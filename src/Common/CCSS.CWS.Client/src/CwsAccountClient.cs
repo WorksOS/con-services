@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -30,7 +30,7 @@ namespace CCSS.CWS.Client
     ///   user token
     ///   Observation: If you use an application token you get 10 accounts, but for user token you get 1. We will only use a user token
     /// </summary>
-    public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
+    public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetMyAccounts)}: userUid {userUid}");
 
@@ -47,10 +47,10 @@ namespace CCSS.CWS.Client
     /// <summary>
     ///   user token
     /// </summary>
-    public async Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
+    public async Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IHeaderDictionary customHeaders = null)
     {
       var accountListResponseModel = await GetMyAccounts(userUid, customHeaders);
-  
+
       if (accountListResponseModel == null || !accountListResponseModel.Accounts.Any())
         return null;
 
@@ -67,13 +67,13 @@ namespace CCSS.CWS.Client
     ///   used by UI to determine functionality allowed by user user token
     ///   used by TFA using an application token            
     /// </summary>
-    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IDictionary<string, string> customHeaders = null)
+    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDeviceLicenses)}: customerUid {customerUid}");
 
       var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
       var deviceLicenseResponseModel = GetData<DeviceLicenseResponseModel>($"/accounts/{accountTrn}/devicelicense", customerUid, null, null, customHeaders);
-      
+
       log.LogDebug($"{nameof(GetDeviceLicenses)}: deviceLicenseResponseModel {JsonConvert.SerializeObject(deviceLicenseResponseModel)}");
       return deviceLicenseResponseModel;
     }

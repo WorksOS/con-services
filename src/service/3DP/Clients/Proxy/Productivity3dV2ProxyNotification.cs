@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Notifies TRex/Raptor that a file has been added to a project
     /// </summary>
-    public async Task<AddFileResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders = null)
+    public async Task<AddFileResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(AddFile)} projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} dxfUnitsType: {dxfUnitsType}");
       var queryParams = new List<KeyValuePair<string, string>>
@@ -56,7 +57,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Notifies TRex/Raptor that a file has been deleted from a project
     /// </summary>
-    public async Task<BaseMasterDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseMasterDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, long? legacyFileId, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(DeleteFile)} projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
       var queryParams = new List<KeyValuePair<string, string>>
@@ -73,7 +74,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     ///  Notifies TRex/Raptor that files have been updated in a project
     /// </summary>
     /// <returns></returns>
-    public async Task<BaseMasterDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseMasterDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IHeaderDictionary customHeaders = null)
     {
       var fileUidsList = fileUids.ToList();
       log.LogDebug($"{nameof(UpdateFiles)} projectUid: {projectUid} fileUids: {string.Join<Guid>(",", fileUidsList)}");
@@ -92,7 +93,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Notifies TRex/Raptor that a file has been CRUD to a project via CGen
     /// </summary>
-    public async Task<BaseMasterDataResult> NotifyImportedFileChange(Guid projectUid, Guid fileUid, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseMasterDataResult> NotifyImportedFileChange(Guid projectUid, Guid fileUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(NotifyImportedFileChange)} projectUid: {projectUid} fileUid: {fileUid}");
       var queryParams = new List<KeyValuePair<string, string>>
@@ -105,10 +106,10 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     }
 
     public async Task<BaseMasterDataResult> InvalidateCache(string projectUid,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(InvalidateCache)} Project UID: {projectUid}");
-      var queryParams = new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>("projectUid", projectUid)};
+      var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("projectUid", projectUid) };
 
       var response = await GetMasterDataItemServiceDiscoveryNoCache<BaseMasterDataResult>("/invalidatecache", customHeaders, queryParams);
       log.LogDebug($"{nameof(InvalidateCache)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
@@ -118,7 +119,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Validates that filterUid has changed i.e. updated/deleted but not inserted
     /// </summary>
-    public async Task<BaseMasterDataResult> NotifyFilterChange(Guid filterUid, Guid projectUid, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseMasterDataResult> NotifyFilterChange(Guid filterUid, Guid projectUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(NotifyFilterChange)} filterUid: {filterUid}, projectUid: {projectUid}");
       var queryParams = new List<KeyValuePair<string, string>>
@@ -136,7 +137,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     ///  Notifies TRex/Raptor that a file has been added to or deleted from a project
     /// </summary>
-    private async Task<T> NotifyFile<T>(string route, IList<KeyValuePair<string, string>> queryParams, IDictionary<string, string> customHeaders)
+    private async Task<T> NotifyFile<T>(string route, IList<KeyValuePair<string, string>> queryParams, IHeaderDictionary customHeaders)
       where T : class, IMasterDataModel
     {
       T response = await GetMasterDataItemServiceDiscoveryNoCache<T>(route, customHeaders, queryParams);

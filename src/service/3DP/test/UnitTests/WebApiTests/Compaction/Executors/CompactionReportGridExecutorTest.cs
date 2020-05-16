@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 #if RAPTOR
 using ASNodeRPC;
 using SVOICFilterSettings;
@@ -14,19 +13,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
 using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 
@@ -117,7 +112,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           $"Grid report failed somehow. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<CompactionReportGridTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<CompactionReportGridTRexRequest>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

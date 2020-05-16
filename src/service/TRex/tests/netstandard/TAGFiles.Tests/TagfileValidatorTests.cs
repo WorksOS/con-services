@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
@@ -258,7 +259,7 @@ namespace TAGFiles.Tests
 
       var moqTfaProxy = new Mock<ITagFileAuthProjectProxy>();
       if (enableTfaService && getProjectAndAssetUidsRequest != null)
-        moqTfaProxy.Setup(x => x.GetProjectAndAssetUids(It.IsAny<GetProjectAndAssetUidsRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(getProjectAndAssetUidsResult);
+        moqTfaProxy.Setup(x => x.GetProjectAndAssetUids(It.IsAny<GetProjectAndAssetUidsRequest>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(getProjectAndAssetUidsResult);
 
       DIBuilder
         .Continue()

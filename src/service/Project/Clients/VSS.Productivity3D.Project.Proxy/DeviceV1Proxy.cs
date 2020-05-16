@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -36,7 +37,7 @@ namespace VSS.Productivity3D.Project.Proxy
     public  override string CacheLifeKey => "DEVICE_CACHE_LIFE";
      
 
-    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingDevices(List<Guid> deviceUids, IDictionary<string, string> customHeaders = null)
+    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingDevices(List<Guid> deviceUids, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetMatchingDevices)} deviceUids: {deviceUids}");
       if (deviceUids.Count == 0)
@@ -54,7 +55,7 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
 
-    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingDevices(List<long> shortRaptorAssetIds, IDictionary<string, string> customHeaders = null)
+    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingDevices(List<long> shortRaptorAssetIds, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetMatchingDevices)} shortRaptorAssetIds: {shortRaptorAssetIds}");
       if (shortRaptorAssetIds.Count == 0)

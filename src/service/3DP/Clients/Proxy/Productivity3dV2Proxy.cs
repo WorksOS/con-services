@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -18,13 +18,12 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
   {
     public Productivity3dV2Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
-    {
-    }
+    { }
 
     /// <summary>
     /// Execute a generic request against v2 productivity3D endpoint
     /// </summary>
-    public async Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null)
+    public async Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IHeaderDictionary customHeaders = null)
       where T : class, IMasterDataModel
     {
       log.LogDebug($"{nameof(ExecuteGenericV2Request)} route: {route}");

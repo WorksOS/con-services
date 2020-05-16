@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 
@@ -19,18 +17,18 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   /// </summary>
   public class ApiClient : IApiClient
   {
-    private readonly IConfigurationStore configurationStore;
-    private readonly ILogger log;
-    private readonly ILoggerFactory logger;
+    private readonly IConfigurationStore _configurationStore;
+    private readonly ILogger _log;
+    private readonly ILoggerFactory _logger;
 
     /// <summary>
     /// Constructor
     /// </summary>
     public ApiClient(IConfigurationStore configurationStore, ILoggerFactory logger)
     {
-      log = logger.CreateLogger<ApiClient>();
-      this.logger = logger;
-      this.configurationStore = configurationStore;
+      _log = logger.CreateLogger<ApiClient>();
+      _logger = logger;
+      _configurationStore = configurationStore;
     }
 
     /// <summary>
@@ -39,14 +37,14 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// <param name="jobRequest">Details of the job request</param>
     /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
     /// <returns>The result of the HTTP request as a stream</returns>
-    public async Task<HttpContent> SendRequest(ScheduleJobRequest jobRequest, IDictionary<string, string> customHeaders)
+    public async Task<HttpContent> SendRequest(ScheduleJobRequest jobRequest, IHeaderDictionary customHeaders)
     {
       HttpContent result = null;
       var method = new HttpMethod(jobRequest.Method ?? "GET");
-      log.LogDebug($"Job request is {JsonConvert.SerializeObject(jobRequest)}");
+      _log.LogDebug($"Job request is {JsonConvert.SerializeObject(jobRequest)}");
       try
       {
-        var request = new GracefulWebRequest(logger, configurationStore);
+        var request = new GracefulWebRequest(_logger, _configurationStore);
         // Merge the Custom headers passed in with the http request, and the headers requested by the Schedule Job
         foreach (var header in jobRequest.Headers)
         {
@@ -56,10 +54,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           }
           else
           {
-            log.LogDebug($"HTTP Header '{header.Key}' exists in both the web requests and job request headers, using web request value. Web Request Value: '${customHeaders[header.Key]}', Job Request Value: '${header.Value}'");
+            _log.LogDebug($"HTTP Header '{header.Key}' exists in both the web requests and job request headers, using web request value. Web Request Value: '${customHeaders[header.Key]}', Job Request Value: '${header.Value}'");
           }
         }
-        
+
         // The Schedule job request may contain encoded binary data, or a standard string,
         // We need to handle both cases differently, as we could lose data if converting binary information to a string
         if (jobRequest.IsBinaryData)
@@ -70,7 +68,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
               jobRequest.Timeout, 0);
           }
         }
-        else if(!string.IsNullOrEmpty(jobRequest.Payload))
+        else if (!string.IsNullOrEmpty(jobRequest.Payload))
         {
           using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload)))
           {
@@ -84,7 +82,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, jobRequest.Timeout, 0);
         }
 
-        log.LogDebug("Result of send request: Stream Content={0}", result);
+        _log.LogDebug("Result of send request: Stream Content={0}", result);
       }
       catch (Exception ex)
       {
@@ -96,8 +94,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           message = ex.InnerException.Message;
           stacktrace = ex.InnerException.StackTrace;
         }
-        log.LogWarning("Error sending data: ", message);
-        log.LogWarning("Stacktrace: ", stacktrace);
+        _log.LogWarning("Error sending data: ", message);
+        _log.LogWarning("Stacktrace: ", stacktrace);
         throw;
       }
       return result;

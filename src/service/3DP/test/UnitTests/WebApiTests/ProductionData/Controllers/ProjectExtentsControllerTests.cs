@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 #if RAPTOR
 using BoundingExtents;
 using VLPDDecls;
@@ -111,10 +112,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           $"Get project extents has not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(), 
-          It.IsAny<string>(), 
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
+      trexCompactionDataProxy.Setup(x => x.SendDataGetRequest<BoundingBox3DGrid>(projectUid.ToString(),
+          It.IsAny<string>(),
+          It.IsAny<IHeaderDictionary>(),
+          It.IsAny<IHeaderDictionary>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

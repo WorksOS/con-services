@@ -36,7 +36,7 @@ namespace VSS.Tile.Service.Common.Authentication
     /// Create 3dpm principal
     /// </summary>
     public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, 
-      string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "")
+      string userEmail, bool isApplicationContext, IHeaderDictionary contextHeaders, string tpaasApplicationName = "")
     {
       //Delegate customer->project association resolution to the principal object for now as it has execution context and can invalidate cache if required
       // note that userUid may actually be the ApplicationId if isApplicationContext

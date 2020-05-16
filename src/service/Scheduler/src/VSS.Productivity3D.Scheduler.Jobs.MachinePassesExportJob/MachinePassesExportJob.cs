@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
@@ -15,7 +16,6 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.MachinePassesExportJob
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.MachinePassesExportJob
     private readonly ITPaaSApplicationAuthentication authn;
     private readonly IServiceResolution serviceResolution;
     private readonly IExportEmailGenerator exportEmailGenerator;
-    private IDictionary<string, string> headers;
+    private IHeaderDictionary headers;
     private string[] recipients;
 
     private List<ProjectData> customerProjects;

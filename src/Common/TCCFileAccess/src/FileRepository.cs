@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -678,9 +679,9 @@ namespace VSS.TCCFileAccess
       }
     }
 
-    private (string, Dictionary<string, string>) FormRequest(object request, string endpoint, string token = null)
+    private (string, IHeaderDictionary) FormRequest(object request, string endpoint, string token = null)
     {
-      var headers = new Dictionary<string, string>();
+      var headers = new HeaderDictionary();
 
       var properties = request.GetType()
                                .GetRuntimeFields()

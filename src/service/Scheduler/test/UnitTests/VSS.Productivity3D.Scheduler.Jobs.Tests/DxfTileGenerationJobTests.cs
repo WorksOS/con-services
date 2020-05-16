@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +22,6 @@ using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Serilog.Extensions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.Tests
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
                            It.IsAny<string>(),
                            It.IsAny<string>(),
                            DxfUnitsType.Meters,
-                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string,string>>>() ))
+                           It.IsAny<IHeaderDictionary>(), It.IsAny<Action<IHeaderDictionary>>() ))
                  .ReturnsAsync(new TileMetadata());
 
       var mockNotification = new Mock<INotificationHubClient>();
@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
                            It.IsAny<string>(),
                            It.IsAny<string>(),
                            DxfUnitsType.Meters,
-                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string, string>>>()), runTimes);
+                           It.IsAny<IHeaderDictionary>(), It.IsAny<Action<IHeaderDictionary>>()), runTimes);
     }
 
     [TestMethod]

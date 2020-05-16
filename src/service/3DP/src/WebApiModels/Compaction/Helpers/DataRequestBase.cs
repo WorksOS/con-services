@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Common.Interfaces;
@@ -20,13 +21,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
     protected Guid? ProjectUid;
     protected long ProjectId;
-    protected IDictionary<string, string> Headers;
+    protected IHeaderDictionary Headers;
     protected CompactionProjectSettings ProjectSettings;
     protected CompactionProjectSettingsColors ProjectSettingsColors;
     protected FilterResult Filter;
     protected DesignDescriptor DesignDescriptor;
 
-    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, Guid? projectUid, long projectId, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, IDictionary<string, string> headers, FilterResult filter, DesignDescriptor designDescriptor)
+    public void Initialize(ILogger log, IConfigurationStore configurationStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, Guid? projectUid, long projectId, CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, IHeaderDictionary headers, FilterResult filter, DesignDescriptor designDescriptor)
     {
       filter?.Validate(); // Should be moved to FilterResult.CreateFilterObsolete().
 

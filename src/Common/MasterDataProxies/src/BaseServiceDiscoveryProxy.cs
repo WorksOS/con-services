@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -82,7 +83,7 @@ namespace VSS.MasterData.Proxies
     /// Execute a Post to an endpoint, and cache the result
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
-    protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
+    protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IHeaderDictionary customHeaders,
       IList<KeyValuePair<string, string>> queryParameters = null)
       where T : class, IMasterDataModel
     {
@@ -94,7 +95,7 @@ namespace VSS.MasterData.Proxies
     /// Execute a Post to an endpoint, and cache the result
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
-    protected Task<T> PostMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
+    protected Task<T> PostMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IHeaderDictionary customHeaders,
       IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
       where T : class, IMasterDataModel
     {
@@ -102,20 +103,20 @@ namespace VSS.MasterData.Proxies
         () => RequestAndReturnData<T>(customHeaders, HttpMethod.Post, route, queryParameters, payload));
     }
 
-    protected Task<T> GetMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+    protected Task<T> GetMasterDataItemServiceDiscoveryNoCache<T>(string route, IHeaderDictionary customHeaders,
       IList<KeyValuePair<string, string>> queryParameters = null)
       where T : class, IMasterDataModel
     {
         return RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters);
     }
 
-    protected Task<Stream> GetMasterDataStreamItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
+    protected Task<Stream> GetMasterDataStreamItemServiceDiscoveryNoCache(string route, IHeaderDictionary customHeaders,
      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)
     {
       return RequestAndReturnDataStream(customHeaders, method, route, queryParameters, payload);
     }
 
-    protected Task<T> SendMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+    protected Task<T> SendMasterDataItemServiceDiscoveryNoCache<T>(string route, IHeaderDictionary customHeaders,
       HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 3)
       where T : class
     {
@@ -125,7 +126,7 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Execute a Post/Put/Delete to an endpoint that returns only an HttpStatusCode.
     /// </summary>
-    protected Task SendMasterDataItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
+    protected Task SendMasterDataItemServiceDiscoveryNoCache(string route, IHeaderDictionary customHeaders,
      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
     {
       return Request(customHeaders, method, route, queryParameters, payload);
@@ -135,7 +136,7 @@ namespace VSS.MasterData.Proxies
     /// Execute a Post/Put/Delete to an endpoint, do not cache the result
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
-    protected Task<T> MasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
+    protected Task<T> MasterDataItemServiceDiscoveryNoCache<T>(string route, IHeaderDictionary customHeaders,
       HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null) where T : ContractExecutionResult
     {
       return RequestAndReturnResult<T>(customHeaders, method, route, queryParameters, payload);
@@ -162,7 +163,7 @@ namespace VSS.MasterData.Proxies
 
     #endregion
 
-    protected Task<string> GetUrl(string route, IDictionary<string, string> customHeaders, IList<KeyValuePair<string, string>> queryParameters = null)
+    protected Task<string> GetUrl(string route, IHeaderDictionary customHeaders, IList<KeyValuePair<string, string>> queryParameters = null)
     {
       var serviceName = ResolveServiceNameFromHeaders(customHeaders);
       return IsInsideAuthBoundary
@@ -177,7 +178,7 @@ namespace VSS.MasterData.Proxies
     /// This method checks for any of these overrides
     /// If no overrides are found, the service name configured by the proxy is returned.
     /// </summary>
-    private string ResolveServiceNameFromHeaders(IDictionary<string, string> customHeaders)
+    private string ResolveServiceNameFromHeaders(IHeaderDictionary customHeaders)
     {
       // Get the original Service Name
       var serviceName = GetServiceName();
@@ -196,7 +197,7 @@ namespace VSS.MasterData.Proxies
       return header.Value;
     }
 
-    private async Task<Stream> RequestAndReturnDataStream(IDictionary<string, string> customHeaders,
+    private async Task<Stream> RequestAndReturnDataStream(IHeaderDictionary customHeaders,
      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
@@ -210,8 +211,7 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 3) where TResult : class
+    private async Task<TResult> RequestAndReturnData<TResult>(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 3) where TResult : class
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
@@ -224,8 +224,7 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    private async Task<T> RequestAndReturnResult<T>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null) where T : ContractExecutionResult
+    private async Task<T> RequestAndReturnResult<T>(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null) where T : ContractExecutionResult
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
@@ -238,8 +237,7 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    private async Task Request(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
+    private async Task Request(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 

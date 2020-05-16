@@ -28,6 +28,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -141,7 +142,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           $"SinglePatche request failed somehow. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<PatchDataRequest>(), "/patches", It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<PatchDataRequest>(), "/patches", It.IsAny<IHeaderDictionary>()))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory
@@ -204,7 +205,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       }
 
       var resultStream = WriteAsPerTRex(1, 1, subgridOriginX, subgridOriginY, elevationOrigin, timeOrigin, elevationOffsets, timeOffsets);
-      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<PatchDataRequest>(), "/patches", It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<PatchDataRequest>(), "/patches", It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult<Stream>(resultStream));
 
       var executor = RequestExecutorContainerFactory

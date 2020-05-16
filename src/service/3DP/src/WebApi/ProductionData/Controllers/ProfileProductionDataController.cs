@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -44,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.

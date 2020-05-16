@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -44,12 +45,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
-    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">LoggerFactory</param>
     /// <param name="configStore">Configuration Store</param>
     /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>

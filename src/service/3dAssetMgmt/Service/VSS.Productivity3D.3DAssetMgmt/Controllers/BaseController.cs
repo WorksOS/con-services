@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
 
     protected ILogger Log => _log ??= HttpContext?.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
     protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ??= HttpContext.RequestServices.GetRequiredService<IServiceExceptionHandler>();
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
+    protected IHeaderDictionary customHeaders => Request.Headers.GetCustomHeaders();
     protected string CustomerUid => Request.Headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID].ToString();
     protected string UserId => GetUserId();
 

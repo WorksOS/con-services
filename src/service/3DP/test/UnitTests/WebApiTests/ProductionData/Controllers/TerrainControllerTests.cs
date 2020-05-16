@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
   {
     private static IServiceProvider serviceProvider;
     private static ILoggerFactory logger;
-    private static Dictionary<string, string> _customHeaders;
+    private static HeaderDictionary _customHeaders;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
     }
 
     [TestMethod]
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(
         It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrainNoValid"),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>()))
        .Returns(Task.FromResult<Stream>(resultStream));
 
       var configStore = new Mock<IConfigurationStore>();
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Verify(m => m.SendDataPostRequestWithStreamResponse(
         It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
-          It.IsAny<IDictionary<string, string>>())
+          It.IsAny<IHeaderDictionary>())
       , Times.Once);
 
     }
@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(
         It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>()))
        .Returns(Task.FromResult<Stream>(resultStream));
 
 
@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Verify(m => m.SendDataPostRequestWithStreamResponse(
         It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
-          It.IsAny<IDictionary<string, string>>())
+          It.IsAny<IHeaderDictionary>())
       , Times.Once);
     }
   }

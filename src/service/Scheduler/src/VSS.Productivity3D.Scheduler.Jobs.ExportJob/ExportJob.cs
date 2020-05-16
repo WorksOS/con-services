@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
@@ -99,7 +100,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     /// <param name="request">Scheduled Job Details</param>
     /// <param name="customHeaders">Any Customer headers to be passed with the Scheduled Job Request</param>
     /// <returns>A Job ID for the Background Job</returns>
-    public string QueueJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
+    public string QueueJob(ScheduleJobRequest request, IHeaderDictionary customHeaders)
     {
       throw new NotImplementedException();
     }
@@ -112,7 +113,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     /// <param name="context">Hangfire context</param>
     [ExportFailureFilter]
     [AutomaticRetry(Attempts = 0)]
-    public async Task GetExportData(Guid requestId, IDictionary<string, string> customHeaders,
+    public async Task GetExportData(Guid requestId, IHeaderDictionary customHeaders,
       PerformContext context)
     {
       // Refetch the Request Model from S3
@@ -120,7 +121,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
       await ExecuteExportProc(request, customHeaders, context);
     }
 
-    public async Task<string> ExecuteExportProc(ScheduleJobRequest request, IDictionary<string, string> customHeaders,
+    public async Task<string> ExecuteExportProc(ScheduleJobRequest request, IHeaderDictionary customHeaders,
       PerformContext context)
     {
       var data = await apiClient.SendRequest(request, customHeaders);
@@ -189,9 +190,9 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
       if (!(context is PerformContext))
         throw new ArgumentException($"Wrong context object has been passed {nameof(context)}");
 
-      var headers = o.GetConvertedObject<IDictionary<string, string>>();
+      var headers = o.GetConvertedObject<IHeaderDictionary>();
 
-      return GetExportData(savedRequestId, headers, (context as PerformContext));
+      return GetExportData(savedRequestId, headers, context as PerformContext);
     }
 
     public Task TearDown(object o, object context) => Task.FromResult(true);

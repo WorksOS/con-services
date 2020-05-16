@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -18,7 +18,7 @@ namespace VSS.Tile.Service.UnitTests.Service.WebApi.Executors
   {
     public static IServiceProvider ServiceProvider;
 
-    protected IDictionary<string, string> CustomHeaders = new Dictionary<string, string>();
+    protected IHeaderDictionary customHeaders = new HeaderDictionary();
     protected IConfigurationStore Config;
     protected ILoggerFactory Logger;
 

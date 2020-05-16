@@ -4,18 +4,19 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -141,7 +142,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         FileUpdatedUtc = fileUpdatedUtc,
         ImportedBy = importedBy,
         SurveyedUTC = surveyedUtc,
-        ActionUTC = nowUtc, 
+        ActionUTC = nowUtc,
         ParentUID = parentUid,
         Offset = offset ?? 0
       };
@@ -259,12 +260,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 51);
     }
 
-
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
     public static async Task<List<Filter>> GetFilters(Guid projectUid,
-      IDictionary<string, string> customHeaders, IFilterServiceProxy filterServiceProxy)
+      IHeaderDictionary customHeaders, IFilterServiceProxy filterServiceProxy)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)

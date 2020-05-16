@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,13 +16,9 @@ using VLPDDecls;
 #endif
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models.MapHandling;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
@@ -44,7 +40,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
     private static IServiceProvider serviceProvider;
     private static ILoggerFactory logger;
-    private static Dictionary<string, string> _customHeaders;
+    private static IHeaderDictionary _customHeaders;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -55,7 +51,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
                         .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
     }
 
     [TestMethod]
@@ -93,11 +89,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     public void DesignExecutor_TRex_Success()
     {
       var request = new DesignBoundariesRequest(PROJECT_ID, Guid.NewGuid(), TOLERANCE);
-      
+
       var expectedResult = new DesignBoundaryResult(JsonConvert.DeserializeObject<GeoJson>(joString));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<DesignBoundaryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, string>>()))
+      tRexProxy.Setup(x => x.SendDataGetRequest<DesignBoundaryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(expectedResult);
 
       var configStore = new Mock<IConfigurationStore>();
@@ -108,7 +104,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           trexCompactionDataProxy: tRexProxy.Object, customHeaders: _customHeaders);
 
       var result = executor.ProcessAsync(request).Result as DesignResult;
-      
+
       result.Should().NotBeNull();
       result.DesignBoundaries.Should().NotBeNull();
       result.DesignBoundaries.Length.Should().Be(1);
@@ -123,12 +119,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       geoJSon.Features[0].Geometry.Coordinates[0].Count.Should().Be(NUMBER_OF_COORDINATES);
       geoJSon.Features[0].Geometry.Coordinates[0].Count.Should().Be(expectedResult.GeoJSON.Features[0].Geometry.Coordinates[0].Count);
-      
+
       for (var i = 0; i < geoJSon.Features[0].Geometry.Coordinates[0].Count; i++)
       {
         var coordinate = geoJSon.Features[0].Geometry.Coordinates[0][i];
         var resultCoordinate = expectedResult.GeoJSON.Features[0].Geometry.Coordinates[0][i];
-        
+
         coordinate[0].Should().Be(resultCoordinate[0]);
         coordinate[1].Should().Be(resultCoordinate[1]);
       }

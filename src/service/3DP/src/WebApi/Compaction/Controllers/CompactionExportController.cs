@@ -183,7 +183,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return WithServiceExceptionTryExecute(() => new ScheduleResult
       {
-        JobId = scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders(true)).Result?.JobId
+        JobId = scheduler.ScheduleExportJob(request, Request.Headers.GetCustomHeaders()).Result?.JobId
       });
     }
 

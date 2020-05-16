@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -26,7 +27,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 {
   public class GetDeviceByShortRaptorIdExecutorTests
   {
-    private Dictionary<string, string> _customHeaders;
+    private IHeaderDictionary _customHeaders;
     private IConfigurationStore _configStore;
     private ILoggerFactory _logger;
     private IServiceExceptionHandler _serviceExceptionHandler;
@@ -59,7 +60,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
 
       _customerUid = Guid.NewGuid().ToString();
       _deviceUid = Guid.NewGuid().ToString();

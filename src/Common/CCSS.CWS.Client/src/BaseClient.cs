@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -32,53 +33,48 @@ namespace CCSS.CWS.Client
     // NOTE: must have a uid or userId for cache key
     protected Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
+      IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
-      var result = GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
+      return GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
         customHeaders, parameters);
-      return result;
     }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
       TReq request,
       IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
+      IHeaderDictionary customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
       var payload = JsonConvert.SerializeObject(request);
 
-      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
-      {
-        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
-      }
+      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+      return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
     }
 
     protected async Task PostData<TReq>(string route,
       TReq request,
       IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class
+      IHeaderDictionary customHeaders = null) where TReq : class
     {
       var payload = JsonConvert.SerializeObject(request);
 
-      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
-      {
-        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
-      }
+      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+      await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
     }
 
     protected Task UploadData(string uploadUrl, Stream payload,
-      IDictionary<string, string> customHeaders = null) 
+      IHeaderDictionary customHeaders = null)
     {
       return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
 
     protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
+      IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
       return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
     }
 
     protected Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       return SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
     }
@@ -86,30 +82,25 @@ namespace CCSS.CWS.Client
     protected async Task<TRes> UpdateData<TReq, TRes>(string route,
       TReq request,
       IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
+      IHeaderDictionary customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
       var payload = JsonConvert.SerializeObject(request);
 
-      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
-      {
-        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
-      }
+      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+      // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+      return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
     }
 
     protected async Task UpdateData<TReq>(string route,
       TReq request,
       IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class 
+      IHeaderDictionary customHeaders = null) where TReq : class
     {
       var payload = JsonConvert.SerializeObject(request);
 
-      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
-      {
-        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
-      }
+      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+      // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+      await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
     }
-
   }
 }
