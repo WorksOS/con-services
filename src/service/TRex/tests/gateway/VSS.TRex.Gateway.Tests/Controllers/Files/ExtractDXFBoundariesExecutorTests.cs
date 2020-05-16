@@ -12,6 +12,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Files;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
+using VSS.TRex.Files.DXF;
 using VSS.TRex.Gateway.Common.Executors.Files;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Geometry;
@@ -41,7 +42,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     }
 
     [Fact]
-    public void FailWithFileNotExist()
+    public void Fail_With_FileNotExist()
     {
       var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", "does-not-exist.dxf"), DxfUnitsType.Meters, 10);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
@@ -52,10 +53,13 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     }
 
     [Theory]
-    [InlineData("Southern Motorway 55 point polygon.dxf", DxfUnitsType.Meters, 1, 1001)]
-    [InlineData("avoidMeBoundary.dxf", DxfUnitsType.Meters, 1, 12)]
-    [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 7, 4)]
-    public async void Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount)
+    [InlineData("Southern Motorway 55 point polygon.dxf", DxfUnitsType.Meters, 1, 1001, "55 points", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("avoidMeBoundary.dxf", DxfUnitsType.Meters, 1, 12, "avoidMeBoundary", DXFLineWorkBoundaryType.AvoidanceZone)]
+    [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 7, 4, "Fill", DXFLineWorkBoundaryType.Stockpile)]
+    [InlineData("100_sided_giraffe.dxf", DxfUnitsType.Meters, 1, 104, "stockpile_100_sides", DXFLineWorkBoundaryType.Stockpile)]
+    [InlineData("vssBoundary.dxf", DxfUnitsType.Meters, 1, 101, "vssBoundary", DXFLineWorkBoundaryType.GenericBoundary)]
+
+    public async void Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
     {
       var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, 10);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
@@ -70,6 +74,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       {
         boundary.Boundaries.Count.Should().Be(expectedBoundaryCount);
         boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
+        boundary.Boundaries[0].Name.Should().Be(expectedName);
+        boundary.Boundaries[0].Type.Should().Be(expectedType);
       }
       else
       {
@@ -101,6 +107,17 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       {
         false.Should().BeTrue(); // fail the test
       }
+    }
+
+    [Fact]
+    public async void Fail_With_InvalidFile()
+    {
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", "TransferTestDesign.ttm"), DxfUnitsType.Meters, 10);
+      var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
+      executor.Should().NotBeNull();
+
+      Func<Task> act = async () => await executor.ProcessAsync(request);
+      act.Should().Throw<ServiceException>().WithMessage($"Error processing file: {DXFUtilitiesResult.UnknownFileFormat}");
     }
   }
 }

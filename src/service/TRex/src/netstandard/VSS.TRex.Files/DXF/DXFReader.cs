@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using VSS.Productivity3D.Models.Models.Files;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -189,7 +191,7 @@ namespace VSS.TRex.Files.DXF
           if (rec.recType != 0)
             continue;
 
-          TestString = rec.s.ToUpper();
+          TestString = rec.s.ToUpper(CultureInfo.InvariantCulture);
           // ReSharper disable once StringLiteralTypo
           foundSectionStart = string.Compare(TestString, name0, StringComparison.InvariantCulture) == 0 || TestString == "ENDSEC" || TestString == "SECTION";
         }
@@ -199,7 +201,7 @@ namespace VSS.TRex.Files.DXF
         {
           if (!ReadDXFRecord(out rec))
             return false;
-          TestString = rec.s.ToUpper();
+          TestString = rec.s.ToUpper(CultureInfo.InvariantCulture);
         }
 
         _haveFoundSection = rec.recType == 2 && string.Compare(TestString, name2, StringComparison.InvariantCulture) == 0;
@@ -260,7 +262,7 @@ namespace VSS.TRex.Files.DXF
       // Todo extrusion not supported XYZ Extrusion;
       bool PolyLineIs3D;
       double DefaultPolyLineHeight;
-      //ExtendedAttrName : String;
+      var ExtendedAttrName = "";
 
       var PolyLineRecords = new List<DXFRecord>();
 
@@ -422,6 +424,17 @@ namespace VSS.TRex.Files.DXF
             Extrusion.Z = rec.r;
             break;
             */
+
+          case 1001: 
+            ExtendedAttrName = rec.s.ToUpper(CultureInfo.InvariantCulture); // Registered application name (up to 31 bytes) in extended data
+            break;
+          case 1000: // ASCII string in extended attrs (up to 255 bytes)
+          case 1070: 
+            if (ExtendedAttrName == "TRIMBLEBNDYTYPE")
+              entity.Type = (DXFLineWorkBoundaryType)rec.i;
+            else if (ExtendedAttrName == "TRIMBLENAME")
+              entity.Name = rec.s;
+            break;
         }
       }
 
@@ -575,7 +588,7 @@ namespace VSS.TRex.Files.DXF
 
       boundary = new PolyLineBoundary();
 
-      var testString = DXFRec.s.ToUpper();
+      var testString = DXFRec.s.ToUpper(CultureInfo.InvariantCulture);
       switch (testString)
       {
         // ReSharper disable once StringLiteralTypo

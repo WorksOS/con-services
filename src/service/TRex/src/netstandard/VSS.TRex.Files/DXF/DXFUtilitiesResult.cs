@@ -4,6 +4,7 @@
   {
     UnknownError,
     Ok,
-    NoEntitiesSectionFound
+    NoEntitiesSectionFound,
+    UnknownFileFormat
   }
 }
