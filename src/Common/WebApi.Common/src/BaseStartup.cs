@@ -160,16 +160,18 @@ namespace VSS.WebApi.Common
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
       app.UseRouting();
-      var corsPolicyNames = GetCors().Select(c => c.Item1);
-      foreach (var corsPolicyName in corsPolicyNames)
+
+      foreach (var corsPolicyName in GetCors().Select(c => c.Item1))
+      {
         app.UseCors(corsPolicyName);
+      }
 
       app.UseMetricsAllMiddleware();
       app.UseMetricsAllEndpoints();
       app.UseHealthAllEndpoints();
       app.UseCommon(ServiceName);
 
-      if (Configuration.GetValueBool("newrelic").HasValue && Configuration.GetValueBool("newrelic").Value)
+      if (Configuration.GetValueBool("newrelic") == true)
       {
         NewRelicMiddleware.ServiceName = ServiceName;
         app.UseMiddleware<NewRelicMiddleware>();
@@ -179,18 +181,14 @@ namespace VSS.WebApi.Common
       Services.AddSingleton(loggerFactory);
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
-      app.UseEndpoints(endpoints =>
-      {
-        endpoints.MapControllers();
-      });
+      app.UseEndpoints(endpoints => endpoints.MapControllers());
     }
 
     /// <summary>
     /// Start any services once the service provider has been built
     /// </summary>
     protected virtual void StartServices(IServiceProvider serviceProvider)
-    {
-    }
+    { }
 
     /// <summary>
     /// Extra configuration that would normally be in ConfigureServices

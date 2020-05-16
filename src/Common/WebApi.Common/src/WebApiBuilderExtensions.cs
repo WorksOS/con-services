@@ -32,7 +32,9 @@ namespace VSS.WebApi.Common
     public static IApplicationBuilder UseCommon(this IApplicationBuilder app, string serviceTitle)
     {
       if (app == null)
+      {
         throw new ArgumentNullException(nameof(app));
+      }
 
       app.UseExceptionTrap();
       app.UseFilterMiddleware<RequestIDMiddleware>();
@@ -53,22 +55,15 @@ namespace VSS.WebApi.Common
 
     public static IWebHostBuilder BuildKestrelWebHost(this IWebHostBuilder builder)
     {
-      IConfigurationRoot configurationRoot = null;
+      var configurationRoot = new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+        .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
+        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true)
+        .Build();
 
       builder
         .UseContentRoot(Directory.GetCurrentDirectory())
-        .ConfigureAppConfiguration((hostingContext, config) =>
-        {
-          config.Sources.Clear();
-
-          var env = hostingContext.HostingEnvironment;
-
-          config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-          configurationRoot = config.Build();
-        })
+        .UseConfiguration(configurationRoot)
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
           loggingBuilder.AddProvider(
@@ -79,7 +74,6 @@ namespace VSS.WebApi.Common
         {
           // Setup the ConfigurationRoot so it's available in BaseStartup.
           services.AddSingleton<IConfigurationRoot>(configurationRoot);
-          services.AddSingleton<IConfiguration>(configurationRoot);
         });
 
       ThreadPool.SetMaxThreads(1024, 2048);
