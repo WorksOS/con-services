@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
@@ -21,26 +22,25 @@ namespace VSS.WebApi.Common
 
     private string _applicationBearerToken;
     private DateTime _tPaasTokenExpiryUtc = DateTime.MinValue;
-    private IConfigurationStore configuration;
-    private ITPaasProxy tpaas;
-    private ILogger<TPaaSApplicationAuthentication> Log;
-    private object _lock = new object();
+    private readonly IConfigurationStore _configuration;
+    private readonly ITPaasProxy _tpaas;
+    private readonly ILogger<TPaaSApplicationAuthentication> _log;
+    private readonly object _lock = new object();
     private const int DefaultLogMaxChar = 1000;
     private readonly int _logMaxChar;
 
     public TPaaSApplicationAuthentication(IConfigurationStore config, ITPaasProxy tpaasProxy, ILogger<TPaaSApplicationAuthentication> log)
     {
-      configuration = config;
-      tpaas = tpaasProxy;
-      Log = log;
-      _logMaxChar = configuration.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
+      _configuration = config;
+      _tpaas = tpaasProxy;
+      _log = log;
+      _logMaxChar = _configuration.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
-    private string GetApplicationJWT()
+    public string GetApplicationJWT()
     {
-      return configuration.GetValueString("INTERNAL_JWT");
+      return _configuration.GetValueString("INTERNAL_JWT");
     }
-
 
     /// <summary>
     /// Gets a temporary bearer token for an application. Refreshes the token as required.
@@ -55,11 +55,11 @@ namespace VSS.WebApi.Common
         if (string.IsNullOrEmpty(_applicationBearerToken) ||
             _tPaasTokenExpiryUtc < DateTime.UtcNow)
         {
-          var customHeaders = new Dictionary<string, string>
+          var customHeaders = new HeaderDictionary
           {
             {HeaderConstants.ACCEPT, ContentTypeConstants.ApplicationJson},
             {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationFormUrlEncoded},
-            {HeaderConstants.AUTHORIZATION, string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
+            {HeaderConstants.AUTHORIZATION, string.Format($"Basic {_configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
           TPaasOauthResult tPaasOauthResult;
 
@@ -68,10 +68,10 @@ namespace VSS.WebApi.Common
             //Revoke expired or expiring token
             if (!string.IsNullOrEmpty(_applicationBearerToken))
             {
-              var revokeResult = tpaas.RevokeApplicationBearerToken(_applicationBearerToken, customHeaders).WaitAndUnwrapException();
+              var revokeResult = _tpaas.RevokeApplicationBearerToken(_applicationBearerToken, customHeaders).WaitAndUnwrapException();
               if (revokeResult.Code != 0)
               {
-                Log.LogInformation($"GetApplicationBearerToken failed to revoke token: {revokeResult.Message}");
+                _log.LogInformation($"GetApplicationBearerToken failed to revoke token: {revokeResult.Message}");
                 throw new ServiceException(HttpStatusCode.InternalServerError,
                   new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
                     $"Failed to revoke application bearer token: {revokeResult.Message}"));
@@ -81,10 +81,10 @@ namespace VSS.WebApi.Common
               _tPaasTokenExpiryUtc = DateTime.MinValue;
             }
             //Authenticate to get a token
-            tPaasOauthResult = tpaas.GetApplicationBearerToken(grantType, customHeaders).WaitAndUnwrapException();
+            tPaasOauthResult = _tpaas.GetApplicationBearerToken(grantType, customHeaders).WaitAndUnwrapException();
 
-            var tPaasUrl = configuration.GetValueString("TPAAS_OAUTH_URL") ?? "null";
-            Log.LogInformation(
+            var tPaasUrl = _configuration.GetValueString("TPAAS_OAUTH_URL") ?? "null";
+            _log.LogInformation(
               $"GetApplicationBearerToken() Got new bearer token: TPAAS_OAUTH_URL: {tPaasUrl} grantType: {grantType} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
           }
           catch (Exception e)
@@ -110,32 +110,32 @@ namespace VSS.WebApi.Common
           _tPaasTokenExpiryUtc = DateTime.UtcNow.AddSeconds(tPaasOauthResult.tPaasOauthRawResult.expires_in - TOKEN_EXPIRY_GRACE_SECONDS);
         }
 
-        Log.LogInformation(
+        _log.LogInformation(
           $"GetApplicationBearerToken()  Using bearer token: {_applicationBearerToken}");
         return _applicationBearerToken;
       }
     }
 
-    public IDictionary<string, string> CustomHeadersJWT()
+    public IHeaderDictionary CustomHeadersJWT()
     {
-      return new Dictionary<string, string>
+      return new HeaderDictionary
       {
-        {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson},
-        {HeaderConstants.X_JWT_ASSERTION, GetApplicationJWT() }
+        { HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson },
+        { HeaderConstants.X_JWT_ASSERTION, GetApplicationJWT() }
       };
     }
 
-    public IDictionary<string, string> CustomHeadersJWTAndBearer()
+    public IHeaderDictionary CustomHeadersJWTAndBearer()
     {
-      return CustomHeaders().MergeDifference(CustomHeadersJWT());
+      return (IHeaderDictionary)CustomHeaders().MergeDifference(CustomHeadersJWT());
     }
 
-    public IDictionary<string, string> CustomHeaders()
+    public IHeaderDictionary CustomHeaders()
     {
-      return new Dictionary<string, string>
+      return new HeaderDictionary
       {
-        {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson},
-        {HeaderConstants.AUTHORIZATION, $"Bearer {GetApplicationBearerToken()}"}
+        { HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson },
+        { HeaderConstants.AUTHORIZATION, $"Bearer {GetApplicationBearerToken()}"}
       };
     }
   }

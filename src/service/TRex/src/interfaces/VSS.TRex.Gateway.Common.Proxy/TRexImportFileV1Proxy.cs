@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -44,10 +45,9 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     /// <summary>
     /// Notifies TRex that a design file has been added to a project
-    /// </summary>   
-    /// <returns></returns>
+    /// </summary>
     public async Task<ContractExecutionResult> AddFile(DesignRequest designRequest,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       Gateway = GatewayType.Mutable;
       return await SendImportFileRequest(designRequest, customHeaders, HttpMethod.Post);
@@ -55,10 +55,9 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     /// <summary>
     /// Notifies TRex that a design file has been updated a project
-    /// </summary>   
-    /// <returns></returns>
+    /// </summary>
     public async Task<ContractExecutionResult> UpdateFile(DesignRequest designRequest,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       Gateway = GatewayType.Mutable;
       return await SendImportFileRequest(designRequest, customHeaders, HttpMethod.Put);
@@ -66,17 +65,16 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     /// <summary>
     /// Notifies Trex that a design file has been deleted from a project
-    /// </summary>   
-    /// <returns></returns>
+    /// </summary>
     public async Task<ContractExecutionResult> DeleteFile(DesignRequest designRequest,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       Gateway = GatewayType.Mutable;
       return await SendImportFileRequest(designRequest, customHeaders, HttpMethod.Delete);
     }
 
     public async Task<DesignListResult> GetDesignsOfTypeForProject(Guid projectUid, ImportedFileType? importedFileType,
-        IDictionary<string, string> customHeaders = null)
+        IHeaderDictionary customHeaders = null)
     {
       Gateway = GatewayType.Immutable;
       var queryParams = new List<KeyValuePair<string, string>>
@@ -85,11 +83,11 @@ namespace VSS.TRex.Gateway.Common.Proxy
         new KeyValuePair<string, string>("importedFileType", importedFileType.ToString())
       };
       return await GetMasterDataItemServiceDiscovery<DesignListResult>
-        ($"/design/get", projectUid.ToString(), null, customHeaders, queryParams);
+        ("/design/get", projectUid.ToString(), null, customHeaders, queryParams);
     }
 
     private async Task<ContractExecutionResult> SendImportFileRequest(DesignRequest designRequest,
-      IDictionary<string, string> customHeaders, HttpMethod method)
+      IHeaderDictionary customHeaders, HttpMethod method)
     {
       var jsonData = JsonConvert.SerializeObject(designRequest);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))

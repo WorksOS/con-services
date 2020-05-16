@@ -40,9 +40,7 @@ namespace VSS.WebApi.Common
         return Task.FromResult(0);
       });
 
-      await this.NextRequestDelegate.Invoke(context);
-
-
+      await NextRequestDelegate.Invoke(context);
     }
   }
 }

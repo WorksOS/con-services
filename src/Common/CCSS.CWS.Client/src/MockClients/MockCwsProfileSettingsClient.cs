@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -22,7 +23,7 @@ namespace CCSS.CWS.Client.MockClients
     {
     }
 
-    public Task<ProjectConfigurationFileResponseModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IDictionary<string, string> customHeaders = null)
+    public Task<ProjectConfigurationFileResponseModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectConfiguration)} Mock: projectUid {projectUid} projectConfigurationFileType {JsonConvert.SerializeObject(projectConfigurationFileType)}");
 
@@ -40,7 +41,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(projectConfigurationFileResponseModel);
     }
 
-    public Task<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(Guid projectUid, IDictionary<string, string> customHeaders = null)
+    public Task<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(Guid projectUid, IHeaderDictionary customHeaders = null)
     {
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
@@ -70,7 +71,7 @@ namespace CCSS.CWS.Client.MockClients
     }
 
     public Task<ProjectConfigurationFileResponseModel> SaveProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType,
-      ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IDictionary<string, string> customHeaders = null)
+      ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(SaveProjectConfiguration)} Mock: projectUid {projectUid} projectConfigurationFileType {JsonConvert.SerializeObject(projectConfigurationFileType)} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
@@ -89,7 +90,7 @@ namespace CCSS.CWS.Client.MockClients
     }
 
     public Task<ProjectConfigurationFileResponseModel> UpdateProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType,
-      ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IDictionary<string, string> customHeaders = null)
+      ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(UpdateProjectConfiguration)} Mock: projectUid {projectUid} projectConfigurationFileType {JsonConvert.SerializeObject(projectConfigurationFileType)} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
@@ -107,7 +108,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(projectConfigurationFileResponseModel);
     }
 
-    public Task DeleteProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IDictionary<string, string> customHeaders = null)
+    public Task DeleteProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(DeleteProjectConfiguration)} Mock: projectUid {projectUid} projectConfigurationFileType {JsonConvert.SerializeObject(projectConfigurationFileType)}");
       return Task.CompletedTask;

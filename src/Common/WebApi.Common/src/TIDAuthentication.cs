@@ -184,7 +184,7 @@ namespace VSS.WebApi.Common
     /// Creates a TID principal. Override in a service to create custom service principals.
     /// </summary>
     public virtual TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, string userEmail,
-      bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "")
+      bool isApplicationContext, IHeaderDictionary contextHeaders, string tpaasApplicationName = "")
     {
       return new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName);
     }

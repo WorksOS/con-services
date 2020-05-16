@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     private readonly IConfigurationStore configStore;
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Constructor with dependency injection

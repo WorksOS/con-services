@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -88,7 +89,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -109,7 +110,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       _ = new CreateImportedFileEvent
       {
-        CustomerUID =_customerUid,
+        CustomerUID = _customerUid,
         ProjectUID = _projectUid,
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.DesignSurface,
@@ -138,12 +139,12 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
       productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
-        It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
+        It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1); // for updating zoom levels
@@ -158,7 +159,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
-          customHeaders, 
+          customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
           productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
@@ -178,7 +179,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
@@ -208,12 +209,12 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
       productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
-        It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
+        It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
@@ -225,7 +226,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
-          customHeaders, 
+          customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
@@ -238,7 +239,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task DeleteImportedFile_RaptorHappyPath()
     {
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
@@ -268,15 +269,15 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorDeleteFileResult = new BaseMasterDataResult { Code = 0 };
       productivity3dV2ProxyNotification.Setup(p => p.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
-        It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<IDictionary<string, string>>()))
+        It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<HeaderDictionary>()))
        .ReturnsAsync(raptorDeleteFileResult);
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
-      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
        .ReturnsAsync(new List<FilterDescriptor>());
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -287,8 +288,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -298,7 +299,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
-          customHeaders, 
+          customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, filterServiceProxy: filterServiceProxy.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
@@ -312,7 +313,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.tif";
@@ -360,7 +361,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-     
+
       var project = new ProjectDatabaseModel() { CustomerUID = _customerUid.ToString(), ProjectUID = _projectUid.ToString(), ShortRaptorProjectId = (int)_shortRaptorProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
 
@@ -371,7 +372,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
       var scheduler = new Mock<ISchedulerProxy>();
-      scheduler.Setup(s => s.ScheduleVSSJob(It.IsAny<JobRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ScheduleJobResult());
+      scheduler.Setup(s => s.ScheduleVSSJob(It.IsAny<JobRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ScheduleJobResult());
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
@@ -393,7 +394,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -441,9 +442,9 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
@@ -464,7 +465,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task UpdateImportedFile_TRexHappyPath_DesignSurface()
     {
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
@@ -492,9 +493,9 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-     
+
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.UpdateFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.UpdateFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
@@ -519,7 +520,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
@@ -552,10 +553,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
-      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(new List<FilterDescriptor>());
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -566,8 +567,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -577,7 +578,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
-          customHeaders, 
+          customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
@@ -591,7 +592,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var parentUid = Guid.NewGuid();
       var offset = 1.5;
@@ -645,7 +646,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
@@ -671,7 +672,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var parentUid = Guid.NewGuid();
       var offset = 1.5;
@@ -723,9 +724,9 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-     
+
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetImportedFile(newImportedFile.ImportedFileUid)).ReturnsAsync(newImportedFile);
@@ -743,7 +744,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task UpdateImportedFile_TRexHappyPath_ReferenceSurface()
     {
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var parentUid = Guid.NewGuid();
       var oldOffset = 1.5;
@@ -776,9 +777,9 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-     
+
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.UpdateFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.UpdateFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
@@ -804,7 +805,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var parentUid = Guid.NewGuid();
       var offset = 1.5;
@@ -837,12 +838,12 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
-      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(new List<FilterDescriptor>());
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -853,8 +854,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -864,7 +865,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
-          customHeaders, 
+          customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
@@ -878,7 +879,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //    V2 Note: BCC file has already put the file on TCC.
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       var importedFileUid = Guid.NewGuid();
       var parentUid = Guid.NewGuid();
       var offset = 1.5;
@@ -923,12 +924,12 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ContractExecutionResult());
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
-      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>()))
+      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(new List<FilterDescriptor>());
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -940,8 +941,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -951,7 +952,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
-          customHeaders, 
+          customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -207,7 +208,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var projectProxy = new Mock<IProjectProxy>();
       var projectData = new ProjectData { ProjectUID = projectUid, CustomerUID = custUid };
 
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       projectProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), projectUid, customHeaders))
         .ReturnsAsync(projectData);
 
@@ -224,7 +225,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
       var projectProxy = new Mock<IProjectProxy>();
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       projectProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), It.IsAny<string>(), customHeaders))
         .ReturnsAsync((ProjectData)null);
 
@@ -247,7 +248,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var projectData = new ProjectData { ProjectUID = projectUid, CustomerUID = custUid };
       var projects = new List<ProjectData> { projectData };
 
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
       projectProxy.SetupSequence(ps => ps.GetProjects(It.IsAny<string>(), customHeaders))
         .ReturnsAsync(new List<ProjectData>())
         .ReturnsAsync(projects);
@@ -326,7 +327,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceRepo = new Mock<IGeofenceRepository>();
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence)null);
       //var geofenceProxy = new Mock<IGeofenceProxy>();
-      //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(
+      //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(
       //  (GeofenceData)null);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
@@ -357,7 +358,7 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
       //var geofenceProxy = new Mock<IGeofenceProxy>();
       var geofenceData = new GeofenceData { GeometryWKT = geofence.GeometryWKT, GeofenceType = GeofenceType.Generic.ToString() };
-      //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
+      //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(geofenceData);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
@@ -391,7 +392,7 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
       //var geofenceProxy = new Mock<IGeofenceProxy>();
       //var geofenceData = new GeofenceData { GeofenceType = GeofenceType.Generic.ToString(), GeometryWKT = geofence.GeometryWKT };
-      //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
+      //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(geofenceData);
 
       var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
@@ -603,7 +604,7 @@ namespace VSS.Productivity3D.Filter.Tests
     //  geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync((Geofence)null);
     //  //var geofenceProxy = new Mock<IGeofenceProxy>();
     //  //var geofenceData = new GeofenceData { GeofenceUID = new Guid(boundaryUid), GeofenceName = Name, GeometryWKT = GeometryWKT, GeofenceType = geofenceType.ToString() };
-    //  //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
+    //  //geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(geofenceData);
     //  var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
     //    new FilterRequest
     //    {

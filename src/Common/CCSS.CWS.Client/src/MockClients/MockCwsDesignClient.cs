@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -23,7 +23,7 @@ namespace CCSS.CWS.Client.MockClients
     {
     }
 
-    public Task<CreateFileResponseModel> CreateFile(Guid projectUid, CreateFileRequestModel createFileRequest, IDictionary<string, string> customHeaders = null)
+    public Task<CreateFileResponseModel> CreateFile(Guid projectUid, CreateFileRequestModel createFileRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(CreateFile)} Mock: createFileRequest {JsonConvert.SerializeObject(createFileRequest)}");
 
@@ -37,7 +37,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(createFileResponse);
     }
 
-    public Task<CreateFileResponseModel> CreateAndUploadFile(Guid projectUid, CreateFileRequestModel createFileRequest, Stream fileContents, IDictionary<string, string> customHeaders = null)
+    public Task<CreateFileResponseModel> CreateAndUploadFile(Guid projectUid, CreateFileRequestModel createFileRequest, Stream fileContents, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(CreateAndUploadFile)} Mock: createFileRequest {JsonConvert.SerializeObject(createFileRequest)}");
 

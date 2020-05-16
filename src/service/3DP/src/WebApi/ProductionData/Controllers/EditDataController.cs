@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -38,7 +37,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IFileImportProxy fileImportProxy;
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
 
-    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
     private string CustomerUid => ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
     /// <summary>
     /// Constructor with dependency injection

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -29,7 +30,7 @@ namespace CCSS.CWS.Client
     ///  used by TFA AssetIdExecutor; ProjectAndAssetUidsExecutor;  ProjectAndAssetUidsEarthWorksExecutor
     ///                 response fields: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
     /// </summary>
-    public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDeviceBySerialNumber)}: serialNumber {serialNumber}");
 
@@ -46,7 +47,7 @@ namespace CCSS.CWS.Client
     /// used by TFA ProjectIDExecutor, projectBoundariesAtDateExecutor
     ///                 response fields: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
     /// </summary>
-    public async Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDeviceByDeviceUid)}: deviceUid {deviceUid}");
 
@@ -64,7 +65,7 @@ namespace CCSS.CWS.Client
     /// to load devices for account into DB (to generate shortRaptorAssetId)
     ///                 response fields: DeviceTRN
     /// </summary>
-    public async Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevicesForAccount)}: accountUid {accountUid}");
 
@@ -84,7 +85,7 @@ namespace CCSS.CWS.Client
     /// used by TFA: projectIdExecutor; ProjectBoundariesAtDateExec; ProjectAndAssetUidsExecutor; ProjectAndAssetUidsEarthWorksExecutor
     ///                 response fields: ProjectTRN
     /// </summary>
-    public async Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForDevice)}: deviceUid {deviceUid}");
 
@@ -105,7 +106,7 @@ namespace CCSS.CWS.Client
     /// gets accounts related to a device
     ///    should only be 1 RelationStatus.Active
     /// </summary>
-    public async Task<DeviceAccountListResponseModel> GetAccountsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceAccountListResponseModel> GetAccountsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetAccountsForDevice)}: deviceUid {deviceUid}");
 
@@ -121,8 +122,8 @@ namespace CCSS.CWS.Client
 
     private List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
     {
-      return new List<KeyValuePair<string, string>> 
-        { new KeyValuePair<string, string>("from", fromRow.ToString()), 
+      return new List<KeyValuePair<string, string>>
+        { new KeyValuePair<string, string>("from", fromRow.ToString()),
           new KeyValuePair<string, string>("limit", rowCount.ToString())
         };
     }

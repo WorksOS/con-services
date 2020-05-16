@@ -4,7 +4,7 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.MasterData.Repositories
 {
-  public class RepositoryHelper
+  public static class RepositoryHelper
   {
     public static string WKTToSpatial(string geometryWKT)
     {

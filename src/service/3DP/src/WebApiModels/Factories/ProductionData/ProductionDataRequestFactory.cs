@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Common.Interfaces;
@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     private readonly ICompactionSettingsManager settingsManager;
     private Guid projectUid;
     private long projectId;
-    private IDictionary<string, string> headers;
+    private IHeaderDictionary headers;
     private CompactionProjectSettings projectSettings;
     private CompactionProjectSettingsColors projectSettingsColors;
     private FilterResult filter;
@@ -34,7 +34,6 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     /// </summary>
     /// <param name="logger">ILoggerFactory service implementation</param>
     /// <param name="configStore">IConfigurationStore service implementation</param>
-    /// <param name="fileListProxy">MasterDataProxies IFileListProxy service</param>
     /// <param name="settingsManager">ICompactionSettingsManager service implementation</param>
     public ProductionDataRequestFactory(ILoggerFactory logger, IConfigurationStore configStore,
       IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
@@ -84,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData
     /// Sets the collection of custom headers used on the service request.
     /// </summary>
     /// <param name="headers"></param>
-    public ProductionDataRequestFactory Headers(IDictionary<string, string> headers)
+    public ProductionDataRequestFactory Headers(IHeaderDictionary headers)
     {
       this.headers = headers;
       return this;

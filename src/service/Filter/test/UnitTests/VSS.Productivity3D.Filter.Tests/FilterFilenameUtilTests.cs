@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.Filter.Tests
     private readonly string custUid = Guid.NewGuid().ToString();
     private readonly string userUid = Guid.NewGuid().ToString();
     private readonly string projectUid = Guid.NewGuid().ToString();
-    
+
     public FilterFilenameUtilTests(ExecutorBaseTests classFixture)
     {
       _classFixture = classFixture;
@@ -57,7 +58,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       productivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -116,7 +117,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       productivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -138,7 +139,7 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
 
       var fileImportProxy = new Mock<IFileImportProxy>();
-      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new List<FileData>());
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(new List<FileData>());
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -179,7 +180,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       productivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -215,7 +216,7 @@ namespace VSS.Productivity3D.Filter.Tests
         }};
 
       var fileImportProxy = new Mock<IFileImportProxy>();
-      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(fileData);
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -256,7 +257,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       productivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -293,7 +294,7 @@ namespace VSS.Productivity3D.Filter.Tests
         }};
 
       var fileImportProxy = new Mock<IFileImportProxy>();
-      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(fileData);
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
@@ -334,7 +335,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var getMachinesExecutionResult = new MachineExecutionResult(new List<MachineStatus>(0));
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       productivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       var filter = new FilterModel
@@ -381,7 +382,7 @@ namespace VSS.Productivity3D.Filter.Tests
         }};
 
       var fileImportProxy = new Mock<IFileImportProxy>();
-      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(fileData);
+      fileImportProxy.As<IFileImportProxy>().Setup(ps => ps.GetFiles(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(fileData);
 
       var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
       var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));

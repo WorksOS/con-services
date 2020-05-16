@@ -10,10 +10,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -84,7 +82,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       };
 
       var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
-      var contextHeaders = new Dictionary<string, string>();
+      var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);
@@ -120,7 +118,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       };
 
       var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
-      var contextHeaders = new Dictionary<string, string>();
+      var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);
@@ -158,7 +156,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       };
 
       var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
-      var contextHeaders = new Dictionary<string, string>();
+      var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), legacyProjectId, contextHeaders)).ReturnsAsync(projectData);
@@ -195,7 +193,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       };
 
       var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = legacyProjectId };
-      var contextHeaders = new Dictionary<string, string>();
+      var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), legacyProjectId, contextHeaders)).ReturnsAsync(projectData);
@@ -232,7 +230,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       };
 
       var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
-      var contextHeaders = new Dictionary<string, string>();
+      var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);
@@ -269,7 +267,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       };
 
       var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = legacyProjectId };
-      var contextHeaders = new Dictionary<string, string>();
+      var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
       mockProxy.Setup(proxy => proxy.GetProjectForCustomer(customerUid.ToString(), projectUid.ToString(), contextHeaders)).ReturnsAsync(projectData);

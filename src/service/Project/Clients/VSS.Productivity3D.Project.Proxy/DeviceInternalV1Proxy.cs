@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -33,7 +34,7 @@ namespace VSS.Productivity3D.Project.Proxy
     public  override string CacheLifeKey => "DEVICE_INTERNAL_CACHE_LIFE";
 
 
-    public async Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceData> GetDevice(string serialNumber, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevice)} serialNumber: {serialNumber}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("serialNumber", serialNumber) };
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.Project.Proxy
       return result.DeviceDescriptor;
     }
 
-    public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("shortRaptorAssetId", shortRaptorAssetId.ToString()) };
@@ -57,7 +58,7 @@ namespace VSS.Productivity3D.Project.Proxy
       return result.DeviceDescriptor;
     }
     
-    public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForDevice)} deviceUid: {deviceUid}");
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>($"/device/{deviceUid}/projects",

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -36,9 +37,9 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string CacheLifeKey => "PROJECT_SETTINGS_CACHE_LIFE";
 
-    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IHeaderDictionary customHeaders)
     {
-      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult> ($"/projectsettings/{projectUid}", projectUid, userId, customHeaders );
+      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult>($"/projectsettings/{projectUid}", projectUid, userId, customHeaders);
 
       if (result.Code == 0)
         return result.Settings;
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
 
-    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IDictionary<string, string> customHeaders, ProjectSettingsType settingsType)
+    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IHeaderDictionary customHeaders, ProjectSettingsType settingsType)
     {
       var uri = string.Empty;
       switch (settingsType)
@@ -58,18 +59,18 @@ namespace VSS.Productivity3D.Project.Proxy
         case ProjectSettingsType.Colors:
           uri = $"/projectcolors/{projectUid}";
           break;
-          default:
-          throw new ServiceException(HttpStatusCode.BadRequest,new ContractExecutionResult(-10,"Unsupported project settings type."));
+        default:
+          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(-10, "Unsupported project settings type."));
       }
 
-      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult> (uri,projectUid + settingsType, userId, customHeaders );
+      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult>(uri, projectUid + settingsType, userId, customHeaders);
 
       if (result.Code == 0)
         return result.Settings;
- 
+
       log.LogWarning($"Failed to get project settings by type {settingsType.ToString()}, using default values: {result.Code}, {result.Message}");
       return null;
-      
+
     }
 
     /// <summary>

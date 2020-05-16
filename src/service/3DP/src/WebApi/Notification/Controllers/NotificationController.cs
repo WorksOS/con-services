@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -29,7 +30,6 @@ using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Notification.Controllers
 {
@@ -169,7 +169,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 
       if (fileType != ImportedFileType.ReferenceSurface)
       {
-        var projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
+        var projectDescr = await ((RaptorPrincipal)User).GetProject(projectUid);
         string coordSystem = projectDescr.CoordinateSystemFileName;
         var fileDes = GetFileDescriptor(fileDescriptor);
 
@@ -240,14 +240,14 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       )
     {
       log.LogDebug($"{nameof(GetDeleteFile)}: " + Request.QueryString);
-      var projectDescr = await ((RaptorPrincipal) User).GetProject(projectUid);
+      var projectDescr = await ((RaptorPrincipal)User).GetProject(projectUid);
       var customHeaders = Request.Headers.GetCustomHeaders();
 
       //Cannot delete a design or alignment file that is used in a filter
       //TODO: When scheduled reports are implemented, extend this check to them as well.
       if (fileType == ImportedFileType.DesignSurface || fileType == ImportedFileType.Alignment || fileType == ImportedFileType.ReferenceSurface)
       {
-        var filters = await GetFilters(projectUid, Request.Headers.GetCustomHeaders(true));
+        var filters = await GetFilters(projectUid, Request.Headers.GetCustomHeaders());
         if (filters != null)
         {
           var fileUidStr = fileUid.ToString();
@@ -331,7 +331,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var customHeaders = Request.Headers.GetCustomHeaders();
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
-      await projectProxy.GetProjectForCustomer(((RaptorPrincipal) User).CustomerUid, projectUid.ToString(),
+      await projectProxy.GetProjectForCustomer(((RaptorPrincipal)User).CustomerUid, projectUid.ToString(),
         customHeaders);
       dataCache.RemoveByTag(projectUid.ToString());
       return new ContractExecutionResult();
@@ -378,7 +378,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Clears the imported files cache in the proxy so that linework tile requests are refreshed appropriately
     /// </summary>
-    private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IDictionary<string, string> customHeaders)
+    private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IHeaderDictionary customHeaders)
     {
       log.LogInformation("Clearing imported files cache for project {0}", projectUid);
       //Clear file list cache and reload
@@ -415,7 +415,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    private async Task<List<Filter.Abstractions.Models.Filter>> GetFilters(Guid projectUid, IDictionary<string, string> customHeaders)
+    private async Task<List<Filter.Abstractions.Models.Filter>> GetFilters(Guid projectUid, IHeaderDictionary customHeaders)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)

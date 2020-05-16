@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -73,7 +74,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       mockPegasus.Setup(x => x.GenerateGeoTiffTiles(
                            It.IsAny<string>(),
-                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string, string>>>()))
+                           It.IsAny<HeaderDictionary>(), It.IsAny<Action<IHeaderDictionary>>()))
                  .ReturnsAsync(new TileMetadata());
 
       var mockNotification = new Mock<INotificationHubClient>();
@@ -95,7 +96,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       // Verify based on the value of SCHEDULER_ENABLE_DXF_TILE_GENERATION the execution of GenerateGeoTiffTiles().
       mockPegasus.Verify(x => x.GenerateGeoTiffTiles(
                            It.IsAny<string>(),
-                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string, string>>>()), runTimes);
+                           It.IsAny<HeaderDictionary>(), It.IsAny<Action<IHeaderDictionary>>()), runTimes);
     }
 
     [TestMethod]

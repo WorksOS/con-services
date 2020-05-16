@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Principal;
+﻿using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -15,7 +14,7 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
   /// </summary>
   public class FilterAuthentication : TIDAuthentication
   {
-    private readonly IProjectProxy ProjectProxy;
+    private readonly IProjectProxy _projectProxy;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FilterAuthentication"/> class.
@@ -26,18 +25,17 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
-    { 
-      ProjectProxy = projectProxy;
+    {
+      _projectProxy = projectProxy;
     }
 
     /// <summary>
     /// Create 3dpm filter principal
     /// </summary>
     public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName,
-      string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "")
+      string userEmail, bool isApplicationContext, IHeaderDictionary contextHeaders, string tpaasApplicationName = "")
     {
-      return new FilterPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, ProjectProxy, contextHeaders);
+      return new FilterPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, _projectProxy, contextHeaders);
     }
-
   }
 }

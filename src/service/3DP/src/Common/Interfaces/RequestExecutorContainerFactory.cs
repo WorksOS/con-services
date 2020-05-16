@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -21,9 +22,9 @@ namespace VSS.Productivity3D.Common.Interfaces
       ITagProcessor tagProcessor = null,
 #endif
       IConfigurationStore configStore = null, IFileRepository fileRepo = null,
-      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
+      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null,
       ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexConnectedSiteProxy tRexConnectedSiteProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
-      IDeviceProxy deviceProxy = null, IDictionary<string, string> customHeaders = null, string customerUid = null)
+      IDeviceProxy deviceProxy = null, IHeaderDictionary customHeaders = null, string customerUid = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.Common.Interfaces
         deviceProxy,
         customHeaders,
         customerUid);
-      
+
       return executor;
     }
   }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -11,7 +11,7 @@ namespace ExecutorTests.Internal
   {
     public void Setup()
     {
-      SetupDI();     
+      SetupDI();
     }
 
     protected FilterRequestFull CreateAndValidateRequest(
@@ -27,7 +27,7 @@ namespace ExecutorTests.Internal
       bool onlyFilterUid = false)
     {
       var request = FilterRequestFull.Create(
-        new Dictionary<string, string>(),
+        new HeaderDictionary(),
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),
@@ -45,8 +45,6 @@ namespace ExecutorTests.Internal
       return request;
     }
 
-
-
     protected FilterRequestFull CreateAndValidateRequest(
       ProjectData projectData,
       bool isApplicationContext = false,
@@ -60,7 +58,7 @@ namespace ExecutorTests.Internal
       bool onlyFilterUid = false)
     {
       var request = FilterRequestFull.Create(
-        new Dictionary<string, string>(),
+        new HeaderDictionary(),
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),

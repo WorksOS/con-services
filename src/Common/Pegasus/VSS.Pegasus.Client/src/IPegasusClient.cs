@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using VSS.Pegasus.Client.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -12,14 +12,14 @@ namespace VSS.Pegasus.Client
       string dcFileName,
       string dxfFileName,
       DxfUnitsType dxfUnitsType,
-      IDictionary<string, string> customHeaders,
-      Action<IDictionary<string, string>> setJobIdAction);
+      IHeaderDictionary customHeaders,
+      Action<IHeaderDictionary> setJobIdAction);
 
     Task<TileMetadata> GenerateGeoTiffTiles(
       string geoTiffFileName,
-      IDictionary<string, string> customHeaders,
-      Action<IDictionary<string, string>> setJobIdAction);
+      IHeaderDictionary customHeaders,
+      Action<IHeaderDictionary> setJobIdAction);
 
-    Task<bool> DeleteTiles(string fileName, IDictionary<string, string> customHeaders);
+    Task<bool> DeleteTiles(string fileName, IHeaderDictionary customHeaders);
   }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Project.Abstractions.Models;
 
@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public string UserUid { get; set; }
     public string ProjectUid { get; set; }
     public string GeometryWKT { get; set; }
-    public IDictionary<string, string> CustomHeaders { get; set; }
+    public IHeaderDictionary CustomHeaders { get; set; }
 
     /// <summary>
     /// Returns a new instance of <see cref="BaseRequestFull"/> using the provided inputs.
@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       bool isApplicationContext,
       ProjectData projectData,
       string userUid,
-      IDictionary<string, string> customHeaders)
+      IHeaderDictionary customHeaders)
     {
       return new BaseRequestFull
       {

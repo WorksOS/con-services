@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using VSS.Common.Abstractions.Http;
 using Xunit;
 
@@ -12,7 +12,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     [Fact]
     public void StripHeaders_Should_return_When_receiver_is_null()
     {
-      var ex = Record.Exception(() => default(Dictionary<string, string>).StripHeaders(false));
+      var ex = Record.Exception(() => default(IHeaderDictionary).StripHeaders(false));
 
       Assert.Null(ex);
     }
@@ -20,7 +20,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     [Fact]
     public void StripHeaders_Should_retain_Internal_headers_When_already_present()
     {
-      var headers = new Dictionary<string, string>
+      var headers = new HeaderDictionary
       {
         { HeaderConstants.X_VISION_LINK_CUSTOMER_UID, _precomputedTestValue }
       };
@@ -41,7 +41,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     [InlineData(HeaderConstants.X_VSS_REQUEST_ID)]
     public void StripHeaders_Should_ignore_case_When_parsing_whitelist(string key)
     {
-      var headers = new Dictionary<string, string>
+      var headers = new HeaderDictionary
       {
         { key.ToUpper(), _precomputedTestValue }
       };
@@ -56,7 +56,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     [InlineData("TestHeader")]
     public void StripHeaders_Internal_Should_remove_headers_When_not_whitelisted(string key)
     {
-      var headers = new Dictionary<string, string>
+      var headers = new HeaderDictionary
       {
         { HeaderConstants.AUTHORIZATION, _precomputedTestValue },
         { HeaderConstants.REQUEST_ID, _precomputedTestValue },
@@ -88,7 +88,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     [InlineData(HeaderConstants.X_JWT_ASSERTION)]
     public void StripHeaders_External_Should_remove_headers_When_not_whitelisted(string key)
     {
-      var headers = new Dictionary<string, string>
+      var headers = new HeaderDictionary
       {
         { HeaderConstants.AUTHORIZATION, _precomputedTestValue },
         { HeaderConstants.REQUEST_ID, _precomputedTestValue },
@@ -125,7 +125,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     [InlineData(HeaderConstants.X_VSS_SERVICE_OVERRIDE_PREFIX + HeaderConstants.X_VSS_REQUEST_ID)]
     public void StripHeaders_Internal_Should_accept_override_headers(string key)
     {
-      var headers = new Dictionary<string, string>
+      var headers = new HeaderDictionary
       {
         { key, _precomputedTestValue }
       };
@@ -147,7 +147,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     [InlineData(HeaderConstants.X_VSS_SERVICE_OVERRIDE_PREFIX + HeaderConstants.X_VSS_REQUEST_ID)]
     public void StripHeaders_External_Should_ignore_override_headers(string key)
     {
-      var headers = new Dictionary<string, string>
+      var headers = new HeaderDictionary
       {
         { key, _precomputedTestValue }
       };
