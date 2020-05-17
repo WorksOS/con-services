@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -36,28 +36,26 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
 
     public override string CacheLifeKey => "TAGFILEAUTH_CACHE_LIFE"; // not used
 
-
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids(GetProjectAndAssetUidsRequest request,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       log.LogDebug($"{nameof(GetProjectAndAssetUids)}  getProjectAndAssetUidsRequest: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>($"project/getUids", customHeaders, HttpMethod.Post, payload: payload);
+        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>("project/getUids", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
 
     public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsEarthWorksRequest request,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       log.LogDebug($"{nameof(GetProjectAndAssetUidsEarthWorks)}  getProjectAndAssetUidsEarthWorksRequest: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsEarthWorksResult>($"project/getUidsEarthWorks", customHeaders, HttpMethod.Post, payload: payload);
+        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsEarthWorksResult>("project/getUidsEarthWorks", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
   }
-
 }

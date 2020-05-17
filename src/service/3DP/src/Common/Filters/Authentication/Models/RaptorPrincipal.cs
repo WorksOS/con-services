@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -19,7 +20,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
   public class RaptorPrincipal : TIDCustomPrincipal
   {
     private readonly IProjectProxy projectProxy;
-    private readonly IDictionary<string, string> authNContext;
+    private readonly IHeaderDictionary authNContext;
     private static readonly ConcurrentDictionary<Guid, long> legacyProjectIdsCache;
     private static readonly ConcurrentDictionary<long, Guid> ProjectUidsCache;
 
@@ -31,7 +32,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 
     //We need to delegate Project retrieval downstream as project may not accessible to a user once it has been created
     public RaptorPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication, string tpaasApplicationName,
-      IProjectProxy projectProxy, IDictionary<string, string> contextHeaders)
+      IProjectProxy projectProxy, IHeaderDictionary contextHeaders)
       : base(identity, customerUid, customerName, userEmail, isApplication, tpaasApplicationName)
     {
       this.projectProxy = projectProxy;
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       return false;
     }
 
-    public IDictionary<string, string> GetAuthNContext() => authNContext;
+    public IHeaderDictionary GetAuthNContext() => authNContext;
 
     /// <summary>
     /// Get the project descriptor for the specified project id.

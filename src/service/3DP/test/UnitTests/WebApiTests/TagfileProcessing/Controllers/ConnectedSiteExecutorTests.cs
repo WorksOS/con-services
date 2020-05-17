@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,7 +18,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
@@ -35,7 +33,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
   {
     private static IServiceProvider _serviceProvider;
     private static ILoggerFactory _logger;
-    private static Dictionary<string, string> _customHeaders;
+    private static HeaderDictionary _customHeaders;
 
     private static CompactionTagFileRequestExtended request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
     (
@@ -64,7 +62,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
                          .BuildServiceProvider();
 
       _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
     }
 
     [TestMethod]
@@ -85,7 +83,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_CONNECTED_SITE_GATEWAY")).Returns(false);
 
       var mockTRexConnectedSiteProxy = new Mock<ITRexConnectedSiteProxy>();
-      mockTRexConnectedSiteProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexConnectedSiteProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IHeaderDictionary>()))
         .Throws(new Exception("I should not be called"));
 
       var submitter = RequestExecutorContainerFactory
@@ -94,13 +92,13 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
           mockRaptorClient.Object, mockTagProcessor.Object,
 #endif
           mockConfigStore.Object, tRexConnectedSiteProxy: mockTRexConnectedSiteProxy.Object, customHeaders: _customHeaders);
-  
+
       var result = await submitter.ProcessAsync(request);
 
       result.Should().NotBeNull();
       result.Message.Should().Be(TagFileConnectedSiteSubmissionExecutor.DISABLED_MESSAGE);
       mockTRexConnectedSiteProxy.Verify(s => s.SendTagFileNonDirectToConnectedSite(
-        It.IsAny<CompactionTagFileRequestExtended>(), It.IsAny<IDictionary<string, string>>()), Times.Never());
+        It.IsAny<CompactionTagFileRequestExtended>(), It.IsAny<IHeaderDictionary>()), Times.Never());
     }
 
 
@@ -125,7 +123,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         TagFileConnectedSiteSubmissionExecutor.DEFAULT_ERROR_MESSAGE);
       var mockTRexConnectedSiteProxy = new Mock<ITRexConnectedSiteProxy>();
 
-      mockTRexConnectedSiteProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexConnectedSiteProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(connectedSiteResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -141,7 +139,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       result.Message.Should().Be(TagFileConnectedSiteSubmissionExecutor.DEFAULT_ERROR_MESSAGE);
 
       mockTRexConnectedSiteProxy.Verify(s => s.SendTagFileNonDirectToConnectedSite(
-        request, new Dictionary<string, string>()), Times.Once());
+        request, new HeaderDictionary()), Times.Once());
     }
 
 
@@ -163,7 +161,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexConnectedSiteProxy = new Mock<ITRexConnectedSiteProxy>();
-      mockTRexConnectedSiteProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexConnectedSiteProxy.Setup(s => s.SendTagFileNonDirectToConnectedSite(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -178,7 +176,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       result.Should().NotBeNull();
       result.Message.Should().Be(ContractExecutionResult.DefaultMessage);
       mockTRexConnectedSiteProxy.Verify(s => s.SendTagFileNonDirectToConnectedSite(
-        request, It.IsAny<IDictionary<string, string>>()), Times.Once());
+        request, It.IsAny<IHeaderDictionary>()), Times.Once());
     }
   }
 }

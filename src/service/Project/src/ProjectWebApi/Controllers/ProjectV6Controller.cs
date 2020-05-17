@@ -77,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation("GetProjectV6");
 
-      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+      var project = await ProjectRequestHelper.GetProject(projectUid, CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
     }
 
@@ -105,25 +105,25 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      projectRequest.CustomerUID ??= new Guid(customerUid);
+      projectRequest.CustomerUID ??= new Guid(CustomerUid);
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
       
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
 
-      if (createProjectEvent.CustomerUID.ToString() != customerUid)
+      if (createProjectEvent.CustomerUID.ToString() != CustomerUid)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
 
       // ProjectUID won't be filled yet
-      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(CustomerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, null, customHeaders,
+            CustomerUid, UserId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
@@ -133,7 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       var result = new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
       await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
@@ -204,12 +204,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(CustomerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpdateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, null, customHeaders,
+            CustomerUid, UserId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
             dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient,
@@ -223,7 +223,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
       var result = new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
       return Ok(result);
@@ -250,7 +250,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       project.ActionUTC = DateTime.UtcNow;
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(CustomerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       var baseUrl = Request.Host.ToUriComponent();
       var callbackUrl = $"http://{baseUrl}/internal/v6/project";
@@ -300,12 +300,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
-      if (!string.IsNullOrEmpty(customerUid))
-        await _notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
+      if (!string.IsNullOrEmpty(CustomerUid))
+        await _notificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
 
       Logger.LogInformation("ArchiveProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
     }
   }

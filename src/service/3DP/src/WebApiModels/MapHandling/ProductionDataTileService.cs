@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="volumeCalcType">Type of summary volumes calculation</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public async Task<TileResult> GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IDictionary<string, string> customHeaders, bool explicitFilters=false)
+    public async Task<TileResult> GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IHeaderDictionary customHeaders, bool explicitFilters = false)
     {
       var getTile = true;
       ElevationStatisticsResult elevationExtents = null;
@@ -174,7 +174,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="mode">Display mode; type of data requested</param>
     /// <returns>Elevation extents to use</returns>
-    private async Task<ElevationStatisticsResult> GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, IDictionary<string, string> customHeaders)
+    private async Task<ElevationStatisticsResult> GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, IHeaderDictionary customHeaders)
     {
       var elevExtents = (mode == DisplayMode.Height || mode == DisplayMode.Design3D)
         ? await elevProxy.GetElevationRange(projectId, projectUid, filter, projectSettings, customHeaders)

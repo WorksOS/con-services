@@ -3,22 +3,21 @@ kind: ConfigMap
 metadata:
   name: 3dapp-dev
   namespace: dev
-data: 
-# Kubernetes Cluster Info - This must match the namespace (including case) that the pods will run in
+data:
+  # Kubernetes Cluster Info - This must match the namespace (including case) that the pods will run in
   kubernetesNamespace: dev
-# TCC configuration
+  # TCC configuration
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
-#Jaeger configuration
-#  JAEGER_AGENT_HOST: jaeger-agent.logging
-#  JAEGER_AGENT_PORT: "6831"
-#  JAEGER_SAMPLER_TYPE: const
-#MySql configuration
-  MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
-  MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
+  #Jaeger configuration
+  #  JAEGER_AGENT_HOST: jaeger-agent.logging
+  #  JAEGER_AGENT_PORT: "6831"
+  #  JAEGER_SAMPLER_TYPE: const
+  #MySql configuration
+  MYSQL_SERVER_NAME_VSPDB: rds-rpd-mydb04.cfyg2f3omhgy.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
-#Service references 
-#SERVICE DISCOVERY REFERENCES
+  #Service references
+  #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
   cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
@@ -30,10 +29,10 @@ data:
   tpaasemail_public_v1: https://api-stg.trimble.com/t/trimble.com/tpaas-email-service/1.0/emails/
   TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
-#TPaaS
-  TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2 
+  #TPaaS
+  TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
   INTERNAL_JWT: eyJ4NXQiOiJNREk0WTJNd1pUVmpNRGRsTkdVeFlUSmtaV00zWmpCaVptVTBZVFprTkRjek9HTmhZMk5oTmciLCJraWQiOiJNREk0WTJNd1pUVmpNRGRsTkdVeFlUSmtaV00zWmpCaVptVTBZVFprTkRjek9HTmhZMk5oTmciLCJhbGciOiJSUzI1NiJ9.eyJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hY2NvdW50TG9ja2VkIjoiZmFsc2UiLCJzdWIiOiJmMzFmYmFmMC0xMzBjLTQzM2ItYjlhMC03YWQ3NWI4M2Y0MmEiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hY2NvdW50bmFtZSI6InRyaW1ibGUuY29tIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvcm9sZSI6IiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2ZhaWxlZExvZ2luQXR0ZW1wdHMiOiIwIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvYXBwbGljYXRpb250aWVyIjoiVW5saW1pdGVkIiwiaXNzIjoiaHR0cHM6XC9cL2lkZW50aXR5LnRyaW1ibGUuY29tIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvbGFzdFB3ZFNldFRpbWVTdGFtcCI6IjE1MjY0NjMyMTAwOTIiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9lbmR1c2VyVGVuYW50SWQiOjEsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2xhc3RMb2dpblRpbWVTdGFtcCI6IjE1NDA3NTQ4MjUwOTkiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC91dWlkIjoiZjMxZmJhZjAtMTMwYy00MzNiLWI5YTAtN2FkNzViODNmNDJhIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvdXNlckNyZWF0ZVRpbWVTdGFtcCI6IjE1MjY0NjMyMTAwOTIiLCJhenAiOiI5WDd6MkZKNXRBUVNNd05KVXhPaGZCcVVWTmdhIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZW1haWxhZGRyZXNzIjoiY3RjdC10cGFhcy11Z0B0cmltYmxlLmNvbSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2xhc3RuYW1lIjoiZGV2IiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZmlyc3RuYW1lIjoiY3RjdCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3VzZXJ0eXBlIjoiQVBQTElDQVRJT04iLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hcHBsaWNhdGlvbmlkIjowLCJleHAiOjE1Njk1NTM4ODAsImlhdCI6MTU2OTU0OTk0MSwiaHR0cDpcL1wvdHJpbWJsZS5jb21cL3RwYWFzXC9jbGFpbXNcL2FwcGxpY2F0aW9ubmFtZSI6IlByb2QtRWFydGh3b3Jrcy1FQzUyMCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FwaWNvbnRleHQiOiJcL3RcL3RyaW1ibGUuY29tXC92c3MtM2Rwcm9kdWN0aXZpdHkiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9wYXNzd29yZFRpbWVzdGFtcCI6IjE1MjY0NjMyMTAwOTIiLCJodHRwOlwvXC90cmltYmxlLmNvbVwvdHBhYXNcL2NsYWltc1wvdXNlcm5hbWUiOiJjdGN0LXRwYWFzLXVnQHRyaW1ibGUuY29tIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvdmVyc2lvbiI6IjIuMCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2tleXR5cGUiOiJQUk9EVUNUSU9OIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvYXBwbGljYXRpb25uYW1lIjoiUHJvZC1FYXJ0aHdvcmtzLUVDNTIwIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZW5kdXNlciI6ImN0Y3QtdHBhYXMtdWdAdHJpbWJsZS5jb20iLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9sYXN0VXBkYXRlVGltZVN0YW1wIjoiMTU2Njg1NjI2ODUzNiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2dpdmVubmFtZSI6ImN0Y3QiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9lbWFpbFZlcmlmaWVkIjoidHJ1ZSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FjY291bnR1c2VybmFtZSI6ImN0Y3QtdHBhYXMtdWciLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC90aWVyIjoiVW5saW1pdGVkIiwiaHR0cDpcL1wvdHJpbWJsZS5jb21cL3RwYWFzXC9jbGFpbXNcL2FwcGxpY2F0aW9uaWQiOiJhNWI4ODllOS04ODdjLTQ0NWItOTlhOS0wZDQ3NjZlODEwMjUiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9zdWJqZWN0IjoiY3RjdC10cGFhcy11ZyIsInNjb3BlcyI6IkRJRF8wOGQ2YWM4Ni0wY2I3LTdjNWQtY2EyYi0yYjAwMDEwMDA1NmQiLCJodHRwOlwvXC90cmltYmxlLmNvbVwvdHBhYXNcL2NsYWltc1wvY29uc3VtZXJrZXkiOiI5WDd6MkZKNXRBUVNNd05KVXhPaGZCcVVWTmdhIn0.DnhJONdd3NGygZwcwk7eO2w-awVhHjffzMAUUPdROGQ4WMuXaZoGBSAI1p7GtJM5Zq_hjs24Of3rVQ5yKQsFO6q6g4ghgjYSCIhmYf3b6VsygZvtlVMPYbzO7Xxkodu3iErs8Tmka-WEiy3u3I2jDUn0x5v-ypmemJoeqHGCi0s
-#Misc stuff   
+  #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"
   TILE_RENDER_WAIT_INTERVAL: "2000"
@@ -45,11 +44,11 @@ data:
   AWS_TAGFILE_BUCKET_NAME: vss-stg-directtagfile-archives
   ENVIRONMENT: DEV
   CORECLR_ENABLE_PROFILING: "0"
-#AWS configuration  
+  #AWS configuration
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
-#Raptor configuration
+  #Raptor configuration
   ASNODEIP: 10.97.96.134
   ENABLE_CONNECTED_SITE_GATEWAY: "true"
   ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
@@ -78,7 +77,7 @@ data:
   TCCSynchProductionDataArchivedFolder: Production-Data (Archived)
   TCCSynchProjectBoundaryIssueFolder: Project Boundary (Issue)
   TCCSynchSubscriptionIssueFolder: Subscription (Issue)
-#Cache
+  #Cache
   MAX_FILE_SIZE: "100000000"
   TILE_CACHE_LIFE: 00:15:00
   CWS_CACHE_LIFE: 00:30:00
@@ -96,23 +95,29 @@ data:
   MIN_IO_THREADS: "1024"
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
-#Notifications config
+  #Notifications config
   NOTIFICATION_HUB_URL: http://push.dev.eks.ccss.cloud/notifications
   PUSH_NO_AUTHENTICATION_HEADER: "true"
-#DataOcean config
+  #DataOcean config
   DATA_OCEAN_URL: https://api-stg-usw2.trimblepaas.com/data_ocean_stage-v1.0
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER_ID: a3f51fdf-69e4-4d80-b734-e72e4f9b36d9
   ENABLE_DATA_OCEAN: "true"
-#Pegasus
+  #Pegasus
   PEGASUS_DXF_PROCEDURE_ID: 1d05aebc-37b7-4c90-8c6c-ba5d0d1c9290
   PEGASUS_GEOTIFF_PROCEDURE_ID: f61c965b-0828-40b6-8980-26c7ee164566
   PEGASUS_EXECUTION_TIMEOUT_MINS: "30"
   PEGASUS_EXECUTION_WAIT_MILLSECS: "20000"
   PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/pegasus_stage-v1.0
   SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
-#Slack
+  #Slack
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-dev"
   SLACK_USERNAME: vss-jobs-dev
+  MOCK_CWS_ACCOUNT: "false"
+  MOCK_CWS_DESIGN: "false"
+  MOCK_CWS_DEVICE: "false"
+  MOCK_CWS_PROFILE: "false"
+  MOCK_CWS_PROJECT: "false"
+  MOCK_CWS_USER: "false"

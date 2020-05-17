@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -17,7 +18,7 @@ using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 
 namespace VSS.Productivity3D.Productivity3D.Proxy
-{  
+{
   /// <summary>
   /// Proxy for Productivity services.
   /// ServiceDiscovery covers 2 Productivity3D Coord endpoints:
@@ -56,7 +57,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// Validates the CoordinateSystem for the project.
     ///  COORDSYSVALIDATE_API_URL HttpPost "api/v1/coordsystem/validation"
     /// </summary>
-    public async Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
+    public async Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(CoordinateSystemValidate)} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = new CoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
@@ -68,7 +69,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// Validates and posts to TRex/Raptor, the CoordinateSystem for the project.
     ///  COORDSYSPOST_API_URL HttpPost "api/v1/coordsystem"
     /// </summary>
-    public async Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
+    public async Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(CoordinateSystemPost)} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(legacyProjectId, coordinateSystemFileContent, coordinateSystemFileName);
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Posts the coordinate system to Raptor
     /// </summary>
-    private async Task<CoordinateSystemSettingsResult> CoordSystemPost(string payload, IDictionary<string, string> customHeaders, string route)
+    private async Task<CoordinateSystemSettingsResult> CoordSystemPost(string payload, IHeaderDictionary customHeaders, string route)
     {
       using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
@@ -96,8 +97,8 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Execute a generic request against v1 productivity endpoint with a payload object
     /// </summary>
-    public async Task<T> ExecuteGenericV1Request<T>(string route, object payload, IDictionary<string, string> customHeaders = null)
-      where T : class, IMasterDataModel 
+    public async Task<T> ExecuteGenericV1Request<T>(string route, object payload, IHeaderDictionary customHeaders = null)
+      where T : class, IMasterDataModel
     {
       log.LogDebug($"{nameof(ExecuteGenericV1Request)} with payload. route: {route}");
       using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload))))
@@ -114,7 +115,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Execute a generic request against v1 productivity endpoint with a query string
     /// </summary>
-    public async Task<T> ExecuteGenericV1Request<T>(string route, IList<KeyValuePair<string, string>> queryParameters, IDictionary<string, string> customHeaders = null)
+    public async Task<T> ExecuteGenericV1Request<T>(string route, IList<KeyValuePair<string, string>> queryParameters, IHeaderDictionary customHeaders = null)
       where T : class, IMasterDataModel
     {
       log.LogDebug($"{nameof(ExecuteGenericV1Request)} with queryParameters. route: {route}");

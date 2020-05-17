@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -12,7 +11,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
@@ -106,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
     public async Task<ElevationStatisticsResult> GetElevationRange(long projectId, Guid projectUid, FilterResult filter,
-      CompactionProjectSettings projectSettings, IDictionary<string, string> customHeaders)
+      CompactionProjectSettings projectSettings, IHeaderDictionary customHeaders)
     {
       const double NO_ELEVATION = 10000000000.0;
 

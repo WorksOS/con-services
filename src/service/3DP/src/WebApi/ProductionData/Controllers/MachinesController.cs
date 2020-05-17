@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -42,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IConfigurationStore _configStore;
     private readonly ITRexCompactionDataProxy _trexCompactionDataProxy;
     private readonly IDeviceProxy _deviceProxy;
-    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
+    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
     private string CustomerUid => ((RaptorPrincipal) Request.HttpContext.User).CustomerUid;
 
     /// <summary>

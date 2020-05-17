@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
@@ -11,22 +11,20 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
   {
     Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width,
       ushort height, string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType,
-      IDictionary<string, string> customHeaders = null, bool explicitFilters = false);
+      IHeaderDictionary customHeaders = null, bool explicitFilters = false);
 
     Task<byte[]> GetLineworkTile(Guid projectUid, ushort width, ushort height,
-      string bbox, string filetype, IDictionary<string, string> customHeaders = null);
+      string bbox, string filetype, IHeaderDictionary customHeaders = null);
 
-
-    Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null);
+    Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IHeaderDictionary customHeaders = null);
 
     Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid,
-      IDictionary<string, string> customHeaders = null);
-
+      IHeaderDictionary customHeaders = null);
 
     Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType,
-      IDictionary<string, string> customHeaders = null);
+      IHeaderDictionary customHeaders = null);
 
     Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid,
-      Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null);
+      Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IHeaderDictionary customHeaders = null);
   }
 }

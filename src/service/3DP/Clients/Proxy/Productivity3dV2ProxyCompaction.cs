@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -39,7 +40,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     {
     }
 
-    public async Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders)
+    public async Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid, IHeaderDictionary customHeaders)
     {
       var queryParams = new List<KeyValuePair<string, string>>
       {
@@ -59,10 +60,10 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Get the statistics for a project.
     /// </summary>
-    public async Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid, IDictionary<string, string> customHeaders = null)
+    public async Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectStatistics)} projectUid: {projectUid}");
-      var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("projectUid", projectUid.ToString())};
+      var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("projectUid", projectUid.ToString()) };
       var response = await GetMasterDataItemServiceDiscoveryNoCache<ProjectStatisticsResult>("/projectstatistics", customHeaders, queryParams);
 
       return response;
@@ -71,7 +72,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Validates the Settings for the project.
     /// </summary>
-    public async Task<BaseMasterDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, ProjectSettingsType settingsType, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseMasterDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, ProjectSettingsType settingsType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(ValidateProjectSettings)} 2) projectUid: {projectUid} settings type: {settingsType}");
       var queryParams = new List<KeyValuePair<string, string>>
@@ -89,7 +90,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Validates the Settings for the project.
     /// </summary>
-    public async Task<BaseMasterDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseMasterDataResult> ValidateProjectSettings(ProjectSettingsRequest request, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(ValidateProjectSettings)} 3) projectUid: {request.projectUid}");
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request))))

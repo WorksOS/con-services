@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Net;
 using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -164,7 +164,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
-    /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
     private string GetUserId()
     {
@@ -181,12 +180,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectUid">The project UID that the cached items belong to</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
-    private void ClearProjectSettingsCaches(string projectUid, IDictionary<string, string> customHeaders)
+    private void ClearProjectSettingsCaches(string projectUid, IHeaderDictionary customHeaders)
     {
       log.LogInformation("Clearing project settingss cache for project {0}", projectUid);
+
       //Clear file list cache and reload
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
+      {
         customHeaders.Add("X-VisionLink-ClearCache", "true");
+      }
 
       projectSettingsProxy.ClearCacheItem(projectUid, GetUserId());
     }

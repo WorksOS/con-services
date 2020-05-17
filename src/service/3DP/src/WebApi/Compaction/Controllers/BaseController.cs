@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
@@ -126,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     private readonly MemoryCacheEntryOptions filterCacheOptions = new MemoryCacheEntryOptions
     {
@@ -535,7 +536,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<Filter.Abstractions.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
-      var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
+      var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders());
 
       return filterDescriptor == null
         ? null

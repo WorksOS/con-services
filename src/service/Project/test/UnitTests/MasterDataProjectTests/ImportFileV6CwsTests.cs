@@ -35,7 +35,7 @@ namespace VSS.MasterData.ProjectTests
     public async Task GetCwsImportedFiles_HappyPath()
     {
       var projectUid = Guid.NewGuid();
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
@@ -82,7 +82,7 @@ namespace VSS.MasterData.ProjectTests
     public async Task DeleteCwsImportedFile_HappyPath_OneFile()
     {
       var projectUid = Guid.NewGuid();
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
       var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
@@ -129,7 +129,7 @@ namespace VSS.MasterData.ProjectTests
     public async Task DeleteCwsImportedFile_HappyPath_OneOfTwoFiles()
     {
       var projectUid = Guid.NewGuid();
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
       var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
@@ -196,7 +196,7 @@ namespace VSS.MasterData.ProjectTests
     public async Task DeleteCwsImportedFile_HappyPath_TwoFiles()
     {
       var projectUid = Guid.NewGuid();
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
       var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
@@ -252,7 +252,7 @@ namespace VSS.MasterData.ProjectTests
     public async Task CreateCwsImportedFile_HappyPath_SyncUpload(ImportedFileType importedFileType, string filename, ProjectConfigurationFileType fileType)
     {
       var projectUid = Guid.NewGuid();
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var createFileResponseModel = new CreateFileResponseModel
         { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
@@ -310,7 +310,7 @@ namespace VSS.MasterData.ProjectTests
     public async Task UpdateCwsImportedFile_HappyPath_UpsertImportedFileV6(ImportedFileType importedFileType, string filename, ProjectConfigurationFileType fileType)
     {
       var projectUid = Guid.NewGuid();
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var createFileResponseModel = new CreateFileResponseModel
       { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };

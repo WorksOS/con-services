@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using CCSS.CWS.Client;
+using Microsoft.AspNetCore.Http;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.Handlers;
@@ -43,7 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     public static async Task<ProjectConfigurationFileResponseModel> SaveFileToCws(Guid projectUid, string filename, Stream fileContents,
       ImportedFileType importedFileType, ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient,
-      IDictionary<string, string> customHeaders)
+      IHeaderDictionary customHeaders)
     {
       // use User token for CWS. If app token required use auth.CustomHeaders() 
       
@@ -71,7 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Control points and avoidance zones can have 2 files associated with the configuration file, one for site collectors and one for machine control.
     /// </summary>
     public static async Task<ProjectConfigurationFileResponseModel> GetCwsFile(Guid projectUid, string filename, ImportedFileType importedFileType,
-      ICwsProfileSettingsClient cwsProfileSettingsClient, IDictionary<string, string> customHeaders)
+      ICwsProfileSettingsClient cwsProfileSettingsClient, IHeaderDictionary customHeaders)
     {
       var existingFile = await GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
       if (existingFile == null)
@@ -86,7 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Control points and avoidance zones can have 2 files associated with the configuration file, one for site collectors and one for machine control.
     /// </summary>
     public static Task<ProjectConfigurationFileResponseModel> GetCwsFile(Guid projectUid, ImportedFileType importedFileType,
-      ICwsProfileSettingsClient cwsProfileSettingsClient, IDictionary<string, string> customHeaders)
+      ICwsProfileSettingsClient cwsProfileSettingsClient, IHeaderDictionary customHeaders)
     {
       var fileType = _cwsFileTypeMap[importedFileType];
       return cwsProfileSettingsClient.GetProjectConfiguration(projectUid, fileType, customHeaders);
@@ -96,7 +97,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes a project configuration file from CWS.
     /// </summary>
     public static async Task DeleteFileFromCws(Guid projectUid, ImportedFileType importedFileType, string filename, ICwsDesignClient cwsDesignClient,
-      ICwsProfileSettingsClient cwsProfileSettingsClient, IServiceExceptionHandler serviceExceptionHandler, IWebClientWrapper webClient, IDictionary<string, string> customHeaders)
+      ICwsProfileSettingsClient cwsProfileSettingsClient, IServiceExceptionHandler serviceExceptionHandler, IWebClientWrapper webClient, IHeaderDictionary customHeaders)
     {
       var existingFile = await GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
       if (existingFile != null)

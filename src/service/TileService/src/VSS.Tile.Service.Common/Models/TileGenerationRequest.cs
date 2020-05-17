@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -39,7 +40,7 @@ namespace VSS.Tile.Service.Common.Models
     public string language { get; private set; }
     public ProjectData project { get; private set; }
     public MapParameters mapParameters { get; set; }
-    public IDictionary<string, string> customHeaders { get; set; }
+    public IHeaderDictionary customHeaders { get; set; }
     public List<WGSPoint> geoJsonPoints { get; set; }
     public bool ExplicitFilters { get; set; }
 
@@ -67,7 +68,7 @@ namespace VSS.Tile.Service.Common.Models
       string language,
       ProjectData project,
       MapParameters mapParameters,
-      IDictionary<string, string> customHeaders,
+      IHeaderDictionary customHeaders,
       List<WGSPoint> geoJsonPoints,
       bool explicitFilters = false
       )

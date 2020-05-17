@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -16,11 +17,7 @@ namespace VSS.MasterData.Proxies
     public FleetAssetSummaryProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
       IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
       dataCache, serviceResolution)
-    {
-    }
-    //assetsummary-public-v1_1 = https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
-
-    //https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1/ details/summary?assetUid=ace44294-634e-e311-b5a0-90e2ba076184&date=04/02/19
+    { }
 
     public override bool IsInsideAuthBoundary => false;
     public override ApiService InternalServiceType => ApiService.None;
@@ -29,7 +26,7 @@ namespace VSS.MasterData.Proxies
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "FLEET_ASSET_SUMMARY_CACHE_LIFE";
 
-    public Task<AssetSummary> GetAssetSummary(string assetUid, IDictionary<string, string> customHeaders = null)
+    public Task<AssetSummary> GetAssetSummary(string assetUid, IHeaderDictionary customHeaders = null)
     {
       return GetMasterDataItemServiceDiscovery<AssetSummary>("details/summary", assetUid, null,
         customHeaders,

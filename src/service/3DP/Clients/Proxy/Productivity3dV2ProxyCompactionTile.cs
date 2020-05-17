@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// Gets a production data tile from the 3dpm WMS service.
     /// </summary>
     public async Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width, ushort height,
-      string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null, bool explicitFilters = false)
+      string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType, IHeaderDictionary customHeaders = null, bool explicitFilters = false)
     {
       log.LogDebug($"{nameof(GetProductionDataTile)}: projectUid={projectUid}, filterUid={filterUid}, width={width}, height={height}, mode={mode}, bbox={bbox}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
 
@@ -83,7 +84,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// Gets a production data tile from the 3dpm WMS service.
     /// </summary>
     public async Task<byte[]> GetLineworkTile(Guid projectUid, ushort width, ushort height,
-      string bbox, string filetype, IDictionary<string, string> customHeaders = null)
+      string bbox, string filetype, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetLineworkTile)}: projectUid={projectUid}, width={width}, height={height},  bbox={bbox} ");
 
@@ -109,7 +110,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Get the points for all active alignment files for a project.
     /// </summary>
-    public async Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null)
+    public async Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetAlignmentPointsList)} projectUid: {projectUid}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("projectUid", projectUid.ToString()) };
@@ -125,7 +126,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Get the boundary points for a design for a project.
     /// </summary>
-    public async Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid, IDictionary<string, string> customHeaders = null)
+    public async Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDesignBoundaryPoints)} projectUid: {projectUid}, designUid: {designUid}");
 
@@ -146,7 +147,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Get the boundary points for the requested filters for a project if they have a spatial filter
     /// </summary>
-    public async Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders = null)
+    public async Task<PointsListResult> GetFilterPointsList(Guid projectUid, Guid? filterUid, Guid? baseUid, Guid? topUid, FilterBoundaryType boundaryType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetFilterPointsList)} projectUid={projectUid}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, boundaryType={boundaryType}");
 
@@ -173,7 +174,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// </summary>
     /// <returns>The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</returns>
     public async Task<string> GetBoundingBox(Guid projectUid, TileOverlayType[] overlays, Guid? filterUid, Guid? cutFillDesignUid, Guid? baseUid,
-      Guid? topUid, VolumeCalcType? volCalcType, IDictionary<string, string> customHeaders = null)
+      Guid? topUid, VolumeCalcType? volCalcType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetBoundingBox)} projectUid={projectUid}, overlays={JsonConvert.SerializeObject(overlays)}, filterUid={filterUid}, baseUid={baseUid}, topUid={topUid}, volCalcType={volCalcType}, cutFillDesignUid={cutFillDesignUid}");
 

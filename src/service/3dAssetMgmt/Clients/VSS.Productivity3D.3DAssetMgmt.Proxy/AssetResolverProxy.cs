@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -12,7 +13,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
     public override string CacheLifeKey => "ASSETMGMT_CACHE_LIFE";
 
     public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<Guid> assetUids,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       if (assetUids.Count == 0)
         return new List<KeyValuePair<Guid, long>>();
@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
     }
 
     public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingAssets(List<long> assetIds,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       if (assetIds.Count == 0)
         return new List<KeyValuePair<Guid, long>>();
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
     }
 
     public async Task<MatchingAssetsDisplayModel> GetMatching3D2DAssets(MatchingAssetsDisplayModel asset,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       MatchingAssetsDisplayModel result = null;
 
@@ -90,7 +90,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Proxy
 
       if (!string.IsNullOrEmpty(asset.AssetUID3D))
         result = await GetMasterDataItemServiceDiscoveryNoCache<MatchingAssetsDisplayModel>($"/assets/match3dasset/{asset.AssetUID3D}", customHeaders);
-      
+
       if (result == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "No assert to process provided"));

@@ -73,19 +73,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       request.ProjectSettingsType = ProjectSettingsType.Colors;
 
       var projectSettingsRequest = _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-          .CustomerUid(customerUid))
+          .CustomerUid(CustomerUid))
         .CreateProjectSettingsRequest(request.projectUid, request.Settings, request.ProjectSettingsType);
       projectSettingsRequest.Validate();
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, headers: customHeaders,
+            CustomerUid, UserId, headers: customHeaders,
             productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
-      await NotifyChanges(userId, request.projectUid);
+      await NotifyChanges(UserId, request.projectUid);
 
       Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
       return result;
@@ -107,19 +107,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       request.ProjectSettingsType = ProjectSettingsType.Targets;
 
       var projectSettingsRequest = _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-            .CustomerUid(customerUid))
+            .CustomerUid(CustomerUid))
           .CreateProjectSettingsRequest(request.projectUid, request.Settings, request.ProjectSettingsType);
       projectSettingsRequest.Validate();
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, headers: customHeaders,
+            CustomerUid, UserId, headers: customHeaders,
             productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
-      await NotifyChanges(userId, request.projectUid);
+      await NotifyChanges(UserId, request.projectUid);
 
       Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
       return result;
@@ -132,14 +132,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("GetProjectSettings", projectUid);
 
       var projectSettingsRequest = _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-          .CustomerUid(customerUid))
+          .CustomerUid(CustomerUid))
         .CreateProjectSettingsRequest(projectUid, string.Empty, settingsType);
       projectSettingsRequest.Validate();
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<GetProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, projectRepo: ProjectRepo)
+            CustomerUid, UserId, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 

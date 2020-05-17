@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Exceptions;
@@ -63,7 +64,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // to assetMatch on VSS assets
       var assetMatches = new List< KeyValuePair<Guid, long> > { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(assetMatches);
 
       var executor = RequestExecutorContainerFactory
@@ -227,7 +228,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
-      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(assetMatches);
 
       var executor = RequestExecutorContainerFactory

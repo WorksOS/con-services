@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -44,7 +45,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// Sends a tag file to TRex for to send to connectedSite
     /// </summary>  
     public async Task<ContractExecutionResult> SendTagFileNonDirectToConnectedSite(CompactionTagFileRequest compactionTagFileRequest,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(SendTagFileNonDirectToConnectedSite)}: Filename: {compactionTagFileRequest.FileName}");
       Gateway = GatewayType.ConnectedSite;
@@ -52,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     }
 
     private async Task<ContractExecutionResult> SendTagFileRequest(CompactionTagFileRequest compactionTagFileRequest,
-      IDictionary<string, string> customHeaders, HttpMethod method, string route)
+      IHeaderDictionary customHeaders, HttpMethod method, string route)
     {
       var jsonData = JsonConvert.SerializeObject(compactionTagFileRequest);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))

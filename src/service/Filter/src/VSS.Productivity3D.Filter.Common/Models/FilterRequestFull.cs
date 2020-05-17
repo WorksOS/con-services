@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -19,9 +20,9 @@ namespace VSS.Productivity3D.Filter.Common.Models
 
     public string ProjectUid { get; set; }
 
-    public IDictionary<string, string> CustomHeaders { get; set; }
-    
-    public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
+    public IHeaderDictionary CustomHeaders { get; set; }
+
+    public static FilterRequestFull Create(IHeaderDictionary customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
     {
       return new FilterRequestFull
       {
@@ -29,7 +30,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         HierarchicFilterUids = request?.HierarchicFilterUids,
         Name = request?.Name ?? string.Empty,
         FilterJson = request?.FilterJson ?? string.Empty,
-        FilterType = request?.FilterType ?? VSS.Visionlink.Interfaces.Events.MasterData.Models.FilterType.Transient,
+        FilterType = request?.FilterType ?? Visionlink.Interfaces.Events.MasterData.Models.FilterType.Transient,
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,

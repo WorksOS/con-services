@@ -21,7 +21,6 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -35,7 +34,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
     private static string _customerUid;
     private static string _userId;
-    private static Dictionary<string, string> _customHeaders;
+    private static HeaderDictionary _customHeaders;
     private static Guid _geofenceUid;
     private static IConfigurationStore _configStore;
     private static ILoggerFactory _logger;
@@ -58,7 +57,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       _customerUid = Guid.NewGuid().ToString();
       _geofenceUid = Guid.NewGuid();
       _userId = Guid.NewGuid().ToString();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
     }
 
     [Fact]
@@ -127,10 +126,10 @@ namespace VSS.MasterData.ProjectTests.Executors
 
         var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
         productivity3dV1ProxyCoord.Setup(p =>
-            p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+            p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
         productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
-            It.IsAny<Dictionary<string, string>>()))
+            It.IsAny<HeaderDictionary>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 
         var fileRepo = new Mock<IFileRepository>();
@@ -139,9 +138,9 @@ namespace VSS.MasterData.ProjectTests.Executors
           It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
         var dataOceanClient = new Mock<IDataOceanClient>();
-        dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+        dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
         dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
-          It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+          It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
 
         var authn = new Mock<ITPaaSApplicationAuthentication>();
         authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -158,7 +157,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
-  
+
     private async Task<ProjectDatabaseModel> CreateProject(string projectUid, ProjectType projectType, string coordinateSystemFileName = null, byte[] coordinateSystemFileContent = null)
     {
       var createProjectEvent = new CreateProjectEvent
@@ -168,7 +167,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         CoordinateSystemFileName = coordinateSystemFileName,
         CoordinateSystemFileContent = coordinateSystemFileContent,
         CustomerUID = Guid.NewGuid(),
-        ProjectName = "projectName",       
+        ProjectName = "projectName",
         ProjectTimezone = "NZ whatsup",
         ProjectBoundary = _boundaryString,
         ActionUTC = DateTime.UtcNow
@@ -184,7 +183,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(createProjectResponseModel);
+      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(createProjectResponseModel);
 
       var createFileResponseModel = new CreateFileResponseModel
         { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
@@ -208,10 +207,10 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
       productivity3dV1ProxyCoord.Setup(p =>
-          p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+          p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
       productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
-          It.IsAny<Dictionary<string, string>>()))
+          It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
 
       var fileRepo = new Mock<IFileRepository>();
@@ -220,9 +219,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
-        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+        It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
