@@ -18,6 +18,12 @@ data:
   filter_service: http://localhost:5001
   FILTER_CACHE_LIFE: "00:15:00" 
   LOG_MAX_CHAR: "1000"
+  MOCK_ACCOUNT_KEY: "false"
+  MOCK_DESIGN_KEY: "false"
+  MOCK_DEVICE_KEY: "false"
+  MOCK_PROFILE_KEY: "false"
+  MOCK_PROJECT_KEY: "false"
+  MOCK_USER_KEY: "false"
   MOCK_WEBAPI_BASE_URL: http://localhost:5001
   MYSQL_DATABASE_NAME: CCSS-Project
   MYSQL_PASSWORD_BUILD: abc123
