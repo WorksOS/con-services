@@ -27,17 +27,13 @@ namespace CCSS.CWS.Client
     protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
      dataCache, serviceResolution)
-    {
-    }
+    { }
 
     // NOTE: must have a uid or userId for cache key
     protected Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
-      IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
-    {
-      return GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
+      IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel => GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
         customHeaders, parameters);
-    }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
       TReq request,

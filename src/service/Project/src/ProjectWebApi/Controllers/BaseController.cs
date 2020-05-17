@@ -83,20 +83,77 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </remarks>
     protected IHeaderDictionary customHeaders => Request.Headers.GetCustomHeaders();
 
-    /// <summary>
-    /// Gets the customer uid from the current context
-    /// </summary>
-    protected string customerUid => GetCustomerUid();
+    private string _customerUid;
 
     /// <summary>
-    /// Gets the user id from the current context
+    /// Gets the customer uid from the current context.
     /// </summary>
-    protected string userId => GetUserId();
+    protected string CustomerUid
+    {
+      get
+      {
+        if (!string.IsNullOrEmpty(_customerUid))
+        {
+          return _customerUid;
+        }
+
+        if (User is TIDCustomPrincipal principal)
+        {
+          _customerUid = principal.CustomerUid;
+          return _customerUid;
+        }
+
+        throw new ArgumentException("Incorrect customer in request context principal.");
+      }
+    }
+
+    private string _userId;
+
+    /// <summary>
+    /// Gets the UserUID/applicationID from the current context.
+    /// </summary>
+    protected string UserId
+    {
+      get
+      {
+        if (!string.IsNullOrEmpty(_userId))
+        {
+          return _userId;
+        }
+
+        if (User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity identity))
+        {
+          _userId = identity.Name;
+          return _userId;
+        }
+
+        throw new ArgumentException("Incorrect UserId in request context principal.");
+      }
+    }
+
+    private string _userEmailAddress;
 
     /// <summary>
     /// Gets the userEmailAddress from the current context
     /// </summary>
-    protected string userEmailAddress => GetUserEmailAddress();
+    protected string UserEmailAddress
+    {
+      get
+      {
+        if (!string.IsNullOrEmpty(_userEmailAddress))
+        {
+          return _userEmailAddress;
+        }
+
+        if (User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity identity))
+        {
+          _userEmailAddress = principal.UserEmail;
+          return _userEmailAddress;
+        }
+
+        throw new ArgumentException("Incorrect user email address in request context principal."); ;
+      }
+    }
 
     /// <summary>
     /// Default constructor.
@@ -139,55 +196,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets the account uid from the context.
-    /// </summary>
-    /// <exception cref="ArgumentException">Incorrect account uid value.</exception>
-    private string GetCustomerUid()
-    {
-      if (User is TIDCustomPrincipal principal)
-      {
-        return principal.CustomerUid;
-      }
-
-      throw new ArgumentException("Incorrect customer in request context principal.");
-    }
-
-    /// <summary>
-    /// Gets the User uid/applicationID from the context.
-    /// </summary>
-    /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
-    private string GetUserId()
-    {
-      if (User is TIDCustomPrincipal principal && (principal.Identity is GenericIdentity identity))
-      {
-        return identity.Name;
-      }
-
-      throw new ArgumentException("Incorrect UserId in request context principal.");
-    }
-
-    /// <summary>
-    /// Gets the users email address from the context.
-    /// </summary>
-    /// <exception cref="ArgumentException">Incorrect email address value.</exception>
-    private string GetUserEmailAddress()
-    {
-      if (User is TIDCustomPrincipal principal)
-      {
-        return principal.UserEmail;
-      }
-
-      throw new ArgumentException("Incorrect user email address in request context principal.");
-    }
-
-    /// <summary>
     /// Gets the project.
     /// </summary>
     protected async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId)
     {
       LogCustomerDetails("GetProject by shortRaptorProjectId", shortRaptorProjectId);
       var project =
-        (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+        (await ProjectRepo.GetProjectsForCustomer(CustomerUid).ConfigureAwait(false)).FirstOrDefault(
           p => p.ShortRaptorProjectId == shortRaptorProjectId);
 
       if (project == null)
@@ -205,13 +220,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected void LogCustomerDetails(string functionName, string projectUid = "") =>
       Logger.LogInformation(
-        $"{functionName}: UserUID={userId}, CustomerUID={customerUid} and projectUid='{projectUid}'");
+        $"{functionName}: UserUID={UserId}, CustomerUID={CustomerUid} and projectUid='{projectUid}'");
 
     /// <summary>
     /// Log the Customer and Project details.
     /// </summary>
     protected void LogCustomerDetails(string functionName, long legacyProjectId = 0) =>
       Logger.LogInformation(
-        $"{functionName}: UserUID={userId}, CustomerUID={customerUid} and legacyProjectId='{legacyProjectId}'");
+        $"{functionName}: UserUID={UserId}, CustomerUID={CustomerUid} and legacyProjectId='{legacyProjectId}'");
   }
 }

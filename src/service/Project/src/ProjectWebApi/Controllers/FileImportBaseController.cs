@@ -69,7 +69,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       LogCustomerDetails("GetProject", projectUid);
       var project =
-        (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+        (await ProjectRepo.GetProjectsForCustomer(CustomerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
@@ -102,7 +102,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogDebug($"SetFileActivatedState: projectUid={projectUid}, {fileUids.Keys.Count} files with changed state");
 
-      var deactivatedFileList = await ImportedFileRequestDatabaseHelper.GetImportedFileProjectSettings(projectUid, userId, ProjectRepo).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
+      var deactivatedFileList = await ImportedFileRequestDatabaseHelper.GetImportedFileProjectSettings(projectUid, UserId, ProjectRepo).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
       Logger.LogDebug($"SetFileActivatedState: originally {deactivatedFileList.Count} deactivated files");
 
       var missingUids = new List<Guid>();
@@ -134,14 +134,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var projectSettingsRequest =
         _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
-            .CustomerUid(customerUid))
+            .CustomerUid(CustomerUid))
           .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
       projectSettingsRequest.Validate();
 
       _ = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, headers: customHeaders,
+            CustomerUid, UserId, headers: customHeaders,
             productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;
