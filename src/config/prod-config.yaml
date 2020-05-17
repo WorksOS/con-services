@@ -117,4 +117,10 @@ data:
   SLACK_URL: https://hooks.slack.com/services/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
   SLACK_CHANNEL: "#notifications-prod"
   SLACK_USERNAME: vss-jobs-prod
-
+#CWS
+  MOCK_CWS_ACCOUNT: "false"
+  MOCK_CWS_DESIGN: "false"
+  MOCK_CWS_DEVICE: "false"
+  MOCK_CWS_PROFILE: "false"
+  MOCK_CWS_PROJECT: "false"
+  MOCK_CWS_USER: "false"
