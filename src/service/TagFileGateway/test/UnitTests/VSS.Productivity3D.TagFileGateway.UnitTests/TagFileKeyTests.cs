@@ -1,6 +1,6 @@
-﻿using VSS.Productivity3D.TagFileGateway.Common.Executors;
+﻿using FluentAssertions;
+using VSS.Productivity3D.TagFileGateway.Common.Executors;
 using Xunit;
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace VSS.Productivity3D.TagFileGateway.UnitTests
 {
@@ -15,7 +15,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var expected = "abc123sn--my machine/abc123sn--my machine--161230/abc123sn--my machine--161230235959.tag";
       var s3Key = TagFileProcessExecutor.GetS3Key(tagFileName);
 
-      Assert.AreEqual(expected, s3Key);
+
+      s3Key.Should().Be(expected);
     }
 
     [Fact]
@@ -27,7 +28,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var expected = $"{TagFileProcessExecutor.INVALID_TAG_FILE_FOLDER}/my invalid tag file.tag";
       var s3Key = TagFileProcessExecutor.GetS3Key(tagFileName);
 
-      Assert.AreEqual(expected, s3Key);
+      s3Key.Should().Be(expected);
     }
   }
 }
