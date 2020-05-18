@@ -90,7 +90,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
       // CCSSSCON-216 temporary move to real endpoints when available
-      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
       services.AddCwsClient<ICwsProjectClient, CwsProjectClient, MockCwsProjectClient>(CwsClientMockExtensionMethods.MOCK_PROJECT_KEY);
       services.AddCwsClient<ICwsDeviceClient, CwsDeviceClient, MockCwsDeviceClient>(CwsClientMockExtensionMethods.MOCK_DEVICE_KEY);
       services.AddCwsClient<ICwsDesignClient, CwsDesignClient, MockCwsDesignClient>(CwsClientMockExtensionMethods.MOCK_DESIGN_KEY);
