@@ -54,7 +54,7 @@ namespace CCSS.CWS.Client
       }
       catch (HttpRequestException e)
       {
-        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        if (e.IsNotFoundException())
         {
           return null;
         }
@@ -84,7 +84,7 @@ namespace CCSS.CWS.Client
       }
       catch (HttpRequestException e)
       {
-        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        if (e.IsNotFoundException())
         {
           return null;
         }
@@ -128,7 +128,7 @@ namespace CCSS.CWS.Client
       }
       catch (HttpRequestException e)
       {
-        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        if (e.IsNotFoundException())
         {
           return null;
         }
@@ -155,7 +155,7 @@ namespace CCSS.CWS.Client
       }
       catch (HttpRequestException e)
       {
-        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        if (e.IsNotFoundException())
         {
           return Task.CompletedTask;
         }

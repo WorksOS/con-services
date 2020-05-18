@@ -12,12 +12,12 @@
         MassHaulPlan = 7,
         GeoTiff = 8,
         // These are the types used by CWS
-        Calibration = 9,
-        AvoidanceZone = 10,
-        ControlPoints = 11,
-        Geoid = 12,
-        FeatureCode = 13,
-        SiteConfiguration = 14,
-        GcsCalibration= 15
+        CwsCalibration = 9,
+        CwsAvoidanceZone = 10,
+        CwsControlPoints = 11,
+        CwsGeoid = 12,
+        CwsFeatureCode = 13,
+        CwsSiteConfiguration = 14,
+        CwsGcsCalibration= 15
   }
 }

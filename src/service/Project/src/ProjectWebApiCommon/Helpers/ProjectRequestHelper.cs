@@ -240,7 +240,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             //TODO: handle errors from CWS
-            await CwsConfigFileHelper.SaveFileToCws(projectUid, coordinateSystemFileName, ms, ImportedFileType.Calibration, 
+            await CwsConfigFileHelper.SaveFileToCws(projectUid, coordinateSystemFileName, ms, ImportedFileType.CwsCalibration, 
               cwsDesignClient, cwsProfileSettingsClient, customHeaders);
           }
         }

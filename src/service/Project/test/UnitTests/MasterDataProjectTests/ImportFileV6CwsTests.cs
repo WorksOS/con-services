@@ -119,7 +119,7 @@ namespace VSS.MasterData.ProjectTests
       var mockPegasusClient = new Mock<IPegasusClient>();
       var mockWebClient = new Mock<IWebClientWrapper>();
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
+      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.CwsAvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -186,7 +186,7 @@ namespace VSS.MasterData.ProjectTests
       var mockWebClient = new Mock<IWebClientWrapper>();
       mockWebClient.Setup(w => w.DownloadData(It.IsAny<string>())).Returns(new byte[] {1, 2, 3, 4});
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, filename1, mockPegasusClient.Object, mockWebClient.Object);
+      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.CwsAvoidanceZone, filename1, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -232,23 +232,23 @@ namespace VSS.MasterData.ProjectTests
       var mockPegasusClient = new Mock<IPegasusClient>();
       var mockWebClient = new Mock<IWebClientWrapper>();
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
+      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.CwsAvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     [Theory]
-    [InlineData(ImportedFileType.Calibration, "MyTestCalibration.dc", ProjectConfigurationFileType.CALIBRATION)]
-    [InlineData(ImportedFileType.Calibration, "MyTestCalibration.cal", ProjectConfigurationFileType.CALIBRATION)]
-    [InlineData(ImportedFileType.AvoidanceZone, "MyTestAvoidanceZone.svl", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
-    [InlineData(ImportedFileType.AvoidanceZone, "MyTestAvoidanceZone.dxf", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
-    [InlineData(ImportedFileType.ControlPoints, "MyTestControlPoints.cpz", ProjectConfigurationFileType.CONTROL_POINTS)]
-    [InlineData(ImportedFileType.ControlPoints, "MyTestControlPoints.csv", ProjectConfigurationFileType.CONTROL_POINTS)]
-    [InlineData(ImportedFileType.Geoid, "MyTestGeoid.ggf", ProjectConfigurationFileType.GEOID)]
-    [InlineData(ImportedFileType.FeatureCode, "MyTestFeatureCode.fxl", ProjectConfigurationFileType.FEATURE_CODE)]
-    [InlineData(ImportedFileType.SiteConfiguration, "MyTestSiteConfiguration.xml", ProjectConfigurationFileType.SITE_CONFIGURATION)]
-    [InlineData(ImportedFileType.GcsCalibration, "MyTestGcsCalibration.cfg", ProjectConfigurationFileType.GCS_CALIBRATION)]
+    [InlineData(ImportedFileType.CwsCalibration, "MyTestCalibration.dc", ProjectConfigurationFileType.CALIBRATION)]
+    [InlineData(ImportedFileType.CwsCalibration, "MyTestCalibration.cal", ProjectConfigurationFileType.CALIBRATION)]
+    [InlineData(ImportedFileType.CwsAvoidanceZone, "MyTestAvoidanceZone.svl", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
+    [InlineData(ImportedFileType.CwsAvoidanceZone, "MyTestAvoidanceZone.dxf", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
+    [InlineData(ImportedFileType.CwsControlPoints, "MyTestControlPoints.cpz", ProjectConfigurationFileType.CONTROL_POINTS)]
+    [InlineData(ImportedFileType.CwsControlPoints, "MyTestControlPoints.csv", ProjectConfigurationFileType.CONTROL_POINTS)]
+    [InlineData(ImportedFileType.CwsGeoid, "MyTestGeoid.ggf", ProjectConfigurationFileType.GEOID)]
+    [InlineData(ImportedFileType.CwsFeatureCode, "MyTestFeatureCode.fxl", ProjectConfigurationFileType.FEATURE_CODE)]
+    [InlineData(ImportedFileType.CwsSiteConfiguration, "MyTestSiteConfiguration.xml", ProjectConfigurationFileType.SITE_CONFIGURATION)]
+    [InlineData(ImportedFileType.CwsGcsCalibration, "MyTestGcsCalibration.cfg", ProjectConfigurationFileType.GCS_CALIBRATION)]
     public async Task CreateCwsImportedFile_HappyPath_SyncUpload(ImportedFileType importedFileType, string filename, ProjectConfigurationFileType fileType)
     {
       var projectUid = Guid.NewGuid();
@@ -264,10 +264,10 @@ namespace VSS.MasterData.ProjectTests
 
       var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
       {
-        FileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ?null :  filename,
-        FileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
-        SiteCollectorFileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? filename : null,
-        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse" :null,
+        FileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ?null :  filename,
+        FileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
+        SiteCollectorFileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? filename : null,
+        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? "http://whateverelse" :null,
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
@@ -297,16 +297,16 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Theory]
-    [InlineData(ImportedFileType.Calibration, "MyTestCalibration.dc", ProjectConfigurationFileType.CALIBRATION)]
-    [InlineData(ImportedFileType.Calibration, "MyTestCalibration.cal", ProjectConfigurationFileType.CALIBRATION)]
-    [InlineData(ImportedFileType.AvoidanceZone, "MyTestAvoidanceZone.svl", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
-    [InlineData(ImportedFileType.AvoidanceZone, "MyTestAvoidanceZone.dxf", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
-    [InlineData(ImportedFileType.ControlPoints, "MyTestControlPoints.cpz", ProjectConfigurationFileType.CONTROL_POINTS)]
-    [InlineData(ImportedFileType.ControlPoints, "MyTestControlPoints.csv", ProjectConfigurationFileType.CONTROL_POINTS)]
-    [InlineData(ImportedFileType.Geoid, "MyTestGeoid.ggf", ProjectConfigurationFileType.GEOID)]
-    [InlineData(ImportedFileType.FeatureCode, "MyTestFeatureCode.fxl", ProjectConfigurationFileType.FEATURE_CODE)]
-    [InlineData(ImportedFileType.SiteConfiguration, "MyTestSiteConfiguration.xml", ProjectConfigurationFileType.SITE_CONFIGURATION)]
-    [InlineData(ImportedFileType.GcsCalibration, "MyTestGcsCalibration.cfg", ProjectConfigurationFileType.GCS_CALIBRATION)]
+    [InlineData(ImportedFileType.CwsCalibration, "MyTestCalibration.dc", ProjectConfigurationFileType.CALIBRATION)]
+    [InlineData(ImportedFileType.CwsCalibration, "MyTestCalibration.cal", ProjectConfigurationFileType.CALIBRATION)]
+    [InlineData(ImportedFileType.CwsAvoidanceZone, "MyTestAvoidanceZone.svl", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
+    [InlineData(ImportedFileType.CwsAvoidanceZone, "MyTestAvoidanceZone.dxf", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
+    [InlineData(ImportedFileType.CwsControlPoints, "MyTestControlPoints.cpz", ProjectConfigurationFileType.CONTROL_POINTS)]
+    [InlineData(ImportedFileType.CwsControlPoints, "MyTestControlPoints.csv", ProjectConfigurationFileType.CONTROL_POINTS)]
+    [InlineData(ImportedFileType.CwsGeoid, "MyTestGeoid.ggf", ProjectConfigurationFileType.GEOID)]
+    [InlineData(ImportedFileType.CwsFeatureCode, "MyTestFeatureCode.fxl", ProjectConfigurationFileType.FEATURE_CODE)]
+    [InlineData(ImportedFileType.CwsSiteConfiguration, "MyTestSiteConfiguration.xml", ProjectConfigurationFileType.SITE_CONFIGURATION)]
+    [InlineData(ImportedFileType.CwsGcsCalibration, "MyTestGcsCalibration.cfg", ProjectConfigurationFileType.GCS_CALIBRATION)]
     public async Task UpdateCwsImportedFile_HappyPath_UpsertImportedFileV6(ImportedFileType importedFileType, string filename, ProjectConfigurationFileType fileType)
     {
       var projectUid = Guid.NewGuid();
@@ -322,10 +322,10 @@ namespace VSS.MasterData.ProjectTests
 
       var createProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
       {
-        FileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : $"{filename}-original",
-        FileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
-        SiteCollectorFileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? $"{filename}-original" : null,
-        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse" : null,
+        FileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : $"{filename}-original",
+        FileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
+        SiteCollectorFileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? $"{filename}-original" : null,
+        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? "http://whateverelse" : null,
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
@@ -333,10 +333,10 @@ namespace VSS.MasterData.ProjectTests
       };
       var updateProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
       {
-        FileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : filename,
-        FileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever/updated",
-        SiteCollectorFileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? filename : null,
-        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse/updated" : null,
+        FileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : filename,
+        FileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : "http//whatever/updated",
+        SiteCollectorFileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? filename : null,
+        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? "http://whateverelse/updated" : null,
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),

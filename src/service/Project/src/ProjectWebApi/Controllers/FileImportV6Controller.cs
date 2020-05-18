@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -402,10 +403,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       await ValidateProjectId(projectUid.ToString());
 
-      if (importedFileType.HasValue && ProjectConfigurationFileHelper.isCwsFileType(importedFileType.Value))
+      if (importedFileType.HasValue && ProjectConfigurationFileHelper.IsCwsFileType(importedFileType.Value))
       {
         await CwsConfigFileHelper.DeleteFileFromCws(projectUid, importedFileType.Value, filename, CwsDesignClient, 
-          CwsProfileSettingsClient, ServiceExceptionHandler, webClient, customHeaders);
+          CwsProfileSettingsClient, ServiceExceptionHandler, webClient, customHeaders, Logger);
         Logger.LogInformation(
           $"{nameof(DeleteImportedFileV6)}: Completed successfully. projectUid {projectUid} importedFileType: {importedFileType}");
         return new ContractExecutionResult();
@@ -492,7 +493,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       ImportedFileDescriptorSingleResult importedFile = null;
 
-      if (ProjectConfigurationFileHelper.isCwsFileType(importedFileType))
+      if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
       { 
         Logger.LogInformation($"{nameof(UpsertFileInternal)}. Found a CWS file type");
         // Only save to CWS. 3dpm doesn't use these files.
@@ -653,7 +654,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task ValidateFileDoesNotExist(string projectUid, string filename, ImportedFileType importedFileType, DateTime? surveyedUtc, Guid? parentUid, double? offset)
     {
       var fileExists = false;
-      if (ProjectConfigurationFileHelper.isCwsFileType(importedFileType))
+      if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
       {
         var existingFile = await CwsConfigFileHelper.GetCwsFile(new Guid( projectUid), filename, importedFileType, CwsProfileSettingsClient, customHeaders);
         fileExists = existingFile != null;

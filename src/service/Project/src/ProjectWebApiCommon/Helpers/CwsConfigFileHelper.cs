@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.Handlers;
@@ -19,9 +20,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
                             (EC520 and      (CB460, CB450, 	    (Tablet)            (TSC3, Mobile)
 	                           EC520-W)       CB430, CD700)                       
 	      
-      Calibration	          .cal	          .cfg (if present)	  .dc	                .dc
+      CwsCalibration	          .cal	          .cfg (if present)	  .dc	                .dc
                                             or .cal
-      Geoid	                .ggf	          .ggf	              .ggf	              .ggf
+      CwsGeoid	                .ggf	          .ggf	              .ggf	              .ggf
       Control points	      .cpz		                            .office.csv/.csv 	  .office.csv/.csv 
       Avoidance zone	      .avoid.svl		                      .avoid.dxf	        .avoid.dxf
       Feature code library	.fxl		                            .fxl	              .fxl
@@ -29,13 +30,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
      */
     private static readonly Dictionary<ImportedFileType, ProjectConfigurationFileType> _cwsFileTypeMap = new Dictionary<ImportedFileType, ProjectConfigurationFileType>
     {
-      {ImportedFileType.Calibration, ProjectConfigurationFileType.CALIBRATION},
-      {ImportedFileType.AvoidanceZone, ProjectConfigurationFileType.AVOIDANCE_ZONE},
-      {ImportedFileType.ControlPoints, ProjectConfigurationFileType.CONTROL_POINTS},
-      {ImportedFileType.Geoid, ProjectConfigurationFileType.GEOID},
-      {ImportedFileType.FeatureCode, ProjectConfigurationFileType.FEATURE_CODE},
-      {ImportedFileType.SiteConfiguration, ProjectConfigurationFileType.SITE_CONFIGURATION},
-      {ImportedFileType.GcsCalibration, ProjectConfigurationFileType.GCS_CALIBRATION}
+      {ImportedFileType.CwsCalibration, ProjectConfigurationFileType.CALIBRATION},
+      {ImportedFileType.CwsAvoidanceZone, ProjectConfigurationFileType.AVOIDANCE_ZONE},
+      {ImportedFileType.CwsControlPoints, ProjectConfigurationFileType.CONTROL_POINTS},
+      {ImportedFileType.CwsGeoid, ProjectConfigurationFileType.GEOID},
+      {ImportedFileType.CwsFeatureCode, ProjectConfigurationFileType.FEATURE_CODE},
+      {ImportedFileType.CwsSiteConfiguration, ProjectConfigurationFileType.SITE_CONFIGURATION},
+      {ImportedFileType.CwsGcsCalibration, ProjectConfigurationFileType.GCS_CALIBRATION}
       // Is ProjectConfigurationFileType.SITE_MAP supported/used ?
     };
 
@@ -47,21 +48,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       IHeaderDictionary customHeaders)
     {
       // use User token for CWS. If app token required use auth.CustomHeaders() 
-      
-      var existingFile = await GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
+      var existingFileTask = GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
+      var createAndUploadTask = cwsDesignClient.CreateAndUploadFile(projectUid, new CreateFileRequestModel { FileName = filename }, fileContents, customHeaders);
+      var tasks = new List<Task> {existingFileTask, createAndUploadTask};
+      await Task.WhenAll(tasks);
       var fileType = _cwsFileTypeMap[importedFileType];
-      var result = await cwsDesignClient.CreateAndUploadFile(projectUid, new CreateFileRequestModel { FileName = filename }, fileContents, customHeaders);
       var request = new ProjectConfigurationFileRequestModel();
-      if (ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename))
+      if (ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename))
       {
-        request.SiteCollectorFilespaceId = result.FileSpaceId;
+        request.SiteCollectorFilespaceId = createAndUploadTask?.Result.FileSpaceId;
       }
       else
       {
-        request.MachineControlFilespaceId = result.FileSpaceId;
+        request.MachineControlFilespaceId = createAndUploadTask?.Result.FileSpaceId;
       }
 
-      var configResult = await(existingFile == null ?
+      var configResult = await(existingFileTask?.Result == null ?
         cwsProfileSettingsClient.SaveProjectConfiguration(projectUid, fileType, request, customHeaders) :
         cwsProfileSettingsClient.UpdateProjectConfiguration(projectUid, fileType, request, customHeaders));
       return configResult;
@@ -78,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (existingFile == null)
         return null;
 
-      var matches = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? existingFile.SiteCollectorFileName == filename : existingFile.FileName == filename;
+      var matches = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? existingFile.SiteCollectorFileName == filename : existingFile.FileName == filename;
       return matches ? existingFile : null;
     }
 
@@ -97,7 +99,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes a project configuration file from CWS.
     /// </summary>
     public static async Task DeleteFileFromCws(Guid projectUid, ImportedFileType importedFileType, string filename, ICwsDesignClient cwsDesignClient,
-      ICwsProfileSettingsClient cwsProfileSettingsClient, IServiceExceptionHandler serviceExceptionHandler, IWebClientWrapper webClient, IHeaderDictionary customHeaders)
+      ICwsProfileSettingsClient cwsProfileSettingsClient, IServiceExceptionHandler serviceExceptionHandler, IWebClientWrapper webClient, 
+      IHeaderDictionary customHeaders, ILogger Logger)
     {
       var existingFile = await GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
       if (existingFile != null)
@@ -140,8 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           }
         }
       }
-      else
-      {
+      else {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
       }
     }

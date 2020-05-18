@@ -9,6 +9,7 @@ using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -85,9 +86,9 @@ namespace MockProjectWebApi.Controllers
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
         var result = new FileDataSingleResult();
-        if (ProjectConfigurationFileHelper.isCwsFileType(importedFileType))
+        if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
         {
-          if (ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, file.flowFilename))
+          if (ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, file.flowFilename))
           {
             result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
               .SingleOrDefault(f => f.SiteCollectorFileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
@@ -109,7 +110,7 @@ namespace MockProjectWebApi.Controllers
 
       return new FileDataSingleResult
       {
-        Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError, 
+        Code = ContractExecutionStatesEnum.InternalProcessingError, 
         Message = "Failed to create imported file"
       };
     }
@@ -137,9 +138,9 @@ namespace MockProjectWebApi.Controllers
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
         var result = new FileDataSingleResult();
-        if (ProjectConfigurationFileHelper.isCwsFileType(importedFileType))
+        if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
         {
-          if (ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, file.flowFilename))
+          if (ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, file.flowFilename))
           {
             result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
               .SingleOrDefault(f => f.SiteCollectorFileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
@@ -161,7 +162,7 @@ namespace MockProjectWebApi.Controllers
 
       return new FileDataSingleResult
       {
-        Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError,
+        Code = ContractExecutionStatesEnum.InternalProcessingError,
         Message = "Failed to update imported file"
       };
     }

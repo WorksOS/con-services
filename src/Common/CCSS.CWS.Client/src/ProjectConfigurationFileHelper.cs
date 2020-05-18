@@ -8,17 +8,17 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// Returns true if the imported file type is a CWS project configuration file type
     /// </summary>
-    public static bool isCwsFileType(ImportedFileType importedFileType)
+    public static bool IsCwsFileType(ImportedFileType importedFileType)
     {
       switch (importedFileType)
       {
-        case ImportedFileType.Calibration:
-        case ImportedFileType.AvoidanceZone:
-        case ImportedFileType.ControlPoints:
-        case ImportedFileType.Geoid:
-        case ImportedFileType.FeatureCode:
-        case ImportedFileType.SiteConfiguration:
-        case ImportedFileType.GcsCalibration:
+        case ImportedFileType.CwsCalibration:
+        case ImportedFileType.CwsAvoidanceZone:
+        case ImportedFileType.CwsControlPoints:
+        case ImportedFileType.CwsGeoid:
+        case ImportedFileType.CwsFeatureCode:
+        case ImportedFileType.CwsSiteConfiguration:
+        case ImportedFileType.CwsGcsCalibration:
           return true;
         default:
           return false;
@@ -28,11 +28,11 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// Determines if the file is a site collector or machine control type
     /// </summary>
-    public static bool isSiteCollectorType(ImportedFileType importedFileType, string filename)
+    public static bool IsSiteCollectorType(ImportedFileType importedFileType, string filename)
     {
       var fileExtension = Path.GetExtension(filename).ToLower();
-      return ((importedFileType == ImportedFileType.ControlPoints && fileExtension == ".csv") ||
-              (importedFileType == ImportedFileType.AvoidanceZone && fileExtension == ".dxf"));
+      return ((importedFileType == ImportedFileType.CwsControlPoints && fileExtension == ".csv") ||
+              (importedFileType == ImportedFileType.CwsAvoidanceZone && fileExtension == ".dxf"));
     }
   }
 }

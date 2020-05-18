@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
     public string DatumParametersFileName { get; set; }
     #endregion
 
-    #region Geoid details
+    #region CwsGeoid details
     /// <summary>
     /// The coordinate system geoid model name.
     /// </summary>
@@ -156,54 +156,54 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
     /// <summary>
     /// The coordinate system geoid model method's type.
     /// 0 - Unknown 
-    /// 1 - Grid Geoid 
-    /// 2 - Constant Separation Geoid 
-    /// 3 - Site Calibrated Geoid Record
+    /// 1 - Grid CwsGeoid 
+    /// 2 - Constant Separation CwsGeoid 
+    /// 3 - Site Calibrated CwsGeoid Record
     /// </summary>
     public CoordinateSystemGeoidMethodType GeoidMethodType { get; set; }
     /// <summary> 
     /// The coordinate system grid geoid model file name.
-    /// Grid Geoid method.
+    /// Grid CwsGeoid method.
     /// </summary>
     public string GeoidFileName { get; set; }
     /// <summary>
     /// The coordinate system geoid model constant separation value.
-    /// Constant Separation Geoid method.
+    /// Constant Separation CwsGeoid method.
     /// </summary>
     public double GeoidConstantSeparation { get; set; }
     /// <summary>
     /// The coordinate system geoid model origin X value.
-    /// Site Calibrated Geoid method.
+    /// Site Calibrated CwsGeoid method.
     /// </summary>
     public double GeoidOriginX { get; set; }
     /// <summary>
     /// The coordinate system geoid model origin Y value.
-    /// Site Calibrated Geoid method.
+    /// Site Calibrated CwsGeoid method.
     /// </summary>
     public double GeoidOriginY { get; set; }
     /// <summary>
     /// The coordinate system geoid model origin Z value.
-    /// Site Calibrated Geoid method.
+    /// Site Calibrated CwsGeoid method.
     /// </summary>
     public double GeoidOriginZ { get; set; }
     /// <summary>
     /// The coordinate system geoid model translation along axis Z value.
-    /// Site Calibrated Geoid method.
+    /// Site Calibrated CwsGeoid method.
     /// </summary>
     public double GeoidTranslationZ { get; set; }
     /// <summary>
     /// The coordinate system geoid model rotation around axis X value.
-    /// Site Calibrated Geoid method.
+    /// Site Calibrated CwsGeoid method.
     /// </summary>
     public double GeoidRotationX { get; set; }
     /// <summary>
     /// The coordinate system geoid model rotation around axis Y value.
-    /// Site Calibrated Geoid method.
+    /// Site Calibrated CwsGeoid method.
     /// </summary>
     public double GeoidRotationY { get; set; }
     /// <summary>
     /// The coordinate system geoid model scale factor value.
-    /// Site Calibrated Geoid method.
+    /// Site Calibrated CwsGeoid method.
     /// </summary>
     public double GeoidScaleFactor { get; set; }
     #endregion
@@ -268,7 +268,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
         $"HeightShiftDatumGridFileName:{HeightShiftDatumGridFileName}, DatumDirection:{DatumDirection}, DatumTranslationX:{DatumTranslationX}, " +
         $"DatumTranslationY:{DatumTranslationY}, DatumTranslationZ:{DatumTranslationZ}, DatumRotationX:{DatumRotationX}, DatumRotationY:{DatumRotationY}, " +
         $"DatumRotationZ:{DatumRotationZ}, DatumScaleFactor:{DatumScaleFactor}, DatumParametersFileName:{DatumParametersFileName}, " +
-        // Geoid...
+        // CwsGeoid...
         $"GeoidName:{GeoidName}, GeoidMethod:{GeoidMethod}, GeoidMethodType:{GeoidMethodType}, GeoidFileName:{GeoidFileName}, " +
         $"GeoidConstantSeparation:{GeoidConstantSeparation}, GeoidOriginX:{GeoidOriginX}, GeoidOriginY:{GeoidOriginY}, GeoidOriginZ:{GeoidOriginZ}, " +
         $"GeoidTranslationZ:{GeoidTranslationZ}, GeoidRotationX:{GeoidRotationX}, GeoidRotationY:{GeoidRotationY}, GeoidScaleFactor:{GeoidScaleFactor}, " +
