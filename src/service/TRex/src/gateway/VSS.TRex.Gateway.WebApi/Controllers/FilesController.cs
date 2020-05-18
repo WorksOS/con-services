@@ -12,7 +12,7 @@ using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Executors.Files;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
+namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
   /// Controller to provide functionality related to file manipulations, such as extracting boundaries from a DXF file,
