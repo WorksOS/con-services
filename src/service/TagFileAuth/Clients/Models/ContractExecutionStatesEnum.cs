@@ -66,7 +66,6 @@ namespace VSS.Productivity3D.TagFileAuth.Models
 
       // these error numbers come from calls to projectService
       DynamicAddwithOffset("Unable to locate device by serialNumber in cws", 100);
-      DynamicAddwithOffset("Unable to locate device in localDB", 101);
       DynamicAddwithOffset("Unable to locate any account for the device in cws", 102);
       DynamicAddwithOffset("There is >1 active account for the device in cws", 103);
       DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 104);

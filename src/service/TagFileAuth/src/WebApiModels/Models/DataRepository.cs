@@ -74,23 +74,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
 
     #region project
-
-    public async Task<ProjectData> GetProject(long shortRaptorProjectId)
-    {
-      if (shortRaptorProjectId < 1)
-        return null;
-      try
-      {
-        return await _projectProxy.GetProject(shortRaptorProjectId, _mergedCustomHeaders);
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-    }
-
     public async Task<ProjectData> GetProject(string projectUid)
     {
       if (string.IsNullOrEmpty(projectUid))
@@ -104,53 +87,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
             ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-    }
-
-    public async Task<List<ProjectData>> GetProjects(string customerUid, DateTime validAtDate)
-    {
-      if (string.IsNullOrEmpty(customerUid))
-        return null;
-      try
-      {
-        var p = await _projectProxy.GetProjects(customerUid, _mergedCustomHeaders);
-        if (p != null)
-        {
-          return p
-              .Where(x => !x.IsArchived)
-              .ToList();
-        }
-        return null;
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-    }
-
-    public async Task<List<ProjectData>> GetProjectsAssociatedWithDevice(string customerUid, string deviceUid, DateTime validAtDate)
-    {
-      if (string.IsNullOrEmpty(customerUid) || string.IsNullOrEmpty(deviceUid))
-        return null;
-      try
-      {
-
-        var projects = await _deviceProxy.GetProjectsForDevice(deviceUid, _mergedCustomHeaders);
-        if (projects?.Code != 0)
-        {
-          return projects.ProjectDescriptors
-            .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) && !x.IsArchived)
-            .ToList();
-        }
-        return null;
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
       }
     }
 
@@ -272,30 +208,5 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #endregion device
 
-
-    public TWGS84Point[] ParseBoundaryData(string s)
-    {
-      // WKT string should be in 'lon lat,' format
-      // TWG84Point is 'lon, lat'
-      var points = new List<TWGS84Point>();
-      var pointsArray = s.Substring(9, s.Length - 11).Split(',');
-
-      for (var i = 0; i < pointsArray.Length; i++)
-      {
-        var coordinates = new double[2];
-        coordinates = pointsArray[i].Trim().Split(' ').Select(c => double.Parse(c)).ToArray();
-        points.Add(new TWGS84Point(coordinates[0], coordinates[1]));
-      }
-
-      // is it a valid WKT polygon?
-      // note that an invalid polygon can't be created via the ProjectRepo
-      if (points.Count > 3 && points[0].Equals(points[points.Count - 1]))
-      {
-        var fencePoints = points.ToArray();
-        return fencePoints;
-      }
-
-      return new TWGS84Point[0];
-    }
   }
 }
