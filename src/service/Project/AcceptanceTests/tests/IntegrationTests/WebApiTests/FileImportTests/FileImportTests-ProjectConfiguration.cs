@@ -38,12 +38,12 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     }
 
     [Theory]
-    [InlineData(ImportedFileType.AvoidanceZone)]
-    [InlineData(ImportedFileType.ControlPoints)]
-    [InlineData(ImportedFileType.Geoid)]
-    [InlineData(ImportedFileType.FeatureCode)]
-    [InlineData(ImportedFileType.SiteConfiguration)]
-    [InlineData(ImportedFileType.GcsCalibration)]
+    [InlineData(ImportedFileType.CwsAvoidanceZone)]
+    [InlineData(ImportedFileType.CwsControlPoints)]
+    [InlineData(ImportedFileType.CwsGeoid)]
+    [InlineData(ImportedFileType.CwsFeatureCode)]
+    [InlineData(ImportedFileType.CwsSiteConfiguration)]
+    [InlineData(ImportedFileType.CwsGcsCalibration)]
     public async Task TestCreateProjectConfigurationFile(ImportedFileType importedFileType)
     {
       const string testText = "File Import Project Configuration 2";
@@ -65,7 +65,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var filesResult = await importFile.SendRequestToFileImportV6(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" })) ;
       Assert.Equal(importFile.ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName, filesResult.ProjectConfigFileDescriptor.FileName);
 
-      if (importedFileType == ImportedFileType.AvoidanceZone || importedFileType == ImportedFileType.ControlPoints)
+      if (importedFileType == ImportedFileType.CwsAvoidanceZone || importedFileType == ImportedFileType.CwsControlPoints)
       {
         // Upload the second file
         var firstFilename = importFile.ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName;
@@ -83,12 +83,12 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     }
 
     [Theory]
-    [InlineData(ImportedFileType.AvoidanceZone)]
-    [InlineData(ImportedFileType.ControlPoints)]
-    [InlineData(ImportedFileType.Geoid)]
-    [InlineData(ImportedFileType.FeatureCode)]
-    [InlineData(ImportedFileType.SiteConfiguration)]
-    [InlineData(ImportedFileType.GcsCalibration)]
+    [InlineData(ImportedFileType.CwsAvoidanceZone)]
+    [InlineData(ImportedFileType.CwsControlPoints)]
+    [InlineData(ImportedFileType.CwsGeoid)]
+    [InlineData(ImportedFileType.CwsFeatureCode)]
+    [InlineData(ImportedFileType.CwsSiteConfiguration)]
+    [InlineData(ImportedFileType.CwsGcsCalibration)]
     public async Task TestUpdateProjectConfigurationFile(ImportedFileType importedFileType)
     {
       const string testText = "File Import Project Configuration 3";
@@ -116,12 +116,12 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     }
 
     [Theory]
-    [InlineData(ImportedFileType.AvoidanceZone)]
-    [InlineData(ImportedFileType.ControlPoints)]
-    [InlineData(ImportedFileType.Geoid)]
-    [InlineData(ImportedFileType.FeatureCode)]
-    [InlineData(ImportedFileType.SiteConfiguration)]
-    [InlineData(ImportedFileType.GcsCalibration)]
+    [InlineData(ImportedFileType.CwsAvoidanceZone)]
+    [InlineData(ImportedFileType.CwsControlPoints)]
+    [InlineData(ImportedFileType.CwsGeoid)]
+    [InlineData(ImportedFileType.CwsFeatureCode)]
+    [InlineData(ImportedFileType.CwsSiteConfiguration)]
+    [InlineData(ImportedFileType.CwsGcsCalibration)]
     public async Task TestDeleteProjectConfigurationFile(ImportedFileType importedFileType)
     {
       const string testText = "File Import Project Configuration 4";
@@ -154,22 +154,22 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       string filename = null;
       switch (importedFileType)
       {
-        case ImportedFileType.AvoidanceZone:
+        case ImportedFileType.CwsAvoidanceZone:
           filename = first? TestFile.TestAvoidanceZone1: TestFile.TestAvoidanceZone2;
           break;
-        case ImportedFileType.ControlPoints:
+        case ImportedFileType.CwsControlPoints:
           filename = first ? TestFile.TestControlPoints1: TestFile.TestControlPoints2;
           break;
-        case ImportedFileType.Geoid:
+        case ImportedFileType.CwsGeoid:
           filename = TestFile.TestGeoid;
           break;
-        case ImportedFileType.FeatureCode:
+        case ImportedFileType.CwsFeatureCode:
           filename = TestFile.TestFeatureCode;
           break;
-        case ImportedFileType.SiteConfiguration:
+        case ImportedFileType.CwsSiteConfiguration:
           filename = TestFile.TestSiteConfiguration;
           break;
-        case ImportedFileType.GcsCalibration:
+        case ImportedFileType.CwsGcsCalibration:
           filename = TestFile.TestGcsCalibration;
           break;
       }

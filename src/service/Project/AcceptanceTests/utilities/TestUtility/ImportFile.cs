@@ -76,7 +76,7 @@ namespace TestUtility
       var fileDescriptor = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
       string uri = null;
-      if (ProjectConfigurationFileHelper.isCwsFileType(fileDescriptor.ImportedFileType))
+      if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
       {
         ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor = new ProjectConfigurationFileResponseModel {FileName = fileDescriptor.Name};
 
@@ -141,7 +141,7 @@ namespace TestUtility
         if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
         {
           // Change expected result - fix filename
-          if (ProjectConfigurationFileHelper.isCwsFileType(fileDescriptor.ImportedFileType))
+          if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
           {
             ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName);
           }
