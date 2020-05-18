@@ -84,5 +84,48 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"Returning location data for {resultSet.Count} Assets.");
       return Json(resultSet);
     }
+
+    /// <summary>
+    /// Gets list of devices with last known status (LKS).
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="lastReported"></param>
+    /// <returns></returns>
+    [HttpGet("api/v1/devices")]
+    public IActionResult GetDevicesWithLKS(
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? lastReported)
+    {
+      var logMsg = $"{nameof(GetDevicesWithLKS)} Getting list of devices with last known status (LKS)";
+      var project = projectUid != Guid.Empty ? $"for: {projectUid}" : "";
+      var lastReportedDate = lastReported != null ? $"at: {lastReported}" : "";
+
+      Logger.LogInformation($"{logMsg} {project} {lastReportedDate}.");
+
+      var devices = MockDeviceRepository.GetDevicesWithLKS();
+
+      logMsg = "Returning list of devices with last known status (LKS) data";
+
+      Logger.LogInformation($"{logMsg} {project} {lastReportedDate}.");
+
+      return Json(devices);
+    }
+
+    /// <summary>
+    /// Gets device with last known status (LKS).
+    /// </summary>
+    /// <param name="deviceName"></param>
+    /// <returns></returns>
+    [HttpGet("api/v1/device")]
+    public IActionResult GetDeviceWithLKS([FromQuery] string deviceName)
+    {
+      Logger.LogInformation($"{nameof(GetDeviceWithLKS)} Getting device with last known status (LKS). Device name: {deviceName}");
+
+      var device = MockDeviceRepository.GetDeviceWithLKS();
+
+      Logger.LogInformation($"Returning device with last known status (LKS). Device name: {deviceName}.");
+
+      return Json(device);
+    }
   }
 }

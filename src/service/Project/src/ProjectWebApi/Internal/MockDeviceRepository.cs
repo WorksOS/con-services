@@ -1,12 +1,215 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.MasterData.Project.WebAPI.Common.Models.DeviceStatus;
 using VSS.Productivity3D._3DAssetMgmt.Abstractions;
 
 namespace VSS.MasterData.Project.WebAPI.Internal
 {
   public static class MockDeviceRepository
   {
+    private static readonly DeviceStatus _deviceStatus = new DeviceStatus
+    {
+      deviceId = "14a4177f9ce1a112ac2",
+      deviceName = "Tablet-1294012",
+      lat = 39.8971033631906,
+      lon = -105.11554773936436,
+      designName = "Pond.V11",
+      designId = "5c9bcbd1c6769c105ea09b5",
+      deviceNickname = "ChubuddysBuddyDozer",
+      assetType = "Tablet",
+      projectName = "The Pond",
+      lastReported = "2019-06-12T18:53:52Z",
+      assetSerialNumber = "Tablet-T71SY-1300-001",
+      swWarrantyExpUtc = "2019-06-12",
+      osName = "Win32NT",
+      appName = "Trimble Groundworks",
+      correctionSource = "Wifi,DaVinci",
+      ts = "2019-06-12T18:53:52Z",
+      h = 0.27,
+      operatorName = "ChubuddyG",
+      isLlhSiteLocal = true,
+      language = "en-US",
+      coordinateSystemHash = "120EA8A25E5D487BF68B5F7",
+      isDataLogging = false,
+      antennaType = "SPS985",
+      targetType = "AT360",
+      rodHeight = 1052.89,
+      radioIntegrity = 100,
+      systemStatus = "Disconnected",
+      attachmentName = "Bucket",
+      attachmentWearUpdateUtc = "2019-06-12",
+      workOrderName = "pond cut",
+      designType = "CutFill",
+      designSurfaceName = "pondSufaceCut",
+      designVertOffset = 0.61,
+      designPerpOffset = 164.99,
+      assetNickname = "ChubuddysBuddy",
+      assetMake = "EC520",
+      assetModel = "336F",
+      osVersion = "Microsoft Windows NT 6.1.7601 Service Pack 1",
+      appVersion = "1.1.19200.96",
+      freeSpace = 1024000,
+      batteryPercent = 75,
+      powerSource = "battery",
+      licenseCodes = "C0821",
+      baseStationName = "PondBaseStation",
+      baseStationLat = 35.8971033631906,
+      baseStationLon = -103.11554773936436,
+      baseStationHeight = 1523.31,
+      internalTemp = 18,
+      totalRunTime = 345,
+      totalCellTime = 225,
+      totalWifiTime = 236,
+      totalAppTime = 223,
+      totalAutomaticsTime = 178,
+      networks = new List<Network>
+      {
+        new Network
+        {
+          type = "Cell",
+          signal = -92,
+          state = "connected",
+          dbm = 40,
+          uptime = 30,
+          carrier = "Verizon",
+          roaming = false,
+          cellTech = "4G",
+          mcc = "404",
+          mnc = "10",
+          simId = "9320B39J",
+          iccId = "25772365112890019904",
+          phoneNumber = "7194530922",
+          modemResets = 19216801,
+          apn = "icecreamapn",
+          apnUsername = "icecreamun",
+          apnPasswordSet = false,
+          txData = 1024,
+          rxData = 1024,
+          regulatoryDomain = "FCC",
+          regulatoryDomainMethod = "2.4GHz"
+        },
+        new Network
+        {
+          type = "Cell",
+          signal = -92,
+          state = "connected",
+          dbm = 40,
+          uptime = 30,
+          carrier = "Verizon",
+          roaming = false,
+          cellTech = "4G",
+          mcc = "404",
+          mnc = "10",
+          simId = "9320B39J",
+          iccId = "25772365112890019904",
+          phoneNumber = "7194530922",
+          modemResets = 19216801,
+          apn = "icecreamapn",
+          apnUsername = "icecreamun",
+          apnPasswordSet = false,
+          txData = 1024,
+          rxData = 1024,
+          regulatoryDomain = "FCC",
+          regulatoryDomainMethod = "2.4GHz"
+        }
+      },
+      gnss = new List<GNSSAntenna>
+      {
+        new GNSSAntenna
+        {
+          antennaLocation = "primary",
+          antennaSerialNumber = "SN391832445",
+          svsUsed = new SatelliteVehicle
+          {
+            gps = 12,
+            gln = 7350053850019,
+            bds = 17,
+            gal = 10,
+            irnss = 83
+          }
+        },
+        new GNSSAntenna
+        {
+          antennaLocation = "primary",
+          antennaSerialNumber = "SN391832445",
+          svsUsed = new SatelliteVehicle
+          {
+            gps = 12,
+            gln = 7350053850019,
+            bds = 17,
+            gal = 10,
+            irnss = 83
+          }
+        }
+      },
+      devices = new List<ConnectedDevice>
+      {
+        new ConnectedDevice
+        {
+          nickname = "ChubuddysBuddyDozer",
+          serialNumber = "23426644",
+          model = "Tablet",
+          firmware = "1.0.1.9876",
+          batteryPercent = 79,
+          licenseCodes = "D0928",
+          swWarrantyExpUtc = "2019-06-12"
+        },
+        new ConnectedDevice
+        {
+          nickname = "ChubuddysBuddyDozer",
+          serialNumber = "23426644",
+          model = "Tablet",
+          firmware = "1.0.1.9876",
+          batteryPercent = 79,
+          licenseCodes = "D0928",
+          swWarrantyExpUtc = "2019-06-12"
+        },
+        new ConnectedDevice
+        {
+          nickname = "ChubuddysBuddyDozer",
+          serialNumber = "23426644",
+          model = "Tablet",
+          firmware = "1.0.1.9876",
+          batteryPercent = 79,
+          licenseCodes = "D0928",
+          swWarrantyExpUtc = "2019-06-12"
+        }
+      },
+      projects = new List<ProjectID>
+      {
+        new ProjectID
+        {
+          projectId = "trn::profilex:us-west-2:project:c19b974e-64c0"
+        },
+        new ProjectID
+        {
+          projectId = "trn::profilex:us-west-2:project:c19b974e-64c0"
+        },
+        new ProjectID
+        {
+          projectId = "trn::profilex:us-west-2:project:c19b974e-64c0"
+        },
+        new ProjectID
+        {
+          projectId = "trn::profilex:us-west-2:project:c19b974e-64c0"
+        },
+        new ProjectID
+        {
+          projectId = "trn::profilex:us-west-2:project:c19b974e-64c0"
+        }
+      } 
+    };
+
+    private static readonly List<DeviceStatus> _deviceStatuses = new List<DeviceStatus>
+    { 
+      new DeviceStatus(),
+      new DeviceStatus(),
+      new DeviceStatus(),
+      new DeviceStatus(),
+      new DeviceStatus()
+    };
+
     private static readonly List<Asset> _assets = new List<Asset>
     {
       new Asset
@@ -60,7 +263,9 @@ namespace VSS.MasterData.Project.WebAPI.Internal
         Name = "Tonka Excavator"
       }
     };
-
+    
     public static List<Asset> GetAssets(IEnumerable<Guid> uids) => _assets.FindAll(x => uids.Any(y => y.ToString().Contains(x.AssetUID)));
+    public static List<DeviceStatus> GetDevicesWithLKS() => _deviceStatuses;
+    public static DeviceStatus GetDeviceWithLKS() => _deviceStatus;
   }
 }
