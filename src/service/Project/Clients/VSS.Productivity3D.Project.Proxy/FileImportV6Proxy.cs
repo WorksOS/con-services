@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -33,7 +34,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string CacheLifeKey => "IMPORTED_FILE_CACHE_LIFE";
 
-    public async Task<List<FileData>> GetFiles(string projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<List<FileData>> GetFiles(string projectUid, string userId, IHeaderDictionary customHeaders)
       {
         var result = await GetMasterDataItemServiceDiscovery<FileDataResult>
         ("/importedfiles", projectUid, userId, customHeaders,
@@ -50,7 +51,7 @@ namespace VSS.Productivity3D.Project.Proxy
     /// Gets an imported file for a project. 
     /// </summary>
     public async Task<FileData> GetFileForProject(string projectUid, string userId, string importedFileUid,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       return await GetItemWithRetry<FileDataResult, FileData>(GetFiles, f => string.Equals(f.ImportedFileUid, importedFileUid, StringComparison.OrdinalIgnoreCase), projectUid, userId, customHeaders);
     }

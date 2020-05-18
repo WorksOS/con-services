@@ -59,7 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
-      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, customerUid);
+      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, CustomerUid);
 
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
 
@@ -80,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, null, customHeaders, 
+            CustomerUid, UserId, null, customHeaders, 
             Productivity3dV1ProxyCoord, projectRepo: ProjectRepo,
             fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient, cwsDesignClient: CwsDesignClient,

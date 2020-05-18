@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Common.Interfaces;
@@ -18,7 +19,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   /// To support getting ProjectStatistics from either Raptor or TRex
   ///    we need to muck around converting between Ids and Guids
   /// </summary>
-  public class ProjectStatisticsHelper 
+  public class ProjectStatisticsHelper
   {
     private readonly ILoggerFactory _loggerFactory;
     private readonly IConfigurationStore _configStore;
@@ -49,7 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Gets the ids and uids of the surveyed surfaces to exclude from Raptor/TRex calculations. 
     /// This is the deactivated ones.
     /// </summary>
-    public async Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IHeaderDictionary customHeaders)
     {
       var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
@@ -65,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <summary>
     /// Get project statistics using all excluded surveyed surfaces.
     /// </summary>
-    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithProjectSsExclusions(Guid projectUid, long projectId, string userId, IDictionary<string, string> customHeaders)
+    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithProjectSsExclusions(Guid projectUid, long projectId, string userId, IHeaderDictionary customHeaders)
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid, userId, customHeaders);
 
@@ -76,7 +77,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Get project statistics using excluded surveyed surfaces provided in the request.
     /// This is used for v1 requests where the excluded surveyed surfaces are provided in the request
     /// </summary>
-    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithRequestSsExclusions(Guid projectUid, long projectId, string userId, long[] excludedIds, IDictionary<string, string> customHeaders)
+    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithRequestSsExclusions(Guid projectUid, long projectId, string userId, long[] excludedIds, IHeaderDictionary customHeaders)
     {
       Guid[] excludedUids = null;
       if (excludedIds != null && excludedIds.Length > 0)

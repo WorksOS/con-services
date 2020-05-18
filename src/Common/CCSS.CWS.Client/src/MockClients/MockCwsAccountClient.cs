@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -23,8 +24,7 @@ namespace CCSS.CWS.Client.MockClients
     {
     }
 
-    /// </summary>
-    public Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
+    public Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetMyAccounts)} Mock: userUid {userUid}");
 
@@ -50,7 +50,7 @@ namespace CCSS.CWS.Client.MockClients
     }
 
     /// </summary>
-    public Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
+    public Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetMyAccount)} Mock: userUid {userUid} customerUid {customerUid}");
 
@@ -71,7 +71,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(accountResponseModel);
     }
 
-    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IDictionary<string, string> customHeaders = null)
+    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDeviceLicenses)} Mock: customerUid {customerUid}");
 

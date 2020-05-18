@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -22,7 +23,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     protected const long NULL_ASSETID = -1;
     protected static IServiceProvider serviceProvider;
     protected static ILoggerFactory logger;
-    protected static Dictionary<string, string> _customHeaders;
+    protected static IHeaderDictionary _customHeaders;
     protected static Mock<ITRexCompactionDataProxy> tRexProxy;
 #if RAPTOR
     protected static Mock<IASNodeClient> raptorClient;
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
       tRexProxy = new Mock<ITRexCompactionDataProxy>();
 #if RAPTOR
       raptorClient = new Mock<IASNodeClient>();
@@ -57,8 +58,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectUid.ToString(),
           It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>(),
+          It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(expectedMachineExecutionResult);
 
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(enableTRexGateway);

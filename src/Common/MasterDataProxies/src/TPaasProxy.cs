@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -21,7 +21,7 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Gets a new bearer token from TPaaS Oauth
     /// </summary>
-    public async Task<TPaasOauthResult> GetApplicationBearerToken(string grantType, Dictionary<string, string> customHeaders)
+    public async Task<TPaasOauthResult> GetApplicationBearerToken(string grantType, IHeaderDictionary customHeaders)
     {
       log.LogDebug($"GetApplicationBearerToken: grantType: {grantType} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
       var payLoadToSend = $"grant_type={grantType}";
@@ -46,7 +46,7 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Revokes a bearer token from TPaaS Oauth
     /// </summary>
-    public async Task<BaseDataResult> RevokeApplicationBearerToken(string token, Dictionary<string, string> customHeaders)
+    public async Task<BaseDataResult> RevokeApplicationBearerToken(string token, IHeaderDictionary customHeaders)
     {
       log.LogDebug($"RevokeApplicationBearerToken: token: {token} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
       var payLoadToSend = $"token={token}";

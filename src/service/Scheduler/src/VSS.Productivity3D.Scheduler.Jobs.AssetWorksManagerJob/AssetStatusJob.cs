@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
@@ -100,7 +101,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
     /// <summary>
     /// Fetch asset data, the proxy will cache multiple request to the same asset
     /// </summary>
-    private async Task<(AssetDetails details, AssetSummary summary)> GetAssetData(string assetUid, IDictionary<string, string> headers)
+    private async Task<(AssetDetails details, AssetSummary summary)> GetAssetData(string assetUid, IHeaderDictionary headers)
     {
       var assetDetailsTask = _assetDetailsProxy.GetAssetDetails(assetUid, headers);
       var assetSummaryTask = _assetSummaryProxy.GetAssetSummary(assetUid, headers);
@@ -110,8 +111,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
       return (assetDetailsTask.Result, assetSummaryTask.Result);
     }
 
-    private async Task ProcessAssetEvents(MachineStatus machine, Guid projectUid, Guid customerUid,
-      IDictionary<string, string> headers)
+    private async Task ProcessAssetEvents(MachineStatus machine, Guid projectUid, Guid customerUid, IHeaderDictionary headers)
     {
       AssetAggregateStatus statusEvent = null;
       
@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
         statusEvent = GenerateEvent(customerUid, projectUid, null, machine, null, null);
       }
 
-      if(statusEvent != null)
+      if (statusEvent != null)
         await _assetStatusServerHubClient.UpdateAssetLocationsForClient(statusEvent);
     }
 
@@ -146,10 +146,10 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
       {
         ProjectUid = projectUid,
         CustomerUid = customerUid,
-        AssetUid =  assetUid,
+        AssetUid = assetUid,
         UtilizationSummary = summary
       };
-      
+
       // This is where all the magic happens, in terms of mapping data we have from 3d / 2d endpoints into an event for the UI
       // details / summary can be null, machineStatus won't be.
       var lastLocationTimeUtc = machineStatus.lastKnownTimeStamp;
@@ -162,7 +162,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
 
       // If we have a Asset ID (which matches Asset ID in Fleet management) from UF, use that, otherwise machine name
       result.AssetIdentifier = !string.IsNullOrEmpty(details?.AssetId)
-        ? details.AssetId 
+        ? details.AssetId
         : machineStatus.MachineName;
 
       // Extract data from Asset Details

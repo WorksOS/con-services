@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -10,10 +11,10 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.TRex.Gateway.Common.Proxy
 {
@@ -40,12 +41,11 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     public override string CacheLifeKey => "TREX_COMPACTIONDATA_CACHE_LIFE"; // not used
 
-
     /// <summary>
     /// Sends a request to get/save data from/to the TRex immutable/mutable database.
     /// </summary>
     public async Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route,
-      IDictionary<string, string> customHeaders = null, bool mutableGateway = false)
+      IHeaderDictionary customHeaders = null, bool mutableGateway = false)
       where TResponse : ContractExecutionResult
     {
       Gateway = mutableGateway ? GatewayType.Mutable : GatewayType.Immutable;
@@ -60,7 +60,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// Sends a request to get data as a stream from the TRex immutable database.
     /// </summary>
     public async Task<Stream> SendDataPostRequestWithStreamResponse<TRequest>(TRequest dataRequest, string route,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       Gateway = GatewayType.Immutable;
       var payload = JsonConvert.SerializeObject(dataRequest);
@@ -79,7 +79,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// Sends a request to delete data to the TRex immutable/mutable database.
     /// </summary>
     public async Task<TResponse> SendDataDeleteRequest<TResponse, TRequest>(TRequest dataRequest, string route,
-      IDictionary<string, string> customHeaders = null, bool mutableGateway = false)
+      IHeaderDictionary customHeaders = null, bool mutableGateway = false)
       where TResponse : ContractExecutionResult
     {
       Gateway = mutableGateway ? GatewayType.Mutable : GatewayType.Immutable;
@@ -94,7 +94,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
     public async Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IDictionary<string, string> customHeaders = null, IDictionary<string, string> queryParameters = null)
+      IHeaderDictionary customHeaders = null, IHeaderDictionary queryParameters = null)
       where TResponse : class, IMasterDataModel
     {
       Gateway = GatewayType.Immutable;

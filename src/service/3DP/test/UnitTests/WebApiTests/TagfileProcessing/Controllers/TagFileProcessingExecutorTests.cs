@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,9 +20,7 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
@@ -39,7 +37,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
   {
     private static IServiceProvider _serviceProvider;
     private static ILoggerFactory _logger;
-    private static Dictionary<string, string> _customHeaders;
+    private static HeaderDictionary _customHeaders;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -55,16 +53,16 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
                         .BuildServiceProvider();
 
       _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
     }
 
     [TestMethod]
     public async Task DirectTagFileSubmitter_RaptorAndTRex_Successfull()
     {
-      var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
       long legacyProjectId = 1;
       var request = new CompactionTagFileRequest
-                    {
+      {
         ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
@@ -83,14 +81,14 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       // S3 Repository 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
-      
+
       // TCC File Repository
       var mockTccFileRepo = new Mock<IFileRepository>();
-      mockTccFileRepo.Setup(t => 
-        t.PutFile(It.IsAny<string>(), 
-          It.IsAny<string>(), 
-          It.IsAny<string>(), 
-          It.IsAny<Stream>(), 
+      mockTccFileRepo.Setup(t =>
+        t.PutFile(It.IsAny<string>(),
+          It.IsAny<string>(),
+          It.IsAny<string>(),
+          It.IsAny<Stream>(),
           It.IsAny<long>()))
         .Returns(Task.FromResult(true));
 
@@ -109,7 +107,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -149,10 +147,10 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       // trex result is ignored in overall result to final return is the Raptor success
 
-      var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
       long legacyProjectId = 1;
       var request = new CompactionTagFileRequest
-                    {
+      {
         ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
@@ -180,8 +178,8 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_RAPTOR_GATEWAY_TAGFILE")).Returns(false);
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
       var trexGatewayResult =
-        new ContractExecutionResult((int)TRexTagFileResultCode.TRexInvalidTagfile); 
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IDictionary<string, string>>()))
+        new ContractExecutionResult((int)TRexTagFileResultCode.TRexInvalidTagfile);
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -233,7 +231,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -279,7 +277,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_TAGFILE")).Returns(true);
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_RAPTOR_GATEWAY_TAGFILE")).Returns(true);
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IHeaderDictionary>()))
         .ThrowsAsync(new NotImplementedException());
 
       var submitter = RequestExecutorContainerFactory
@@ -328,7 +326,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -348,7 +346,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       var projectUid = Guid.NewGuid();
       var resolvedLegacyProjectId = 544;
-      var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
       var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
       (
         new CompactionTagFileRequest
@@ -378,7 +376,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -399,7 +397,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       var projectUid = Guid.NewGuid();
       var resolvedLegacyProjectId = 544;
-      var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
+      var tagFileContent = new byte[] { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
       var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
       (
         new CompactionTagFileRequest
@@ -431,7 +429,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         new ContractExecutionResult((int)TRexTagFileResultCode.TFAManualProjectNotFound, "Unable to find the Project requested");
 
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -485,7 +483,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
@@ -536,7 +534,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var trexGatewayResult =
         TagFileDirectSubmissionResult.Create(new TagFileProcessResultHelper(TAGProcServerProcessResultCode.OK));
       var mockTRexTagFileProxy = new Mock<ITRexTagFileProxy>();
-      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IDictionary<string, string>>()))
+      mockTRexTagFileProxy.Setup(s => s.SendTagFileNonDirect(request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory

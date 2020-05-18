@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRPC;
@@ -19,7 +19,6 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -88,7 +87,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           $"Cut/Fill statistics have not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCutFillDetailedResult, TRexCutFillDetailsRequest>(It.IsAny<TRexCutFillDetailsRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
+      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCutFillDetailedResult, TRexCutFillDetailsRequest>(It.IsAny<TRexCutFillDetailsRequest>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), false))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory

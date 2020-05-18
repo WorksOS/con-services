@@ -106,3 +106,8 @@ dotnet_naming_symbols.constants.applicable_kinds = local, field
 dotnet_naming_symbols.constants.required_modifiers = const
 
 dotnet_naming_style.constant_style.capitalization = all_upper
+
+# 3rd Party Extension behaviour
+
+# Roslynator
+dotnet_diagnostic.RCS1090.severity = none

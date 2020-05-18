@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +48,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     private readonly IMemoryCache tileCache;
     private readonly TimeSpan tileCacheExpiration;
 
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
     protected ILogger<T> Log => logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
     private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
 

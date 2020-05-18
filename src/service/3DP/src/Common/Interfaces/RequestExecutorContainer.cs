@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -81,7 +82,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ITRexCompactionDataProxy trexCompactionDataProxy;
 
-    protected IDictionary<string, string> customHeaders;
+    protected IHeaderDictionary customHeaders;
 
     protected string customerUid;
 
@@ -178,7 +179,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 #endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
       ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
-      IDictionary<string, string> customHeaders, string customerUid)
+      IHeaderDictionary customHeaders, string customerUid)
     {
       this.loggerFactory = loggerFactory;
       this.log = logger;

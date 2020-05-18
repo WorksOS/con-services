@@ -5,7 +5,7 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.MasterData.Repositories
 {
-  public class RepositoryHelper
+  public static class RepositoryHelper
   {
     private static string POLYGON = "POLYGON";
 

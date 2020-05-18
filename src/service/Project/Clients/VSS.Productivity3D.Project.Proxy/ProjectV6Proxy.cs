@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -34,7 +35,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string CacheLifeKey => "PROJECT_CACHE_LIFE";
 
-    public async Task<List<ProjectData>> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
+    public async Task<List<ProjectData>> GetProjects(string customerUid, IHeaderDictionary customHeaders = null)
     {
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project", customerUid, null, customHeaders);
 
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     // customHeaders will include customerUid
     public async Task<ProjectData> GetProjectForCustomer(string customerUid, string projectUid,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataSingleResult>($"/project/{projectUid}",
         projectUid,
@@ -64,7 +65,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     //To support 3dpm v1 end points which use legacy project id
     public async Task<ProjectData> GetProjectForCustomer(string customerUid, long shortRaptorProjectId,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjects, p => p.ShortRaptorProjectId == shortRaptorProjectId, customerUid, customHeaders);
     }

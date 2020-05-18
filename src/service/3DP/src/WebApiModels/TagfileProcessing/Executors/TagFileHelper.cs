@@ -6,22 +6,18 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Gateway.Common.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {
-
-  /// <summary>
-  ///
-  /// </summary>
-  public class TagFileHelper
+  public static class TagFileHelper
   {
     /// <summary>
     /// Sends tag file to TRex endpoint, retrieving result 
     /// </summary>
-    /// <returns></returns>
     public static async Task<ContractExecutionResult> SendTagFileToTRex(CompactionTagFileRequest compactionTagFileRequest,
       ITRexTagFileProxy tagFileProxy,
-      ILogger log, IDictionary<string, string> customHeaders,
+      ILogger log, IHeaderDictionary customHeaders,
       bool isDirectSubmission = true)
     {
       var tRexResult = new ContractExecutionResult();
@@ -32,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
           tRexResult = await tagFileProxy.SendTagFileDirect(compactionTagFileRequest, customHeaders);
         else
           tRexResult = await tagFileProxy.SendTagFileNonDirect(compactionTagFileRequest, customHeaders);
-        
+
         return tRexResult;
       }
       catch (Exception e)
@@ -40,8 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
         log.LogError(e, $"SendTagFileToTRex: returned exception");
       }
 
-      return new ContractExecutionResult((int) TAGProcServerProcessResultCode.Unknown);
+      return new ContractExecutionResult((int)TAGProcServerProcessResultCode.Unknown);
     }
   }
 }
-

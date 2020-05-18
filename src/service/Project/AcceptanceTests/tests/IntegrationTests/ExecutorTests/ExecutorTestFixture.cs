@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -33,7 +33,7 @@ namespace IntegrationTests.ExecutorTests
     public readonly IConfigurationStore ConfigStore;
     public readonly ILoggerFactory Logger;
     public readonly IServiceExceptionHandler ServiceExceptionHandler;
-    public readonly ProjectRepository ProjectRepo; 
+    public readonly ProjectRepository ProjectRepo;
     public readonly IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord;
     public readonly IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
     public readonly IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
@@ -42,7 +42,7 @@ namespace IntegrationTests.ExecutorTests
     {
       var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("IntegrationTests.ExecutorTests.log", null));
       var serviceCollection = new ServiceCollection();
-      
+
       serviceCollection.AddLogging()
         .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
@@ -58,7 +58,7 @@ namespace IntegrationTests.ExecutorTests
         .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
         .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
         .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
-        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();  
+        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
       _serviceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
@@ -67,21 +67,22 @@ namespace IntegrationTests.ExecutorTests
       ProjectRepo = _serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       Productivity3dV1ProxyCoord = _serviceProvider.GetRequiredService<IProductivity3dV1ProxyCoord>();
       Productivity3dV2ProxyNotification = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyNotification>();
-      Productivity3dV2ProxyCompaction = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();     
+      Productivity3dV2ProxyCompaction = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();
     }
 
-    public IDictionary<string, string> CustomHeaders(string customerUid)
+    public IHeaderDictionary CustomHeaders(string customerUid)
     {
-      var headers = new Dictionary<string, string>();
-      headers.Add("X-JWT-Assertion", RestClient.DEFAULT_JWT);
-      headers.Add("X-VisionLink-CustomerUid", customerUid);
-      headers.Add("X-VisionLink-ClearCache", "true");
-      return headers;
+      return new HeaderDictionary
+      {
+        { "X-JWT-Assertion", RestClient.DEFAULT_JWT },
+        { "X-VisionLink-CustomerUid", customerUid },
+        { "X-VisionLink-ClearCache", "true" }
+      };
     }
 
     public bool CreateCustomerProject(string customerUid, string projectUid)
     {
-      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);          
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createProjectEvent = new CreateProjectEvent()
       {
@@ -97,7 +98,7 @@ namespace IntegrationTests.ExecutorTests
         CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
         CoordinateSystemFileName = "thisLocation\\this.cs"
       };
-           
+
       ProjectRepo.StoreEvent(createProjectEvent).Wait();
       var g = ProjectRepo.GetProject(projectUid); g.Wait();
       return (g.Result != null ? true : false);
@@ -105,7 +106,7 @@ namespace IntegrationTests.ExecutorTests
 
     public bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
-      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);     
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
         ProjectUID = new Guid(projectUid),
@@ -127,7 +128,7 @@ namespace IntegrationTests.ExecutorTests
         UserID = projectEvent.UserID,
         LastActionedUtc = projectEvent.ActionUTC
       };
-      
+
       Console.WriteLine(
         $"projectSettings after cast/convert ={JsonConvert.SerializeObject(projectSettings)}))')");
       ProjectRepo.StoreEvent(createProjectSettingsEvent).Wait();

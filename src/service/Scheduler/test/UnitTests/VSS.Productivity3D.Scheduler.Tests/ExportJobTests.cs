@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [DataRow("Export Success")]
     public void CanGetExportDataSuccess(string message)
     {
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
       var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
@@ -78,7 +79,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       const string extension = ".json";
       const string contentType = ContentTypeConstants.ApplicationJson;
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy.mp3" };
       var expectedFilename = scheduleRequest.Filename + extension;
@@ -116,7 +117,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
     [DataRow("InternalServerError Some general exception message")]
     public async Task CanGetExportDataFailure(string message)
     {
-      var customHeaders = new Dictionary<string, string>();
+      var customHeaders = new HeaderDictionary();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
       var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(scheduleRequest)));

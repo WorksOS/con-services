@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
@@ -43,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly ITRexTagFileProxy _tRexTagFileProxy;
     private readonly ITRexConnectedSiteProxy _tRexConnectedSiteProxy;
     private readonly IFileRepository _tccRepository;
-    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.

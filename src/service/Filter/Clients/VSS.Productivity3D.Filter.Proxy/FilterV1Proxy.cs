@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.Filter.Proxy
 
     public override string CacheLifeKey => "FILTER_CACHE_LIFE";
 
-    public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IDictionary<string, string> customHeaders = null)
+    public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IHeaderDictionary customHeaders = null)
     {
       var result = await GetMasterDataItemServiceDiscovery<FilterListData>
         ($"/filters/{projectUid}", projectUid, null, customHeaders);
@@ -49,11 +50,11 @@ namespace VSS.Productivity3D.Filter.Proxy
       return null;
     }
 
-    public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IDictionary<string, string> customHeaders = null)
+    public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IHeaderDictionary customHeaders = null)
     {
       var result = await GetMasterDataItemServiceDiscovery<FilterData>
       ($"/filter/{projectUid}", filterUid, null, customHeaders,
-        new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("filterUid", filterUid)});
+        new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("filterUid", filterUid) });
 
       if (result.Code == 0)
         return result.filterDescriptor;
@@ -62,15 +63,12 @@ namespace VSS.Productivity3D.Filter.Proxy
       return null;
     }
 
-
-    public async Task<FilterDescriptorSingleResult> CreateFilter(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders = null)
+    public async Task<FilterDescriptorSingleResult> CreateFilter(string projectUid, FilterRequest request, IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
-      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-      {
-        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-        return await SendMasterDataItemServiceDiscoveryNoCache<FilterDescriptorSingleResult>($"filter/{projectUid}", customHeaders, HttpMethod.Put, payload: payload);
-      }
+      using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
+      // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+      return await SendMasterDataItemServiceDiscoveryNoCache<FilterDescriptorSingleResult>($"filter/{projectUid}", customHeaders, HttpMethod.Put, payload: payload);
     }
 
     // can't remove these yet from IFilterServiceProxy as non serviceDiscovery is still used by 3dp
@@ -89,7 +87,7 @@ namespace VSS.Productivity3D.Filter.Proxy
       ClearCacheItem(projectUid, userId);
     }
 
-    public Task<List<FilterDescriptor>> GetFilters(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders = null)
+    public Task<List<FilterDescriptor>> GetFilters(string projectUid, FilterRequest request, IHeaderDictionary customHeaders = null)
     {
       throw new NotImplementedException();
     }

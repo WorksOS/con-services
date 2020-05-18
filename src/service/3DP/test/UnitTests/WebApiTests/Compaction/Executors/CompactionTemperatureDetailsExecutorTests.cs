@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRPC;
@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
@@ -66,7 +65,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 #endif
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
-      trexCompactionDataProxy.Setup(x => x.SendDataPostRequest<TemperatureDetailResult, TemperatureDetailsRequest>(request, It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
+      trexCompactionDataProxy.Setup(x => x.SendDataPostRequest<TemperatureDetailResult, TemperatureDetailsRequest>(request, It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), false))
         .Returns((Task<TemperatureDetailResult>)null);
 
 

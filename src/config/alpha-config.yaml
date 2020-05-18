@@ -104,4 +104,10 @@ data:
   PEGASUS_EXECUTION_WAIT_MILLSECS: "20000"
   PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/processing_stage-v1.0
   SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
-
+#CWS
+  MOCK_CWS_ACCOUNT: "true"
+  MOCK_CWS_DESIGN: "true"
+  MOCK_CWS_DEVICE: "true"
+  MOCK_CWS_PROFILE: "true"
+  MOCK_CWS_PROJECT: "true"
+  MOCK_CWS_USER: "true"

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -17,7 +17,6 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -63,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Constructor with dependency injection
@@ -161,7 +160,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var request = await CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, assetUid);
 
       return await GetCCADataTile(request);
@@ -182,7 +181,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           raptorClient, 
 #endif
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders:CustomHeaders)
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                          .ProcessAsync(request) as TileResult;
 
       if (tileResult?.TileData == null)

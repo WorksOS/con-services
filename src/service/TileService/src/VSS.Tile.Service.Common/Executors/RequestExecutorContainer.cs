@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -33,7 +34,7 @@ namespace VSS.Tile.Service.Common.Executors
     /// </summary>
     protected IConfigurationStore configStore;
 
-    protected IDictionary<string, string> customHeaders;
+    protected IHeaderDictionary customHeaders;
 
     protected IDataOceanClient dataOceanClient;
 
@@ -41,7 +42,7 @@ namespace VSS.Tile.Service.Common.Executors
 
     protected IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
 
-    protected  IBoundingBoxHelper bboxHelper;
+    protected IBoundingBoxHelper bboxHelper;
 
     /// <summary>
     /// Gets the available contract execution error states.
@@ -82,21 +83,12 @@ namespace VSS.Tile.Service.Common.Executors
     /// <param name="item">>The item.</param>
     protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
     protected virtual Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       throw new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing asynchronous executor process method override"));
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <exception cref="ServiceException"></exception>
     public ContractExecutionResult Process<T>(T item)
     {
       ValidateTItem(item);
@@ -124,8 +116,8 @@ namespace VSS.Tile.Service.Common.Executors
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger,  IConfigurationStore configStore, 
-      IDictionary<string, string> customHeaders, IDataOceanClient dataOceanClient, 
+    public void Initialise(ILogger logger, IConfigurationStore configStore,
+      IHeaderDictionary customHeaders, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn, IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IBoundingBoxHelper bboxHelper)
     {
       log = logger;
