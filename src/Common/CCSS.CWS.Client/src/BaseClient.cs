@@ -176,7 +176,6 @@ namespace CCSS.CWS.Client
         using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
         // Need to await this, as we need the stream (if we return the task, the stream is disposed)
         await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
-    }
       }
       catch (HttpRequestException e)
       {
