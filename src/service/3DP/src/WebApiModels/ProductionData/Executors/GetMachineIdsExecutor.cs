@@ -82,7 +82,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       if (machines == null || machines.Count == 0)
         return;
 
-      await PairUpVSSAssets(machines, haveUids);
+      // No longer supporting Raptor asset ids so can't match TRex and Raptor VSS assets
+
       await PairUpJohnDoeAssets(request, machines, haveUids);
 
       var unMatchedList = (machines.Where(a => !a.AssetUid.HasValue || a.AssetUid.Value == Guid.Empty || a.AssetId < 1)
@@ -90,40 +91,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         .Distinct()).ToList();
       if (unMatchedList.Any())
         log.LogWarning($"PairUpAssetIdentifiers: UnmatchedAssetCount: {unMatchedList.Count} MatchedAssetCount: {machines.Count - unMatchedList.Count} UnableToMatchAllAssets: {JsonConvert.SerializeObject(unMatchedList)}");
-    }
-
-    private async Task PairUpVSSAssets(List<MachineStatus> machines, bool haveUids)
-    {
-      if (haveUids)
-      {
-        // VSS assetMatch will return rows if Uids found, however the legacyAssetIds may be invalid
-        var assetUids = new List<Guid>(machines.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty && !a.IsJohnDoe).Select(a => a.AssetUid.Value).Distinct());
-        if (assetUids.Count > 0)
-        {
-          var assetMatchingResult = (await deviceProxy.GetMatchingDevices(assetUids, customHeaders)).ToList();
-          foreach (var assetMatch in assetMatchingResult)
-          {
-            if (assetMatch.Value > 0)
-              foreach (var assetOnDesignPeriod in machines.FindAll(x => x.AssetUid == assetMatch.Key))
-                assetOnDesignPeriod.AssetId = assetMatch.Value;
-          }
-        }
-      }
-      else
-      {
-        // VSS assetMatch will only return rows if Uids found for the legacyAssetIds
-        var assetIds = new List<long>(machines.Where(a => a.AssetId > 0 && !a.IsJohnDoe).Select(a => a.AssetId).Distinct());
-        if (assetIds.Count > 0)
-        {
-          var assetMatchingResult = (await deviceProxy.GetMatchingDevices(assetIds, customHeaders)).ToList();
-          foreach (var assetMatch in assetMatchingResult)
-          {
-            if (assetMatch.Value > 0) // machineId of 0/-1 may occur for >1 AssetUid
-              foreach (var assetOnDesignPeriod in machines.FindAll(x => x.AssetId == assetMatch.Value))
-                assetOnDesignPeriod.AssetUid = assetMatch.Key;
-          }
-        }
-      }
     }
 
     private async Task PairUpJohnDoeAssets(ProjectIDs request, List<MachineStatus> machines, bool haveUids)

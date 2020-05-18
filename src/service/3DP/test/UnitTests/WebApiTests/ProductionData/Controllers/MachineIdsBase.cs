@@ -29,7 +29,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     protected static Mock<IASNodeClient> raptorClient;
 #endif
     protected static Mock<IConfigurationStore> configStore;
-    protected static Mock<IDeviceProxy> deviceProxy;
 
     protected static void Init()
     {
@@ -45,7 +44,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       raptorClient = new Mock<IASNodeClient>();
 #endif
       configStore = new Mock<IConfigurationStore>();
-      deviceProxy = new Mock<IDeviceProxy>();
     }
 
     protected void GetTRexMachineIdsMock(List<MachineStatus> machineStatusList, Guid projectUid,

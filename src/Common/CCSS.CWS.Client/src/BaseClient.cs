@@ -32,18 +32,47 @@ namespace CCSS.CWS.Client
     // NOTE: must have a uid or userId for cache key
     protected Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
-      IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel => GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
-        customHeaders, parameters);
+      IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
+    {
+      try
+      {
+        var result = GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
+          customHeaders, parameters);
+        return result;
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return null;
+        }
+
+        throw;
+      }
+    }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
       TReq request,
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)); 
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
+        
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return null;
+        }
+
+        throw;
+      }
     }
 
     protected async Task PostData<TReq>(string route,
@@ -51,10 +80,22 @@ namespace CCSS.CWS.Client
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return;
+        }
+
+        throw;
+      }
     }
 
     protected Task UploadData(string uploadUrl, Stream payload,
@@ -66,13 +107,37 @@ namespace CCSS.CWS.Client
     protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
-      return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
+      try
+      {
+        return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return null;
+        }
+
+        throw;
+      }
     }
 
     protected Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null)
     {
-      return SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
+      try
+      {
+        return SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return Task.CompletedTask;
+        }
+
+        throw;
+      }
     }
 
     protected async Task<TRes> UpdateData<TReq, TRes>(string route,
@@ -80,11 +145,23 @@ namespace CCSS.CWS.Client
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-      return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
+       using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+      	// Need to await this, as we need the stream (if we return the task, the stream is disposed)
+      	return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return null;
+        }
+
+        throw;
+      }
     }
 
     protected async Task UpdateData<TReq>(string route,
@@ -92,11 +169,23 @@ namespace CCSS.CWS.Client
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-      await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return;
+        }
+
+        throw;
+      }
     }
   }
 }

@@ -12,8 +12,7 @@ namespace VSS.MasterData.Repositories
     private static readonly Dictionary<Type, object> container = new Dictionary<Type, object>();
     private readonly ILogger log;
 
-    public RepositoryFactory(IRepository<IDeviceEvent> deviceRepository,
-      IRepository<IProjectEvent> projRepository, IRepository<IFilterEvent> filterRepository,
+    public RepositoryFactory(IRepository<IProjectEvent> projRepository, IRepository<IFilterEvent> filterRepository,
       ILoggerFactory logger)
     {
       log = logger.CreateLogger<RepositoryFactory>();
@@ -22,7 +21,6 @@ namespace VSS.MasterData.Repositories
       if (log.IsTraceEnabled())
         log.LogTrace("Registering repositories");
 
-      container.Add(typeof(IDeviceEvent), deviceRepository);
       container.Add(typeof(IProjectEvent), projRepository);
       container.Add(typeof(IFilterEvent), filterRepository);
 

@@ -50,7 +50,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #endif
           configStore: configStore,
           trexCompactionDataProxy: trexCompactionDataProxy,
-          deviceProxy: deviceProxy,
           customHeaders: customHeaders,
           customerUid: customerUid)
         .ProcessAsync(projectIds);
