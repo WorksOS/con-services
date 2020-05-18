@@ -9,6 +9,10 @@
     AvoidanceZone = 3,
     Stockpile = 4,
     CutZone = 5,
-    FillZone = 6
+    FillZone = 6,
+    Import = 7,
+    Export = 8,
+    Landfill = 9,
+    Filter = 10
   }
 }

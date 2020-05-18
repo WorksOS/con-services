@@ -11,10 +11,6 @@ namespace VSS.Productivity3D.Models.Models.Files
 {
   public class DXFBoundariesRequest
   {
-    //    [JsonProperty(PropertyName = "projectUid", Required = Required.Always)]
-    //    [ValidProjectUID]
-    //    public Guid ProjectUid { get; set; }
-
     [JsonProperty(PropertyName = "csib", Required = Required.Always)]
     public string CSIB { get; set; }
 
@@ -35,9 +31,8 @@ namespace VSS.Productivity3D.Models.Models.Files
     {
     }
 
-    public DXFBoundariesRequest(/*Guid projectUid, */ string csib, ImportedFileType fileType, string fileName, DxfUnitsType fileUnits, uint maxBoundaries)
+    public DXFBoundariesRequest(string csib, ImportedFileType fileType, string fileName, DxfUnitsType fileUnits, uint maxBoundaries)
     {
-      //ProjectUid = projectUid;
       CSIB = csib;
       FileType = fileType;
       FileName = fileName;
@@ -47,11 +42,6 @@ namespace VSS.Productivity3D.Models.Models.Files
 
     public void Validate()
     {
-    //  if (!Guid.TryParseExact(ProjectUid.ToString(), "D", out var _) || ProjectUid == Guid.Empty)
-    //  {
-    //    throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid must be provided"));
-    //  }
-
       if (FileType != ImportedFileType.SiteBoundary && FileType != ImportedFileType.Linework)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must support DXF representation"));
