@@ -17,7 +17,7 @@ namespace VSS.TRex.Files.DXF
       _reader = reader;
     }
 
-    public DXFUtilitiesResult Extract(string baseName, DxfUnitsType units, uint maxBoundariesToProcess)
+    public DXFUtilitiesResult Extract(DxfUnitsType units, uint maxBoundariesToProcess)
     {
       bool atEOF;
 
@@ -33,7 +33,7 @@ namespace VSS.TRex.Files.DXF
               boundary.Type = DXFLineWorkBoundaryType.GenericBoundary;
 
             if (string.IsNullOrEmpty(boundary.Name))
-              boundary.Name = $"{baseName}{Boundaries.Boundaries.Count + 1}";
+              boundary.Name = $"{Boundaries.Boundaries.Count + 1}";
 
             Boundaries.Boundaries.Add(boundary);
           }

@@ -1,35 +1,23 @@
 ﻿using System;
-using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
-#if RAPTOR
-using VSS.Productivity3D.Common.Algorithms;
-#endif
-using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
-using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.MapHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   /// <summary>
-  /// Linework file controller.
+  /// Line work file controller.
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class LineworkController : BaseController<LineworkController>
@@ -40,45 +28,29 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     { }
 
     /// <summary>
-    /// Get all boundaries from provided linework (DXF) file.
+    /// Get all boundaries from provided line work (DXF) file.
     /// </summary>
     [HttpPost("api/v2/linework/boundaries")]
-    public async Task<IActionResult> GetBoundariesFromLinework([FromServices] IRaptorFileUploadUtility fileUploadUtility, [FromForm] DxfFileRequest requestDto)
+    public async Task<IActionResult> GetBoundariesFromLinework([FromForm] DxfFileRequest requestDto)
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
-#if RAPTOR
-      var customerUid = ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
-      var uploadPath = Path.Combine(ConfigStore.GetValueString("SHAREUNC"), "Temp", "LineworkFileUploads", customerUid);
-      var executorRequestObj = new LineworkRequest(requestDto, uploadPath).Validate();
 
-      var uploadResult = fileUploadUtility.UploadFile(executorRequestObj.DxfFileDescriptor, executorRequestObj.DxfFileData);
-      if (!uploadResult.success) return StatusCode((int)HttpStatusCode.BadRequest, uploadResult.message);
-
-      uploadResult = fileUploadUtility.UploadFile(executorRequestObj.CoordinateSystemFileDescriptor, executorRequestObj.CoordinateSystemFileData);
-      if (!uploadResult.success) return StatusCode((int)HttpStatusCode.BadRequest, uploadResult.message);
-
-      executorRequestObj.ClearFileData();
+      var executorRequestObj = new LineworkRequest(requestDto).Validate();
 
       var result = await RequestExecutorContainerFactory
-                         .Build<LineworkFileExecutor>(LoggerFactory, RaptorClient, configStore: ConfigStore)
+                         .Build<LineworkFileExecutor>(LoggerFactory,
+                         configStore: ConfigStore)
                          .ProcessAsync(executorRequestObj);
-
-      fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.DxfFileDescriptor.Path, executorRequestObj.DxfFileDescriptor.FileName));
-      fileUploadUtility.DeleteFile(Path.Combine(executorRequestObj.CoordinateSystemFileDescriptor.Path, executorRequestObj.CoordinateSystemFileDescriptor.FileName));
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson(requestDto.ConvertLineStringCoordsToPolygon, requestDto.MaxVerticesPerBoundary))
         : StatusCode((int)HttpStatusCode.BadRequest, result);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     /// <summary>
-    /// Gets a DXF linework representation of an alignment.
+    /// Gets a DXF line work representation of an alignment.
     /// </summary>
-    /// <returns>A zipped file containing the linework and a result code and message</returns>
+    /// <returns>A zipped file containing the line work and a result code and message</returns>
     [HttpGet("api/v2/linework/alignment")]
     public async Task<FileResult> GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid, [FromServices] IPreferenceProxy prefProxy)
     {

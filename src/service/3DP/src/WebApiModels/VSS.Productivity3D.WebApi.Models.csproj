@@ -51,12 +51,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
     <Compile Remove=".\Compaction\Executors\CompactionPatchExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\DxfTileExecutor.cs" />
-    <Compile Remove=".\Compaction\Executors\LineworkFileExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\AlignmentLineworkExecutor.cs" />
-
-    <Compile Remove=".\Compaction\Models\LineworkRequest.cs" />
-
-    <Compile Remove=".\Compaction\ResultHandling\DxfLineworkFileResult.cs" />
 
     <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />

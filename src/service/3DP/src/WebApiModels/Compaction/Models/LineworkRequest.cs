@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Net;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
@@ -14,40 +13,31 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
   /// </summary>
   public class LineworkRequest : ProjectID
   {
-    private enum DistanceUnits
-    {
-      Meters,
-      ImperialFeet,
-      USSurveyFeet
-    }
+    /// <summary>
+    /// Base64 encoded content of DXF file
+    /// </summary>
+    public string DxfFileData { get; private set; }
 
-    private const string MOCK_FILE_REQUEST_ID = "123";
-    public byte[] DxfFileData { get; private set; }
-    public byte[] CoordinateSystemFileData { get; }
-    public string FilespaceId { get; }
+    /// <summary>
+    /// Base64 encoded content of DXF file
+    /// </summary>
+    public string CoordinateSystemFileData { get; }
+
     public int LineworkUnits { get; }
-    public FileDescriptor DxfFileDescriptor { get; }
-    public FileDescriptor CoordinateSystemFileDescriptor { get; }
+
     private int MaxBoundariesToProcess { get; }
 
     public int NumberOfBoundariesToProcess => MaxBoundariesToProcess < 1 ? VelociraptorConstants.MAX_BOUNDARIES_TO_PROCESS : MaxBoundariesToProcess;
     public int NumberOfVerticesPerBoundary = VelociraptorConstants.MAX_VERTICES_PER_BOUNDARY;
 
-    public LineworkRequest(DxfFileRequest fileRequest, string uploadPath)
+    public LineworkRequest(DxfFileRequest fileRequest)
     {
-      var tmpFilename = Guid.NewGuid().ToString();
-
       ProjectId = VelociraptorConstants.NO_PROJECT_ID;
-      DxfFileDescriptor = FileDescriptor.CreateFileDescriptor(MOCK_FILE_REQUEST_ID, uploadPath, tmpFilename + ".dxf");
-      CoordinateSystemFileDescriptor = FileDescriptor.CreateFileDescriptor(MOCK_FILE_REQUEST_ID, uploadPath, tmpFilename + ".dc");
       LineworkUnits = fileRequest.DxfUnits;
-      DxfFileData = fileRequest.GetFileAsByteArray(fileRequest.DxfFile);
-      CoordinateSystemFileData = fileRequest.GetFileAsByteArray(fileRequest.CoordinateSystemFile);
-      FilespaceId = MOCK_FILE_REQUEST_ID;
+      DxfFileData = fileRequest.GetFileAsBase64EncodedString(fileRequest.DxfFile);
+      CoordinateSystemFileData = fileRequest.GetFileAsBase64EncodedString(fileRequest.CoordinateSystemFile);
       MaxBoundariesToProcess = fileRequest.MaxBoundariesToProcess;
     }
-
-    public void ClearFileData() => DxfFileData = null;
 
     public new LineworkRequest Validate()
     {
@@ -68,7 +58,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
         ThrowValidationError("Invalid request, DxfUnits must be provided");
       }
 
-      if (!Enum.IsDefined(typeof(DistanceUnits), LineworkUnits))
+      if (!Enum.IsDefined(typeof(DxfUnitsType), LineworkUnits))
       {
         ThrowValidationError($"Invalid DxfUnits value '{LineworkUnits}', out of range");
       }
