@@ -30,13 +30,13 @@ namespace CCSS.CWS.Client
     { }
 
     // NOTE: must have a uid or userId for cache key
-    protected Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
+    protected async Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
       try
       {
-        var result = GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
+        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
           customHeaders, parameters);
         return result;
       }
@@ -104,17 +104,17 @@ namespace CCSS.CWS.Client
       return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
 
-    protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
+    protected async Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
       try
       {
-        return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
       }
       catch (HttpRequestException e)
       {
         if (e.IsNotFoundException())
-          {
+        {
           return null;
         }
 
@@ -122,18 +122,18 @@ namespace CCSS.CWS.Client
       }
     }
 
-    protected Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
+    protected async Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null)
     {
       try
       {
-        return SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
       }
       catch (HttpRequestException e)
       {
         if (e.IsNotFoundException())
-          {
-          return Task.CompletedTask;
+        {
+          return;
         }
 
         throw;
