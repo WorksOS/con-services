@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using VSS.TRex.Common;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL.DXF
 {

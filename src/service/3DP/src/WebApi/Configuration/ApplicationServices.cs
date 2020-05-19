@@ -90,7 +90,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
       services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4Proxy>();
       services.AddTransient<IProjectProxy, ProjectV6Proxy>();
-      services.AddTransient<IDeviceProxy, DeviceV1Proxy>();
       services.AddTransient<IFileImportProxy, FileImportV6Proxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
       services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();

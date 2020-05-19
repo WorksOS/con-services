@@ -50,7 +50,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
         {
           Type = GeoJson.FeatureType.FEATURE,
           Geometry = geo,
-          Properties = new Properties() { Name = fileName }
+          Properties = new Properties { Name = fileName }
         };
 
         // Reduce vertices if too large...
@@ -71,7 +71,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
 
         var neeCoords = new XYZ[arrayCount];
 
-        // Winding must be anticlockwise (righthand rule) which is worked out be calculating area...
+        // Winding must be anticlockwise (right hand rule) which is worked out be calculating area...
         if (fence.IsWindingClockwise())
         {
           Log.LogInformation($"{nameof(ConvertBoundary)}: Winding Clockwise.");
@@ -119,7 +119,8 @@ namespace VSS.TRex.Gateway.Common.Helpers
       const int DECIMALS = 6;
 
       var point = new[]
-      { Math.Round(x, DECIMALS),
+      { 
+        Math.Round(x, DECIMALS),
         Math.Round(y, DECIMALS)
       };
 

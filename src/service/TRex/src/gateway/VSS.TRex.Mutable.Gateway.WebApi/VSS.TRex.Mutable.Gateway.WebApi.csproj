@@ -40,6 +40,7 @@
     <ProjectReference Include="..\..\..\..\TagFileAuth\Clients\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.Files\VSS.TRex.Files.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModels\VSS.TRex.SiteModels.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Storage\VSS.TRex.Storage.csproj" />
