@@ -15,7 +15,8 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace CCSS.CWS.Client
 {
   /// <summary>
-  ///  These use the cws-ProfileManager controller
+  ///  These use the cws-ProfileManager controller.
+  /// NOTE: All calls require a TPaaS application token. This is because TFA doesn't have a user token.
   /// </summary>
   public class CwsDeviceClient : CwsProfileManagerClient, ICwsDeviceClient
   {

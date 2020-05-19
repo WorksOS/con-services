@@ -2,6 +2,7 @@
 using AutoMapper;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -100,15 +101,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.Ignore());
           cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
             .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
-            .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
-          cfg.CreateMap<DeviceResponseModel, CreateDeviceEvent>()
-            .ForMember(dest => dest.DeviceUID, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.ShortRaptorAssetID, opt => opt.Ignore())
-            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow));
-          cfg.CreateMap<DeviceData, CreateDeviceEvent>()
-            .ForMember(dest => dest.DeviceUID, opt => opt.MapFrom(src => src.DeviceUID))
-            .ForMember(dest => dest.ShortRaptorAssetID, opt => opt.Ignore())
-            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow));
+            .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude))); 
           // ProjectGeofenceAssociations
           cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();
 
@@ -141,9 +134,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CustomerType, opt => opt.MapFrom(src => "Customer"))
             .ForMember(dest => dest.Children, opt => opt.Ignore());
 
-          cfg.CreateMap<VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project, ProjectData>()
-            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.Boundary))
-            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.ProjectTimeZoneIana))
+          cfg.CreateMap<ProjectResponseModel, ProjectData>()
+            .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => src.projectId))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.projectName))
+            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.accountId))
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => RepositoryHelper.ProjectBoundaryToWKT(src.boundary)))
+            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.timezone))
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore())
+            .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectTimeZone, opt => opt.Ignore())
+            .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectType, opt => opt.Ignore())
+            .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
             ;
         }
       );
