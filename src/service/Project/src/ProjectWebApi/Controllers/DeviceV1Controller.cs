@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
