@@ -118,12 +118,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
             .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.TRN, opt => opt.Ignore())
             ;
           cfg.CreateMap<UpdateProjectEvent, CreateProjectRequestModel>()
             .ForMember(dest => dest.AccountId, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone)) // not sure if we can update timezone
             .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.TRN, opt => opt.Ignore())
             ;
 
           cfg.CreateMap<AccountResponseModel, CustomerData>()

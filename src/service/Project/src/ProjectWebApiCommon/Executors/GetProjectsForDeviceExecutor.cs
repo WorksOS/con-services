@@ -37,14 +37,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var projectDataListResult = new ProjectDataListResult();
         foreach (var projectCws in projectsFromCws.Projects)
         {
-          var project = await projectRepo.GetProjectOnly(projectCws.projectId);
+          var project = await projectRepo.GetProjectOnly(projectCws.ProjectId);
 
           // use WorksOS data rather than cws as it is the source of truth
           if (project != null)
           {
-            if (string.Compare(project.CustomerUID, projectCws.accountId, StringComparison.OrdinalIgnoreCase) != 0)
+            if (string.Compare(project.CustomerUID, projectCws.AccountId, StringComparison.OrdinalIgnoreCase) != 0)
             {
-              var message= $"Project accountId differs between WorksOS and WorksManager: projectId: {project.ProjectUID} WorksOS customer: {project.CustomerUID}  CWS account: {projectCws.accountId}";
+              var message= $"Project accountId differs between WorksOS and WorksManager: projectId: {project.ProjectUID} WorksOS customer: {project.CustomerUID}  CWS account: {projectCws.AccountId}";
               log.LogError($"GetProjectsForDeviceExecutor: {message}");
               return new ProjectDataListResult(106, message: message, projectDataListResult.ProjectDescriptors);
             }

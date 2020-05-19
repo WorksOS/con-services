@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -17,9 +18,13 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public DeviceResponseModel GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
-      var deviceResponseModel = new DeviceResponseModel() {Id = Guid.NewGuid().ToString(), DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = serialNumber};
+      var deviceResponseModel = new DeviceResponseModel()
+      {
+        TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
+        DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = serialNumber
+      };
 
-      Logger.LogInformation($"{nameof(GetDeviceByDeviceUid)}: serialNumber {serialNumber}. deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
+      Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)}: serialNumber {serialNumber}. deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return deviceResponseModel;
     }
 
@@ -27,7 +32,13 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public DeviceResponseModel GetDeviceByDeviceUid(string deviceTrn)
     {
-      var deviceResponseModel = new DeviceResponseModel() {Id = deviceTrn, DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = "56556565"};
+      var deviceResponseModel = new DeviceResponseModel()
+      {
+        TRN = deviceTrn,
+        DeviceType = "EC520", 
+        DeviceName = "this is a device", 
+        SerialNumber = "56556565"
+      };
 
       Logger.LogInformation($"{nameof(GetDeviceByDeviceUid)}: deviceTrn {deviceTrn}. deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return deviceResponseModel;
@@ -37,7 +48,17 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public DeviceListResponseModel GetDevicesForAccount(string accountTrn)
     {
-      var deviceListResponseModel = new DeviceListResponseModel() {Devices = new List<DeviceFromListResponseModel>() {new DeviceFromListResponseModel() {Id = Guid.NewGuid().ToString(), DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = "56556565"}}};
+      var deviceListResponseModel = new DeviceListResponseModel()
+      {
+        Devices = new List<DeviceFromListResponseModel>()
+        {
+          new DeviceFromListResponseModel()
+          {
+            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_DEVICE),
+            DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = "56556565"
+          }
+        }
+      };
 
       Logger.LogInformation($"{nameof(GetDevicesForAccount)}: accountTrn {accountTrn}. deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return deviceListResponseModel;
@@ -50,15 +71,15 @@ namespace MockProjectWebApi.Controllers
     {
       var projectListResponseModel = new ProjectListResponseModel()
       {
-        Projects = new List<ProjectResponseModel>()
+        Projects = new List<ProjectResponseModel>
         {
-          new ProjectResponseModel()
+          new ProjectResponseModel
           {
-            accountId = Guid.NewGuid().ToString(),
-            projectId = Guid.NewGuid().ToString(),
-            projectName = "this is a project",
-            timezone = "Timbucktoo",
-            boundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<double[,]>() {{new double[2, 2] {{180, 90}, {180, 90}}}}}
+            AccountTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_ACCOUNT),
+            ProjectTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_PROJECT),
+            ProjectName = "this is a project",
+            Timezone = "Timbucktoo",
+            Boundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<double[,]>() {{new double[2, 2] {{180, 90}, {180, 90}}}}}
           }
         }
       };
