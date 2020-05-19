@@ -4,11 +4,25 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
   public class CreateProjectRequestModel
   {
+    private string _id;
+
     /// <summary>
-    /// Account TRN ID
+    /// Account TRN ID constructed from the WorksOS AccountId
     /// </summary>
     [JsonProperty("accountId")]
-    public string AccountId { get; set; }
+    public string TRN { get; private set; }
+    
+    /// <summary>
+    /// WorksOS account ID.
+    /// </summary>
+    public string AccountId { 
+      get => _id;
+      set
+      {
+        _id = value;
+        TRN = TRNHelper.MakeTRN(value, TRNHelper.TRN_ACCOUNT);
+      }
+    }
 
     /// <summary>
     /// Project name

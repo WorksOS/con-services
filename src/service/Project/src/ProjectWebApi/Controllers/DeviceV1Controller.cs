@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -13,49 +12,11 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
-  /// Customer controller v1 for the UI to get customer list etc as we have no CustomerSvc yet
+  /// Device controller v1
   /// </summary>
   public class DeviceV1Controller : ProjectBaseController
   {
-    private readonly ICwsDeviceClient cwsDeviceClient;
-
-    protected static ProjectErrorCodesProvider ProjectErrorCodesProvider = new ProjectErrorCodesProvider();
-
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    public DeviceV1Controller(ICwsDeviceClient cwsDeviceClient)
-    {
-      this.cwsDeviceClient = cwsDeviceClient;
-    }
-
-    /// <summary>
-    /// Get a list of device Uid/Id matches for Uids supplied
-    /// </summary>
-    [HttpPost("api/v1/device/deviceuids")]
-    [ProducesResponseType(typeof(DeviceMatchingModel), 200)]
-    public async Task<IActionResult> GetMatchingDevices([FromBody] List<Guid> deviceUids)
-    {
-      var deviceUidDisplay = string.Join(", ", deviceUids ?? new List<Guid>());
-      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for deviceUids: {deviceUidDisplay}");
-
-      var devices = await DeviceRepo.GetDevices(deviceUids);
-      return Json(DeviceMatchingModel.FromDeviceList(devices));
-    }
-
-    /// <summary>
-    /// Get a list of device Uid/Id matches for Ids supplied
-    /// </summary>
-    [HttpPost("api/v1/device/shortRaptorAssetIds")]
-    [ProducesResponseType(typeof(List<DeviceMatchingModel>), 200)]
-    public async Task<IActionResult> GetMatchingDevices([FromBody] List<long> shortRaptorAssetIds)
-    {
-      var deviceIdsDisplay = string.Join(", ", shortRaptorAssetIds ?? new List<long>());
-      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for shortRaptorAssetIds: {deviceIdsDisplay}");
-
-      var devices = await DeviceRepo.GetDevices(shortRaptorAssetIds);
-      return Json(DeviceMatchingModel.FromDeviceList(devices));
-    }
+    //TODO: Is this mock data still used ?
 
     /// <summary>
     /// Get location data for a given set of Devices.
@@ -64,7 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public IActionResult GetDeviceLocationData([FromBody] List<Guid> deviceIds)
     {
       var deviceIdsDisplay = string.Join(", ", deviceIds ?? new List<Guid>());
-      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Device location data for: {deviceIdsDisplay}");
+      Logger.LogInformation($"{nameof(GetDeviceLocationData)} Getting Device location data for: {deviceIdsDisplay}");
 
       var assets = MockDeviceRepository.GetAssets(deviceIds);
 

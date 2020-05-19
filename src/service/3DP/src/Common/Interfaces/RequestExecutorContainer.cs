@@ -82,8 +82,6 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ITRexCompactionDataProxy trexCompactionDataProxy;
 
-    protected IDeviceProxy deviceProxy;
-
     protected IHeaderDictionary customHeaders;
 
     protected string customerUid;
@@ -181,7 +179,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 #endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
       ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
-      IDeviceProxy deviceProxy, IHeaderDictionary customHeaders, string customerUid)
+      IHeaderDictionary customHeaders, string customerUid)
     {
       this.loggerFactory = loggerFactory;
       this.log = logger;
@@ -198,7 +196,6 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.tRexConnectedSiteProxy = tRexConnectedSiteProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
-      this.deviceProxy = deviceProxy;
       this.customHeaders = customHeaders;
       this.customerUid = customerUid;
     }
