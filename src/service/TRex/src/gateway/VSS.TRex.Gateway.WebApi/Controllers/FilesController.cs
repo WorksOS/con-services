@@ -38,11 +38,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(ExtractBoundariesFromDXF)}: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      //GatewayHelper.ValidateAndGetSiteModel(nameof(request), request.ProjectUid, true);
-
-      if (!System.IO.File.Exists(request.FileName))
-        return Task.FromResult(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"File {request.FileName} does not exist"));
-
       if (request.FileType == ImportedFileType.Linework || request.FileType == ImportedFileType.SiteBoundary)
       {
         return WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer

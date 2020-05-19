@@ -23,17 +23,21 @@ namespace VSS.Productivity3D.Models.Models.Files
     [JsonProperty(PropertyName = "maxBoundaries", Required = Required.Always)]
     public uint MaxBoundaries { get; set; }
 
+    [JsonProperty(PropertyName = "convertLineStringCoordsToPolygon", Required = Required.Default)]
+    public bool ConvertLineStringCoordsToPolygon { get; set; }
+
     private DXFBoundariesRequest()
     {
     }
 
-    public DXFBoundariesRequest(string csibFileData, ImportedFileType fileType, string dxfFileData, DxfUnitsType fileUnits, uint maxBoundaries)
+    public DXFBoundariesRequest(string csibFileData, ImportedFileType fileType, string dxfFileData, DxfUnitsType fileUnits, uint maxBoundaries, bool convertLineStringCoordsToPolygon)
     {
       CSIBFileData = csibFileData;
       FileType = fileType;
       DXFFileData = dxfFileData;
       FileUnits = fileUnits;
       MaxBoundaries = maxBoundaries;
+      ConvertLineStringCoordsToPolygon = convertLineStringCoordsToPolygon;
     }
 
     public void Validate()

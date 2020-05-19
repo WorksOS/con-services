@@ -17,7 +17,7 @@ namespace VSS.TRex.Files.DXF
       _reader = reader;
     }
 
-    public DXFUtilitiesResult Extract(DxfUnitsType units, uint maxBoundariesToProcess)
+    public DXFUtilitiesResult Extract(DxfUnitsType units, uint maxBoundariesToProcess, bool convertLineStringCoordsToPolygon)
     {
       bool atEOF;
 
@@ -25,7 +25,7 @@ namespace VSS.TRex.Files.DXF
 
       do
       {
-        if (_reader.GetBoundaryFromPolyLineEntity(true, out atEOF, out var boundary))
+        if (_reader.GetBoundaryFromPolyLineEntity(!convertLineStringCoordsToPolygon, out atEOF, out var boundary))
         {
           if (boundary != null)
           {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -41,7 +40,11 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
     {
       var request = item as DXFBoundariesRequest;
 
-      var result = DXFFileUtilities.RequestBoundariesFromLineWork(request.DXFFileData, request.FileUnits, request.MaxBoundaries, out var boundaries);
+      if (request == null) 
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Request is null"));
+
+      var result = DXFFileUtilities.RequestBoundariesFromLineWork
+        (request.DXFFileData, request.FileUnits, request.MaxBoundaries, request.ConvertLineStringCoordsToPolygon, out var boundaries);
 
       if (result != DXFUtilitiesResult.Ok)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Error processing file: {result}"));
@@ -54,6 +57,20 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
 
     protected async Task<DXFBoundaryResult> ConvertResult(PolyLineBoundaries boundaries, string coordinateSystemFileData)
     {
+      DXFBoundaryResult ConstructResponse()
+      {
+        return new DXFBoundaryResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success",
+          boundaries.Boundaries.Select(x =>
+            new DXFBoundaryResultItem(x.Boundary.Points.Select(pt =>
+              new WGSPoint(pt.X, pt.Y)).ToList(), x.Type, x.Name)).ToList());
+      }
+
+      if (string.IsNullOrEmpty(coordinateSystemFileData))
+      {
+        // No coordinate system provided, jsut return the grid coordinates read from the file
+        return ConstructResponse();
+      }
+
       var csib = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSIB("nofile", Convert.FromBase64String(coordinateSystemFileData));
 
       // Convert grid coordinates into WGS: assemble and convert
@@ -79,11 +96,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
         }
       }
 
-      // Construct response
-      return new DXFBoundaryResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success",
-        boundaries.Boundaries.Select(x =>
-        new DXFBoundaryResultItem(x.Boundary.Points.Select(pt =>
-          new WGSPoint(pt.X, pt.Y)).ToList(), x.Type, x.Name)).ToList());
+      return ConstructResponse();
     }
 
     /// <summary>

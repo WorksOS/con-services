@@ -25,7 +25,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 
     public int LineworkUnits { get; }
 
-    private int MaxBoundariesToProcess { get; }
+    public int MaxBoundariesToProcess { get; }
+
+    public bool ConvertLineStringCoordsToPolygon { get; }
 
     public int NumberOfBoundariesToProcess => MaxBoundariesToProcess < 1 ? VelociraptorConstants.MAX_BOUNDARIES_TO_PROCESS : MaxBoundariesToProcess;
     public int NumberOfVerticesPerBoundary = VelociraptorConstants.MAX_VERTICES_PER_BOUNDARY;
@@ -37,6 +39,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
       DxfFileData = fileRequest.GetFileAsBase64EncodedString(fileRequest.DxfFile);
       CoordinateSystemFileData = fileRequest.GetFileAsBase64EncodedString(fileRequest.CoordinateSystemFile);
       MaxBoundariesToProcess = fileRequest.MaxBoundariesToProcess;
+      ConvertLineStringCoordsToPolygon = fileRequest.ConvertLineStringCoordsToPolygon;
     }
 
     public new LineworkRequest Validate()

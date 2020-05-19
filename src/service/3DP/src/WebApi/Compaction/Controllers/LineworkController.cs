@@ -35,12 +35,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
 
-      var executorRequestObj = new LineworkRequest(requestDto).Validate();
-
       var result = await RequestExecutorContainerFactory
-                         .Build<LineworkFileExecutor>(LoggerFactory,
-                         configStore: ConfigStore)
-                         .ProcessAsync(executorRequestObj);
+                         .Build<LineworkFileExecutor>(LoggerFactory, configStore: ConfigStore)
+                         .ProcessAsync(requestDto);
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, ((DxfLineworkFileResult)result).ConvertToGeoJson(requestDto.ConvertLineStringCoordsToPolygon, requestDto.MaxVerticesPerBoundary))

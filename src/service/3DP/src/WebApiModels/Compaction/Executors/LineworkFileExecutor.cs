@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 #if Raptor
 using ASNode.DXF.RequestBoundaries.RPC;
 using ASNodeDecls;
@@ -35,7 +36,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<LineworkRequest>(item);
+      if (!(item is DxfFileRequest dxfRequest))
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Request is not a DxfFileRequest"));
+      }
+
+      var request = new LineworkRequest(dxfRequest).Validate();
 
       return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
         ? await ProcessForTRex(request)
@@ -49,8 +55,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         log.LogDebug($"{nameof(LineworkFileExecutor)}::{nameof(ProcessForTRex)}()");
 
-        var req = new DXFBoundariesRequest(request.CoordinateSystemFileData, ImportedFileType.SiteBoundary, request.DxfFileData, (DxfUnitsType)request.LineworkUnits, (uint)request.NumberOfBoundariesToProcess);
-        var returnResult = await trexCompactionDataProxy.SendDataPostRequest<DxfLineworkFileResult, DXFBoundariesRequest>(req, "api/v2/linework/boundaries");
+        var req = new DXFBoundariesRequest(request.CoordinateSystemFileData, ImportedFileType.SiteBoundary, 
+          request.DxfFileData, (DxfUnitsType)request.LineworkUnits, (uint)request.NumberOfBoundariesToProcess,
+          request.ConvertLineStringCoordsToPolygon);
+        var returnResult = await trexCompactionDataProxy.SendDataPostRequest<DxfLineworkFileResult, DXFBoundariesRequest>(req, "linework/boundaries");
 
         log.LogInformation($"RequestBoundariesFromLineWork: result: {JsonConvert.SerializeObject(returnResult)}");
 
@@ -73,8 +81,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
-#endif
+#else
       return null;
+#endif
     }
 
     private DxfLineworkFileResult ProcessForRaptor(LineworkRequest request)
@@ -122,8 +131,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
-#endif
+#else
       return null;
+#endif
     }
   }
 }
