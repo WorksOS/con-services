@@ -265,10 +265,10 @@ namespace VSS.MasterData.Project.WebAPI.Internal
     };
     
     public static List<Asset> GetAssets(IEnumerable<Guid> uids) => _assets.FindAll(x => uids.Any(y => y.ToString().Contains(x.AssetUID)));
-    public static List<DeviceStatus> GetDevicesWithLKS() => _deviceStatuses;
-    public static DeviceStatus GetDeviceWithLKS() => GetUpdatedDeviceList();
+    public static List<DeviceStatus> GetDevicesWithLKS() => GetUpdatedDeviceList();
+    public static DeviceStatus GetDeviceWithLKS() => _deviceStatus;
 
-    private static DeviceStatus GetUpdatedDeviceList()
+    private static List<DeviceStatus> GetUpdatedDeviceList()
     {
       _deviceStatuses[0].deviceId = "8982e5e7-1da1-4cf8-a335-ef7b0c6758b6";
       _deviceStatuses[0].deviceName = "Backhoe Loader";
@@ -300,7 +300,7 @@ namespace VSS.MasterData.Project.WebAPI.Internal
       _deviceStatuses[4].lat = -114.94659355301343;
       _deviceStatuses[4].lon = 36.23016854679474;
 
-      return _deviceStatus;
+      return _deviceStatuses;
     }
   }
 }

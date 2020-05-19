@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -16,6 +18,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class DeviceV1Controller : ProjectBaseController
   {
     private readonly ICwsDeviceClient cwsDeviceClient;
+
+    protected static ProjectErrorCodesProvider ProjectErrorCodesProvider = new ProjectErrorCodesProvider();
 
     /// <summary>
     /// Default constructor.
@@ -120,6 +124,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public IActionResult GetDeviceWithLKS([FromQuery] string deviceName)
     {
       Logger.LogInformation($"{nameof(GetDeviceWithLKS)} Getting device with last known status (LKS). Device name: {deviceName}");
+
+      DeviceDataValidator.ValidateDeviceName(deviceName);
 
       var device = MockDeviceRepository.GetDeviceWithLKS();
 
