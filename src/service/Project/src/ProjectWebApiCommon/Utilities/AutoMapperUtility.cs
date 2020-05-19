@@ -111,12 +111,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
             .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.TRN, opt => opt.Ignore())
             ;
           cfg.CreateMap<UpdateProjectEvent, CreateProjectRequestModel>()
             .ForMember(dest => dest.AccountId, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone)) // not sure if we can update timezone
             .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.TRN, opt => opt.Ignore())
             ;
 
           cfg.CreateMap<AccountResponseModel, CustomerData>()
@@ -133,11 +135,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.Children, opt => opt.Ignore());
 
           cfg.CreateMap<ProjectResponseModel, ProjectData>()
-            .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => src.projectId))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.projectName))
-            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.accountId))
-            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => RepositoryHelper.ProjectBoundaryToWKT(src.boundary)))
-            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.timezone))
+            .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => src.ProjectId))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.AccountId))
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => RepositoryHelper.ProjectBoundaryToWKT(src.Boundary)))
+            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.Timezone))
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimeZone, opt => opt.Ignore())
