@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -69,11 +70,25 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task GetDevice_HappyPath()
     {
-      var cwsDevice = new DeviceResponseModel() {Id = _deviceUid, DeviceName = _deviceName, SerialNumber = _serialNumber};
+      var cwsDevice = new DeviceResponseModel()
+      {
+        TRN = TRNHelper.MakeTRN(_deviceUid, TRNHelper.TRN_DEVICE),
+        DeviceName = _deviceName, SerialNumber = _serialNumber
+      };
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
       cwsDeviceClient.Setup(pr => pr.GetDeviceBySerialNumber(It.IsAny<string>(), _customHeaders))
         .ReturnsAsync(cwsDevice);
-      var cwsDeviceAccountList = new DeviceAccountListResponseModel() {Accounts = new List<DeviceAccountResponseModel>() {new DeviceAccountResponseModel() {Id = _customerUid, AccountName = "the customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus}}};
+      var cwsDeviceAccountList = new DeviceAccountListResponseModel
+      {
+        Accounts = new List<DeviceAccountResponseModel>()
+        {
+          new DeviceAccountResponseModel
+          {
+            TRN = TRNHelper.MakeTRN(_customerUid.ToString(),TRNHelper.TRN_ACCOUNT),
+            AccountName = "the customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus
+          }
+        }
+      };
       cwsDeviceClient.Setup(pr => pr.GetAccountsForDevice(It.IsAny<Guid>(), _customHeaders))
         .ReturnsAsync(cwsDeviceAccountList);
 
@@ -100,11 +115,29 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task GetDevice_2Accounts1Active_HappyPath()
     {
-      var cwsDevice = new DeviceResponseModel() {Id = _deviceUid, DeviceName = _deviceName, SerialNumber = _serialNumber};
+      var cwsDevice = new DeviceResponseModel()
+      {
+        TRN = TRNHelper.MakeTRN(_deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+        DeviceName = _deviceName, SerialNumber = _serialNumber
+      };
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
       cwsDeviceClient.Setup(pr => pr.GetDeviceBySerialNumber(It.IsAny<string>(), _customHeaders))
         .ReturnsAsync(cwsDevice);
-      var cwsDeviceAccountList = new DeviceAccountListResponseModel() {Accounts = new List<DeviceAccountResponseModel>() {new DeviceAccountResponseModel() {Id = _customerUid, AccountName = "the customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus}, new DeviceAccountResponseModel() {Id = Guid.NewGuid().ToString(), AccountName = "the other customer name", RelationStatus = RelationStatusEnum.Pending, TccDeviceStatus = _tccDeviceStatus}}};
+      var cwsDeviceAccountList = new DeviceAccountListResponseModel
+      {
+        Accounts = new List<DeviceAccountResponseModel>
+        {
+          new DeviceAccountResponseModel()
+          {
+            TRN = TRNHelper.MakeTRN(_customerUid.ToString(),TRNHelper.TRN_ACCOUNT),
+            AccountName = "the customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus
+          }, new DeviceAccountResponseModel()
+          {
+            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_ACCOUNT),
+            AccountName = "the other customer name", RelationStatus = RelationStatusEnum.Pending, TccDeviceStatus = _tccDeviceStatus
+          }
+        }
+      };
       cwsDeviceClient.Setup(pr => pr.GetAccountsForDevice(It.IsAny<Guid>(), _customHeaders))
         .ReturnsAsync(cwsDeviceAccountList);
 
@@ -150,7 +183,11 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task GetDevice_NoAccountFound_UnhappyPath()
     {
-      var cwsDevice = new DeviceResponseModel() { Id = _deviceUid, DeviceName = _deviceName, SerialNumber = _serialNumber };
+      var cwsDevice = new DeviceResponseModel()
+      {
+        TRN = TRNHelper.MakeTRN(_deviceUid, TRNHelper.TRN_DEVICE),
+        DeviceName = _deviceName, SerialNumber = _serialNumber
+      };
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
       cwsDeviceClient.Setup(pr => pr.GetDeviceBySerialNumber(It.IsAny<string>(), _customHeaders))
         .ReturnsAsync(cwsDevice);
@@ -181,14 +218,26 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task GetDevice_TooManyActiveAccounts_UnhappyPath()
     {
-      var cwsDevice = new DeviceResponseModel() { Id = _deviceUid, DeviceName = _deviceName, SerialNumber = _serialNumber };
+      var cwsDevice = new DeviceResponseModel()
+      {
+        TRN = TRNHelper.MakeTRN(_deviceUid, TRNHelper.TRN_DEVICE),
+        DeviceName = _deviceName, SerialNumber = _serialNumber
+      };
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
       cwsDeviceClient.Setup(pr => pr.GetDeviceBySerialNumber(It.IsAny<string>(), _customHeaders))
         .ReturnsAsync(cwsDevice);
       var cwsDeviceAccountList = new DeviceAccountListResponseModel() { Accounts = new List<DeviceAccountResponseModel>()
         {
-          new DeviceAccountResponseModel() { Id = _customerUid, AccountName = "the customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus },
-          new DeviceAccountResponseModel() { Id =  Guid.NewGuid().ToString(), AccountName = "the other customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus }
+          new DeviceAccountResponseModel()
+          {
+            TRN = TRNHelper.MakeTRN(_customerUid,TRNHelper.TRN_ACCOUNT),
+            AccountName = "the customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus
+          },
+          new DeviceAccountResponseModel()
+          {
+            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_ACCOUNT),
+            AccountName = "the other customer name", RelationStatus = _relationStatus, TccDeviceStatus = _tccDeviceStatus
+          }
         }
       };
       cwsDeviceClient.Setup(pr => pr.GetAccountsForDevice(It.IsAny<Guid>(), _customHeaders))

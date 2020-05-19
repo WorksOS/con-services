@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -28,7 +29,7 @@ namespace CCSS.CWS.Client.MockClients
 
       var createProjectResponseModel = new CreateProjectResponseModel
       {
-        Id = Guid.NewGuid().ToString()
+        TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_PROJECT)
       };
 
       log.LogDebug($"{nameof(CreateProject)} Mock: createProjectResponseModel {JsonConvert.SerializeObject(createProjectResponseModel)}");
