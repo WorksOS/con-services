@@ -13,6 +13,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
   /// </summary>
   public class LineworkRequest : ProjectID
   {
+    public const int MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 Mb
+
     /// <summary>
     /// Base64 encoded content of DXF file
     /// </summary>
@@ -34,6 +36,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 
     public LineworkRequest(DxfFileRequest fileRequest)
     {
+      if (fileRequest.DxfFile.Length > MAX_FILE_SIZE)
+      {
+        ThrowValidationError($"DXF file too large, must be less than {MAX_FILE_SIZE} bytes");
+      }
+
+      if (fileRequest.CoordinateSystemFile.Length > MAX_FILE_SIZE)
+      {
+        ThrowValidationError($"Coordinate system file too large, must be less than {MAX_FILE_SIZE} bytes");
+      }
+
       ProjectId = VelociraptorConstants.NO_PROJECT_ID;
       LineworkUnits = fileRequest.DxfUnits;
       DxfFileData = fileRequest.GetFileAsBase64EncodedString(fileRequest.DxfFile);
