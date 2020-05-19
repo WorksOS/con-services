@@ -23,5 +23,39 @@
     public short rxData { get; set; }
     public string regulatoryDomain { get; set; }
     public string regulatoryDomainMethod { get; set; }
+
+    /// <summary>
+    /// Public default constructor.
+    /// </summary>
+    public Network() {}
+
+    /// <summary>
+    /// Public constructor with parameters.
+    /// </summary>
+    /// <param name="network"></param>
+    public Network(Network network)
+    {
+      type = network.type;
+      signal = network.signal;
+      state = network.state;
+      dbm = network.dbm;
+      uptime = network.uptime;
+      carrier = network.carrier;
+      roaming = network.roaming;
+      cellTech = network.cellTech;
+      mcc = network.mcc;
+      mnc = network.mnc;
+      simId = network.simId;
+      iccId = network.iccId;
+      phoneNumber = network.phoneNumber;
+      modemResets = network.modemResets;
+      apn = network.apn;
+      apnUsername = network.apnUsername;
+      apnPasswordSet = network.apnPasswordSet;
+      txData = network.txData;
+      rxData = network.rxData;
+      regulatoryDomain = network.regulatoryDomain;
+      regulatoryDomainMethod = network.regulatoryDomainMethod;
+    }
   }
 }

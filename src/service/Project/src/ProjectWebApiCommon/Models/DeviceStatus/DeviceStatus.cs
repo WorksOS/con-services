@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models.DeviceStatus
 {
@@ -61,10 +62,94 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models.DeviceStatus
     public List<GNSSAntenna> gnss { get; set; }
     public List<ConnectedDevice> devices { get; set; }
     public List<ProjectID> projects { get; set; }
+
+    /// <summary>
+    /// Public default constructor.
+    /// </summary>
+    public DeviceStatus() {}
+
+    /// <summary>
+    /// Public constructor with parameters.
+    /// </summary>
+    /// <param name="status"></param>
+    public DeviceStatus(DeviceStatus status)
+    {
+      deviceId = status.deviceId;
+      deviceName = status.deviceName;
+      lat = status.lat;
+      lon = status.lon;
+      designName = status.designName;
+      designId = status.designId;
+      deviceNickname = status.deviceNickname;
+      assetType = status.assetType;
+      projectName = status.projectName;
+      lastReported = status.lastReported;
+      assetSerialNumber = status.assetSerialNumber;
+      swWarrantyExpUtc = status.swWarrantyExpUtc;
+      osName = status.osName;
+      appName = status.appName;
+      correctionSource = status.correctionSource;
+      ts = status.ts;
+      h = status.h;
+      operatorName = status.operatorName;
+      isLlhSiteLocal = status.isLlhSiteLocal;
+      language = status.language;
+      coordinateSystemHash = status.coordinateSystemHash;
+      isDataLogging = status.isDataLogging;
+      antennaType = status.antennaType;
+      targetType = status.targetType;
+      rodHeight = status.rodHeight;
+      radioIntegrity = status.radioIntegrity;
+      systemStatus = status.systemStatus;
+      attachmentName = status.attachmentName;
+      attachmentWearUpdateUtc = status.attachmentWearUpdateUtc;
+      workOrderName = status.workOrderName;
+      designType = status.designType;
+      designSurfaceName = status.designSurfaceName;
+      designVertOffset = status.designVertOffset;
+      designPerpOffset = status.designPerpOffset;
+      assetNickname = status.assetNickname;
+      assetMake = status.assetMake;
+      assetModel = status.assetModel;
+      osVersion = status.osVersion;
+      appVersion = status.appVersion;
+      freeSpace = status.freeSpace;
+      batteryPercent = status.batteryPercent;
+      powerSource = status.powerSource;
+      licenseCodes = status.licenseCodes;
+      baseStationName = status.baseStationName;
+      baseStationLat = status.baseStationLat;
+      baseStationLon = status.baseStationLon;
+      baseStationHeight = status.baseStationHeight;
+      internalTemp = status.internalTemp;
+      totalRunTime = status.totalRunTime;
+      totalCellTime = status.totalCellTime;
+      totalWifiTime = status.totalWifiTime;
+      totalAppTime = status.totalAppTime;
+      totalAutomaticsTime = status.totalAutomaticsTime;
+      networks = status.networks != null ? status.networks.Select(network => new Network(network)).ToList() : null;
+      gnss = status.gnss != null ? status.gnss.Select(antena => new GNSSAntenna(antena)).ToList() : null;
+      devices = status.devices != null ? status.devices.Select(device => new ConnectedDevice(device)).ToList() : null;
+      projects = status.projects != null ? status.projects.Select(project => new ProjectID(project)).ToList() : null;
+    }
   }
 
   public class ProjectID
   {
     public string projectId { get; set; }
+
+    /// <summary>
+    /// Public default constructor.
+    /// </summary>
+    public ProjectID() {}
+
+    /// <summary>
+    /// Public constructor with parameters.
+    /// </summary>
+    /// <param name="project"></param>
+    public ProjectID(ProjectID project)
+    {
+      projectId = project.projectId;
+    }
   }
 }
