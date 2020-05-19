@@ -5,6 +5,7 @@ using CCSS.CWS.Client;
 using Mvc=Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 
@@ -34,7 +35,7 @@ namespace MockProjectWebApi.Controllers
     {
       var createProjectResponseModel = new CreateProjectResponseModel
       {
-        Id = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_PROJECT)
+        TRN = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_PROJECT)
       };
 
       Logger.LogInformation($"{nameof(CreateProject)}: createProjectRequestModel {JsonConvert.SerializeObject(createProjectRequestModel)} createProjectResponseModel {JsonConvert.SerializeObject(createProjectResponseModel)}");

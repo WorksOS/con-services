@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -104,7 +105,10 @@ namespace VSS.MasterData.ProjectTests.Executors
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(false);
 
-      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var createProjectResponseModel = new CreateProjectResponseModel()
+      {
+        TRN = TRNHelper.MakeTRN("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97", TRNHelper.TRN_PROJECT),
+      };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(createProjectResponseModel);
 
@@ -186,7 +190,10 @@ namespace VSS.MasterData.ProjectTests.Executors
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(false);
 
-      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var createProjectResponseModel = new CreateProjectResponseModel()
+      {
+        TRN = TRNHelper.MakeTRN("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97", TRNHelper.TRN_PROJECT)
+      };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), customHeaders)).ReturnsAsync(createProjectResponseModel);
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -34,11 +35,6 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetMyAccounts)}: userUid {userUid}");
 
       var accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, null, customHeaders);
-      foreach (var account in accountListResponseModel.Accounts)
-      {
-        account.Id = TRNHelper.ExtractGuidAsString(account.Id);
-      }
-
       log.LogDebug($"{nameof(GetMyAccounts)}: accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
       return accountListResponseModel;
     }

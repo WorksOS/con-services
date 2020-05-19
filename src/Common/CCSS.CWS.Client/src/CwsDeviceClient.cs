@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -38,7 +39,6 @@ namespace CCSS.CWS.Client
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("serialNumber", serialNumber)};
       var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/getDeviceWithSerialNumber", null, null, queryParameters, customHeaders);
-      deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
 
       log.LogDebug($"{nameof(GetDeviceBySerialNumber)}: deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return deviceResponseModel;
@@ -54,7 +54,6 @@ namespace CCSS.CWS.Client
 
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
       var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/{deviceTrn}", deviceUid, null, null, customHeaders);
-      deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
 
       log.LogDebug($"{nameof(GetDeviceByDeviceUid)}: deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return deviceResponseModel;
@@ -75,9 +74,7 @@ namespace CCSS.CWS.Client
       queryParameters.Add(new KeyValuePair<string, string>("includeTccRegistrationStatus", "true"));
 
       var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices", accountUid, null, queryParameters, customHeaders);
-      foreach (var device in deviceListResponseModel.Devices)
-        device.Id = TRNHelper.ExtractGuidAsString(device.Id);
-
+      
       log.LogDebug($"{nameof(GetDevicesForAccount)}: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return deviceListResponseModel;
     }
@@ -93,12 +90,7 @@ namespace CCSS.CWS.Client
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
       var queryParameters = WithLimits(FromRow, RowCount);
       var projectListResponseModel = await GetData<ProjectListResponseModel>($"/device/{deviceTrn}/projects", deviceUid, null, queryParameters, customHeaders);
-      foreach (var project in projectListResponseModel.Projects)
-      {
-        project.accountId = TRNHelper.ExtractGuidAsString(project.accountId);
-        project.projectId = TRNHelper.ExtractGuidAsString(project.projectId);
-      }
-
+    
       log.LogDebug($"{nameof(GetProjectsForDevice)}: projectListResponseModel {JsonConvert.SerializeObject(projectListResponseModel)}");
       return projectListResponseModel;
     }
@@ -114,9 +106,7 @@ namespace CCSS.CWS.Client
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
       var queryParameters = WithLimits(FromRow, RowCount);
       var deviceAccountListResponseModel = await GetData<DeviceAccountListResponseModel>($"/devices/{deviceTrn}/accounts", deviceUid, null, queryParameters, customHeaders);
-      foreach (var account in deviceAccountListResponseModel.Accounts)
-        account.Id = TRNHelper.ExtractGuidAsString(account.Id);
-
+      
       log.LogDebug($"{nameof(GetAccountsForDevice)}: deviceAccountListResponseModel {JsonConvert.SerializeObject(deviceAccountListResponseModel)}");
       return deviceAccountListResponseModel;
     }

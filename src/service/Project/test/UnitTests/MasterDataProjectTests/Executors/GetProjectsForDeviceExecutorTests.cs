@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -69,9 +70,15 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task GetProjects_HappyPath()
     {
-      var cwsProjects = new ProjectListResponseModel() 
-        {Projects = new List<ProjectResponseModel>()
-          { new ProjectResponseModel() {accountId = _customerUid, projectId = _projectUid, projectName = _projectName, timezone = _timeZone, boundary = _projectBoundary}}};
+      var cwsProjects = new ProjectListResponseModel 
+        {Projects = new List<ProjectResponseModel>
+          {
+            new ProjectResponseModel()
+          {
+            AccountTRN = TRNHelper.MakeTRN(_customerUid,TRNHelper.TRN_ACCOUNT),
+            ProjectTRN = TRNHelper.MakeTRN(_projectUid,TRNHelper.TRN_PROJECT),
+            ProjectName = _projectName, Timezone = _timeZone, Boundary = _projectBoundary
+          }}};
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
       cwsDeviceClient.Setup(pr => pr.GetProjectsForDevice(It.IsAny<Guid>(), _customHeaders))
         .ReturnsAsync(cwsProjects);
