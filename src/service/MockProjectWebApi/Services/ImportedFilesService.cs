@@ -211,7 +211,7 @@ namespace MockProjectWebApi.Services
       importedFilesGoldenData1.AddRange(surveyedSurfacesFileListIsActivated);
       importedFilesGoldenData1.AddRange(goldenDataDesignSurfaceFileList);
       importedFilesGoldenData1.AddRange(goldenDataReferenceSurfaceFileList);
-      
+
       ImportedFiles.Add(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1, importedFilesGoldenData1);
 
       ImportedFiles.Add(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2, surveyedSurfacesFileList);

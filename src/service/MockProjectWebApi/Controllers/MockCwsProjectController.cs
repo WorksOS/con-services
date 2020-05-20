@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CCSS.CWS.Client;
-using Mvc=Microsoft.AspNetCore.Mvc;
+using Mvc = Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS;
@@ -56,7 +56,7 @@ namespace MockProjectWebApi.Controllers
     [Mvc.HttpPut]
     public void UpdateProjectDetails(string projectTrn, [Mvc.FromQuery] ProjectBoundary projectBoundary)
     {
-     
+
       Logger.LogInformation($"{nameof(UpdateProjectDetails)}: projectTrn {projectTrn} projectBoundary {JsonConvert.SerializeObject(projectBoundary)}");
 
       return;
@@ -126,7 +126,7 @@ namespace MockProjectWebApi.Controllers
     public Mvc.ActionResult<ProjectConfigurationFileResponseModel> GetProjectConfiguration(string projectTrn, string projectConfigurationType)
     {
       ProjectConfigurationFileResponseModel projectConfigurationFileResponse = null;
-      if (projectConfigFilesMap.ContainsKey(projectTrn)&& projectConfigFilesMap[projectTrn].ContainsKey(projectConfigurationType))
+      if (projectConfigFilesMap.ContainsKey(projectTrn) && projectConfigFilesMap[projectTrn].ContainsKey(projectConfigurationType))
       {
         projectConfigurationFileResponse = projectConfigFilesMap[projectTrn][projectConfigurationType];
       }

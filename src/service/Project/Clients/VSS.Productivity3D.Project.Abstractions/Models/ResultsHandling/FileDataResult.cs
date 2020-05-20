@@ -25,12 +25,12 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
                                               .SelectMany(f => f.GetIdentifiers())
                                               .Distinct()
                                               .ToList()
-                                          ?? 
+                                            ??
                                             ProjectConfigFileDescriptors?
                                               .SelectMany(f => f.GetIdentifiers())
                                               .Distinct()
                                               .ToList()
-                                          ?? new List<string>();
+                                            ?? new List<string>();
 
   }
 }
