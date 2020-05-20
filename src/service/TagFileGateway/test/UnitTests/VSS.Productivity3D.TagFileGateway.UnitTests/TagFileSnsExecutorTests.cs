@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -91,7 +92,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       WebRequest.Setup(m => m.ExecuteRequestAsStreamContent(It.IsAny<string>(),
           It.IsAny<HttpMethod>(),
-          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<IHeaderDictionary>(),
           It.IsAny<Stream>(),
           It.IsAny<int?>(),
           It.IsAny<int>(),
@@ -101,8 +102,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Ensure the tag file will be upload and save the response
       TagFileForwarder
         .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .Callback<CompactionTagFileRequest, IDictionary<string, string>>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
+          It.IsAny<IHeaderDictionary>()))
+        .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
         .Returns(Task.FromResult(new ContractExecutionResult()));
 
       // Handle the upload
@@ -113,7 +114,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Validate
       WebRequest.Verify(m => m.ExecuteRequestAsStreamContent(It.Is<string>(m => m == testUrl),
           It.Is<HttpMethod>(m => m == HttpMethod.Get),
-          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<IHeaderDictionary>(),
           It.IsAny<Stream>(),
           It.IsAny<int?>(),
           It.IsAny<int>(),
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       TagFileForwarder
         .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-            It.IsAny<IDictionary<string, string>>()),
+            It.IsAny<IHeaderDictionary>()),
           Times.Once);
       
 
@@ -158,8 +159,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     // Ensure the tag file will be upload and save the response
       TagFileForwarder
         .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-          It.IsAny<IDictionary<string, string>>()))
-        .Callback<CompactionTagFileRequest, IDictionary<string, string>>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
+          It.IsAny<IHeaderDictionary>()))
+        .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
         .Returns(Task.FromResult(new ContractExecutionResult()));
 
       // Handle the upload
@@ -170,7 +171,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Validate
       TagFileForwarder
         .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-            It.IsAny<IDictionary<string, string>>()),
+            It.IsAny<IHeaderDictionary>()),
           Times.Once);
       
 

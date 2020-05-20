@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -60,7 +61,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Setup a failed connection
       TagFileForwarder
         .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>()))
         .Throws<HttpRequestException>();
 
       // Handle the upload, and save the data for validation
@@ -73,7 +74,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Validate we tried to upload
       TagFileForwarder
         .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-            It.IsAny<IDictionary<string, string>>()),
+            It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 
       // Validate that the path was correct (we check the data separately)
@@ -98,7 +99,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Setup a failed connection
       TagFileForwarder
         .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(new ContractExecutionResult(expectedErrorCode)));
 
       // Handle the upload, and save the data for validation
@@ -111,7 +112,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Validate we tried to upload
       TagFileForwarder
         .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-            It.IsAny<IDictionary<string, string>>()),
+            It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 
       // Validate that the path was correct (we check the data separately)
@@ -136,7 +137,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Setup a failed connection
       TagFileForwarder
         .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(new ContractExecutionResult(0)));
 
       // Handle the upload, and save the data for validation
@@ -149,7 +150,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       // Validate we tried to upload
       TagFileForwarder
         .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
-            It.IsAny<IDictionary<string, string>>()),
+            It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 
       // Validate that the path was correct (we check the data separately)
