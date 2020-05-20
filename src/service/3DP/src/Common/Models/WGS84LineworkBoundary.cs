@@ -13,6 +13,6 @@ namespace VSS.Productivity3D.Common.Models
     public DXFLineWorkBoundaryType BoundaryType = DXFLineWorkBoundaryType.Unknown;
 
     [JsonProperty(PropertyName = "boundaryName", Required = Required.Always)]
-    public string BoundaryName = "";
+    public string BoundaryName = string.Empty;
   }
 }

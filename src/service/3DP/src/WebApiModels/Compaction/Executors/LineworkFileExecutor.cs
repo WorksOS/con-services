@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 #if Raptor
 using ASNode.DXF.RequestBoundaries.RPC;
@@ -82,7 +83,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ContractExecutionStates.ClearDynamic();
       }
 #else
-      return null;
+      throw new Exception("ProcessForTRex called with RAPTOR defined");
 #endif
     }
 
@@ -132,7 +133,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ContractExecutionStates.ClearDynamic();
       }
 #else
-      return null;
+      throw new Exception("ProcessForRaptor called with RAPTOR not defined");
 #endif
     }
   }
