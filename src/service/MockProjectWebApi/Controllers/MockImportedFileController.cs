@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
@@ -8,6 +9,7 @@ using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -31,16 +33,24 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked imported files</returns>
     [Route("api/v6/importedfiles")]
     [HttpGet]
-    public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
+    public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid, [FromQuery] bool getProjectCalibrationFiles = false)
     {
-      Logger.LogInformation($"{nameof(GetMockImportedFiles)}: projectUid={projectUid}");
+      Logger.LogInformation($"{nameof(GetMockImportedFiles)}: projectUid={projectUid} getProjectCalibrationFiles={getProjectCalibrationFiles}");
 
-      ImportedFilesService.ImportedFiles.TryGetValue(projectUid.ToString(), out var fileList);
+      var result = new FileDataResult();
 
-      return new FileDataResult
+      if (getProjectCalibrationFiles)
       {
-        ImportedFileDescriptors = fileList ?? new List<FileData>()
-      };
+        ImportedFilesService.ProjectConfigFiles.TryGetValue(projectUid.ToString(), out var projConfigFileList);
+        result.ProjectConfigFileDescriptors = projConfigFileList;
+      }
+      else
+      {
+        ImportedFilesService.ImportedFiles.TryGetValue(projectUid.ToString(), out var fileList);
+        result.ImportedFileDescriptors = fileList ?? new List<FileData>();
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -75,14 +85,34 @@ namespace MockProjectWebApi.Controllers
 
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
-        return new FileDataSingleResult
+        var result = new FileDataSingleResult();
+        if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
         {
-          ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
-                                                       .SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase))
-        };
+          if (ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, file.flowFilename))
+          {
+            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+              .SingleOrDefault(f => f.SiteCollectorFileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
+          }
+          else
+          {
+            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+              .SingleOrDefault(f => f.FileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
+          }
+        }
+        else
+        {
+          result.ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+            .SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return result;
       }
 
-      return new FileDataSingleResult { Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to create imported file" };
+      return new FileDataSingleResult
+      {
+        Code = ContractExecutionStatesEnum.InternalProcessingError,
+        Message = "Failed to create imported file"
+      };
     }
 
     [Route("api/v6/importedfile")]
@@ -107,25 +137,46 @@ namespace MockProjectWebApi.Controllers
 
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
-        return new FileDataSingleResult
+        var result = new FileDataSingleResult();
+        if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
         {
-          ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
-                                                       .SingleOrDefault(f => f.Name == file.flowFilename)
-        };
+          if (ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, file.flowFilename))
+          {
+            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+              .SingleOrDefault(f => f.SiteCollectorFileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
+          }
+          else
+          {
+            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+              .SingleOrDefault(f => f.FileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
+          }
+        }
+        else
+        {
+          result.ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+            .SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return result;
       }
 
       return new FileDataSingleResult
       {
-        Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError,
+        Code = ContractExecutionStatesEnum.InternalProcessingError,
         Message = "Failed to update imported file"
       };
     }
 
     [Route("api/v6/importedfile")]
     [HttpDelete]
-    public BaseDataResult DeleteMockImportedFile([FromQuery] Guid projectUid, [FromQuery] Guid importedFileUid)
+    public BaseDataResult DeleteMockImportedFile(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid? importedFileUid,
+      [FromQuery] ImportedFileType? importedFileType,
+      [FromQuery] string filename)
     {
-      Logger.LogInformation($"DeleteMockImportedFile. projectUid {projectUid} importedFileUid: {importedFileUid}");
+      Logger.LogInformation($"DeleteMockImportedFile. projectUid {projectUid} importedFileUid: {importedFileUid} importedFileType: {importedFileType} filename: {filename}");
+
       return new BaseDataResult();
     }
   }
