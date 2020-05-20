@@ -3,7 +3,7 @@
   public class DXFRecord
   {
     public ushort recType;
-    public int i;
+    public long i;
     public double r;
     public string s = string.Empty;
   }

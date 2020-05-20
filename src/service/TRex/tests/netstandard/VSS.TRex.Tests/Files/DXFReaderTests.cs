@@ -11,7 +11,7 @@ namespace VSS.TRex.Tests.Files
 {
   public class DXFReaderTests
   {
-    private StreamReader CreateTestPolyline()
+    private Stream CreateTestPolyline()
     {
       byte[] bytes = null;
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Files
 
         bytes = ms.ToArray();
       }
-      return new StreamReader(new MemoryStream(bytes));
+      return new MemoryStream(bytes);
     }
 
     [Fact]

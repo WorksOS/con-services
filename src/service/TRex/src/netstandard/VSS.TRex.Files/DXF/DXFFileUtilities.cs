@@ -9,7 +9,7 @@ namespace VSS.TRex.Files.DXF
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger("DXFFileUtilities");
 
-    public static DXFUtilitiesResult RequestBoundariesFromLineWork(StreamReader dxfFileStream, string baseName, DxfUnitsType units, uint maxBoundariesToProcess, out PolyLineBoundaries boundaries)
+    public static DXFUtilitiesResult RequestBoundariesFromLineWork(Stream dxfFileStream, string baseName, DxfUnitsType units, uint maxBoundariesToProcess, out PolyLineBoundaries boundaries)
     {
       boundaries = null;
       var reader = new DXFReader(dxfFileStream, units);
@@ -44,9 +44,8 @@ namespace VSS.TRex.Files.DXF
     public static DXFUtilitiesResult RequestBoundariesFromLineWork(string dxfFileName, DxfUnitsType units, uint maxBoundariesToProcess, out PolyLineBoundaries boundaries)
     {
       using var fileStream = new FileStream(dxfFileName, FileMode.Open, FileAccess.Read);
-      using var reader = new StreamReader(fileStream);
 
-      return DXFFileUtilities.RequestBoundariesFromLineWork(reader, Path.GetFileNameWithoutExtension(dxfFileName), units, maxBoundariesToProcess, out boundaries);
+      return DXFFileUtilities.RequestBoundariesFromLineWork(fileStream, Path.GetFileNameWithoutExtension(dxfFileName), units, maxBoundariesToProcess, out boundaries);
     }
   }
 }

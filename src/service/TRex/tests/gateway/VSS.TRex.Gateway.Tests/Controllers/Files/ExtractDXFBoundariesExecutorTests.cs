@@ -59,7 +59,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     [InlineData("100_sided_giraffe.dxf", DxfUnitsType.Meters, 1, 104, "stockpile_100_sides", DXFLineWorkBoundaryType.Stockpile)]
     [InlineData("vssBoundary.dxf", DxfUnitsType.Meters, 1, 101, "vssBoundary", DXFLineWorkBoundaryType.GenericBoundary)]
 
-    public async void Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
+    public async void ASCII_DXF_Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
     {
       var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, 10);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
@@ -76,6 +76,38 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
         boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
         boundary.Boundaries[0].Name.Should().Be(expectedName);
         boundary.Boundaries[0].Type.Should().Be(expectedType);
+      }
+      else
+      {
+        false.Should().BeTrue(); // fail the test
+      }
+    }
+
+    [Theory]
+    [InlineData("11-12_Binary.dxf", DxfUnitsType.Meters, 10, 1, "11-12_Binary1", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("Binary lesson-11.dxf", DxfUnitsType.Meters, 8, 2, "Binary lesson-111", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("Binary lesson-3.dxf", DxfUnitsType.Meters, 0, 0, "-1", DXFLineWorkBoundaryType.Unknown)]
+    public async void Binary_DXF_Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
+    {
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, 10);
+      var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
+      executor.Should().NotBeNull();
+
+      var result = await executor.ProcessAsync(request);
+      result.Should().NotBeNull();
+      result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+      result.Message.Should().Be("Success");
+
+      if (result is DXFBoundaryResult boundary)
+      {
+        boundary.Boundaries.Count.Should().Be(expectedBoundaryCount);
+
+        if (expectedBoundaryCount > 0)
+        {
+          boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
+          boundary.Boundaries[0].Name.Should().Be(expectedName);
+          boundary.Boundaries[0].Type.Should().Be(expectedType);
+        }
       }
       else
       {
