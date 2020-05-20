@@ -272,31 +272,31 @@ namespace VSS.MasterData.Project.WebAPI.Internal
     {
       _deviceStatuses[0].deviceId = "8982e5e7-1da1-4cf8-a335-ef7b0c6758b6";
       _deviceStatuses[0].deviceName = "Backhoe Loader";
-      _deviceStatuses[0].assetType = "BACKHOE_LOADER";
+      _deviceStatuses[0].assetType = "BackchoeLoader";
       _deviceStatuses[0].lat = -114.94628053154341;
       _deviceStatuses[0].lon = 36.23050406683231;
 
       _deviceStatuses[1].deviceId = "6cb6fa71-9800-4700-b7ff-c62014970deb";
       _deviceStatuses[1].deviceName = "Dump Truck";
-      _deviceStatuses[1].assetType = "DUMP_TRUCK";
+      _deviceStatuses[1].assetType = "DumpTruck";
       _deviceStatuses[1].lat = -114.94670430086103;
       _deviceStatuses[1].lon = 36.23184072028269;
 
       _deviceStatuses[2].deviceId = "b93dbe5a-7123-42f1-ab20-2ce8cfefa8f6";
       _deviceStatuses[2].deviceName = "Excavator";
-      _deviceStatuses[2].assetType = "EXCAVATOR";
+      _deviceStatuses[2].assetType = "Excavator";
       _deviceStatuses[2].lat = -114.94694764287715;
       _deviceStatuses[2].lon = 36.23007284059864;
 
       _deviceStatuses[3].deviceId = "6b4dc385-b517-4baa-9419-d9dc58f808c5";
       _deviceStatuses[3].deviceName = "CB460";
-      _deviceStatuses[3].assetType = "MC_DISPLAY";
+      _deviceStatuses[3].assetType = "MCDisplay";
       _deviceStatuses[3].lat = -114.94508567462547;
       _deviceStatuses[3].lon = 36.2347641658546;
 
       _deviceStatuses[4].deviceId = "0a1c60f2-2654-450d-b919-53e806685dd3";
       _deviceStatuses[4].deviceName = "TSC3";
-      _deviceStatuses[4].assetType = "SURVEY_DEVICE";
+      _deviceStatuses[4].assetType = "SurveyDevice";
       _deviceStatuses[4].lat = -114.94659355301343;
       _deviceStatuses[4].lon = 36.23016854679474;
 
