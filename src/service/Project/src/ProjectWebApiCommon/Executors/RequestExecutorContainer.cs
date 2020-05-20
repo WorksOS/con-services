@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
@@ -13,14 +13,13 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
-using VSS.WebApi.Common;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Productivity3D.Project.Repository;
+using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -34,7 +33,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// Logger for logging
     /// </summary>
     protected ILogger log;
-    
+
     /// <summary>
     /// Configuration items
     /// </summary>
@@ -49,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected string userId;
     protected string userEmailAddress;
 
-    protected IDictionary<string, string> customHeaders;
+    protected IHeaderDictionary customHeaders;
 
     /// <summary>
     /// Interfaces to Productivity3d
@@ -79,11 +78,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// Repository factory used extensively for project DB
     /// </summary>
     protected IProjectRepository projectRepo;
-
-    /// <summary>
-    /// Repository factory used extensively for device
-    /// </summary>
-    protected IDeviceRepository deviceRepo;
 
     /// <summary>
     /// Repository factory used for accessing files in TCC (at present)
@@ -167,23 +161,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected virtual void ProcessErrorCodes()
     { }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public void Initialise(ILogger logger, IConfigurationStore configStore,
       IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null,
-      IDictionary<string, string> headers = null,
-      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, 
-      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, 
+      IHeaderDictionary headers = null,
+      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null,
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
-      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, IDeviceRepository deviceRepo = null,
+      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
       IFileRepository fileRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
-      ICwsDesignClient cwsDesignClient=null, ICwsProfileSettingsClient cwsProfileSettingsClient=null)
+      ICwsDesignClient cwsDesignClient = null, ICwsProfileSettingsClient cwsProfileSettingsClient = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -199,8 +190,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
-      this.deviceRepo = deviceRepo;
-      this.fileRepo = fileRepo;    
+      this.fileRepo = fileRepo;
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
       this.authn = authn;
@@ -223,12 +213,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, 
-      IProjectRepository projectRepo, DeviceRepository deviceRepo)
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
+      IProjectRepository projectRepo)
       where TExecutor : RequestExecutorContainer, new()
     {
-      return new TExecutor { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, 
-        projectRepo = projectRepo, deviceRepo = deviceRepo};
+      return new TExecutor
+      {
+        log = logger.CreateLogger<TExecutor>(),
+        configStore = configStore,
+        serviceExceptionHandler = serviceExceptionHandler,
+        projectRepo = projectRepo
+      };
     }
 
 
@@ -246,7 +241,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       log.LogInformation($"projectUid {projectUid} validated");
     }
-    
+
     /// <summary>
     /// Casts input object to type T for use with child executors.
     /// </summary>

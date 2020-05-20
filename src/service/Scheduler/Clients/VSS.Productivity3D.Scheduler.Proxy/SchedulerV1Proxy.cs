@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -23,8 +24,7 @@ namespace VSS.Productivity3D.Scheduler.Proxy
   {
     public SchedulerV1Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
-    {
-    }
+    { }
 
     public override bool IsInsideAuthBoundary => true;
 
@@ -42,8 +42,7 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     /// Schedules the export job with a Scheduler Service.
     /// </summary>
     [Obsolete("Use ScheduleBackgroundJob instead - generic solution")]
-    public async Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request,
-      IDictionary<string, string> customHeaders)
+    public async Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request, IHeaderDictionary customHeaders)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
@@ -60,7 +59,7 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     }
 
     /// <inheritdoc />
-    public async Task<ScheduleJobResult> ScheduleBackgroundJob(ScheduleJobRequest request, IDictionary<string, string> customHeaders)
+    public async Task<ScheduleJobResult> ScheduleBackgroundJob(ScheduleJobRequest request, IHeaderDictionary customHeaders)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
@@ -76,29 +75,8 @@ namespace VSS.Productivity3D.Scheduler.Proxy
       return null;
     }
 
-
-    ///// <summary>
-    ///// Retrieves the status of the requested job and the filename in S3 bucket where file is stored.
-    ///// </summary>
-    ///// <param name="jobId">The job identifier.</param>
-    ///// <param name="customHeaders">Custom request headers</param>
-    ///// <returns></returns>
-    //[Obsolete("Use ScheduleBackgroundJob instead - generic solution")]
-    //public async Task<JobStatusResult> GetExportJobStatus(string jobId, IDictionary<string, string> customHeaders)
-    //{
-    //  // "internal/v1/export/{jobId}"
-    //  var result = await GetMasterDataItemServiceDiscoveryNoCache<JobStatusResult>
-    //    ($"/export/{jobId}", customHeaders);
-    //  if (result != null)
-    //    return result;
-
-    //  log.LogDebug($"{nameof(GetExportJobStatus)} Failed to get status for JobID: {jobId}");
-    //  return null;
-    //}
-
-
     /// <inheritdoc />
-    public async Task<JobStatusResult> GetBackgroundJobStatus(string jobId, IDictionary<string, string> customHeaders)
+    public async Task<JobStatusResult> GetBackgroundJobStatus(string jobId, IHeaderDictionary customHeaders)
     {
       // "internal/v1/background/{jobId}"
       var result = await GetMasterDataItemServiceDiscoveryNoCache<JobStatusResult>
@@ -111,7 +89,7 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     }
 
     /// <inheritdoc />
-    public async Task<Stream> GetBackgroundJobResults(string jobId, IDictionary<string, string> customHeaders)
+    public async Task<Stream> GetBackgroundJobResults(string jobId, IHeaderDictionary customHeaders)
     {
       // "internal/v1/background/{jobId}/result"
       var result = await GetMasterDataStreamItemServiceDiscoveryNoCache
@@ -124,7 +102,7 @@ namespace VSS.Productivity3D.Scheduler.Proxy
     }
 
     /// <inheritdoc />
-    public async Task<ScheduleJobResult> ScheduleVSSJob(JobRequest request, IDictionary<string, string> customHeaders)
+    public async Task<ScheduleJobResult> ScheduleVSSJob(JobRequest request, IHeaderDictionary customHeaders)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))

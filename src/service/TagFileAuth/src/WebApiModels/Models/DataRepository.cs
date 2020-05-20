@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -23,13 +22,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    private ILogger _log;
-    private IConfigurationStore _configStore;
-
     // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
     private readonly ICwsAccountClient _cwsAccountClient;
 
-    // We need to use ProjectSvc IProjectProxy as thats where the project data is
+    // We need to use ProjectSvc IProjectProxy as that's where the project data is
     private readonly IProjectInternalProxy _projectProxy;
 
     // We need to use ProjectSvc IDeviceProxy 
@@ -37,19 +33,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceInternalProxy _deviceProxy;
 
-    private ITPaaSApplicationAuthentication _authorization;
+    private IHeaderDictionary _mergedCustomHeaders;
 
-    public DataRepository(ILogger logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      ITPaaSApplicationAuthentication authorization
-      )
+    public DataRepository(ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      IHeaderDictionary requestCustomHeaders)
     {
-      _log = logger;
-      _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
-      _authorization = authorization;
+      _mergedCustomHeaders = requestCustomHeaders;
+
+      foreach (var header in authorization.CustomHeaders())
+      {
+        _mergedCustomHeaders.Add(header);
+      }
     }
 
     #region account
@@ -61,7 +58,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), _authorization.CustomHeaders()))?.Total ?? 0;
+        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), _mergedCustomHeaders))?.Total ?? 0;
       }
       catch (Exception e)
       {
@@ -75,82 +72,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
 
     #region project
-
-    public async Task<ProjectData> GetProject(long shortRaptorProjectId)
-    {
-      if (shortRaptorProjectId < 1)
-        return null;
-      try
-      {
-        return await _projectProxy.GetProject(shortRaptorProjectId, _authorization.CustomHeaders());
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-    }
-
     public async Task<ProjectData> GetProject(string projectUid)
     {
       if (string.IsNullOrEmpty(projectUid))
         return null;
       try
       {
-        return await _projectProxy.GetProject(projectUid, _authorization.CustomHeaders());
+        return await _projectProxy.GetProject(projectUid, _mergedCustomHeaders);
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
             ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-    }
-
-    public async Task<List<ProjectData>> GetProjects(string customerUid, DateTime validAtDate)
-    {
-      if (string.IsNullOrEmpty(customerUid))
-        return null;
-      try
-      {
-        var p = await _projectProxy.GetProjects(customerUid, _authorization.CustomHeaders());
-        if (p != null)
-        {
-          return p
-              .Where(x => !x.IsArchived)
-              .ToList();
-        }
-        return null;
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-    }
-
-    public async Task<List<ProjectData>> GetProjectsAssociatedWithDevice(string customerUid, string deviceUid, DateTime validAtDate)
-    {
-      if (string.IsNullOrEmpty(customerUid) || string.IsNullOrEmpty(deviceUid))
-        return null;
-      try
-      {
-        var projects = await _deviceProxy.GetProjectsForDevice(deviceUid, _authorization.CustomHeaders());
-        if (projects?.Code != 0)
-        {
-          return projects.ProjectDescriptors
-            .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) && !x.IsArchived)
-            .ToList();
-        }
-        return null;
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
       }
     }
 
@@ -164,7 +98,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _authorization.CustomHeaders()));
+        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _mergedCustomHeaders));
         // should not be possible to get > 1 as call was limited by the projectUid       
         if (accountProjects?.Code == 0 && accountProjects.ProjectDescriptors.Count() != 1)
           return accountProjects;
@@ -181,7 +115,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _authorization.CustomHeaders()));
+        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders));
         if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
         {
           var result = new ProjectDataResult();
@@ -211,7 +145,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this customer have which intersect the lat/long?
       try
       {
-        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders:_authorization.CustomHeaders()).Result;
+        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders: _mergedCustomHeaders).Result;
         if (accountProjects?.Code != 0 || !accountProjects.ProjectDescriptors.Any())
         {
           errorCode = 44;
@@ -229,7 +163,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         var intersectingProjectsForDevice = new ProjectDataResult();
-        var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _authorization.CustomHeaders()).Result;
+        var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders).Result;
         if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
         {
           var intersection = projectsAssociatedWithDevice.ProjectDescriptors.Select(dp => dp.ProjectUID).Intersect(accountProjects.ProjectDescriptors.Select(ap => ap.ProjectUID));
@@ -254,30 +188,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     #region device
 
     // Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
-    // and shortRaptorAssetId(localDB)
     public async Task<DeviceData> GetDevice(string serialNumber)
     {
       if (string.IsNullOrEmpty(serialNumber))
         return null;
       try
       {
-        return await _deviceProxy.GetDevice(serialNumber, _authorization.CustomHeaders());
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
-      }
-    }
-
-    public async Task<DeviceData> GetDevice(int shortRaptorAssetId)
-    {
-      if (shortRaptorAssetId < 1)
-        return null;
-      try
-      {
-        return await _deviceProxy.GetDevice(shortRaptorAssetId, _authorization.CustomHeaders());
+        return await _deviceProxy.GetDevice(serialNumber, _mergedCustomHeaders);
       }
       catch (Exception e)
       {
@@ -289,30 +206,5 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #endregion device
 
-
-    public TWGS84Point[] ParseBoundaryData(string s)
-    {
-      // WKT string should be in 'lon lat,' format
-      // TWG84Point is 'lon, lat'
-      var points = new List<TWGS84Point>();
-      var pointsArray = s.Substring(9, s.Length - 11).Split(',');
-
-      for (var i = 0; i < pointsArray.Length; i++)
-      {
-        var coordinates = new double[2];
-        coordinates = pointsArray[i].Trim().Split(' ').Select(c => double.Parse(c)).ToArray();
-        points.Add(new TWGS84Point(coordinates[0], coordinates[1]));
-      }
-
-      // is it a valid WKT polygon?
-      // note that an invalid polygon can't be created via the ProjectRepo
-      if (points.Count > 3 && points[0].Equals(points[points.Count - 1]))
-      {
-        var fencePoints = points.ToArray();
-        return fencePoints;
-      }
-
-      return new TWGS84Point[0];
-    }
   }
 }

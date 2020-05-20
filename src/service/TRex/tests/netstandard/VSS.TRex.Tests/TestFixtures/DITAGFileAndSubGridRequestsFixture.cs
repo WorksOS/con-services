@@ -214,8 +214,9 @@ namespace VSS.TRex.Tests.TestFixtures
       // Save the leaf information just created
       siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
-      // Save the site model metadata to preserve the site model extent information across a site model change notification event
-      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
+      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
+
+      siteModel.PrimaryStorageProxy.Commit();
     }
 
     public static void AddMultipleCellsWithPasses(ISiteModel siteModel, int cellX, int cellY,
@@ -273,8 +274,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Save the leaf information just created
       siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
-      // Save the site model metadata to preserve the site model extent information across a site model change notification event
-      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
+      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
     }
 
     public static void AddSingleSubGridWithPasses(ISiteModel siteModel, int cellX, int cellY, IEnumerable<CellPass>[,] passes)
@@ -317,8 +317,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Save the leaf information just created
       siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
-      // Save the site model metadata to preserve the site model extent information across a site model change notification event
-      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
+      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
     }
 
     /// <summary>

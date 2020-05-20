@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -14,34 +14,33 @@ namespace VSS.MasterData.Proxies.UnitTests
   public class MockProxy : BaseServiceDiscoveryProxy
   {
     private bool _isInsideAuthBoundary;
-    private ApiService internalServiceType;
-    private string externalServiceName;
-    private ApiVersion version;
-    private ApiType type;
+    private ApiService _internalServiceType;
+    private string _externalServiceName;
+    private ApiVersion _version;
+    private ApiType _type;
 
-    public MockProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
+    public MockProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
 
     public void SetParameters(bool isInsideAuthBoundary, ApiService serviceType, string externalServiceName, ApiVersion version, ApiType type)
     {
-      this._isInsideAuthBoundary = isInsideAuthBoundary;
-      this.internalServiceType = serviceType;
-      this.externalServiceName = externalServiceName;
-      this.version = version;
-      this.type = type;
-
+      _isInsideAuthBoundary = isInsideAuthBoundary;
+      _internalServiceType = serviceType;
+      _externalServiceName = externalServiceName;
+      _version = version;
+      _type = type;
     }
 
     public override bool IsInsideAuthBoundary => _isInsideAuthBoundary;
-    public override ApiService InternalServiceType => internalServiceType;
-    public override string ExternalServiceName => externalServiceName;
-    public override ApiVersion Version => version;
-    public override ApiType Type => type;
+    public override ApiService InternalServiceType => _internalServiceType;
+    public override string ExternalServiceName => _externalServiceName;
+    public override ApiVersion Version => _version;
+    public override ApiType Type => _type;
     public override string CacheLifeKey => "NO_CACHE";
 
-    public Task<ContractExecutionResult> DoACall(string route, IDictionary<string, string> customerHeaders)
+    public Task<ContractExecutionResult> DoACall(string route, IHeaderDictionary customerHeaders)
     {
       return MasterDataItemServiceDiscoveryNoCache<ContractExecutionResult>(route, customerHeaders, HttpMethod.Get);
     }

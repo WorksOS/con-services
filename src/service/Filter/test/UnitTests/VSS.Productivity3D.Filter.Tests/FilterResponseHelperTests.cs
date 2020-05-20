@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
@@ -28,7 +29,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public FilterResponseHelperTests()
     {
       _mockedProductivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
-      _mockedProductivity3dV2ProxyCompaction.Setup(p => p.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<Dictionary<string, string>>()))
+      _mockedProductivity3dV2ProxyCompaction.Setup(p => p.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<HeaderDictionary>()))
         .Returns(Task.FromResult(new ProjectStatisticsResult
         {
           startTime = MockedStartTime,
@@ -43,7 +44,7 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         var filter = new MasterData.Repositories.DBModels.Filter
         { FilterJson = "{\"dateRangeType\":\"0\",\"elevationType\":null}" };
-        await FilterJsonHelper.ParseFilterJson(null, filter, _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        await FilterJsonHelper.ParseFilterJson(null, filter, _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
         var filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
         Assert.Equal(DateRangeType.Today, filterObj.DateRangeType);
@@ -60,7 +61,7 @@ namespace VSS.Productivity3D.Filter.Tests
       try
       {
         await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (MasterData.Repositories.DBModels.Filter)null,
-          productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new Dictionary<string, string>());
+          productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new HeaderDictionary());
       }
       catch (Exception exception)
       {
@@ -74,7 +75,7 @@ namespace VSS.Productivity3D.Filter.Tests
       try
       {
         await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter: (FilterDescriptor)null,
-          productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new Dictionary<string, string>());
+          productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new HeaderDictionary());
       }
       catch (Exception exception)
       {
@@ -87,7 +88,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       try
       {
-        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null, productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new Dictionary<string, string>());
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filters: null, productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new HeaderDictionary());
       }
       catch (Exception exception)
       {
@@ -102,7 +103,7 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         var filter = new MasterData.Repositories.DBModels.Filter
         { FilterJson = "{\"dateRangeType\":\"4\",\"elevationType\":null}" };
-        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new Dictionary<string, string>());
+        await FilterJsonHelper.ParseFilterJson(new ProjectData(), filter, productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new HeaderDictionary());
 
         var filterObj =
           JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
@@ -132,7 +133,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       await FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filter,
-        productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new Dictionary<string, string>());
+        productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new HeaderDictionary());
 
       Abstractions.Models.Filter filterObj =
         JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filter.FilterJson);
@@ -165,7 +166,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       Abstractions.Models.Filter filterObj =
         JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
@@ -193,7 +194,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new Dictionary<string, string>());
+        productivity3dV2ProxyCompaction: _mockedProductivity3dV2ProxyCompaction.Object, customHeaders: new HeaderDictionary());
 
       Abstractions.Models.Filter filterObj =
         JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
@@ -235,7 +236,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       await FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filters,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       foreach (var filter in filters)
       {
@@ -269,7 +270,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       await FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filter,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       ValidateDates(filter.FilterJson, asAtDate);
     }
@@ -301,7 +302,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       ValidateDates(filterDescriptor.FilterJson, asAtDate);
     }
@@ -321,7 +322,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Equal(expectedResult, actualResult.ContributingMachines);
@@ -359,12 +360,12 @@ namespace VSS.Productivity3D.Filter.Tests
       );
 
       _mockedProductivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Single(actualResult.ContributingMachines);
@@ -403,12 +404,12 @@ namespace VSS.Productivity3D.Filter.Tests
         }
       );
       _mockedProductivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IDictionary<string, string>>()))
+          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(getMachinesExecutionResult);
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Single(actualResult.ContributingMachines);
@@ -438,7 +439,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Single(actualResult.ContributingMachines);
@@ -467,7 +468,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Single(actualResult.ContributingMachines);
@@ -497,7 +498,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       FilterJsonHelper.ParseFilterJson(
         new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new Dictionary<string, string>());
+        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
 
       var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
       Assert.Single(actualResult.ContributingMachines);

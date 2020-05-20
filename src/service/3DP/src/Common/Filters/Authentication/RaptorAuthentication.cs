@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Principal;
+﻿using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -39,7 +38,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       //HACK allow internal connections without authn for tagfile submission by the harvester
       // TAG Files come via TPAAS endpoints
       return
-        context.Request.Path.Value.Contains("tagfiles") && 
+        context.Request.Path.Value.Contains("tagfiles") &&
         context.Request.Method == "POST" &&
         !context.Request.Headers.ContainsKey("X-Jwt-Assertion") &&
         !context.Request.Headers.ContainsKey("Authorization");
@@ -75,8 +74,8 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// <summary>
     /// Create 3dpm principal
     /// </summary>
-    public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, 
-      string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName)
+    public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName,
+      string userEmail, bool isApplicationContext, IHeaderDictionary contextHeaders, string tpaasApplicationName)
     {
       //Delegate customer->project association resolution to the principal object for now as it has execution context and can invalidate cache if required
       // note that userUid may actually be the ApplicationId if isApplicationContext

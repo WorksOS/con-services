@@ -23,6 +23,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
       evt.MachinesModified.Should().BeFalse();
       evt.ProofingRunsModified.Should().BeFalse();
       evt.SurveyedSurfacesModified.Should().BeFalse();
+      evt.SiteModelMarkedForDeletion.Should().BeFalse();
       evt.SiteModelID.Should().Be(Guid.Empty);
     }
 
@@ -43,6 +44,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
         MachinesModified = true,
         ProofingRunsModified = true,
         SurveyedSurfacesModified = true,
+        SiteModelMarkedForDeletion = true,
         SiteModelID = newGuid
       };
 

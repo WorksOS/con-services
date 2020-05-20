@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       Log.LogInformation($"{nameof(GetProjectFilters)}: CustomerUID={CustomerUid} isApplication={IsApplication} UserUid={GetUserId} projectUid: {projectUid}");
 
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(true),
+        Request.Headers.GetCustomHeaders(),
         CustomerUid,
         IsApplication,
         GetUserId,
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       Log.LogInformation($"{nameof(GetProjectFilter)}: CustomerUID={CustomerUid} IsApplication={IsApplication} UserUid={GetUserId} ProjectUid: {projectUid} FilterUid: {filterUid}");
 
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(true),
+        Request.Headers.GetCustomHeaders(),
         CustomerUid,
         IsApplication,
         GetUserId,
@@ -205,7 +205,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     private async Task<FilterDescriptorSingleResult> UpsertFilter(UpsertFilterExecutor filterExecutor, ProjectData project, FilterRequest filterRequest)
     {
       var requestFull = FilterRequestFull.Create(
-        Request.Headers.GetCustomHeaders(true),
+        Request.Headers.GetCustomHeaders(),
         CustomerUid,
         IsApplication,
         GetUserId,

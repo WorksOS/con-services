@@ -10,6 +10,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SiteModels
@@ -39,7 +40,7 @@ namespace VSS.TRex.SiteModels
         // Replicate the site model metadata across nodes
         CacheMode = CacheMode.Replicated,
 
-        Backups = 0,  // No backups need as it is a replicated cache
+        Backups = 0,  // No backups needed as it is a replicated cache
 
         DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
       };
@@ -174,12 +175,33 @@ namespace VSS.TRex.SiteModels
     {
       try
       {
-        ISiteModelMetadata[] result = metaDataCache.Query(new ScanQuery<Guid, SiteModelMetadata>()).GetAll().Select(x => x.Value).ToArray();
+        var result = metaDataCache.Query(new ScanQuery<Guid, SiteModelMetadata>()).GetAll().Select(x => x.Value).ToArray();
         return result;
       }
       catch (Exception e)
       {
         throw new TRexException("Failure to retrieve all metadata for site models", e);
+      }
+    }
+
+    /// <summary>
+    /// Removes the summary site model metadata for a project. This is a non-transacted operation.
+    /// TODO: If this is retained in production then the storage proxy cache should be used instead of direct cache access
+    /// </summary>
+    /// <param name="siteModelId"></param>
+    public void Remove(Guid siteModelId)
+    {
+      try
+      {
+        metaDataCache.Remove(siteModelId);
+      }
+      catch (KeyNotFoundException)
+      {
+        // This is OK - already removed
+      }
+      catch (Exception e)
+      {
+        throw new TRexException($"Failure to remove metadata for site model {siteModelId}", e);
       }
     }
   }

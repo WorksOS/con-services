@@ -73,7 +73,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return converter;
     }
 
-    private static void AddProxyCacheFactoriesToDI()
+    public static void AddProxyCacheFactoriesToDI()
     {
       DIBuilder
         .Continue()
@@ -108,7 +108,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Build();
 
-      // Set up a singleton storage proxy for mutable and immutable contexts for tests
+      // Set up a singleton storage proxy for mutable and immutable contexts for tests when there is no Ignite mock available
       var mutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
       var immutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
 
@@ -135,6 +135,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))
 
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 

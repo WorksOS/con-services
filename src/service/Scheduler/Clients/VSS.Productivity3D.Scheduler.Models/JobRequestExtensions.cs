@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Scheduler.Models
           result = (o as JToken).ToObject<T>();
           return result;
         }
-        catch (Exception e)
+        catch
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Scheduler.Models
           result = (o as JObject).ToObject<T>();
           return result;
         }
-        catch (Exception e)
+        catch
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface IFleetAssetSummaryProxy
   {
-    Task<AssetSummary> GetAssetSummary(string assetUid, IDictionary<string, string> customHeaders = null);
+    Task<AssetSummary> GetAssetSummary(string assetUid, IHeaderDictionary customHeaders = null);
   }
 }

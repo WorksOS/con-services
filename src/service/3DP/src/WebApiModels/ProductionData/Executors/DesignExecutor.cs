@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 #if RAPTOR
 using DesignProfilerDecls;
 using VLPDDecls;
@@ -78,7 +79,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       var siteModelId = request.ProjectUid.ToString();
 
-      var queryParams = new Dictionary<string, string>()
+      var queryParams = new HeaderDictionary()
       {
         { "projectUid", siteModelId },
         { "designUid", designUid },

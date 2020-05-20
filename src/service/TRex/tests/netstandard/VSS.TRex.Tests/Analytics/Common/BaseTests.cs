@@ -8,12 +8,12 @@ namespace VSS.TRex.Tests.Analytics.Common
 {
   public class BaseTests<TArgument, TResponse> : IClassFixture<DILoggingFixture>
   {
-    protected void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<IComputeFunc<TArgument, TResponse>, TArgument, TResponse>();
+    protected void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<IComputeFunc<TArgument, TResponse>, TArgument, TResponse>();
 
     protected void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting<IComputeFunc<TArgument, TResponse>, TArgument, TResponse>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<IComputeFunc<TArgument, TResponse>, TArgument, TResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
   }
 }

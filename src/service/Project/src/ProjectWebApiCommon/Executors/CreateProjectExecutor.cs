@@ -46,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (response != null && !string.IsNullOrEmpty(response.Id))
           createProjectEvent.ProjectUID = new Guid(response.Id);
         else
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);       
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
       }
       catch (Exception e)
       {
@@ -62,25 +62,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
-        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn, 
+        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
         cwsDesignClient, cwsProfileSettingsClient).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
-      
+
       log.LogDebug("CreateProject. completed successfully");
       return new ContractExecutionResult();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
-
+    protected override ContractExecutionResult ProcessEx<T>(T item) => throw new NotImplementedException();
 
     /// <summary>
     /// Creates a project. Handles both old and new project boundary formats.
     /// </summary>
     /// <param name="project">The create project event</param>
-    /// <returns></returns>
     private async Task<CreateProjectEvent> CreateProjectInDb(CreateProjectEvent project)
     {
       log.LogDebug(
@@ -122,7 +117,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       log.LogDebug($"Using Legacy projectId {project.ShortRaptorProjectId} for project {project.ProjectName}");
-      
+
       return project; // shortRaptorProjectID may have been added
     }
   }

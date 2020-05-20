@@ -18,12 +18,28 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
 {
   public class CoordinateServiceUtilityTests : IClassFixture<DILoggingFixture>, IDisposable
   {
+    /* Settings for Alpha
+    private const string TPAAS_AUTH_URL = "https://identity-stg.trimble.com/i/oauth2";
+    private const string TPAAS_APP_TOKEN = "YjZvSk1WemZ6ajJNUEplQkIyWlVLOUJ4ckZFYTp5MWk1YmZlMjdpQlRQb0VCS2laYXMxM0hacUFh";
+    */
+
     public CoordinateServiceUtilityTests()
     {
       DIBuilder
         .Continue()
         .Add(x => x.AddTransient<ICoordinateServiceUtility, CoordinateServiceUtility>())
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
+
+/*        .Add(x => x.AddHttpClient<ITPaaSClient, TPaaSClient>(client =>
+          client.BaseAddress = new Uri(TPAAS_AUTH_URL) //Configuration.GetValueString(TPaaSClient.TPAAS_AUTH_URL_ENV_KEY))
+        ).ConfigurePrimaryHttpMessageHandler(() => new TPaaSApplicationCredentialsRequestHandler
+          {
+            TPaaSToken = TPAAS_APP_TOKEN, //Configuration.GetValueString(TPaaSApplicationCredentialsRequestHandler.TPAAS_APP_TOKEN_ENV_KEY),
+            InnerHandler = new HttpClientHandler()
+          }))
+        .Add(x => x.AddTransient(context => new TPaaSAuthenticatedRequestHandler {TPaaSClient = context.GetService<ITPaaSClient>()}))
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+*/
         .Complete();
     }
 
@@ -63,8 +79,8 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
 
       var result = await DIContext.Obtain<ICoordinateServiceUtility>().PatchLLH(TestCommonConsts.DIMENSIONS_2012_DC_CSIB, machines);
       result.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
-      machines[0].lastKnownLongitude.Should().Be(-115.05065884125976);
-      machines[0].lastKnownLatitude.Should().Be(36.196461918456677);
+      machines[0].lastKnownLongitude.Should().Be(-115.03727717865179);
+      machines[0].lastKnownLatitude.Should().Be(36.217306995697705);
     }
 
     [Fact(Skip = "Skip until coreX is available")]

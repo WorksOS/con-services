@@ -5,6 +5,6 @@
       /// <summary>
       /// The key name identifier used for locating CSIB storage 
       /// </summary>
-      public static string kCoordinateSystemCSIBStorageKeyName = "CoordinateSystemCSIB";
+      public static string CoordinateSystemCSIBStorageKeyName = "CoordinateSystemCSIB";
     }
 }

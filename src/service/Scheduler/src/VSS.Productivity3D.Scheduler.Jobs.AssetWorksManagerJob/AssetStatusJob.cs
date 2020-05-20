@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
@@ -28,21 +29,19 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
     private readonly IFleetAssetDetailsProxy _assetDetailsProxy;
     private readonly IFleetAssetSummaryProxy _assetSummaryProxy;
     private readonly IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
-    private readonly IDeviceProxy _deviceProxy;
     private readonly ILogger _log;
 
     private List<AssetUpdateSubscriptionModel> _subscriptions;
 
     public AssetStatusJob(IAssetStatusServerHubClient assetStatusServerHubClient,
-      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification,
-      IDeviceProxy _deviceProxy, ILoggerFactory logger)
+      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, 
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, ILoggerFactory logger)
     {
       this._assetStatusServerHubClient = assetStatusServerHubClient;
       _log = logger.CreateLogger<AssetStatusJob>();
       this._assetDetailsProxy = assetDetailsProxy;
       this._productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
       this._assetSummaryProxy = assetSummaryProxy;
-      this._deviceProxy = _deviceProxy;
     }
 
     public Task Setup(object o, object context)
@@ -102,7 +101,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
     /// <summary>
     /// Fetch asset data, the proxy will cache multiple request to the same asset
     /// </summary>
-    private async Task<(AssetDetails details, AssetSummary summary)> GetAssetData(string assetUid, IDictionary<string, string> headers)
+    private async Task<(AssetDetails details, AssetSummary summary)> GetAssetData(string assetUid, IHeaderDictionary headers)
     {
       var assetDetailsTask = _assetDetailsProxy.GetAssetDetails(assetUid, headers);
       var assetSummaryTask = _assetSummaryProxy.GetAssetSummary(assetUid, headers);
@@ -112,36 +111,20 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
       return (assetDetailsTask.Result, assetSummaryTask.Result);
     }
 
-    private async Task ProcessAssetEvents(MachineStatus machine, Guid projectUid, Guid customerUid,
-      IDictionary<string, string> headers)
+    private async Task ProcessAssetEvents(MachineStatus machine, Guid projectUid, Guid customerUid, IHeaderDictionary headers)
     {
-
       AssetAggregateStatus statusEvent = null;
-      var assets = await _deviceProxy.GetMatchingDevices(new List<long>
-      {
-        machine.AssetId,
-      }, headers);
-
-      // Prevent multiple iterations of the IEnumerable
-      var assetList = assets?.ToList();
-      if (assetList != null && assetList.Any())
+      
+      if (machine.AssetUid.HasValue)
       {
         // CCSSCOON-85 it's not possible to match radio types in WM cws/ProfileX
         // var matchingAsset = await _deviceProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel() {AssetUID3D = assetList.First().Key.ToString()}, headers);
         //Change that for the actual matched asset. Since we supplied 3d asset get data for the matching 2d asset.
         //if there is no 2d asset we should try using SNM asset
 
-        string uid;
-        //if (matchingAsset == null || matchingAsset.Code != ContractExecutionStatesEnum.ExecutedSuccessfully || string.IsNullOrEmpty(matchingAsset.AssetUID2D))
-          uid = assetList.First().Key.ToString();
-        //else
-        //  uid = matchingAsset.AssetUID2D;
+        var (details, summary) = await GetAssetData(machine.AssetUid.ToString(), headers);
 
-        var (details, summary) = await GetAssetData(uid, headers);
-
-        var assetUid = Guid.Parse(uid);
-
-        statusEvent = GenerateEvent(customerUid, projectUid, assetUid, machine, details, summary);
+        statusEvent = GenerateEvent(customerUid, projectUid, machine.AssetUid, machine, details, summary);
       }
       else
       {
@@ -149,7 +132,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
         statusEvent = GenerateEvent(customerUid, projectUid, null, machine, null, null);
       }
 
-      if(statusEvent != null)
+      if (statusEvent != null)
         await _assetStatusServerHubClient.UpdateAssetLocationsForClient(statusEvent);
     }
 
@@ -163,10 +146,10 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
       {
         ProjectUid = projectUid,
         CustomerUid = customerUid,
-        AssetUid =  assetUid,
+        AssetUid = assetUid,
         UtilizationSummary = summary
       };
-      
+
       // This is where all the magic happens, in terms of mapping data we have from 3d / 2d endpoints into an event for the UI
       // details / summary can be null, machineStatus won't be.
       var lastLocationTimeUtc = machineStatus.lastKnownTimeStamp;
@@ -179,7 +162,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
 
       // If we have a Asset ID (which matches Asset ID in Fleet management) from UF, use that, otherwise machine name
       result.AssetIdentifier = !string.IsNullOrEmpty(details?.AssetId)
-        ? details.AssetId 
+        ? details.AssetId
         : machineStatus.MachineName;
 
       // Extract data from Asset Details

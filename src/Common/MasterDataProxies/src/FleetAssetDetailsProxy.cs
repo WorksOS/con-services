@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -12,15 +13,6 @@ namespace VSS.MasterData.Proxies
 {
   public class FleetAssetDetailsProxy : BaseServiceDiscoveryProxy, IFleetAssetDetailsProxy
   {
-    public FleetAssetDetailsProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
-      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
-      dataCache, serviceResolution)
-    {
-    }
-    //assetdetails-public-v1 = /https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0/
-
-    //https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0/ UnifiedFleet/AssetDetails/v1?assetUID=52bebb94-634e-e311-b5a0-90e2ba076184
-
     public override bool IsInsideAuthBoundary => false;
     public override ApiService InternalServiceType => ApiService.None;
     public override string ExternalServiceName => "assetdetails";
@@ -28,7 +20,12 @@ namespace VSS.MasterData.Proxies
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "FLEET_ASSET_DETAILS_CACHE_LIFE";
 
-    public Task<AssetDetails> GetAssetDetails(string assetUid, IDictionary<string, string> customHeaders = null)
+    public FleetAssetDetailsProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
+      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
+      dataCache, serviceResolution)
+    { }
+
+    public Task<AssetDetails> GetAssetDetails(string assetUid, IHeaderDictionary customHeaders = null)
     {
       return GetMasterDataItemServiceDiscovery<AssetDetails>("UnifiedFleet/AssetDetails/v1", assetUid, null,
         customHeaders, new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>("assetUID", assetUid)});

@@ -21,6 +21,8 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     void SaveToPersistentStore(Guid projectUid, IStorageProxy storageProxy);
 
+    void RemoveFromPersistentStore(Guid projectUid, IStorageProxy storageProxy);
+
     void LoadFromPersistentStore(Guid projectUid, IStorageProxy storageProxy);
 
   }

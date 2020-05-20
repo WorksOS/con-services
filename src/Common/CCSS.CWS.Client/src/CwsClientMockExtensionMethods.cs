@@ -12,9 +12,9 @@ namespace CCSS.CWS.Client
     public const string MOCK_PROJECT_KEY = "MOCK_CWS_PROJECT";
     public const string MOCK_USER_KEY = "MOCK_CWS_USER";
 
-    public static IServiceCollection AddCwsClient<TInterface, TReal, TMock>(this IServiceCollection services, string variable) 
-      where TReal : class, TInterface 
-      where TMock : class, TInterface 
+    public static IServiceCollection AddCwsClient<TInterface, TReal, TMock>(this IServiceCollection services, string variable)
+      where TReal : class, TInterface
+      where TMock : class, TInterface
       where TInterface : class
     {
       var configStore = services.BuildServiceProvider().GetService<IConfigurationStore>();

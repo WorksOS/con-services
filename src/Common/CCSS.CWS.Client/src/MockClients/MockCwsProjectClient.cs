@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -22,26 +23,26 @@ namespace CCSS.CWS.Client.MockClients
     {
     }
 
-    public Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
+    public Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(CreateProject)} Mock: createProjectRequest {JsonConvert.SerializeObject(createProjectRequest)}");
 
       var createProjectResponseModel = new CreateProjectResponseModel
       {
-        Id = Guid.NewGuid().ToString()
+        TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_PROJECT)
       };
 
       log.LogDebug($"{nameof(CreateProject)} Mock: createProjectResponseModel {JsonConvert.SerializeObject(createProjectResponseModel)}");
       return Task.FromResult(createProjectResponseModel);
     }
 
-    public Task UpdateProjectDetails(Guid projectUid, UpdateProjectDetailsRequestModel updateProjectDetailsRequest, IDictionary<string, string> customHeaders = null)
+    public Task UpdateProjectDetails(Guid projectUid, UpdateProjectDetailsRequestModel updateProjectDetailsRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(UpdateProjectDetails)} Mock: projectUid {projectUid} updateProjectDetailsRequest {JsonConvert.SerializeObject(updateProjectDetailsRequest)}");
       return Task.CompletedTask;
     }
 
-    public Task UpdateProjectBoundary(Guid projectUid, ProjectBoundary projectBoundary, IDictionary<string, string> customHeaders = null)
+    public Task UpdateProjectBoundary(Guid projectUid, ProjectBoundary projectBoundary, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(UpdateProjectBoundary)} Mock: projectUid {projectUid} projectBoundary {JsonConvert.SerializeObject(projectBoundary)}");
       return Task.CompletedTask;

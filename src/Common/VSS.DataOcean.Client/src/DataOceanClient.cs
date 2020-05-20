@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace VSS.DataOcean.Client
     private readonly string _dataOceanBaseUrl;
     private readonly int _uploadWaitInterval;
     private readonly double _uploadTimeout;
-    
+
     private readonly DataOceanFolderCache _dataOceanFolderCache;
     private readonly DataOceanMissingTileCache _dataOceanMissingTileCache;
 
@@ -65,7 +66,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Determines if the folder path exists.
     /// </summary>
-    public async Task<bool> FolderExists(string path, IDictionary<string, string> customHeaders)
+    public async Task<bool> FolderExists(string path, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(FolderExists)}: {path}");
 
@@ -76,7 +77,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Determines if the file exists.
     /// </summary>
-    public async Task<bool> FileExists(string filename, IDictionary<string, string> customHeaders)
+    public async Task<bool> FileExists(string filename, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(FileExists)}: {filename}");
 
@@ -87,7 +88,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Makes the folder structure. Can partially exist already i.e. parent folder. 
     /// </summary>
-    public async Task<bool> MakeFolder(string path, IDictionary<string, string> customHeaders)
+    public async Task<bool> MakeFolder(string path, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(MakeFolder)}: {path}");
 
@@ -99,7 +100,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Uploads the file to Data Ocean, will upsert if necessary.
     /// </summary>
-    public async Task<bool> PutFile(string path, string filename, Stream contents, IDictionary<string, string> customHeaders = null)
+    public async Task<bool> PutFile(string path, string filename, Stream contents, IHeaderDictionary customHeaders = null)
     {
       var fullName = Path.Combine(path, filename);
       _log.LogDebug($"{nameof(PutFile)}: {fullName}");
@@ -156,7 +157,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Deletes the file.
     /// </summary>
-    public async Task<bool> DeleteFile(string fullName, IDictionary<string, string> customHeaders)
+    public async Task<bool> DeleteFile(string fullName, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(DeleteFile)}: {fullName}");
 
@@ -164,7 +165,7 @@ namespace VSS.DataOcean.Client
       if (result != null)
       {
         var route = $"/api/files/{result.Id}";
-        await _gracefulClient.ExecuteRequest($"{_dataOceanBaseUrl}{route}", null, customHeaders, HttpMethod.Delete);
+        await _gracefulClient.ExecuteRequest(_dataOceanBaseUrl + route, null, customHeaders, HttpMethod.Delete);
         return true;
       }
 
@@ -174,7 +175,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the id of the lowest level folder metadata in the path 
     /// </summary>
-    public async Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders)
+    public async Task<Guid?> GetFolderId(string path, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(GetFolderId)}: {path}");
 
@@ -185,7 +186,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the file id
     /// </summary>
-    public async Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders)
+    public async Task<Guid?> GetFileId(string fullName, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(GetFileId)}: {fullName}");
 
@@ -196,7 +197,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the file contents
     /// </summary>
-    public async Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders)
+    public async Task<Stream> GetFile(string fullName, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(GetFile)}: {fullName}");
 
@@ -247,7 +248,7 @@ namespace VSS.DataOcean.Client
         //If tile does not exist DataOcean returns 403. The message can include either text as follows
         if (!result.Multifile ||
             !(string.CompareOrdinal(ex.Message.Substring(0, 3), "403") == 0
-              || string.Compare(ex.Message.Substring(0, 9),  "Forbidden", StringComparison.OrdinalIgnoreCase) == 0
+              || string.Compare(ex.Message.Substring(0, 9), "Forbidden", StringComparison.OrdinalIgnoreCase) == 0
               || string.Compare(ex.Message.Substring(0, 13), "Access Denied", StringComparison.OrdinalIgnoreCase) == 0
               )
             )
@@ -273,7 +274,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the file metadata.
     /// </summary>
-    private async Task<DataOceanFile> GetFileMetadata(string fullName, IDictionary<string, string> customHeaders)
+    private async Task<DataOceanFile> GetFileMetadata(string fullName, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(GetFileMetadata)}: {fullName}");
 
@@ -303,7 +304,7 @@ namespace VSS.DataOcean.Client
     ///   We traverse this hierarchy. The only place it matters is the multi-file structure for tiles. This is contained in the multi-file
     ///   download url so we don't have to worry about it.
     /// </summary>
-    private async Task<DataOceanDirectory> GetFolderMetadata(string path, bool mustExist, IDictionary<string, string> customHeaders)
+    private async Task<DataOceanDirectory> GetFolderMetadata(string path, bool mustExist, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(GetFolderMetadata)}: path: {path}, mustExist: {mustExist}");
 
@@ -377,18 +378,18 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the requested folder metadata at the specified level i.e. with the requested parent.
     /// </summary>
-    private Task<BrowseDirectoriesResult> BrowseFolder(string folderName, Guid? parentId, IDictionary<string, string> customHeaders) => BrowseItem<BrowseDirectoriesResult>(folderName, parentId, true, customHeaders);
+    private Task<BrowseDirectoriesResult> BrowseFolder(string folderName, Guid? parentId, IHeaderDictionary customHeaders) => BrowseItem<BrowseDirectoriesResult>(folderName, parentId, true, customHeaders);
 
     /// <summary>
     /// Gets the requested file metadata at the specified level i.e. with the requested parent.
     /// </summary>
-    private Task<BrowseFilesResult> BrowseFile(string fileName, Guid? parentId, IDictionary<string, string> customHeaders) => BrowseItem<BrowseFilesResult>(fileName, parentId, false, customHeaders);
+    private Task<BrowseFilesResult> BrowseFile(string fileName, Guid? parentId, IHeaderDictionary customHeaders) => BrowseItem<BrowseFilesResult>(fileName, parentId, false, customHeaders);
 
     /// <summary>
     /// Gets the requested folder or file metadata at the specified level i.e. with the requested parent.
     /// </summary>
     /// <typeparam name="T">The type of item, folder or file</typeparam>
-    private Task<T> BrowseItem<T>(string itemName, Guid? parentId, bool isFolder, IDictionary<string, string> customHeaders)
+    private Task<T> BrowseItem<T>(string itemName, Guid? parentId, bool isFolder, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(BrowseItem)} ({(isFolder ? "FOLDER" : "FILE")}): name={itemName}, parentId={parentId}");
 
@@ -406,7 +407,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Creates a DataOcean directory.
     /// </summary>
-    private Task<DataOceanDirectoryResult> CreateDirectory(string directoryName, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<DataOceanDirectoryResult> CreateDirectory(string directoryName, Guid? parentId, IHeaderDictionary customHeaders)
     {
       var message = new CreateDirectoryMessage
       {
@@ -423,7 +424,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Creates a DataOcean file.
     /// </summary>
-    private Task<DataOceanFileResult> CreateFile(string filename, Guid? parentId, IDictionary<string, string> customHeaders)
+    private Task<DataOceanFileResult> CreateFile(string filename, Guid? parentId, IHeaderDictionary customHeaders)
     {
       var message = new CreateFileMessage
       {
@@ -447,7 +448,7 @@ namespace VSS.DataOcean.Client
     /// <param name="message">The message payload</param>
     /// <param name="route">The route for the request</param>
     /// <param name="customHeaders"></param>
-    private async Task<U> CreateItem<T, U>(T message, string route, IDictionary<string, string> customHeaders)
+    private async Task<U> CreateItem<T, U>(T message, string route, IHeaderDictionary customHeaders)
     {
       var payload = JsonConvert.SerializeObject(message);
       _log.LogDebug($"{nameof(CreateItem)}: route={route}, message={payload}");
@@ -467,7 +468,7 @@ namespace VSS.DataOcean.Client
     /// <param name="route">The route for the request</param>
     /// <param name="queryParameters">Query parameters for the request</param>
     /// <param name="customHeaders"></param>
-    private async Task<T> GetData<T>(string route, IDictionary<string, string> queryParameters, IDictionary<string, string> customHeaders)
+    private async Task<T> GetData<T>(string route, IDictionary<string, string> queryParameters, IHeaderDictionary customHeaders)
     {
       _log.LogDebug($"{nameof(GetData)}: route={route}, queryParameters={JsonConvert.SerializeObject(queryParameters)}");
 

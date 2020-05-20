@@ -173,10 +173,24 @@ namespace VSS.TRex.Machines
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      using (var stream = this.ToStream())
-      {
-        storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, stream, this);
-      }
+      using var stream = this.ToStream();
+      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, stream, this);
+    }
+
+    /// <summary>
+    /// Removes the content of the machines list from the persistent store
+    /// </summary>
+    public void RemoveFromPersistentStore(IStorageProxy storageProxy)
+    {
+        RemoveFromPersistentStore(DataModelID, storageProxy);
+    }
+
+    /// <summary>
+    /// Removes the content of the machines list from the persistent store
+    /// </summary>
+    public static void RemoveFromPersistentStore(Guid dataModelId, IStorageProxy storageProxy)
+    {
+      storageProxy.RemoveStreamFromPersistentStore(dataModelId, FileSystemStreamType.Machines, MACHINES_LIST_STREAM_NAME);
     }
 
     /// <summary>

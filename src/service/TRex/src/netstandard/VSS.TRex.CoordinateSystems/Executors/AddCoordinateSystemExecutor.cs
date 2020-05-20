@@ -37,7 +37,7 @@ namespace VSS.TRex.CoordinateSystems.Executors
 
         using (MemoryStream csibStream = new MemoryStream(Encoding.ASCII.GetBytes(CSIB)))
         {
-          var status = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
+          var status = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
             FileSystemStreamType.CoordinateSystemCSIB, csibStream, CSIB);
 
           if (status != FileSystemErrorStatus.OK)

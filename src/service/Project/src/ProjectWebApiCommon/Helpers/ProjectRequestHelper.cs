@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
@@ -22,8 +24,6 @@ using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
-using CwsModels = VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -89,7 +89,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var project = (await projectRepo.GetProject(shortRaptorProjectId));
-      
+
       log.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} retrieved");
       return project;
     }
@@ -100,10 +100,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///    else get overlapping projects in localDB for this CustomerUID
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
-      string customerUid, double latitude, double longitude, 
+      string customerUid, double latitude, double longitude,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
-      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList();        ;
+      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList(); ;
 
       log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
       return projects;
@@ -128,7 +128,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// validate CoordinateSystem if provided
     /// </summary>
     public static async Task<bool> ValidateCoordSystemInProductivity3D(IProjectEvent project,
-    IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+    IServiceExceptionHandler serviceExceptionHandler, IHeaderDictionary customHeaders,
     IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord)
     {
       var csFileName = project is CreateProjectEvent
@@ -174,7 +174,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
-      IDictionary<string, string> customHeaders,
+      IHeaderDictionary customHeaders,
       IProjectRepository projectRepo, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
       IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
       ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient)
@@ -182,7 +182,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
         var headers = customHeaders;
-        headers.TryGetValue("X-VisionLink-ClearCache", out string caching);
+        headers.TryGetValue("X-VisionLink-ClearCache", out var caching);
         if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
           headers.Add("X-VisionLink-ClearCache", "true");
 
@@ -220,12 +220,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
               false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
+
           //save copy to DataOcean
           var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
           if (string.IsNullOrEmpty(rootFolder))
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
           }
+
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
@@ -233,15 +235,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
               log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
           }
+
           //save to CWS
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             // use User token for CWS. If app token required use auth.CustomHeaders()   
-            var result = await cwsDesignClient.CreateAndUploadFile(projectUid, new CwsModels.CreateFileRequestModel { FileName= coordinateSystemFileName }, ms, customHeaders);
-            var request = new ProjectConfigurationFileRequestModel { MachineControlFilespaceId = result.FileSpaceId};
-            await (isCreate ? 
-              cwsProfileSettingsClient.SaveProjectConfiguration(projectUid, CwsModels.ProjectConfigurationFileType.CALIBRATION, request, customHeaders) : 
-              cwsProfileSettingsClient.UpdateProjectConfiguration(projectUid, CwsModels.ProjectConfigurationFileType.CALIBRATION, request, customHeaders));
+            var result = await cwsDesignClient.CreateAndUploadFile(projectUid, new CreateFileRequestModel { FileName = coordinateSystemFileName }, ms, customHeaders);
+            var request = new ProjectConfigurationFileRequestModel { MachineControlFilespaceId = result.FileSpaceId };
+            await (isCreate ?
+              cwsProfileSettingsClient.SaveProjectConfiguration(projectUid, ProjectConfigurationFileType.CALIBRATION, request, customHeaders) :
+              cwsProfileSettingsClient.UpdateProjectConfiguration(projectUid, ProjectConfigurationFileType.CALIBRATION, request, customHeaders));
           }
         }
         catch (Exception e)
@@ -318,7 +321,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       };
       await projectRepo.StoreEvent(deleteProjectEvent);
     }
-    
+
     #endregion rollback
 
   }

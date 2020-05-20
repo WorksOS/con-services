@@ -52,6 +52,11 @@ namespace VSS.TRex.Storage
       throw new NotImplementedException();
     }
 
+    public FileSystemErrorStatus RemoveSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks, long version, FileSystemStreamType streamType)
+    {
+      throw new NotImplementedException();
+    }
+
     public void SetImmutableStorageProxy(IStorageProxy immutableProxy)
     {
       throw new NotImplementedException();

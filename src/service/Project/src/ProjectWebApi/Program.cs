@@ -1,26 +1,24 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI
 {
-  /// <summary>
-  /// 
-  /// </summary>
-  public class Program
+  public static class Program
   {
-    /// <summary>
-    /// Application entry point.
-    /// </summary>
-    public static void Main()
+    public static void Main(string[] args)
     {
-      new WebHostBuilder().BuildHostWithReflectionException(builder =>
-      {
-        return builder.UseKestrel()
-          .UseLibuv(opts => { opts.ThreadCount = 32; })
-          .BuildKestrelWebHost()
-          .UseStartup<Startup>()
-          .Build();
-      }).Run();
+      CreateHostBuilder(args).Build()
+                             .Run();
     }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+      Host.CreateDefaultBuilder(args)
+          .ConfigureWebHostDefaults(webBuilder =>
+          {
+            webBuilder.UseLibuv(opts => opts.ThreadCount = 32)
+                      .BuildKestrelWebHost()
+                      .UseStartup<Startup>();
+          });
   }
 }

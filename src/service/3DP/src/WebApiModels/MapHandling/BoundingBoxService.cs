@@ -31,6 +31,7 @@ using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -96,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <returns>A list of boundaries (polygons). Points are latitude/longitude in degrees.</returns>
     public async Task<List<List<WGSPoint>>> GetFilterBoundaries(ProjectData project, FilterResult filter,
       FilterResult baseFilter, FilterResult topFilter, FilterBoundaryType boundaryType,
-      IDictionary<string, string> customHeaders)
+      IHeaderDictionary customHeaders)
     {
       var boundariesTask = GetFilterBoundaries(project, filter, boundaryType, customHeaders);
       var baseFilterBoundaryTask = GetFilterBoundaries(project, baseFilter, boundaryType, customHeaders);
@@ -108,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       boundaries.AddRange(baseFilterBoundaryTask.Result);
       boundaries.AddRange(topFilterBoundaryTask.Result);
-      
+
       return boundaries;
     }
 
@@ -123,7 +124,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="customHeaders"></param>
     /// <returns>A list of boundaries (polygons). Points are latitude/longitude in degrees.</returns>
     public async Task<List<List<WGSPoint>>> GetFilterBoundaries(ProjectData project, FilterResult filter,
-      FilterBoundaryType boundaryType, IDictionary<string, string> customHeaders)
+      FilterBoundaryType boundaryType, IHeaderDictionary customHeaders)
     {
       var boundaries = new List<List<WGSPoint>>();
       if (filter != null)
@@ -169,7 +170,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="topFilter">The top filter for summary volumes</param>
     /// <param name="customHeaders"></param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
-    private async Task<List<WGSPoint>> GetFilterPoints(ProjectData project, FilterResult filter, FilterResult baseFilter, FilterResult topFilter, IDictionary<string, string> customHeaders)
+    private async Task<List<WGSPoint>> GetFilterPoints(ProjectData project, FilterResult filter, FilterResult baseFilter, FilterResult topFilter, IHeaderDictionary customHeaders)
     {
       var boundaries = await GetFilterBoundaries(project, filter, baseFilter, topFilter, FilterBoundaryType.All, customHeaders);
       return GetPointsFromPolygons(boundaries);
@@ -205,7 +206,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     public async Task<MapBoundingBox> GetBoundingBox(ProjectData project, FilterResult filter,
       TileOverlayType[] overlays,
       FilterResult baseFilter, FilterResult topFilter, DesignDescriptor designDescriptor,
-      string userId, IDictionary<string, string> customHeaders)
+      string userId, IHeaderDictionary customHeaders)
     {
       log.LogInformation($"GetBoundingBox: project {project.ProjectUID}");
 
@@ -303,7 +304,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <summary>
     /// Get the production data extents for the project.
     /// </summary>
-    private Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, FilterResult filter, string userId, IDictionary<string, string> customHeaders)
+    private Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId, FilterResult filter, string userId, IHeaderDictionary customHeaders)
     {
       return GetProductionDataExtents(projectUid, projectId, filter?.SurveyedSurfaceExclusionList, filter?.ExcludedSurveyedSurfaceUids, userId, customHeaders);
     }
@@ -312,7 +313,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// Get the production data extents for the project.
     /// </summary>
     public async Task<CoordinateConversionResult> GetProductionDataExtents(Guid projectUid, long projectId,
-      IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids, string userId, IDictionary<string, string> customHeaders)
+      IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids, string userId, IHeaderDictionary customHeaders)
     {
       ProjectStatisticsResult statsResult;
       try
@@ -354,7 +355,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="customHeaders"></param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
     public async Task<List<List<WGSPoint>>> GetDesignBoundaryPolygons(ProjectData project,
-      DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
+      DesignDescriptor designDescriptor, IHeaderDictionary customHeaders)
     {
       var polygons = new List<List<WGSPoint>>();
       var description = TileServiceUtils.DesignDescriptionForLogging(designDescriptor);
@@ -387,20 +388,20 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="designDescriptor">The design to get the boundary for</param>
     /// <param name="customHeaders"></param>
     /// <returns>A GeoJSON representation of the design boundary</returns>
-    private async Task<string> GetDesignBoundary(ProjectData project, DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
+    private async Task<string> GetDesignBoundary(ProjectData project, DesignDescriptor designDescriptor, IHeaderDictionary customHeaders)
     {
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
 #endif
-        return await ProcessWithTRex(project.ProjectUID, designDescriptor, customHeaders);
+      return await ProcessWithTRex(project.ProjectUID, designDescriptor, customHeaders);
 #if RAPTOR
       return ProcessWithRaptor(project.LegacyProjectId, designDescriptor);
 #endif
     }
 
-    private async Task<string> ProcessWithTRex(string projectUid, DesignDescriptor designDescriptor, IDictionary<string, string> customHeaders)
+    private async Task<string> ProcessWithTRex(string projectUid, DesignDescriptor designDescriptor, IHeaderDictionary customHeaders)
     {
-      var queryParams = new Dictionary<string, string>()
+      var queryParams = new HeaderDictionary()
       {
         { "projectUid", projectUid },
         { "designUid", designDescriptor?.FileUid.ToString() },
@@ -477,7 +478,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="customHeaders"></param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
     public async Task<IEnumerable<WGSPoint>> GetAlignmentPoints(ProjectData project, DesignDescriptor alignDescriptor,
-      double startStation = 0, double endStation = 0, double leftOffset = 0, double rightOffset = 0, IDictionary<string, string> customHeaders = null)
+      double startStation = 0, double endStation = 0, double leftOffset = 0, double rightOffset = 0, IHeaderDictionary customHeaders = null)
     {
       var description = TileServiceUtils.DesignDescriptionForLogging(alignDescriptor);
       log.LogDebug($"{nameof(GetAlignmentPoints)}: projectUid={project.ProjectUID}, projectId={project.ShortRaptorProjectId}, alignment={description}");
@@ -507,7 +508,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
           if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
 #endif
-            return await ProcessDesignFilterBoundaryWithTRex(project.ProjectUID, alignDescriptor, customHeaders);
+          return await ProcessDesignFilterBoundaryWithTRex(project.ProjectUID, alignDescriptor, customHeaders);
 #if RAPTOR
           var alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
 
@@ -538,9 +539,9 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       return alignmentPoints;
     }
 
-    private async Task<List<WGSPoint>> ProcessDesignFilterBoundaryWithTRex(string projectUid, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders)
+    private async Task<List<WGSPoint>> ProcessDesignFilterBoundaryWithTRex(string projectUid, DesignDescriptor alignDescriptor, IHeaderDictionary customHeaders)
     {
-      var queryParams = new Dictionary<string, string>()
+      var queryParams = new HeaderDictionary()
       {
         { "projectUid", projectUid },
         { "designUid", alignDescriptor.FileUid.ToString() },
@@ -566,7 +567,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="alignDescriptor"></param>
     /// <param name="customHeaders"></param>
     /// <returns>The station range</returns>
-    public async Task<AlignmentStationRangeResult> GetAlignmentStationRange(ProjectData project, DesignDescriptor alignDescriptor, IDictionary<string, string> customHeaders)
+    public async Task<AlignmentStationRangeResult> GetAlignmentStationRange(ProjectData project, DesignDescriptor alignDescriptor, IHeaderDictionary customHeaders)
     {
       if (alignDescriptor == null)
       {
@@ -584,13 +585,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
       {
 #endif
-        var queryParams = new Dictionary<string, string>()
+      var queryParams = new HeaderDictionary()
         {
           { "projectUid", project.ProjectUID },
           { "designUid", alignDescriptor.FileUid.ToString() }
         };
 
-        return await tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationRangeResult>(project.ProjectUID, "/design/alignment/stationrange", customHeaders, queryParams);
+      return await tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationRangeResult>(project.ProjectUID, "/design/alignment/stationrange", customHeaders, queryParams);
 #if RAPTOR
       }
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);

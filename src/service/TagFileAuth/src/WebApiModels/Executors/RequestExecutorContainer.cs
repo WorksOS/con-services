@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -23,15 +23,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public abstract class RequestExecutorContainer
   {
-
     protected ILogger log;
     private IConfigurationStore configStore;
-    protected IDictionary<string, string> customHeaders;
+    private ITPaaSApplicationAuthentication authorization;
+    private IHeaderDictionary requestCustomHeaders;
 
     private ICwsAccountClient cwsAccountClient;
     private IProjectInternalProxy projectProxy;
     private IDeviceInternalProxy deviceProxy;
-    private ITPaaSApplicationAuthentication authorization;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -46,7 +45,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item); 
+    protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
     protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
@@ -55,7 +54,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       throw new NotImplementedException();
     }
 
-    /// <summary> </summary>
     public ContractExecutionResult Process<T>(T item)
     {
       if (item == null)
@@ -64,8 +62,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       return ProcessEx(item);
     }
 
-
-    /// <summary> </summary>
     public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
     {
       if (item == null)
@@ -77,15 +73,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,      
+    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      ITPaaSApplicationAuthentication authorization) 
+      IHeaderDictionary requestCustomHeaders)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, authorization = authorization };
-        dataRepository = new DataRepository(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization);
+      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders };
+      dataRepository = new DataRepository(authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
       return executor;
     }
-    
   }
 }

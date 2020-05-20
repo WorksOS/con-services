@@ -73,7 +73,8 @@ namespace VSS.TRex.Machines.Interfaces
       bool isJohnDoeMachine,
       Guid machineID);
 
-    void SaveToPersistentStore(IStorageProxy StorageProxy);
-    void LoadFromPersistentStore(IStorageProxy StorageProxy);
+    void SaveToPersistentStore(IStorageProxy storageProxy);
+    void RemoveFromPersistentStore(IStorageProxy storageProxy);
+    void LoadFromPersistentStore(IStorageProxy storageProxy);
   }
 }

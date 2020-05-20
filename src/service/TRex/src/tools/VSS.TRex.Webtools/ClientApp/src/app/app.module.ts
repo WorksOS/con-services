@@ -15,6 +15,7 @@ import { UploadDataComponent } from './upload-data/upload-data.component';
 import { SandboxComponent } from './sandbox/sandbox-component';
 import { ProjectComponent } from './project/project-component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { DeleteProjectComponent } from './delete-project/delete-project-component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
     GridServiceDeployerComponent,
     SandboxComponent,
     ProjectComponent,
-    FetchDataComponent
+    FetchDataComponent,
+    DeleteProjectComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -41,6 +43,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
       { path: 'project', component: ProjectComponent },
       { path: 'sandbox', component: SandboxComponent },
       { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'delete-project', component: DeleteProjectComponent },
     ])
   ],
   providers: [

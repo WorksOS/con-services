@@ -39,6 +39,10 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     bool IsTransient { get; }
 
+    bool IsMarkedForDeletion { get; }
+
+    void MarkForDeletion();
+
     /// <summary>
     /// The grid data for this site model
     /// </summary>
@@ -54,7 +58,15 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     ISubGridTreeBitMask ExistenceMap { get; }
 
-/* VersionMap commented out in interim pending consistency scope review
+    /// <summary>
+    /// Gets the loaded state of the version map. This permits testing if an map is loaded without forcing
+    /// the map to be loaded via the VersionMap property
+    /// </summary>
+    bool ExistenceMapLoaded { get; }
+
+    bool RemoveProductionDataExistenceMapFromStorage(IStorageProxy storageProxy);
+
+    /* VersionMap commented out in interim pending consistency scope review
 /// <summary>
 /// Gets the loaded state of the existence map. This permits testing if an existence map is loaded without forcing
 /// the existence map to be loaded via the ExistenceMap property
@@ -69,15 +81,10 @@ IGenericSubGridTree_Long VersionMap { get; }
 */
 
     /// <summary>
-    /// Gets the loaded state of the version map. This permits testing if an map is loaded without forcing
-    /// the map to be loaded via the VersionMap property
-    /// </summary>
-    bool ExistenceMapLoaded { get; }
-
-    /// <summary>
-    /// SiteModelDesigns records all the designs that have been seen in this site model.
-    /// Each site model designs records the name of the site model and the extents
-    /// of the cell information that have been record for it.
+    /// SiteModelDesigns records all the designs that have been seen in this site model
+    /// as reported by machines via production data
+    /// Each site model design records the name of the design and the extents
+    /// of the cell information that have been recorded for it.
     /// </summary>
     ISiteModelDesignList SiteModelDesigns { get; }
 
@@ -126,9 +133,11 @@ IGenericSubGridTree_Long VersionMap { get; }
     void Include(ISiteModel Source);
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
-    bool SaveMetadataToPersistentStore(IStorageProxy storageProxy);
+    bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = false);
     bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy);
     FileSystemErrorStatus LoadFromPersistentStore();
+
+    bool RemoveMetadataFromPersistentStore(IStorageProxy storageProxy);
 
     /// <summary>
     /// GetAdjustedDataModelSpatialExtents returns the bounding extent of the production data held in the 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -188,7 +189,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       productivity3dV2ProxyCompaction.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
-        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseMasterDataResult());
+        It.IsAny<HeaderDictionary>())).ReturnsAsync(new BaseMasterDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
@@ -249,7 +250,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       productivity3dV2ProxyCompaction.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
-        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseMasterDataResult());
+        It.IsAny<IHeaderDictionary>())).ReturnsAsync(new BaseMasterDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,

@@ -18,7 +18,6 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
-using VSS.Productivity3D.Scheduler.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -42,8 +41,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     public ProjectV6Controller(IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
     {
-      this.HttpContextAccessor = httpContextAccessor;
-      this._notificationHubClient = notificationHubClient;
+      HttpContextAccessor = httpContextAccessor;
+      _notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
@@ -77,16 +76,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectV6(string projectUid)
     {
       Logger.LogInformation("GetProjectV6");
-     
-      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+
+      var project = await ProjectRequestHelper.GetProject(projectUid, CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
     }
 
     // POST: api/project
     /// <summary>
-    /// Create Project
-    ///    as of v6 this creates a project which includes the CustomerUID
-    ///       Both the ProjectUID and CustomerUID are trns which come from ProfileX
+    /// Create a new Project.
+    /// As of v6 this creates a project which includes the CustomerUID.
+    /// Both the ProjectUID and CustomerUID are TRNs provided by ProfileX
     /// </summary>
     /// <param name="projectRequest">CreateProjectRequest model</param>
     /// <remarks>Create new project</remarks>
@@ -97,44 +96,50 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPost]
-    public async Task<ProjectV6DescriptorsSingleResult> CreateProject([FromBody] CreateProjectRequest projectRequest)
+    public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest projectRequest)
     {
       if (projectRequest == null)
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+      {
+        return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 39));
+      }
 
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = new Guid(customerUid);
-   
+      projectRequest.CustomerUID ??= new Guid(CustomerUid);
+
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
+      
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
-      if (createProjectEvent.CustomerUID.ToString() != customerUid)
+
+      if (createProjectEvent.CustomerUID.ToString() != CustomerUid)
+      {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
+      }
 
       // ProjectUID won't be filled yet
-      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(CustomerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, null, customHeaders,
+            CustomerUid, UserId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient:CwsProjectClient, cwsDesignClient:CwsDesignClient, 
-            cwsProfileSettingsClient:CwsProfileSettingsClient)
+            cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
+            cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(createProjectEvent)
       );
 
       var result = new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
       await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
-      Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
-      return result;
+      Logger.LogResult(ToString(), JsonConvert.SerializeObject(projectRequest), result);
+      return Ok(result);
     }
 
     /// <summary>
@@ -146,15 +151,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v4/project/background")]
     [Route("api/v6/project/background")]
     [HttpPost]
-    public async Task<ScheduleJobResult> RequestCreateProjectBackgroundJob([FromBody] CreateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
+    public async Task<IActionResult> RequestCreateProjectBackgroundJob([FromBody] CreateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
     {
       if (projectRequest == null)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+        return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 39));
       }
-      
-      var baseUrl = Request.Host.ToUriComponent(); 
-      var callbackUrl = $"http://{baseUrl}/internal/v6/project";  
+
+      var baseUrl = Request.Host.ToUriComponent();
+      var callbackUrl = $"http://{baseUrl}/internal/v6/project";
       Logger.LogInformation($"nameof(RequestCreateProjectBackgroundJob): baseUrl {callbackUrl}");
 
       var request = new ScheduleJobRequest
@@ -167,11 +172,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ["Content-Type"] = Request.Headers["Content-Type"]
         }
       };
+
       request.SetBinaryPayload(Request.Body);
 
-      var customHeaders = Request.Headers.GetCustomHeaders();
-
-      return await scheduler.ScheduleBackgroundJob(request, customHeaders);
+      return Ok(await scheduler.ScheduleBackgroundJob(request, Request.Headers.GetCustomHeaders()));
     }
 
     // PUT: api/v6/project
@@ -187,25 +191,25 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPut]
-    public async Task<ProjectV6DescriptorsSingleResult> UpdateProjectV6([FromBody] UpdateProjectRequest projectRequest)
+    public async Task<IActionResult> UpdateProjectV6([FromBody] UpdateProjectRequest projectRequest)
     {
       if (projectRequest == null)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
+        return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 40));
       }
 
       Logger.LogInformation("UpdateProjectV6. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
-      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);      
+      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(CustomerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpdateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, null, customHeaders,
+            CustomerUid, UserId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
             dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient,
@@ -218,9 +222,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await _notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
-      return new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+      var result = new ProjectV6DescriptorsSingleResult(
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
+
+      return Ok(result);
     }
 
     /// <summary>
@@ -232,11 +238,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v4/project/background")]
     [Route("api/v6/project/background")]
     [HttpPut]
-    public async Task<ScheduleJobResult> RequestUpdateProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
+    public async Task<IActionResult> RequestUpdateProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
     {
       if (projectRequest == null)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
+        return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 39));
       }
 
       // do a quick validation to make sure the project acctually exists (this will also be run in the background task, but a quick response to the UI will be better if the project can't be updated)
@@ -244,7 +250,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       project.ActionUTC = DateTime.UtcNow;
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
-      await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(CustomerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       var baseUrl = Request.Host.ToUriComponent();
       var callbackUrl = $"http://{baseUrl}/internal/v6/project";
@@ -262,9 +268,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       request.SetBinaryPayload(Request.Body);
 
-      var customHeaders = Request.Headers.GetCustomHeaders();
-
-      return await scheduler.ScheduleBackgroundJob(request, customHeaders);
+      return Ok(await scheduler.ScheduleBackgroundJob(request, Request.Headers.GetCustomHeaders()));
     }
 
     // Archive: api/Project/
@@ -296,14 +300,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
-      if (!string.IsNullOrEmpty(customerUid))
-        await _notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
+      if (!string.IsNullOrEmpty(CustomerUid))
+        await _notificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
 
       Logger.LogInformation("ArchiveProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
-
     }
   }
 }

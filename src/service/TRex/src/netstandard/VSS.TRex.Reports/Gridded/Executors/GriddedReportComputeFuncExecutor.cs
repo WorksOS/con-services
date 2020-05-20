@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -29,7 +28,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
   /// </summary>
   public class GriddedReportComputeFuncExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GriddedReportComputeFuncExecutor>();
     private const double StartGridOffset = 0.000001; // by offsetting the grid start position a tiny distance we avoid skipped cells due to cell boundary checks
 
     /// <summary>

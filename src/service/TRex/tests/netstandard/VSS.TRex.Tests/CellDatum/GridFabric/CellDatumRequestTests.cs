@@ -40,15 +40,15 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     private void AddDesignProfilerGridRouting()
     {
       //This is specific to cell datum i.e. what the cell datum cluster compute will call in the design profiler
-      IgniteMock.AddApplicationGridRouting<CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, double>();
+      IgniteMock.Immutable.AddApplicationGridRouting<CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, double>();
     }
 
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CellDatumRequestComputeFunc_ApplicationService, CellDatumRequestArgument_ApplicationService, CellDatumResponse_ApplicationService>();
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<CellDatumRequestComputeFunc_ApplicationService, CellDatumRequestArgument_ApplicationService, CellDatumResponse_ApplicationService>();
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeSpatialAffinityGridRouting<CellDatumRequestComputeFunc_ClusterCompute, CellDatumRequestArgument_ClusterCompute, CellDatumResponse_ClusterCompute>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeSpatialAffinityGridRouting<CellDatumRequestComputeFunc_ClusterCompute, CellDatumRequestArgument_ClusterCompute, CellDatumResponse_ClusterCompute>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
 

@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(SurfaceElevationPatchRequest))]
   public class SurfaceElevationPatchRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
 
     [Fact]
     public void Creation()

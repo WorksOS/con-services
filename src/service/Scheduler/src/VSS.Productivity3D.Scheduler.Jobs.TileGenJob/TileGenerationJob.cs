@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -81,15 +81,15 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     public Task TearDown(object o, object context) => Task.FromResult(true);
 
     protected abstract Task<TileMetadata> GenerateTiles(TileGenerationRequest request);
-    
-    protected Dictionary<string, string> CustomHeaders() =>
-      new Dictionary<string, string>
+
+    protected IHeaderDictionary CustomHeaders() =>
+      new HeaderDictionary
       {
         {"Content-Type", ContentTypeConstants.ApplicationJson},
         {"Authorization", $"Bearer {authentication.GetApplicationBearerToken()}"}
       };
 
-    protected void SetJobValues(IDictionary<string, string> setJobIdAction)
+    protected void SetJobValues(IHeaderDictionary setJobIdAction)
     {
       if (jobContext == null) { return; }
 

@@ -14,10 +14,10 @@ namespace MockProjectWebApi
   public class Startup : BaseStartup
   {
     /// <inheritdoc />
-    public override string ServiceName => "Filter Service API";
+    public override string ServiceName => "Mock Project Service API";
 
     /// <inheritdoc />
-    public override string ServiceDescription => "A service to manage Filter related CRUD requests within the 3DP service architecture.";
+    public override string ServiceDescription => "A service to mock all CRUD requests within the 3DP service architecture.";
 
     /// <inheritdoc />
     public override string ServiceVersion => "v1";
@@ -56,15 +56,13 @@ namespace MockProjectWebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IFiltersService, FiltersService>();
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
-      services.AddSingleton<IProjectService, ProjectService>();      
+      services.AddSingleton<IProjectService, ProjectService>();
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       //Enable CORS before TID so OPTIONS works without authentication
-      app.UseCommon("VSS");
       app.UseExceptionDummyPostMiddleware();
-      app.UseMvc();
     }
   }
 }

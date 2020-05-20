@@ -21,8 +21,9 @@ namespace VSS.TRex.Storage
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite_Transactional>();
 
-    private static readonly bool UseAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
+    private static readonly bool _useAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
       .GetValueBool("USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", true);
+
     /// <summary>
     /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
     /// </summary>
@@ -129,7 +130,7 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public override bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
-      var commitOk = UseAsyncTasksForStorageProxyIgniteTransactionalCommits 
+      var commitOk = _useAsyncTasksForStorageProxyIgniteTransactionalCommits 
         ? CommitAsync(out numDeleted, out numUpdated, out numBytesWritten) 
         : CommitSync(out numDeleted, out numUpdated, out numBytesWritten);
 

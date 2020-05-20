@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -46,11 +46,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
         try
         {
-          log.LogInformation($"{nameof(WriteFileToDataOcean)}: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
+          log.LogInformation($"{nameof(WriteFileToDataOcean)}: dataOceanPath: '{dataOceanPath}', dataOceanFileName: '{dataOceanFileName}'");
 
           folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
 
-          if (folderAlreadyExists == false)
+          if (!folderAlreadyExists)
           {
             await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);
           }
@@ -63,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             e.Message);
         }
 
-        if (ccPutFileResult == false)
+        if (!ccPutFileResult)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 116);
         }
@@ -80,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes the importedFile from DataOcean
     /// </summary>
     public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(
-      string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid, 
+      string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid,
       ILogger log, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn, IConfigurationStore configStore)
     {
       var dataOceanEnabled = configStore.GetValueBool("ENABLE_DATA_OCEAN", false);
@@ -103,7 +103,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "dataOceanClient.DeleteFile", e.Message);
         }
 
-        if (ccDeleteFileResult == false)
+        if (!ccDeleteFileResult)
         {
           log.LogWarning(
             $"{nameof(DeleteFileFromDataOcean)}: failed to delete {fileName} (importedFileUid:{importedFileUid}).");
@@ -119,14 +119,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return null;
     }
 
-    public static IDictionary<string, string> CustomHeaders(ITPaaSApplicationAuthentication authn)
+    public static IHeaderDictionary CustomHeaders(ITPaaSApplicationAuthentication authn) => new HeaderDictionary
     {
-      return new Dictionary<string, string>
-      {
-        {"Content-Type", ContentTypeConstants.ApplicationJson},
-        {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"},
-        {"Accept", "*/*" }
-      };
-    }
+      {"Content-Type", ContentTypeConstants.ApplicationJson},
+      {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"},
+      {"Accept", "*/*" }
+    };
   }
 }

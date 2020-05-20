@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
@@ -10,26 +13,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   /// <summary>
   /// Common controller base.
   /// </summary>
-  public abstract class BaseController : Controller
+  public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
-    protected readonly IConfigurationStore _configStore;
-    protected ICwsAccountClient _cwsAccountClient;
-    protected IProjectInternalProxy _projectProxy;
-    protected IDeviceInternalProxy _deviceProxy;
-    protected ITPaaSApplicationAuthentication _authorization;
+    private ILogger<T> _logger;
+    private IConfigurationStore _configStore;
+    private ITPaaSApplicationAuthentication _authorization;
+    private ICwsAccountClient _cwsAccountClient;
+    private IProjectInternalProxy _projectProxy;
+    private IDeviceInternalProxy _deviceProxy;
 
-    /// <summary>
-    /// Default constructor.
-    /// </summary>
-    protected BaseController(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      ITPaaSApplicationAuthentication authorization)
-    {
-      _configStore = configStore;
-      _cwsAccountClient = cwsAccountClient;
-      _projectProxy = projectProxy;
-      _deviceProxy = deviceProxy;
-      _authorization = authorization;
-    }
+    protected ILogger<T> Logger => _logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
+    protected IConfigurationStore ConfigStore => _configStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+    protected IHeaderDictionary RequestCustomHeaders => Request.Headers.GetCustomHeaders();
+    protected ITPaaSApplicationAuthentication Authorization => _authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
+    protected ICwsAccountClient CwsAccountClient => _cwsAccountClient ??= HttpContext.RequestServices.GetService<ICwsAccountClient>();
+    protected IProjectInternalProxy ProjectProxy => _projectProxy ??= HttpContext.RequestServices.GetService<IProjectInternalProxy>();
+    protected IDeviceInternalProxy DeviceProxy => _deviceProxy ??= HttpContext.RequestServices.GetService<IDeviceInternalProxy>();
+
+    protected BaseController()
+    { }
   }
 }

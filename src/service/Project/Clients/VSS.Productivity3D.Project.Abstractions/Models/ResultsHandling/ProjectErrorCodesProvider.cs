@@ -129,6 +129,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Device not found in local storage", 125);
       this.DynamicAddwithOffset("Invalid DeviceUid", 126);
       this.DynamicAddwithOffset("Invalid ShortRaptorAssetId", 127);
+      this.DynamicAddwithOffset("Missing DeviceName.", 128);
     }
   }
 }

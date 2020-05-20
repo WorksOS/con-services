@@ -25,7 +25,7 @@ namespace VSS.TRex.Storage
         /// The hashed set of elements pending deletion stored in the transacted cache.
         /// Note: The default equality comparer is supplied to prevent the hash set creating large numbers of comparer objects in its operations
         /// </summary>
-        private readonly HashSet<TK> PendingTransactedDeletes;
+        protected readonly HashSet<TK> PendingTransactedDeletes;
 
         /// <summary>
         /// The dictionary of elements pending writing stored in the transacted cache.

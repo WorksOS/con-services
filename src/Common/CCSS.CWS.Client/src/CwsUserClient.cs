@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -23,10 +23,9 @@ namespace CCSS.CWS.Client
     ///   userId is used for our caching. It must match the userId in the JWT. JWT should be in the customHeaders and should be a user token, not application token.
     /// used by our preferenceService to get details from ProfileX via cws
     /// </summary>
-    public Task<UserResponseModel> GetUser(Guid userId, IDictionary<string, string> customHeaders = null)
+    public Task<UserResponseModel> GetUser(Guid userId, IHeaderDictionary customHeaders = null)
     {
       return GetData<UserResponseModel>("/users/me", null, userId, null, customHeaders);
     }
-
   }
 }

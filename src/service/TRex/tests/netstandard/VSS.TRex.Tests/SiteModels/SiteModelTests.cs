@@ -327,7 +327,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Serialization()
     {
-      const int expectedSiteModelSerializedStreamSize = 89;
+      const int expectedSiteModelSerializedStreamSize = 90;
 
       var guid = Guid.NewGuid();
       var siteModel = new SiteModel(guid, 1.23);

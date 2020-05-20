@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -21,30 +22,30 @@ namespace VSS.MasterData.Proxies.UnitTests
 {
   public class BaseProxyTests
   {
-    private readonly IServiceCollection serviceCollection;
-    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceCollection _serviceCollection;
+    private readonly IServiceProvider _serviceProvider;
 
-    private Mock<IWebRequest> mockWebRequest = new Mock<IWebRequest>();
-    private Mock<IConfigurationStore> mockConfiguration = new Mock<IConfigurationStore>();
-    private Mock<IServiceResolution> mockServiceResolution = new Mock<IServiceResolution>();
+    private readonly Mock<IWebRequest> _mockWebRequest = new Mock<IWebRequest>();
+    private readonly Mock<IConfigurationStore> _mockConfiguration = new Mock<IConfigurationStore>();
+    private readonly Mock<IServiceResolution> _mockServiceResolution = new Mock<IServiceResolution>();
 
     public BaseProxyTests()
     {
-      var name = this.GetType().FullName + ".log";
+      var name = GetType().FullName + ".log";
       var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure(name));
 
-      serviceCollection = new ServiceCollection()
+      _serviceCollection = new ServiceCollection()
         .AddLogging()
         .AddSingleton(loggerFactory)
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>()
         .AddMemoryCache()
         .AddSingleton<IDataCache, InMemoryDataCache>()
-        .AddSingleton(mockWebRequest.Object)
-        .AddSingleton(mockConfiguration.Object)
-        .AddSingleton(mockServiceResolution.Object);
+        .AddSingleton(_mockWebRequest.Object)
+        .AddSingleton(_mockConfiguration.Object)
+        .AddSingleton(_mockServiceResolution.Object);
 
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      _serviceProvider = _serviceCollection.BuildServiceProvider();
     }
 
     [Fact]
@@ -52,54 +53,55 @@ namespace VSS.MasterData.Proxies.UnitTests
     {
       const string originalServiceName = "test-service";
       const string route = "/not-important";
-      var proxy = ActivatorUtilities.CreateInstance<MockProxy>(serviceProvider);
+      var proxy = ActivatorUtilities.CreateInstance<MockProxy>(_serviceProvider);
       Assert.NotNull(proxy);
 
       // Setup the proxy
       proxy.SetParameters(true, ApiService.Project, null, ApiVersion.V1, ApiType.Public);
 
       // Setup the mocks
-      mockServiceResolution.Setup(m => m.GetServiceName(It.IsAny<ApiService>())).Returns(originalServiceName);
+      _mockServiceResolution.Setup(m => m.GetServiceName(It.IsAny<ApiService>())).Returns(originalServiceName);
 
       // First Test, ensure we get the original service name (no override)
       var x = proxy.DoACall(route, null);
 
       // And verify we called with the correct service name
-      mockServiceResolution.Verify(m =>
+      _mockServiceResolution.Verify(m =>
           m.ResolveLocalServiceEndpoint(
-            It.Is<string>(s => string.Compare(s, originalServiceName, StringComparison.OrdinalIgnoreCase) == 0),
+            It.Is<string>(s => string.Equals(s, originalServiceName, StringComparison.OrdinalIgnoreCase)),
             ApiType.Public,
             ApiVersion.V1,
-            It.Is<string>(s => string.Compare(s, route, StringComparison.OrdinalIgnoreCase) == 0),
-            It.IsAny<IList<KeyValuePair<string, string>>>()), 
+            It.Is<string>(s => string.Equals(s, route, StringComparison.OrdinalIgnoreCase)),
+            It.IsAny<IList<KeyValuePair<string, string>>>()),
         Times.Once);
 
       // Reset the calls
-      mockServiceResolution.Invocations.Clear();
-      
+      _mockServiceResolution.Invocations.Clear();
+
       // Now make a call with the overriden service name
-      var overrideServiceHeader = HeaderConstants.X_VSS_SERVICE_OVERRIDE_PREFIX + originalServiceName;
-      var newServiceName = "doesnt-matter";
-      var x2 = proxy.DoACall(route, new Dictionary<string, string> {{overrideServiceHeader, newServiceName}});
+      const string overrideServiceHeader = HeaderConstants.X_VSS_SERVICE_OVERRIDE_PREFIX + originalServiceName;
+      const string newServiceName = "doesnt-matter";
+
+      var x2 = proxy.DoACall(route, new HeaderDictionary { { overrideServiceHeader, newServiceName } });
 
       // Verify that we called the method with the correct name
-      mockServiceResolution.Verify(m =>
+      _mockServiceResolution.Verify(m =>
           m.ResolveLocalServiceEndpoint(
-            It.Is<string>(s => string.Compare(s, newServiceName, StringComparison.OrdinalIgnoreCase) == 0),
+            It.Is<string>(s => string.Equals(s, newServiceName, StringComparison.OrdinalIgnoreCase)),
             ApiType.Public,
             ApiVersion.V1,
-            It.Is<string>(s => string.Compare(s, route, StringComparison.OrdinalIgnoreCase) == 0),
-            It.IsAny<IList<KeyValuePair<string, string>>>()), 
+            It.Is<string>(s => string.Equals(s, route, StringComparison.OrdinalIgnoreCase)),
+            It.IsAny<IList<KeyValuePair<string, string>>>()),
         Times.Once);
 
       // And didn't call the old method with the original service name
-      mockServiceResolution.Verify(m =>
+      _mockServiceResolution.Verify(m =>
           m.ResolveLocalServiceEndpoint(
-            It.Is<string>(s => string.Compare(s, originalServiceName, StringComparison.OrdinalIgnoreCase) == 0),
+            It.Is<string>(s => string.Equals(s, originalServiceName, StringComparison.OrdinalIgnoreCase)),
             ApiType.Public,
             ApiVersion.V1,
-            It.Is<string>(s => string.Compare(s, route, StringComparison.OrdinalIgnoreCase) == 0),
-            It.IsAny<IList<KeyValuePair<string, string>>>()), 
+            It.Is<string>(s => string.Equals(s, route, StringComparison.OrdinalIgnoreCase)),
+            It.IsAny<IList<KeyValuePair<string, string>>>()),
         Times.Never);
     }
   }

@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests
 
     private void AddDesignProfilerGridRouting()
     {
-      IgniteMock.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
+      IgniteMock.Immutable.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
     }
 
     private CutFillStatisticsArgument SimpleCutFillStatisticsArgument(ISiteModel siteModel, Guid designUid, double offset)

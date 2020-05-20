@@ -10,28 +10,26 @@ namespace VSS.Common.Exceptions
   /// </summary>
   public class ServiceExceptionHandler : IServiceExceptionHandler
   {
-    /// <summary>
-    /// The contract execution states enum
-    /// </summary>
     private readonly IErrorCodesProvider _contractExecutionStatesEnum;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ServiceExceptionHandler"/> class.
-    /// </summary>
-    /// <param name="errorProvider">The error provider.</param>
     public ServiceExceptionHandler(IErrorCodesProvider errorProvider)
     {
       _contractExecutionStatesEnum = errorProvider;
     }
 
-    /// <summary>
-    /// Correctly throw ServiceException for controller types.
-    /// </summary>
+    /// <inheritdoc />
     public ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage1 = null, string errorMessage2 = null, Exception innerException = null)
     {
       throw new ServiceException(statusCode,
         new ContractExecutionResult(_contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
-          string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage1 ?? "null", errorMessage2 ?? "null")),innerException);
+          string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage1 ?? "null", errorMessage2 ?? "null")), innerException);
+    }
+
+    /// <inheritdoc />
+    public ContractExecutionResult CreateServiceError(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage1 = null, string errorMessage2 = null, Exception innerException = null)
+    {
+      return new ContractExecutionResult(_contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
+                                         string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage1 ?? "null", errorMessage2 ?? "null"));
     }
   }
 }

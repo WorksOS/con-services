@@ -1,30 +1,16 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
-  public class DeviceDataSingleResult : ContractExecutionResult
+  /// <summary>
+  /// Single Device Descriptor result class
+  /// </summary>
+  public class DeviceDataSingleResult : BaseDataResult, IMasterDataModel
   {
-    private DeviceData _deviceData { get; set; }
+    public DeviceData DeviceDescriptor { get; set; }
 
-    public DeviceDataSingleResult()
-    {
-      _deviceData = null;
-    }
-
-    public DeviceDataSingleResult(int code, string message, DeviceData deviceData = null)
-    {
-      Code = code;
-      Message = message;
-      _deviceData = deviceData;
-      if (_deviceData != null)
-        _deviceData.Code = code;
-    }
-
-    public DeviceDataSingleResult(DeviceData deviceData)
-    {
-      _deviceData = deviceData;
-    }
-
-    public DeviceData DeviceDescriptor { get { return _deviceData; } set { _deviceData = value; } }
+    public List<string> GetIdentifiers() => DeviceDescriptor?.GetIdentifiers() ?? new List<string>();
   }
 }

@@ -8,14 +8,13 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace CCSS.CWS.Client
 {
   public abstract class CwsProfileManagerClient : BaseClient
-  {  
+  {
     public override string ExternalServiceName => "cws_profilemanager";
     public override ApiVersion Version => ApiVersion.V1;
 
     protected CwsProfileManagerClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
      dataCache, serviceResolution)
-    {
-    }
+    { }
   }
 }
