@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -33,23 +34,18 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked imported files</returns>
     [Route("api/v6/importedfiles")]
     [HttpGet]
-    public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid, [FromQuery] bool getProjectCalibrationFiles = false)
+    public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
     {
-      Logger.LogInformation($"{nameof(GetMockImportedFiles)}: projectUid={projectUid} getProjectCalibrationFiles={getProjectCalibrationFiles}");
+      Logger.LogInformation($"{nameof(GetMockImportedFiles)}: projectUid={projectUid}");
 
-      var result = new FileDataResult();
+      ImportedFilesService.ProjectConfigFiles.TryGetValue(projectUid.ToString(), out var projConfigFileList);
+      ImportedFilesService.ImportedFiles.TryGetValue(projectUid.ToString(), out var fileList);
 
-      if (getProjectCalibrationFiles)
+      var result = new FileDataResult
       {
-        ImportedFilesService.ProjectConfigFiles.TryGetValue(projectUid.ToString(), out var projConfigFileList);
-        result.ProjectConfigFileDescriptors = projConfigFileList;
-      }
-      else
-      {
-        ImportedFilesService.ImportedFiles.TryGetValue(projectUid.ToString(), out var fileList);
-        result.ImportedFileDescriptors = fileList ?? new List<FileData>();
-      }
-
+        ProjectConfigFileDescriptors =  projConfigFileList ?? new List<ProjectConfigurationFileResponseModel>(),
+        ImportedFileDescriptors = fileList ?? new List<FileData>()
+      };
       return result;
     }
 
