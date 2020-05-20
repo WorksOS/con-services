@@ -8,6 +8,7 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
+using VSS.Productivity3D.TagFileGateway.Common.Executors;
 using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.TagFileGateway.UnitTests
@@ -23,14 +24,25 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     public Mock<ITransferProxy> TransferProxy { get; }
     public Mock<IWebRequest> WebRequest { get; }
 
+    public T CreateExecutor<T>() where T : RequestExecutorContainer, new()
+    {
+        ConfigStore.Reset();
+        DataCache.Reset();
+
+        TagFileForwarder.Reset();
+        TransferProxy.Reset();
+        WebRequest.Reset();
+        return RequestExecutorContainer.Build<T>(LoggerFactory, ConfigStore.Object, DataCache.Object, TagFileForwarder.Object, TransferProxy.Object, WebRequest.Object);
+    }
+
     public ExecutorBaseFixture()
     {
       LoggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("TagFileGatewayTests.log"));
-      ConfigStore = new Mock<IConfigurationStore>();
-      DataCache = new Mock<IDataCache>();
-      TagFileForwarder = new Mock<ITagFileForwarder>();
-      TransferProxy = new Mock<ITransferProxy>();
-      WebRequest = new Mock<IWebRequest>();
+      ConfigStore = new Mock<IConfigurationStore>(MockBehavior.Strict);
+      DataCache = new Mock<IDataCache>(MockBehavior.Strict);
+      TagFileForwarder = new Mock<ITagFileForwarder>(MockBehavior.Strict);
+      TransferProxy = new Mock<ITransferProxy>(MockBehavior.Strict);
+      WebRequest = new Mock<IWebRequest>(MockBehavior.Strict);
 
       ServiceProvider = new ServiceCollection()
         .AddLogging()
