@@ -17,8 +17,8 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Get a filter for a project by filter id.
     /// </summary>
-    [Mvc.RouteAttribute("api/v1/filter/{projectUid}")]
-    [Mvc.HttpGetAttribute]
+    [Mvc.Route("api/v1/filter/{projectUid}")]
+    [Mvc.HttpGet]
     public FilterData GetMockFilter(string projectUid, [Mvc.FromQuery] string filterUid)
     {
       Logger.LogInformation($"{nameof(GetMockFilter)}: projectUid={projectUid}, filterUid={filterUid}");
@@ -29,8 +29,8 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Gets the filters for a given project.
     /// </summary>
-    [Mvc.RouteAttribute("api/v1/filters/{projectUid}")]
-    [Mvc.HttpGetAttribute]
+    [Mvc.Route("api/v1/filters/{projectUid}")]
+    [Mvc.HttpGet]
     public FilterListData GetMockFilters(string projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockFilters)}: projectUid={projectUid}");
