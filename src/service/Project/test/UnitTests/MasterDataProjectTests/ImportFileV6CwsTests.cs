@@ -69,11 +69,12 @@ namespace VSS.MasterData.ProjectTests
       ServiceProvider = ServiceCollection.BuildServiceProvider();
 
       var controller = CreateFileImportV6Controller();
-      var result = await controller.GetImportedFilesV6(projectUid.ToString(), true);
+      var result = await controller.GetImportedFilesV6(projectUid.ToString());
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
-      Assert.Null(result.ImportedFileDescriptors);
+      Assert.NotNull(result.ImportedFileDescriptors);
+      Assert.Equal(0, result.ImportedFileDescriptors.Count);
       Assert.NotNull(result.ProjectConfigFileDescriptors);
       Assert.Equal(projectConfigurationFileListResponse.ProjectConfigurationFiles, result.ProjectConfigFileDescriptors);
     }
