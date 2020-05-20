@@ -70,19 +70,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v4/importedfiles")] // temporary kludge until ccssscon-219 
     [Route("api/v6/importedfiles")]
     [HttpGet]
-    public async Task<ImportedFileDescriptorListResult> GetImportedFilesV6([FromQuery] string projectUid, [FromQuery] bool getProjectCalibrationFiles=false)
+    public async Task<ImportedFileDescriptorListResult> GetImportedFilesV6([FromQuery] string projectUid)
     {
-      Logger.LogInformation($"{nameof(GetImportedFilesV6)}: projectUid={projectUid} getProjectCalibrationFiles={getProjectCalibrationFiles}");
-      var result = new ImportedFileDescriptorListResult();
-      if (getProjectCalibrationFiles)
+      Logger.LogInformation($"{nameof(GetImportedFilesV6)}: projectUid={projectUid}");
+
+      var projConfigTask = CwsProfileSettingsClient.GetProjectConfigurations(new Guid(projectUid), customHeaders);
+      var importedFileTask = ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, Logger, UserId, ProjectRepo);
+      var tasks = new List<Task> {projConfigTask, importedFileTask};
+      await Task.WhenAll(tasks);
+      var result = new ImportedFileDescriptorListResult
       {
-        var configResult = await CwsProfileSettingsClient.GetProjectConfigurations(new Guid(projectUid), customHeaders);
-        result.ProjectConfigFileDescriptors = configResult.ProjectConfigurationFiles.ToImmutableList();
-      }
-      else
-      {
-        result.ImportedFileDescriptors = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, Logger, UserId, ProjectRepo);
-      }
+        ProjectConfigFileDescriptors = projConfigTask?.Result.ProjectConfigurationFiles.ToImmutableList(),
+        ImportedFileDescriptors = importedFileTask?.Result
+      };
       return result;
     }
 

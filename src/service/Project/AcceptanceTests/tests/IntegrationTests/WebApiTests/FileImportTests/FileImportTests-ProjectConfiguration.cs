@@ -31,7 +31,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
 
       var importFile = new ImportFile(uriRoot);
       var expectedResults = ts.ExpectedProjectConfigFileDescriptorsListResult;
-      var filesResult = await importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v6/importedfiles?projectUid={ts.ProjectUid}&getProjectCalibrationFiles=true", customerUid);
+      var filesResult = await importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v6/importedfiles?projectUid={ts.ProjectUid}", customerUid);
 
       Assert.True(filesResult.ProjectConfigFileDescriptors.Count == 1, $"Expected 1 config file but got {filesResult.ProjectConfigFileDescriptors.Count}");
       Assert.Equal(expectedResults.ProjectConfigFileDescriptors[0].FileName, filesResult.ProjectConfigFileDescriptors[0].FileName);
