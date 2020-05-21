@@ -22,6 +22,7 @@ using VSS.MasterData.Project.WebAPI.Controllers;
 using VSS.Pegasus.Client;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -61,12 +62,18 @@ namespace VSS.MasterData.ProjectTests
           }
         }
       };
+      var mockProjectRepo = CreateMockProjectRepo();
+      mockProjectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>()))
+        .ReturnsAsync(new List<ImportedFile>());
+
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfigurations(projectUid, customHeaders))
         .ReturnsAsync(projectConfigurationFileListResponse);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
+
+      
 
       var controller = CreateFileImportV6Controller();
       var result = await controller.GetImportedFilesV6(projectUid.ToString());
@@ -87,12 +94,8 @@ namespace VSS.MasterData.ProjectTests
 
       var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
       var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
-      var mockProjectRepo = new Mock<IProjectRepository>();
-      mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
-      //Remove the real project repo set up in base class and replace with mock
-      var serviceDescriptor = ServiceCollection.First(s => s.ServiceType == typeof(IProjectRepository));
-      ServiceCollection.Remove(serviceDescriptor);
-      ServiceCollection.AddSingleton(mockProjectRepo.Object);
+      var mockProjectRepo = CreateMockProjectRepo();
+      mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList); ;
 
       var mockCwsDesignClient = new Mock<ICwsDesignClient>();
       ServiceCollection
@@ -134,12 +137,8 @@ namespace VSS.MasterData.ProjectTests
 
       var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
       var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
-      var mockProjectRepo = new Mock<IProjectRepository>();
+      var mockProjectRepo = CreateMockProjectRepo();
       mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
-      //Remove the real project repo set up in base class and replace with mock
-      var serviceDescriptor = ServiceCollection.First(s => s.ServiceType == typeof(IProjectRepository));
-      ServiceCollection.Remove(serviceDescriptor);
-      ServiceCollection.AddSingleton(mockProjectRepo.Object);
 
       var createFileResponseModel = new CreateFileResponseModel
         { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
@@ -201,12 +200,8 @@ namespace VSS.MasterData.ProjectTests
 
       var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
       var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
-      var mockProjectRepo = new Mock<IProjectRepository>();
+      var mockProjectRepo = CreateMockProjectRepo();
       mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
-      //Remove the real project repo set up in base class and replace with mock
-      var serviceDescriptor = ServiceCollection.First(s => s.ServiceType == typeof(IProjectRepository));
-      ServiceCollection.Remove(serviceDescriptor);
-      ServiceCollection.AddSingleton(mockProjectRepo.Object);
 
       var filename1 = "MyTestFilename.avoid.svl";
       var filename2 = "MyTestFilename.avoid.dxf";
@@ -384,6 +379,16 @@ namespace VSS.MasterData.ProjectTests
       var controller = new FileImportV6Controller(configStore, persistentTransferProxy, null,null,null,mockNotificationHubClient.Object);
       controller.ControllerContext = controllerContext;
       return controller;
+    }
+
+    private Mock<IProjectRepository> CreateMockProjectRepo()
+    {
+      var mockProjectRepo = new Mock<IProjectRepository>();
+      //Remove the real project repo set up in base class and replace with mock
+      var serviceDescriptor = ServiceCollection.First(s => s.ServiceType == typeof(IProjectRepository));
+      ServiceCollection.Remove(serviceDescriptor);
+      ServiceCollection.AddSingleton(mockProjectRepo.Object);
+      return mockProjectRepo;
     }
 
     private ITransferProxy TransferProxyMethod(TransferProxyType type)
