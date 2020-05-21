@@ -73,12 +73,13 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     }
 
     [Theory]
-    [InlineData("11-12_Binary.dxf", DxfUnitsType.Meters, 10, 1, "11-12_Binary1", DXFLineWorkBoundaryType.GenericBoundary)]
-    [InlineData("Binary lesson-11.dxf", DxfUnitsType.Meters, 8, 2, "Binary lesson-111", DXFLineWorkBoundaryType.GenericBoundary)]
-    [InlineData("Binary lesson-3.dxf", DxfUnitsType.Meters, 0, 0, "-1", DXFLineWorkBoundaryType.Unknown)]
+    [InlineData("11-12_Binary.dxf", DxfUnitsType.Meters, 10, 37, "1", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("Binary lesson-11.dxf", DxfUnitsType.Meters, 0, 0, "1", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("Binary lesson-3.dxf", DxfUnitsType.Meters, 0, 0, "1", DXFLineWorkBoundaryType.Unknown)]
     public async void Binary_DXF_Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
     {
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, 10);
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary,
+        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))), units, 10, false);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 

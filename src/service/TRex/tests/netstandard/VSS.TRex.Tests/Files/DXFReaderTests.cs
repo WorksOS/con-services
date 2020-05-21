@@ -11,7 +11,7 @@ namespace VSS.TRex.Tests.Files
 {
   public class DXFReaderTests
   {
-    private Stream CreateTestPolyline()
+    private MemoryStream CreateTestPolyline()
     {
       byte[] bytes = null;
 

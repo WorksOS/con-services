@@ -858,7 +858,7 @@ namespace VSS.TRex.Files.DXF
     /// </summary>
     /// <param name="dxfFile"></param>
     /// <param name="units"></param>
-    public DXFReader(Stream dxfFile, DxfUnitsType units)
+    public DXFReader(MemoryStream dxfFile, DxfUnitsType units)
     {
       DXFFileIsBinary = IsBinaryDXF(dxfFile, out _dXFFileIsPostR13c3);
 
@@ -869,7 +869,7 @@ namespace VSS.TRex.Files.DXF
       }
       else
       {
-        _dxfLine.
+        dxfFile.Position = 0;
         _aSCIIdxfFile = new StreamReader(dxfFile);
       }
 

@@ -27,7 +27,7 @@ namespace VSS.TRex.Files.DXF
       {
         if (_reader.GetBoundaryFromPolyLineEntity(!convertLineStringCoordsToPolygon, out atEOF, out var boundary))
         {
-          if (boundary != null)
+          if (boundary != null && boundary.Boundary.Points.Count >= 3)
           {
             if (boundary.Type == DXFLineWorkBoundaryType.Unknown)
               boundary.Type = DXFLineWorkBoundaryType.GenericBoundary;
