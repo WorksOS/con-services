@@ -1,8 +1,8 @@
 ﻿using Apache.Ignite.Core.Compute;
 using VSS.TRex.Caching.Interfaces;
-using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
+using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
@@ -11,7 +11,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 {
-  public class SurfaceElevationPatchRequest : DesignProfilerRequest<ISurfaceElevationPatchArgument, IClientLeafSubGrid>, ISurfaceElevationPatchRequest
+  public class SurfaceElevationPatchRequest : DesignProfilerServicePoolRequest<ISurfaceElevationPatchArgument, IClientLeafSubGrid>, ISurfaceElevationPatchRequest
   {
     //private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchRequest>();
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         return resultItem;
       }
 
-      bool cachingSupported = arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _context != null;
+      var cachingSupported = arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _context != null;
 
       // Check the item is available in the cache
       if (cachingSupported && _context?.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
