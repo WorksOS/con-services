@@ -70,12 +70,14 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectUid = Guid.NewGuid();
       var projectType = ProjectType.Standard;
-      var existingProject = await CreateProject(projectUid.ToString(), projectType);
+      var coordSystemFileContent = System.Text.Encoding.ASCII.GetBytes("Some dummy content");
+      var existingProject = await CreateProject(projectUid.ToString(), projectType,"dummy coord system", coordSystemFileContent);
 
       if (existingProject.ProjectUID != null)
       {
+        var updatedCoordSysFileContent = System.Text.Encoding.ASCII.GetBytes("Some other dummy content");
         var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
-        (projectUid, existingProject.ProjectType, existingProject.Name, null, null,
+        (projectUid, existingProject.ProjectType, existingProject.Name, "updated dummy coord system", updatedCoordSysFileContent,
           _updatedBoundaryString);
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -84,6 +86,28 @@ namespace VSS.MasterData.ProjectTests.Executors
         //var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
         var projectClient = new Mock<ICwsProjectClient>();
         //projectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+
+        var createFileResponseModel = new CreateFileResponseModel
+          { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
+        var cwsDesignClient = new Mock<ICwsDesignClient>();
+        cwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), _customHeaders))
+          .ReturnsAsync(createFileResponseModel);
+
+        var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+        {
+          FileName = "some coord sys file",
+          FileDownloadLink = "some download link"
+        };
+        var updatedConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+        {
+          FileName = "updated coord sys file",
+          FileDownloadLink = "updated download link"
+        };
+        var cwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
+        cwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, _customHeaders))
+          .ReturnsAsync(projectConfigurationFileResponseModel);
+        cwsProfileSettingsClient.Setup(ps => ps.UpdateProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), _customHeaders))
+          .ReturnsAsync(updatedConfigurationFileResponseModel);
 
         var projectRepo = new Mock<IProjectRepository>();
         projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
@@ -105,12 +129,32 @@ namespace VSS.MasterData.ProjectTests.Executors
         productivity3dV1ProxyCoord.Setup(p =>
             p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
+        productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+            It.IsAny<HeaderDictionary>()))
+          .ReturnsAsync(new CoordinateSystemSettingsResult());
+
+        var fileRepo = new Mock<IFileRepository>();
+        fileRepo.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+        fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+          It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
+
+        var dataOceanClient = new Mock<IDataOceanClient>();
+        dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
+        dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
+          It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
+
+        var authn = new Mock<ITPaaSApplicationAuthentication>();
+        authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
         var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
-          projectRepo: projectRepo.Object, cwsProjectClient: projectClient.Object);
+          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, /*httpContextAccessor: httpContextAccessor,*/
+          dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+          cwsProjectClient: projectClient.Object, 
+          cwsDesignClient: cwsDesignClient.Object,
+          cwsProfileSettingsClient: cwsProfileSettingsClient.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
@@ -145,6 +189,23 @@ namespace VSS.MasterData.ProjectTests.Executors
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(createProjectResponseModel);
 
+      var createFileResponseModel = new CreateFileResponseModel
+        { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
+      var cwsDesignClient = new Mock<ICwsDesignClient>();
+      cwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), _customHeaders))
+        .ReturnsAsync(createFileResponseModel);
+
+      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      {
+        FileName = "some coord sys file",
+        FileDownloadLink = "some download link"
+      };
+      var cwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
+      cwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, _customHeaders))
+        .ReturnsAsync((ProjectConfigurationFileResponseModel)null);
+      cwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), _customHeaders))
+        .ReturnsAsync(projectConfigurationFileResponseModel);
+
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v6/projects");
 
@@ -174,7 +235,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
         projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
-        cwsProjectClient: cwsProjectClient.Object);
+        cwsProjectClient: cwsProjectClient.Object, cwsDesignClient: cwsDesignClient.Object,
+        cwsProfileSettingsClient: cwsProfileSettingsClient.Object);
       await createExecutor.ProcessAsync(createProjectEvent);
 
       return AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(createProjectEvent);

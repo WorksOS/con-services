@@ -23,17 +23,18 @@ namespace VSS.MasterData.ProjectTests
     public IServiceProvider ServiceProvider;
     protected IServiceExceptionHandler ServiceExceptionHandler;
     public ILogger Log;
+    protected IServiceCollection ServiceCollection;
 
     public UnitTestsDIFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
       var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Project.UnitTests.log"));
-      var serviceCollection = new ServiceCollection();
+      ServiceCollection = new ServiceCollection();
 
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection
+      ServiceCollection.AddLogging();
+      ServiceCollection.AddSingleton(loggerFactory);
+      ServiceCollection
         .AddTransient<IProjectRepository, ProjectRepository>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
@@ -42,7 +43,7 @@ namespace VSS.MasterData.ProjectTests
         .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
-      ServiceProvider = serviceCollection.BuildServiceProvider();
+      ServiceProvider = ServiceCollection.BuildServiceProvider();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();

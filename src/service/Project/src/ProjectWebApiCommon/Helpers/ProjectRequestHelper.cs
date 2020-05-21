@@ -239,12 +239,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           //save to CWS
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
-            // use User token for CWS. If app token required use auth.CustomHeaders()   
-            var result = await cwsDesignClient.CreateAndUploadFile(projectUid, new CreateFileRequestModel { FileName = coordinateSystemFileName }, ms, customHeaders);
-            var request = new ProjectConfigurationFileRequestModel { MachineControlFilespaceId = result.FileSpaceId };
-            await (isCreate ?
-              cwsProfileSettingsClient.SaveProjectConfiguration(projectUid, ProjectConfigurationFileType.CALIBRATION, request, customHeaders) :
-              cwsProfileSettingsClient.UpdateProjectConfiguration(projectUid, ProjectConfigurationFileType.CALIBRATION, request, customHeaders));
+            //TODO: handle errors from CWS
+            await CwsConfigFileHelper.SaveFileToCws(projectUid, coordinateSystemFileName, ms, ImportedFileType.CwsCalibration, 
+              cwsDesignClient, cwsProfileSettingsClient, customHeaders);
           }
         }
         catch (Exception e)

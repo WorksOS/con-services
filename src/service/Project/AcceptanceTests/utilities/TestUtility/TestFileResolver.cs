@@ -4,7 +4,7 @@ using System.IO;
 
 namespace TestUtility
 {
-  public class TestFileResolver
+  public static class TestFileResolver
   {
     private static readonly Dictionary<string, string> _uniqueTestFilenames = new Dictionary<string, string>();
 

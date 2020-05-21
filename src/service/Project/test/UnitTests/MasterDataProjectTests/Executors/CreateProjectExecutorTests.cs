@@ -124,6 +124,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         FileDownloadLink = "some download link"
       };
       var cwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
+      cwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, customHeaders))
+        .ReturnsAsync((ProjectConfigurationFileResponseModel)null);
       cwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel);
 
@@ -207,6 +209,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         FileDownloadLink = "some download link"
       };
       var cwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
+      cwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, customHeaders))
+        .ReturnsAsync((ProjectConfigurationFileResponseModel)null);
       cwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel);
 

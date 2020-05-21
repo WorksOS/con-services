@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -47,8 +48,9 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
-      var projectConfigurationFileResponse = await GetData<ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
-
+      var projectConfigurationFileResponse = 
+        await GetData<ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
+     
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationFileResponse {JsonConvert.SerializeObject(projectConfigurationFileResponse)}");
       return projectConfigurationFileResponse;
     }
@@ -64,8 +66,9 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectConfigurations)}: projectUid {projectUid}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
-      var projectConfigurationFileListResponse = await GetData<ProjectConfigurationFileListResponseModel>($"/projects/{projectTrn}/configuration", null, null, null, customHeaders);
-
+      var projectConfigurationFileListResponse = 
+        await GetData<ProjectConfigurationFileListResponseModel>($"/projects/{projectTrn}/configuration", null, null, null, customHeaders);
+      
       log.LogDebug($"{nameof(GetProjectConfigurations)}: projectConfigurationFileListResponse {JsonConvert.SerializeObject(projectConfigurationFileListResponse)}");
       return projectConfigurationFileListResponse;
     }
@@ -96,7 +99,8 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
-      var projectConfigurationResponse = await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
+      var projectConfigurationResponse = 
+        await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
 
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectConfigurationResponse {JsonConvert.SerializeObject(projectConfigurationResponse)}");
       return projectConfigurationResponse;

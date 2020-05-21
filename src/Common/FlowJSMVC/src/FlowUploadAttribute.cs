@@ -39,7 +39,11 @@ namespace VSS.FlowJSHandler
         return;
       }
 
-      filterContext.Result = new AcceptedResult();
+      if (status.Status == PostChunkStatus.Error)
+        //TODO: Figure out how we can return the flow errors to the client
+        filterContext.Result = new BadRequestResult();
+      else
+        filterContext.Result = new AcceptedResult();
 
       base.OnActionExecuting(filterContext);
     }

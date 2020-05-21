@@ -9,8 +9,11 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CCSS.CWS.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using TestUtility.Model;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -72,27 +75,49 @@ namespace TestUtility
     {
       var fileDescriptor = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
-      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = fileDescriptor;
-
-      var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
-      var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
-
-      var uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
-
-      switch (fileDescriptor.ImportedFileTypeName)
+      string uri = null;
+      if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
       {
-        case "SurveyedSurface":
-          uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
-          break;
-        case "Linework":
-          uri = $"{uri}&DxfUnitsType={fileDescriptor.DxfUnitsType}";
-          break;
-        case "ReferenceSurface":
-          uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
-          break;
-        case "GeoTiff":
-          uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
-          break;
+        ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor = new ProjectConfigurationFileResponseModel {FileName = fileDescriptor.Name};
+
+        uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}&fileUpdatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}";
+
+        if (importOptions.HttpMethod == HttpMethod.Delete)
+        {
+          uri = $"{uri}&filename={fileDescriptor.Name}";
+        }
+      }
+      else
+      {
+        ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = fileDescriptor;
+
+        if (importOptions.HttpMethod == HttpMethod.Delete)
+        {
+          uri = $"api/v6/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
+        }
+        else
+        {
+          var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
+          var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
+
+          uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
+
+          switch (fileDescriptor.ImportedFileTypeName)
+          {
+            case "SurveyedSurface":
+              uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+              break;
+            case "Linework":
+              uri = $"{uri}&DxfUnitsType={fileDescriptor.DxfUnitsType}";
+              break;
+            case "ReferenceSurface":
+              uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
+              break;
+            case "GeoTiff":
+              uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+              break;
+          }
+        }
       }
 
       if (importOptions.QueryParams != null)
@@ -103,29 +128,39 @@ namespace TestUtility
         }
       }
 
-      if (importOptions.HttpMethod == HttpMethod.Delete)
-      {
-        uri = $"api/v6/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
-      }
-
       string response;
 
       if (fileDescriptor.ImportedFileType == ImportedFileType.ReferenceSurface)
       {
         response = await DoHttpRequest(uri, importOptions.HttpMethod, null, fileDescriptor.CustomerUid, MediaTypes.JSON, statusCode: statusCode);
       }
+      else if (importOptions.HttpMethod == HttpMethod.Delete)
+      {
+        response = await DoHttpRequest(uri, importOptions.HttpMethod, null, fileDescriptor.CustomerUid, MediaTypes.JSON, statusCode: statusCode);
+      }
       else
       {
         response = await UploadFilesToWebApi(fileDescriptor.Name, uri, fileDescriptor.CustomerUid, importOptions.HttpMethod, statusCode);
-
-        if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
-          ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      }
+      
+      if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
+      {
+        // Change expected result - fix filename
+        if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
+        {
+          ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName);
+        }
+        else
+        {
+          ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);
+        }
       }
 
       return JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response, new JsonSerializerSettings
       {
         DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
-        NullValueHandling = NullValueHandling.Ignore
+        NullValueHandling = NullValueHandling.Ignore,
+        ContractResolver = new CamelCasePropertyNamesContractResolver()
       });
     }
 
@@ -207,12 +242,13 @@ namespace TestUtility
         var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
         var contentType = $"multipart/form-data; boundary={BOUNDARY_START}{boundaryIdentifier}";
 
+        var expectedStatusCode = statusCode != HttpStatusCode.OK ? statusCode : (offset < chunks-1 ? HttpStatusCode.Accepted : HttpStatusCode.OK);
         using (var content = new MemoryStream())
         {
           FormatTheContentDisposition(flowFileUpload, currentBytes, filename,
             $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
 
-          result = await RestClient.SendHttpClientRequest(uri, httpMethod, MediaTypes.JSON, contentType, customerUid, content, expectedHttpCode: statusCode);
+          result = await RestClient.SendHttpClientRequest(uri, httpMethod, MediaTypes.JSON, contentType, customerUid, content, expectedHttpCode: expectedStatusCode);
         }
       }
 
