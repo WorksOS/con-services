@@ -16,8 +16,8 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
         {
             if (!(item is CompactionTagFileRequest request))
             {
-                Logger.LogWarning("Empty request passed");
-                return ContractExecutionResult.ErrorResult("Empty Request");
+                Logger.LogWarning($"Invalid Request passed in. Expected {typeof(CompactionTagFileRequest).Name} but got {(item == null ? "null" : item.GetType().Name)}");
+                return ContractExecutionResult.ErrorResult("Invalid Request");
             }
 
             request.Validate();

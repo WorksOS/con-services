@@ -15,8 +15,8 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
     {
       if (!(item is SnsPayload payload))
       {
-        Logger.LogWarning($"Empty request passed");
-        return ContractExecutionResult.ErrorResult("Empty Request");
+        Logger.LogWarning($"Invalid Request passed in. Expected {typeof(SnsPayload).Name} but got {(item == null ? "null" : item.GetType().Name)}");
+        return ContractExecutionResult.ErrorResult("Invalid Request");
       }
 
       Logger.LogInformation($"Sns message type: {payload.Type}, topic: {payload.TopicArn}");
