@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -40,15 +39,12 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as DXFBoundariesRequest;
-      //      var siteModel = GetSiteModel(request.ProjectUid);
 
-      //      if (siteModel == null)
-      //        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Unknown site model {request.ProjectUid}"));
+      if (request == null) 
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Request is null"));
 
-      if (!File.Exists(request.FileName))
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"File {request.FileName} does not exist"));
-
-      var result = DXFFileUtilities.RequestBoundariesFromLineWork(request.FileName, request.FileUnits, request.MaxBoundaries, out var boundaries);
+      var result = DXFFileUtilities.RequestBoundariesFromLineWork
+        (request.DXFFileData, request.FileUnits, request.MaxBoundaries, request.ConvertLineStringCoordsToPolygon, out var boundaries);
 
       if (result != DXFUtilitiesResult.Ok)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Error processing file: {result}"));
@@ -56,11 +52,27 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
       if (boundaries == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Internal request successful, but returned boundaries are null"));
 
-      return await ConvertResult(boundaries, request.CSIB);
+      return await ConvertResult(boundaries, request.CSIBFileData);
     }
 
-    protected async Task<DXFBoundaryResult> ConvertResult(PolyLineBoundaries boundaries, string csib)
+    protected async Task<DXFBoundaryResult> ConvertResult(PolyLineBoundaries boundaries, string coordinateSystemFileData)
     {
+      DXFBoundaryResult ConstructResponse()
+      {
+        return new DXFBoundaryResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success",
+          boundaries.Boundaries.Select(x =>
+            new DXFBoundaryResultItem(x.Boundary.Points.Select(pt =>
+              new WGSPoint(pt.X, pt.Y)).ToList(), x.Type, x.Name)).ToList());
+      }
+
+      if (string.IsNullOrEmpty(coordinateSystemFileData))
+      {
+        // No coordinate system provided, jsut return the grid coordinates read from the file
+        return ConstructResponse();
+      }
+
+      var csib = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSIB("nofile", Convert.FromBase64String(coordinateSystemFileData));
+
       // Convert grid coordinates into WGS: assemble and convert
       var coordinates = boundaries.Boundaries.SelectMany(x => x.Boundary.Points).Select(pt => new XYZ(pt.X, pt.Y,0.0)).ToArray();
 
@@ -84,11 +96,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
         }
       }
 
-      // Construct response
-      return new DXFBoundaryResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success",
-        boundaries.Boundaries.Select(x =>
-        new DXFBoundaryResultItem(x.Boundary.Points.Select(pt =>
-          new WGSPoint(pt.X, pt.Y)).ToList(), x.Type, x.Name)).ToList());
+      return ConstructResponse();
     }
 
     /// <summary>

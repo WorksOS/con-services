@@ -22,7 +22,7 @@ namespace VSS.TRex.Files.DXF
         }
 
         var extractor = new PolyLineBoundaryExtractor(reader);
-        var result = extractor.Extract(baseName, units, maxBoundariesToProcess);
+        var result = extractor.Extract(units, maxBoundariesToProcess, convertLineStringCoordsToPolygon);
 
         if (result == DXFUtilitiesResult.Ok)
           boundaries = extractor.Boundaries;
@@ -41,11 +41,12 @@ namespace VSS.TRex.Files.DXF
       }
     }
 
-    public static DXFUtilitiesResult RequestBoundariesFromLineWork(string dxfFileName, DxfUnitsType units, uint maxBoundariesToProcess, out PolyLineBoundaries boundaries)
+    public static DXFUtilitiesResult RequestBoundariesFromLineWork(string dxfFileContext, DxfUnitsType units, uint maxBoundariesToProcess, bool convertLineStringCoordsToPolygon, out PolyLineBoundaries boundaries)
     {
-      using var fileStream = new FileStream(dxfFileName, FileMode.Open, FileAccess.Read);
+      using var fileStream = new MemoryStream(Convert.FromBase64String(dxfFileContext));
+      using var reader = new StreamReader(fileStream);
 
-      return DXFFileUtilities.RequestBoundariesFromLineWork(fileStream, Path.GetFileNameWithoutExtension(dxfFileName), units, maxBoundariesToProcess, out boundaries);
+      return DXFFileUtilities.RequestBoundariesFromLineWork(reader, units, maxBoundariesToProcess, convertLineStringCoordsToPolygon, out boundaries);
     }
   }
 }
