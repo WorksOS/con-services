@@ -1,0 +1,15 @@
+# We bind the role to the Jenkins service account. The role binding is created in the namespace
+# where the agents are supposed to run.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prod-service-role-binding
+  namespace: prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prod-service-role
+subjects:
+  - kind: ServiceAccount
+    name: prod-service-account
+    namespace: prod
