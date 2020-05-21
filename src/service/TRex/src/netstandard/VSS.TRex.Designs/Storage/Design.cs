@@ -178,16 +178,14 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="spotY"></param>
     public async Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelID, double offset, double spotX, double spotY)
     {
-      (double spotHeight, DesignProfilerRequestResult errorCode) result = (0.0, DesignProfilerRequestResult.OK);
-
       // Query the DesignProfiler service to get the spot elevation calculated
       if (elevSpotRequest == null)
         elevSpotRequest = new DesignElevationSpotRequest();
 
-      result.spotHeight = await elevSpotRequest.ExecuteAsync(new CalculateDesignElevationSpotArgument
+      var response = await elevSpotRequest.ExecuteAsync(new CalculateDesignElevationSpotArgument
         (siteModelID, spotX, spotY, new DesignOffset(DesignDescriptor.DesignID, offset)));
 
-      return result;
+      return (response.Elevation, response.CalcResult);
     }
 
     /// <summary>
