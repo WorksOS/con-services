@@ -80,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await Task.WhenAll(tasks);
       var result = new ImportedFileDescriptorListResult
       {
-        ProjectConfigFileDescriptors = projConfigTask?.Result.ProjectConfigurationFiles.ToImmutableList(),
+        ProjectConfigFileDescriptors = projConfigTask?.Result?.ProjectConfigurationFiles.ToImmutableList(),
         ImportedFileDescriptors = importedFileTask?.Result
       };
       return result;
