@@ -5,6 +5,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -15,7 +16,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
   public class DesignElevationSpotRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
-      <CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, double>();
+      <CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, CalculateDesignElevationSpotResponse>();
 
     [Fact]
     public void Test_DesignElevationSpotRequest_Creation()
@@ -50,7 +51,8 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
         SpotY = spotY,
       });
 
-      response.Should().BeApproximately(expectedHeight + offset, 0.001);
+      response.CalcResult.Should().Be(DesignProfilerRequestResult.OK);
+      response.Elevation.Should().BeApproximately(expectedHeight + offset, 0.001);
     }
   }
 }
