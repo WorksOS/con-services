@@ -134,21 +134,25 @@ namespace TestUtility
       {
         response = await DoHttpRequest(uri, importOptions.HttpMethod, null, fileDescriptor.CustomerUid, MediaTypes.JSON, statusCode: statusCode);
       }
+      else if (importOptions.HttpMethod == HttpMethod.Delete)
+      {
+        response = await DoHttpRequest(uri, importOptions.HttpMethod, null, fileDescriptor.CustomerUid, MediaTypes.JSON, statusCode: statusCode);
+      }
       else
       {
         response = await UploadFilesToWebApi(fileDescriptor.Name, uri, fileDescriptor.CustomerUid, importOptions.HttpMethod, statusCode);
-
-        if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
+      }
+      
+      if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
+      {
+        // Change expected result - fix filename
+        if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
         {
-          // Change expected result - fix filename
-          if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
-          {
-            ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName);
-          }
-          else
-          {
-            ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);
-          }
+          ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName);
+        }
+        else
+        {
+          ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);
         }
       }
 
