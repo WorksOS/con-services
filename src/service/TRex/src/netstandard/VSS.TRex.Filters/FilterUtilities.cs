@@ -8,6 +8,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
 
@@ -26,39 +27,39 @@ namespace VSS.TRex.Filters
     /// Prepare a filter for use by performing any necessary coordinate conversions and requesting any
     /// supplemental information such as alignment design boundary calculations.
     /// </summary>
-    /// <param name="Filter"></param>
-    /// <param name="DataModelID"></param>
+    /// <param name="filter"></param>
+    /// <param name="dataModelId"></param>
     /// <returns></returns>
-    public static async Task<RequestErrorStatus> PrepareFilterForUse(ICombinedFilter Filter, Guid DataModelID)
+    public static async Task<RequestErrorStatus> PrepareFilterForUse(ICombinedFilter filter, Guid dataModelId)
     {
       // Fence DesignBoundary = null;
-      var Result = RequestErrorStatus.OK;
+      var result = RequestErrorStatus.OK;
 
       //RequestResult: TDesignProfilerRequestResult;
 
-      if (Filter == null)
-        return Result;
+      if (filter == null)
+        return result;
 
-      if (Filter.SpatialFilter != null)
+      if (filter.SpatialFilter != null)
       {
-        if (!Filter.SpatialFilter.CoordsAreGrid)
+        if (!filter.SpatialFilter.CoordsAreGrid)
         {
-          var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+          var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
 
           XYZ[] LLHCoords;
           // If the filter has a spatial or positional context, then convert the LLH values in the
           // spatial context into the NEE values consistent with the data model.
-          if (Filter.SpatialFilter.IsSpatial)
+          if (filter.SpatialFilter.IsSpatial)
           {
-            LLHCoords = new XYZ[Filter.SpatialFilter.Fence.NumVertices];
+            LLHCoords = new XYZ[filter.SpatialFilter.Fence.NumVertices];
 
             // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
-            for (int FencePointIdx = 0; FencePointIdx < Filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
+            for (var FencePointIdx = 0; FencePointIdx < filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
             {
-              LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(Filter.SpatialFilter.Fence[FencePointIdx].Y));
+              LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].Y));
             }
 
-            (var errorCode, XYZ[] NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            var (errorCode, NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
             if (errorCode != RequestErrorStatus.OK)
             {
@@ -67,22 +68,22 @@ namespace VSS.TRex.Filters
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
 
-            for (var fencePointIdx = 0; fencePointIdx < Filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
+            for (var fencePointIdx = 0; fencePointIdx < filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
             {
-              Filter.SpatialFilter.Fence[fencePointIdx].X = NEECoords[fencePointIdx].X;
-              Filter.SpatialFilter.Fence[fencePointIdx].Y = NEECoords[fencePointIdx].Y;
+              filter.SpatialFilter.Fence[fencePointIdx].X = NEECoords[fencePointIdx].X;
+              filter.SpatialFilter.Fence[fencePointIdx].Y = NEECoords[fencePointIdx].Y;
             }
 
             // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
-            Filter.SpatialFilter.Fence.UpdateExtents();
+            filter.SpatialFilter.Fence.UpdateExtents();
           }
 
-          if (Filter.SpatialFilter.IsPositional)
+          if (filter.SpatialFilter.IsPositional)
           {
             // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
-            LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(Filter.SpatialFilter.PositionY)) };
+            LLHCoords = new[] {new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY))};
 
-            (var errorCode, XYZ[] NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            var (errorCode, NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
             if (errorCode != RequestErrorStatus.OK)
             {
@@ -90,41 +91,46 @@ namespace VSS.TRex.Filters
 
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
-            
-            Filter.SpatialFilter.PositionX = NEECoords[0].X;
-            Filter.SpatialFilter.PositionY = NEECoords[0].Y;
+
+            filter.SpatialFilter.PositionX = NEECoords[0].X;
+            filter.SpatialFilter.PositionY = NEECoords[0].Y;
           }
 
-          Filter.SpatialFilter.CoordsAreGrid = true;
+          filter.SpatialFilter.CoordsAreGrid = true;
         }
 
         // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
-        Filter.SpatialFilter?.Fence.UpdateExtents();
+        filter.SpatialFilter?.Fence.UpdateExtents();
 
         // Is there an alignment file to look up? If so, only do it if there not an already existing alignment fence boundary
-        if (Filter.SpatialFilter.HasAlignmentDesignMask() && !(Filter.SpatialFilter.AlignmentFence?.HasVertices ?? true))
+        if (filter.SpatialFilter.HasAlignmentDesignMask() && !(filter.SpatialFilter.AlignmentFence?.HasVertices ?? true))
         {
-          var BoundaryResult = AlignmentDesignFilterBoundaryRequest.Execute
-            (new DesignOffset(Filter.SpatialFilter.AlignmentDesignMaskDesignUID, 0),
-             Filter.SpatialFilter.StartStation ?? Common.Consts.NullDouble,
-             Filter.SpatialFilter.EndStation ?? Common.Consts.NullDouble,
-             Filter.SpatialFilter.LeftOffset ?? Common.Consts.NullDouble,
-             Filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble);
+          var boundaryRequest = new AlignmentDesignFilterBoundaryRequest();
+
+          var BoundaryResult = boundaryRequest.Execute
+          (new AlignmentDesignFilterBoundaryArgument()
+          {
+            ReferenceDesign = new DesignOffset(filter.SpatialFilter.AlignmentDesignMaskDesignUID, 0),
+            StartStation = filter.SpatialFilter.StartStation ?? Common.Consts.NullDouble,
+            EndStation = filter.SpatialFilter.EndStation ?? Common.Consts.NullDouble,
+            LeftOffset = filter.SpatialFilter.LeftOffset ?? Common.Consts.NullDouble,
+            RightOffset = filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble
+          });
 
           if (BoundaryResult.RequestResult != DesignProfilerRequestResult.OK)
           {
-            Log.LogError($"{nameof(PrepareFilterForUse)}: Failed to get boundary for alignment design ID:{Filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
+            Log.LogError($"{nameof(PrepareFilterForUse)}: Failed to get boundary for alignment design ID:{filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
 
             return RequestErrorStatus.NoResultReturned;
           }
 
-          Filter.SpatialFilter.AlignmentFence = BoundaryResult.Boundary;
+          filter.SpatialFilter.AlignmentFence = BoundaryResult.Boundary;
         }
 
         // Is there a surface design to look up
-        if (Filter.SpatialFilter.HasSurfaceDesignMask())
+        if (filter.SpatialFilter.HasSurfaceDesignMask())
         {
-          // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in the larger scale determination of the subgrids that need to be queried).
+          // Todo: Not yet supported (or demonstrated that it's needed as this should be taken care of in the larger scale determination of the sub grids that need to be queried).
 
           /* If the filter needs to retain a reference to the existence map, then do this...
           Filter.SpatialFilter.DesignMaskExistenceMap = GetExistenceMaps().GetSingleExistenceMap(ProjectUid, EXISTENCE_MAP_DESIGN_DESCRIPTOR, Filter.SpatialFilter.SurfaceDesignMaskDesignUid);
@@ -137,25 +143,25 @@ namespace VSS.TRex.Filters
         }
       }
 
-      return Result;
+      return result;
     }
 
     /// <summary>
     /// Prepare a set of filter for use by performing any necessary coordinate conversions and requesting any
     /// supplemental information such as alignment design boundary calculations.
     /// </summary>
-    /// <param name="Filters"></param>
-    /// <param name="DataModelID"></param>
+    /// <param name="filters"></param>
+    /// <param name="dataModelId"></param>
     /// <returns></returns>
-    public static async Task<RequestErrorStatus> PrepareFiltersForUse(ICombinedFilter[] Filters, Guid DataModelID)
+    public static async Task<RequestErrorStatus> PrepareFiltersForUse(ICombinedFilter[] filters, Guid dataModelId)
     {
       var status = RequestErrorStatus.Unknown;
 
-      foreach (ICombinedFilter filter in Filters)
+      foreach (var filter in filters)
       {
         if (filter != null)
         {
-          status = await PrepareFilterForUse(filter, DataModelID);
+          status = await PrepareFilterForUse(filter, dataModelId);
 
           if (status != RequestErrorStatus.OK)
             break;
