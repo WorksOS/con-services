@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -25,29 +26,29 @@ namespace VSS.TRex.Designs.Executors
     /// </summary>
     /// <returns>The computed elevation of the given design at the spot location, or NullDouble if the location does not lie on the design</returns>
     private double Calc(Guid projectUID, DesignOffset referenceDesign, double spotX, double spotY,
-      out DesignProfilerRequestResult CalcResult)
+      out DesignProfilerRequestResult calcResult)
     {
-      CalcResult = DesignProfilerRequestResult.UnknownError;
+      calcResult = DesignProfilerRequestResult.UnknownError;
 
-      var design = designs.Lock(referenceDesign.DesignID, projectUID, SubGridTreeConsts.DefaultCellSize, out DesignLoadResult LockResult);
+      var design = designs.Lock(referenceDesign.DesignID, projectUID, SubGridTreeConsts.DefaultCellSize, out var LockResult);
 
       if (design == null)
       {
         Log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
-        CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
+        calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
         return Common.Consts.NullDouble;
       }
 
       try
       {
-        int Hint = -1;
-        if (design.InterpolateHeight(ref Hint, spotX, spotY, referenceDesign.Offset, out double Z))
+        var Hint = -1;
+        if (design.InterpolateHeight(ref Hint, spotX, spotY, referenceDesign.Offset, out var Z))
         {
-          CalcResult = DesignProfilerRequestResult.OK;
+          calcResult = DesignProfilerRequestResult.OK;
         }
         else
         {
-          CalcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
+          calcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
           Z = Common.Consts.NullDouble;
         }
 
@@ -63,17 +64,26 @@ namespace VSS.TRex.Designs.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public double Execute(Guid projectUID, DesignOffset referenceDesign, double spotX, double spotY)
+    public CalculateDesignElevationSpotResponse Execute(Guid projectUID, DesignOffset referenceDesign, double spotX, double spotY)
     {
       try
       {
+        var elevation = Calc(projectUID, referenceDesign, spotX, spotY, out var calcResult);
+
         // Calculate the spot elevation and return it
-        return Calc(projectUID, referenceDesign, spotX, spotY, out DesignProfilerRequestResult CalcResult);
+        return new CalculateDesignElevationSpotResponse
+        {
+          Elevation = elevation,
+          CalcResult = calcResult
+        };
       }
       catch (Exception E)
       {
         Log.LogError(E, "Execute: Exception: ");
-        return Common.Consts.NullDouble;
+        return new CalculateDesignElevationSpotResponse
+        {
+          Elevation = Common.Consts.NullDouble
+        };
       }
     }
   }

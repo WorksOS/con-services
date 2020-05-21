@@ -15,6 +15,7 @@ using VSS.TRex.Common.Records;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -40,7 +41,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     private void AddDesignProfilerGridRouting()
     {
       //This is specific to cell datum i.e. what the cell datum cluster compute will call in the design profiler
-      IgniteMock.Immutable.AddApplicationGridRouting<CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, double>();
+      IgniteMock.Immutable.AddApplicationGridRouting<CalculateDesignElevationSpotComputeFunc, CalculateDesignElevationSpotArgument, CalculateDesignElevationSpotResponse>();
     }
 
     private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<CellDatumRequestComputeFunc_ApplicationService, CellDatumRequestArgument_ApplicationService, CellDatumResponse_ApplicationService>();

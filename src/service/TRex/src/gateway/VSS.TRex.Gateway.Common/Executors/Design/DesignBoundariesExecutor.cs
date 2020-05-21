@@ -6,6 +6,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Gateway.Common.Helpers;
@@ -47,7 +48,12 @@ namespace VSS.TRex.Gateway.Common.Executors
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
       var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
-      var designBoundaryResponse = await DesignBoundaryRequest.ExecuteAsync(siteModel, referenceDesign);
+      var designBoundaryRequest = new DesignBoundaryRequest();
+      var designBoundaryResponse = await designBoundaryRequest.ExecuteAsync(new DesignBoundaryArgument
+      {
+        ProjectID = siteModel.ID,
+        ReferenceDesign = referenceDesign
+      });
 
       if (designBoundaryResponse != null && 
           designBoundaryResponse.RequestResult == DesignProfilerRequestResult.OK && 
