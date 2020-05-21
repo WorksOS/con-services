@@ -41,17 +41,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       executor.Should().NotBeNull();
     }
 
-    [Fact]
-    public void Fail_With_FileNotExist()
-    {
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", "does-not-exist.dxf"), DxfUnitsType.Meters, 10);
-      var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
-      executor.Should().NotBeNull();
-      
-      Func<Task> act = async () => await executor.ProcessAsync(request);
-      act.Should().Throw<ServiceException>().WithMessage("File*does not exist");
-    }
-
     [Theory]
     [InlineData("Southern Motorway 55 point polygon.dxf", DxfUnitsType.Meters, 1, 1001, "55 points", DXFLineWorkBoundaryType.GenericBoundary)]
     [InlineData("avoidMeBoundary.dxf", DxfUnitsType.Meters, 1, 12, "avoidMeBoundary", DXFLineWorkBoundaryType.AvoidanceZone)]
@@ -61,7 +50,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
 
     public async void Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
     {
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, 10);
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))), units, 10, false);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 
@@ -89,7 +78,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     {
       const int LIMIT = 5;
 
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, LIMIT);
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, 
+        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))), units, LIMIT, false);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 
@@ -112,7 +102,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     [Fact]
     public async void Fail_With_InvalidFile()
     {
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", "TransferTestDesign.ttm"), DxfUnitsType.Meters, 10);
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary,
+        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", "TransferTestDesign.ttm"))), DxfUnitsType.Meters, 10, false);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 
