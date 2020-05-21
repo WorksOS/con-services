@@ -51,8 +51,16 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
         SpotY = spotY,
       });
 
-      response.CalcResult.Should().Be(DesignProfilerRequestResult.OK);
-      response.Elevation.Should().BeApproximately(expectedHeight + offset, 0.001);
+      if (expectedHeight == Consts.NullDouble)
+      {
+        response.CalcResult.Should().Be(DesignProfilerRequestResult.NoElevationsInRequestedPatch);
+        response.Elevation.Should().Be(Consts.NullDouble);
+      }
+      else
+      {
+        response.CalcResult.Should().Be(DesignProfilerRequestResult.OK);
+        response.Elevation.Should().BeApproximately(expectedHeight + offset, 0.001);
+      }
     }
   }
 }
