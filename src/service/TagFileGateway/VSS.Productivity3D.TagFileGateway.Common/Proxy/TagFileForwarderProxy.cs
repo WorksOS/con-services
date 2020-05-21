@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -39,12 +40,12 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
         {
         }
 
-        public Task<ContractExecutionResult> SendTagFileDirect(CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
+        public Task<ContractExecutionResult> SendTagFileDirect(CompactionTagFileRequest compactionTagFileRequest, IHeaderDictionary customHeaders = null)
         {
             return SendTagFileWithRetry(compactionTagFileRequest, "/tagfiles/direct", customHeaders);
         }
 
-        public Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
+        public Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest, IHeaderDictionary customHeaders = null)
         {
             return SendTagFileWithRetry(compactionTagFileRequest, "/tagfiles", customHeaders);
         }
@@ -52,14 +53,14 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
         /// <summary>
         /// This method is created so we can test the retry logic, but we can't mock the base proxy class currently
         /// </summary>
-        public virtual async Task<ContractExecutionResult> SendSingleTagFile(CompactionTagFileRequest request, string route, IDictionary<string, string> customHeaders)
+        public virtual async Task<ContractExecutionResult> SendSingleTagFile(CompactionTagFileRequest request, string route, IHeaderDictionary customHeaders)
         {
             // Only use 1 retry here, we will handle retries ourselves
             await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request)));
             return await SendMasterDataItemServiceDiscoveryNoCache<ContractExecutionResult>("/tagfiles", customHeaders, HttpMethod.Post, null, ms, 1);
         }
 
-        private async Task<ContractExecutionResult> SendTagFileWithRetry(CompactionTagFileRequest request, string route, IDictionary<string, string> customHeaders, int maxRetries = MAX_RETRIES)
+        private async Task<ContractExecutionResult> SendTagFileWithRetry(CompactionTagFileRequest request, string route, IHeaderDictionary customHeaders, int maxRetries = MAX_RETRIES)
         {
             var retry = 1;
             var result = new ContractExecutionResult();

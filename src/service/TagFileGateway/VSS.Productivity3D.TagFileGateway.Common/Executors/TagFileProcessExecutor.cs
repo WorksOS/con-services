@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 
-namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
+namespace VSS.Productivity3D.TagFileGateway.Common.Executors
 {
     public class TagFileProcessExecutor : RequestExecutorContainer
     {
@@ -16,8 +16,8 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
         {
             if (!(item is CompactionTagFileRequest request))
             {
-                Logger.LogWarning("Empty request passed");
-                return ContractExecutionResult.ErrorResult("Empty Request");
+                Logger.LogWarning($"Invalid Request passed in. Expected {typeof(CompactionTagFileRequest).Name} but got {(item == null ? "null" : item.GetType().Name)}");
+                return ContractExecutionResult.ErrorResult("Invalid Request");
             }
 
             request.Validate();

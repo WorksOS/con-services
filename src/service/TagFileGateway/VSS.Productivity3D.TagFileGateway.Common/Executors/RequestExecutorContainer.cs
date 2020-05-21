@@ -6,17 +6,23 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 
-namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
+namespace VSS.Productivity3D.TagFileGateway.Common.Executors
 {
     public abstract class RequestExecutorContainer
     {
-        protected ILogger Logger { get; private set; }
+        private ILogger _logger;
+        protected ILogger Logger => _logger ??= LoggerFactory.CreateLogger(GetType());
+
+        protected ILoggerFactory LoggerFactory { get; private set; }
+        
         protected IConfigurationStore ConfigStore { get; private set; }
         protected IDataCache DataCache { get; private set; }
         protected ITagFileForwarder TagFileForwarder { get; private set; }
         protected ITransferProxy TransferProxy { get; private set; }
+        protected IWebRequest WebRequest { get; private set; }
         protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
         /// <summary> </summary>
@@ -32,18 +38,35 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
           IConfigurationStore configStore,
           IDataCache dataCache,
           ITagFileForwarder tagFileForwarder,
-          ITransferProxy transferProxy)
+          ITransferProxy transferProxy,
+          IWebRequest webRequest)
           where TExecutor : RequestExecutorContainer, new()
         {
             var executor = new TExecutor()
             {
-                Logger = loggerFactory.CreateLogger(typeof(TExecutor)),
+                LoggerFactory = loggerFactory,
                 ConfigStore = configStore,
                 DataCache = dataCache,
                 TagFileForwarder = tagFileForwarder,
-                TransferProxy = transferProxy
+                TransferProxy = transferProxy,
+                WebRequest = webRequest
             };
             return executor;
+        }
+
+        public TExecutor Build<TExecutor>()
+          where TExecutor : RequestExecutorContainer, new()
+        {
+          var executor = new TExecutor()
+          {
+            LoggerFactory = LoggerFactory,
+            ConfigStore = ConfigStore,
+            DataCache = DataCache,
+            TagFileForwarder = TagFileForwarder,
+            TransferProxy = TransferProxy,
+            WebRequest = WebRequest
+          };
+          return executor;
         }
     }
 }
