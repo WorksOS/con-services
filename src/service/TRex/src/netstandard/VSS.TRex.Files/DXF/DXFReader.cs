@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using VSS.Productivity3D.Models.Models.Files;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Geometry;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -33,32 +36,52 @@ namespace VSS.TRex.Files.DXF
     public const int kVertexIsPolyfaceMeshVertex = 0x80;
 
     private const ushort ASCIIDXFRecordsMax = 1071;
+    private const ushort BinaryDXFRecordsMax = 1071;
+
     private const byte ASCIIDXFRecordType_Integer = 0;
     private const byte ASCIIDXFRecordType_Real = 1;
     private const byte ASCIIDXFRecordType_String = 2;
     private const byte ASCIIDXFRecordType_Ignore = 3;
 
-    private readonly StreamReader _dxfFile;
+    private const byte BinaryDXFRecordType_Integer1 = 0;
+    private const byte BinaryDXFRecordType_Integer2 = 1;
+    private const byte BinaryDXFRecordType_Integer4 = 2;
+    private const byte BinaryDXFRecordType_Integer8 = 3;
+    private const byte BinaryDXFRecordType_Real = 4;
+    private const byte BinaryDXFRecordType_String = 5;
+    private const byte BinaryDXFRecordType_ExtendedData = 6;
+    private const byte BinaryDXFRecordType_Ignore = 7;
+
+    private bool DXFFileIsBinary;
+
+    private readonly StreamReader _aSCIIdxfFile;
+    private readonly Stream _binarydxfFile;
     private int _dxfLine;
 
     private bool _haveFoundEntitiesSection;
     private bool _reuseRecord;
     private DXFRecord _lastRecord;
 
+    private bool _dXFFileIsPostR13c3;
+    private static byte[] BinaryACADDXFSignature;
+
     private static readonly byte[] ASCIIDXFRecordTypeLookUp = new byte [ASCIIDXFRecordsMax + 1];
+    private static readonly byte[] BinaryDXFRecordTypeLookUp = new byte[BinaryDXFRecordsMax + 1];
 
     public double DXFImportConvFactor;
     public DxfUnitsType Units;
 
     static DXFReader()
     {
-      InitialiseDXFRecordLookUpTable();
+      BinaryACADDXFSignature = Encoding.ASCII.GetBytes("AutoCAD Binary DXF" + (char)13 + (char)10 + (char)26 + (char)0);
+      InitialiseASCIIDXFRecordLookUpTable();
+      InitialiseBinaryDXFRecordLookUpTable();
     }
 
     /// <summary>
     /// Initialises the maps of record numbers to value types in ASCII DXF files
     /// </summary>
-    private static void InitialiseDXFRecordLookUpTable()
+    private static void InitialiseASCIIDXFRecordLookUpTable()
     {
       for (var type = 0; type <= ASCIIDXFRecordsMax; type++)
       {
@@ -105,6 +128,71 @@ namespace VSS.TRex.Files.DXF
     }
 
     /// <summary>
+    /// Initialises the maps of record numbers to value types in ASCII DXF files
+    /// </summary>
+    private static void InitialiseBinaryDXFRecordLookUpTable()
+    {
+      for (var type = 0; type <= BinaryDXFRecordsMax; type++)
+      {
+        if ((type >= 10 && type <= 59) ||
+            (type >= 110 && type <= 112) ||
+            (type >= 120 && type <= 122) ||
+            (type >= 130 && type <= 132) ||
+            (type >= 140 && type <= 148) ||
+            (type >= 210 && type <= 239) ||
+            (type >= 1010 && type <= 1059))
+        {
+          BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_Real;
+        }
+        else if (type >= 60 && type <= 79 ||
+                 type >= 170 && type <= 179 ||
+                 type >= 270 && type <= 279 ||
+                 type >= 280 && type <= 289 ||
+                 type >= 370 && type <= 379 ||
+                 type >= 380 && type <= 389 ||
+                 type >= 400 && type <= 409 ||
+                 type >= 1060 && type <= 1070)
+        {
+          BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_Integer2;
+        }
+        else if (type >= 290 && type <= 299)
+        {
+          BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_Integer1;
+        }
+        else if (type >= 90 && type <= 99)
+        {
+          BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_Integer4;
+        }
+        else if (type == 1071)
+        {
+          BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_Integer8;
+        }
+        else if (type >= 0 && type <= 9 ||
+                 type == 100 || type == 102 || type == 105 ||
+                 type >= 300 && type <= 309 ||
+                 type >= 320 && type <= 329 ||
+                 type >= 330 && type <= 369 ||
+                 type >= 390 && type <= 399 ||
+                 type >= 410 && type <= 419 ||
+                 // (type == 999) || Not used in binary DXF
+                 type >= 1000 && type <= 1003 ||
+                 type >= 1005 && type <= 1009)
+        {
+        BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_String;
+        }
+        else if (type >= 310 && type <= 319 ||
+                 type == 1004)
+        {
+          BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_ExtendedData;
+        }
+        else
+        {
+          BinaryDXFRecordTypeLookUp[type] = BinaryDXFRecordType_Ignore;
+        }
+      }
+    }
+
+    /// <summary>
     /// Read a single DXF record from an ASCII DXF file consisting of the record type and value
     /// </summary>
     /// <param name="rec"></param>
@@ -117,16 +205,16 @@ namespace VSS.TRex.Files.DXF
     {
       rec = new DXFRecord();
 
-      var recTypeString = _dxfFile.ReadLine();
+      var recTypeString = _aSCIIdxfFile.ReadLine();
       rec.recType = Convert.ToUInt16(recTypeString);
 
-      if (_dxfFile.EndOfStream)
+      if (_aSCIIdxfFile.EndOfStream)
         return false; // may be ASCII but not DXF format
       lineNumber++;
 
       if (rec.recType <= ASCIIDXFRecordsMax)
       {
-        var line = _dxfFile.ReadLine();
+        var line = _aSCIIdxfFile.ReadLine();
 
         switch (ASCIIDXFRecordTypeLookUp[rec.recType])
         {
@@ -164,6 +252,115 @@ namespace VSS.TRex.Files.DXF
     }
 
     /// <summary>
+    /// Read a DXF record from a binary DXF file
+    /// </summary>
+    /// <param name="rec"></param>
+    /// <param name="lineNumber"></param>
+    /// <param name="readingTextEntity"></param>
+    /// <returns></returns>
+    public bool ReadBinaryDXFRecord(out DXFRecord rec,
+      ref int lineNumber,
+      bool readingTextEntity = false)
+    {
+      rec = new DXFRecord();
+      var buffer = new byte[100];
+
+      // Read the record number
+      if (_dXFFileIsPostR13c3)
+      {
+        _binarydxfFile.Read(buffer, 0, 2);
+        rec.recType = BitConverter.ToUInt16(buffer);
+      }
+      else
+      {
+        var binaryRecType1 = _binarydxfFile.ReadByte();
+
+        if (binaryRecType1 != 255)
+          rec.recType = (ushort)binaryRecType1;
+        else // escaped record number
+        {
+          _binarydxfFile.Read(buffer, 0, 2);
+          rec.recType = BitConverter.ToUInt16(buffer);
+        }
+      }
+
+      if (rec.recType >= BinaryDXFRecordTypeLookUp.Length)
+      {
+        return false;
+      }
+
+      switch (BinaryDXFRecordTypeLookUp[rec.recType])
+      {
+        case BinaryDXFRecordType_String:
+          var builder = new StringBuilder();
+          // read chars until we find a #0
+
+          byte theByte;
+          do
+          {
+            theByte = (byte)_binarydxfFile.ReadByte();
+            if (theByte != 0)
+            {
+              builder.Append((char) theByte);
+            }
+          } while  (theByte != 0);
+
+          rec.s = builder.ToString();
+
+          // We do not want to remove leading or trailing spaces from
+          // the text in DXF text entities (TEXT and MTEXT). These
+          // group codes 1 (for TEXT) and 1&3 (for MTEXT). If the caller
+          // has advised it is reading a DXF text entity we no do not
+          // strip the spaces from the string value.
+          if (readingTextEntity)
+          {
+            if (!(rec.recType == 1 || rec.recType == 3))
+              rec.s = rec.s.Trim();
+          }
+          else
+            rec.s = rec.s.Trim();
+          break;
+
+        case BinaryDXFRecordType_Real:
+          _binarydxfFile.Read(buffer, 0, 8);
+          rec.r = BitConverter.ToDouble(buffer);
+          break;
+
+        case BinaryDXFRecordType_Integer1:
+          _binarydxfFile.Read(buffer, 0, 1);
+          rec.i = buffer[0];
+          break;
+
+        case BinaryDXFRecordType_Integer2:
+          _binarydxfFile.Read(buffer, 0, 2);
+          rec.i = BitConverter.ToInt16(buffer);
+          break;
+
+        case BinaryDXFRecordType_Integer4:
+          _binarydxfFile.Read(buffer, 0, 4);
+          rec.i = BitConverter.ToInt32(buffer);
+          break;
+
+        case BinaryDXFRecordType_Integer8:
+          _binarydxfFile.Read(buffer, 0, 4);
+          rec.i = BitConverter.ToUInt32(buffer);
+          break;
+
+        case BinaryDXFRecordType_ExtendedData:
+          rec.s = "";
+          var recLength = _binarydxfFile.ReadByte();
+          _binarydxfFile.Position += recLength;
+          break;
+
+        default:
+          return false;
+      }
+
+      lineNumber++;
+      return true;
+    }
+
+    /// <summary>
     /// Reads the next record from the DXF file
     /// </summary>
     /// <param name="rec"></param>
@@ -178,13 +375,10 @@ namespace VSS.TRex.Files.DXF
       }
       else
       {
-        //If DXFFileIsBinary then
-        //Result := Read_Binary_DXF_Record(out rec, ref _dxfLine)
-        //else
-        var Result = ReadASCIIDXFRecord(out rec, ref _dxfLine);
+        var result = DXFFileIsBinary ? ReadBinaryDXFRecord(out rec, ref _dxfLine) : ReadASCIIDXFRecord(out rec, ref _dxfLine);
 
         _lastRecord = rec;
-        return Result;
+        return result;
       }
     }
 
@@ -284,11 +478,11 @@ namespace VSS.TRex.Files.DXF
       bool PaperSpace;
       // Todo: Extrusion is not taken into account
       // bool extruded;
-      int PolyLineFlags;
+      long PolyLineFlags;
 //      double bulge;
-      int NVertices;
-      int VertexNum;
-      int CurveSmoothing;
+      long NVertices;
+      long VertexNum;
+      long CurveSmoothing;
       // Todo extrusion not supported XYZ Extrusion;
       bool PolyLineIs3D;
       double DefaultPolyLineHeight;
@@ -638,14 +832,47 @@ namespace VSS.TRex.Files.DXF
       return !loadError && (polyLineIsClosed || !closedPolyLinesOnly);
     }
 
+    // This function assumes that the files exists - we are just determining its type
+    private bool IsBinaryDXF(Stream dxfFile, out bool dxfFileIsPostR13C3)
+    {
+      dxfFileIsPostR13C3 = false;
+
+      var buffer = new byte[BinaryACADDXFSignature.Length];
+      dxfFile.Read(buffer, 0, buffer.Length);
+
+      // now check the version of the file
+      var result = true;
+      buffer.ForEach((b, i) => result = result && (BinaryACADDXFSignature[i] == b));
+
+      if (result)
+      {
+        dxfFile.Read(buffer, 0, 2);
+        dxfFileIsPostR13C3 = BitConverter.ToUInt16(new ReadOnlySpan<byte>(buffer, 0, 2)) == 0;
+      }
+
+      return result;
+    }
+
     /// <summary>
     /// Construct a DXFReader given a stream reader representing teh DXF file content and the units to use
     /// </summary>
     /// <param name="dxfFile"></param>
     /// <param name="units"></param>
-    public DXFReader(StreamReader dxfFile, DxfUnitsType units)
+    public DXFReader(MemoryStream dxfFile, DxfUnitsType units)
     {
-      _dxfFile = dxfFile;
+      DXFFileIsBinary = IsBinaryDXF(dxfFile, out _dXFFileIsPostR13c3);
+
+      if (DXFFileIsBinary)
+      {
+        _binarydxfFile = dxfFile;
+        _binarydxfFile.Position = BinaryACADDXFSignature.Length; // Skip the sentinel
+      }
+      else
+      {
+        dxfFile.Position = 0;
+        _aSCIIdxfFile = new StreamReader(dxfFile);
+      }
+
       Units = units;
 
       DXFImportConvFactor = units switch

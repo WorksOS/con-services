@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.IO;
+using VSS.TRex.IO.Helpers;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Files.DXF
@@ -9,7 +11,7 @@ namespace VSS.TRex.Files.DXF
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger("DXFFileUtilities");
 
-    public static DXFUtilitiesResult RequestBoundariesFromLineWork(StreamReader dxfFileStream, DxfUnitsType units, uint maxBoundariesToProcess, bool convertLineStringCoordsToPolygon, out PolyLineBoundaries boundaries)
+    public static DXFUtilitiesResult RequestBoundariesFromLineWork(MemoryStream dxfFileStream, DxfUnitsType units, uint maxBoundariesToProcess, bool convertLineStringCoordsToPolygon, out PolyLineBoundaries boundaries)
     {
       boundaries = null;
       var reader = new DXFReader(dxfFileStream, units);
@@ -43,10 +45,9 @@ namespace VSS.TRex.Files.DXF
 
     public static DXFUtilitiesResult RequestBoundariesFromLineWork(string dxfFileContext, DxfUnitsType units, uint maxBoundariesToProcess, bool convertLineStringCoordsToPolygon, out PolyLineBoundaries boundaries)
     {
-      using var fileStream = new MemoryStream(Convert.FromBase64String(dxfFileContext));
-      using var reader = new StreamReader(fileStream);
+      using var stream = new MemoryStream(Convert.FromBase64String(dxfFileContext));
 
-      return DXFFileUtilities.RequestBoundariesFromLineWork(reader, units, maxBoundariesToProcess, convertLineStringCoordsToPolygon, out boundaries);
+      return DXFFileUtilities.RequestBoundariesFromLineWork(stream, units, maxBoundariesToProcess, convertLineStringCoordsToPolygon, out boundaries);
     }
   }
 }

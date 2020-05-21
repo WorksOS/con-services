@@ -41,16 +41,11 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       executor.Should().NotBeNull();
     }
 
-    [Theory]
-    [InlineData("Southern Motorway 55 point polygon.dxf", DxfUnitsType.Meters, 1, 1001, "55 points", DXFLineWorkBoundaryType.GenericBoundary)]
-    [InlineData("avoidMeBoundary.dxf", DxfUnitsType.Meters, 1, 12, "avoidMeBoundary", DXFLineWorkBoundaryType.AvoidanceZone)]
-    [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 7, 4, "Fill", DXFLineWorkBoundaryType.Stockpile)]
-    [InlineData("100_sided_giraffe.dxf", DxfUnitsType.Meters, 1, 104, "stockpile_100_sides", DXFLineWorkBoundaryType.Stockpile)]
-    [InlineData("vssBoundary.dxf", DxfUnitsType.Meters, 1, 101, "vssBoundary", DXFLineWorkBoundaryType.GenericBoundary)]
-
-    public async void Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
+    private async void TestAFile(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType, bool allowUnclosedBoundaries)
     {
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))), units, 10, false);
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary,
+        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))), 
+        units, 10, allowUnclosedBoundaries);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 
@@ -62,14 +57,39 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       if (result is DXFBoundaryResult boundary)
       {
         boundary.Boundaries.Count.Should().Be(expectedBoundaryCount);
-        boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
-        boundary.Boundaries[0].Name.Should().Be(expectedName);
-        boundary.Boundaries[0].Type.Should().Be(expectedType);
+
+        if (expectedBoundaryCount > 0)
+        {
+          boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
+          boundary.Boundaries[0].Name.Should().Be(expectedName);
+          boundary.Boundaries[0].Type.Should().Be(expectedType);
+        }
       }
       else
       {
         false.Should().BeTrue(); // fail the test
       }
+    }
+
+    [Theory]
+    [InlineData("Southern Motorway 55 point polygon.dxf", DxfUnitsType.Meters, 1, 1001, "55 points", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("avoidMeBoundary.dxf", DxfUnitsType.Meters, 1, 12, "avoidMeBoundary", DXFLineWorkBoundaryType.AvoidanceZone)]
+    [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 7, 4, "Fill", DXFLineWorkBoundaryType.Stockpile)]
+    [InlineData("100_sided_giraffe.dxf", DxfUnitsType.Meters, 1, 104, "stockpile_100_sides", DXFLineWorkBoundaryType.Stockpile)]
+    [InlineData("vssBoundary.dxf", DxfUnitsType.Meters, 1, 101, "vssBoundary", DXFLineWorkBoundaryType.GenericBoundary)]
+
+    public async void ASCII_DXF_Boundaries_UnderLimit_Closed(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
+    {
+      TestAFile(fileName, units, expectedBoundaryCount, firstBoundaryVertexCount, expectedName, expectedType, false);
+    }
+
+    [Theory]
+    [InlineData("11-12_Binary.dxf", DxfUnitsType.Meters, 10, 37, "1", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("Binary lesson-11.dxf", DxfUnitsType.Meters, 0, 0, "1", DXFLineWorkBoundaryType.GenericBoundary)]
+    [InlineData("Binary lesson-3.dxf", DxfUnitsType.Meters, 0, 0, "1", DXFLineWorkBoundaryType.Unknown)]
+    public async void Binary_DXF_Boundaries_UnderLimit_Closed(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType)
+    {
+      TestAFile(fileName, units, expectedBoundaryCount, firstBoundaryVertexCount, expectedName, expectedType, false);
     }
 
     [Theory]
