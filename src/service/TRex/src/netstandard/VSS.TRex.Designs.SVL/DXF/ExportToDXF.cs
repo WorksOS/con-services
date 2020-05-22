@@ -8,14 +8,8 @@ using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL.DXF
 {
-  public class ExportToDXF
+  public class ExportToDXF : SVLExporterBase
   {
-    public DistanceUnitsType Units { get; set; } = DistanceUnitsType.Meters;
-    public double AlignmentLabelingInterval { get; set; } = 10; // Default to 10 meters
-
-    private const int kAlignmentCenterLineColor = 1; // Red
-    private const int kAlignmentCenterLineThickness = 2;
-
     private DXFFile DXF;
 
     private void ExportNFFSmoothedPolyLineEntityToDXF(NFFLineworkSmoothedPolyLineEntity Data)
@@ -24,20 +18,22 @@ namespace VSS.TRex.Designs.SVL.DXF
       var StartPt = Data.Vertices.First();
       var vertices = new AddVertexCallback();
 
-      for (int I = 0; I < Data.Vertices.Count; I++)
+      for (var I = 0; I < Data.Vertices.Count; I++)
       {
         var EndPt = Data.Vertices[I];
 
         vertices.VertexCount = 0;
-        NFFUtils.DecomposeSmoothPolylineSegmentToPolyLine(StartPt, EndPt,
+        NFFUtils.DecomposeSmoothPolyLineSegmentToPolyLine(StartPt, EndPt,
           1.0 /* Min length*/, 100 /*Max segment length */, 1000 /*Max number of segments*/,
           vertices.AddVertex);
         if (vertices.VertexCount > 2)
         {
-          var DXFPolyline = new DXFPolyLineEntity("B", kAlignmentCenterLineColor, kAlignmentCenterLineThickness);
-          DXFPolyline.Closed = false;
+          var DXFPolyline = new DXFPolyLineEntity("B", kAlignmentCenterLineColor, kAlignmentCenterLineThickness)
+          {
+            Closed = false
+          };
           DXF.Entities.Add(DXFPolyline);
-          for (int PtIdx = 0; PtIdx < vertices.VertexCount - 1; PtIdx++)
+          for (var PtIdx = 0; PtIdx < vertices.VertexCount - 1; PtIdx++)
             DXFPolyline.Entities.Add(new DXFLineEntity("B", kAlignmentCenterLineColor,
               vertices.Vertices[PtIdx].X,
               vertices.Vertices[PtIdx].Y,
@@ -60,24 +56,24 @@ namespace VSS.TRex.Designs.SVL.DXF
       }
     }
 
-    private void AddEntityToDXF(NFFLineworkEntity NFFEntity)
+    private void AddEntityToDXF(NFFLineworkEntity nffEntity)
     {
-      switch (NFFEntity.ElementType)
+      switch (nffEntity.ElementType)
       {
         case NFFLineWorkElementType.kNFFLineWorkLineElement:
-          var lineEntity = NFFEntity as NFFLineworkEntity;
+          var lineEntity = nffEntity as NFFLineworkEntity;
           // TODO : Not yet supported DXF.Entities.Add(new DXFLineEntity("B", kAlignmentCenterLineColor, lineEntity. X1, Y1, Z1, X2, Y2, Z2, kAlignmentCenterLineThickness));
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkPolyLineElement:
         case NFFLineWorkElementType.kNFFLineWorkPolygonElement:
-          var nffPolyLine = NFFEntity as NFFLineworkPolyLineEntity;
+          var nffPolyLine = nffEntity as NFFLineworkPolyLineEntity;
           var DXFPolyline = new DXFPolyLineEntity("B", kAlignmentCenterLineColor, kAlignmentCenterLineThickness);
 
-          DXFPolyline.Closed = NFFEntity.ElementType == NFFLineWorkElementType.kNFFLineWorkPolygonElement;
+          DXFPolyline.Closed = nffEntity.ElementType == NFFLineWorkElementType.kNFFLineWorkPolygonElement;
           DXF.Entities.Add(DXFPolyline);
 
-          for (int PtIdx = 0; PtIdx < nffPolyLine.Vertices.Count - 1; PtIdx++)
+          for (var PtIdx = 0; PtIdx < nffPolyLine.Vertices.Count - 1; PtIdx++)
             DXFPolyline.Entities.Add(new DXFLineEntity("B", kAlignmentCenterLineColor,
               nffPolyLine.Vertices[PtIdx].X, nffPolyLine.Vertices[PtIdx].Y, nffPolyLine.Vertices[PtIdx].Z,
               nffPolyLine.Vertices[PtIdx + 1].X, nffPolyLine.Vertices[PtIdx + 1].Y, nffPolyLine.Vertices[PtIdx + 1].Z,
@@ -85,11 +81,11 @@ namespace VSS.TRex.Designs.SVL.DXF
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkSmoothedPolyLineElement:
-          ExportNFFSmoothedPolyLineEntityToDXF((NFFLineworkSmoothedPolyLineEntity)NFFEntity);
+          ExportNFFSmoothedPolyLineEntityToDXF((NFFLineworkSmoothedPolyLineEntity)nffEntity);
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkArcElement:
-          var nffArc = NFFEntity as NFFLineworkArcEntity;
+          var nffArc = nffEntity as NFFLineworkArcEntity;
           double cz;
 
           if (nffArc.Z1 == Consts.NullDouble || nffArc.Z2 == Consts.NullDouble)
@@ -106,73 +102,27 @@ namespace VSS.TRex.Designs.SVL.DXF
       }
     }
 
-    double AzimuthAt(NFFGuidableAlignmentEntity Alignment, double Stn)
+    public bool ConstructSVLCenterlineDXFAlignment(NFFGuidableAlignmentEntity alignment,
+      out DesignProfilerRequestResult calcResult, out MemoryStream ms)
     {
-      double TestStn1, TestStn2;
-
-      if (Stn < Alignment.StartStation + 0.001)
-        TestStn1 = Alignment.StartStation;
-      else
-        TestStn1 = Stn - 0.001;
-
-      if (Stn > (Alignment.EndStation - 0.001))
-        TestStn2 = Alignment.EndStation;
-      else
-        TestStn2 = Stn + 0.001;
-
-      Alignment.ComputeXY(TestStn1, 0, out double X1, out double Y1);
-      Alignment.ComputeXY(TestStn2, 0, out double X2, out double Y2);
-
-      if (X1 != Consts.NullDouble && Y1 != Consts.NullDouble && X2 != Consts.NullDouble && Y2 != Consts.NullDouble)
-      {
-        GeometryUtils.RectToPolar(Y1, X1, Y2, X2, out double result, out _);
-        return result;
-      }
-
-      return Consts.NullDouble;
-    }
-
-    public bool ConstructSVLCenterlineDXFAlignment(NFFGuidableAlignmentEntity Alignment,
-      out DesignProfilerRequestResult CalcResult, out MemoryStream MS)
-    {
-      // Todo InterlockedIncrement64(DesignProfilerRequestStats.NumAlignmentCenterlinesComputed);
-      MS = null;
-      CalcResult = DesignProfilerRequestResult.UnknownError;
-
-      DXF = new DXFFile();
-
-      if (Alignment.Entities.Count == 0)
-      {
-        CalcResult = DesignProfilerRequestResult.AlignmentContainsNoElements;
+      ms = null;
+      if ((calcResult = Validate(alignment)) != DesignProfilerRequestResult.OK)
         return false;
-      }
-
-      if (Alignment.StartStation == Consts.NullDouble || Alignment.EndStation == Consts.NullDouble)
-      {
-        CalcResult = DesignProfilerRequestResult.AlignmentContainsNoStationing;
-        return false;
-      }
-
-      if (Alignment.StartStation >= Alignment.EndStation)
-      {
-        CalcResult = DesignProfilerRequestResult.AlignmentContainsInvalidStationing;
-        return false;
-      }
 
       DXF = new DXFFile();
       DXF.Layers.Add("B");
 
       // Run through the entities in the alignment and add them to the DXF file
-      for (int I = 0; I < Alignment.Entities.Count; I++)
-        AddEntityToDXF(Alignment.Entities[I]);
+      for (var I = 0; I < alignment.Entities.Count; I++)
+        AddEntityToDXF(alignment.Entities[I]);
 
       // Construct the stationing text entities along the alignment
-      double StationIncrement = AlignmentLabelingInterval;
-      double CurrentStation = Alignment.StartStation;
-      while (CurrentStation <= Alignment.EndStation + 0.001)
+      var StationIncrement = AlignmentLabelingInterval;
+      var CurrentStation = alignment.StartStation;
+      while (CurrentStation <= alignment.EndStation + 0.001)
       {
-        Alignment.ComputeXY(CurrentStation, 0, out double X, out double Y);
-        var Orientation = AzimuthAt(Alignment, CurrentStation);
+        alignment.ComputeXY(CurrentStation, 0, out var X, out var Y);
+        var Orientation = AzimuthAt(alignment, CurrentStation);
 
         DXF.Entities.Add(new DXFTextEntity("B",
           kAlignmentCenterLineColor,
@@ -185,24 +135,22 @@ namespace VSS.TRex.Designs.SVL.DXF
           //0, 
           0, 0));
 
-        if (CurrentStation + StationIncrement <= Alignment.EndStation)
+        if (CurrentStation + StationIncrement <= alignment.EndStation)
           CurrentStation = CurrentStation + StationIncrement;
-        else if (CurrentStation > Alignment.EndStation - 0.001)
+        else if (CurrentStation > alignment.EndStation - 0.001)
           break;
         else
-          CurrentStation = Alignment.EndStation;
+          CurrentStation = alignment.EndStation;
       }
 
       if (DXF.Entities.Count > 0)
       {
-        MS = new MemoryStream();
-        using (var writer = new StreamWriter(MS))
-        {
-          DXF.SaveToFile(writer);
-        }
+        ms = new MemoryStream();
+        using var writer = new StreamWriter(ms);
+        DXF.SaveToFile(writer);
       }
 
-      CalcResult = DesignProfilerRequestResult.OK;
+      calcResult = DesignProfilerRequestResult.OK;
 
       return true;
     }

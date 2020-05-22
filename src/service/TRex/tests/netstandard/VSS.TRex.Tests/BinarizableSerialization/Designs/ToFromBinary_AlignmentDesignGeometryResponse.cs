@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using Xunit;
@@ -23,7 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
         Vertices = new[] { new double[] {0, 1, 0}, new double[] { 2, 3, 1} },
         Labels = new[] {
           new AlignmentGeometryResponseLabel(0.0, 1.0, 1.1, 0.5),
-          new AlignmentGeometryResponseLabel(100.0, 1.01, 1.11, 075)
+          new AlignmentGeometryResponseLabel(100.0, 1.01, 1.11, 0.75)
         }
       };
 

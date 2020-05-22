@@ -48,7 +48,7 @@ namespace VSS.TRex.Alignments
       {
         _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, out MemoryStream ms);
 
-        IAlignments alignments = DIContext.Obtain<IAlignments>();
+        var alignments = DIContext.Obtain<IAlignments>();
 
         if (ms != null)
         { 
@@ -104,8 +104,8 @@ namespace VSS.TRex.Alignments
     /// <param name="extents"></param>
     public IAlignment Add(Guid siteModelUid, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
-      IAlignments alignments = Load(siteModelUid);
-      IAlignment newAlignment = alignments.AddAlignmentDetails(designDescriptor.DesignID, designDescriptor, extents);
+      var alignments = Load(siteModelUid);
+      var newAlignment = alignments.AddAlignmentDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(siteModelUid, alignments);
 
       return newAlignment;
@@ -129,8 +129,8 @@ namespace VSS.TRex.Alignments
     /// <returns></returns>
     public bool Remove(Guid siteModelUid, Guid alignmentUid)
     {
-      IAlignments alignments = Load(siteModelUid);
-      bool result = alignments.RemoveAlignment(alignmentUid);
+      var alignments = Load(siteModelUid);
+      var result = alignments.RemoveAlignment(alignmentUid);
       Store(siteModelUid, alignments);
 
       return result;

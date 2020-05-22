@@ -397,51 +397,55 @@ Huzzah!
       return Result;
     }
 
-    public static void DecomposeSmoothPolylineSegmentToPolyLine(NFFLineworkSmoothedPolyLineVertexEntity StartPt, NFFLineworkSmoothedPolyLineVertexEntity EndPt,
-      double Minimumlength,
-      double MaxSegmentLength,
-      int MaxNumSegments,
-      Action<double, double, DecompositionVertexLocation> DecompCallback)
+    public static void DecomposeSmoothPolyLineSegmentToPolyLine(NFFLineworkSmoothedPolyLineVertexEntity startPt, 
+      NFFLineworkSmoothedPolyLineVertexEntity endPt,
+      double minimumLength,
+      double maxSegmentLength,
+      int maxNumSegments,
+      Action<double, double, double, double, DecompositionVertexLocation> decompositionCallback)
     {
       // How long is this element?
-      double lx = EndPt.X - StartPt.X;
-      double ly = EndPt.Y - StartPt.Y;
-      double Len = MathUtilities.Hypot(lx, ly);
+      var lx = endPt.X - startPt.X;
+      var ly = endPt.Y - startPt.Y;
+      var Len = MathUtilities.Hypot(lx, ly);
 
-      if (Len > Minimumlength)
+      if (Len > minimumLength)
       {
         // Cache these, for speed.
-        double Alpha = EndPt.Alpha;
-        double Beta = EndPt.Beta;
+        var Alpha = endPt.Alpha;
+        var Beta = endPt.Beta;
 
-        // Add the start point of the segment to the polyline vertices
-        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.First);
+        var trackedChainage = startPt.Chainage;
+        var trackedPoint = new XYZ(startPt.X, startPt.Y);
 
-        // zero co-efficients means a straight line
+        // Add the start point of the segment to the poly line vertices
+        decompositionCallback(startPt.X, startPt.Y, Consts.NullDouble, trackedChainage, DecompositionVertexLocation.First);
+
+        // zero coefficients means a straight line
         if (Alpha != 0 && Beta != 0)
         {
-          double AlphaPlusBeta = Alpha + Beta;
-          double TwoAlphaPlusBeta = AlphaPlusBeta + Alpha;
+          var AlphaPlusBeta = Alpha + Beta;
+          var TwoAlphaPlusBeta = AlphaPlusBeta + Alpha;
 
           // so we want to keep each segment no more than MaxSegmentLength in distance
-          int SegmentCount = (int) Math.Truncate(Len / MaxSegmentLength) + 1;
+          var SegmentCount = (int) Math.Truncate(Len / maxSegmentLength) + 1;
 
           // unless that means millions of segments...
-          if (SegmentCount > MaxNumSegments)
-            SegmentCount = MaxNumSegments;
+          if (SegmentCount > maxNumSegments)
+            SegmentCount = maxNumSegments;
 
-          double Step = 1.0 / SegmentCount;
-          double Ordinate = Step; // not starting at zero, of course.
+          var Step = 1.0 / SegmentCount;
+          var Ordinate = Step; // not starting at zero, of course.
 
           // Now calc each segment.
-          for (int SegmentIdx = 1; SegmentIdx < SegmentCount; SegmentIdx++)
+          for (var SegmentIdx = 1; SegmentIdx < SegmentCount; SegmentIdx++)
           {
-            double o2 = Ordinate * Ordinate;
-            double Cubic = AlphaPlusBeta * o2 * Ordinate - TwoAlphaPlusBeta * o2 + Alpha * Ordinate;
+            var o2 = Ordinate * Ordinate;
+            var Cubic = AlphaPlusBeta * o2 * Ordinate - TwoAlphaPlusBeta * o2 + Alpha * Ordinate;
 
             XYZ pt;
-            pt.X = StartPt.X + lx * Ordinate;
-            pt.Y = StartPt.Y + ly * Ordinate;
+            pt.X = startPt.X + lx * Ordinate;
+            pt.Y = startPt.Y + ly * Ordinate;
 
             if (Cubic != 0.0)
             {
@@ -449,20 +453,23 @@ Huzzah!
               pt.Y += lx * Cubic;
             }
 
-            // Add the vertex to the polyline
-            DecompCallback(pt.X, pt.Y, DecompositionVertexLocation.Intermediate);
+            trackedChainage += MathUtilities.Hypot(pt.X = trackedPoint.X, pt.Y = trackedPoint.Y);
+            trackedPoint = new XYZ(pt.X, pt.Y);
 
-            Ordinate = Ordinate + Step;
+            // Add the vertex to the poly line
+            decompositionCallback(pt.X, pt.Y, Consts.NullDouble, trackedChainage, DecompositionVertexLocation.Intermediate);
+
+            Ordinate += Step;
           }
         }
 
-        // Add the end point of the segment to the polyline vertices
-        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
+        // Add the end point of the segment to the poly line vertices
+        decompositionCallback(endPt.X, endPt.Y, Consts.NullDouble, endPt.Chainage, DecompositionVertexLocation.Last);
       }
       else
       {
-        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.First);
-        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
+        decompositionCallback(startPt.X, startPt.Y, Consts.NullDouble, startPt.Chainage, DecompositionVertexLocation.First);
+        decompositionCallback(endPt.X, endPt.Y, Consts.NullDouble, endPt.Chainage, DecompositionVertexLocation.Last);
       }
     }
 

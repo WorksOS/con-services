@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Designs.GridFabric.Responses
+﻿namespace VSS.TRex.Designs.Models
 {
   public class AlignmentGeometryResponseLabel
   {

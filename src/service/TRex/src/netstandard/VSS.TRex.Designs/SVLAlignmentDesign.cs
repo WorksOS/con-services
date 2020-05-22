@@ -265,7 +265,7 @@ namespace VSS.TRex.Designs
     {
       var determinator = new SVLAlignmentBoundaryDeterminator(data, startStation, endStation, leftOffset, rightOffset);
 
-      determinator.DetermineBoundary(out DesignProfilerRequestResult calcResult, out fence);
+      determinator.DetermineBoundary(out var calcResult, out fence);
 
       return calcResult;
     }
@@ -275,5 +275,10 @@ namespace VSS.TRex.Designs
       return S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
     }
 
+    /// <summary>
+    /// Obtains the master alignment
+    /// </summary>
+    /// <returns></returns>
+    public NFFGuidableAlignmentEntity GetMasterAlignment() => data;
   }
 }
