@@ -65,7 +65,7 @@ namespace VSS.TRex.Tests.Files
     [Fact]
     public void Creation()
     {
-      var reader = new DXFReader(null, DxfUnitsType.Meters);
+      var reader = new DXFReader(new MemoryStream(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), DxfUnitsType.Meters);
       reader.Should().NotBeNull();
     }
 
