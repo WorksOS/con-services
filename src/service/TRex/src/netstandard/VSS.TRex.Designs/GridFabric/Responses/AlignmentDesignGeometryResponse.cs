@@ -1,43 +1,16 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
 {
-  public class AlignmentGeometryResponseLabel
-  {
-    /// <summary>
-    /// Measured (as in walked) distance along the alignment from the start of the alignment, expressed in meters
-    /// </summary>
-    public double Station { get; set; }
-
-    /// <summary>
-    /// Contains the WGS84 latitude (expressed decimal degrees) of the test insertion position
-    /// </summary>
-    public double Lat { get; set; }
-
-    /// <summary>
-    /// Contains the WGS84 longitude (expressed decimal degrees) of the test insertion position
-    /// </summary>
-    public double Lon { get; set; }
-
-    /// <summary>
-    /// Text rotation expressed as a survey angle (north is 0, increasing clockwise), in decimal degrees.
-    /// </summary>
-    public double Rotation { get; set; }
-
-    public AlignmentGeometryResponseLabel(double station, double lat, double lon, double rotation)
-    {
-      Station = station;
-      Lat = lat;
-      Lon = lon;
-      Rotation = rotation;
-    }
-  }
-
   public class AlignmentDesignGeometryResponse : BaseRequestResponse
   {
     private const byte VERSION_NUMBER = 1;
+
+    public AlignmentDesignGeometryResponse() { }
+
+    public DesignProfilerRequestResult RequestResult { get; set; }
 
     /// <summary>
     /// The array of vertices describing a poly line representation of the alignment center line
@@ -52,14 +25,15 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     /// </summary>
     public AlignmentGeometryResponseLabel[] Labels { get; set; }
 
-
     /// <summary>
     /// Constructs an alignment master geometry result from supplied vertices and labels
     /// </summary>
+    /// <param name="requestResult"></param>
     /// <param name="vertices"></param>
     /// <param name="labels"></param>
-    public AlignmentDesignGeometryResponse(double[][] vertices, AlignmentGeometryResponseLabel[] labels)
+    public AlignmentDesignGeometryResponse(DesignProfilerRequestResult requestResult, double[][] vertices, AlignmentGeometryResponseLabel[] labels)
     {
+      RequestResult = requestResult;
       Vertices = vertices;
       Labels = labels;
     }
@@ -68,14 +42,66 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      throw new NotImplementedException();
+      writer.WriteInt((int)RequestResult);
+
+      // Write the vertices
+      var count = Vertices?.Length ?? 0;
+      writer.WriteInt(count);
+      if (count > 0)
+      {
+        // ReSharper disable once PossibleNullReferenceException
+        foreach (var vertex in Vertices)
+        {
+          writer.WriteDouble(vertex[0]);
+          writer.WriteDouble(vertex[1]);
+          writer.WriteDouble(vertex[2]);
+        }
+      }
+
+      // Write the labels
+      count = Labels?.Length ?? 0;
+      writer.WriteInt(count);
+      if (count > 0)
+      {
+        // ReSharper disable once PossibleNullReferenceException
+        foreach (var label in Labels)
+        {
+          writer.WriteDouble(label.Station);
+          writer.WriteDouble(label.Lat);
+          writer.WriteDouble(label.Lon);
+          writer.WriteDouble(label.Rotation);
+        }
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      throw new NotImplementedException();
+      RequestResult = (DesignProfilerRequestResult) reader.ReadInt();
+
+      // Read the vertices
+      var count = reader.ReadInt();
+      if (count > 0)
+      {
+        Vertices = new double[count][];
+
+        for (var i = 0; i < count; i++)
+        {
+          Vertices[i] = new[] {reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble()};
+        }
+      }
+
+      // Read the labels
+      count = reader.ReadInt();
+      if (count > 0)
+      {
+        Labels = new AlignmentGeometryResponseLabel[count];
+        for (var i = 0; i < count; i++)
+        {
+          Labels[i] = new AlignmentGeometryResponseLabel(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+        }
+      }
     }
   }
 }
