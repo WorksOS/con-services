@@ -37,8 +37,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// Returns surface and surveyed surface designs
-    ///    which is registered for a sitemodel.
+    /// Returns surface, alignment and surveyed surface designs
+    ///    which is registered for a site model.
     /// If there are no designs the result will be an empty list.
     /// </summary>
     /// <param name="projectUid"></param>
@@ -100,7 +100,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Gets a list of design boundaries in GeoJson format from TRex database.
     /// </summary>
     /// <param name="projectUid">The site model/project unique identifier.</param>
-    /// <param name="designUid">The design file unique identidier.</param>
+    /// <param name="designUid">The design file unique identifier.</param>
     /// <param name="fileName">The design file name.</param>
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
@@ -167,7 +167,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    ///  Gets an alignmend design station range from TRex database.
+    ///  Gets an alignment design station range from TRex database.
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="designUid"></param>
@@ -186,5 +186,49 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<AlignmentStationRangeExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .ProcessAsync(alignmentStationRangeRequest));
     }
+
+    /// <summary>
+    ///  Gets a model describing the geometry and station labeling for the master alignment in an alignment design
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="designUid"></param>
+    /// <returns></returns>
+    [HttpGet("alignment/master/geometry")]
+    public Task<ContractExecutionResult> GetAlignmentGeometryForRendering([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
+    {
+      Log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: projectUid:{projectUid}, designUid:{designUid}");
+
+      var alignmentMasterGeometryRequest = new AlignmentDesignGeometryRequest(projectUid, designUid);
+
+      alignmentMasterGeometryRequest.Validate();
+
+      return WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainer
+          .Build<AlignmentMasterGeometryExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .ProcessAsync(alignmentMasterGeometryRequest));
+    }
+
+    /*
+    /// <summary>
+    /// Produces a DXF file containing a rendering of the geometry and station labeling for the master alignment in an alignment design
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="designUid"></param>
+    /// <returns></returns>
+    [HttpGet("alignment/master/render/dxf")]
+    public Task<ContractExecutionResult> GetAlignmentGeometryRenderedToDXF([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
+    {
+      Log.LogInformation($"{nameof(GetAlignmentStationRange)}: projectUid:{projectUid}, designUid:{designUid}");
+
+      var alignmentStationRangeRequest = new DesignDataRequest(projectUid, designUid);
+
+      alignmentStationRangeRequest.Validate();
+
+      return WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainer
+          .Build<AlignmentMasterGeometryExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .ProcessAsync(alignmentStationRangeRequest));
+    }
+    */
   }
 }
