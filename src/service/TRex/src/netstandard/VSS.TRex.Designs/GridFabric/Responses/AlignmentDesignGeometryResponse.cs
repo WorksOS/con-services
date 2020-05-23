@@ -50,19 +50,25 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
       writer.WriteInt((int)RequestResult);
 
-      // Write the vertices
-      foreach (var vertices in Vertices)
+      var verticesCount = Vertices?.Length ?? 0;
+      writer.WriteInt(verticesCount);
+
+      if (verticesCount > 0)
       {
-        var vertexCount = vertices?.Length ?? 0;
-        writer.WriteInt(vertexCount);
-        if (vertexCount > 0)
+        // Write the vertices
+        foreach (var vertices in Vertices)
         {
-          // ReSharper disable once PossibleNullReferenceException
-          foreach (var vertex in vertices)
+          var vertexCount = vertices?.Length ?? 0;
+          writer.WriteInt(vertexCount);
+          if (vertexCount > 0)
           {
-            writer.WriteDouble(vertex[0]);
-            writer.WriteDouble(vertex[1]);
-            writer.WriteDouble(vertex[2]);
+            // ReSharper disable once PossibleNullReferenceException
+            foreach (var vertex in vertices)
+            {
+              writer.WriteDouble(vertex[0]);
+              writer.WriteDouble(vertex[1]);
+              writer.WriteDouble(vertex[2]);
+            }
           }
         }
       }
@@ -151,7 +157,8 @@ namespace VSS.TRex.Designs.GridFabric.Responses
         Labels = new AlignmentGeometryResponseLabel[count];
         for (var i = 0; i < count; i++)
         {
-          Labels[i] = new AlignmentGeometryResponseLabel(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+          Labels[i] = new AlignmentGeometryResponseLabel
+            (reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
         }
       }
     }

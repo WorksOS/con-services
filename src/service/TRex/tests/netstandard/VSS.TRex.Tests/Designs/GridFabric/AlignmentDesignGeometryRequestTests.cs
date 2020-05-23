@@ -41,10 +41,10 @@ namespace VSS.TRex.Tests.Designs.GridFabric
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
       response.Vertices.Should().NotBeNull();
-      response.Vertices.Length.Should().Be(4);
+      response.Vertices.Length.Should().Be(2);
 
       response.Labels.Should().NotBeNull();
-      response.Labels.Length.Should().Be(100);
+      response.Labels.Length.Should().Be(21);
     }
   }
 }
