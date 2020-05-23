@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -18,7 +17,7 @@ namespace VSS.TRex.Designs.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public AlignmentDesignGeometryResponse Execute(Guid projectUid, Guid alignmentDesignUid)
+    public ExportToGeometry Execute(Guid projectUid, Guid alignmentDesignUid)
     {
       try
       {
@@ -30,7 +29,14 @@ namespace VSS.TRex.Designs.Executors
           return null;
         }
 
-        var design = DIContext.Obtain<IDesignFiles>()?.Lock(alignmentDesignUid, projectUid, siteModel.CellSize, out var lockResult);
+        var lockResult = DesignLoadResult.UnknownFailure;
+        var design = DIContext.Obtain<IDesignFiles>()?.Lock(alignmentDesignUid, projectUid, siteModel.CellSize, out lockResult);
+
+        if (lockResult != DesignLoadResult.Success)
+        {
+          Log.LogError($"Failed to lock design with error {lockResult}");
+          return null;
+        }
 
         if (design == null)
         {
@@ -62,13 +68,9 @@ namespace VSS.TRex.Designs.Executors
         if (!success)
         {
           Log.LogError($"Failed to generate geometry for alignment design {alignmentDesignUid}, error = {geometryExporter.CalcResult}");
-          return null;
         }
 
-        return new AlignmentDesignGeometryResponse
-        (geometryExporter.CalcResult, 
-          geometryExporter.Vertices.Vertices.Select(x => new [] { x.X, x.Y, x.Station } ).ToArray(),
-          geometryExporter.Labels.ToArray());
+        return geometryExporter;
       }
       catch (Exception e)
       {

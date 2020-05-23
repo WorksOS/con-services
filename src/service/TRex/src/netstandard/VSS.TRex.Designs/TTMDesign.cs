@@ -618,7 +618,7 @@ namespace VSS.TRex.Designs
       {
         isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
-          return DesignLoadResult.UnableToLoadSubgridIndex;
+          return DesignLoadResult.UnableToLoadSubGridIndex;
 
         isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
@@ -652,10 +652,10 @@ namespace VSS.TRex.Designs
         maxHeight = Common.Consts.NullReal;
 
         if (!LoadSubGridIndexFile(localPathAndFileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, saveIndexFiles))
-          return DesignLoadResult.UnableToLoadSubgridIndex;
+          return DesignLoadResult.UnableToLoadSubGridIndex;
 
         if (!LoadSpatialIndexFile(localPathAndFileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, saveIndexFiles))
-          return DesignLoadResult.UnableToLoadSubgridIndex;
+          return DesignLoadResult.UnableToLoadSubGridIndex;
 
         if (!LoadBoundaryFile(localPathAndFileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, saveIndexFiles))
           return DesignLoadResult.UnableToLoadBoundary;

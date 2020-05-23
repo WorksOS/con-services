@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Designs.SVL.DXF;
 using VSS.TRex.Designs.SVL.Utilities;
 
 namespace VSS.TRex.Designs.SVL
@@ -10,13 +10,38 @@ namespace VSS.TRex.Designs.SVL
   public class ExportToGeometry : SVLExporterBase
   {
     /// <summary>
-    /// This is a global accumulator for vertices in a consecutive series of elements in an SVL alignment
+    /// This is a global accumulator for vertices in sets of consecutive series of elements in an SVL alignment
     /// </summary>
-    public AddVertexCallback Vertices = new AddVertexCallback();
+    public AddVertexCallback WorkingVertices = new AddVertexCallback();
 
+    /// <summary>
+    /// Accumulator for labels created along the alignment
+    /// </summary>
     public List<AlignmentGeometryResponseLabel> Labels = new List<AlignmentGeometryResponseLabel>();
 
+    /// <summary>
+    /// The collection of arc elements along the alignment
+    /// </summary>
+    public List<AlignmentGeometryResponseArc> Arcs = new List<AlignmentGeometryResponseArc>();
+
+    /// <summary>
+    /// The collection of all series of vertices
+    /// </summary>
+    public List<AddVertexCallback> Vertices = new List<AddVertexCallback>();
+
+    /// <summary>
+    /// The overall calculation result from the operation
+    /// </summary>
     public DesignProfilerRequestResult CalcResult { get; private set; }
+
+    private void MoveWorkingVerticesToVertices()
+    {
+      if (WorkingVertices.VertexCount == 0)
+        return;
+
+      Vertices.Add(WorkingVertices);
+      WorkingVertices = new AddVertexCallback();
+    }
 
     private void ExportNFFSmoothedPolyLineEntityToGeometry(NFFLineworkSmoothedPolyLineEntity data)
     {
@@ -29,13 +54,13 @@ namespace VSS.TRex.Designs.SVL
 
         NFFUtils.DecomposeSmoothPolyLineSegmentToPolyLine(StartPt, EndPt,
           1.0 /* Min length*/, 100 /*Max segment length */, 1000 /*Max number of segments*/,
-          Vertices.AddVertex);
+          WorkingVertices.AddVertex);
 
         StartPt = EndPt; // Swap
       }
     }
 
-    private void AddEntityToDXF(NFFLineworkEntity nffEntity)
+    private void AddEntityToGeometry(NFFLineworkEntity nffEntity)
     {
       switch (nffEntity.ElementType)
       {
@@ -44,20 +69,22 @@ namespace VSS.TRex.Designs.SVL
 
           for (var PtIdx = 0; PtIdx < nffPolyLine.Vertices.Count; PtIdx++)
           {
-            Vertices.AddVertex(nffPolyLine.Vertices[PtIdx].X, 
-                               nffPolyLine.Vertices[PtIdx].Y, 
-                               nffPolyLine.Vertices[PtIdx].Z,
-                               nffPolyLine.Vertices[PtIdx].Chainage,
-                               DecompositionVertexLocation.Intermediate);
+            WorkingVertices.AddVertex(nffPolyLine.Vertices[PtIdx].X,
+              nffPolyLine.Vertices[PtIdx].Y,
+              nffPolyLine.Vertices[PtIdx].Z,
+              nffPolyLine.Vertices[PtIdx].Chainage,
+              DecompositionVertexLocation.Intermediate);
           }
+
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkSmoothedPolyLineElement:
-          ExportNFFSmoothedPolyLineEntityToGeometry((NFFLineworkSmoothedPolyLineEntity)nffEntity);
+          ExportNFFSmoothedPolyLineEntityToGeometry((NFFLineworkSmoothedPolyLineEntity) nffEntity);
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkArcElement:
-          /* TODO: Implement arcs in SVL alignment geometry
+          MoveWorkingVerticesToVertices();
+
           var nffArc = nffEntity as NFFLineworkArcEntity;
           double cz;
 
@@ -66,9 +93,11 @@ namespace VSS.TRex.Designs.SVL
           else
             cz = (nffArc.Z1 + nffArc.Z2) / 2;
 
-          Entities.Add(new DXFArcEntity(
-            nffArc.X1, nffArc.Y1, nffArc.Z1, nffArc.X2, nffArc.Y2, nffArc.Z2, nffArc.CX, nffArc.CY, cz));
-          */   
+          Arcs.Add(new AlignmentGeometryResponseArc(
+            nffArc.X1, nffArc.Y1, nffArc.Z1,
+            nffArc.X2, nffArc.Y2, nffArc.Z2,
+            nffArc.CX, nffArc.CY, cz,
+            nffArc.WasClockWise));
           break;
       }
     }
@@ -78,11 +107,10 @@ namespace VSS.TRex.Designs.SVL
       if ((CalcResult = Validate(alignment)) != DesignProfilerRequestResult.OK)
         return false;
 
-      // Run through the entities in the alignment and add them to the DXF file
+      // Run through the entities in the alignment and add them to the geometry
       for (var I = 0; I < alignment.Entities.Count; I++)
-        AddEntityToDXF(alignment.Entities[I]);
-
-      // Decorate the vertices that 
+        AddEntityToGeometry(alignment.Entities[I]);
+      MoveWorkingVerticesToVertices();
 
       // Construct the stationing text entities along the alignment
       var StationIncrement = AlignmentLabelingInterval;
@@ -103,6 +131,9 @@ namespace VSS.TRex.Designs.SVL
         else
           CurrentStation = alignment.EndStation;
       }
+
+      foreach (var vertices in Vertices)
+        vertices.FillInStationValues();
 
       CalcResult = DesignProfilerRequestResult.OK;
       return true;

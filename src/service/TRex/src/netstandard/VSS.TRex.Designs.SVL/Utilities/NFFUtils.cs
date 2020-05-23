@@ -415,11 +415,8 @@ Huzzah!
         var Alpha = endPt.Alpha;
         var Beta = endPt.Beta;
 
-        var trackedChainage = startPt.Chainage;
-        var trackedPoint = new XYZ(startPt.X, startPt.Y);
-
         // Add the start point of the segment to the poly line vertices
-        decompositionCallback(startPt.X, startPt.Y, Consts.NullDouble, trackedChainage, DecompositionVertexLocation.First);
+        decompositionCallback(startPt.X, startPt.Y, Consts.NullDouble, startPt.Chainage, DecompositionVertexLocation.First);
 
         // zero coefficients means a straight line
         if (Alpha != 0 && Beta != 0)
@@ -453,11 +450,8 @@ Huzzah!
               pt.Y += lx * Cubic;
             }
 
-            trackedChainage += MathUtilities.Hypot(pt.X = trackedPoint.X, pt.Y = trackedPoint.Y);
-            trackedPoint = new XYZ(pt.X, pt.Y);
-
             // Add the vertex to the poly line
-            decompositionCallback(pt.X, pt.Y, Consts.NullDouble, trackedChainage, DecompositionVertexLocation.Intermediate);
+            decompositionCallback(pt.X, pt.Y, Consts.NullDouble, Consts.NullDouble, DecompositionVertexLocation.Intermediate);
 
             Ordinate += Step;
           }

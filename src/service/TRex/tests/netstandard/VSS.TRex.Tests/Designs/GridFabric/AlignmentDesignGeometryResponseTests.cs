@@ -17,7 +17,11 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     [Fact]
     public void Creation2()
     {
-      var vertices = new[] {new double[] {1, 2, 3}};
+      var vertices = new[]
+      {
+        new [] { new double[] { 1, 2, 3 }, new double[] { 2, 2, 4 }  }, 
+        new [] { new double[] { 3, 3, 5 }, new double[] { 3, 4, 6 } }
+      };
       var labels = new [] {new AlignmentGeometryResponseLabel(1, 2, 3, 4),};
 
       var response = new AlignmentDesignGeometryResponse(DesignProfilerRequestResult.OK, vertices, labels);

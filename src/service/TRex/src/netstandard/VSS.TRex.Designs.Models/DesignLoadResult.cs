@@ -2,10 +2,10 @@
 {
   public enum DesignLoadResult
   {
+    UnknownFailure, 
     Success,
-    UnknownFailure,
     NoAlignmentsFound,
-    UnableToLoadSubgridIndex,
+    UnableToLoadSubGridIndex,
     UnableToLoadSpatialIndex,
     DesignDoesNotExist,
     UnableToLoadBoundary
