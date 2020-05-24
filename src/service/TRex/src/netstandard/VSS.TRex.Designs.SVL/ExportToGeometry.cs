@@ -122,7 +122,7 @@ namespace VSS.TRex.Designs.SVL
 
         // Create an instance of the response label with the lat/lon coordinate set to the Y/X grid coordinates
         // which will be converted later by the caller
-        Labels.Add(new AlignmentGeometryResponseLabel(CurrentStation, Y, X, Orientation - Math.PI / 2));
+        Labels.Add(new AlignmentGeometryResponseLabel(CurrentStation, X, Y, Orientation));
 
         if (CurrentStation + StationIncrement <= alignment.EndStation)
           CurrentStation = CurrentStation + StationIncrement;
