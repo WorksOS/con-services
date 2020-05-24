@@ -22,8 +22,7 @@
     /// </summary>
     public double Rotation { get; set; }
 
-    // ReSharper disable once UnusedMember.Local
-    private AlignmentGeometryResponseLabel() { }
+    public AlignmentGeometryResponseLabel() { }
 
     public AlignmentGeometryResponseLabel(double station, double lat, double lon, double rotation)
     {

@@ -303,11 +303,11 @@ namespace VSS.TRex.Webtools.Controllers
       try
       {
         // Load the file and extract its extents?
-        var alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);
+        var alignmentDesign = new SVLAlignmentDesign(SubGridTreeConsts.DefaultCellSize);
         alignmentDesign.LoadFromFile(Path.Combine(new[] { localPath, localFileName }));
 
         // todo when SDK avail
-        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+        var extents = new BoundingWorldExtent3D();
         alignmentDesign.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 

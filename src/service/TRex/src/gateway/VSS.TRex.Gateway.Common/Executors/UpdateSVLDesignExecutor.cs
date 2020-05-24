@@ -70,7 +70,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         var localPath = FilePathHelper.GetTempFolderForProject(request.ProjectUid);
         var localPathAndFileName = Path.Combine(new[] {localPath, request.FileName});
 
-        var alignmentDesign = new AlignmentDesign(SubGridTreeConsts.DefaultCellSize);
+        var alignmentDesign = new SVLAlignmentDesign(SubGridTreeConsts.DefaultCellSize);
         var designLoadResult = await alignmentDesign.LoadFromStorage(request.ProjectUid, request.FileName, localPath);
         if (designLoadResult != DesignLoadResult.Success)
         {
