@@ -8,14 +8,14 @@
     public double Station { get; set; }
 
     /// <summary>
-    /// Contains the WGS84 latitude (expressed decimal degrees) of the test insertion position
+    /// Contains the Easting of the text insertion position
     /// </summary>
-    public double Lat { get; set; }
+    public double X { get; set; }
 
     /// <summary>
-    /// Contains the WGS84 longitude (expressed decimal degrees) of the test insertion position
+    /// Contains the Northing of the text insertion position
     /// </summary>
-    public double Lon { get; set; }
+    public double Y { get; set; }
 
     /// <summary>
     /// Text rotation expressed as a survey angle (north is 0, increasing clockwise), in decimal degrees.
@@ -24,11 +24,11 @@
 
     public AlignmentGeometryResponseLabel() { }
 
-    public AlignmentGeometryResponseLabel(double station, double lat, double lon, double rotation)
+    public AlignmentGeometryResponseLabel(double station, double x, double y, double rotation)
     {
       Station = station;
-      Lat = lat;
-      Lon = lon;
+      X = x;
+      Y = y;
       Rotation = rotation;
     }
   }

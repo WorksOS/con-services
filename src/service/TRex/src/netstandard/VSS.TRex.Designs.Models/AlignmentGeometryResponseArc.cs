@@ -3,49 +3,49 @@
   public class AlignmentGeometryResponseArc
   {
     /// <summary>
-    /// Latitude of the first WGS84 point on the arc, expressed in decimal degrees
+    /// Easting of the first point on the arc, expressed in decimal degrees
     /// </summary>
-    public double Lat1 { get; set; }
+    public double X1 { get; set; }
 
     /// <summary>
-    /// Longitude of the first WGS84 point on the arc, expressed in decimal degrees
+    /// Northing of the first point on the arc, expressed in decimal degrees
     /// </summary>
-    public double Lon1 { get; set; }
+    public double Y1 { get; set; }
 
     /// <summary>
     /// Elevation of the arc start point, expressed in meters
     /// </summary>
-    public double Elev1 { get; set; }
+    public double Z1 { get; set; }
 
     /// <summary>
-    /// Latitude of the second WGS84 point on the arc, expressed in decimal degrees
+    /// Easting of the second point on the arc, expressed in decimal degrees
     /// </summary>
-    public double Lat2 { get; set; }
+    public double X2 { get; set; }
 
     /// <summary>
-    /// Longitude of the second WGS84 point on the arc, expressed in decimal degrees
+    /// Northing of the second point on the arc, expressed in decimal degrees
     /// </summary>
-    public double Lon2 { get; set; }
+    public double Y2 { get; set; }
 
     /// <summary>
     /// Elevation of the arc end arc, expressed in meters
     /// </summary>
-    public double Elev2 { get; set; }
+    public double Z2 { get; set; }
 
     /// <summary>
-    /// Latitude of the center WGS84 point of the arc, expressed in decimal degrees
+    /// Easting of the center point of the arc, expressed in decimal degrees
     /// </summary>
-    public double LatC { get; set; }
+    public double XC { get; set; }
 
     /// <summary>
-    /// Longitude of the center WGS84 point of the arc, expressed in decimal degrees
+    /// Northing of the center point of the arc, expressed in decimal degrees
     /// </summary>
-    public double LonC { get; set; }
+    public double YC { get; set; }
 
     /// <summary>
     /// Elevation of the arc center point, expressed in meters
     /// </summary>
-    public double ElevC { get; set; }
+    public double ZC { get; set; }
 
     /// <summary>
     /// Details if the arc moves clockwise from the first point to the second point.
@@ -55,17 +55,17 @@
     // ReSharper disable once UnusedMember.Local
     private AlignmentGeometryResponseArc() { }
 
-    public AlignmentGeometryResponseArc(double lat1, double lon1, double elev1, double lat2, double lon2, double elev2, double latC, double lonC, double elevC, bool cw)
+    public AlignmentGeometryResponseArc(double x1, double y1, double z1, double x2, double y2, double z2, double xc, double yc, double zc, bool cw)
     {
-      Lat1 = lat1;
-      Lon1 = lon1;
-      Elev1 = elev1;
-      Lat2 = lat2;
-      Lon2 = lon2;
-      Elev1 = elev2;
-      LatC = latC;
-      LonC = lonC;
-      ElevC = elevC;
+      X1 = x1;
+      Y1 = y1;
+      Z1 = z1;
+      X2 = x2;
+      Y2 = y2;
+      Z1 = z2;
+      XC = xc;
+      YC = yc;
+      ZC = zc;
       CW = cw;
     }
   }

@@ -79,15 +79,15 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       {
         foreach (var arc in Arcs)
         {
-          writer.WriteDouble(arc.Lat1);
-          writer.WriteDouble(arc.Lon1);
-          writer.WriteDouble(arc.Elev1);
-          writer.WriteDouble(arc.Lat2);
-          writer.WriteDouble(arc.Lon2);
-          writer.WriteDouble(arc.Elev2);
-          writer.WriteDouble(arc.LatC);
-          writer.WriteDouble(arc.LonC);
-          writer.WriteDouble(arc.ElevC);
+          writer.WriteDouble(arc.X1);
+          writer.WriteDouble(arc.Y1);
+          writer.WriteDouble(arc.Z1);
+          writer.WriteDouble(arc.X2);
+          writer.WriteDouble(arc.Y2);
+          writer.WriteDouble(arc.Z2);
+          writer.WriteDouble(arc.XC);
+          writer.WriteDouble(arc.YC);
+          writer.WriteDouble(arc.ZC);
           writer.WriteBoolean(arc.CW);
         }
       }
@@ -101,8 +101,8 @@ namespace VSS.TRex.Designs.GridFabric.Responses
         foreach (var label in Labels)
         {
           writer.WriteDouble(label.Station);
-          writer.WriteDouble(label.Lat);
-          writer.WriteDouble(label.Lon);
+          writer.WriteDouble(label.X);
+          writer.WriteDouble(label.Y);
           writer.WriteDouble(label.Rotation);
         }
       }

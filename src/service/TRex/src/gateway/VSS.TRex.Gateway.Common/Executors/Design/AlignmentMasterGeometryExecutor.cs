@@ -50,9 +50,9 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       if ((geometryResponse.Vertices?.Length ?? 0) > 0)
         coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[0], x[1], x[2])).ToArray()).ToList());
       if ((geometryResponse.Arcs?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Lon1, x.Lat1, x.Elev1), new XYZ(x.Lon2, x.Lat2, x.Elev2), new XYZ(x.LonC, x.LatC, x.ElevC) }).ToList());
+        coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, x.Z1), new XYZ(x.Y2, x.X2, x.Z2), new XYZ(x.YC, x.XC, x.ZC) }).ToList());
       if ((geometryResponse.Labels?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.Lon, x.Lat, 0)).ToList());
+        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.X, x.Y, 0)).ToList());
 
       var (errorCode, convertedCoords) = await _convertCoordinates.NEEToLLH(csib, coords.ToArray());
 
@@ -71,8 +71,8 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         {
           for (var j = 0; j < geometryResponse.Vertices[i].Length; j++)
           {
-            geometryResponse.Vertices[i][j][0] = convertedCoords[index].Y; // Y is Latitude
-            geometryResponse.Vertices[i][j][1] = convertedCoords[index].X; // X is Longitude 
+            geometryResponse.Vertices[i][j][0] = convertedCoords[index].X;
+            geometryResponse.Vertices[i][j][1] = convertedCoords[index].Y; 
             index++;
           }
         }
@@ -82,17 +82,17 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       {
         for (var i = 0; i < geometryResponse.Arcs.Length; i++)
         {
-          geometryResponse.Arcs[i].Lat1 = convertedCoords[index].Y;
-          geometryResponse.Arcs[i].Lon1 = convertedCoords[index].X;
-          geometryResponse.Arcs[i].Elev1 = convertedCoords[index].Z;
+          geometryResponse.Arcs[i].X1 = convertedCoords[index].X;
+          geometryResponse.Arcs[i].Y1 = convertedCoords[index].Y;
+          geometryResponse.Arcs[i].Z1 = convertedCoords[index].Z;
           index++;
-          geometryResponse.Arcs[i].Lat2 = convertedCoords[index].Y;
-          geometryResponse.Arcs[i].Lon2 = convertedCoords[index].X;
-          geometryResponse.Arcs[i].Elev2 = convertedCoords[index].Z;
+          geometryResponse.Arcs[i].X2 = convertedCoords[index].X;
+          geometryResponse.Arcs[i].Y2 = convertedCoords[index].Y;
+          geometryResponse.Arcs[i].Z2 = convertedCoords[index].Z;
           index++;
-          geometryResponse.Arcs[i].LatC = convertedCoords[index].Y;
-          geometryResponse.Arcs[i].LonC = convertedCoords[index].X;
-          geometryResponse.Arcs[i].ElevC = convertedCoords[index].Z;
+          geometryResponse.Arcs[i].XC = convertedCoords[index].X;
+          geometryResponse.Arcs[i].YC = convertedCoords[index].Y;
+          geometryResponse.Arcs[i].ZC = convertedCoords[index].Z;
           index++;
         }
       }
@@ -101,8 +101,8 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       {
         for (var i = 0; i < geometryResponse.Labels.Length; i++)
         {
-          geometryResponse.Labels[i].Lat = convertedCoords[index].Y;
-          geometryResponse.Labels[i].Lon = convertedCoords[index].X;
+          geometryResponse.Labels[i].X = convertedCoords[index].X;
+          geometryResponse.Labels[i].Y = convertedCoords[index].Y;
           index++;
         }
       }
@@ -130,16 +130,18 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         // Convert all coordinates from grid to lat/lon
         ConvertNEEToLLHCoords(siteModel.CSIB(), geometryResponse);
 
+        // Populate the converted coordinates into the result. Note: At this point, X = Longitude and Y = Latitude
         var result = new AlignmentGeometryResult
         (ContractExecutionStatesEnum.ExecutedSuccessfully,
-          geometryResponse.Vertices,
+          geometryResponse.Vertices.Select(x => 
+            x.Select(v => new[] { v[1], v[0], v[2] }).ToArray()).ToArray(),
           geometryResponse.Arcs.Select(x => 
             new AlignmentGeometryResultArc
-            (x.Lat1, x.Lon1, x.Elev1, 
-             x.Lat2, x.Lon2, x.Elev2, 
-             x.LatC, x.LonC, x.ElevC, x.CW)).ToArray(),
+            (x.Y1, x.X1, x.Z1, 
+             x.Y2, x.X2, x.Z2, 
+             x.YC, x.XC, x.ZC, x.CW)).ToArray(),
           geometryResponse.Labels.Select(x => 
-            new AlignmentGeometryResultLabel(x.Station, x.Lat, x.Lon, x.Rotation)).ToArray());
+            new AlignmentGeometryResultLabel(x.Station, x.Y, x.X, x.Rotation)).ToArray());
 
         return result;
       }
