@@ -51,7 +51,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         return new AlignmentGeometryResult
         (ContractExecutionStatesEnum.ExecutedSuccessfully,
           geometryResponse.Vertices,
-          geometryResponse.Labels.Select(x => new AlignmentGeometryResultLabel(x.Station, x.Lat, x.Lon, x.Rotation)).ToArray());
+          geometryResponse.Arcs.Select(x => 
+            new AlignmentGeometryResultArc(x.Lat1, x.Lon1, x.Elev1, x.Lat2, x.Lon2, x.Elev2, x.LatC, x.LonC, x.ElevC, x.CW)).ToArray(),
+          geometryResponse.Labels.Select(x => 
+            new AlignmentGeometryResultLabel(x.Station, x.Lat, x.Lon, x.Rotation)).ToArray());
       }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

@@ -35,9 +35,10 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     /// <param name="vertices"></param>
     /// <param name="labels"></param>
     /// <param name="message"></param>
-    public AlignmentGeometryResult(int code, double[][][] vertices, AlignmentGeometryResultLabel[] labels, string message = DefaultMessage) : base(code, message)
+    public AlignmentGeometryResult(int code, double[][][] vertices, AlignmentGeometryResultArc[] arcs, AlignmentGeometryResultLabel[] labels, string message = DefaultMessage) : base(code, message)
     {
       Vertices = vertices;
+      Arcs = arcs;
       Labels = labels;
     }
   }

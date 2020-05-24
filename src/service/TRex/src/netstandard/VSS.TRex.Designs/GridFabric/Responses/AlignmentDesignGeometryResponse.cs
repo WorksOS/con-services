@@ -1,5 +1,4 @@
 ﻿using Apache.Ignite.Core.Binary;
-using VSS.Productivity3D.Productivity3D.Models.Designs;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 
@@ -23,7 +22,7 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     /// <summary>
     /// The array of arcs describing all arc elements present along the alignment.
     /// </summary>
-    public AlignmentGeometryResultArc[] Arcs { get; set; }
+    public AlignmentGeometryResponseArc[] Arcs { get; set; }
 
     /// <summary>
     /// The array of labels to be rendered along the alignment. These are generated according to the interval specified
@@ -139,10 +138,10 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       var arcCount = reader.ReadInt();
       if (arcCount > 0)
       {
-        Arcs = new AlignmentGeometryResultArc[arcCount];
+        Arcs = new AlignmentGeometryResponseArc[arcCount];
         for (var i = 0; i < arcCount; i++)
         {
-          Arcs[i] = new AlignmentGeometryResultArc
+          Arcs[i] = new AlignmentGeometryResponseArc
             (reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
             reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
             reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
