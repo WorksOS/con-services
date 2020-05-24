@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     /// <summary>
     /// Elevation of the arc start point, expressed in meters
     /// </summary>
-    [JsonProperty(PropertyName = "elev1", Required = Required.Always)] 
+    [JsonProperty(PropertyName = "elev1", Required = Required.Default)] 
     public double Elev1 { get; set; }
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     /// <summary>
     /// Elevation of the arc end arc, expressed in meters
     /// </summary>
-    [JsonProperty(PropertyName = "elev2", Required = Required.Always)] 
+    [JsonProperty(PropertyName = "elev2", Required = Required.Default)] 
     public double Elev2 { get; set; }
 
     /// <summary>
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     /// <summary>
     /// Elevation of the arc center point, expressed in meters
     /// </summary>
-    [JsonProperty(PropertyName = "elevC", Required = Required.Always)] 
+    [JsonProperty(PropertyName = "elevC", Required = Required.Default)] 
     public double ElevC { get; set; }
 
     /// <summary>
