@@ -11,13 +11,13 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     public double Stn { get; }
 
     /// <summary>
-    /// Contains the WGS84 latitude (expressed decimal degrees) of the test insertion position
+    /// Contains the WGS84 latitude (expressed decimal degrees) of the text insertion position
     /// </summary>
     [JsonProperty(PropertyName = "lat", Required = Required.Always)]
     public double Lat { get; }
 
     /// <summary>
-    /// Contains the WGS84 longitude (expressed decimal degrees) of the test insertion position
+    /// Contains the WGS84 longitude (expressed decimal degrees) of the text insertion position
     /// </summary>
     [JsonProperty(PropertyName = "lon", Required = Required.Always)]
     public double Lon { get; }

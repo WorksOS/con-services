@@ -14,7 +14,7 @@ namespace VSS.TRex.Designs.Factories
       if (string.Compare(Path.GetExtension(fileName), ".ttm", StringComparison.InvariantCultureIgnoreCase) == 0)
         result = new TTMDesign(cellSize);
       else if (string.Compare(Path.GetExtension(fileName), ".svl", StringComparison.InvariantCultureIgnoreCase) == 0)
-        result = new SVLAlignmentDesign(cellSize);
+        result = new SVLAlignmentDesign();
       else
         throw new TRexException($"Unknown design file type in design class factory for design {fileName}");
 

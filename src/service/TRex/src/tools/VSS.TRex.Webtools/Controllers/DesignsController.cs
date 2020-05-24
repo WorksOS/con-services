@@ -303,7 +303,7 @@ namespace VSS.TRex.Webtools.Controllers
       try
       {
         // Load the file and extract its extents?
-        var alignmentDesign = new SVLAlignmentDesign(SubGridTreeConsts.DefaultCellSize);
+        var alignmentDesign = new SVLAlignmentDesign();
         alignmentDesign.LoadFromFile(Path.Combine(new[] { localPath, localFileName }));
 
         // todo when SDK avail
