@@ -44,7 +44,6 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       response.Vertices.Length.Should().Be(2);
 
       (response.Arcs?.Length ?? 0).Should().Be(0);
-      response.Arcs.Length.Should().Be(2);
 
       response.Labels.Should().NotBeNull();
       response.Labels.Length.Should().Be(21);
