@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Common.Abstractions.Clients.CWS;
 using Xunit;
 
 namespace CCSS.CWS.Client.UnitTests.Utilities

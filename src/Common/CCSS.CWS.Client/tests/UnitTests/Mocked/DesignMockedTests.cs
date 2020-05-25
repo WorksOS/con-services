@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
@@ -76,7 +78,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
       var expectedContent = new StringContent("Dummy");
-      mockWebRequest.Setup(s => s.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, It.IsAny<IDictionary<string, string>>(), It.IsAny<Stream>(), null, 3, false))
+      mockWebRequest.Setup(s => s.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, It.IsAny<IHeaderDictionary>(), It.IsAny<Stream>(), null, 3, false))
         .Returns(Task.FromResult(expectedContent as HttpContent));
      
       MockUtilities.TestRequestSendsCorrectJson("Create and uload a file", mockWebRequest, null, expectedUrl, HttpMethod.Post, createFileResponseModel, async () =>

@@ -9,6 +9,7 @@ using VSS.WebApi.Common;
 using VSS.Common.ServiceDiscovery;
 using Xunit;
 using System.Linq;
+using VSS.Common.Abstractions.Clients.CWS;
 
 namespace CCSS.CWS.Client.UnitTests.Staging
 {
@@ -53,7 +54,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
 
       var result = await client.GetDeviceLicenses(new Guid(accountId), headers);
       Assert.NotNull(result);
-      Assert.Equal(DeviceLicenseResponseModel.FREE_DEVICE_LICENSE, result.Total);
+      Assert.Equal(10, result.Total);
     }
   }
 }
