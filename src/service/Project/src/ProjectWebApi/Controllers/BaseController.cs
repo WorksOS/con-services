@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -19,6 +20,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
@@ -50,6 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private ICwsDesignClient _cwsDesignClient;
     private ICwsProfileSettingsClient _cwsProfileSettingsClient;
     private IConfigurationStore _configurationStore;
+    private INotificationHubClient _notificationHubClient;
 
     protected ILogger<T> Logger => _logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
     protected ILoggerFactory LoggerFactory => _loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
@@ -71,7 +74,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected ICwsDesignClient CwsDesignClient => _cwsDesignClient ??= HttpContext.RequestServices.GetService<ICwsDesignClient>();
     protected ICwsProfileSettingsClient CwsProfileSettingsClient => _cwsProfileSettingsClient ??= HttpContext.RequestServices.GetService<ICwsProfileSettingsClient>();
     protected ITPaaSApplicationAuthentication Authorization => _authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
-
+    protected INotificationHubClient NotificationHubClient => _notificationHubClient ??= HttpContext.RequestServices.GetService<INotificationHubClient>();
     /// <summary>
     /// Gets the custom customHeaders for the request.
     /// </summary>
