@@ -36,6 +36,6 @@ namespace VSS.TRex.Gateway.Common.Abstractions
     /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
     Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IHeaderDictionary customHeaders = null, IHeaderDictionary queryParameters = null) where TResponse : class, IMasterDataModel;
+      IHeaderDictionary customHeaders = null, IList<KeyValuePair<string, string>> queryParameters = null) where TResponse : class, IMasterDataModel;
   }
 }

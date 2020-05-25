@@ -94,12 +94,12 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
     public async Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
-      IHeaderDictionary customHeaders = null, IHeaderDictionary queryParameters = null)
+      IHeaderDictionary customHeaders = null, IList<KeyValuePair<string, string>> queryParameters = null)
       where TResponse : class, IMasterDataModel
     {
       Gateway = GatewayType.Immutable;
       log.LogDebug($"{nameof(SendDataGetRequest)}: Sending the get data request for site model ID: {siteModelId}");
-      return await GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders);
+      return await GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, queryParameters);
     }
   }
 }

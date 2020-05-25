@@ -401,12 +401,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
     private async Task<string> ProcessWithTRex(string projectUid, DesignDescriptor designDescriptor, IHeaderDictionary customHeaders)
     {
-      var queryParams = new HeaderDictionary()
+      var queryParams = new List<KeyValuePair<string, string>>
       {
-        { "projectUid", projectUid },
-        { "designUid", designDescriptor?.FileUid.ToString() },
-        { "fileName", designDescriptor?.File?.FileName },
-        { "tolerance", DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL.ToString(CultureInfo.CurrentCulture) }
+        new KeyValuePair<string, string>( "projectUid", projectUid ),
+        new KeyValuePair<string, string>("designUid", designDescriptor?.FileUid.ToString() ),
+        new KeyValuePair<string, string>( "fileName", designDescriptor?.File?.FileName ),
+        new KeyValuePair<string, string>( "tolerance", DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL.ToString(CultureInfo.CurrentCulture) )
       };
 
       var returnedResult = await tRexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(projectUid, "/design/boundaries", customHeaders, queryParams);
@@ -541,12 +541,12 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
     private async Task<List<WGSPoint>> ProcessDesignFilterBoundaryWithTRex(string projectUid, DesignDescriptor alignDescriptor, IHeaderDictionary customHeaders)
     {
-      var queryParams = new HeaderDictionary()
+      var queryParams = new List<KeyValuePair<string, string>>
       {
-        { "projectUid", projectUid },
-        { "designUid", alignDescriptor.FileUid.ToString() },
-        { "fileName", alignDescriptor.File?.FileName },
-        { "tolerance", DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL.ToString(CultureInfo.CurrentCulture) }
+        new KeyValuePair<string, string>( "projectUid", projectUid ),
+        new KeyValuePair<string, string>("designUid", alignDescriptor.FileUid.ToString() ),
+        new KeyValuePair<string, string>( "fileName", alignDescriptor.File?.FileName ),
+        new KeyValuePair<string, string>( "tolerance", DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL.ToString(CultureInfo.CurrentCulture) )
       };
 
       var returnedResult = await tRexCompactionDataProxy.SendDataGetRequest<DesignFilterBoundaryResult>(projectUid, "/design/filter/boundary", customHeaders, queryParams);
@@ -585,10 +585,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
       {
 #endif
-      var queryParams = new HeaderDictionary()
+      var queryParams = new List<KeyValuePair<string, string>>
         {
-          { "projectUid", project.ProjectUID },
-          { "designUid", alignDescriptor.FileUid.ToString() }
+          new KeyValuePair<string, string>(  "projectUid", project.ProjectUID ),
+          new KeyValuePair<string, string>("designUid", alignDescriptor.FileUid.ToString() )
         };
 
       return await tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationRangeResult>(project.ProjectUID, "/design/alignment/stationrange", customHeaders, queryParams);

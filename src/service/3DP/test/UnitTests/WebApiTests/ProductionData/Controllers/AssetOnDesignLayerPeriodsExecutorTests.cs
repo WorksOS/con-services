@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         }
       );
       tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
-          It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<IHeaderDictionary>()))
+          It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedAssetOnDesignLayerPeriodsExecutionResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
 
@@ -103,7 +103,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<AssetOnDesignLayerPeriodsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IHeaderDictionary>(),
-          It.IsAny<IHeaderDictionary>()))
+          It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedAssetOnDesignLayerPeriodsExecutionResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_LAYERS")).Returns(true);
 
