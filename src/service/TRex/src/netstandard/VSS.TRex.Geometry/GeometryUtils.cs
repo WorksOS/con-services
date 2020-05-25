@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common.Utilities;
 
-namespace VSS.TRex.Designs.SVL.Utilities
+namespace VSS.TRex.Geometry
 {
   public static class GeometryUtils
   {
