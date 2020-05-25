@@ -44,7 +44,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       {             
         AccountId = stagingCustomerUid,
         ProjectName = $"Merino test project {Guid.NewGuid()}",
-        TimeZone = "New Zealand Standard Time",
+        Timezone = "New Zealand Standard Time",
         Boundary = new ProjectBoundary()
         {
           type = "POLYGON",

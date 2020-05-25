@@ -36,7 +36,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// 3dp supports what types?
     /// </summary>
     [JsonProperty("timezone")]
-    public string TimeZone { get; set; }
+    public string Timezone { get; set; }
 
     /// <summary>
     /// 3dp supports what types?

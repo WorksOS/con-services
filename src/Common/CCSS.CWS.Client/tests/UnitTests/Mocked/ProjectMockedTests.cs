@@ -35,7 +35,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       {
         AccountId = customerUid.ToString(),
         ProjectName = "my first project",
-        TimeZone = "Mountain Standard Time",
+        Timezone = "Mountain Standard Time",
         Boundary = new ProjectBoundary()
         {
           type = "Polygon",
