@@ -19,12 +19,13 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     {
       var vertices = new[]
       {
-        new [] { new double[] { 1, 2, 3 }, new double[] { 2, 2, 4 }  }, 
+        new [] { new double[] { 1, 2, 3 }, new double[] { 2, 2, 4 } }, 
         new [] { new double[] { 3, 3, 5 }, new double[] { 3, 4, 6 } }
       };
+      var arcs = new [] {new AlignmentGeometryResponseArc(0, 0, 0, 1, 1, 0, 1, 0, 0, true)};
       var labels = new [] {new AlignmentGeometryResponseLabel(1, 2, 3, 4),};
 
-      var response = new AlignmentDesignGeometryResponse(DesignProfilerRequestResult.OK, vertices, labels);
+      var response = new AlignmentDesignGeometryResponse(DesignProfilerRequestResult.OK, vertices, arcs, labels);
       response.Should().NotBeNull();
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);

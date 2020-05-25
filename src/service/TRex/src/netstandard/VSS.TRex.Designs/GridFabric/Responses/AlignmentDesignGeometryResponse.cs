@@ -36,10 +36,11 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     /// <param name="requestResult"></param>
     /// <param name="vertices"></param>
     /// <param name="labels"></param>
-    public AlignmentDesignGeometryResponse(DesignProfilerRequestResult requestResult, double[][][] vertices, AlignmentGeometryResponseLabel[] labels)
+    public AlignmentDesignGeometryResponse(DesignProfilerRequestResult requestResult, double[][][] vertices, AlignmentGeometryResponseArc[] arcs, AlignmentGeometryResponseLabel[] labels)
     {
       RequestResult = requestResult;
       Vertices = vertices;
+      Arcs = arcs;
       Labels = labels;
     }
 

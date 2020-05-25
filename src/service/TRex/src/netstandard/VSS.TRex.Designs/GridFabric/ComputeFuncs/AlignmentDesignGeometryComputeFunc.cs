@@ -26,10 +26,11 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
           return new AlignmentDesignGeometryResponse
           (geometry.CalcResult,
             geometry.Vertices.Select(v => v.Vertices.Select(x => new[] {x.X, x.Y, x.Station}).ToArray()).ToArray(),
+            geometry.Arcs.ToArray(),
             geometry.Labels.ToArray());
         }
         
-        return new AlignmentDesignGeometryResponse(DesignProfilerRequestResult.UnknownError, null, null);
+        return new AlignmentDesignGeometryResponse(DesignProfilerRequestResult.UnknownError, null, null, null);
       }
       catch (Exception E)
       {
