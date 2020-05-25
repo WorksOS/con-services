@@ -563,8 +563,8 @@ namespace VSS.TRex.Designs.SVL
     }
 
     // IncludedAngle calculates the included angle subtended by the
-    // arc. The result in in radians and by definition is a clockwise
-    // turning angle consistent with the clockwise direction or arcs in
+    // arc. The result is in radians and by definition is a clockwise
+    // turning angle consistent with the clockwise direction of arcs in
     // SVL
     public double IncludedAngle()
     {

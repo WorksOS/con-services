@@ -121,14 +121,16 @@ namespace VSS.TRex.Designs.SVL.DXF
       var CurrentStation = alignment.StartStation;
       while (CurrentStation <= alignment.EndStation + 0.001)
       {
-        alignment.ComputeXY(CurrentStation, 0, out var X, out var Y);
-        var Orientation = AzimuthAt(alignment, CurrentStation);
+        alignment.ComputeXY(CurrentStation, 0, out var X1, out var Y1);
+        alignment.ComputeXY(CurrentStation, -1, out var X2, out var Y2);
+
+        GeometryUtils.RectToPolar(Y1, X1, Y2, X2, out var textOrientation, out _);
 
         DXF.Entities.Add(new DXFTextEntity("B",
           kAlignmentCenterLineColor,
-          X, Y, Consts.NullDouble,
+          X1, Y1, Consts.NullDouble,
           $"{CurrentStation / UnitUtils.DistToMeters(Units):F2}",
-          Orientation - (Math.PI / 2),
+          textOrientation - (Math.PI / 2),
           2,
           "Arial",
           //[],

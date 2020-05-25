@@ -4,6 +4,7 @@ using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL.Utilities;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
@@ -117,12 +118,14 @@ namespace VSS.TRex.Designs.SVL
       var CurrentStation = alignment.StartStation;
       while (CurrentStation <= alignment.EndStation + 0.001)
       {
-        alignment.ComputeXY(CurrentStation, 0, out var X, out var Y);
-        var Orientation = AzimuthAt(alignment, CurrentStation);
+        alignment.ComputeXY(CurrentStation, 0, out var X1, out var Y1);
+        alignment.ComputeXY(CurrentStation, -1, out var X2, out var Y2);
+
+        GeometryUtils.RectToPolar(Y1, X1, Y2, X2, out var textOrientation, out _);
 
         // Create an instance of the response label with the lat/lon coordinate set to the Y/X grid coordinates
         // which will be converted later by the caller
-        Labels.Add(new AlignmentGeometryResponseLabel(CurrentStation, X, Y, Orientation));
+        Labels.Add(new AlignmentGeometryResponseLabel(CurrentStation, X1, Y1, Math.PI / 2 - textOrientation));
 
         if (CurrentStation + StationIncrement <= alignment.EndStation)
           CurrentStation = CurrentStation + StationIncrement;
