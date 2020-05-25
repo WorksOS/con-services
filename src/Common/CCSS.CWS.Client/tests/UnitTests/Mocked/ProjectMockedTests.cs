@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
@@ -44,7 +45,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
       var createProjectResponseModel = new CreateProjectResponseModel
       {
-        Id = expectedProjectTrn
+        TRN = expectedProjectTrn
       };
       const string route = "/projects";
       var expectedUrl = $"{baseUrl}{route}";
