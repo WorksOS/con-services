@@ -55,8 +55,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.SendEmailJob
 
         if (details.Result.Code == ContractExecutionStatesEnum.ExecutedSuccessfully)
         {
-          key = JobStorage.Current.GetConnection().GetJobParameter(parentJob, ExportJob.ExportJob.S3KeyStateKey);
-          downloadLink = JobStorage.Current.GetConnection().GetJobParameter(parentJob, ExportJob.ExportJob.DownloadLinkStateKey);
+          key = JobStorage.Current.GetConnection().GetJobParameter(parentJob, ExportJob.ExportJob.S3_KEY_STATE_KEY);
+          downloadLink = JobStorage.Current.GetConnection().GetJobParameter(parentJob, ExportJob.ExportJob.DOWNLOAD_LINK_STATE_KEY);
         }
 
         var projectName = currentContext.GetJobParameter<string>(Tags.PROJECTNAME_TAG);

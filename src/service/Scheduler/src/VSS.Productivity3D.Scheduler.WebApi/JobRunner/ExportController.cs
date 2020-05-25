@@ -98,8 +98,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       if (status.Equals(Hangfire.States.SucceededState.StateName, StringComparison.OrdinalIgnoreCase))
       {
         // Attempt to get the download link that should ve set in the job
-        key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3KeyStateKey);
-        downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DownloadLinkStateKey);
+        key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3_KEY_STATE_KEY);
+        downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DOWNLOAD_LINK_STATE_KEY);
 
         if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(downloadLink))
         {

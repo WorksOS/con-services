@@ -49,22 +49,21 @@ namespace VSS.AWS.TransferProxy
       awsLinkExpiry = configStore.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY") ??
                       TimeSpan.FromDays(MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL);
 
-     logger.LogInformation("AWS S3 Now using Assumed Roles");
+      logger.LogInformation("AWS S3 Now using Assumed Roles");
     }
 
     private TransferUtility GetTransferUtility()
     {
-     return new TransferUtility(GetS3Client());
+      return new TransferUtility(GetS3Client());
     }
 
     private IAmazonS3 GetS3Client()
     {
-       return new AmazonS3Client(RegionEndpoint.USWest2);
+      return new AmazonS3Client(RegionEndpoint.USWest2);
     }
 
     public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)
     {
-
       using (var transferUtil = GetTransferUtility())
       {
         var stream = await transferUtil.OpenStreamAsync(bucketName, s3Key);
@@ -92,7 +91,7 @@ namespace VSS.AWS.TransferProxy
     /// <returns>FileStreamResult if the file exists</returns>
     public Task<FileStreamResult> Download(string s3Key) => DownloadFromBucket(s3Key, awsBucketName);
 
-  public void UploadToBucket(Stream stream, string s3Key, string bucketName)
+    public void UploadToBucket(Stream stream, string s3Key, string bucketName)
     {
       using (var transferUtil = GetTransferUtility())
       {
@@ -153,6 +152,5 @@ namespace VSS.AWS.TransferProxy
         return true;
       }
     }
-
   }
 }
