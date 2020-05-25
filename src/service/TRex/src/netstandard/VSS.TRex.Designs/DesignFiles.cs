@@ -74,7 +74,7 @@ end;
 
         if (design == null)
         {
-          // Verify the design does exist in either the designs or surveyed surface lists for the site model
+          // Verify the design does exist in either the designs, surveyed surface or alignment lists for the site model
           var designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID).Designs.Locate(designUid);
           var descriptor = designRef?.DesignDescriptor;
 
@@ -83,7 +83,13 @@ end;
             var surveyedSurfaceRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID).SurveyedSurfaces?.Locate(designUid);
             descriptor = surveyedSurfaceRef?.DesignDescriptor;
           }
-          
+
+          if (descriptor == null)
+          {
+            var alignmentDesignRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID).Alignments?.Locate(designUid);
+            descriptor = alignmentDesignRef?.DesignDescriptor;
+          }
+
           if (descriptor == null)
           {
             loadResult = DesignLoadResult.DesignDoesNotExist;

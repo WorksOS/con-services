@@ -1,7 +1,6 @@
 ﻿using System;
-using VSS.TRex.Geometry;
 
-namespace VSS.TRex.Designs.SVL.Utilities
+namespace VSS.TRex.Geometry
 {
   public static class ArcUtils
   {
