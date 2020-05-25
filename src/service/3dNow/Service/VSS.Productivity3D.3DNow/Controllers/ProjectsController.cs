@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -77,7 +78,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// For a project master data model, populate our display project model with its details and files attached
     /// </summary>
-    private async Task<ProjectDisplayModel> GetProjectModel(ProjectData project, IDictionary<string, string> headers)
+    private async Task<ProjectDisplayModel> GetProjectModel(ProjectData project, IHeaderDictionary headers)
     {
       var projectModel = new ProjectDisplayModel
       {
