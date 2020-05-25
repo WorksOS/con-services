@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var expectedResult = new DesignBoundaryResult(JsonConvert.DeserializeObject<GeoJson>(joString));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<DesignBoundaryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<IHeaderDictionary>()))
+      tRexProxy.Setup(x => x.SendDataGetRequest<DesignBoundaryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedResult);
 
       var configStore = new Mock<IConfigurationStore>();
