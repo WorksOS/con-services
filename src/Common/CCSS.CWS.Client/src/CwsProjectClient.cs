@@ -102,7 +102,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(GetMyProject)}: projectUid {projectUid} userUid {userUid}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       ProjectDetailResponseModel projectDetailResponseModel = null;
 
       try
@@ -142,7 +142,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(UpdateProjectDetails)}: projectUid {projectUid} updateProjectDetailsRequest {JsonConvert.SerializeObject(updateProjectDetailsRequest)}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       await UpdateData($"/projects/{projectTrn}", updateProjectDetailsRequest, null, customHeaders);
     }
 
@@ -153,7 +153,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(UpdateProjectBoundary)}: projectUid {projectUid} projectBoundary {JsonConvert.SerializeObject(projectBoundary)}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       await UpdateData($"/projects/{projectTrn}/boundary", projectBoundary, null, customHeaders);
     }
   }

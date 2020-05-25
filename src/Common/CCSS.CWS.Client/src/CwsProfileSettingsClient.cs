@@ -46,7 +46,7 @@ namespace CCSS.CWS.Client
     { 
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       var projectConfigurationFileResponse = 
         await GetData<ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
      
@@ -64,7 +64,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(GetProjectConfigurations)}: projectUid {projectUid}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       var projectConfigurationFileListResponse = 
         await GetData<ProjectConfigurationFileListResponseModel>($"/projects/{projectTrn}/configuration", null, null, null, customHeaders);
       
@@ -81,7 +81,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(SaveProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       var projectConfigurationResponse = await PostData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
 
       log.LogDebug($"{nameof(SaveProjectConfiguration)}: projectConfigurationResponse {JsonConvert.SerializeObject(projectConfigurationResponse)}");
@@ -97,7 +97,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       var projectConfigurationResponse = 
         await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
 
@@ -113,7 +113,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(DeleteProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       return DeleteData($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, customHeaders);
     }
   }
