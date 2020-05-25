@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +14,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
-using Xunit;
 using ILogger = Serilog.ILogger;
 
 namespace CCSS.CWS.Client.UnitTests
