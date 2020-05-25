@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,7 +56,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new[] {new AlignmentGeometryResultLabel(0, 1, 2, 3),});
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<AlignmentGeometryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<IHeaderDictionary>()))
+      tRexProxy.Setup(x => x.SendDataGetRequest<AlignmentGeometryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedResult);
 
       var executor = RequestExecutorContainerFactory
@@ -77,7 +78,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       AlignmentGeometryResult expectedResult = null;
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataGetRequest<AlignmentGeometryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<IHeaderDictionary>()))
+      tRexProxy.Setup(x => x.SendDataGetRequest<AlignmentGeometryResult>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedResult);
 
       var executor = RequestExecutorContainerFactory

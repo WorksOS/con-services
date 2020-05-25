@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var request = CastRequestObjectTo<AlignmentGeometryRequest>(item);
         var siteModelId = request.ProjectUid.ToString();
         var designUid = request.DesignUid.ToString();
-        var queryParams = new HeaderDictionary { { "projectUid", siteModelId }, { "designUid", designUid }, };
+        var queryParams = new List<KeyValuePair<string, string>>
+        {
+          new KeyValuePair<string, string>( "projectUid", siteModelId ),
+          new KeyValuePair<string, string>( "designUid", designUid )
+        };
      
         var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<AlignmentGeometryResult>(siteModelId, "/design/alignment/centerline/geometry", customHeaders, queryParams);
 
