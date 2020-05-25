@@ -24,24 +24,17 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     // Needed for the out parameter on the Lock function
     delegate IDesignBase GobbleDesignFilesLockReturns(Guid designUid, Guid datamodelUid, double cellSize, out DesignLoadResult result);      
 
-    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
-      <AlignmentDesignGeometryComputeFunc, AlignmentDesignGeometryArgument, AlignmentDesignGeometryResponse>();
-
     public AlignmentDesignGeometryRequestTests()
     {
-      // LL to NEE
-//      var convertCoordinatesMock = new Mock<IConvertCoordinates>();
-//      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns<string, XYZ[]>((csib, coords) =>
-//      {
-//        // Return the coordinates with the X and Y reversed to mimic the X <-> Lon, Y <-> Lat ordering change (NEE -> LLH) in coordinate conversions
-//        return Task.FromResult((RequestErrorStatus.OK, coords.Select(x => new XYZ(x.Y, x.X, x.Z)).ToArray()));
-//      });
-
-//      DIBuilder.
-//        Continue()
-//        .Add(x => x.AddSingleton(convertCoordinatesMock.Object))
-//        .Complete();
+      // Fresh the DesignFiles DI for each test as some tests mock it specially
+      DIBuilder.
+        Continue()
+        .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
+        .Complete();
     }
+
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
+      <AlignmentDesignGeometryComputeFunc, AlignmentDesignGeometryArgument, AlignmentDesignGeometryResponse>();
 
     [Fact]
     public void Creation()
@@ -52,7 +45,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     /// <summary>
-    /// Constructs a SVL alignment with a single polyline element with two vertices
+    /// Constructs a SVL alignment with a single poly line element with two vertices
     /// </summary>
     /// <returns></returns>
     [Fact]
