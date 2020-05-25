@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,7 +14,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
-using Xunit;
 using ILogger = Serilog.ILogger;
 
 namespace CCSS.CWS.Client.UnitTests
@@ -59,8 +58,8 @@ namespace CCSS.CWS.Client.UnitTests
 
     protected virtual bool PretestChecks() => true;
 
-    protected Dictionary<string, string> CustomHeaders() =>
-      new Dictionary<string, string>
+    protected HeaderDictionary CustomHeaders() =>
+      new HeaderDictionary
       {
         {"Content-Type", ContentTypeConstants.ApplicationJson},
         {"Authorization", $"Bearer {ServiceProvider.GetService<ITPaaSApplicationAuthentication>().GetApplicationBearerToken()}"}

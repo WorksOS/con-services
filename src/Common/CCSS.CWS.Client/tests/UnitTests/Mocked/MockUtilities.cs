@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -8,6 +7,7 @@ using Moq;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Proxies.Interfaces;
 using FluentAssertions.Json;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace CCSS.CWS.Client.UnitTests.Mocked
@@ -69,12 +69,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     {
       mockWebRequest.Setup(s => s.ExecuteRequest<TResponse>(It.Is<string>(v => string.Compare(v, endpointAddress, StringComparison.Ordinal) == 0),
           It.IsAny<Stream>(),
-          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<IHeaderDictionary>(),
           It.IsAny<HttpMethod>(),
           It.IsAny<int?>(),
           It.IsAny<int>(),
           It.IsAny<bool>()))
-        .Callback<string, Stream, IDictionary<string, string>, HttpMethod, int?, int, bool>((url, stream, _, method, __, ___, ____) =>
+        .Callback<string, Stream, IHeaderDictionary, HttpMethod, int?, int, bool>((url, stream, _, method, __, ___, ____) =>
         Validate(url, stream, method, validateUrlAction, validateStreamAction, validateHttpMethodAction))
         .Returns(Task.FromResult(responseFunc()));
     }
@@ -87,12 +87,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     {
       mockWebRequest.Setup(s => s.ExecuteRequest(It.Is<string>(v => string.Compare(v, endpointAddress, StringComparison.Ordinal) == 0),
           It.IsAny<Stream>(),
-          It.IsAny<IDictionary<string, string>>(),
+          It.IsAny<IHeaderDictionary>(),
           It.IsAny<HttpMethod>(),
           It.IsAny<int?>(),
           It.IsAny<int>(),
           It.IsAny<bool>()))
-        .Callback<string, Stream, IDictionary<string, string>, HttpMethod, int?, int, bool>((url, stream, _, method, __, ___, ____) =>
+        .Callback<string, Stream, IHeaderDictionary, HttpMethod, int?, int, bool>((url, stream, _, method, __, ___, ____) =>
         Validate(url, stream, method, validateUrlAction, validateStreamAction, validateHttpMethodAction))
         .Returns(Task.CompletedTask);
     }

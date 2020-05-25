@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IHeaderDictionary>(),
-          It.IsAny<IHeaderDictionary>()))
+          It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedMachineExecutionResult);
 
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(enableTRexGateway);

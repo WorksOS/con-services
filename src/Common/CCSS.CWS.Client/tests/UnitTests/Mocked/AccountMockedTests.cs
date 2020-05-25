@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
@@ -35,7 +35,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         HasMore = false,
         Accounts = new List<AccountResponseModel>()
         {
-          new AccountResponseModel() {Id = expectedId, Name = expectedName, DeviceCount = 10, UserCount = 5, ProjectCount = 0}
+          new AccountResponseModel() {TRN = expectedId, Name = expectedName, DeviceCount = 10, UserCount = 5, ProjectCount = 0}
         }
       };
 

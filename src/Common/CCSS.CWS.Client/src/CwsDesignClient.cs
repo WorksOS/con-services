@@ -33,7 +33,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(CreateFile)}: createFileRequest {JsonConvert.SerializeObject(createFileRequest)}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       var createFileResponse = await PostData<CreateFileRequestModel, CreateFileResponseModel>($"/projects/{projectTrn}/file", createFileRequest, null, customHeaders);
 
       log.LogDebug($"{nameof(CreateFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
@@ -47,7 +47,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileRequest {JsonConvert.SerializeObject(createFileRequest)}");
 
-      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
       var createFileResponse = await PostData<CreateFileRequestModel, CreateFileResponseModel>($"/projects/{projectTrn}/file", createFileRequest, null, customHeaders);
 
       //We won't monitor status of upload as calibration/config files are small so should be quick.

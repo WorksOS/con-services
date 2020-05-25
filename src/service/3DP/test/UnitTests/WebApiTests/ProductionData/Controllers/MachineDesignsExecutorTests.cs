@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IHeaderDictionary>(),
-          It.IsAny<HeaderDictionary>()))
+          It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedGetAssetOnDesignPeriodsExecutorResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(true);
 
@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IHeaderDictionary>(),
-          It.IsAny<HeaderDictionary>()))
+          It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedGetAssetOnDesignPeriodsExecutorResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(true);
 
@@ -181,7 +181,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<HeaderDictionary>(),
-          It.IsAny<HeaderDictionary>()))
+          It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedGetAssetOnDesignPeriodsExecutorResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(true);
 

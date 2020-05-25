@@ -24,9 +24,12 @@ namespace CCSS.CWS.Client
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
 
+    protected int FromRow = 0;
+    protected int RowCount = 200;
+
     protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
-     IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
-     dataCache, serviceResolution)
+      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
+      dataCache, serviceResolution)
     { }
 
     // NOTE: must have a uid or userId for cache key
@@ -36,8 +39,7 @@ namespace CCSS.CWS.Client
     {
       try
       {
-        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
-          customHeaders, parameters);
+        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(), customHeaders, parameters);
         return result;
       }
       catch (HttpRequestException e)
@@ -60,9 +62,9 @@ namespace CCSS.CWS.Client
       {
         var payload = JsonConvert.SerializeObject(request);
 
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)); 
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
         return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
-        
+
       }
       catch (HttpRequestException e)
       {
@@ -149,9 +151,9 @@ namespace CCSS.CWS.Client
       {
         var payload = JsonConvert.SerializeObject(request);
 
-       using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      	// Need to await this, as we need the stream (if we return the task, the stream is disposed)
-      	return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
       }
       catch (HttpRequestException e)
       {
@@ -186,6 +188,11 @@ namespace CCSS.CWS.Client
 
         throw;
       }
+    }
+
+    protected List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
+    {
+      return new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("from", fromRow.ToString()), new KeyValuePair<string, string>("limit", rowCount.ToString()) };
     }
   }
 }
