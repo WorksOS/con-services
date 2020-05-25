@@ -24,9 +24,12 @@ namespace CCSS.CWS.Client
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
 
+    protected int FromRow = 0;
+    protected int RowCount = 200;
+
     protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
-     IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
-     dataCache, serviceResolution)
+      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
+      dataCache, serviceResolution)
     { }
 
     // NOTE: must have a uid or userId for cache key
@@ -36,13 +39,12 @@ namespace CCSS.CWS.Client
     {
       try
       {
-        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
-          customHeaders, parameters);
+        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(), customHeaders, parameters);
         return result;
       }
       catch (HttpRequestException e)
       {
-        if (e.IsNotFoundException())
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
         {
           return null;
         }
@@ -60,13 +62,13 @@ namespace CCSS.CWS.Client
       {
         var payload = JsonConvert.SerializeObject(request);
 
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)); 
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
         return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
-        
+
       }
       catch (HttpRequestException e)
       {
-        if (e.IsNotFoundException())
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
         {
           return null;
         }
@@ -89,7 +91,7 @@ namespace CCSS.CWS.Client
       }
       catch (HttpRequestException e)
       {
-        if (e.IsNotFoundException())
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
         {
           return;
         }
@@ -104,16 +106,16 @@ namespace CCSS.CWS.Client
       return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
 
-    protected async Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
+    protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
       try
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
+        return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
       }
       catch (HttpRequestException e)
       {
-        if (e.IsNotFoundException())
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
         {
           return null;
         }
@@ -122,18 +124,18 @@ namespace CCSS.CWS.Client
       }
     }
 
-    protected async Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
+    protected Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null)
     {
       try
       {
-        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
+        return SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
       }
       catch (HttpRequestException e)
       {
-        if (e.IsNotFoundException())
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
         {
-          return;
+          return Task.CompletedTask;
         }
 
         throw;
@@ -149,13 +151,13 @@ namespace CCSS.CWS.Client
       {
         var payload = JsonConvert.SerializeObject(request);
 
-       using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      	// Need to await this, as we need the stream (if we return the task, the stream is disposed)
-      	return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
       }
       catch (HttpRequestException e)
       {
-        if (e.IsNotFoundException())
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
         {
           return null;
         }
@@ -179,13 +181,18 @@ namespace CCSS.CWS.Client
       }
       catch (HttpRequestException e)
       {
-        if (e.IsNotFoundException())
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
         {
           return;
         }
 
         throw;
       }
+    }
+
+    protected List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
+    {
+      return new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("from", fromRow.ToString()), new KeyValuePair<string, string>("limit", rowCount.ToString()) };
     }
   }
 }

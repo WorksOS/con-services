@@ -20,10 +20,6 @@ namespace CCSS.CWS.Client
   /// </summary>
   public class CwsDeviceClient : CwsProfileManagerClient, ICwsDeviceClient
   {
-    // todoJeannie ProfileX throws exception on anything much over 20 (note that default is 10)
-    private int FromRow = 0;
-    private int RowCount = 20;
-
     public CwsDeviceClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)
     { }
@@ -109,14 +105,6 @@ namespace CCSS.CWS.Client
       
       log.LogDebug($"{nameof(GetAccountsForDevice)}: deviceAccountListResponseModel {JsonConvert.SerializeObject(deviceAccountListResponseModel)}");
       return deviceAccountListResponseModel;
-    }
-
-    private List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
-    {
-      return new List<KeyValuePair<string, string>>
-        { new KeyValuePair<string, string>("from", fromRow.ToString()),
-          new KeyValuePair<string, string>("limit", rowCount.ToString())
-        };
     }
   }
 }

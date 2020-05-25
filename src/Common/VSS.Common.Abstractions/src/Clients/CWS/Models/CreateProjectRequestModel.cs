@@ -11,11 +11,13 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("accountId")]
     public string TRN { get; private set; }
-    
+
     /// <summary>
     /// WorksOS account ID.
     /// </summary>
-    public string AccountId { 
+    [JsonProperty("accountUid")]
+    public string AccountId
+    {
       get => _id;
       set
       {
@@ -34,7 +36,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// 3dp supports what types?
     /// </summary>
     [JsonProperty("timezone")]
-    public string Timezone { get; set; }
+    public string TimeZone { get; set; }
 
     /// <summary>
     /// 3dp supports what types?
