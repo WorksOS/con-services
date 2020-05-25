@@ -43,13 +43,13 @@ namespace VSS.Productivity.Push.Models.Notifications
     /// Uid for the Type provided
     /// </summary>
     [JsonProperty]
-    public Guid? Uid { get; private set; }
+    public Guid? Uid { get; set; }
 
     /// <summary>
     /// Uid Type
     /// </summary>
     [JsonProperty]
-    public NotificationUidType Type { get; private set; }
+    public NotificationUidType Type { get; set; }
 
     /// <summary>
     /// Uid Type string 
@@ -61,12 +61,12 @@ namespace VSS.Productivity.Push.Models.Notifications
     /// Notification Key
     /// </summary>
     [JsonProperty]
-    public string Key { get; private set; }
+    public string Key { get; set; }
 
     /// <summary>
     /// Notification parameters
     /// </summary>
     [JsonProperty]
-    public object Parameters { get; private set; }
+    public object Parameters { get; set; }
   }
 }
