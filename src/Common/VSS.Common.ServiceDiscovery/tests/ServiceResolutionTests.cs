@@ -173,10 +173,10 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
     {
       var resolver = serviceCollection.BuildServiceProvider().GetService<IServiceResolution>() as InternalServiceResolver;
       Assert.NotNull(resolver);
-      Assert.Equal("servicename-public-v1", resolver.GetServiceConfigurationName("ServiceName", ApiType.Public, ApiVersion.V1));
-      Assert.Equal("servicename-public-v2", resolver.GetServiceConfigurationName("SERVICENAME", ApiType.Public, ApiVersion.V2));
-      Assert.Equal("servicename-private-v1", resolver.GetServiceConfigurationName("ServiceName", ApiType.Private, ApiVersion.V1));
-      Assert.Equal("servicename-private-v4", resolver.GetServiceConfigurationName("ServiceName", ApiType.Private, ApiVersion.V4));
+      Assert.Equal("servicename_public_v1", resolver.GetServiceConfigurationName("ServiceName", ApiType.Public, ApiVersion.V1));
+      Assert.Equal("servicename_public_v2", resolver.GetServiceConfigurationName("SERVICENAME", ApiType.Public, ApiVersion.V2));
+      Assert.Equal("servicename_private_v1", resolver.GetServiceConfigurationName("ServiceName", ApiType.Private, ApiVersion.V1));
+      Assert.Equal("servicename_private_v4", resolver.GetServiceConfigurationName("ServiceName", ApiType.Private, ApiVersion.V4));
     }
 
     /// <summary>
@@ -273,7 +273,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
       // Test we can get an endpoint from a single resolver correctly when the service exists, and when it doesn't
       const string serviceName = "test-service-for-url";
       const string
-        serviceConfigurationKey = "test-service-for-url-public-v2"; // Modified to include the api type and version
+        serviceConfigurationKey = "test-service-for-url_public_v2"; // Modified to include the api type and version
       const string
         serviceEndpoint =
           "http://localhost:5023/test-endpoint/rewritten/for/simplicity/v1.99/"; // Something like a TPaaS URL which doesn't match our naming convention
@@ -308,7 +308,7 @@ namespace VSS.Common.ServiceDiscovery.UnitTests
 
       // Test we can get an endpoint from a single resolver correctly when the service exists, and when it doesn't
       const string serviceName = "test-service";
-      const string explictConfigKey = "test-service-public-v2"; // Modified to include the api type and version
+      const string explictConfigKey = "test-service_public_v2"; // Modified to include the api type and version
       const string serviceRealEndpoint = "http://my-real-host/with/my/real/route/";
       const string serviceBaseUrl = "http://localhost:9000/";
       const string route = "/i/dont/know/where/i/am";
