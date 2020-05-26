@@ -76,7 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation("GetProjectV6");
 
-      var project = await ProjectRequestHelper.GetProject(projectUid, CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+      var project = await ProjectRequestHelper.GetProject(new Guid(projectUid), new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders).ConfigureAwait(false);
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
     }
 

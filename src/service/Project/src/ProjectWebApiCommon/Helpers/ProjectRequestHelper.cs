@@ -119,6 +119,33 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
+    /// Gets a Project and checks customerUid
+    ///   Includes any project, regardless of archived state.
+    ///   Temporary Note that this will return nothing if user doesn't have ADMIN role
+    ///       WM team may change this behaviour in future
+    /// </summary>
+    public static async Task<ProjectDatabaseModel> GetProject(Guid projectUid, Guid customerUid, Guid userUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    {
+      var project = await cwsProjectClient.GetMyProject(projectUid, userUid, customHeaders);
+      if (project == null)
+      {
+        log.LogWarning($"Project not found: {projectUid}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+        return null;
+      }
+
+      if (!string.Equals(project.AccountId, customerUid.ToString(), StringComparison.OrdinalIgnoreCase))
+      {
+        log.LogWarning($"Customer doesn't have access to projectUid: {projectUid}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+      }
+
+      log.LogInformation($"Project projectUid: {projectUid} retrieved");
+      return ConvertCwsToWorksOSProject(project, log);
+    }
+
+    /// <summary>
     /// Gets a Project by customer uid.
     /// </summary>
     public static async Task<ProjectDatabaseModel> GetProject(string projectUid, string customerUid,
