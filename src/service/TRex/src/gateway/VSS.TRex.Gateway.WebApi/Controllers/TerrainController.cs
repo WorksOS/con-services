@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -15,52 +16,42 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   public class TerrainController : BaseController
   {
     /// <summary>
-    /// Constructor for production data image tile controller.
+    /// Constructor for production data quantized mesh terrain tile controller.
     /// </summary>
-    /// <param name="loggerFactory"></param>
-    /// <param name="exceptionHandler"></param>
-    /// <param name="configStore"></param>
     public TerrainController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler,
       IConfigurationStore configStore) : base(loggerFactory, loggerFactory.CreateLogger<TerrainController>(), exceptionHandler, configStore)
     {
     }
 
+    [HttpGet]
+    public string Get()
+    {
+      return "You have reached the Gateway Terrain Controller";
+    }
+
     /// <summary>
     /// Get production quantized mesh tile.
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
     [HttpPost]
-    public IActionResult GetTile([FromBody] QMTileRequest request)
+    public async Task<IActionResult> GetTile([FromBody] QMTileRequest request)
     {
-
-      Log.LogInformation($"{nameof(GetTile)}: #Tile# In. Params. XYZ:{request.X},{request.Y},{request.Z}, Project:{request.ProjectUid}, Lighting:{request.HasLighting}");
-
+      Log.LogInformation($"{nameof(GetTile)}: #Tile# In. Params. XYZ:{request.X},{request.Y},{request.Z}, Project:{request.ProjectUid}, Lighting:{request.HasLighting}, DisplayMode:{request.DisplayMode}");
       request.Validate();
 
-      try
-      {
-        var tileResult = WithServiceExceptionTryExecute(() =>
-          RequestExecutorContainer
-            .Build<QuantizedMeshTileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(request)) as QMTileResult;
-        if (tileResult == null || tileResult.TileData == null)
-        {
-          var msg = $"Failed to get Quantized Mesh tile for projectUid: {request.ProjectUid}. Check log VSS.TRex.Server.QuantizedMesh";
-          Log.LogError(msg);
-          return NoContent();
-        }
+      var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainer
+          .Build<QuantizedMeshTileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .ProcessAsync(request)) as QMTileResult;
 
-        Log.LogDebug($"#Tile# Out. XYZ:{request.X},{request.Y},{request.Z}");
-        return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ApplicationOctetStream);
-      }
-      catch (System.Exception e)
+      if (tileResult == null || tileResult.TileData == null)
       {
-        // log exception in Gateway log then return exception. Typically cluster not active
-        var msg = $"Failed to execute Quantized Mesh tile generation for projectUid: {request.ProjectUid} Error:{e.Message}";
-        Log.LogError(msg);
-        throw;
+        Log.LogError($"Failed to get Quantized Mesh tile for projectUid: {request.ProjectUid}. For more info check .Server.QuantizedMesh.log");
+        return NoContent();
       }
+
+      Log.LogDebug($"#Tile# Out. XYZ:{request.X},{request.Y},{request.Z}");
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ApplicationOctetStream);
     }
+
   }
 }
