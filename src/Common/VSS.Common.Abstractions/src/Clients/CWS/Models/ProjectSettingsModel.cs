@@ -44,13 +44,12 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("boundary")]
     public ProjectBoundary Boundary { get; set; }
 
-    public ProjectConfigurationListResponseModel Config => new ProjectConfigurationListResponseModel() { ProjectConfigurations = ConfigEntries.ToList() };
-
     /// <summary>
     /// config file may include calibration file 
     /// </summary>
-//    [JsonIgnore]
-    public List<ProjectConfiguration> ConfigEntries { get; set; }
+    [JsonProperty("config")]
+    public List<ProjectConfigurationModel> Config { get; set; }
+
     public List<string> GetIdentifiers() => new List<string> { ProjectTRN, ProjectId };
   }
 }

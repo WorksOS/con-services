@@ -41,9 +41,15 @@ namespace CCSS.CWS.Client
       var projectDetailListReponseModel = new ProjectDetailListResponseModel();
       foreach (var project in projectSummaryListResponseModel.Projects)
       {
-        // We can't query details on projects we don't have role in
+        // We can't query details on projects we don't have role in. // todo in next PR Return all, with whatever info we have.
         if (project.Role == UserProjectRoleEnum.Unknown)
         {
+          // todo in next PR
+          //projectDetailListReponseModel.Projects.Add(new ProjectDetailResponseModel()
+          //  { AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT), 
+          //    ProjectTRN = project.ProjectTRN,
+          //    ProjectName = project.ProjectName
+          //  });
           continue;
         }
 
@@ -69,7 +75,6 @@ namespace CCSS.CWS.Client
       ProjectSummaryListResponseModel projectSummaryListResponseModel = null;
       try
       {
-        // todoJeannie waiting for the rules on User role and visibility in WorksOS
         projectSummaryListResponseModel = await GetData<ProjectSummaryListResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, queryParameters, customHeaders);
       }
       catch (HttpRequestException e)

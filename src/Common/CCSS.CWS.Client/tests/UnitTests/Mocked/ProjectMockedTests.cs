@@ -114,11 +114,10 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
             type = "Polygon",
             coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } }
           },
-          ConfigEntries = new List<ProjectConfiguration>() { new ProjectConfiguration() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString() } } 
+          Config = new List<ProjectConfigurationModel>() { new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString() } } 
         }
       };
-
-
+      
       var route = $"/projects/{TRNHelper.MakeTRN(projectUid)}";
       var expectedUrl = $"{baseUrl}{route}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
@@ -134,7 +133,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Assert.Equal(projectUid.ToString(), result.ProjectId);
         Assert.Equal(projectUid.ToString(), result.ProjectSettings.ProjectId);
         Assert.Equal("Polygon", result.ProjectSettings.Boundary.type);
-        Assert.Equal(ProjectConfigurationFileType.CALIBRATION.ToString(), result.ProjectSettings.Config.ProjectConfigurations[0].FileType);
+        Assert.Equal(ProjectConfigurationFileType.CALIBRATION.ToString(), result.ProjectSettings.Config[0].FileType);
         return true;
       });
     }
