@@ -55,8 +55,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectV6DescriptorsListResult> GetProjectsV6()
     {
       Logger.LogInformation("GetAllProjectsV6");
-
-      var projects = (await GetProjectListForCustomer().ConfigureAwait(false)).ToImmutableList();
+      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       return new ProjectV6DescriptorsListResult
       {

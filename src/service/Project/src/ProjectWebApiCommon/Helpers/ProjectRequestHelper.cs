@@ -13,9 +13,12 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
+using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
@@ -32,6 +35,85 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// </summary>
   public partial class ProjectRequestHelper
   {
+
+    /// <summary>
+    /// Gets a Project list for customer uid.
+    ///  Includes all projects, regardless of archived state and user role
+    /// </summary>
+    public static async Task<List<ProjectDatabaseModel>> GetProjectListForCustomer(Guid customerUid, Guid userUid,
+    ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    {
+      log.LogDebug($"{nameof(GetProjectListForCustomer)} customerUid {customerUid}, userUid {userUid}");
+      var projects = await cwsProjectClient.GetProjectsForCustomer(customerUid, userUid, customHeaders);
+
+      var projectDatabaseModelList = new List<ProjectDatabaseModel>();
+      foreach (var project in projects.Projects)
+      {
+        var projectDatabaseModel = ConvertCwsToWorksOSProject(project, log);
+        if (projectDatabaseModel != null)
+          projectDatabaseModelList.Add(projectDatabaseModel);
+      }
+      log.LogDebug($"{nameof(GetProjectListForCustomer)} Project list contains {projectDatabaseModelList.Count} projects");
+      return projectDatabaseModelList;
+    }
+
+    /// <summary>
+    /// Calibration file is optional for nonThreeDReady projects
+    /// cws Filename format is: "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc",
+    /// </summary>
+    public static bool ExtractCalibrationFileDetails(List<ProjectConfiguration> projectConfigurations, out string fileName, out DateTime? fileDateUtc)
+    {
+      fileName = string.Empty;
+      fileDateUtc = null;
+
+      var projectConfiguration = projectConfigurations?.FirstOrDefault(c => c.FileType == ProjectConfigurationFileType.CALIBRATION.ToString());
+      if (projectConfiguration == null)
+        return false;
+      var parts = projectConfiguration.FileName.Split(ProjectConfiguration.FilenamePathSeparator);
+      if (parts.Length == 3)
+      {
+        fileName = parts[2].Trim();
+        var acceptedFileExtensions = new AcceptedFileExtensions();
+        if ((!acceptedFileExtensions.IsExtensionAllowed(new List<string> { "dc", "cal" }, fileName))
+           || (!DateTime.TryParse(parts[1], out var fileDate)))
+          return false;
+
+        fileDateUtc = fileDate;
+        return true;
+      }
+
+      return false;
+    }
+
+    public static ProjectDatabaseModel ConvertCwsToWorksOSProject(ProjectDetailResponseModel project, ILogger log)
+    {
+      var extractedCalibrationFileOK = ExtractCalibrationFileDetails(project.ProjectSettings.Config.ProjectConfigurations, out var coordinatSystemFileName, out var coordinateSystemLastActionedUTC);
+      if (!extractedCalibrationFileOK)
+      {
+        //if (project.ProjectType == ProjectTypeEnum.ThreeDEnabled)
+        //  log.LogError(@"{nameof(GetProjectListForCustomer)} unable to extract calibrationFile {project.ProjectSettings.Config.ProjectConfigurations}");
+        //else
+          log.LogInformation(@"{nameof(GetProjectListForCustomer)} calibrationFile not available {project.ProjectSettings.Config.ProjectConfigurations}");
+      }
+
+      var projectDatabaseModel =
+        new ProjectDatabaseModel() 
+        {
+          ProjectUID = project.ProjectId,
+          CustomerUID = project.AccountId,
+          Name = project.ProjectName,
+          ProjectType = ProjectType.Standard,
+          ProjectTimeZone = PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone),
+          ProjectTimeZoneIana = project.ProjectSettings.TimeZone,
+          Boundary = RepositoryHelper.ProjectBoundaryToWKT(project.ProjectSettings.Boundary),
+          CoordinateSystemFileName = coordinatSystemFileName,
+          CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUTC,
+          IsArchived = false, // todo for now
+          LastActionedUTC = project.LastUpdate
+        };
+      return projectDatabaseModel;
+    }
+
     /// <summary>
     /// Gets a Project by customer uid.
     /// </summary>
