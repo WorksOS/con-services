@@ -87,13 +87,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     public static ProjectDatabaseModel ConvertCwsToWorksOSProject(ProjectDetailResponseModel project, ILogger log)
     {
-      var extractedCalibrationFileOK = ExtractCalibrationFileDetails(project.ProjectSettings.Config.ProjectConfigurations, out var coordinatSystemFileName, out var coordinateSystemLastActionedUTC);
-      if (!extractedCalibrationFileOK)
+      var extractedCalibrationFileOk = false;
+      var coordinateSystemFileName = string.Empty;
+      DateTime? coordinateSystemLastActionedUtc = null;
+      if (project.ProjectSettings?.Config?.ProjectConfigurations != null)
+         extractedCalibrationFileOk = ExtractCalibrationFileDetails(project.ProjectSettings.Config.ProjectConfigurations, out coordinateSystemFileName, out coordinateSystemLastActionedUtc);
+      if (project.ProjectSettings?.Boundary == null || project.ProjectSettings?.TimeZone == null)
+        log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} no boundary or timezone available {project}");
+
+      if (!extractedCalibrationFileOk)
       {
         //if (project.ProjectType == ProjectTypeEnum.ThreeDEnabled)
-        //  log.LogError(@"{nameof(GetProjectListForCustomer)} unable to extract calibrationFile {project.ProjectSettings.Config.ProjectConfigurations}");
+        //  log.LogError(@"{nameof(ConvertCwsToWorksOSProject)} unable to extract calibrationFile {project.ProjectSettings.Config.ProjectConfigurations}");
         //else
-          log.LogInformation(@"{nameof(GetProjectListForCustomer)} calibrationFile not available {project.ProjectSettings.Config.ProjectConfigurations}");
+        log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} calibrationFile not available {project.ProjectSettings?.Config?.ProjectConfigurations}");
       }
 
       var projectDatabaseModel =
@@ -103,12 +110,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           CustomerUID = project.AccountId,
           Name = project.ProjectName,
           ProjectType = ProjectType.Standard,
-          ProjectTimeZone = PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone),
-          ProjectTimeZoneIana = project.ProjectSettings.TimeZone,
-          Boundary = RepositoryHelper.ProjectBoundaryToWKT(project.ProjectSettings.Boundary),
-          CoordinateSystemFileName = coordinatSystemFileName,
-          CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUTC,
-          IsArchived = false, // todo for now
+          ProjectTimeZone = project.ProjectSettings != null ? PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone) : string.Empty,
+          ProjectTimeZoneIana = project.ProjectSettings?.TimeZone,
+          Boundary = project.ProjectSettings?.Boundary != null ? RepositoryHelper.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,
+          CoordinateSystemFileName = coordinateSystemFileName,
+          CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUtc,
+          IsArchived = false, 
           LastActionedUTC = project.LastUpdate
         };
       return projectDatabaseModel;
