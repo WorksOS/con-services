@@ -59,11 +59,14 @@ namespace VSS.TRex.Filters
               LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].Y));
             }
 
-            var (errorCode, NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            var (errorCode, NEECoords) =
+              SiteModel == null
+                ? (RequestErrorStatus.FailedToConvertClientWGSCoords, null)
+                : await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
 
             if (errorCode != RequestErrorStatus.OK)
             {
-              Log.LogInformation("Summary volume failure, could not convert coordinates from WGS to grid coordinates");
+              Log.LogInformation("Filter preparation failure, could not convert coordinates from WGS to grid coordinates");
 
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
@@ -83,8 +86,11 @@ namespace VSS.TRex.Filters
             // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
             LLHCoords = new[] {new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY))};
 
-            var (errorCode, NEECoords) = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
-
+            var (errorCode, NEECoords) = 
+              SiteModel == null 
+                ? (RequestErrorStatus.FailedToConvertClientWGSCoords, null) 
+                : await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            
             if (errorCode != RequestErrorStatus.OK)
             {
               Log.LogInformation("Filter mutation failure, could not convert coordinates from WGS to grid coordinates");

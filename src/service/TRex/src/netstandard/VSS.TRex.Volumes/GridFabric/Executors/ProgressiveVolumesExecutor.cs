@@ -30,7 +30,11 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
 
           var neeCoords = new[] {new XYZ(aggregator.Volume.BoundingExtentGrid.MinX, aggregator.Volume.BoundingExtentGrid.MinY), new XYZ(aggregator.Volume.BoundingExtentGrid.MaxX, aggregator.Volume.BoundingExtentGrid.MaxY)};
 
-          var (errorCode, llhCoords) = await convertCoordinates.NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), neeCoords);
+          var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid);
+          var (errorCode, llhCoords) 
+            = siteModel == null 
+            ? (RequestErrorStatus.NoSuchDataModel, null) 
+            : await convertCoordinates.NEEToLLH(siteModel.CSIB(), neeCoords);
 
           if (errorCode == RequestErrorStatus.OK)
           {
