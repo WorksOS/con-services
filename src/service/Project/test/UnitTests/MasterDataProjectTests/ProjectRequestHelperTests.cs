@@ -51,7 +51,7 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void ExtractCalibrationFileDetails_NullConfigurations_Failed()
     {
-      List<ProjectConfiguration> projectConfigurations = null;
+      List<ProjectConfigurationModel> projectConfigurations = null;
       var extractedCalibrationFileOk = ProjectRequestHelper.ExtractCalibrationFileDetails(projectConfigurations, out string fileName, out DateTime? fileDateUtc);
       Assert.False(extractedCalibrationFileOk);
     }
@@ -59,7 +59,7 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void ExtractCalibrationFileDetails_NoConfiguration_Failed()
     {
-      var projectConfigurations = new List<ProjectConfiguration>();
+      var projectConfigurations = new List<ProjectConfigurationModel>();
       var extractedCalibrationFileOk = ProjectRequestHelper.ExtractCalibrationFileDetails(projectConfigurations, out string fileName, out DateTime? fileDateUtc);
       Assert.False(extractedCalibrationFileOk);
     }
@@ -67,8 +67,8 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void ExtractCalibrationFileDetails_NoCalibrationCnfiguration_Failed()
     {
-      var projectConfigurations = new List<ProjectConfiguration>();
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
+      var projectConfigurations = new List<ProjectConfigurationModel>();
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
       var extractedCalibrationFileOk = ProjectRequestHelper.ExtractCalibrationFileDetails(projectConfigurations, out string fileName, out DateTime? fileDateUtc);
       Assert.False(extractedCalibrationFileOk);
     }
@@ -76,11 +76,11 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void ExtractCalibrationFileDetails_InvalidFullName_Failed()
     {
-      var projectConfigurations = new List<ProjectConfiguration>();
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
+      var projectConfigurations = new List<ProjectConfigurationModel>();
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
 
       var invalidFullName = "2020-03-25 23:03:45.314||BootCamp 2012.dc";
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = invalidFullName });
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = invalidFullName });
       var extractedCalibrationFileOk = ProjectRequestHelper.ExtractCalibrationFileDetails(projectConfigurations, out var fileName, out var fileDateUtc);
       Assert.False(extractedCalibrationFileOk);
     }
@@ -88,11 +88,11 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void ExtractCalibrationFileDetails_InvalidFileExtension_Failed()
     {
-      var projectConfigurations = new List<ProjectConfiguration>();
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
+      var projectConfigurations = new List<ProjectConfigurationModel>();
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
 
       var invalidFullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.aa";
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = invalidFullName });
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = invalidFullName });
       var extractedCalibrationFileOk = ProjectRequestHelper.ExtractCalibrationFileDetails(projectConfigurations, out var fileName, out var fileDateUtc);
       Assert.False(extractedCalibrationFileOk);
     }
@@ -100,11 +100,11 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void ExtractCalibrationFileDetails_HappyPath()
     {
-      var projectConfigurations = new List<ProjectConfiguration>();
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
+      var projectConfigurations = new List<ProjectConfigurationModel>();
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString() });
 
       var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
       var extractedCalibrationFileOk = ProjectRequestHelper.ExtractCalibrationFileDetails(projectConfigurations, out var fileName, out var fileDateUtc);
       Assert.True(extractedCalibrationFileOk);
       Assert.Equal("BootCamp 2012.dc", fileName);
@@ -119,9 +119,9 @@ namespace VSS.MasterData.ProjectTests
       var projectName = "the project name";
       var lastUpdate = DateTime.UtcNow.AddDays(-1);
 
-      var projectConfigurations = new List<ProjectConfiguration>();
+      var projectConfigurations = new List<ProjectConfigurationModel>();
       var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
-      projectConfigurations.Add(new ProjectConfiguration() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
 
       var projectDetailResponseModel = new ProjectDetailListResponseModel()
       {
@@ -134,7 +134,7 @@ namespace VSS.MasterData.ProjectTests
                 ProjectId = projectUid,
                 TimeZone = "Pacific/Auckland",
                 Boundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<double[,]>() {{new double[,] {{150.3, 1.2}, {150.4, 1.2}, {150.4, 1.3}, {150.4, 1.4}, {150.3, 1.2}}}}},
-                ConfigEntries = projectConfigurations
+                Config = projectConfigurations
               }
             }
           }

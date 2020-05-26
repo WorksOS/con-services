@@ -48,10 +48,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// config file may include calibration file 
     /// </summary>
     [JsonProperty("config")]
-    public List<ProjectConfiguration> ConfigEntries { get; set; }
-
-    public ProjectConfigurationListResponseModel Config => new ProjectConfigurationListResponseModel() { ProjectConfigurations = ConfigEntries.ToList() };
-
+    public List<ProjectConfigurationModel> Config { get; set; }
 
     public List<string> GetIdentifiers() => new List<string> { ProjectTRN, ProjectId };
   }

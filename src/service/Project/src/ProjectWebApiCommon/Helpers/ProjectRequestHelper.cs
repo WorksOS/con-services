@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -61,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Calibration file is optional for nonThreeDReady projects
     /// cws Filename format is: "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc",
     /// </summary>
-    public static bool ExtractCalibrationFileDetails(List<ProjectConfiguration> projectConfigurations, out string fileName, out DateTime? fileDateUtc)
+    public static bool ExtractCalibrationFileDetails(List<ProjectConfigurationModel> projectConfigurations, out string fileName, out DateTime? fileDateUtc)
     {
       fileName = string.Empty;
       fileDateUtc = null;
@@ -69,7 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var projectConfiguration = projectConfigurations?.FirstOrDefault(c => c.FileType == ProjectConfigurationFileType.CALIBRATION.ToString());
       if (projectConfiguration == null)
         return false;
-      var parts = projectConfiguration.FileName.Split(ProjectConfiguration.FilenamePathSeparator);
+      var parts = projectConfiguration.FileName.Split(ProjectConfigurationModel.FilenamePathSeparator);
       if (parts.Length == 3)
       {
         fileName = parts[2].Trim();
@@ -87,21 +88,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     public static ProjectDatabaseModel ConvertCwsToWorksOSProject(ProjectDetailResponseModel project, ILogger log)
     {
+      log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} project {JsonConvert.SerializeObject(project)}");
+
       var extractedCalibrationFileOk = false;
       var coordinateSystemFileName = string.Empty;
       DateTime? coordinateSystemLastActionedUtc = null;
-      if (project.ProjectSettings?.Config?.ProjectConfigurations != null)
-         extractedCalibrationFileOk = ExtractCalibrationFileDetails(project.ProjectSettings.Config.ProjectConfigurations, out coordinateSystemFileName, out coordinateSystemLastActionedUtc);
+      if (project.ProjectSettings?.Config!= null && project.ProjectSettings.Config.Any())
+         extractedCalibrationFileOk = ExtractCalibrationFileDetails(project.ProjectSettings.Config, out coordinateSystemFileName, out coordinateSystemLastActionedUtc);
       if (project.ProjectSettings?.Boundary == null || project.ProjectSettings?.TimeZone == null)
-        log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} no boundary or timezone available {project}");
-
+        log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} contains no boundary or timezone");
       if (!extractedCalibrationFileOk)
-      {
-        //if (project.ProjectType == ProjectTypeEnum.ThreeDEnabled)
-        //  log.LogError(@"{nameof(ConvertCwsToWorksOSProject)} unable to extract calibrationFile {project.ProjectSettings.Config.ProjectConfigurations}");
-        //else
-        log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} calibrationFile not available {project.ProjectSettings?.Config?.ProjectConfigurations}");
-      }
+        log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} contains no calibrationFile.");
 
       var projectDatabaseModel =
         new ProjectDatabaseModel() 

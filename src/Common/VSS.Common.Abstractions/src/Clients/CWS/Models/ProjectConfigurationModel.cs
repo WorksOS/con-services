@@ -1,38 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class ProjectConfigurationListResponseModel : IMasterDataModel
-  {
-
-    public ProjectConfigurationListResponseModel()
-    {
-      ProjectConfigurations = new List<ProjectConfiguration>();
-    }
-
-    /// <summary>
-    /// Project configuration file list
-    /// </summary>
-    [JsonProperty("config")]
-    public List<ProjectConfiguration> ProjectConfigurations { get; set; }
-
-    /// <summary>
-    /// Returned as true if the result has more records to display. Helps in pagination. False implies that there are no more records to display.
-    /// </summary>
-    [JsonProperty("hasMore")]
-    public bool HasMore { get; set; }
-
-    public List<string> GetIdentifiers() => ProjectConfigurations?
-                                              .SelectMany(d => d.GetIdentifiers())
-                                              .Distinct()
-                                              .ToList()
-                                            ?? new List<string>();
-  }
-
-  public class ProjectConfiguration : IMasterDataModel
+  public class ProjectConfigurationModel : IMasterDataModel
   {
     //Note: There are other properties returned but we only want some of it
 
