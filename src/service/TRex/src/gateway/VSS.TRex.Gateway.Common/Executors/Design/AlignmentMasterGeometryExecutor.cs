@@ -133,13 +133,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         // Populate the converted coordinates into the result. Note: At this point, X = Longitude and Y = Latitude
         var result = new AlignmentGeometryResult
         (ContractExecutionStatesEnum.ExecutedSuccessfully,
-          geometryResponse.Vertices.Select(x => 
-            x.Select(v => new[] { v[1], v[0], v[2] }).ToArray()).ToArray(),
-          geometryResponse.Arcs.Select(x => 
+          request.DesignUid,
+          geometryResponse.Vertices.Select(x =>
+            x.Select(v => new[] {v[1], v[0], v[2]}).ToArray()).ToArray(),
+          geometryResponse.Arcs.Select(x =>
             new AlignmentGeometryResultArc
-            (x.Y1, x.X1, x.Z1, 
-             x.Y2, x.X2, x.Z2, 
-             x.YC, x.XC, x.ZC, x.CW)).ToArray(),
+            (x.Y1, x.X1, x.Z1,
+              x.Y2, x.X2, x.Z2,
+              x.YC, x.XC, x.ZC, x.CW)).ToArray(),
           geometryResponse.Labels.Select(x => 
             new AlignmentGeometryResultLabel(x.Station, x.Y, x.X, x.Rotation)).ToArray());
 
