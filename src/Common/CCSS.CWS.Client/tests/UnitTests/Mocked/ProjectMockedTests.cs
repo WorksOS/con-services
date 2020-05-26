@@ -117,8 +117,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
           Config = new List<ProjectConfigurationModel>() { new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString() } } 
         }
       };
-
-
+      
       var route = $"/projects/{TRNHelper.MakeTRN(projectUid)}";
       var expectedUrl = $"{baseUrl}{route}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
