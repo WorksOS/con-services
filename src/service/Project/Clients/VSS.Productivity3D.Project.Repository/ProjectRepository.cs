@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.Project.Repository
           project.CoordinateSystemLastActionedUTC = projectEvent.ActionUTC;
         }
 
-        project.Boundary = RepositoryHelper.GetPolygonWKT(projectEvent.ProjectBoundary);
+        project.Boundary = GeometryConversion.GetPolygonWKT(projectEvent.ProjectBoundary);
         if (!string.IsNullOrEmpty(project.Boundary))
         {
           upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
@@ -90,7 +91,7 @@ namespace VSS.Productivity3D.Project.Repository
           project.CoordinateSystemLastActionedUTC = projectEvent.ActionUTC;
         }
 
-        project.Boundary = RepositoryHelper.GetPolygonWKT(projectEvent.ProjectBoundary);
+        project.Boundary = GeometryConversion.GetPolygonWKT(projectEvent.ProjectBoundary);
         upsertedCount = await UpsertProjectDetail(project, "UpdateProjectEvent");
       }
       else if (evt is DeleteProjectEvent)
