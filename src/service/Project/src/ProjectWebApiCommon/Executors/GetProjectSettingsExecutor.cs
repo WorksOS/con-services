@@ -27,7 +27,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (projectSettingsRequest.ProjectSettingsType != ProjectSettingsType.Targets && projectSettingsRequest.ProjectSettingsType != ProjectSettingsType.Colors)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 77);
 
-      await ValidateProjectWithCustomer(customerUid, projectSettingsRequest.projectUid);
+      await ValidateProjectWithCustomer(customerUid, projectSettingsRequest.projectUid, true);
 
       try
       {

@@ -11,6 +11,7 @@ using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -228,11 +229,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
 
     /// <summary>
-    /// Validates a project identifier.
+    /// Validates that project belongs to the customer.
     /// </summary>
-    public async Task ValidateProjectWithCustomer(string customerUid, string projectUid)
+    public async Task ValidateProjectWithCustomer(string customerUid, string projectUid, bool tempCwsFlag = false)
     {
-      var project = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+      Productivity3D.Project.Abstractions.Models.DatabaseModels.Project project = null;
+      if (tempCwsFlag)
+        project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+      else
+        project = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
       {
