@@ -62,7 +62,17 @@ namespace VSS.TRex.SiteModels
       lock (CachedModels)
       {
         if (CachedModels.TryGetValue(id, out result))
+        {
+          if (result.IsMarkedForDeletion)
+          {
+            // Ignore this site model as it is in the process of being deleted, also
+            // remove it from the cache...
+            CachedModels.Remove(id);
+            return null;
+          }
+
           return result;
+        }
       }
 
       result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
