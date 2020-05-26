@@ -24,8 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller v6
-  ///     requests and responses have changed IDs from Guids to strings
-  ///     May be other changes
+  ///    UI interface for projects i.e. user context
   /// </summary>
   public class ProjectV6Controller : ProjectBaseController
   {
@@ -102,50 +101,46 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 39));
       }
 
-      Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
+      Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
+      projectRequest.CustomerUID ??= new Guid(CustomerUid);
 
-       // TODO:  CCSSSCON-351 - Add Create Project
+      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
+      createProjectEvent.ActionUTC = DateTime.UtcNow;
 
+      ProjectDataValidator.Validate(createProjectEvent, new Guid(CustomerUid), new Guid(UserId),
+        Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
-//      projectRequest.CustomerUID ??= new Guid(CustomerUid);
-//
-//      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
-//      createProjectEvent.ActionUTC = DateTime.UtcNow;
-//      
-//      ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
-//
-//      if (createProjectEvent.CustomerUID.ToString() != CustomerUid)
-//      {
-//        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
-//      }
-//
-//      // ProjectUID won't be filled yet
-//      await ProjectDataValidator.ValidateProjectName(CustomerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
-//
-//      await WithServiceExceptionTryExecuteAsync(() =>
-//        RequestExecutorContainerFactory
-//          .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-//            CustomerUid, UserId, null, customHeaders,
-//            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
-//            projectRepo: ProjectRepo, fileRepo: FileRepo,
-//            dataOceanClient: DataOceanClient, authn: Authorization,
-//            cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
-//            cwsProfileSettingsClient: CwsProfileSettingsClient)
-//          .ProcessAsync(createProjectEvent)
-//      );
-//
-//      var result = new ProjectV6DescriptorsSingleResult(
-//        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
-//          .ConfigureAwait(false)));
-//
-//      await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
-//
-//      Logger.LogResult(ToString(), JsonConvert.SerializeObject(projectRequest), result);
-      return Ok(new ProjectV6Descriptor()
+      if (createProjectEvent.CustomerUID.ToString() != CustomerUid)
       {
-        Name = "Not Implemented"
-      });
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
+      }
+
+      // ProjectUID won't be filled yet
+      await ProjectDataValidator.ValidateProjectName(new Guid(CustomerUid), new Guid(UserId), createProjectEvent.ProjectName,
+        createProjectEvent.ProjectUID, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+
+      await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            CustomerUid, UserId, null, customHeaders,
+            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
+            fileRepo: FileRepo,
+            dataOceanClient: DataOceanClient, authn: Authorization,
+            cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
+            cwsProfileSettingsClient: CwsProfileSettingsClient)
+          .ProcessAsync(createProjectEvent)
+      );
+
+      var result = new ProjectV6DescriptorsSingleResult(
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID, new Guid(CustomerUid), new Guid(UserId),
+            Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders)
+          .ConfigureAwait(false)));
+
+      await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
+
+      Logger.LogResult(ToString(), JsonConvert.SerializeObject(projectRequest), result);
+      return Ok(result);
     }
 
     /// <summary>

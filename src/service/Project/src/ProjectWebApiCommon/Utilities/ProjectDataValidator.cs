@@ -3,8 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -74,7 +76,122 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       return businessCenterFile;
     }
 
+    /// <summary>
+    /// Validates the data of a specific project request
+    /// </summary>
+    public static void Validate(IProjectEvent evt, Guid customerUid, Guid userUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    {
 
+      //Note: don't check if project exists for associate events.
+      //We don't know the workflow for NG so associate may come before project creation.
+      var checkExists = evt is CreateProjectEvent || evt is UpdateProjectEvent || evt is DeleteProjectEvent;
+      if (checkExists)
+      {
+        var isCreate = evt is CreateProjectEvent;
+        // this should always be empty
+        if (evt.ProjectUID != Guid.Empty)
+        {
+          var exists = ProjectRequestHelper.ProjectExists(evt.ProjectUID, customerUid, userUid,
+            log, serviceExceptionHandler, cwsProjectClient, customHeaders).Result;
+          if (isCreate || (!isCreate && !exists))
+          {
+            var messageId = isCreate ? 6 : 7;
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(messageId),
+                projectErrorCodesProvider.FirstNameWithOffset(messageId)));
+          }
+        }
+        if (isCreate)
+        {
+          var createEvent = evt as CreateProjectEvent;
+
+          if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(8),
+                projectErrorCodesProvider.FirstNameWithOffset(8)));
+          }
+
+          ProjectRequestHelper.ValidateProjectBoundary(createEvent.ProjectBoundary, serviceExceptionHandler);
+
+          if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(9),
+                projectErrorCodesProvider.FirstNameWithOffset(9)));
+          }
+          if (PreferencesTimeZones.WindowsTimeZoneNames().Contains(createEvent.ProjectTimezone) == false)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(10),
+                projectErrorCodesProvider.FirstNameWithOffset(10)));
+          }
+          if (string.IsNullOrEmpty(createEvent.ProjectName))
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(11),
+                projectErrorCodesProvider.FirstNameWithOffset(11)));
+          }
+          if (createEvent.ProjectName.Length > 255)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
+                projectErrorCodesProvider.FirstNameWithOffset(12)));
+          }
+        }
+        else if (evt is UpdateProjectEvent)
+        {
+          var updateEvent = evt as UpdateProjectEvent;
+          if (string.IsNullOrEmpty(updateEvent.ProjectName))
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(11),
+                projectErrorCodesProvider.FirstNameWithOffset(11)));
+          }
+          if (updateEvent.ProjectName.Length > 255)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
+                projectErrorCodesProvider.FirstNameWithOffset(12)));
+          }
+
+          if (!string.IsNullOrEmpty(updateEvent.ProjectBoundary))
+          {
+            ProjectRequestHelper.ValidateProjectBoundary(updateEvent.ProjectBoundary, serviceExceptionHandler);
+          }
+        }
+        //Nothing else to check for DeleteProjectEvent
+      }
+    }
+
+
+    /// <summary>
+    /// Validates a project name. Must be unique amongst active projects for the Customer.
+    /// </summary>
+    public static async Task ValidateProjectName(Guid customerUid, Guid userUid, string projectName, Guid projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    {
+      log.LogInformation($"{nameof(ValidateProjectName)} projectName: {projectName} projectUid: {projectUid}");
+      var duplicateProjectNames =
+        (await ProjectRequestHelper.GetProjectListForCustomer(customerUid, userUid,
+          log, serviceExceptionHandler, cwsProjectClient, customHeaders))
+        .Where(
+          p => p.IsArchived == false &&
+                string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&
+               !string.Equals(p.ProjectUID, projectUid.ToString(), StringComparison.OrdinalIgnoreCase))
+        .ToList();
+      if (duplicateProjectNames.Any())
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 109, $"Count:{duplicateProjectNames.Count} projectUid: {duplicateProjectNames[0].ProjectUID}");
+      }
+
+      log.LogInformation($"{nameof(ValidateProjectName)} Any duplicateProjectNames? {JsonConvert.SerializeObject(duplicateProjectNames)} retrieved");
+    }
+
+
+    #region SoonToBeObsoleteCCSSSCON-351
     /// <summary>
     /// Validates the data of a specific project event
     /// </summary>
@@ -215,6 +332,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
       log.LogInformation($"ValidateProjectName Any duplicateProjectNames? {JsonConvert.SerializeObject(duplicateProjectNames)} retrieved");
     }
-   
+    #endregion SoonToBeObsoleteCCSSSCON-351
+
   }
 }

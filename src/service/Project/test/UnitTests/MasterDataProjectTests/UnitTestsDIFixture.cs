@@ -89,6 +89,28 @@ namespace VSS.MasterData.ProjectTests
         }
       };
     }
+
+    protected ProjectDetailResponseModel CreateProjectDetailModel(string customerTrn, string projectTrn, string projectName = "the project name",
+      DateTime? lastUpdate = null, List<ProjectConfigurationModel> projectConfigurations = null)
+    {
+      var lastUpdateUtc = lastUpdate ?? DateTime.UtcNow.AddDays(-1);
+      var projectConfigurationList = projectConfigurations ?? new List<ProjectConfigurationModel>();
+      return new ProjectDetailResponseModel()
+      {
+        AccountTRN = customerTrn,
+        ProjectTRN = projectTrn,
+        ProjectName = projectName,
+        LastUpdate = lastUpdateUtc,
+        ProjectSettings = new ProjectSettingsModel()
+        {
+          ProjectTRN = projectTrn,
+          TimeZone = "Pacific/Auckland",
+          Boundary = new ProjectBoundary() { type = "Polygon", coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } } },
+          Config = projectConfigurationList
+        }
+      };
+    }
+
     public void Dispose()
     { }
   }

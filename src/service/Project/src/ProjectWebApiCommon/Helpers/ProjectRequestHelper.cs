@@ -42,18 +42,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///  Includes all projects, regardless of archived state and user role
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetProjectListForCustomer(Guid customerUid, Guid userUid,
-    ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
       log.LogDebug($"{nameof(GetProjectListForCustomer)} customerUid {customerUid}, userUid {userUid}");
       var projects = await cwsProjectClient.GetProjectsForCustomer(customerUid, userUid, customHeaders);
 
       var projectDatabaseModelList = new List<ProjectDatabaseModel>();
-      foreach (var project in projects.Projects)
-      {
-        var projectDatabaseModel = ConvertCwsToWorksOSProject(project, log);
-        if (projectDatabaseModel != null)
-          projectDatabaseModelList.Add(projectDatabaseModel);
-      }
+      if (projects.Projects != null)
+        foreach (var project in projects.Projects)
+        {
+          var projectDatabaseModel = ConvertCwsToWorksOSProject(project, log);
+          if (projectDatabaseModel != null)
+            projectDatabaseModelList.Add(projectDatabaseModel);
+        }
+
       log.LogDebug($"{nameof(GetProjectListForCustomer)} Project list contains {projectDatabaseModelList.Count} projects");
       return projectDatabaseModelList;
     }
@@ -146,6 +148,32 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
+    /// Gets a Project and checks customerUid
+    ///   Includes all projects, regardless of archived state and user role
+    /// </summary>
+    public static async Task<bool> ProjectExists(Guid projectUid, Guid customerUid, Guid userUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    {
+      var project = await cwsProjectClient.GetMyProject(projectUid, userUid, customHeaders: customHeaders);
+      if (project == null)
+      {
+        log.LogWarning($"Project not found: {projectUid}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+        return false;
+      }
+
+      if (!string.Equals(project.AccountId, customerUid.ToString(), StringComparison.OrdinalIgnoreCase))
+      {
+        log.LogWarning($"Customer doesn't have access to projectUid: {projectUid}");
+        return false;
+      }
+
+      log.LogInformation($"Project projectUid: {projectUid} retrieved");
+      return true;
+    }
+
+
+    /// <summary>
     /// Gets a Project by customer uid.
     /// </summary>
     public static async Task<ProjectDatabaseModel> GetProject(string projectUid, string customerUid,
@@ -222,6 +250,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return projects;
     }
 
+    public static async Task<bool> DoesProjectOverlap(Guid customerUid, Guid? projectUid, Guid userUid, string projectBoundary,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    {
+      // get all active projects for customer, excluding this projectUid (i.e. update)
+      var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
+          log, serviceExceptionHandler, cwsProjectClient, customHeaders))
+        .Where(p => !p.IsArchived &&
+                    (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
+
+      // call new overlap routine // todo CCSSSCON-341
+      //var overlaps =
+      //  await Wherever.DoesPolygonOverlap(projectBoundary, projectDatabaseModelList);
+      //if (overlaps)
+      //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+
+      log.LogDebug($"No overlapping projects for: {projectUid}");
+      return false; // todo CCSSSCON-341
+    }
+
+    #region SoonToBeObsoleteCCSSSCON-351
     public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
@@ -233,10 +281,49 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"No overlapping projects for: {projectUid}");
       return overlaps;
     }
+    #endregion SoonToBeObsoleteCCSSSCON-351
 
     #region coordSystem
 
 
+    /// <summary>
+    /// validate CoordinateSystem if provided
+    /// </summary>
+    public static async Task<bool> ValidateCoordSystemInProductivity3D(string csFileName, byte[] csFileContent,
+      IServiceExceptionHandler serviceExceptionHandler, IHeaderDictionary customHeaders,
+      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord)
+    {
+      if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
+      {
+        ProjectDataValidator.ValidateFileName(csFileName);
+        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
+        try
+        {
+          coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
+            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
+            "productivity3dV1ProxyCoord.CoordinateSystemValidate", e.Message);
+        }
+
+        if (coordinateSystemSettingsResult == null)
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
+
+        if (coordinateSystemSettingsResult != null &&
+            coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47,
+            coordinateSystemSettingsResult.Code.ToString(),
+            coordinateSystemSettingsResult.Message);
+        }
+      }
+
+      return true;
+    }
+
+    #region SoonToBeObsoleteCCSSSCON-351
     /// <summary>
     /// validate CoordinateSystem if provided
     /// </summary>
@@ -279,10 +366,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       return true;
     }
+    #endregion SoonToBeObsoleteCCSSSCON-351
 
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
+    ///  todo CCSSSCON-351 cleanup parameters once UpdateProject endpoint has been converted
     public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid, int shortRaptorProjectId,
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
@@ -290,7 +379,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       IHeaderDictionary customHeaders,
       IProjectRepository projectRepo, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
       IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
-      ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient)
+      ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient, ICwsProjectClient cwsProjectClient = null)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -302,9 +391,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         try
         {
           //Pass coordinate system to Raptor
-          var coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-            .CoordinateSystemPost(shortRaptorProjectId, coordinateSystemFileContent,
-              coordinateSystemFileName, headers);
+          CoordinateSystemSettingsResult coordinateSystemSettingsResult;
+          if (cwsProjectClient == null)
+            coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
+              .CoordinateSystemPost(shortRaptorProjectId,
+                coordinateSystemFileContent, coordinateSystemFileName, headers);
+          else
+            coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
+              .CoordinateSystemPost(projectUid,
+                coordinateSystemFileContent, coordinateSystemFileName, headers);
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
             coordinateSystemSettingsResult?.Code ?? -1,
             coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
@@ -313,7 +408,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
+              if (cwsProjectClient != null)
+                await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
+              else
+                await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
@@ -353,14 +451,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             //TODO: handle errors from CWS
-            await CwsConfigFileHelper.SaveFileToCws(projectUid, coordinateSystemFileName, ms, ImportedFileType.CwsCalibration, 
+            await CwsConfigFileHelper.SaveFileToCws(projectUid, coordinateSystemFileName, ms, ImportedFileType.CwsCalibration,
               cwsDesignClient, cwsProfileSettingsClient, customHeaders);
           }
         }
         catch (Exception e)
         {
           if (isCreate)
-            await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid, log, projectRepo);
+            if (cwsProjectClient != null)
+              await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
+            else
+              await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, projectRepo);
 
           //Don't hide exceptions thrown above
           if (e is ServiceException)
@@ -410,26 +511,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     /// <summary>
     /// Used internally, if a step fails, after a project has been CREATED, 
-    ///    then delete it permanently i.e. don't just set IsArchived.
-    /// Since v4 CreateProjectInDB also associates projectCustomer then roll this back also.
-    /// DissociateProjectCustomer actually deletes the DB ent4ry
+    ///    then todo CCSSSCON-417 what to do?
+    ///     delete from cws?
     /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="log"></param>
-    /// <param name="projectRepo"></param>
-    /// <returns></returns>
-    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid, ILogger log,
+    private static async Task RollbackProjectCreation(Guid customerUid, Guid projectUid, ILogger log,
       IProjectRepository projectRepo)
     {
-      log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
-      var deleteProjectEvent = new DeleteProjectEvent
-      {
-        ProjectUID = projectUid,
-        DeletePermanently = true,
-        ActionUTC = DateTime.UtcNow
-      };
-      await projectRepo.StoreEvent(deleteProjectEvent);
+      log.LogDebug($"RollbackProjectCreation: {projectUid}");
+      
+    }
+
+    /// <summary>
+    /// Used internally, if a step fails, after a project has been CREATED, 
+    ///    then todo CCSSSCON-417 what to do?
+    ///     delete from cws?
+    /// </summary>
+    private static async Task RollbackProjectCreation(Guid customerUid, Guid projectUid, ILogger log,
+      ICwsProjectClient projectClient)
+    {
+      log.LogDebug($"RollbackProjectCreation: {projectUid}");
+
     }
 
     #endregion rollback
