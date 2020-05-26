@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace VSS.MasterData.Models.Models
@@ -15,7 +15,7 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     public ScheduleJobRequest()
     {
-      Headers = new Dictionary<string, string>();
+      Headers = new HeaderDictionary();
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace VSS.MasterData.Models.Models
     /// Custom Headers to be used in the Scheduled job request
     /// </summary>
     [JsonProperty(PropertyName = "headers", Required = Required.Default)]
-    public Dictionary<string, string> Headers { get; set; }
+    public HeaderDictionary Headers { get; set; }
 
     /// <summary>
     /// THe Http method to use. Default is GET.
@@ -66,7 +66,7 @@ namespace VSS.MasterData.Models.Models
     /// </summary>
     [JsonProperty(PropertyName = "timeout", Required = Required.Default)]
     public int? Timeout { get; set; }
-    
+
     /// <summary>
     /// Set the Payload to be binary data from a stream
     /// </summary>
@@ -80,11 +80,9 @@ namespace VSS.MasterData.Models.Models
       }
       else
       {
-        using (var ms = new MemoryStream())
-        {
-          data.CopyTo(ms);
-          bytes = ms.ToArray();
-        }
+        using var ms = new MemoryStream();
+        data.CopyTo(ms);
+        bytes = ms.ToArray();
       }
 
       IsBinaryData = true;
