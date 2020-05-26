@@ -71,14 +71,16 @@ namespace VSS.TRex.SiteModels
 
       if (result.LoadFromPersistentStore() == FileSystemErrorStatus.OK)
       {
-        if (result.IsMarkedForDeletion)
-        {
-          // Ignore this site model as it is in the process of being deleted
-          return null;
-        }
-
         lock (CachedModels)
         {
+          if (result.IsMarkedForDeletion)
+          {
+            // Ignore this site model as it is in the process of being deleted, also
+            // remove it from the cache...
+            CachedModels.Remove(id);
+            return null;
+          }
+
           // Check if another thread managed to get in before this thread. If so discard
           // the one just created in favor of the one in the dictionary
           if (CachedModels.TryGetValue(id, out var result2))
@@ -112,6 +114,22 @@ namespace VSS.TRex.SiteModels
       }
 
       return null;
+    }
+
+    /// <summary>
+    /// Retrieves a site model from persistent storage with no reference to cached
+    /// site models, or attributes of the site model that might otherwise affect its
+    /// retrieval, such as being marked for deletion
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public ISiteModel GetSiteModelRaw(Guid id)
+    {
+      Log.LogInformation($"Loading site model {id} from persistent store as raw read");
+      
+      var result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
+
+      return result.LoadFromPersistentStore() == FileSystemErrorStatus.OK ? result : null;
     }
 
     /// <summary>
