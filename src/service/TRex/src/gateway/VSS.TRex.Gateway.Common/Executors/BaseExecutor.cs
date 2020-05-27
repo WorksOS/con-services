@@ -53,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected ISiteModel GetSiteModel(Guid? ID)
     {
-      ISiteModel siteModel = ID.HasValue ? DIContext.Obtain<ISiteModels>().GetSiteModel(ID.Value) : null;
+      var siteModel = ID.HasValue ? DIContext.Obtain<ISiteModels>().GetSiteModel(ID.Value) : null;
 
       if (siteModel == null)
       {
