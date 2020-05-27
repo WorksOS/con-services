@@ -413,6 +413,12 @@ namespace VSS.TRex.Rendering.Executors
       // given the project's coordinate system. If there is no coordinate system then exit.
 
       var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+      if (SiteModel == null)
+      {
+        Log.LogWarning($"Failed to locate site model {DataModelID}");
+        return null;
+      }
+
       Log.LogInformation($"Got Site model {DataModelID}, production data extents are {SiteModel.SiteModelExtent}");
 
       LLHCoords = new[]

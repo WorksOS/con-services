@@ -630,7 +630,6 @@ versionMap = null;
     {
       if (storageProxy.RemoveStreamFromPersistentStore(ID, FileSystemStreamType.ProductionDataXML, SiteModelXMLFileName) == FileSystemErrorStatus.OK)
       {
-        storageProxy.Commit();
         return true;
       }
 

@@ -222,7 +222,7 @@ namespace VSS.MasterData.ProjectTests
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { new ProjectDatabaseModel { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString() } };
+      var projectList = new List<ProjectDatabaseModel> { new ProjectDatabaseModel { Name = request.ProjectName, ProjectUID = request.ProjectUid.ToString() } };
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
 
