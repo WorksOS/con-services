@@ -16,17 +16,17 @@ using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to separate executor logic
-  ///   from controller logic for testability and possible executor versioning.
+  ///   from controller logic for testability and possible executor version.
   /// </summary>
   public abstract class RequestExecutorContainer
   {
@@ -233,9 +233,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     public async Task ValidateProjectWithCustomer(string customerUid, string projectUid, bool tempCwsFlag = false)
     {
-      Productivity3D.Project.Abstractions.Models.DatabaseModels.Project project = null;
+      ProjectDatabaseModel project;
       if (tempCwsFlag)
-        project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+        project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders).ConfigureAwait(false))
+          .FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       else
         project = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 

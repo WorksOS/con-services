@@ -139,7 +139,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<GetProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            CustomerUid, UserId, projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
+            CustomerUid, UserId, headers: customHeaders, 
+            projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
