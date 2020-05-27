@@ -346,12 +346,12 @@ namespace VSS.TRex.Rendering.Executors
         if (CoordsAreGrid)
         {
           Log.LogDebug($"RenderPlanViewTiles Execute: Performing render for Descriptor={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, CutFillDesign=''{CutFillDesign}'' " +
-                       $" Bound[BL/TR:X/Y]=({BLPoint.X} {BLPoint.Y}, {TRPoint.X} {TRPoint.Y}), Width={NPixelsX}, Height={NPixelsY}");
+                       $"Bound[BL/TR:X/Y]=({BLPoint.X} {BLPoint.Y}, {TRPoint.X} {TRPoint.Y}), Width={NPixelsX}, Height={NPixelsY}");
         }
         else
         {
           Log.LogDebug($"RenderPlanViewTiles Execute: Performing render for Descriptor={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, Filter1={Filters.Filters[0]}, Filter2={Filters.Filters[1]}, CutFillDesign=''{CutFillDesign}'' " +
-                       $" Bound[BL/TR:Lon/Lat]=({BLPoint.X} {BLPoint.Y}, {TRPoint.X} {TRPoint.Y}), Width={NPixelsX}, Height={NPixelsY}");
+                       $"Bound[BL/TR:Lon/Lat]=({BLPoint.X} {BLPoint.Y}, {TRPoint.X} {TRPoint.Y}), Width={NPixelsX}, Height={NPixelsY}");
         }
 
         // Include the details of the filters with the logged tile parameters

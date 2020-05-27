@@ -36,17 +36,17 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// Constructs a PVM task accumulator tailored to accumulate cell information to be rendered by this displayer
     /// Note: This intentionally does not pin the bounds of the accumulator to the bounds of the rendered map view
-    /// as mapview rotation and smoothing operations may require large areas of data to be requested to supply the final
+    /// as map view rotation and smoothing operations may require large areas of data to be requested to supply the final
     /// rendered outcome.
     /// </summary>
     /// <param name="valueStoreCellSizeX">The world X dimension size of cells in the value store</param>
     /// <param name="valueStoreCellSizeY">The world X dimension size of cells in the value store</param>
     /// <param name="cellsWidth">The number of cells in the X axis in the value store</param>
     /// <param name="cellsHeight">The number of cells in the X axis in the value store</param>
-    /// <param name="worldX">The world coordinate width of the area covered by the value store</param>
-    /// <param name="worldY">The world coordinate width of the area covered by the value store</param>
     /// <param name="originX">The world coordinate origin on the X axis of the area covered by the value store</param>
     /// <param name="originY">The world coordinate origin on the X axis of the area covered by the value store</param>
+    /// <param name="worldX">The world coordinate width of the area covered by the value store</param>
+    /// <param name="worldY">The world coordinate width of the area covered by the value store</param>
     /// <param name="sourceCellSize">The (square) size of the cells data elements are extracted from in the source data set</param>
     /// <returns></returns>
     public IPVMTaskAccumulator GetPVMTaskAccumulator(double valueStoreCellSizeX, double valueStoreCellSizeY,

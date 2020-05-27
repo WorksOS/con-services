@@ -167,7 +167,7 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
 
       // Provide data smoothing support to the displayer for the rendering operation being performed
-      ((IProductionPVMConsistentDisplayer) Displayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode); 
+      ((IProductionPVMConsistentDisplayer) Displayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode);
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
@@ -177,7 +177,7 @@ namespace VSS.TRex.Rendering
       // We manage this here because the accumulator context relates to the query spatial bounds, not the rendered tile bounds
       // The acumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
       // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
-      // of cells to the mapview grid of pixels
+      // of cells to the map view grid of pixels
 
       var smoother = (Displayer as IProductionPVMConsistentDisplayer)?.DataSmoother;
 
@@ -188,17 +188,17 @@ namespace VSS.TRex.Rendering
       var mapViewCellsY = (int)Math.Truncate(Displayer.MapView.WidthY / valueStoreCellSizeY) + 1;
 
       var borderAdjustmentCells = 2 * smoother?.AdditionalBorderSize ?? 0;
-      var extentAdjumentSizeX = smoother?.AdditionalBorderSize * valueStoreCellSizeX ?? 0;
-      var extentAdjumentSizeY = smoother?.AdditionalBorderSize * valueStoreCellSizeY ?? 0;
+      var extentAdjustmentSizeX = smoother?.AdditionalBorderSize * valueStoreCellSizeX ?? 0;
+      var extentAdjustmentSizeY = smoother?.AdditionalBorderSize * valueStoreCellSizeY ?? 0;
 
       ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
         valueStoreCellSizeX, valueStoreCellSizeY,
         mapViewCellsX + borderAdjustmentCells,
         mapViewCellsY + borderAdjustmentCells,
-        Displayer.MapView.OriginX - extentAdjumentSizeX,
-        Displayer.MapView.OriginY - extentAdjumentSizeY,
-        Displayer.MapView.WidthX + extentAdjumentSizeX,
-        Displayer.MapView.WidthY + extentAdjumentSizeY,
+        Displayer.MapView.WidthX + 2 * extentAdjustmentSizeX,
+        Displayer.MapView.WidthY + 2 * extentAdjustmentSizeY,
+        Displayer.MapView.OriginX - extentAdjustmentSizeX,
+        Displayer.MapView.OriginY - extentAdjustmentSizeY,
         processor.SiteModel.CellSize
       );
 
