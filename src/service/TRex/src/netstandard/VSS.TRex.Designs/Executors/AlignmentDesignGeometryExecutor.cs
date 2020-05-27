@@ -17,7 +17,7 @@ namespace VSS.TRex.Designs.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public ExportToGeometry Execute(Guid projectUid, Guid alignmentDesignUid)
+    public ExportToGeometry Execute(Guid projectUid, Guid alignmentDesignUid, bool convertArcsToPolyLines, double arcChordTolerance)
     {
       try
       {
@@ -26,6 +26,12 @@ namespace VSS.TRex.Designs.Executors
         if (siteModel == null)
         {
           Log.LogError($"Site model {projectUid} not found");
+          return null;
+        }
+
+        if (convertArcsToPolyLines && arcChordTolerance < 0.001)
+        {
+          Log.LogError($"Arc chord tolerance too small, must be >= 0.001 meters");
           return null;
         }
 
@@ -60,7 +66,9 @@ namespace VSS.TRex.Designs.Executors
         var geometryExporter = new ExportToGeometry
         {
           AlignmentLabelingInterval = 10,
-          Units = DistanceUnitsType.Meters
+          Units = DistanceUnitsType.Meters,
+          ConvertArcsToPolyLines = convertArcsToPolyLines,
+          ArcChordTolerance = arcChordTolerance
         };
 
         var success = geometryExporter.ConstructSVLCenterlineAlignmentGeometry(master);

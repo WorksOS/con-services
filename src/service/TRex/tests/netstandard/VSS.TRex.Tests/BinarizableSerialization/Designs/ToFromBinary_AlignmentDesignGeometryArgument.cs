@@ -19,7 +19,13 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
       var projectUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
 
-      var arg = new AlignmentDesignGeometryArgument { ProjectID = projectUid, AlignmentDesignID = designUid };
+      var arg = new AlignmentDesignGeometryArgument
+      {
+        ProjectID = projectUid, 
+        AlignmentDesignID = designUid,
+        ConvertArcsToPolyLines = true,
+        ArcChordTolerance = 0.123
+      };
 
       var result = SimpleBinarizableInstanceTester.TestClass(arg, "Custom AlignmentDesignGeometryArgument not same after round trip serialisation");
 
