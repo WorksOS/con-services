@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -26,10 +26,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var request = CastRequestObjectTo<AlignmentGeometryRequest>(item);
         var siteModelId = request.ProjectUid.ToString();
         var designUid = request.DesignUid.ToString();
+        var convertArcsToChords = request.ConvertArcsToChords.ToString();
+        var arcChordTolerance = request.ArcChordTolerance.ToString(CultureInfo.InvariantCulture);
         var queryParams = new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>( "projectUid", siteModelId ),
-          new KeyValuePair<string, string>( "designUid", designUid )
+          new KeyValuePair<string, string>( "designUid", designUid ),
+          new KeyValuePair<string, string>( "convertArcsToChords", convertArcsToChords),
+          new KeyValuePair<string, string>( "arcChordTolerance", arcChordTolerance)
         };
      
         var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<AlignmentGeometryResult>(siteModelId, "/design/alignment/centerline/geometry", customHeaders, queryParams);
