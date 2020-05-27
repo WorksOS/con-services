@@ -64,7 +64,10 @@ namespace VSS.TRex.Profiling.Executors
         {
           var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
-          arg2.NEECoords = await DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint });
+          if (siteModel != null)
+          {
+            arg2.NEECoords = await DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] {arg.StartPoint, arg.EndPoint});
+          }
         }
 
         var request = new ProfileRequest_ClusterCompute<T>();

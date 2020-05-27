@@ -21,6 +21,13 @@ namespace VSS.TRex.Designs.Executors
       try
       {
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUID, false);
+
+        if (siteModel == null)
+        {
+          Log.LogError($"Site model {projectUID} not found");
+          return (double.MaxValue, double.MinValue);
+        }
+        
         var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUID, projectUID, siteModel.CellSize, out var lockResult);
 
         if (design == null)

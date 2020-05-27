@@ -48,6 +48,12 @@ namespace VSS.TRex.Webtools.Controllers
 
       var siteModelUid = Guid.Parse(siteModelID);
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
+
+      if (siteModel == null)
+      {
+        return new JsonResult(new TileResult(null));
+      }
+
       var displayMode = (DisplayMode) mode;
 
       var filters = displayMode == DisplayMode.CutFill || displayMode == DisplayMode.VolumeCoverage
