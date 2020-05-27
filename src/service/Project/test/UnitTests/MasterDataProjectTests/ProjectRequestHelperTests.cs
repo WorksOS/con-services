@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,7 +14,9 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Serilog.Extensions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -162,5 +166,77 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(lastUpdate, result[0].LastActionedUTC);
     }
 
+    [Fact]
+    public void GetProject_HappyPath()
+    {
+      var customerUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var projectName = "the project name";
+      var lastUpdate = DateTime.UtcNow.AddDays(-1);
+
+      var projectConfigurations = new List<ProjectConfigurationModel>();
+      var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
+      projectConfigurations.Add(new ProjectConfigurationModel() {FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName});
+
+      var projectDetailResponseModel = new ProjectDetailResponseModel()
+      {
+        AccountId = customerUid,
+        ProjectId = projectUid,
+        ProjectName = projectName,
+        LastUpdate = lastUpdate,
+        ProjectSettings = new ProjectSettingsModel() {ProjectId = projectUid, TimeZone = "Pacific/Auckland", Boundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<double[,]>() {{new double[,] {{150.3, 1.2}, {150.4, 1.2}, {150.4, 1.3}, {150.4, 1.4}, {150.3, 1.2}}}}}, Config = projectConfigurations}
+      };
+
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(pr => pr.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailResponseModel);
+
+      var projectDatabaseModelResult = ProjectRequestHelper.GetProject(new Guid(projectUid), new Guid(customerUid), Guid.NewGuid(),
+        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
+
+      var result = projectDatabaseModelResult.Result;
+      Assert.NotNull(result);
+      Assert.Equal(projectUid, result.ProjectUID);
+      Assert.Equal(customerUid, result.CustomerUID);
+      Assert.Equal(projectName, result.Name);
+      Assert.Equal(ProjectType.Standard, result.ProjectType);
+      Assert.Equal("New Zealand Standard Time", result.ProjectTimeZone);
+      Assert.Equal("Pacific/Auckland", result.ProjectTimeZoneIana);
+      Assert.Equal("POLYGON((150.3 1.2,150.4 1.2,150.4 1.3,150.4 1.4,150.3 1.2))", result.Boundary);
+      Assert.Equal("BootCamp 2012.dc", result.CoordinateSystemFileName);
+      Assert.Equal(new DateTime(2020, 03, 25, 23, 03, 45, 314), result.CoordinateSystemLastActionedUTC);
+      Assert.False(result.IsArchived);
+      Assert.Equal(lastUpdate, result.LastActionedUTC);
+    }
+
+    [Fact]
+    public async Task GetProject_CustomerMismatch()
+    {
+      var customerUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var projectName = "the project name";
+      var lastUpdate = DateTime.UtcNow.AddDays(-1);
+
+      var projectConfigurations = new List<ProjectConfigurationModel>();
+      var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
+
+      var projectDetailResponseModel = new ProjectDetailResponseModel()
+      {
+        AccountId = Guid.NewGuid().ToString(),
+        ProjectId = projectUid,
+        ProjectName = projectName,
+        LastUpdate = lastUpdate,
+        ProjectSettings = new ProjectSettingsModel() { ProjectId = projectUid, TimeZone = "Pacific/Auckland", Boundary = new ProjectBoundary() { type = "Polygon", coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } } }, Config = projectConfigurations }
+      };
+
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(pr => pr.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailResponseModel);
+
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => ProjectRequestHelper.GetProject(new Guid(projectUid), new Guid(customerUid), Guid.NewGuid(),
+        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders));
+
+      Assert.Equal(HttpStatusCode.Forbidden, ex.Code);
+      Assert.Equal(2001, ex.GetResult.Code);
+    }
   }
 }
