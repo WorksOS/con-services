@@ -1,7 +1,9 @@
-﻿using VSS.MasterData.Repositories;
+﻿using System.Collections.Generic;
+using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.MasterData.Repositories;
 using Xunit;
 
-namespace RepositoryTests
+namespace VSS.MasterData.ProjectTests
 {
   public class RepositoryHelperTests   
   {
@@ -65,6 +67,29 @@ namespace RepositoryTests
       var boundary = GeometryWKT.Substring(0, GeometryWKT.LastIndexOf(',')) + "))";
       var wkt = RepositoryHelper.GetPolygonWKT(boundary);
       Assert.Equal(GeometryWKT, wkt);
+    }
+
+    [Fact]
+    public void MapWKTToCWSFormat()
+    {
+      var cwsCoordinates = new List<List<double[]>> { new List<double[]> { new[] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } };
+      var expectedProjectBoundary = new ProjectBoundary() {type = "Polygon", coordinates = cwsCoordinates};
+      var wktPolygon = "POLYGON((150.3 1.2,150.4 1.2,150.4 1.3,150.4 1.4,150.3 1.2))";
+
+      var cwsBoundary = RepositoryHelper.MapProjectBoundary(wktPolygon); 
+      Assert.Equal(expectedProjectBoundary.type, cwsBoundary.type);
+      Assert.Equal(expectedProjectBoundary.coordinates, cwsBoundary.coordinates);
+    }
+
+    [Fact]
+    public void MapCWSFormatToWkt()
+    {
+      var cwsCoordinates = new List<List<double[]>> { new List<double[]> { new[] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } };
+      var ProjectBoundary = new ProjectBoundary() { type = "Polygon", coordinates = cwsCoordinates };
+      var expectedWktPolygon = "POLYGON((150.3 1.2,150.4 1.2,150.4 1.3,150.4 1.4,150.3 1.2))";
+      
+      var wktBoundary = RepositoryHelper.ProjectBoundaryToWKT(ProjectBoundary);
+      Assert.Equal(expectedWktPolygon, wktBoundary);
     }
   }
 }

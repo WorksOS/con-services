@@ -63,7 +63,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       _projectUid = Guid.NewGuid().ToString();
       _projectName = "the Project Name";
       _boundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
-      _projectBoundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<double[,]> {new [,] {{ 172.6, -43.5 }, { 172.6, -43.5003 }, { 172.603, -43.5003 }, { 172.603, -43.5 }, { 172.6, -43.5 } }}};
+      _projectBoundary = new ProjectBoundary() {type = "Polygon",
+        coordinates = new List<List<double[]>> { new List<double[]> { new [] { 172.6, -43.5 }, new[] { 172.6, -43.5003 }, new[] { 172.603, -43.5003 }, new[] { 172.603, -43.5 }, new[] { 172.6, -43.5 } }}};
       _timeZone = "New Zealand Standard Time";
     }
 

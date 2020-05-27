@@ -28,15 +28,13 @@ namespace VSS.MasterData.Repositories
       if (boundaryPoints == null)
         return null;
 
-      var pointsAsDoubleList = new List<double[,]>();
+      var pointsAsDoubleList = new List<double[]>();
       foreach (var point in boundaryPoints)
-      {       
-        pointsAsDoubleList.Add(item: new double[,] { { point.X, point.Y } });
-      }
+        pointsAsDoubleList.Add(item: new [] { point.X, point.Y });
 
       var cwsProjectBoundary = new ProjectBoundary();
       cwsProjectBoundary.type = "Polygon";
-      cwsProjectBoundary.coordinates = pointsAsDoubleList;     
+      cwsProjectBoundary.coordinates = new List<List<double[]>>{pointsAsDoubleList};     
 
       return cwsProjectBoundary;
     }
@@ -102,15 +100,15 @@ namespace VSS.MasterData.Repositories
       return $"POLYGON(({internalString}))";
     }
 
-    public static string ToPolygonWKT(this List<double[,]> list)
+    public static string ToPolygonWKT(this List<List<double[]>> list)
     {
       // Always just a single 2D array in the list which is the CWS polygon coordinates
       var coords = list[0];
-      var rowCount = coords.GetLength(0);
+      var rowCount = coords.Count;
       var wktCoords = new List<string>();
       for (var i = 0; i < rowCount; i++)
       {
-        wktCoords.Add($"{coords[i, 0]} {coords[i, 1]}");
+        wktCoords.Add($"{coords[i][0]} {coords[i][1]}");
       }
      
       var internalString = wktCoords.Aggregate((i, j) => $"{i},{j}");

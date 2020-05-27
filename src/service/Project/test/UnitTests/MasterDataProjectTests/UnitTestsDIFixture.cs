@@ -82,7 +82,8 @@ namespace VSS.MasterData.ProjectTests
             ProjectSettings = new ProjectSettingsModel()
             {
               ProjectTRN = projectTrn, TimeZone = "Pacific/Auckland",
-              Boundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<double[,]>() {{new double[,] {{150.3, 1.2}, {150.4, 1.2}, {150.4, 1.3}, {150.4, 1.4}, {150.3, 1.2}}}}},
+              Boundary = new ProjectBoundary() {type = "Polygon", 
+                coordinates = new List<List<double[]>> { new List<double[]> { new [] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } }},
               Config = projectConfigurationList
             }
           }
@@ -105,7 +106,8 @@ namespace VSS.MasterData.ProjectTests
         {
           ProjectTRN = projectTrn,
           TimeZone = "Pacific/Auckland",
-          Boundary = new ProjectBoundary() { type = "Polygon", coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } } },
+          Boundary = new ProjectBoundary() { type = "Polygon", 
+            coordinates = new List<List<double[]>> { new List<double[]> { new[] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } }},
           Config = projectConfigurationList
         }
       };

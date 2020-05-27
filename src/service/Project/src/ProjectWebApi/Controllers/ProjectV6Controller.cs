@@ -97,24 +97,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest projectRequest)
     {
       if (projectRequest == null)
-      {
         return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 39));
-      }
 
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       projectRequest.CustomerUID ??= new Guid(CustomerUid);
+      if (projectRequest.CustomerUID.ToString() != CustomerUid)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
 
       ProjectDataValidator.Validate(createProjectEvent, new Guid(CustomerUid), new Guid(UserId),
         Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-
-      if (createProjectEvent.CustomerUID.ToString() != CustomerUid)
-      {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
-      }
 
       // ProjectUID won't be filled yet
       await ProjectDataValidator.ValidateProjectName(new Guid(CustomerUid), new Guid(UserId), createProjectEvent.ProjectName,
