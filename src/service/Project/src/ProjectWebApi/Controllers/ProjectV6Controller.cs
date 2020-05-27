@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
@@ -322,10 +323,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="updateDto">Update Model</param>
     /// <returns></returns>
     [HttpPost("api/v6/project/updatenotify")]
-    public IActionResult ProjectUpdate([FromBody]CwsProjectModelUpdateDto updateDto)
+    public ContractExecutionResult ProjectUpdate([FromBody]CwsProjectModelUpdateDto updateDto)
     {
       Logger.LogInformation($"Received Update Notification {JsonConvert.SerializeObject(updateDto)}");
-      
+     
+      // Testing for CWS 
+      if(!string.IsNullOrEmpty(updateDto.ProjectTrn))
+        return new ContractExecutionResult(1, "No Project TRN");
+
       // We don't actually do anything with this data yet, other than clear cache
       // Since we call out to CWS for data
       var projectUid = TRNHelper.ExtractGuid(updateDto?.ProjectTrn);
@@ -334,7 +339,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
         NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
       }
-      return Ok();
+      return new ContractExecutionResult();
     }
 
     /// <summary>
@@ -343,16 +348,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="updateDto">Update Model</param>
     /// <returns></returns>
     [HttpPost("api/v6/project/updatecal")]
-    public IActionResult CalibrationUpdate([FromBody]CwsCalibrationFileUpdateDto updateDto)
+    public ContractExecutionResult CalibrationUpdate([FromBody]CwsCalibrationFileUpdateDto updateDto)
     {
       Logger.LogInformation($"Received Calibration Update Notification {JsonConvert.SerializeObject(updateDto)}");
+
+      // Testing for CWS 
+      if(!string.IsNullOrEmpty(updateDto.ProjectTrn))
+        return new ContractExecutionResult(1, "No Project TRN");
+      
       var projectUid = TRNHelper.ExtractGuid(updateDto?.ProjectTrn);
       if (projectUid.HasValue)
       {
         Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
         NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
       }
-      return Ok();
+
+      return new ContractExecutionResult();
     }
   }
 }
