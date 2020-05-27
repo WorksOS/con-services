@@ -54,7 +54,7 @@ namespace VSS.TRex.Rendering.Displayers
       double originX, double originY, double worldX, double worldY, double sourceCellSize
       )
     {
-      _taskAccumulator = new PVMTaskAccumulator<TC, TS>(valueStoreCellSizeX, valueStoreCellSizeY, cellsWidth, cellsHeight, worldX, worldY, originX, originY, sourceCellSize);
+      _taskAccumulator = new PVMTaskAccumulator<TC, TS>(valueStoreCellSizeX, valueStoreCellSizeY, cellsWidth, cellsHeight, originX, originY, worldX, worldY, sourceCellSize);
       return _taskAccumulator;
     }
 

@@ -7,8 +7,8 @@ namespace VSS.TRex.Rendering.Displayers
   {
     IPVMTaskAccumulator GetPVMTaskAccumulator(double valueStoreCellSizeX, double valueStoreCellSizeY,
       int cellsWidth, int cellsHeight,
-      double worldX, double worldY,
       double originX, double originY,
+      double worldX, double worldY,
       double sourceCellSize);
 
     bool PerformConsistentRender();

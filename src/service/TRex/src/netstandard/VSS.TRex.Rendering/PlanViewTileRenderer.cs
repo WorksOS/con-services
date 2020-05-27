@@ -175,7 +175,7 @@ namespace VSS.TRex.Rendering
 
       // Construct the PVM task accumulator for the PVM rendering task to contain the values to be rendered
       // We manage this here because the accumulator context relates to the query spatial bounds, not the rendered tile bounds
-      // The acumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
+      // The accumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
       // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
       // of cells to the map view grid of pixels
 
@@ -195,10 +195,10 @@ namespace VSS.TRex.Rendering
         valueStoreCellSizeX, valueStoreCellSizeY,
         mapViewCellsX + borderAdjustmentCells,
         mapViewCellsY + borderAdjustmentCells,
-        Displayer.MapView.WidthX + 2 * extentAdjustmentSizeX,
-        Displayer.MapView.WidthY + 2 * extentAdjustmentSizeY,
         Displayer.MapView.OriginX - extentAdjustmentSizeX,
         Displayer.MapView.OriginY - extentAdjustmentSizeY,
+        Displayer.MapView.WidthX + 2 * extentAdjustmentSizeX,
+        Displayer.MapView.WidthY + 2 * extentAdjustmentSizeY,
         processor.SiteModel.CellSize
       );
 

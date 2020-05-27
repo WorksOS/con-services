@@ -70,14 +70,14 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// <param name="valueStoreCellSizeY">The world X dimension size of cells in the value store</param>
     /// <param name="cellsWidth">The number of cells 'wide' (x ordinate) in the set of cell values requested</param>
     /// <param name="cellsHeight">The number of cells 'high' (y ordinate) in the set of cell values requested</param>
-    /// <param name="worldX">The world coordinate width (X axis) of the value store</param>
-    /// <param name="worldY">The world coordinate width (X axis) of the value store</param>
     /// <param name="originX">The default north oriented world X coordinate or the _valueStore origin</param>
     /// <param name="originY">The default north oriented world Y coordinate or the _valueStore origin</param>
+    /// <param name="worldX">The world coordinate width (X axis) of the value store</param>
+    /// <param name="worldY">The world coordinate width (X axis) of the value store</param>
     /// <param name="sourceCellSize">The (square) size of the underlying cells in the site model that is the source of rendered data</param>
     public PVMTaskAccumulator(double valueStoreCellSizeX, double valueStoreCellSizeY, int cellsWidth, int cellsHeight,
-      double worldX, double worldY,
       double originX, double originY,
+      double worldX, double worldY,
       double sourceCellSize)
     {
       ValueStoreCellSizeX = valueStoreCellSizeX;
