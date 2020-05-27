@@ -20,7 +20,6 @@ using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
-using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -231,19 +230,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Validates that project belongs to the customer.
     /// </summary>
-    public async Task ValidateProjectWithCustomer(string customerUid, string projectUid, bool tempCwsFlag = false)
+    public async Task ValidateProjectWithCustomer(string customerUid, string projectUid)
     {
-      ProjectDatabaseModel project;
-      if (tempCwsFlag)
-        project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders).ConfigureAwait(false))
+      var project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders).ConfigureAwait(false))
           .FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
-      else
-        project = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
-      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
-      }
 
       log.LogInformation($"projectUid {projectUid} validated");
     }
