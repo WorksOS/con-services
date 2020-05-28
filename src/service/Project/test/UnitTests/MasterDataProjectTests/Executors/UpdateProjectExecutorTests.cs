@@ -1,24 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -94,7 +86,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         productivity3dV1ProxyCoord.Setup(p =>
             p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
-        productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<long>(), It.IsAny<byte[]>(), It.IsAny<string>(),
+        productivity3dV1ProxyCoord.Setup(p => p.CoordinateSystemPost(It.IsAny<Guid>(), It.IsAny<byte[]>(), It.IsAny<string>(),
             It.IsAny<HeaderDictionary>()))
           .ReturnsAsync(new CoordinateSystemSettingsResult());
 

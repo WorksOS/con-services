@@ -12,7 +12,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
@@ -140,9 +139,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
                 projectErrorCodesProvider.FirstNameWithOffset(12)));
           }
         }
-        else if (evt is UpdateProjectEvent)
+        else if (evt is UpdateProjectEvent updateEvent)
         {
-          var updateEvent = evt as UpdateProjectEvent;
           if (string.IsNullOrEmpty(updateEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
