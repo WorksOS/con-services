@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Localization;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace CCSS.Geometry
@@ -22,9 +23,9 @@ namespace CCSS.Geometry
       if (boundaryPoints == null)
         return null;
 
-      var pointsAsDoubleList = new List<double[]>();
-      foreach (var point in boundaryPoints)
-        pointsAsDoubleList.Add(item: new[] { point.X, point.Y });
+      var pointsAsDoubleList = new List<double[]>(boundaryPoints.Count);
+      for (var i = 0; i < boundaryPoints.Count; i++)
+        pointsAsDoubleList.Add(item: new[] { boundaryPoints[i].X, boundaryPoints[i].Y });
 
       var cwsProjectBoundary = new ProjectBoundary();
       cwsProjectBoundary.type = "Polygon";
@@ -35,25 +36,12 @@ namespace CCSS.Geometry
 
     private static List<Point> GetPoints(string boundary)
     {
-      if (!string.IsNullOrEmpty(boundary))
-      {
-        // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
-        if (!boundary.Contains(POLYGON))
-        {
-          boundary =
-            boundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
-          boundary =
-            string.Concat(POLYGON + "((", boundary, "))");
-        }
-        //Polygon must start and end with the same point
-        return boundary.ParseGeometryData().ClosePolygonIfRequired();
-      }
-
-      return null;
+      //Polygon must start and end with the same point
+      return string.IsNullOrEmpty(boundary) ? null : boundary.ParseGeometryData().ClosePolygonIfRequired();
     }
 
     /// <summary>
-    /// Maps a CWS project boundary to a 3dpm project WKT boundary
+    /// Maps a CWS project boundary to a project WKT boundary
     /// </summary>
     public static string ProjectBoundaryToWKT(ProjectBoundary boundary)
     {
@@ -111,27 +99,24 @@ namespace CCSS.Geometry
 
     public static List<Point> ParseGeometryData(this string s)
     {
-      var points = new List<Point>();
+      if (string.IsNullOrEmpty(s))
+        return new List<Point>();
 
       foreach (string to_replace in _replacements.Keys)
       {
         s = s.Replace(to_replace, _replacements[to_replace]);
       }
 
-      string[] pointsArray = s.Split(',').Select(str => str.Trim()).ToArray();
-
-      IEnumerable<string[]> coordinates;
+      var pointsArray = s.Split(',').Select(str => str.Trim()).ToArray();
 
       //gets x and y coordinates split by space, trims whitespace at pos 0, converts to double array
-      coordinates = pointsArray.Select(point => point.Trim().Split(null)
+      var coordinates = pointsArray.Select(point => point.Trim().Split(null)
         .Where(v => !string.IsNullOrWhiteSpace(v)).ToArray());
-      points = coordinates.Select(p => new Point() { X = double.Parse(p[0]), Y = double.Parse(p[1]) }).ToList();
-
-      return points;
+      return coordinates.Select(p => new Point() {X = double.Parse(p[0]), Y = double.Parse(p[1])}).ToList();
     }
   }
 
-  internal class Point
+  internal struct Point
   {
     public double X;
     public double Y;
