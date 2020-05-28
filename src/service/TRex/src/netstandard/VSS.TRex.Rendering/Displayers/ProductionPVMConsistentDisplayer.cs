@@ -64,7 +64,7 @@ namespace VSS.TRex.Rendering.Displayers
 
     /// <summary>
     /// Performs a 'consistent' render across a 2D array of collated values from queried sub grids.
-    /// Effectively this treats the passed array as if it were a subgrid of that size and renders it as
+    /// Effectively this treats the passed array as if it were a sub grid of that size and renders it as
     /// such against the MapView.
     /// This function should be called just once to render the entire set of data for a tile
     /// </summary>
