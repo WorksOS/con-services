@@ -104,7 +104,7 @@ namespace CCSS.Geometry
 
       //  Fail if the segments share an end-point.
       if (EqualPoints(Ax, Ay, Cx, Cy) || EqualPoints(Bx, By, Cx, Cy) ||
-      EqualPoints(Ax, Ay, Dx, Dy) || EqualPoints(Bx, By, Dx, Dy))
+          EqualPoints(Ax, Ay, Dx, Dy) || EqualPoints(Bx, By, Dx, Dy))
       {
         return false;
       }
@@ -161,18 +161,17 @@ namespace CCSS.Geometry
       if (!BoundingBoxesOverlap(points1, points2))
         return false;
 
-      // The clipper library doesn't work as expected for touching polygons so check
-      for (var i = 1; i < points1.Count; i++)
-      for (var j = 1; j < points2.Count; j++)
+      // The clipper library doesn't work as expected for touching polygons so check.
+      // Check both ways as a vertex of one polygon may be touching an edge of the other.
+      foreach (var point in points1)
       {
-        if (LineSegmentsIntersect(
-          points1[i - 1].X, points1[i - 1].Y,
-          points1[i].X, points1[i].Y,
-          points2[j - 1].X, points2[j - 1].Y,
-          points2[j].X, points2[j].Y))
-        {
+        if (PointOnPolygonEdge(points2, point.X, point.Y))
           return true;
-        }
+      }
+      foreach (var point in points2)
+      {
+        if (PointOnPolygonEdge(points1, point.X, point.Y))
+          return true;
       }
 
       // Now do the clipper polygon intersection check.
@@ -184,20 +183,6 @@ namespace CCSS.Geometry
       var intersectingPolygons = new List<List<IntPoint>>();
       var succeeded = clipper.Execute(ClipType.ctIntersection, intersectingPolygons);
       return succeeded && intersectingPolygons.Count > 0;
-    }
-
-    private static bool BoundingBoxesOverlap(List<Point> points1, List<Point> points2)
-    {
-      var xmin1 = points1.Min(p => p.X);
-      var xmax1 = points1.Max(p => p.X);
-      var ymin1 = points1.Min(p => p.Y);
-      var ymax1 = points1.Max(p => p.Y);
-      var xmin2 = points2.Min(p => p.X);
-      var xmax2 = points2.Max(p => p.X);
-      var ymin2 = points2.Min(p => p.Y);
-      var ymax2 = points2.Max(p => p.Y);
-      var noOverlap = (ymax1 < ymin2 || ymin2 > ymax1) && (xmax1 < xmin2 || xmin2 > xmax1);
-      return !noOverlap;
     }
 
     /// <summary>
@@ -226,6 +211,31 @@ namespace CCSS.Geometry
     }
 
     /// <summary>
+    /// Determines if the bounding boxes of the two polygons overlap.
+    /// </summary>
+    private static bool BoundingBoxesOverlap(List<Point> points1, List<Point> points2)
+    {
+      var xmin1 = points1.Min(p => p.X);
+      var xmax1 = points1.Max(p => p.X);
+      var ymin1 = points1.Min(p => p.Y);
+      var ymax1 = points1.Max(p => p.Y);
+      var xmin2 = points2.Min(p => p.X);
+      var xmax2 = points2.Max(p => p.X);
+      var ymin2 = points2.Min(p => p.Y);
+      var ymax2 = points2.Max(p => p.Y);
+      return IsOverlapping(xmin1, xmax1, xmin2, xmax2) &&
+             IsOverlapping(ymin1, ymax1, ymin2, ymax2);
+    }
+
+    /// <summary>
+    /// Determines if the two intervals overlap.
+    /// </summary>
+    private static bool IsOverlapping(double min1, double max1, double min2, double max2)
+    {
+      return max1 >= min2 && max2 >= min1;
+    }
+
+    /// <summary>
     /// Determines if the point lies on any edge of the polygon, including coinciding with a polygon vertex.
     /// </summary>
     private static bool PointOnPolygonEdge(List<Point> points, double longitude, double latitude)
@@ -239,6 +249,7 @@ namespace CCSS.Geometry
 
       return false;
     }
+
     /// <summary>
     /// Determines if the point (cx,cy) lies on the line segment (ax,ay) to (bx,by)
     /// </summary>
