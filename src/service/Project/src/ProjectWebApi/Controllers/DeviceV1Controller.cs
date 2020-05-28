@@ -94,46 +94,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       return Json(device);
     }
-
-
-    [HttpPost("api/v1/device/{deviceName}/project")]
-    public IActionResult AddDeviceToProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
-    {
-      Logger.LogInformation($"{nameof(AddDeviceToProject)} Request to add device {deviceName} to Project TRN {projectTrn}");
-
-      DeviceDataValidator.ValidateDeviceName(deviceName);
-
-
-      // We don't actually do anything with this data yet, other than clear cache
-      // Since we call out to CWS for data
-      var projectUid = TRNHelper.ExtractGuid(projectTrn);
-      if (projectUid.HasValue)
-      {
-        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
-      }
-
-
-      return Ok();
-    }
-
-    [HttpDelete("api/v1/device/{deviceName}/project")]
-    public IActionResult RemoveDeviceFromProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
-    {
-      Logger.LogInformation($"{nameof(RemoveDeviceFromProject)} Request to remove device {deviceName} to Project TRN {projectTrn}");
-
-      DeviceDataValidator.ValidateDeviceName(deviceName);
-
-      // We don't actually do anything with this data yet, other than clear cache
-      // Since we call out to CWS for data
-      var projectUid = TRNHelper.ExtractGuid(projectTrn);
-      if (projectUid.HasValue)
-      {
-        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
-      }
-
-      return Ok();
-    }
   }
 }
