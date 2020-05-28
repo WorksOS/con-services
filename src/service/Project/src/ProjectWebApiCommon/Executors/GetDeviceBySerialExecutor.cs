@@ -18,7 +18,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   public class GetDeviceBySerialExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Processes the GetProjectSettings request
+    /// Processes the Get device by serial number from cws. This uses an application token
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {

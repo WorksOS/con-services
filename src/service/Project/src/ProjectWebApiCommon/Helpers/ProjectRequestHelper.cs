@@ -40,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Gets a Project list for customer uid.
     ///  Includes all projects, regardless of archived state and user role
     /// </summary>
-    public static async Task<List<ProjectDatabaseModel>> GetProjectListForCustomer(Guid customerUid, Guid userUid,
+    public static async Task<List<ProjectDatabaseModel>> GetProjectListForCustomer(Guid customerUid, Guid? userUid,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
       log.LogDebug($"{nameof(GetProjectListForCustomer)} customerUid {customerUid}, userUid {userUid}");
@@ -191,29 +191,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation($"Project projectUid: {projectUid} retrieved");
       return project;
     }
-    
-    /// <summary>
-    /// Gets a Project, even if archived, return project even if null
-    /// </summary>
-    public static async Task<ProjectDatabaseModel> GetProjectEvenIfArchived(string projectUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
-    {
-      var project = (await projectRepo.GetProjectOnly(projectUid));
-
-      log.LogInformation($"Project projectUid: {projectUid} project {project} retrieved");
-      return project;
-    }
+    #endregion SoonToBeObsoleteCCSSSCON-351
 
     /// <summary>
-    /// Gets a Project NO customer uid.
+    /// Gets a Project, even if archived.
+    ///    Return project even if null. This is called internally from TFA,
+    ///      so don't want to throw exception other GetProjects do. Note that no UserUid available.
+    ///
+    /// Others are called from UI so can throw exception.
     /// </summary>
-    public static async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    public static async Task<ProjectDatabaseModel> GetProjectAndReturn(string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
-      var project = (await projectRepo.GetProject(shortRaptorProjectId));
-
-      log.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} retrieved");
-      return project;
+      var project = await cwsProjectClient.GetMyProject(new Guid(projectUid), null, customHeaders: customHeaders);
+      if (project == null)
+      {
+        log.LogInformation($"{nameof(GetProjectAndReturn)} Project projectUid: {projectUid} not retrieved");
+        return null;
+      }
+      log.LogInformation($"{nameof(GetProjectAndReturn)} Project projectUid: {projectUid} project retrieved {JsonConvert.SerializeObject(project)}");
+      return ConvertCwsToWorksOSProject(project, log);
     }
 
     /// <summary>
@@ -222,15 +219,24 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///    else get overlapping projects in localDB for this CustomerUID
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
-      string customerUid, double latitude, double longitude,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+      string customerUid, double latitude, double longitude, string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
-      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList(); ;
+      // get projects for customer using application token i.e. no user
+      // todo what are the rules e.g. active, for manual import? 
+      var projectDatabaseModelList = (await GetProjectListForCustomer(new Guid(customerUid), null,
+          log, serviceExceptionHandler, cwsProjectClient, customHeaders))
+        .Where(p => string.IsNullOrEmpty(projectUid) || !p.IsArchived); 
+
+      var projects = new List<ProjectDatabaseModel>();
+      // call new overlap routine  // todo CCSSSCON-341
+      //projects =
+      //  await Wherever.GetIntersectingProjects(latitude, longitude, projectDatabaseModelList);
 
       log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
       return projects;
     }
-    #endregion SoonToBeObsoleteCCSSSCON-351
+
 
     public static async Task<bool> DoesProjectOverlap(Guid customerUid, Guid? projectUid, Guid userUid, string projectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
@@ -251,7 +257,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return false; // todo CCSSSCON-341
     }
 
-
+  
     #region coordSystem
 
     /// <summary>
