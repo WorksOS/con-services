@@ -80,7 +80,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var fileName = @$"Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "CutFillTile", fileName);
 
-      // var saveFileName = @$"C:\Temp\Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
+      //var saveFileName = @$"C:\Temp\Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, "", path);
     }

@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.Rendering
     [Fact]
     public void Creation()
     {
-      var accum = new PVMTaskAccumulator<float, ClientHeightLeafSubGrid>(1, 1, 1, 1, 0, 0, 0, 0, 0);
+      var accum = new PVMTaskAccumulator<float, ClientHeightLeafSubGrid>(1, 1, 1, 1, 0, 0, 1, 1, 0);
 
       accum.Should().NotBeNull();
     }
@@ -57,8 +57,9 @@ namespace VSS.TRex.Tests.Rendering
     {
       var accum = new PVMTaskAccumulator<float, ClientHeightLeafSubGrid>(
         SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension,
+        0, 0, 
         SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize, 
-        0, 0, SubGridTreeConsts.DefaultCellSize);
+        SubGridTreeConsts.DefaultCellSize);
       var subGrid = NewClientSubGrid();
 
       accum.Transcribe(new IClientLeafSubGrid[] {subGrid}).Should().Be(true);
@@ -71,8 +72,9 @@ namespace VSS.TRex.Tests.Rendering
     {
       var accum = new PVMTaskAccumulator<float, ClientHeightLeafSubGrid>(SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultCellSize, 
         SubGridTreeConsts.SubGridTreeDimension / 2, SubGridTreeConsts.SubGridTreeDimension / 2,
+        0, 0, 
         SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize,
-        0, 0, SubGridTreeConsts.DefaultCellSize);
+        SubGridTreeConsts.DefaultCellSize);
       var subGrid = NewClientSubGrid();
 
       accum.Transcribe(new IClientLeafSubGrid[] { subGrid }).Should().Be(true);
