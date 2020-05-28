@@ -38,7 +38,7 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class ImportFilev6ExecutorTestsDiFixture : UnitTestsDIFixture<ImportFilev6ExecutorTestsDiFixture>
+  public class ImportFilev6ExecutorTests : UnitTestsDIFixture<ImportFilev6ExecutorTests>
   {
     private static Guid _customerUid;
     private static Guid _projectUid;
@@ -47,7 +47,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     private static long _shortRaptorProjectId;
     private static string _fileSpaceId;
 
-    public ImportFilev6ExecutorTestsDiFixture()
+    public ImportFilev6ExecutorTests()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       _customerUid = Guid.NewGuid();
@@ -78,7 +78,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
         _customerUid.ToString(), Guid.NewGuid().ToString(), "f9sdg0sf9",
-        Log, serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
+        _log, serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
     }
 
     [Fact]

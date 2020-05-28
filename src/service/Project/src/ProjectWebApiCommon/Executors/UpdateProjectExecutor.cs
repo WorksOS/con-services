@@ -13,15 +13,10 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
-  /// The executor which updates a updateProjectEvent - appropriate for v4 controller
+  /// The executor which updates a project in cws, storing in trex/DO as appropriate
   /// </summary>
   public class UpdateProjectExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Save for potential rollback
-    /// </summary>
-    protected string subscriptionUidAssigned;
-
     /// <summary>
     /// Processes the UpdateProjectEvent
     /// </summary>
@@ -29,27 +24,30 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       var updateProjectEvent = CastRequestObjectTo<UpdateProjectEvent>(item, errorCode: 68);
 
-      var existing = await projectRepo.GetProject(updateProjectEvent.ProjectUID.ToString());
+      var existing = await ProjectRequestHelper.GetProject(
+        updateProjectEvent.ProjectUID, new Guid(customerUid), new Guid(userId),
+        log, serviceExceptionHandler, cwsProjectClient, customHeaders);
       if (existing == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
 
       if (existing == null || !string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary))
         ProjectRequestHelper.ValidateProjectBoundary(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
 
-      await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
+      await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(
+        updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent,
+        serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
-      // CCSSSCON-213 theres a bug if endDate is extended, it needs to re-check overlap
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
-            updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
+        updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
-        await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID,
-          updateProjectEvent.ProjectBoundary, log, serviceExceptionHandler, projectRepo);
+        await ProjectRequestHelper.DoesProjectOverlap(new Guid(existing.CustomerUID), updateProjectEvent.ProjectUID, new Guid(userId),
+          updateProjectEvent.ProjectBoundary, log, serviceExceptionHandler, cwsProjectClient, customHeaders);
       }
 
       if (existing != null && existing.ProjectType != updateProjectEvent.ProjectType)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
 
-      log.LogDebug($"UpdateProject: passed validation {updateProjectEvent.ProjectUID}");
+      log.LogDebug($"{nameof(UpdateProjectExecutor)}: passed validation {updateProjectEvent.ProjectUID}");
 
       // create/update in Cws
       try
@@ -64,39 +62,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62, "worksManager.UpdateProject", e.Message);
       }
 
-      /*** now making changes, potentially needing rollback ***/
-      //  order changes to minimise rollback
-      //    if CreateCoordSystemInProductivity3dAndTcc fails then nothing is done
-      //    if AssociateProjectSubscription fails then nothing is done
-      //    if UpdateProjectEvent fails then ProjectSubscription is Dissassociated
+      // now making changes, potentially needing rollback 
+      //  order changes to minimize rollback. If any fails, then project is deleted in cws
+      //    if CreateCoordSystem 3dp/Trex fails 
+      //    if tcc and DO write fails
       if (!string.IsNullOrEmpty(updateProjectEvent.CoordinateSystemFileName))
       {
-        // don't bother rolling this back
         await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID,
-          existing.ShortRaptorProjectId,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
-          projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
-          cwsDesignClient, cwsProfileSettingsClient).ConfigureAwait(false);
-        log.LogDebug("UpdateProject: CreateCoordSystemInProductivity3dAndTcc succeeded");
-      }         
-
-      var isUpdated = 0;
-      try
-      {
-        isUpdated = await projectRepo.StoreEvent(updateProjectEvent).ConfigureAwait(false);
+          productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
+          cwsDesignClient, cwsProfileSettingsClient, cwsProjectClient).ConfigureAwait(false);
+        log.LogDebug($"{nameof(UpdateProjectExecutor)}: CreateCoordSystemInProductivity3dAndTcc succeeded");
       }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62, "projectRepo.storeUpdateProject", e.Message);
-      }
-
-      if (isUpdated == 0)
-      {
-        await RollbackAndThrow(updateProjectEvent, HttpStatusCode.InternalServerError, 62, string.Empty);
-      }
-
-      log.LogDebug("UpdateProject: Project updated successfully");
+      log.LogDebug($"{nameof(UpdateProjectExecutor)}: Project updated successfully");
       return new ContractExecutionResult();
     }
 
@@ -143,29 +122,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       return null;
     }
-
-    private async Task RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, ProjectDatabaseModel existing = null)
-    {
-      log.LogDebug($"Rolling back the Project Update for updateProjectEvent: {updateProjectEvent.ProjectUID.ToString()} subscriptionUidAssigned: {subscriptionUidAssigned}");
-      
-      if (existing != null)
-      {
-        // rollback changes to Project
-        var rollbackProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectEvent);
-        rollbackProjectEvent.ProjectTimezone = existing.ProjectTimeZone;
-        rollbackProjectEvent.ProjectName = existing.Name;
-        rollbackProjectEvent.ProjectType = existing.ProjectType;
-        rollbackProjectEvent.ProjectBoundary = existing.Boundary;
-        rollbackProjectEvent.CoordinateSystemFileName = existing.CoordinateSystemFileName;
-        rollbackProjectEvent.ActionUTC = DateTime.UtcNow;
-
-        var isUpdated = await projectRepo.StoreEvent(rollbackProjectEvent).ConfigureAwait(false);
-        log.LogDebug($"UpdateProject: Rolled back Project changes. Updated count (should be 1): {isUpdated}");
-      }
-
-      serviceExceptionHandler.ThrowServiceException(httpStatusCode, errorCode, exceptionMessage);
-    }
-
+    
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();

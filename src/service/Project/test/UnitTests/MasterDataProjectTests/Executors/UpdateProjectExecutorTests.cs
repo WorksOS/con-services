@@ -27,20 +27,12 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class UpdateProjectExecutorTestsDiFixture : UnitTestsDIFixture<UpdateProjectExecutorTestsDiFixture>
+  public class UpdateProjectExecutorTests : UnitTestsDIFixture<UpdateProjectExecutorTests>
   {
     private static string _boundaryString;
     private static string _updatedBoundaryString;
 
-    private static string _customerUid;
-    private static string _userId;
-    private static HeaderDictionary _customHeaders;
-    private static Guid _geofenceUid;
-    private static IConfigurationStore _configStore;
-    private static ILoggerFactory _logger;
-    private static IServiceExceptionHandler _serviceExceptionHandler;
-
-    public UpdateProjectExecutorTestsDiFixture()
+    public UpdateProjectExecutorTests()
     {
       try
       {
@@ -53,22 +45,12 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       _boundaryString = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
       _updatedBoundaryString = "POLYGON((44.6 -3.5,44.6 -3.5003,44.603 -3.5003,44.603 -3.5,44.6 -3.5))";
-
-      _customerUid = Guid.NewGuid().ToString();
-      _geofenceUid = Guid.NewGuid();
-      _userId = Guid.NewGuid().ToString();
-      _customHeaders = new HeaderDictionary();
     }
 
     [Fact]
     public async Task UpdateProjectExecutor_HappyPath()
     {
-      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
       var projectType = ProjectType.Standard;
-      var coordSystemFileContent = System.Text.Encoding.ASCII.GetBytes("Some dummy content");
       var existingProject = await CreateProject(_projectUid.ToString(), projectType);
 
       if (existingProject.ProjectUID != null)
@@ -80,10 +62,11 @@ namespace VSS.MasterData.ProjectTests.Executors
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-        // CCSSSCON-214 need to send update to cws only if boundary/name changed
-        //var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
-        var projectClient = new Mock<ICwsProjectClient>();
-        //projectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+        var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+        var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+        var cwsProjectClient = new Mock<ICwsProjectClient>();
+        cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+        cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
         var createFileResponseModel = new CreateFileResponseModel
           { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
@@ -107,22 +90,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         cwsProfileSettingsClient.Setup(ps => ps.UpdateProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), _customHeaders))
           .ReturnsAsync(updatedConfigurationFileResponseModel);
 
-        var projectRepo = new Mock<IProjectRepository>();
-        projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
-        projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
-          .ReturnsAsync(existingProject);
-
-        var projectGeofence = new List<ProjectGeofence>
-                              {
-          new ProjectGeofence
-          {
-            GeofenceType = GeofenceType.Project,
-            GeofenceUID = _geofenceUid.ToString(),
-            ProjectUID = updateProjectRequest.ProjectUid.ToString()
-          }
-        };
-        projectRepo.Setup(pr => pr.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(projectGeofence);
-
         var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
         productivity3dV1ProxyCoord.Setup(p =>
             p.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
@@ -145,13 +112,11 @@ namespace VSS.MasterData.ProjectTests.Executors
         authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
         var updateExecutor = RequestExecutorContainerFactory.Build<UpdateProjectExecutor>
-        (_logger, _configStore, _serviceExceptionHandler,
-          _customerUid, _userId, null, _customHeaders,
-          productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
-          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, /*httpContextAccessor: httpContextAccessor,*/
+        (_loggerFactory, _configStore, ServiceExceptionHandler,
+          _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+          productivity3dV1ProxyCoord.Object, fileRepo: fileRepo.Object,
           dataOceanClient: dataOceanClient.Object, authn: authn.Object,
-          cwsProjectClient: projectClient.Object, 
-          cwsDesignClient: cwsDesignClient.Object,
+          cwsProjectClient: cwsProjectClient.Object, cwsDesignClient: cwsDesignClient.Object,
           cwsProfileSettingsClient: cwsProfileSettingsClient.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
@@ -165,7 +130,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = projectType,
         CoordinateSystemFileName = string.Empty,
         CoordinateSystemFileContent = null,
-        CustomerUID = new Guid(_customerUid),
+        CustomerUID = _customerUid,
         ProjectName = "projectName",
         ProjectTimezone = "NZ whatsup",
         ProjectBoundary = _boundaryString,
@@ -205,7 +170,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
       var createExecutor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-      (_logger, _configStore, _serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+      (_loggerFactory, _configStore, ServiceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
          productivity3dV1ProxyCoord.Object,
         fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
