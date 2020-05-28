@@ -18,7 +18,6 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -34,16 +33,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the httpContextAccessor.
     /// </summary>
     protected readonly IHttpContextAccessor HttpContextAccessor;
-
-    private readonly INotificationHubClient _notificationHubClient;
-
+    
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV6Controller(IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
+    public ProjectV6Controller(IHttpContextAccessor httpContextAccessor)
     {
       HttpContextAccessor = httpContextAccessor;
-      _notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
@@ -133,7 +129,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders)
           .ConfigureAwait(false)));
 
-      await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
+      NotificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return Ok(result);
@@ -218,7 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation($"{nameof(UpdateProjectV6)}: Invalidating 3D PM cache");
-      await _notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
+      NotificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
       Logger.LogInformation($"{nameof(UpdateProjectV6)} Completed successfully");
       var result = new ProjectV6DescriptorsSingleResult(
@@ -297,7 +293,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
       if (!string.IsNullOrEmpty(CustomerUid))
-        await _notificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
+        NotificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
 
       Logger.LogInformation($"{nameof(ArchiveProjectV6)}: Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
