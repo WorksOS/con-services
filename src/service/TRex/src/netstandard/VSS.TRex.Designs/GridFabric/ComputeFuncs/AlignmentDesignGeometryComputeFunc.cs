@@ -19,15 +19,15 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       try
       {
         var executor = new AlignmentDesignGeometryExecutor();
-        var geometry = executor.Execute(arg.ProjectID, arg.AlignmentDesignID);
+        var geometry = executor.Execute(arg.ProjectID, arg.AlignmentDesignID, arg.ConvertArcsToPolyLines, arg.ArcChordTolerance);
 
         if (geometry != null)
         {
           return new AlignmentDesignGeometryResponse
-          (geometry.CalcResult,
-            geometry.Vertices.Select(v => v.Vertices.Select(x => new[] {x.X, x.Y, x.Station}).ToArray()).ToArray(),
-            geometry.Arcs.ToArray(),
-            geometry.Labels.ToArray());
+            (geometry.CalcResult,
+             geometry.Vertices.Select(v => v.Vertices.Select(x => new[] {x.X, x.Y, x.Station}).ToArray()).ToArray(),
+             geometry.Arcs.ToArray(),
+             geometry.Labels.ToArray());
         }
         
         return new AlignmentDesignGeometryResponse(DesignProfilerRequestResult.UnknownError, null, null, null);
