@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -38,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // don't send our timezone, we only need it for WorksOS. WM has their own, calculated from the boundary, for their own uses.
         var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
-        createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
+        createProjectRequestModel.Boundary = GeometryConversion.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
         // CCSSSCON-141 what are exceptions/other error
         var response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
