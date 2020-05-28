@@ -15,7 +15,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// long, lat
     /// </summary>
     [JsonProperty("coordinates")]
-    public List<double[,]> coordinates { get; set; }
+    public List<List<double[]>> coordinates { get; set; }
 
   }
 }

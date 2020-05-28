@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 
@@ -9,7 +10,13 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
     Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent,
       string coordinateSystemFilename, IHeaderDictionary customHeaders = null);
 
+    #region SoonToBeObsoleteCCSSSCON-351
     Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent,
       string coordinateSystemFilename, IHeaderDictionary customHeaders = null);
+    #endregion SoonToBeObsoleteCCSSSCON-351
+
+    Task<CoordinateSystemSettingsResult> CoordinateSystemPost(Guid projectUid, byte[] coordinateSystemFileContent,
+      string coordinateSystemFilename, IHeaderDictionary customHeaders = null);
+
   }
 }

@@ -22,15 +22,13 @@ namespace CCSS.Geometry
       if (boundaryPoints == null)
         return null;
 
-      var pointsAsDoubleList = new List<double[,]>();
+      var pointsAsDoubleList = new List<double[]>();
       foreach (var point in boundaryPoints)
-      {
-        pointsAsDoubleList.Add(item: new double[,] { { point.X, point.Y } });
-      }
+        pointsAsDoubleList.Add(item: new[] { point.X, point.Y });
 
       var cwsProjectBoundary = new ProjectBoundary();
       cwsProjectBoundary.type = "Polygon";
-      cwsProjectBoundary.coordinates = pointsAsDoubleList;
+      cwsProjectBoundary.coordinates = new List<List<double[]>> { pointsAsDoubleList };
 
       return cwsProjectBoundary;
     }
@@ -68,7 +66,6 @@ namespace CCSS.Geometry
     }
   }
 
-
   internal static class ExtensionString
   {
     private static readonly Dictionary<string, string> _replacements = new Dictionary<string, string>();
@@ -97,15 +94,15 @@ namespace CCSS.Geometry
       return $"POLYGON(({internalString}))";
     }
 
-    public static string ToPolygonWKT(this List<double[,]> list)
+    public static string ToPolygonWKT(this List<List<double[]>> list)
     {
       // Always just a single 2D array in the list which is the CWS polygon coordinates
       var coords = list[0];
-      var rowCount = coords.GetLength(0);
+      var rowCount = coords.Count;
       var wktCoords = new List<string>();
       for (var i = 0; i < rowCount; i++)
       {
-        wktCoords.Add($"{coords[i, 0]} {coords[i, 1]}");
+        wktCoords.Add($"{coords[i][0]} {coords[i][1]}");
       }
 
       var internalString = wktCoords.Aggregate((i, j) => $"{i},{j}");
@@ -116,22 +113,19 @@ namespace CCSS.Geometry
     {
       var points = new List<Point>();
 
-      if (!string.IsNullOrEmpty(s))
+      foreach (string to_replace in _replacements.Keys)
       {
-        foreach (string to_replace in _replacements.Keys)
-        {
-          s = s.Replace(to_replace, _replacements[to_replace]);
-        }
-
-        string[] pointsArray = s.Split(',').Select(str => str.Trim()).ToArray();
-
-        IEnumerable<string[]> coordinates;
-
-        //gets x and y coordinates split by space, trims whitespace at pos 0, converts to double array
-        coordinates = pointsArray.Select(point => point.Trim().Split(null)
-          .Where(v => !string.IsNullOrWhiteSpace(v)).ToArray());
-        points = coordinates.Select(p => new Point {X = double.Parse(p[0]), Y = double.Parse(p[1])}).ToList();
+        s = s.Replace(to_replace, _replacements[to_replace]);
       }
+
+      string[] pointsArray = s.Split(',').Select(str => str.Trim()).ToArray();
+
+      IEnumerable<string[]> coordinates;
+
+      //gets x and y coordinates split by space, trims whitespace at pos 0, converts to double array
+      coordinates = pointsArray.Select(point => point.Trim().Split(null)
+        .Where(v => !string.IsNullOrWhiteSpace(v)).ToArray());
+      points = coordinates.Select(p => new Point() { X = double.Parse(p[0]), Y = double.Parse(p[1]) }).ToList();
 
       return points;
     }

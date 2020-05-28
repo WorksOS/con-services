@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -25,6 +28,12 @@ namespace VSS.MasterData.ProjectTests
     public ILogger Log;
     protected IServiceCollection ServiceCollection;
 
+    protected Guid _userUid;
+    protected Guid _customerUid;
+    protected string _customerTrn;
+    protected Guid _projectUid;
+    protected string _projectTrn;
+
     public UnitTestsDIFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
@@ -47,6 +56,61 @@ namespace VSS.MasterData.ProjectTests
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();
+
+      _userUid = Guid.NewGuid();
+      _customerUid = Guid.NewGuid();
+      _customerTrn = TRNHelper.MakeTRN(_customerUid, TRNHelper.TRN_ACCOUNT);
+      _projectUid = Guid.NewGuid();
+      _projectTrn = TRNHelper.MakeTRN(_projectUid);
+    }
+
+    protected ProjectDetailListResponseModel CreateProjectListModel(string customerTrn, string projectTrn, string projectName = "the project name",
+      DateTime? lastUpdate = null, List<ProjectConfigurationModel> projectConfigurations = null)
+    {
+      var lastUpdateUtc = lastUpdate ?? DateTime.UtcNow.AddDays(-1);
+      var projectConfigurationList = projectConfigurations ?? new List<ProjectConfigurationModel>();
+      return new ProjectDetailListResponseModel()
+      {
+        Projects = new List<ProjectDetailResponseModel>()
+        {
+          new ProjectDetailResponseModel()
+          {
+            AccountTRN = customerTrn,
+            ProjectTRN = projectTrn,
+            ProjectName = projectName,
+            LastUpdate = lastUpdateUtc,
+            ProjectSettings = new ProjectSettingsModel()
+            {
+              ProjectTRN = projectTrn, TimeZone = "Pacific/Auckland",
+              Boundary = new ProjectBoundary() {type = "Polygon", 
+                coordinates = new List<List<double[]>> { new List<double[]> { new [] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } }},
+              Config = projectConfigurationList
+            }
+          }
+        }
+      };
+    }
+
+    protected ProjectDetailResponseModel CreateProjectDetailModel(string customerTrn, string projectTrn, string projectName = "the project name",
+      DateTime? lastUpdate = null, List<ProjectConfigurationModel> projectConfigurations = null)
+    {
+      var lastUpdateUtc = lastUpdate ?? DateTime.UtcNow.AddDays(-1);
+      var projectConfigurationList = projectConfigurations ?? new List<ProjectConfigurationModel>();
+      return new ProjectDetailResponseModel()
+      {
+        AccountTRN = customerTrn,
+        ProjectTRN = projectTrn,
+        ProjectName = projectName,
+        LastUpdate = lastUpdateUtc,
+        ProjectSettings = new ProjectSettingsModel()
+        {
+          ProjectTRN = projectTrn,
+          TimeZone = "Pacific/Auckland",
+          Boundary = new ProjectBoundary() { type = "Polygon", 
+            coordinates = new List<List<double[]>> { new List<double[]> { new[] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } }},
+          Config = projectConfigurationList
+        }
+      };
     }
 
     public void Dispose()

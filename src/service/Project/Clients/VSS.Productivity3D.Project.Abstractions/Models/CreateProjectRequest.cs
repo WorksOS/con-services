@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// <summary>
     /// The time zone of the project.
     /// </summary>
-    [JsonProperty(PropertyName = "ProjectTimezone", Required = Required.Always)]
+    [JsonProperty(PropertyName = "ProjectTimezone", Required = Required.Default)]
     public string ProjectTimezone { get; set; }
 
     /// <summary>

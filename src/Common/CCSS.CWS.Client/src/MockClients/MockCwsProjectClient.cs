@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -21,6 +23,55 @@ namespace CCSS.CWS.Client.MockClients
     public MockCwsProjectClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)
     {
+    }
+
+    public Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid userUid, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetProjectsForCustomer)} Mock: customerUid {customerUid} userUid {userUid}");
+
+      var projectDetailListResponseModel = new ProjectDetailListResponseModel();
+
+      log.LogDebug($"{nameof(GetProjectsForCustomer)} Mock: projectDetailListResponseModel {JsonConvert.SerializeObject(projectDetailListResponseModel)}");
+      return Task.FromResult(projectDetailListResponseModel);
+    }
+
+    public Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid userUid, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetProjectsForMyCustomer)} Mock: customerUid {customerUid} userUid {userUid}");
+
+      var projectSummaryListResponseModel = new ProjectSummaryListResponseModel();
+
+      log.LogDebug($"{nameof(GetProjectsForMyCustomer)} Mock: projectSummaryListResponseModel {JsonConvert.SerializeObject(projectSummaryListResponseModel)}");
+      return Task.FromResult(projectSummaryListResponseModel);
+    }
+
+    public Task<ProjectDetailResponseModel> GetMyProject(Guid projectUid, Guid? userUid, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetMyProject)} Mock: projectUid {projectUid} userUid {userUid}");
+
+      var customerUid = customHeaders?[HeaderConstants.X_VISION_LINK_CUSTOMER_UID];
+      var customerTrn = TRNHelper.MakeTRN((string.IsNullOrEmpty(customerUid) ? new Guid() : new Guid(customerUid)), TRNHelper.TRN_ACCOUNT);
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
+      var projectDetailResponseModel = new ProjectDetailResponseModel()
+      {
+        AccountTRN = customerTrn,
+        ProjectTRN = projectTrn,
+        LastUpdate = DateTime.UtcNow.AddDays(-1),
+        ProjectSettings = new ProjectSettingsModel()
+        {
+          ProjectTRN = projectTrn,
+          TimeZone = "Pacific/Auckland",
+          Boundary = new ProjectBoundary() 
+            { 
+              type = "Polygon", 
+              coordinates = new List<List<double[]>> { new List<double[]> { new[] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } }
+            },
+          Config = new List<ProjectConfigurationModel>()
+        }
+      };
+
+      log.LogDebug($"{nameof(GetMyProject)} Mock: projectDetailResponseModel {JsonConvert.SerializeObject(projectDetailResponseModel)}");
+      return Task.FromResult(projectDetailResponseModel);
     }
 
     public Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IHeaderDictionary customHeaders = null)

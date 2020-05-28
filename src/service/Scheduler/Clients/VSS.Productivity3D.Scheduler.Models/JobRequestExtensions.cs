@@ -1,5 +1,8 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -10,14 +13,35 @@ namespace VSS.Productivity3D.Scheduler.Models
   {
     public static T GetConvertedObject<T>(this object o) where T : class
     {
-      T result;
+      if (typeof(T) == typeof(HeaderDictionary) && o is JToken)
+      {
+        try
+        {
+          var entries = JObject.FromObject(o).ToObject<Dictionary<string, object>>();
+          var result = new HeaderDictionary();
+
+          foreach (var entry in entries)
+          {
+            string[] values = JsonConvert.DeserializeObject<string[]>(entry.Value.ToString());
+
+            result.Add(new KeyValuePair<string, StringValues>(entry.Key, values));
+          }
+
+          return result as T;
+        }
+        catch
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              $"Missing or Wrong parameters passed to job with expected type {typeof(T)} whilst provided with {o.GetType()}"));
+        }
+      }
 
       if (typeof(T) != typeof(string) && o is JToken)
       {
         try
         {
-          result = (o as JToken).ToObject<T>();
-          return result;
+          return (o as JToken).ToObject<T>();
         }
         catch
         {
@@ -31,8 +55,7 @@ namespace VSS.Productivity3D.Scheduler.Models
       {
         try
         {
-          result = (o as JObject).ToObject<T>();
-          return result;
+          return (o as JToken).ToObject<T>();
         }
         catch
         {

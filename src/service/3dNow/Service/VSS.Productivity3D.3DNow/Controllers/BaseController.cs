@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Http;
@@ -28,7 +29,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <value>
     /// The custom customHeaders.
     /// </value>
-    protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     protected string CustomerUid => Request.Headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID].ToString();
 

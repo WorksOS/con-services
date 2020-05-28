@@ -44,11 +44,25 @@ namespace VSS.MasterData.Models.Models
       // ...
     }
 
+    #region SoonToBeObsoleteCCSSSCON-351
     public static CoordinateSystemFile CreateCoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
     {
       CoordinateSystemFile tempCS = new CoordinateSystemFile
       {
         projectId = projectId,
+        csFileName = csFileName,
+        csFileContent = csFileContent
+      };
+
+      return tempCS;
+    }
+    #endregion SoonToBeObsoleteCCSSSCON-351
+
+    public static CoordinateSystemFile CreateCoordinateSystemFile(Guid projectUid, byte[] csFileContent, string csFileName)
+    {
+      CoordinateSystemFile tempCS = new CoordinateSystemFile
+      {
+        projectUid = projectUid,
         csFileName = csFileName,
         csFileContent = csFileContent
       };

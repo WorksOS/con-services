@@ -838,7 +838,15 @@ namespace VSS.TRex.Files.DXF
       dxfFileIsPostR13C3 = false;
 
       var buffer = new byte[BinaryACADDXFSignature.Length];
-      dxfFile.Read(buffer, 0, buffer.Length);
+
+      try
+      {
+        dxfFile.Read(buffer, 0, buffer.Length);
+      }
+      catch
+      {
+        return false;
+      }
 
       // now check the version of the file
       var result = true;

@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
@@ -24,8 +26,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller v6
-  ///     requests and responses have changed IDs from Guids to strings
-  ///     May be other changes
+  ///    UI interface for projects i.e. user context
   /// </summary>
   public class ProjectV6Controller : ProjectBaseController
   {
@@ -55,8 +56,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectV6DescriptorsListResult> GetProjectsV6()
     {
       Logger.LogInformation("GetAllProjectsV6");
-
-      var projects = (await GetProjectListForCustomer().ConfigureAwait(false)).ToImmutableList();
+      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       return new ProjectV6DescriptorsListResult
       {
@@ -77,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation("GetProjectV6");
 
-      var project = await ProjectRequestHelper.GetProject(projectUid, CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+      var project = await ProjectRequestHelper.GetProject(new Guid(projectUid), new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders).ConfigureAwait(false);
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
     }
 
@@ -99,33 +99,30 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest projectRequest)
     {
       if (projectRequest == null)
-      {
         return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 39));
-      }
 
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       projectRequest.CustomerUID ??= new Guid(CustomerUid);
+      if (projectRequest.CustomerUID.ToString() != CustomerUid)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
-      
-      ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
 
-      if (createProjectEvent.CustomerUID.ToString() != CustomerUid)
-      {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
-      }
+      ProjectDataValidator.Validate(createProjectEvent, new Guid(CustomerUid), new Guid(UserId),
+        Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       // ProjectUID won't be filled yet
-      await ProjectDataValidator.ValidateProjectName(CustomerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(new Guid(CustomerUid), new Guid(UserId), createProjectEvent.ProjectName,
+        createProjectEvent.ProjectUID, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
-            projectRepo: ProjectRepo, fileRepo: FileRepo,
+            fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
@@ -133,7 +130,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       var result = new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID, new Guid(CustomerUid), new Guid(UserId),
+            Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders)
           .ConfigureAwait(false)));
 
       await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
@@ -307,6 +305,55 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return new ProjectV6DescriptorsSingleResult(
         AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
+    }
+
+    /// <summary>
+    /// Called from CWS when a Project is created or updated
+    /// </summary>
+    /// <param name="updateDto">Update Model</param>
+    /// <returns></returns>
+    [HttpPost("api/v6/project/updatenotify")]
+    public ContractExecutionResult ProjectUpdate([FromBody]CwsProjectModelUpdateDto updateDto)
+    {
+      Logger.LogInformation($"Received Update Notification {JsonConvert.SerializeObject(updateDto)}");
+     
+      // Testing for CWS 
+      if(!string.IsNullOrEmpty(updateDto.ProjectTrn))
+        return new ContractExecutionResult(1, "No Project TRN");
+
+      // We don't actually do anything with this data yet, other than clear cache
+      // Since we call out to CWS for data
+      var projectUid = TRNHelper.ExtractGuid(updateDto?.ProjectTrn);
+      if (projectUid.HasValue)
+      {
+        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
+        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
+      }
+      return new ContractExecutionResult();
+    }
+
+    /// <summary>
+    /// Called from CWS when aCalibration file is uploaded for another project
+    /// </summary>
+    /// <param name="updateDto">Update Model</param>
+    /// <returns></returns>
+    [HttpPost("api/v6/project/updatecal")]
+    public ContractExecutionResult CalibrationUpdate([FromBody]CwsCalibrationFileUpdateDto updateDto)
+    {
+      Logger.LogInformation($"Received Calibration Update Notification {JsonConvert.SerializeObject(updateDto)}");
+
+      // Testing for CWS 
+      if(!string.IsNullOrEmpty(updateDto.ProjectTrn))
+        return new ContractExecutionResult(1, "No Project TRN");
+      
+      var projectUid = TRNHelper.ExtractGuid(updateDto?.ProjectTrn);
+      if (projectUid.HasValue)
+      {
+        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
+        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
+      }
+
+      return new ContractExecutionResult();
     }
   }
 }

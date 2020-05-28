@@ -39,7 +39,7 @@ namespace VSS.TRex.SiteModels.Executors
     {
       _deleteSiteModelRequestArgument = arg;
       if (arg != null)
-        _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+        _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModelRaw(arg.ProjectID);
 
       if (_siteModel == null)
       {
@@ -124,9 +124,12 @@ namespace VSS.TRex.SiteModels.Executors
 
       _log.LogInformation($"Deleting site model {_siteModel.ID}: Initiating");
 
-      // Instruct the site model to mark itself for deletion. Once completed, the site model will no longer be returned 
-      // by requests to SiteModels.GetSiteModel()
-      _siteModel.MarkForDeletion();
+      if (!_siteModel.IsMarkedForDeletion)
+      {
+        // Instruct the site model to mark itself for deletion. Once completed, the site model will no longer be returned 
+        // by requests to SiteModels.GetSiteModel()
+        _siteModel.MarkForDeletion();
+      }
 
       // Obtain a private storage proxy to perform deletion operations in
       var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();

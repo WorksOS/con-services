@@ -45,18 +45,21 @@ namespace CCSS.CWS.Client.UnitTests.Staging
         AccountId = stagingCustomerUid,
         ProjectName = $"Merino test project {Guid.NewGuid()}",
         Timezone = "New Zealand Standard Time",
-        Boundary = new ProjectBoundary()
+        Boundary = new ProjectBoundary
         {
           type = "POLYGON",
-          coordinates = new List<double[,]>() { { new double[,]
-                { { 172.606, -43.574 },
-                  { 172.606, -43.574 },
-                  { 172.614, -43.578 },
-                  { 172.615, -43.577 },
-                  { 172.617, -43.573 },
-                  { 172.610, -43.570 },
-                  { 172.606, -43.574 }
-                }} }
+          coordinates = new List<List<double[]>> 
+          { new List<double[]>
+            {  
+              new [] { 172.606, -43.574 },
+              new [] { 172.606, -43.574 },
+              new [] { 172.614, -43.578 },
+              new [] { 172.615, -43.577 },
+              new [] { 172.617, -43.573 },
+              new [] { 172.610, -43.570 },
+              new [] { 172.606, -43.574 }
+            }
+          }
         }
       };
 
@@ -143,18 +146,21 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     {
       // test requires a user token.
       var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
-      var boundary = new ProjectBoundary()
-        {
-          type = "POLYGON",
-          coordinates = new List<double[,]>() { { new double[,]
-                { { 172.606, -43.574 },
-                  { 172.606, -43.574 },
-                  { 172.614, -43.578 },
-                  { 172.615, -43.577 },
-                  { 172.617, -43.573 },
-                  { 172.610, -43.570 },
-                  { 172.606, -43.574 }
-                }} }
+      var boundary = new ProjectBoundary
+      {
+        type = "POLYGON",
+        coordinates = new List<List<double[]>>
+        { new List<double[]>
+          {
+            new [] { 172.606, -43.574 },
+            new [] { 172.606, -43.574 },
+            new [] { 172.614, -43.578 },
+            new [] { 172.615, -43.577 },
+            new [] { 172.617, -43.573 },
+            new [] { 172.610, -43.570 },
+            new [] { 172.606, -43.574 }
+          }
+        }
       };
 
       try

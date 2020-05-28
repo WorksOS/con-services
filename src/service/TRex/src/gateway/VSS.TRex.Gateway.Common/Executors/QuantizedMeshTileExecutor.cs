@@ -8,6 +8,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.QuantizedMesh.GridFabric.Requests;
 using VSS.TRex.QuantizedMesh.GridFabric.Arguments;
 using VSS.TRex.Filters;
+using System;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -30,11 +31,19 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
+    /// Processes the QM tile request synchronously.
+    /// </summary>
+    protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
+
+    /// <summary>
     /// Process Quantized Mesh tile request from WebAPI controller 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
+    /// <param name="item">QMTileRequest</param>
+    /// <returns>Zipped Quantized Mesh Tile</returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as QMTileRequest;

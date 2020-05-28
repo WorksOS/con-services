@@ -10,9 +10,9 @@ using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Rendering.GridFabric.Arguments;
-using VSS.TRex.Rendering.GridFabric.ComputeFuncs;
-using VSS.TRex.Rendering.GridFabric.Responses;
+using VSS.TRex.QuantizedMesh.GridFabric.Arguments;
+using VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs;
+using VSS.TRex.QuantizedMesh.GridFabric.Responses;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
@@ -26,7 +26,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
   public class QuantizedMeshTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
-      <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
+      <QuantizedMeshRequestComputeFunc, QuantizedMeshRequestArgument, QuantizedMeshResponse>();
 
     private void AddClusterComputeGridRouting()
     {
@@ -44,9 +44,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
       AddDesignProfilerGridRouting();
     }
 
-
-    [Fact(Skip="Todo why has this changed")]
-    public void TileExecutor_EmptySiteModel()
+    [Fact]
+    public async void TileExecutor_EmptySiteModel()
     {
       AddRoutings();
 
@@ -66,11 +65,12 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
           DIContext.Obtain<ILoggerFactory>(),
           DIContext.Obtain<IServiceExceptionHandler>());
 
-      var result = executor.Process(request) as QMTileResult;
+      var result = await executor.ProcessAsync(request) as QMTileResult;
 
       result.Should().NotBeNull();
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.TileData.Should().NotBeNull();
     }
+
   }
 }
