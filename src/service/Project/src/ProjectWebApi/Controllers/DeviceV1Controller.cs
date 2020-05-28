@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS;
@@ -97,7 +98,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
 
     [HttpPost("api/v1/device/{deviceName}/project")]
-    public IActionResult AddDeviceToProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
+    public async Task<IActionResult> AddDeviceToProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
     {
       Logger.LogInformation($"{nameof(AddDeviceToProject)} Request to add device {deviceName} to Project TRN {projectTrn}");
 
@@ -110,7 +111,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (projectUid.HasValue)
       {
         Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
+        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
       }
 
 
@@ -118,7 +119,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     [HttpDelete("api/v1/device/{deviceName}/project")]
-    public IActionResult RemoveDeviceFromProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
+    public async Task<IActionResult> RemoveDeviceFromProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
     {
       Logger.LogInformation($"{nameof(RemoveDeviceFromProject)} Request to remove device {deviceName} to Project TRN {projectTrn}");
 
@@ -130,7 +131,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (projectUid.HasValue)
       {
         Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
+        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
       }
 
       return Ok();

@@ -15,6 +15,7 @@ using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.FlowJSHandler;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -367,6 +368,7 @@ namespace VSS.MasterData.ProjectTests
       ServiceCollection.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
       var mockNotificationHubClient = new Mock<INotificationHubClient>();
       mockNotificationHubClient.Setup(n => n.Notify(It.IsAny<ProjectChangedNotification>())).Returns(Task.CompletedTask);
+      ServiceCollection.AddSingleton(mockNotificationHubClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
 
       var httpContext = new DefaultHttpContext();
@@ -376,7 +378,7 @@ namespace VSS.MasterData.ProjectTests
       controllerContext.HttpContext = httpContext;
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var persistentTransferProxy = ServiceProvider.GetRequiredService<Func<TransferProxyType, ITransferProxy>>();
-      var controller = new FileImportV6Controller(configStore, persistentTransferProxy, null,null,null,mockNotificationHubClient.Object);
+      var controller = new FileImportV6Controller(configStore, persistentTransferProxy, null,null,null);
       controller.ControllerContext = controllerContext;
       return controller;
     }

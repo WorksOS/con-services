@@ -129,7 +129,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders)
           .ConfigureAwait(false)));
 
-      NotificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
+      await NotificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return Ok(result);
@@ -214,7 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation($"{nameof(UpdateProjectV6)}: Invalidating 3D PM cache");
-      NotificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
+      await NotificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
       Logger.LogInformation($"{nameof(UpdateProjectV6)} Completed successfully");
       var result = new ProjectV6DescriptorsSingleResult(
@@ -293,7 +293,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
       if (!string.IsNullOrEmpty(CustomerUid))
-        NotificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
+        await NotificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
 
       Logger.LogInformation($"{nameof(ArchiveProjectV6)}: Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
@@ -307,7 +307,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="updateDto">Update Model</param>
     /// <returns></returns>
     [HttpPost("api/v6/project/updatenotify")]
-    public ContractExecutionResult ProjectUpdate([FromBody]CwsProjectModelUpdateDto updateDto)
+    public async Task<ContractExecutionResult> ProjectUpdateAsync([FromBody]CwsProjectModelUpdateDto updateDto)
     {
       Logger.LogInformation($"Received Update Notification {JsonConvert.SerializeObject(updateDto)}");
      
@@ -321,7 +321,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (projectUid.HasValue)
       {
         Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
+        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
       }
       return new ContractExecutionResult();
     }
@@ -332,7 +332,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="updateDto">Update Model</param>
     /// <returns></returns>
     [HttpPost("api/v6/project/updatecal")]
-    public ContractExecutionResult CalibrationUpdate([FromBody]CwsCalibrationFileUpdateDto updateDto)
+    public async Task<ContractExecutionResult> CalibrationUpdate([FromBody]CwsCalibrationFileUpdateDto updateDto)
     {
       Logger.LogInformation($"Received Calibration Update Notification {JsonConvert.SerializeObject(updateDto)}");
 
@@ -344,7 +344,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (projectUid.HasValue)
       {
         Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
+        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
       }
 
       return new ContractExecutionResult();
