@@ -39,7 +39,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Boundary = new ProjectBoundary()
         {
           type = "Polygon",
-          coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } }
+          coordinates = new List<List<double[]>> { new List<double[]> { new double[] { 150.3, 1.2 }, new double[] { 150.4, 1.2 }, new double[] { 150.4, 1.3 }, new double[] { 150.4, 1.4 }, new double[] { 150.3, 1.2 } } }
         }
       };
 
@@ -112,7 +112,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
           Boundary = new ProjectBoundary()
           {
             type = "Polygon",
-            coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } }
+            coordinates = new List<List<double[]>> { new List<double[]> { new double[] { 150.3, 1.2 }, new double[] { 150.4, 1.2 }, new double[] { 150.4, 1.3 }, new double[] { 150.4, 1.4 }, new double[] { 150.3, 1.2 } } }
           },
           Config = new List<ProjectConfigurationModel>() { new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString() } } 
         }
@@ -177,7 +177,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var projectBoundary = new ProjectBoundary()
       {
         type = "Polygon",
-        coordinates = new List<double[,]>() { { new double[,] { { 151.3, 1.2 }, { 151.4, 1.2 }, { 151.4, 1.3 }, { 151.4, 1.4 }, { 151.3, 1.2 } } } }
+        coordinates = new List<List<double[]>> { new List<double[]> { new [] { 151.3, 1.2 }, new[] { 151.4, 1.2 }, new[] { 151.4, 1.3 }, new[] { 151.4, 1.4 }, new[] { 151.3, 1.2 } } }
       };
 
       string route = $"/projects/{projectTrn}/boundary";
