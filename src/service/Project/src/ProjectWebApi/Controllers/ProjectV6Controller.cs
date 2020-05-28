@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -15,8 +16,10 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies;
+using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -301,52 +304,81 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Called from CWS when a Project is created or updated
+    /// Called from CWS before a create or update can go ahead, returns pass or fail
     /// </summary>
-    /// <param name="updateDto">Update Model</param>
+    /// <param name="validateDto">Update Model</param>
     /// <returns></returns>
-    [HttpPost("api/v6/project/updatenotify")]
-    public async Task<ContractExecutionResult> ProjectUpdateAsync([FromBody]CwsProjectModelUpdateDto updateDto)
+    [HttpPost("api/v6/project/validate")]
+    public ContractExecutionResult IsProjectValid([FromBody]ProjectValidateDto validateDto)
     {
-      Logger.LogInformation($"Received Update Notification {JsonConvert.SerializeObject(updateDto)}");
-     
+      Logger.LogInformation($"{nameof(IsProjectValid)} Project Validation Check {JsonConvert.SerializeObject(validateDto)}");
+
       // Testing for CWS 
-      if(!string.IsNullOrEmpty(updateDto.ProjectTrn))
+      if (!string.IsNullOrEmpty(validateDto.ProjectTrn) && validateDto.UpdateType != ProjectUpdateType.Created)
         return new ContractExecutionResult(1, "No Project TRN");
 
-      // We don't actually do anything with this data yet, other than clear cache
-      // Since we call out to CWS for data
-      var projectUid = TRNHelper.ExtractGuid(updateDto?.ProjectTrn);
-      if (projectUid.HasValue)
-      {
-        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
-      }
+      // TODO add logic for checking project validation
+      // Empty endpoint for CWS Consumption, while we work on logic
       return new ContractExecutionResult();
     }
 
     /// <summary>
-    /// Called from CWS when aCalibration file is uploaded for another project
+    /// Called from CWS when a project or Coordinate System has been created / updated / deleted
     /// </summary>
     /// <param name="updateDto">Update Model</param>
     /// <returns></returns>
-    [HttpPost("api/v6/project/updatecal")]
-    public async Task<ContractExecutionResult> CalibrationUpdate([FromBody]CwsCalibrationFileUpdateDto updateDto)
+    [HttpPost("api/v6/project/notifychange")]
+    public async Task<IActionResult> OnProjectChangeNotify([FromBody]ProjectChangeNotificationDto updateDto)
     {
-      Logger.LogInformation($"Received Calibration Update Notification {JsonConvert.SerializeObject(updateDto)}");
+      Logger.LogInformation($"{nameof(OnProjectChangeNotify)} Update Notification {JsonConvert.SerializeObject(updateDto)}");
 
-      // Testing for CWS 
-      if(!string.IsNullOrEmpty(updateDto.ProjectTrn))
-        return new ContractExecutionResult(1, "No Project TRN");
-      
-      var projectUid = TRNHelper.ExtractGuid(updateDto?.ProjectTrn);
-      if (projectUid.HasValue)
+      var projectGuid = string.IsNullOrEmpty(updateDto.ProjectTrn) ? null : TRNHelper.ExtractGuid(updateDto.ProjectTrn);
+      if (projectGuid.HasValue)
       {
-        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
+        Logger.LogInformation($"Clearing cache related to Project ID: {projectGuid.Value}");
+        await NotificationHubClient.Notify(new ProjectChangedNotification(projectGuid.Value));
       }
 
-      return new ContractExecutionResult();
+      var accountGuid = string.IsNullOrEmpty(updateDto.AccountTrn) ? null : TRNHelper.ExtractGuid(updateDto.AccountTrn);
+      if (accountGuid.HasValue)
+      {
+        Logger.LogInformation($"Clearing cache related to Project ID: {accountGuid.Value}");
+        await NotificationHubClient.Notify(new CustomerChangedNotification(accountGuid.Value));
+      }
+
+      Logger.LogInformation($"{nameof(OnProjectChangeNotify)} Processed Notification");
+
+      return Ok();
     }
+
+    /// <summary>
+    /// Used for CWS to notify us on association changes, so we can update cache
+    /// </summary>
+    /// <param name="trns">A list of TRNs that have been changed</param>
+    /// <returns>Ok</returns>
+    [HttpPost("api/v1/project/notifyassociation")]
+    public async Task<IActionResult> OnProjectAssociationChange([FromBody] List<string> trns)
+    {
+      Logger.LogInformation($"{nameof(OnProjectAssociationChange)} Associations Updated: {JsonConvert.SerializeObject(trns)}");
+
+      // We don't actually do anything with this data yet, other than clear cache
+      // Since we call out to CWS for data
+      var tasks = new Task[trns.Count];
+      for (var i = 0; i < trns.Count; i++)
+      {
+        var trn = trns[i];
+        var guid = TRNHelper.ExtractGuid(trn);
+        if (!guid.HasValue)
+          continue;
+
+        Logger.LogInformation($"Clearing cache related to TRN: {guid.Value}");
+        tasks[i] = NotificationHubClient.Notify(new ProjectChangedNotification(guid.Value));
+      }
+
+      await Task.WhenAll(tasks);
+
+      return Ok();
+    }
+
   }
 }
