@@ -558,5 +558,62 @@ Huzzah!
       // Add the end point of the segment to the polyline vertices
       DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
     }
+
+    public static void DecomposeArcToPolyline(double x0, double y0, double x1, double y1, double cX, double cY,
+      double angle,
+      double arcChordDist,
+      Action<double, double, DecompositionVertexLocation> decompCallback)
+    {
+      // Decompose an arc from start point[Xstart, Ystart] to end point[Xend, Yend]
+      // with centre point[Xcenter, Ycentre]
+      //  These are world units.
+      //  Angle is in the mathematical sense - +ve for anti-clockwise.and is in RADIANS 
+
+      var relX = x0 - cX; // Position, relative to cX, cY 
+      var relY = y0 - cY;
+      var radius = MathUtilities.Hypot(relX, relY);
+
+      // Decompose arc into line segments with not more than ArcChordDist arc/chord separation
+      // If you know r (radius) and h (arc/chord separation). Then
+      //   d (Chord mid point to circle center distance)  = r - h,
+      //   theta (central angle subtending arc) = 2 arccos(d/r),
+      //   c (chord length) = 2r sin(theta/2),
+
+      var chordToCenterDist = radius - arcChordDist;
+      if (chordToCenterDist < 0)
+        chordToCenterDist = radius / 2;
+
+      var theta = 2 * Math.Acos(chordToCenterDist / radius);
+
+      // If the included angle is too shallow, restrict it to 0.1 degrees
+      if (theta * (180 / Math.PI) < 0.1)
+        theta = 0.1 * (Math.PI / 180);
+
+      var a = theta; //Temporary angle in radians
+      var s = Math.Sin(a); // Sine and cosine of step angle 
+      var c = Math.Cos(a);
+      var a_step = a;
+
+      if (angle >= 0)
+        s = -s;
+
+      angle = Math.Abs(angle);
+
+      decompCallback(x0, y0, DecompositionVertexLocation.First);
+
+      while (a < angle)
+      {
+        var tx = c * relX + s * relY;
+        relY = -s * relX + c * relY;
+        relX = tx;
+
+        decompCallback(cX + relX, cY + relY, DecompositionVertexLocation.Intermediate);
+
+        a += a_step;
+      }
+
+      // Include the last vertex
+      decompCallback(x1, y1, DecompositionVertexLocation.Last);
+    }
   }
 }

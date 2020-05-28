@@ -113,19 +113,26 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     }
 
     /// <summary>
-    ///  Gets a model describing the geometry and station labeling for the master alignment in an alignment design
+    /// Gets a model describing the geometry and station labeling for the master alignment in an alignment design
+    /// Arcs may be optionally converted to poly lines with a specified arc chord tolerance
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="designUid"></param>
+    /// <param name="convertArcsToChords"></param>
+    /// <param name="arcChordTolerance"></param>
     /// <returns></returns>
     [ProjectVerifier]
     [Route("api/v2/designs/alignment/master/geometry")]
     [HttpGet]
-    public async Task<ContractExecutionResult> GetAlignmentGeometryForRendering([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
+    public async Task<ContractExecutionResult> GetAlignmentGeometryForRendering(
+      [FromQuery] Guid projectUid, 
+      [FromQuery] Guid designUid, 
+      [FromQuery] bool convertArcsToChords,
+      [FromQuery] double arcChordTolerance)
     {
       log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: " + Request.QueryString);
 
-      var request = new AlignmentGeometryRequest(projectUid, designUid);
+      var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance);
 
       request.Validate();
 

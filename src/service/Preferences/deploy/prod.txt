@@ -1,4 +1,4 @@
-MYSQL_DATABASE_NAME: Preference
-MYSQL_USERNAME: vssPreferenceUsr
-MYSQL_ROOT_PASSWORD: mRty94hER
+MYSQL_DATABASE_NAME: #{database_name}#
+MYSQL_USERNAME: #{database_username}#
+MYSQL_ROOT_PASSWORD: #{database_password}#
 JAEGER_SERVICE_NAME: Preference Service

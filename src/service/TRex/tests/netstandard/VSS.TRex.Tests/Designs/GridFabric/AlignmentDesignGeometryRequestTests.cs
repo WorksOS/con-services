@@ -13,6 +13,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -112,15 +113,8 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       response.Labels[1].Rotation.Should().BeApproximately(Math.PI / 2, 0.001);
     }
 
-    /// <summary>
-    /// Constructs a SVL alignment with a single polyline element with two vertices
-    /// </summary>
-    /// <returns></returns>
-    [Fact]
-    public async Task Geometry_SimpleArc()
+    private (ISiteModel siteModelId, Guid alignmentId) ConstructSimpleArcNFFFileModel()
     {
-      AddDesignProfilerGridRouting();
-
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var arc = new NFFLineworkArcEntity(0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, true, false)
@@ -149,6 +143,20 @@ namespace VSS.TRex.Tests.Designs.GridFabric
         .Add(x => x.AddSingleton(mockDesignFiles.Object))
         .Complete();
 
+      return (siteModel, alignmentGuid);
+    }
+
+    /// <summary>
+    /// Constructs a SVL alignment with a single poly line element with two vertices
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task Geometry_SimpleArc()
+    {
+      AddDesignProfilerGridRouting();
+
+      var (siteModel, alignmentGuid) = ConstructSimpleArcNFFFileModel();
+
       var request = new AlignmentDesignGeometryRequest();
       var response = await request.ExecuteAsync(new AlignmentDesignGeometryArgument
       {
@@ -163,6 +171,45 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       response.Arcs.Length.Should().Be(1);
 
       response.Arcs[0].Should().BeEquivalentTo(new AlignmentGeometryResponseArc(0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, true));
+
+      response.Labels.Length.Should().Be(2);
+
+      response.Labels[0].Station.Should().BeApproximately(0, 0.001);
+      response.Labels[0].X.Should().BeApproximately(0, 0.001);
+      response.Labels[0].Y.Should().BeApproximately(0, 0.001);
+      response.Labels[0].Rotation.Should().BeApproximately(Math.PI, 0.000001);
+
+      response.Labels[1].Station.Should().BeApproximately(Math.PI / 2, 0.001);
+      response.Labels[1].X.Should().BeApproximately(1.0, 0.001);
+      response.Labels[1].Y.Should().BeApproximately(1.0, 0.001);
+
+      response.Labels[1].Rotation.Should().BeApproximately(Math.PI / 2, 0.000001);
+    }
+
+    /// <summary>
+    /// Constructs a SVL alignment with a single poly line element with two vertices
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task Geometry_SimpleArcWithChords()
+    {
+      AddDesignProfilerGridRouting();
+
+      var (siteModel, alignmentGuid) = ConstructSimpleArcNFFFileModel();
+
+      var request = new AlignmentDesignGeometryRequest();
+      var response = await request.ExecuteAsync(new AlignmentDesignGeometryArgument
+      {
+        ProjectID = siteModel.ID,
+        AlignmentDesignID = alignmentGuid,
+        ConvertArcsToPolyLines = true,
+        ArcChordTolerance = 0.1
+      });
+
+      response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
+      response.Vertices.Should().NotBeNullOrEmpty();
+      response.Vertices.Length.Should().Be(1);
+      response.Vertices[0].Length.Should().Be(3);
 
       response.Labels.Length.Should().Be(2);
 
