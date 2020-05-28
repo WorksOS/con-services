@@ -11,7 +11,6 @@ using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
-using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -120,6 +119,54 @@ namespace VSS.TRex.Rendering
     }
 
     /// <summary>
+    /// Construct the PVM task accumulator for the PVM rendering task to contain the values to be rendered
+    /// We manage this here because the accumulator context relates to the query spatial bounds, not the rendered tile bounds
+    /// The accumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
+    /// will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
+    /// of cells to the map view grid of pixels
+    /// </summary>
+    /// <param name="processor"></param>
+    private void ConstructPVMTaskAccumulator(IPipelineProcessor processor)
+    {
+      // Construct the PVM task accumulator for the PVM rendering task to contain the values to be rendered
+      // We manage this here because the accumulator context relates to the query spatial bounds, not the rendered tile bounds
+      // The accumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
+      // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
+      // of cells to the map view grid of pixels
+
+      var smoother = (Displayer as IProductionPVMConsistentDisplayer)?.DataSmoother;
+
+      var valueStoreCellSizeX = Displayer.MapView.XPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.XPixelSize : processor.SiteModel.CellSize;
+      var valueStoreCellSizeY = Displayer.MapView.YPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.YPixelSize : processor.SiteModel.CellSize;
+
+      // Compute the origin of the cell in the value store that encloses the origin of the map view.
+      var valueStoreOriginX = Math.Truncate(Displayer.MapView.OriginX / valueStoreCellSizeX) * valueStoreCellSizeX;
+      var valueStoreOriginY = Math.Truncate(Displayer.MapView.OriginY / valueStoreCellSizeY) * valueStoreCellSizeY;
+
+      // Compute the limit of the cell in the value store that encloses the limit of the map view.
+      var valueStoreLimitX = Math.Truncate((Displayer.MapView.LimitX + valueStoreCellSizeX) / valueStoreCellSizeX) * valueStoreCellSizeX;
+      var valueStoreLimitY = Math.Truncate((Displayer.MapView.LimitY + valueStoreCellSizeY) / valueStoreCellSizeY) * valueStoreCellSizeY;
+
+      var valueStoreCellsX = (int)Math.Round((valueStoreLimitX - valueStoreOriginX) / valueStoreCellSizeX);
+      var valueStoreCellsY = (int)Math.Round((valueStoreLimitY - valueStoreOriginY) / valueStoreCellSizeY);
+
+      var borderAdjustmentCells = 2 * smoother?.AdditionalBorderSize ?? 0;
+      var extentAdjustmentSizeX = smoother?.AdditionalBorderSize * valueStoreCellSizeX ?? 0;
+      var extentAdjustmentSizeY = smoother?.AdditionalBorderSize * valueStoreCellSizeY ?? 0;
+
+      ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
+        valueStoreCellSizeX, valueStoreCellSizeY,
+        valueStoreCellsX + borderAdjustmentCells,
+        valueStoreCellsY + borderAdjustmentCells,
+        valueStoreOriginX - extentAdjustmentSizeX,
+        valueStoreOriginY - extentAdjustmentSizeY,
+        (valueStoreLimitX - valueStoreOriginX) + 2 * extentAdjustmentSizeX,
+        (valueStoreLimitY - valueStoreOriginY) + 2 * extentAdjustmentSizeY,
+        processor.SiteModel.CellSize
+      );
+    }
+
+    /// <summary>
     /// Perform rendering activities to produce a bitmap tile
     /// </summary>
     public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters, ILiftParameters liftParams)
@@ -173,34 +220,7 @@ namespace VSS.TRex.Rendering
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
       Displayer.MapView.SetRotation(-TileRotation /* + (Math.PI / 2) */);
 
-      // Construct the PVM task accumulator for the PVM rendering task to contain the values to be rendered
-      // We manage this here because the accumulator context relates to the query spatial bounds, not the rendered tile bounds
-      // The accumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
-      // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
-      // of cells to the map view grid of pixels
-
-      var smoother = (Displayer as IProductionPVMConsistentDisplayer)?.DataSmoother;
-
-      var valueStoreCellSizeX = Displayer.MapView.XPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.XPixelSize : processor.SiteModel.CellSize;
-      var valueStoreCellSizeY = Displayer.MapView.YPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.YPixelSize : processor.SiteModel.CellSize;
-
-      var mapViewCellsX = (int)Math.Truncate(Displayer.MapView.WidthX / valueStoreCellSizeX) + 1;
-      var mapViewCellsY = (int)Math.Truncate(Displayer.MapView.WidthY / valueStoreCellSizeY) + 1;
-
-      var borderAdjustmentCells = 2 * smoother?.AdditionalBorderSize ?? 0;
-      var extentAdjustmentSizeX = smoother?.AdditionalBorderSize * valueStoreCellSizeX ?? 0;
-      var extentAdjustmentSizeY = smoother?.AdditionalBorderSize * valueStoreCellSizeY ?? 0;
-
-      ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
-        valueStoreCellSizeX, valueStoreCellSizeY,
-        mapViewCellsX + borderAdjustmentCells,
-        mapViewCellsY + borderAdjustmentCells,
-        Displayer.MapView.OriginX - extentAdjustmentSizeX,
-        Displayer.MapView.OriginY - extentAdjustmentSizeY,
-        Displayer.MapView.WidthX + 2 * extentAdjustmentSizeX,
-        Displayer.MapView.WidthY + 2 * extentAdjustmentSizeY,
-        processor.SiteModel.CellSize
-      );
+      ConstructPVMTaskAccumulator(processor);
 
       // Displayer.ICOptions  = ICOptions;
 
