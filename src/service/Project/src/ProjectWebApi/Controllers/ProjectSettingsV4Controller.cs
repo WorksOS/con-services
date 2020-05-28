@@ -78,7 +78,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, headers: customHeaders,
-            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, 
+            projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
@@ -112,7 +113,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, headers: customHeaders,
-            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, 
+            projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 

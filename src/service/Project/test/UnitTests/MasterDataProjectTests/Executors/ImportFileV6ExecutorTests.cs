@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
@@ -34,15 +35,11 @@ using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;
-using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
   public class ImportFilev6ExecutorTests : UnitTestsDIFixture<ImportFilev6ExecutorTests>
   {
-    private static Guid _customerUid;
-    private static Guid _projectUid;
-    private static string _userId;
     private static string _userEmailAddress;
     private static long _shortRaptorProjectId;
     private static string _fileSpaceId;
@@ -50,9 +47,6 @@ namespace VSS.MasterData.ProjectTests.Executors
     public ImportFilev6ExecutorTests()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _customerUid = Guid.NewGuid();
-      _projectUid = Guid.NewGuid();
-      _userId = "sdf870789sdf0";
       _userEmailAddress = "someone@whatever.com";
       _shortRaptorProjectId = 111;
       _fileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed";
@@ -130,8 +124,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
-      var project = new ProjectDatabaseModel { CustomerUID = _customerUid.ToString(), ProjectUID = _projectUid.ToString(), ShortRaptorProjectId = (int)_shortRaptorProjectId };
-      var projectList = new List<ProjectDatabaseModel> { project };
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("false");
@@ -151,18 +143,25 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync((ProjectSettings)null);
-      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+
       var fileRepo = new Mock<IFileRepository>();
       var dataOceanClient = new Mock<IDataOceanClient>();
       var authn = new Mock<ITPaaSApplicationAuthentication>();
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
           productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
+          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+          cwsProjectClient: cwsProjectClient.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -225,7 +224,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
@@ -298,7 +297,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, filterServiceProxy: filterServiceProxy.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -362,22 +361,25 @@ namespace VSS.MasterData.ProjectTests.Executors
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid.ToString(), ProjectUID = _projectUid.ToString(), ShortRaptorProjectId = (int)_shortRaptorProjectId };
-      var projectList = new List<ProjectDatabaseModel> { project };
-
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
-      projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var scheduler = new Mock<ISchedulerProxy>();
       scheduler.Setup(s => s.ScheduleVSSJob(It.IsAny<JobRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ScheduleJobResult());
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
-          projectRepo: projectRepo.Object, schedulerProxy: scheduler.Object);
+          _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
+          projectRepo: projectRepo.Object, schedulerProxy: scheduler.Object,
+          cwsProjectClient: cwsProjectClient.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -452,7 +454,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
@@ -503,7 +505,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
@@ -577,7 +579,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -654,7 +656,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
@@ -735,7 +737,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>
        await executor.ProcessAsync(createImportedFile).ConfigureAwait(false));
@@ -787,7 +789,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
@@ -864,7 +866,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -951,7 +953,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);

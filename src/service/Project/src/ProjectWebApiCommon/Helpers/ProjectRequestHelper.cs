@@ -22,7 +22,6 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -170,29 +169,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation($"Project projectUid: {projectUid} retrieved");
       return true;
     }
-
-    #region SoonToBeObsoleteCCSSSCON-351
-    /// <summary>
-    /// Gets a Project by customer uid.
-    /// </summary>
-    public static async Task<ProjectDatabaseModel> GetProject(string projectUid, string customerUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
-    {
-      var project =
-        (await projectRepo.GetProjectsForCustomer(customerUid)).FirstOrDefault(
-          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
-
-      if (project == null)
-      {
-        log.LogWarning($"Customer doesn't have access to projectUid: {projectUid}");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
-      }
-
-      log.LogInformation($"Project projectUid: {projectUid} retrieved");
-      return project;
-    }
-    #endregion SoonToBeObsoleteCCSSSCON-351
-
+    
     /// <summary>
     /// Gets a Project, even if archived.
     ///    Return project even if null. This is called internally from TFA,

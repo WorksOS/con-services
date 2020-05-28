@@ -81,7 +81,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             importedFile.ImportedFileType == ImportedFileType.Linework)
         {
           //Generate raster tiles
-          var projectTask = await ProjectRequestHelper.GetProject(importedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
+          var projectTask = await ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);
 
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
             importedFile.ImportedFileType,
