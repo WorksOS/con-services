@@ -8,7 +8,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
-using VSS.Productivity3D.Push.Clients.Notifications;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -94,47 +93,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"Returning device with last known status (LKS). Device name: {deviceName}.");
 
       return Json(device);
-    }
-
-
-    [HttpPost("api/v1/device/{deviceName}/project")]
-    public async Task<IActionResult> AddDeviceToProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
-    {
-      Logger.LogInformation($"{nameof(AddDeviceToProject)} Request to add device {deviceName} to Project TRN {projectTrn}");
-
-      DeviceDataValidator.ValidateDeviceName(deviceName);
-
-
-      // We don't actually do anything with this data yet, other than clear cache
-      // Since we call out to CWS for data
-      var projectUid = TRNHelper.ExtractGuid(projectTrn);
-      if (projectUid.HasValue)
-      {
-        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
-      }
-
-
-      return Ok();
-    }
-
-    [HttpDelete("api/v1/device/{deviceName}/project")]
-    public async Task<IActionResult> RemoveDeviceFromProject([FromRoute] string deviceName, [FromQuery] string projectTrn)
-    {
-      Logger.LogInformation($"{nameof(RemoveDeviceFromProject)} Request to remove device {deviceName} to Project TRN {projectTrn}");
-
-      DeviceDataValidator.ValidateDeviceName(deviceName);
-
-      // We don't actually do anything with this data yet, other than clear cache
-      // Since we call out to CWS for data
-      var projectUid = TRNHelper.ExtractGuid(projectTrn);
-      if (projectUid.HasValue)
-      {
-        Logger.LogInformation($"Clearing cache related to project UID: {projectUid.Value}");
-        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid.Value));
-      }
-
-      return Ok();
     }
   }
 }

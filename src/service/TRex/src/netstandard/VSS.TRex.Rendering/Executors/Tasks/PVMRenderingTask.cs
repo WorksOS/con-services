@@ -4,10 +4,10 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 // Notes for consistent value accumulation and smoothing
 // - Construct a rectangular array of values to contain the overall bounds of cells in the default north orientation of the cell selection
-//    [as opposed to the project orienttion which is taken into account when the values are rendered]
+//    [as opposed to the project orientation which is taken into account when the values are rendered]
 // - Copy the values from the sub grids as they arrive into the task
-// - Apply any required smoothing, gap filling etc, activities to the resulting grid of values once all subgrids have arrived
-// - render the arrya of values into the tile as if it were a single large subgrid
+// - Apply any required smoothing, gap filling etc, activities to the resulting grid of values once all sub grids have arrived
+// - render the array of values into the tile as if it were a single large sub grid
 
 namespace VSS.TRex.Rendering.Executors.Tasks
 {
