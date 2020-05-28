@@ -1,50 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace CCSS.Geometry.UnitTests
 {
   public class PolygonUtilsTests
   {
-    private const string _validBoundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
-    private const string _invalidBoundary_FewPoints = "POLYGON((172.595831670724 -43.5427038560109))";
-
     #region point in polygon
     [Fact]
     public void PointInPolygon_Inside()
     {
-      var result = PolygonUtils.PointInPolygon(_validBoundary, -43.5427, 172.5946);
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      var result = PolygonUtils.PointInPolygon(projectBoundary, 15, 180);
       Assert.True(result);
     }
 
     [Fact]
     public void PointInPolygon_Outside()
     {
-      var result = PolygonUtils.PointInPolygon(_validBoundary, -43.544, 172.596);
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      var result = PolygonUtils.PointInPolygon(projectBoundary, 50, 180);
       Assert.False(result);
     }
 
     [Fact]
     public void PointInPolygon_OnEdge()
     {
-      // point is half way between first and second vertex
-      var result = PolygonUtils.PointInPolygon(_validBoundary, -43.5432948958441, 172.5952308559065);
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      var result = PolygonUtils.PointInPolygon(projectBoundary, 20, 190);
       Assert.True(result);
     }
 
     [Fact]
     public void PointInPolygon_AtVertex()
     {
-      // point is at second vertex
-      var result = PolygonUtils.PointInPolygon(_validBoundary, -43.5438859356773, 172.594630041089);
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      var result = PolygonUtils.PointInPolygon(projectBoundary, 40, 170);
       Assert.True(result);
     }
 
     [Fact]
     public void PointInPolygon_InvalidPolygon()
     {
-      Assert.Throws<InvalidOperationException>(() => PolygonUtils.PointInPolygon(_invalidBoundary_FewPoints, -43.5, 172.6));
+      var projectBoundary = "POLYGON((170 10, 190 10))";
+      Assert.Throws<InvalidOperationException>(() => PolygonUtils.PointInPolygon(projectBoundary, 15, 180));
     }
     #endregion
 
@@ -65,14 +63,15 @@ namespace CCSS.Geometry.UnitTests
     [Fact]
     public void SelfIntersectingPolygon_SelfIntersecting()
     {
-      var result = PolygonUtils.SelfIntersectingPolygon("POLYGON((1 2,7 5,1 6, 5 2))");
+      var result = PolygonUtils.SelfIntersectingPolygon("POLYGON((10 20,70 50,10 60, 50 20))");
       Assert.True(result);
     }
 
     [Fact]
     public void SelfIntersectingPolygon_HappyPath()
     {
-      var result = PolygonUtils.SelfIntersectingPolygon(_validBoundary);
+      // Not self intersecting
+      var result = PolygonUtils.SelfIntersectingPolygon("POLYGON((10 20,10 60,70 50, 50 20))");
       Assert.False(result);
     }
     #endregion
@@ -81,7 +80,8 @@ namespace CCSS.Geometry.UnitTests
     [Fact]
     public void OverlappingPolygons_MissingPolygon()
     {
-      Assert.Throws<InvalidOperationException>(() => PolygonUtils.OverlappingPolygons(_validBoundary, null));
+      var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+      Assert.Throws<InvalidOperationException>(() => PolygonUtils.OverlappingPolygons(projectBoundary, null));
     }
 
     [Fact]
@@ -126,18 +126,17 @@ namespace CCSS.Geometry.UnitTests
     [Fact]
     public void OverlappingPolygons_Vertex()
     {
-      // test polygon touches project polygon at a vertex
+      // test polygon touches project polygon at a point
       var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
       var testBoundary = "POLYGON((200 10, 202 10, 202 20, 190 20, 200 10))";
-      //var result = PolygonUtils.OverlappingPolygons(projectBoundary, testBoundary);
-      var result = PolygonUtils.OverlappingPolygons(testBoundary, projectBoundary);
+      var result = PolygonUtils.OverlappingPolygons(projectBoundary, testBoundary);
       Assert.True(result);
     }
 
     [Fact]
     public void OverlappingPolygons_Edge()
     {
-      // test polygon touches project polygon at an edge
+      // test polygon touches project polygon along an edge
       var projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
       var testBoundary = "POLYGON((190 10, 202 10, 202 20, 190 20, 190 10))";
       var result = PolygonUtils.OverlappingPolygons(projectBoundary, testBoundary);

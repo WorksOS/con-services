@@ -7,6 +7,9 @@ namespace CCSS.Geometry
 {
   public static class PolygonUtils
   {
+
+    const double EPSILON = 0.000001;  // for comparing floating points numbers for equality
+
     /// <summary>
     /// Determines if the point is inside the polygon.
     /// If the point lies on the edge of the polygon it is considered inside.
@@ -20,19 +23,17 @@ namespace CCSS.Geometry
 
     private static bool PointInPolygon(List<Point> points, double latitude, double longitude)
     {
-      // Check if the point matches any vertex of the polygon.
-      // This is because the algorithm returns false when we want true in this case.
-      var count = points.Count;
-      for (var i = 0; i < count; i++)
-      {
-        if (EqualPoints(points[i].X, points[i].Y, longitude, latitude))
-          return true;
-      }
+      //If the test point is on the border of the polygon, the ray casting algorithm will deliver unpredictable results;
+      //i.e. the result may be “inside” or “outside” depending on arbitrary factors such as how the polygon is oriented with respect to the coordinate system.
+      //Therefore check if the point lies on any edge of the polygon. This will include the case of the point being a polygon vertex.
+      if (PointOnPolygonEdge(points, longitude, latitude))
+        return true;
 
-      // from http://alienryderflex.com/polygon/
       // ray casting algorithm
+      // from http://alienryderflex.com/polygon/
       var oddNodes = false;
 
+      var count = points.Count;
       var j = count - 1;
       for (var i = 0; i < count; i++)
       {
@@ -72,7 +73,7 @@ namespace CCSS.Geometry
       {
         for (int j = i + 1; j < count - 1; j++)
         {
-          if (LineSegmentIntersection(
+          if (LineSegmentsIntersect(
             points[i].X, points[i].Y,
             points[i + 1].X, points[i + 1].Y,
             points[j].X, points[j].Y,
@@ -87,12 +88,12 @@ namespace CCSS.Geometry
     }
 
     /// <summary>
-    /// Determines the intersection point of the line segment defined by points A and B
-    /// with the line segment defined by points C and D.
+    /// Determines if the line segment defined by points A and B
+    /// intersects with the line segment defined by points C and D.
     /// 
     /// public domain function by Darel Rex Finley, 2006
     /// </summary>
-    private static bool LineSegmentIntersection(
+    private static bool LineSegmentsIntersect(
         double Ax, double Ay,
         double Bx, double By,
         double Cx, double Cy,
@@ -142,7 +143,6 @@ namespace CCSS.Geometry
     /// </summary>
     private static bool EqualPoints(double x1, double y1, double x2, double y2)
     {
-      const double EPSILON = 0.000001;
       return Math.Abs(x1 - x2) < EPSILON && Math.Abs(y1 - y2) < EPSILON;
     }
 
@@ -156,15 +156,26 @@ namespace CCSS.Geometry
 
       var points1 = ConvertAndValidatePolygon(polygonWkt1);
       var points2 = ConvertAndValidatePolygon(polygonWkt2);
-      // The clipper library considers polygons touching at a vertex or edge to be non-overlapping but we want them to be overlapping.
-      // Check this first.
-      foreach (var point in points1)
+
+      //Simple bounding box check first.
+      if (!BoundingBoxesOverlap(points1, points2))
+        return false;
+
+      // The clipper library doesn't work as expected for touching polygons so check
+      for (var i = 1; i < points1.Count; i++)
+      for (var j = 1; j < points2.Count; j++)
       {
-        if (PointInPolygon(points2, point.Y, point.X))
+        if (LineSegmentsIntersect(
+          points1[i - 1].X, points1[i - 1].Y,
+          points1[i].X, points1[i].Y,
+          points2[j - 1].X, points2[j - 1].Y,
+          points2[j].X, points2[j].Y))
+        {
           return true;
+        }
       }
 
-      // Now do the intersection check.
+      // Now do the clipper polygon intersection check.
       var polygon1 = ClipperPolygon(points1);
       var polygon2 = ClipperPolygon(points2);
       var clipper = new Clipper();
@@ -175,18 +186,19 @@ namespace CCSS.Geometry
       return succeeded && intersectingPolygons.Count > 0;
     }
 
-    /*
-    /// <summary>
-    /// Converts the polygon WKT to the polygon model for the clipper library.
-    /// </summary>
-    private static List<IntPoint> ClipperPolygon(string polygonWkt)
+    private static bool BoundingBoxesOverlap(List<Point> points1, List<Point> points2)
     {
-      const float SCALE = 100000;
-      var points = ConvertAndValidatePolygon(polygonWkt);
-      var clipperPolygon = points.Select(p => new IntPoint { X = (long)(p.X * SCALE), Y = (long)(p.Y * SCALE) }).ToList();
-      return clipperPolygon;
+      var xmin1 = points1.Min(p => p.X);
+      var xmax1 = points1.Max(p => p.X);
+      var ymin1 = points1.Min(p => p.Y);
+      var ymax1 = points1.Max(p => p.Y);
+      var xmin2 = points2.Min(p => p.X);
+      var xmax2 = points2.Max(p => p.X);
+      var ymin2 = points2.Min(p => p.Y);
+      var ymax2 = points2.Max(p => p.Y);
+      var noOverlap = (ymax1 < ymin2 || ymin2 > ymax1) && (xmax1 < xmin2 || xmin2 > xmax1);
+      return !noOverlap;
     }
-    */
 
     /// <summary>
     /// Converts the polygon points to the polygon model for the clipper library.
@@ -205,12 +217,48 @@ namespace CCSS.Geometry
     {
       var points = polygonWkt?.ParseGeometryData().ClosePolygonIfRequired();
       var count = points?.Count ?? 0;
-      if (count < 3)
+      if (count <= 3) // at least 3 points + closing point for valid polygon
       {
         throw new InvalidOperationException("invalid polygon");
       }
 
       return points;
     }
+
+    /// <summary>
+    /// Determines if the point lies on any edge of the polygon, including coinciding with a polygon vertex.
+    /// </summary>
+    private static bool PointOnPolygonEdge(List<Point> points, double longitude, double latitude)
+    {
+      var count = points.Count;
+      for (var i = 1; i < count; i++)
+      {
+        if (PointOnLine(points[i - 1].X, points[i - 1].Y, points[i].X, points[i].Y, longitude, latitude))
+          return true;
+      }
+
+      return false;
+    }
+    /// <summary>
+    /// Determines if the point (cx,cy) lies on the line segment (ax,ay) to (bx,by)
+    /// </summary>
+    public static bool PointOnLine(double ax, double ay, double bx, double by, double cx, double cy)
+    {
+      var crossProduct = (cy - ay) * (bx - ax) - (cx - ax) * (by - ay);
+
+      if (Math.Abs(crossProduct) > EPSILON)
+        return false;
+
+      var dotProduct = (cx - ax) * (bx - ax) + (cy - ay) * (by - ay);
+      if (dotProduct < 0)
+        return false;
+
+      var squaredLineLength = (bx - ax) * (bx - ax) + (by -ay) * (by - ay);
+      if (dotProduct > squaredLineLength)
+        return false;
+
+      return true;
+    }
+
   }
 }
