@@ -777,14 +777,23 @@ double BorderSize)
                                 XAxisAdjust + XAxesDirection * px2, YAxisAdjust - YAxesDirection * py2);
         }
 
-        //    procedure DrawPoint(x, y : FLOAT; PenColor : TColor);
-        //    procedure DrawPointNoClip(x, y : FLOAT; PenColor : TColor);
-        //    procedure DrawPointNoOrigin(x, y : FLOAT; PenColor : TColor);
-        //    procedure DrawPointNoOriginNoClip(x, y : FLOAT; PenColor : TColor);
+    //    procedure DrawPoint(x, y : FLOAT; PenColor : TColor);
+    //    procedure DrawPointNoClip(x, y : FLOAT; PenColor : TColor);
+    //    procedure DrawPointNoOrigin(x, y : FLOAT; PenColor : TColor);
+    //    procedure DrawPointNoOriginNoClip(x, y : FLOAT; PenColor : TColor);
 
-        private void FinaliseViewPortCoords(bool IncludeRightAndBottomBoundary, ref int px1, ref int py1, ref int px2, ref int py2)
+        /// <summary>
+        /// Correct the pixel coordinates from a cartesian coordinate system converted from "bottom left" (0, 0) origin with north east increasing coordinates
+        /// to the bitmap pixel coordinates based on a "top left" (0, 0) origin with south east increasing coordinates
+        /// </summary>
+        /// <param name="includeRightAndBottomBoundary"></param>
+        /// <param name="px1"></param>
+        /// <param name="py1"></param>
+        /// <param name="px2"></param>
+        /// <param name="py2"></param>
+        private void FinaliseViewPortCoords(bool includeRightAndBottomBoundary, ref int px1, ref int py1, ref int px2, ref int py2)
         {
-            if (IncludeRightAndBottomBoundary)
+            if (includeRightAndBottomBoundary)
             {
                 px1 = XAxisAdjust + XAxesDirection * px1;
                 py1 = YAxisAdjust - YAxesDirection * py1 + 1;
@@ -805,30 +814,43 @@ double BorderSize)
                 py2++;
         }
 
-        public void DrawNonRotatedRect(double x, double y, double w, double h, bool Fill, Color PenColor)
+        /// <summary>
+        /// Draw a filled rectangle given the bottom left and top right coordinates in the world coordinate space
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <param name="fill"></param>
+        /// <param name="penColor"></param>
+        public void DrawNonRotatedRect(double x, double y, double w, double h, bool fill, Color penColor)
         {
             try
             {
-                int px1 = (int)Math.Truncate((x - OriginX) * DQMScaleX);
-                int py1 = (int)Math.Truncate((y - OriginY) * DQMScaleY);
-                int px2 = (int)Math.Truncate((x - OriginX + w) * DQMScaleX);
-                int py2 = (int)Math.Truncate((y - OriginY + h) * DQMScaleY);
+                var px1 = (int)Math.Truncate((x - OriginX) * DQMScaleX);
+                var py1 = (int)Math.Truncate((y - OriginY) * DQMScaleY);
+                var px2 = (int)Math.Truncate((x - OriginX + w) * DQMScaleX);
+                var py2 = (int)Math.Truncate((y - OriginY + h) * DQMScaleY);
 
-                SetPenColor(PenColor);
+                SetPenColor(penColor);
 
-                if (Fill)
+                if (fill)
                 {
                     FinaliseViewPortCoords(true, ref px1, ref py1, ref px2, ref py2);
-                    SetBrushColor(PenColor);
+                    SetBrushColor(penColor);
                     DrawCanvasPen.Brush = DrawCanvasBrush;
-                    DrawCanvas.FillRectangle(DrawCanvasBrush, px1, py1, px2 - px1 + 1, Math.Abs(py2 - py1) + 1);
+
+                    // Use py2 as the 'top' of the filled rectangle to correct for reversal of y coordinates between world and bitmap contexts
+                    DrawCanvas.FillRectangle(DrawCanvasBrush, px1, py2, px2 - px1 + 1, Math.Abs(py2 - py1) + 1);
                 }
                 else
                 {
                     FinaliseViewPortCoords(true, ref px1, ref py1, ref px2, ref py2);
                     SetBrushColor(Color.Empty);
                     DrawCanvasPen.Brush = DrawCanvasBrush;
-                    DrawCanvas.DrawRectangle(DrawCanvasPen, px1, py1, px2 - px1 + 1, Math.Abs(py2 - py1) + 1);
+
+                    // Use py2 as the 'top' of the filled rectangle to correct for reversal of y coordinates between world and bitmap contexts
+                    DrawCanvas.DrawRectangle(DrawCanvasPen, px1, py2, px2 - px1 + 1, Math.Abs(py2 - py1) + 1);
                 }
             }
             catch //Most likely math error on transform above 
