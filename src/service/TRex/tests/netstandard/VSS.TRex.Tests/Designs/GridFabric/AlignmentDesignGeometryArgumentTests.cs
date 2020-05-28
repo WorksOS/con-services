@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using Xunit;
@@ -16,18 +14,8 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       arg.Should().NotBeNull();
       arg.ProjectID.Should().Be(Guid.Empty);
       arg.AlignmentDesignID.Should().Be(Guid.Empty);
+      arg.ConvertArcsToPolyLines.Should().BeFalse();
+      arg.ArcChordTolerance.Should().Be(1.0d);
     }
-
-    [Fact]
-    public void Serialization()
-    {
-      var projectUid = Guid.NewGuid();
-      var designUid = Guid.NewGuid();
-
-      var arg = new AlignmentDesignGeometryArgument {ProjectID = projectUid, AlignmentDesignID = designUid};
-
-      arg.Should().NotBeNull();
-    }
-
   }
 }

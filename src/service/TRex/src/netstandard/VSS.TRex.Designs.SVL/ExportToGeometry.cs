@@ -44,6 +44,18 @@ namespace VSS.TRex.Designs.SVL
       WorkingVertices = new AddVertexCallback();
     }
 
+    private void ExportNFFPolyLineEntityToGeometry(NFFLineworkPolyLineEntity nffPolyLine)
+    {
+      for (var PtIdx = 0; PtIdx < nffPolyLine.Vertices.Count; PtIdx++)
+      {
+        WorkingVertices.AddVertex(nffPolyLine.Vertices[PtIdx].X,
+          nffPolyLine.Vertices[PtIdx].Y,
+          nffPolyLine.Vertices[PtIdx].Z,
+          nffPolyLine.Vertices[PtIdx].Chainage,
+          DecompositionVertexLocation.Intermediate);
+      }
+    }
+
     private void ExportNFFSmoothedPolyLineEntityToGeometry(NFFLineworkSmoothedPolyLineEntity data)
     {
       // Iterate over each pair of points decomposing each interval in turn
@@ -61,22 +73,45 @@ namespace VSS.TRex.Designs.SVL
       }
     }
 
+    private void ExportNFFArcToGeometry(NFFLineworkArcEntity nffArc)
+    {
+      if (ConvertArcsToPolyLines)
+      {
+        var startTransitPt = nffArc.GetStartTransitPoint();
+        var endTransitPt = nffArc.GetEndTransitPoint();
+
+        NFFUtils.DecomposeArcToPolyline(startTransitPt.X, startTransitPt.Y,
+          endTransitPt.X, endTransitPt.Y,
+          nffArc.CX, nffArc.CY,
+          nffArc.IncludedAngle(),
+          ArcChordTolerance,
+          WorkingVertices.AddVertex);
+      }
+      else
+      {
+        MoveWorkingVerticesToVertices();
+
+        double cz;
+
+        if (nffArc.Z1 == Consts.NullDouble || nffArc.Z2 == Consts.NullDouble)
+          cz = Consts.NullDouble;
+        else
+          cz = (nffArc.Z1 + nffArc.Z2) / 2;
+
+        Arcs.Add(new AlignmentGeometryResponseArc(
+          nffArc.X1, nffArc.Y1, nffArc.Z1,
+          nffArc.X2, nffArc.Y2, nffArc.Z2,
+          nffArc.CX, nffArc.CY, cz,
+          nffArc.WasClockWise));
+      }
+    }
+
     private void AddEntityToGeometry(NFFLineworkEntity nffEntity)
     {
       switch (nffEntity.ElementType)
       {
         case NFFLineWorkElementType.kNFFLineWorkPolyLineElement:
-          var nffPolyLine = nffEntity as NFFLineworkPolyLineEntity;
-
-          for (var PtIdx = 0; PtIdx < nffPolyLine.Vertices.Count; PtIdx++)
-          {
-            WorkingVertices.AddVertex(nffPolyLine.Vertices[PtIdx].X,
-              nffPolyLine.Vertices[PtIdx].Y,
-              nffPolyLine.Vertices[PtIdx].Z,
-              nffPolyLine.Vertices[PtIdx].Chainage,
-              DecompositionVertexLocation.Intermediate);
-          }
-
+          ExportNFFPolyLineEntityToGeometry(nffEntity as NFFLineworkPolyLineEntity);
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkSmoothedPolyLineElement:
@@ -84,21 +119,7 @@ namespace VSS.TRex.Designs.SVL
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkArcElement:
-          MoveWorkingVerticesToVertices();
-
-          var nffArc = nffEntity as NFFLineworkArcEntity;
-          double cz;
-
-          if (nffArc.Z1 == Consts.NullDouble || nffArc.Z2 == Consts.NullDouble)
-            cz = Consts.NullDouble;
-          else
-            cz = (nffArc.Z1 + nffArc.Z2) / 2;
-
-          Arcs.Add(new AlignmentGeometryResponseArc(
-            nffArc.X1, nffArc.Y1, nffArc.Z1,
-            nffArc.X2, nffArc.Y2, nffArc.Z2,
-            nffArc.CX, nffArc.CY, cz,
-            nffArc.WasClockWise));
+          ExportNFFArcToGeometry(nffEntity as NFFLineworkArcEntity);
           break;
       }
     }
