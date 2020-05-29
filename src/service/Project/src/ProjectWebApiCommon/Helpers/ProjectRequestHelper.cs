@@ -19,7 +19,6 @@ using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
@@ -215,9 +214,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
-    ///   if projectUid, get it if it overlaps in localDB
-    ///    else get overlapping projects in localDB for this CustomerUID
+    /// Gets intersecting projects from cws 
+    ///   called from e.g. TFA, so uses applicationContext i.e. no customer. 
+    ///   if projectUid is provided, this is a manual import so don't consider itself as potentially overlapping
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
       string customerUid, double latitude, double longitude, string projectUid,
@@ -227,35 +226,42 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       // todo what are the rules e.g. active, for manual import? 
       var projectDatabaseModelList = (await GetProjectListForCustomer(new Guid(customerUid), null,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
-        .Where(p => string.IsNullOrEmpty(projectUid) || !p.IsArchived); 
+        .Where(p => string.IsNullOrEmpty(projectUid) || !p.IsArchived);
 
-      var projects = new List<ProjectDatabaseModel>();
-      // call new overlap routine  // todo CCSSSCON-341
-      //projects =
-      //  await Wherever.GetIntersectingProjects(latitude, longitude, projectDatabaseModelList);
+      // return a list at this stage to be used for logging in TFA, but other potential use in future.
+      var projects = projectDatabaseModelList.Where(project => !string.IsNullOrEmpty(project.Boundary))
+        .Where(project => PolygonUtils.PointInPolygon(project.Boundary, latitude, longitude)).ToList();
 
-      log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
+      log.LogInformation($"{nameof(GetIntersectingProjects)}: Overlapping projects for customerUid: {customerUid} projects: {JsonConvert.SerializeObject(projects)}");
       return projects;
     }
 
 
+    /// <summary>
+    /// Used by Create/Update project to check if any new boundary overlaps any OTHER project
+    /// </summary>
     public static async Task<bool> DoesProjectOverlap(Guid customerUid, Guid? projectUid, Guid userUid, string projectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
       // get all active projects for customer, excluding this projectUid (i.e. update)
+      // todo what are the rules e.g. active, for manual import?
       var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
         .Where(p => !p.IsArchived &&
                     (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
 
-      // call new overlap routine // todo CCSSSCON-341
-      //var overlaps =
-      //  await Wherever.DoesPolygonOverlap(projectBoundary, projectDatabaseModelList);
-      //if (overlaps)
-      //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+      // return once we find any overlapping projects
+      foreach (var project in projectDatabaseModelList)
+      {
+        if (string.IsNullOrEmpty(project.Boundary)) continue;
+        if (!PolygonUtils.OverlappingPolygons(project.Boundary, projectBoundary)) continue;
 
-      log.LogDebug($"No overlapping projects for: {projectUid}");
-      return false; // todo CCSSSCON-341
+        log.LogInformation($"{nameof(DoesProjectOverlap)}: overlaps project {JsonConvert.SerializeObject(project)}");
+        return true;
+      }
+
+      log.LogDebug($"{nameof(DoesProjectOverlap)}: No overlapping projects.");
+      return false; 
     }
 
   
