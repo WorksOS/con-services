@@ -1,4 +1,6 @@
-﻿namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
+﻿using VSS.Common.Abstractions.Clients.CWS.Models;
+
+namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
 {
   /// <summary>
   /// A class that represents the payload CWS will send when requesting project validation before updating / creating
@@ -14,9 +16,11 @@
     public string ProjectTrn { get; set; }
 
     /// <summary>
-    /// The project type the project is going to be 
+    /// The project type the project is going to be.
+    /// Will be set if a new project or the type is updated.
+    /// Otherwise it will be null.
     /// </summary>
-    public int ProjectType { get; set; }
+    public int? ProjectType { get; set; }
 
     /// <summary>
     /// The request update type this payload represents
@@ -24,7 +28,9 @@
     public ProjectUpdateType UpdateType { get; set; }
 
     /// <summary>
-    /// Represents the project name requested for the project
+    /// Represents the project name requested for the project.
+    /// Will be set if a new project or the name is updated.
+    /// Otherwise it will be null
     /// </summary>
     public string ProjectName { get; set; }
 
@@ -33,7 +39,7 @@
     /// Will be set if a new project, or the boundary is updated
     /// Otherwise it will be null
     /// </summary>
-    public string Boundary { get; set; }
+    public ProjectBoundary Boundary { get; set; }
 
     /// <summary>
     /// DataOcean FileSpace ID for the coordinate system

@@ -14,6 +14,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies;
 using VSS.Productivity.Push.Models.Notifications;
@@ -310,17 +311,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="validateDto">Update Model</param>
     /// <returns></returns>
     [HttpPost("api/v6/project/validate")]
-    public ContractExecutionResult IsProjectValid([FromBody]ProjectValidateDto validateDto)
+    public async Task<ContractExecutionResult> IsProjectValid([FromBody]ProjectValidateDto validateDto)
     {
       Logger.LogInformation($"{nameof(IsProjectValid)} Project Validation Check {JsonConvert.SerializeObject(validateDto)}");
-
-      // Testing for CWS 
-      if (!string.IsNullOrEmpty(validateDto.ProjectTrn) && validateDto.UpdateType != ProjectUpdateType.Created)
-        return new ContractExecutionResult(1, "No Project TRN");
-
-      // TODO add logic for checking project validation
-      // Empty endpoint for CWS Consumption, while we work on logic
-      return new ContractExecutionResult();
+      
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(validateDto);
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            CustomerUid, UserId, null, customHeaders,
+            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
+            fileRepo: FileRepo,
+            dataOceanClient: DataOceanClient, authn: Authorization,
+            cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
+            cwsProfileSettingsClient: CwsProfileSettingsClient)
+          .ProcessAsync(data)
+      );
+      return result;
     }
 
     /// <summary>

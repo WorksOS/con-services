@@ -242,14 +242,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         .Where(p => !p.IsArchived &&
                     (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
 
-      // call new overlap routine // todo CCSSSCON-341
-      //var overlaps =
-      //  await Wherever.DoesPolygonOverlap(projectBoundary, projectDatabaseModelList);
-      //if (overlaps)
-      //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+      foreach (var project in projectDatabaseModelList)
+      {
+        if (PolygonUtils.OverlappingPolygons(projectBoundary, project.Boundary))
+          return true;
+        //serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+      }
 
       log.LogDebug($"No overlapping projects for: {projectUid}");
-      return false; // todo CCSSSCON-341
+      return false; 
     }
 
 
