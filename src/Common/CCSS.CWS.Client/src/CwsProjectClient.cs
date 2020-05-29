@@ -41,15 +41,17 @@ namespace CCSS.CWS.Client
       var projectDetailListReponseModel = new ProjectDetailListResponseModel();
       foreach (var project in projectSummaryListResponseModel.Projects)
       {
-        // We can't query details on projects we don't have role in. // todo in next PR Return all, with whatever info we have.
-        if (project.Role == UserProjectRoleEnum.Unknown)
+        // We can't query details on projects we don't have role in.
+        // Return whatever info we have and caller can filter.
+        if (project.UserProjectRole == UserProjectRoleEnum.Unknown)
         {
-          // todo in next PR
-          //projectDetailListReponseModel.Projects.Add(new ProjectDetailResponseModel()
-          //  { AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT), 
-          //    ProjectTRN = project.ProjectTRN,
-          //    ProjectName = project.ProjectName
-          //  });
+          projectDetailListReponseModel.Projects.Add(new ProjectDetailResponseModel
+          {
+            AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
+            ProjectTRN = project.ProjectTRN,
+            ProjectName = project.ProjectName,
+            UserProjectRole = project.UserProjectRole
+          });
           continue;
         }
 

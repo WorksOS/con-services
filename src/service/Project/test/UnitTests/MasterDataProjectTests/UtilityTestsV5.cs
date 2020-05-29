@@ -131,9 +131,9 @@ namespace VSS.MasterData.ProjectTests
     {
       var projectUid = Guid.NewGuid();
       var projectId = projectUid.GetHashCode();
-      var expectedProjectUid = new Guid(projectId.ToString("x"));
 
-      //Assert.Equal(expectedProjectUid, projectUid);
+      // can be negative e.g. projectId = -847682904
+      Assert.True(projectId != 0);
     }
 
   }

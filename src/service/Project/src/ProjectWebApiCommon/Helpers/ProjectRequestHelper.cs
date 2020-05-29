@@ -19,7 +19,6 @@ using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
@@ -110,6 +109,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           CustomerUID = project.AccountId,
           Name = project.ProjectName,
           ProjectType = ProjectType.Standard,
+          UserProjectRole = project.UserProjectRole,
           ProjectTimeZone = project.ProjectSettings != null ? PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone) : string.Empty,
           ProjectTimeZoneIana = project.ProjectSettings?.TimeZone,
           Boundary = project.ProjectSettings?.Boundary != null ? GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,

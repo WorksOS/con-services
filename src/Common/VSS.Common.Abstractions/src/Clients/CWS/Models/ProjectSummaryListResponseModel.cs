@@ -73,7 +73,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonConverter(typeof(NullableEnumStringConverter), UserProjectRoleEnum.Unknown)]
     [JsonProperty("role")]
-    public UserProjectRoleEnum Role { get; set; }
+    public UserProjectRoleEnum UserProjectRole { get; set; }
 
 
     public List<string> GetIdentifiers() => new List<string> { ProjectTRN, ProjectId };
