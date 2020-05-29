@@ -230,6 +230,30 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
+    public void GetProjectListForCustomer_NoUserUid_HappyPath()
+    {
+      // todo once intersection utility is complete, this may be able to return projects
+      var projectName = "the project name";
+      var lastUpdate = DateTime.UtcNow.AddDays(-1);
+
+      var projectConfigurations = new List<ProjectConfigurationModel>();
+      var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
+      projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
+      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, projectName, lastUpdate, projectConfigurations: projectConfigurations);
+      var projectDetailListResponseModel = new ProjectDetailListResponseModel() { Projects = new List<ProjectDetailResponseModel>() { projectDetailResponseModel } };
+
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(pr => pr.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailListResponseModel);
+
+      var projectDatabaseModelList = ProjectRequestHelper.GetIntersectingProjects(_customerUid.ToString(), 89, 179,
+        _projectUid.ToString(), _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
+
+      var result = projectDatabaseModelList.Result;
+      Assert.NotNull(result);
+      Assert.Empty(result);
+    }
+
+    [Fact]
     public async Task GetProject_CustomerMismatch()
     {
       var projectDetailResponseModel = CreateProjectDetailModel(TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_ACCOUNT), _projectTrn);

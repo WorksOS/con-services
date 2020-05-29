@@ -24,7 +24,6 @@ using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
-using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -41,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Gets a Project list for customer uid.
     ///  Includes all projects, regardless of archived state and user role
     /// </summary>
-    public static async Task<List<ProjectDatabaseModel>> GetProjectListForCustomer(Guid customerUid, Guid userUid,
+    public static async Task<List<ProjectDatabaseModel>> GetProjectListForCustomer(Guid customerUid, Guid? userUid,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
       log.LogDebug($"{nameof(GetProjectListForCustomer)} customerUid {customerUid}, userUid {userUid}");
@@ -173,7 +172,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return true;
     }
 
-
+    #region SoonToBeObsoleteCCSSSCON-351
     /// <summary>
     /// Gets a Project by customer uid.
     /// </summary>
@@ -193,99 +192,81 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation($"Project projectUid: {projectUid} retrieved");
       return project;
     }
+    #endregion SoonToBeObsoleteCCSSSCON-351
 
     /// <summary>
-    /// Gets a Project, even if archived
+    /// Gets a Project, even if archived.
+    ///    Return project even if null. This is called internally from TFA,
+    ///      so don't want to throw exception other GetProjects do. Note that no UserUid available.
+    ///
+    /// Others are called from UI so can throw exception.
     /// </summary>
-    public static async Task<ProjectDatabaseModel> GetProjectOnly(string projectUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    public static async Task<ProjectDatabaseModel> GetProjectAndReturn(string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
-      var project = (await projectRepo.GetProjectOnly(projectUid));
-
+      var project = await cwsProjectClient.GetMyProject(new Guid(projectUid), null, customHeaders: customHeaders);
       if (project == null)
       {
-        log.LogWarning($"Unable to locate projectUid: {projectUid}");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+        log.LogInformation($"{nameof(GetProjectAndReturn)} Project projectUid: {projectUid} not retrieved");
+        return null;
       }
-
-      log.LogInformation($"Project projectUid: {projectUid} retrieved");
-      return project;
+      log.LogInformation($"{nameof(GetProjectAndReturn)} Project projectUid: {projectUid} project retrieved {JsonConvert.SerializeObject(project)}");
+      return ConvertCwsToWorksOSProject(project, log);
     }
 
     /// <summary>
-    /// Gets a Project, even if archived, return project even if null
-    /// </summary>
-    public static async Task<ProjectDatabaseModel> GetProjectEvenIfArchived(string projectUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
-    {
-      var project = (await projectRepo.GetProjectOnly(projectUid));
-
-      log.LogInformation($"Project projectUid: {projectUid} project {project} retrieved");
-      return project;
-    }
-
-    /// <summary>
-    /// Gets a Project NO customer uid.
-    /// </summary>
-    public static async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
-    {
-      var project = (await projectRepo.GetProject(shortRaptorProjectId));
-
-      log.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} retrieved");
-      return project;
-    }
-
-    /// <summary>
-    /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
-    ///   if projectUid, get it if it overlaps in localDB
-    ///    else get overlapping projects in localDB for this CustomerUID
+    /// Gets intersecting projects from cws 
+    ///   called from e.g. TFA, so uses applicationContext i.e. no customer. 
+    ///   if projectUid is provided, this is a manual import so don't consider itself as potentially overlapping
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
-      string customerUid, double latitude, double longitude,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+      string customerUid, double latitude, double longitude, string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
-      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList(); ;
+      // get projects for customer using application token i.e. no user
+      // todo what are the rules e.g. active, for manual import? 
+      var projectDatabaseModelList = (await GetProjectListForCustomer(new Guid(customerUid), null,
+          log, serviceExceptionHandler, cwsProjectClient, customHeaders))
+        .Where(p => string.IsNullOrEmpty(projectUid) || !p.IsArchived);
 
-      log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
+      // return a list at this stage to be used for logging in TFA, but other potential use in future.
+      var projects = projectDatabaseModelList.Where(project => !string.IsNullOrEmpty(project.Boundary))
+        .Where(project => PolygonUtils.PointInPolygon(project.Boundary, latitude, longitude)).ToList();
+
+      log.LogInformation($"{nameof(GetIntersectingProjects)}: Overlapping projects for customerUid: {customerUid} projects: {JsonConvert.SerializeObject(projects)}");
       return projects;
     }
 
+
+    /// <summary>
+    /// Used by Create/Update project to check if any new boundary overlaps any OTHER project
+    /// </summary>
     public static async Task<bool> DoesProjectOverlap(Guid customerUid, Guid? projectUid, Guid userUid, string projectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
       // get all active projects for customer, excluding this projectUid (i.e. update)
+      // todo what are the rules e.g. active, for manual import?
       var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
         .Where(p => !p.IsArchived &&
                     (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
 
-      // call new overlap routine // todo CCSSSCON-341
-      //var overlaps =
-      //  await Wherever.DoesPolygonOverlap(projectBoundary, projectDatabaseModelList);
-      //if (overlaps)
-      //  serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+      // return once we find any overlapping projects
+      foreach (var project in projectDatabaseModelList)
+      {
+        if (string.IsNullOrEmpty(project.Boundary)) continue;
+        if (!PolygonUtils.OverlappingPolygons(project.Boundary, projectBoundary)) continue;
 
-      log.LogDebug($"No overlapping projects for: {projectUid}");
-      return false; // todo CCSSSCON-341
+        log.LogInformation($"{nameof(DoesProjectOverlap)}: overlaps project {JsonConvert.SerializeObject(project)}");
+        return true;
+      }
+
+      log.LogDebug($"{nameof(DoesProjectOverlap)}: No overlapping projects.");
+      return false; 
     }
 
-    #region SoonToBeObsoleteCCSSSCON-351
-    public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, string databaseProjectBoundary,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
-    {
-      var overlaps =
-        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary, projectUid == Guid.Empty ? string.Empty : projectUid.ToString());
-      if (overlaps)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
-
-      log.LogDebug($"No overlapping projects for: {projectUid}");
-      return overlaps;
-    }
-    #endregion SoonToBeObsoleteCCSSSCON-351
-
+  
     #region coordSystem
-
 
     /// <summary>
     /// validate CoordinateSystem if provided
@@ -324,61 +305,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return true;
     }
 
-    #region SoonToBeObsoleteCCSSSCON-351
-    /// <summary>
-    /// validate CoordinateSystem if provided
-    /// </summary>
-    public static async Task<bool> ValidateCoordSystemInProductivity3D(IProjectEvent project,
-    IServiceExceptionHandler serviceExceptionHandler, IHeaderDictionary customHeaders,
-    IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord)
-    {
-      var csFileName = project is CreateProjectEvent
-        ? ((CreateProjectEvent)project).CoordinateSystemFileName
-        : ((UpdateProjectEvent)project).CoordinateSystemFileName;
-      var csFileContent = project is CreateProjectEvent
-        ? ((CreateProjectEvent)project).CoordinateSystemFileContent
-        : ((UpdateProjectEvent)project).CoordinateSystemFileContent;
-      if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
-      {
-        ProjectDataValidator.ValidateFileName(csFileName);
-        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
-        try
-        {
-          coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "productivity3dV1ProxyCoord.CoordinateSystemValidate", e.Message);
-        }
-
-        if (coordinateSystemSettingsResult == null)
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
-
-        if (coordinateSystemSettingsResult != null &&
-            coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47,
-            coordinateSystemSettingsResult.Code.ToString(),
-            coordinateSystemSettingsResult.Message);
-        }
-      }
-
-      return true;
-    }
-    #endregion SoonToBeObsoleteCCSSSCON-351
-
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
     ///  todo CCSSSCON-351 cleanup parameters once UpdateProject endpoint has been converted
-    public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid, int shortRaptorProjectId,
+    public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid,
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IHeaderDictionary customHeaders,
-      IProjectRepository projectRepo, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
+      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
       IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
       ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient, ICwsProjectClient cwsProjectClient = null)
     {
@@ -393,14 +329,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           //Pass coordinate system to Raptor
           CoordinateSystemSettingsResult coordinateSystemSettingsResult;
-          if (cwsProjectClient == null)
-            coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-              .CoordinateSystemPost(shortRaptorProjectId,
-                coordinateSystemFileContent, coordinateSystemFileName, headers);
-          else
-            coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-              .CoordinateSystemPost(projectUid,
-                coordinateSystemFileContent, coordinateSystemFileName, headers);
+          coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
+            .CoordinateSystemPost(projectUid,
+              coordinateSystemFileContent, coordinateSystemFileName, headers);
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
             coordinateSystemSettingsResult?.Code ?? -1,
             coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
@@ -409,10 +340,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
           {
             if (isCreate)
-              if (cwsProjectClient != null)
-                await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
-              else
-                await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, projectRepo);
+              await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
 
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
@@ -459,10 +387,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         catch (Exception e)
         {
           if (isCreate)
-            if (cwsProjectClient != null)
-              await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
-            else
-              await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, projectRepo);
+            await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
 
           //Don't hide exceptions thrown above
           if (e is ServiceException)
@@ -512,26 +437,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     /// <summary>
     /// Used internally, if a step fails, after a project has been CREATED, 
-    ///    then todo CCSSSCON-417 what to do?
-    ///     delete from cws?
-    /// </summary>
-    private static async Task RollbackProjectCreation(Guid customerUid, Guid projectUid, ILogger log,
-      IProjectRepository projectRepo)
-    {
-      log.LogDebug($"RollbackProjectCreation: {projectUid}");
-      
-    }
-
-    /// <summary>
-    /// Used internally, if a step fails, after a project has been CREATED, 
-    ///    then todo CCSSSCON-417 what to do?
-    ///     delete from cws?
+    ///    then  what to do - delete from cws?
+    ///    CCSSSCON-417
     /// </summary>
     private static async Task RollbackProjectCreation(Guid customerUid, Guid projectUid, ILogger log,
       ICwsProjectClient projectClient)
     {
-      log.LogDebug($"RollbackProjectCreation: {projectUid}");
-
+      log.LogError($"RollbackProjectCreation: NOT IMPLEMENTED YET customerUid {customerUid} projectUid {projectUid}");
     }
 
     #endregion rollback

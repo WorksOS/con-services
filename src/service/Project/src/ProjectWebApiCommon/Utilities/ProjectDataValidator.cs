@@ -12,7 +12,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
@@ -140,9 +139,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
                 projectErrorCodesProvider.FirstNameWithOffset(12)));
           }
         }
-        else if (evt is UpdateProjectEvent)
+        else if (evt is UpdateProjectEvent updateEvent)
         {
-          var updateEvent = evt as UpdateProjectEvent;
           if (string.IsNullOrEmpty(updateEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -189,150 +187,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
       log.LogInformation($"{nameof(ValidateProjectName)} Any duplicateProjectNames? {JsonConvert.SerializeObject(duplicateProjectNames)} retrieved");
     }
-
-
-    #region SoonToBeObsoleteCCSSSCON-351
-    /// <summary>
-    /// Validates the data of a specific project event
-    /// </summary>
-    /// <param name="evt">The event containing the data to be validated</param>
-    /// <param name="repo">Project repository to use in validation</param>
-    /// <param name="serviceExceptionHandler"></param>
-    public static void Validate(IProjectEvent evt, IProjectRepository repo, IServiceExceptionHandler serviceExceptionHandler)
-    {
-      var projectRepo = repo;
-      if (projectRepo == null)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(3),
-            projectErrorCodesProvider.FirstNameWithOffset(3)));
-      }
-      if (evt.ActionUTC == DateTime.MinValue)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(4),
-            projectErrorCodesProvider.FirstNameWithOffset(4)));
-      }
-
-      //Note: don't check if project exists for associate events.
-      //We don't know the workflow for NG so associate may come before project creation.
-      bool checkExists = evt is CreateProjectEvent || evt is UpdateProjectEvent || evt is DeleteProjectEvent;
-      if (checkExists)
-      {
-        bool isCreate = evt is CreateProjectEvent;
-        if (evt.ProjectUID != null && evt.ProjectUID != Guid.Empty)
-        {
-          bool exists = projectRepo.ProjectExists(evt.ProjectUID.ToString()).Result;
-          if ((isCreate && exists) || (!isCreate && !exists))
-          {
-            var messageId = isCreate ? 6 : 7;
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(messageId),
-                projectErrorCodesProvider.FirstNameWithOffset(messageId)));
-          }
-        }
-        if (isCreate)
-        {
-          var createEvent = evt as CreateProjectEvent;
-
-          if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(8),
-                projectErrorCodesProvider.FirstNameWithOffset(8)));
-          }
-          
-          ProjectRequestHelper.ValidateProjectBoundary(createEvent.ProjectBoundary, serviceExceptionHandler);
-
-          if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(9),
-                projectErrorCodesProvider.FirstNameWithOffset(9)));
-          }
-          if (PreferencesTimeZones.WindowsTimeZoneNames().Contains(createEvent.ProjectTimezone) == false)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(10),
-                projectErrorCodesProvider.FirstNameWithOffset(10)));
-          }
-          if (string.IsNullOrEmpty(createEvent.ProjectName))
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(11),
-                projectErrorCodesProvider.FirstNameWithOffset(11)));
-          }
-          if (createEvent.ProjectName.Length > 255)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
-                projectErrorCodesProvider.FirstNameWithOffset(12)));
-          }          
-        }
-        else if (evt is UpdateProjectEvent)
-        {
-          var updateEvent = evt as UpdateProjectEvent;
-          if (string.IsNullOrEmpty(updateEvent.ProjectName))
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(11),
-                projectErrorCodesProvider.FirstNameWithOffset(11)));
-          }
-          if (updateEvent.ProjectName.Length > 255)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
-                projectErrorCodesProvider.FirstNameWithOffset(12)));
-          }
-         
-          var project = projectRepo.GetProjectOnly(evt.ProjectUID.ToString()).Result;          
-          if (!string.IsNullOrEmpty(updateEvent.ProjectTimezone) &&
-              !project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
-          {
-            throw new ServiceException(HttpStatusCode.Forbidden,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(17),
-                projectErrorCodesProvider.FirstNameWithOffset(17)));
-          }
-          if (!string.IsNullOrEmpty(updateEvent.ProjectBoundary))
-          {
-            ProjectRequestHelper.ValidateProjectBoundary(updateEvent.ProjectBoundary, serviceExceptionHandler);
-          }
-        }
-        //Nothing else to check for DeleteProjectEvent
-      }
-    }
-    
-
-    /// <summary>
-    /// Validates a projectname. Must be unique amoungst active projects for the Customer.
-    /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="projectName"></param>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="log"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="projectRepo"></param>
-    /// <returns></returns>
-    public static async Task ValidateProjectName(string customerUid, string projectName, string projectUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectRepository projectRepo)
-    {
-      log.LogInformation($"ValidateProjectName projectName: {projectName} projectUid: {projectUid}");
-      var duplicateProjectNames =
-        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false))
-        .Where(
-          p => p.IsArchived == false &&
-                string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&
-               !string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase))
-        .ToList();
-      if (duplicateProjectNames.Any())
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 109, $"Count:{duplicateProjectNames.Count} projectUid: {duplicateProjectNames[0].ProjectUID}");
-      }
-
-      log.LogInformation($"ValidateProjectName Any duplicateProjectNames? {JsonConvert.SerializeObject(duplicateProjectNames)} retrieved");
-    }
-    #endregion SoonToBeObsoleteCCSSSCON-351
-
   }
 }

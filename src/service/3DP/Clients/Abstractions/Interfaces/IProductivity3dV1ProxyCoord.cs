@@ -10,11 +10,6 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
     Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent,
       string coordinateSystemFilename, IHeaderDictionary customHeaders = null);
 
-    #region SoonToBeObsoleteCCSSSCON-351
-    Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent,
-      string coordinateSystemFilename, IHeaderDictionary customHeaders = null);
-    #endregion SoonToBeObsoleteCCSSSCON-351
-
     Task<CoordinateSystemSettingsResult> CoordinateSystemPost(Guid projectUid, byte[] coordinateSystemFileContent,
       string coordinateSystemFilename, IHeaderDictionary customHeaders = null);
 

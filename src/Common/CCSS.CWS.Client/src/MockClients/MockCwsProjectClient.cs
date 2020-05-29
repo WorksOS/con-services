@@ -26,7 +26,7 @@ namespace CCSS.CWS.Client.MockClients
     {
     }
 
-    public Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid userUid, IHeaderDictionary customHeaders = null)
+    public Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForCustomer)} Mock: customerUid {customerUid} userUid {userUid}");
 
@@ -36,7 +36,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(projectDetailListResponseModel);
     }
 
-    public Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid userUid, IHeaderDictionary customHeaders = null)
+    public Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForMyCustomer)} Mock: customerUid {customerUid} userUid {userUid}");
 
@@ -46,7 +46,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(projectSummaryListResponseModel);
     }
 
-    public Task<ProjectDetailResponseModel> GetMyProject(Guid projectUid, Guid? userUid, IHeaderDictionary customHeaders = null)
+    public Task<ProjectDetailResponseModel> GetMyProject(Guid projectUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetMyProject)} Mock: projectUid {projectUid} userUid {userUid}");
 

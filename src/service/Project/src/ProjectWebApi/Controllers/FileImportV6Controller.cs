@@ -10,9 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Serilog;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
@@ -38,7 +36,6 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Abstractions.Utilities;
-using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -51,18 +48,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportV6Controller : FileImportBaseController
   {
-    private readonly INotificationHubClient _notificationHubClient;
 
     /// <summary>
     /// File import controller v6
     /// </summary>
     public FileImportV6Controller(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
                                   IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
-                                  IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
+                                  IRequestFactory requestFactory)
       : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
-    {
-      this._notificationHubClient = notificationHubClient;
-    }
+    { }
 
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
@@ -439,7 +433,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient)
             .ProcessAsync(deleteImportedFile)
         );
-        await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
         Logger.LogInformation(
           $"{nameof(DeleteImportedFileV6)}: Completed successfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
@@ -641,7 +635,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         }
       }
 
-      await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+      await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
       return importedFile;
     }
@@ -895,7 +889,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task DoActivationAndNotification(string projectUid, Dictionary<Guid, bool> filesToUpdate)
     {
       var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
-      var notificationTask = _notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
+      var notificationTask = NotificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
       var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
 
       await Task.WhenAll(notificationTask, raptorTask);

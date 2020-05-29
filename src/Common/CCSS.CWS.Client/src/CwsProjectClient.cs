@@ -33,7 +33,7 @@ namespace CCSS.CWS.Client
     ///
     ///   todo once this refactor to use cws projects is stable we may get cws team to generate a detailed list in 1 shot
     /// </summary>
-    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid userUid, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: customerUid {customerUid} userUid {userUid}");
 
@@ -68,7 +68,7 @@ namespace CCSS.CWS.Client
     ///   The user must have access to this account.
     ///   Cache to include userUid as different users have access to a different project set
     /// </summary>
-    public async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid userUid, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForMyCustomer)}: customerUid {customerUid} userUid {userUid}");
 

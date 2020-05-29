@@ -58,9 +58,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //    if CreateCoordSystem 3dp/Trex fails 
       //    if tcc and DO write fails
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
-        createProjectEvent.ProjectUID, 0, createProjectEvent.CoordinateSystemFileName,
+        createProjectEvent.ProjectUID, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
-        null, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
+        productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
         cwsDesignClient, cwsProfileSettingsClient, cwsProjectClient).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
 
