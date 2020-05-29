@@ -7,6 +7,8 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 {
   public class PVMTaskAccumulator<TC, TS> : IPVMTaskAccumulator where TS : GenericClientLeafSubGrid<TC>
   {
+    private readonly object _lockObj = new object();
+
     public TC[,] ValueStore;
 
     /// <summary>
@@ -37,8 +39,8 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     {
       ValueStore = new TC[CellsWidth, CellsHeight];
 
-      // Initialise value store to the supplied null values to ensure colour choosing from the palette is
-      // correct for values that are not populated from inbound subgrids
+      // Initialise value store to the supplied null values to ensure color choosing from the palette is
+      // correct for values that are not populated from inbound sub grids
       for (var i = 0; i < CellsWidth; i++)
       {
         for (var j = 0; j < CellsHeight; j++)
@@ -70,14 +72,14 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// <param name="valueStoreCellSizeY">The world X dimension size of cells in the value store</param>
     /// <param name="cellsWidth">The number of cells 'wide' (x ordinate) in the set of cell values requested</param>
     /// <param name="cellsHeight">The number of cells 'high' (y ordinate) in the set of cell values requested</param>
-    /// <param name="worldX">The world coordinate width (X axis) of the value store</param>
-    /// <param name="worldY">The world coordinate width (X axis) of the value store</param>
     /// <param name="originX">The default north oriented world X coordinate or the _valueStore origin</param>
     /// <param name="originY">The default north oriented world Y coordinate or the _valueStore origin</param>
+    /// <param name="worldX">The world coordinate width (X axis) of the value store</param>
+    /// <param name="worldY">The world coordinate width (X axis) of the value store</param>
     /// <param name="sourceCellSize">The (square) size of the underlying cells in the site model that is the source of rendered data</param>
     public PVMTaskAccumulator(double valueStoreCellSizeX, double valueStoreCellSizeY, int cellsWidth, int cellsHeight,
-      double worldX, double worldY,
       double originX, double originY,
+      double worldX, double worldY,
       double sourceCellSize)
     {
       ValueStoreCellSizeX = valueStoreCellSizeX;
@@ -92,10 +94,10 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     }
 
     /// <summary>
-    /// Transcribes values of interest from subgrids into a contiguous collection of values
+    /// Transcribes values of interest from sub grids into a contiguous collection of values
     /// </summary>
     /// <param name="subGridResponses"></param>
-    /// <returns>Whether the content of subGridResponses contained a transcribable sub grid</returns>
+    /// <returns>Whether the content of subGridResponses contains a sub grid to be transcribed</returns>
     public bool Transcribe(IClientLeafSubGrid[] subGridResponses)
     {
       var subGrid = subGridResponses?.Length == 1 ? subGridResponses[0] as TS : null;
@@ -108,8 +110,14 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
       if (ValueStore == null)
       {
-        CalculateAccumulatorParameters();
-        InitialiseValueStore(subGrid.NullCell());
+        lock (_lockObj)
+        {
+          if (ValueStore == null)
+          {
+            CalculateAccumulatorParameters();
+            InitialiseValueStore(subGrid.NullCell());
+          }
+        }
       }
 
       // Calculate the world coordinate location of the origin (bottom left corner) of this sub grid
@@ -145,7 +153,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
           while (eastCol < SubGridTreeConsts.SubGridTreeDimension)
           {
-            // Transcribe the value at [east_col, north_row] in the subgrid in to the matching location in the value store
+            // Transcribe the value at [east_col, north_row] in the sub grid in to the matching location in the value store
             if (valueStoreX >= 0 && valueStoreX < CellsWidth)
             {
               ValueStore[valueStoreX, valueStoreY] = cells[eastCol, northRow];

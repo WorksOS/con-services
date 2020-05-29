@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -110,7 +111,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           ProjectType = ProjectType.Standard,
           ProjectTimeZone = project.ProjectSettings != null ? PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone) : string.Empty,
           ProjectTimeZoneIana = project.ProjectSettings?.TimeZone,
-          Boundary = project.ProjectSettings?.Boundary != null ? RepositoryHelper.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,
+          Boundary = project.ProjectSettings?.Boundary != null ? GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,
           CoordinateSystemFileName = coordinateSystemFileName,
           CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUtc,
           IsArchived = false, 

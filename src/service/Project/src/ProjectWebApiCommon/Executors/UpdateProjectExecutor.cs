@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -88,7 +89,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(updateProjectEvent);
           createProjectRequestModel.AccountId = customerUid;
-          createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
+          createProjectRequestModel.Boundary = GeometryConversion.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
 
           var response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
           if (response != null)
@@ -115,7 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
         {
           // CCSSSCON-214 what are errors?
-          var boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
+          var boundary = GeometryConversion.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
           await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary, customHeaders);
         }        
         return updateProjectEvent.ProjectUID.ToString();
