@@ -14,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Device controller v1
   /// </summary>
-  public class DeviceV1Controller : ProjectBaseController
+  public class DeviceV1Controller : BaseController<DeviceV1Controller>
   {
     //TODO: Is this mock data still used ?
 

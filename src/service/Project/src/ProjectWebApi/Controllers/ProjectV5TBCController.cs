@@ -19,7 +19,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   ///     The signature must be retained.
   ///     BC is now compatible with jwt/TID etc.   
   /// </summary>
-  public class ProjectV5TBCController : ProjectBaseController
+  public class ProjectV5TBCController : BaseController<ProjectV5TBCController>
   {
     /// <summary>
     /// Gets or sets the httpContextAccessor.

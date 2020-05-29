@@ -31,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// Project controller v6
   ///    UI interface for projects i.e. user context
   /// </summary>
-  public class ProjectV6Controller : ProjectBaseController
+  public class ProjectV6Controller : BaseController<ProjectV6Controller>
   {
     /// <summary>
     /// Gets or sets the httpContextAccessor.
