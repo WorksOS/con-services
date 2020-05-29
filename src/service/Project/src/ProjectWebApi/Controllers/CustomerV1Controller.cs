@@ -14,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Customer controller v1 for the UI to get customer list etc as we have no CustomerSvc yet
   /// </summary>
-  public class CustomerV1Controller : ProjectBaseController
+  public class CustomerV1Controller : BaseController<CustomerV1Controller>
   {
     private readonly ICwsAccountClient _cwsAccountClient;
 
