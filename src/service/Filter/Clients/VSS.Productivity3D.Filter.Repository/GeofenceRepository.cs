@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.Filter.Repository
         geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
-        geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT);
+        geofence.GeometryWKT = GeometryConversion.GetPolygonWKT(geofenceEvent.GeometryWKT);
         geofence.FillColor = geofenceEvent.FillColor;
         geofence.IsTransparent = geofenceEvent.IsTransparent;
         geofence.IsDeleted = false;
@@ -62,7 +63,7 @@ namespace VSS.Productivity3D.Filter.Repository
         geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
-        geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT);
+        geofence.GeometryWKT = GeometryConversion.GetPolygonWKT(geofenceEvent.GeometryWKT);
 
         geofence.FillColor = geofenceEvent.FillColor;
         geofence.IsTransparent = geofenceEvent.IsTransparent;

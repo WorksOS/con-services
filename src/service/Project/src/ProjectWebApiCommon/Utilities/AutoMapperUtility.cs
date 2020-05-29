@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoMapper;
+using CCSS.Geometry;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories;
@@ -138,7 +139,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => src.ProjectId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.AccountId))
-            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => RepositoryHelper.ProjectBoundaryToWKT(src.Boundary)))
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))
             .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.Timezone))
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())

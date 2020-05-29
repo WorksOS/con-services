@@ -10,7 +10,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     PlanViewTileRenderer TileRenderer { get; set; }
 
     /// <summary>
-    /// The accumulator for the PVM rendering task to populate cell data from subgrids into
+    /// The accumulator for the PVM rendering task to populate cell data from sub grids into
     /// </summary>
     IPVMTaskAccumulator Accumulator { get; set; }
   }
