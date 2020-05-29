@@ -66,20 +66,6 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/coordsystem/validation");
     }
 
-    #region SoonToBeObsoleteCCSSSCON-351
-    /// <summary>
-    /// Validates and posts to TRex/Raptor, the CoordinateSystem for the project.
-    ///  COORDSYSPOST_API_URL HttpPost "api/v1/coordsystem"
-    /// </summary>
-    public async Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IHeaderDictionary customHeaders = null)
-    {
-      log.LogDebug($"{nameof(CoordinateSystemPost)} coordinateSystemFileName: {coordinateSystemFileName}");
-      var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(legacyProjectId, coordinateSystemFileContent, coordinateSystemFileName);
-
-      return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/coordsystem");
-    }
-    #endregion SoonToBeObsoleteCCSSSCON-351
-
     /// <summary>
     /// Validates and posts to TRex, the CoordinateSystem for the project.
     ///  COORDSYSPOST_API_URL HttpPost "api/v1/coordsystem"

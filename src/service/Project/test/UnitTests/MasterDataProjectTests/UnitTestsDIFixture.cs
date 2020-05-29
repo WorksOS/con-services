@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -24,9 +25,12 @@ namespace VSS.MasterData.ProjectTests
   public class UnitTestsDIFixture<T> : IDisposable
   {
     public IServiceProvider ServiceProvider;
-    protected IServiceExceptionHandler ServiceExceptionHandler;
-    public ILogger Log;
+    protected readonly IServiceExceptionHandler ServiceExceptionHandler;
+    protected readonly ILogger _log;
+    protected readonly ILoggerFactory _loggerFactory;
+    public IHeaderDictionary _customHeaders;
     protected IServiceCollection ServiceCollection;
+    protected IConfigurationStore _configStore;
 
     protected Guid _userUid;
     protected Guid _customerUid;
@@ -55,7 +59,10 @@ namespace VSS.MasterData.ProjectTests
       ServiceProvider = ServiceCollection.BuildServiceProvider();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();
+      _log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();
+      _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      _customHeaders = new HeaderDictionary();
+      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       _userUid = Guid.NewGuid();
       _customerUid = Guid.NewGuid();
