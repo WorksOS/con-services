@@ -124,17 +124,5 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(project.Name, result.Name);
       Assert.Equal(project.ProjectType, result.ProjectType);
     }
-
-    [Fact]
-    // todoJeannie
-    public void TBCProjectIdentityHashConversion()
-    {
-      var projectUid = Guid.NewGuid();
-      var projectId = projectUid.GetHashCode();
-
-      // can be negative e.g. projectId = -847682904
-      Assert.True(projectId != 0);
-    }
-
   }
 }
