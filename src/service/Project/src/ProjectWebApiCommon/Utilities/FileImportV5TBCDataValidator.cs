@@ -22,10 +22,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// </summary>
     /// <param name="projectId"></param>
     /// <param name="importedFile"></param>
-    public static ImportedFileTbc ValidateUpsertImportedFileRequest(long projectId,
+    public static ImportedFileTbc ValidateUpsertImportedFileRequest(Guid projectUid,
       ImportedFileTbc importedFile)
     {
-      if (projectId <= 0 )
+      if (projectUid == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(5),
