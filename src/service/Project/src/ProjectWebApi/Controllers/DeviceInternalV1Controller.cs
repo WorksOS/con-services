@@ -59,11 +59,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var deviceIsUid = new DeviceIsUid(deviceUid);
       deviceIsUid.Validate();
 
-
       var projectDataListResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<GetProjectsForDeviceExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            headers: customHeaders, cwsDeviceClient: CwsDeviceClient)
+            headers: customHeaders, cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient)
           .ProcessAsync(deviceIsUid)) as ProjectDataListResult;
 
       return projectDataListResult;

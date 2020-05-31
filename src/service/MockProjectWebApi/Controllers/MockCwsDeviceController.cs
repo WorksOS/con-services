@@ -44,6 +44,7 @@ namespace MockProjectWebApi.Controllers
       return deviceResponseModel;
     }
 
+    /* obsolete
     [Route("api/v1/accounts/{accountTrn}/devices")]
     [HttpGet]
     public DeviceListResponseModel GetDevicesForAccount(string accountTrn)
@@ -63,6 +64,7 @@ namespace MockProjectWebApi.Controllers
       Logger.LogInformation($"{nameof(GetDevicesForAccount)}: accountTrn {accountTrn}. deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return deviceListResponseModel;
     }
+    */
 
 
     [Route("api/v1/devices/{deviceTrn}/projects")]
