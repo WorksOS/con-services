@@ -87,6 +87,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       });
     }
 
+    /* obsolete
     [Fact]
     public void GetDevicesForAccountTest()
     {
@@ -127,6 +128,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         return true;
       });
     }
+    */
 
     [Fact]
     public void GetProjectsForDeviceTest()
@@ -143,7 +145,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
           new ProjectResponseModel() {ProjectTRN = expectedProjectTrn, AccountTRN = expectedAccountTrn}
         }
       };
-      var route = $"/device/{deviceTrn}/projects";
+      var route = $"/devices/{deviceTrn}/projects";
       var expectedUrl = $"{baseUrl}{route}?from=0&limit=20";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
