@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -70,6 +71,13 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// The type of the project.
     /// </value>
     public ProjectType ProjectType { get; set; }
+
+    /// <summary>
+    /// What Role the current user has in this project
+    ///    e.g. ADMIN or none
+    /// </summary>
+    public UserProjectRoleEnum UserProjectRole { get; set; }
+
 
     /// <summary>
     /// Gets the name of the project type.

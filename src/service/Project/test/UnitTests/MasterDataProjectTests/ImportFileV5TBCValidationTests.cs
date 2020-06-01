@@ -10,7 +10,7 @@ namespace VSS.MasterData.ProjectTests
 {
   public class ImportFileV5TBCValidationTests
   {
-    private readonly long _projectId;
+    private readonly Guid _projectUid;
     private readonly string _fileSpaceId;
     private readonly string _path;
     private readonly string _name;
@@ -19,7 +19,7 @@ namespace VSS.MasterData.ProjectTests
 
     public ImportFileV5TBCValidationTests()
     {
-      _projectId = 56666;
+      _projectUid = Guid.NewGuid();
       _fileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01";
       _path = "/BC Data/Sites/Chch Test Site";
       _name = "CTCTSITECAL.dc";
@@ -40,7 +40,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(0, importedFileTbc));
+        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(new Guid(), importedFileTbc));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2005", StringComparison.Ordinal));
     }
 
@@ -57,7 +57,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
+        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2031", StringComparison.Ordinal));
     }
 
@@ -74,7 +74,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
+        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2075", StringComparison.Ordinal));
     }
 
@@ -91,7 +91,7 @@ namespace VSS.MasterData.ProjectTests
         LineworkFile = new LineworkFile { DxfUnitsTypeId = DxfUnitsType.ImperialFeet }
       };
 
-      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
+      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
+        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2033", StringComparison.Ordinal));
     }
 
@@ -124,7 +124,7 @@ namespace VSS.MasterData.ProjectTests
         SurfaceFile = new SurfaceFile { SurveyedUtc = DateTime.UtcNow.AddDays(-1) }
       };
 
-      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
+      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
+        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2095", StringComparison.Ordinal));
     }
 
@@ -157,7 +157,7 @@ namespace VSS.MasterData.ProjectTests
         AlignmentFile = new AlignmentFile { Offset = 3 }
       };
 
-      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
+      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc);
     }
 
 
@@ -174,7 +174,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
+        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2002", StringComparison.Ordinal));
     }
 
@@ -191,7 +191,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc));
+        () => FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2032", StringComparison.Ordinal));
     }
 
@@ -207,7 +207,7 @@ namespace VSS.MasterData.ProjectTests
         CreatedUtc = _createdUtc
       };
 
-      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectId, importedFileTbc);
+      FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(_projectUid, importedFileTbc);
     }
 
     [Fact]

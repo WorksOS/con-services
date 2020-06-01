@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -85,6 +86,7 @@ namespace VSS.MasterData.ProjectTests
             AccountTRN = customerTrn,
             ProjectTRN = projectTrn,
             ProjectName = projectName,
+            UserProjectRole = UserProjectRoleEnum.Admin,
             LastUpdate = lastUpdateUtc,
             ProjectSettings = new ProjectSettingsModel()
             {
@@ -98,7 +100,7 @@ namespace VSS.MasterData.ProjectTests
     }
 
     protected ProjectDetailResponseModel CreateProjectDetailModel(string customerTrn, string projectTrn, string projectName = "the project name",
-      DateTime? lastUpdate = null, List<ProjectConfigurationModel> projectConfigurations = null)
+      DateTime? lastUpdate = null, UserProjectRoleEnum userProjectRole = UserProjectRoleEnum.Admin,  List<ProjectConfigurationModel> projectConfigurations = null)
     {
       var lastUpdateUtc = lastUpdate ?? DateTime.UtcNow.AddDays(-1);
       var projectConfigurationList = projectConfigurations ?? new List<ProjectConfigurationModel>();
@@ -107,6 +109,7 @@ namespace VSS.MasterData.ProjectTests
         AccountTRN = customerTrn,
         ProjectTRN = projectTrn,
         ProjectName = projectName,
+        UserProjectRole = userProjectRole,
         LastUpdate = lastUpdateUtc,
         ProjectSettings = new ProjectSettingsModel()
         {

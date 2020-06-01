@@ -9,7 +9,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
   {
     Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IHeaderDictionary customHeaders = null);
     Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IHeaderDictionary customHeaders = null);
-    Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null);
+    //obsolete Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null);
     Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null);
     Task<DeviceAccountListResponseModel> GetAccountsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null);
   }

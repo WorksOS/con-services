@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
 using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -123,7 +124,7 @@ namespace VSS.MasterData.ProjectTests
       var projectConfigurations = new List<ProjectConfigurationModel>();
       var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
       projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
-      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, projectName, lastUpdate, projectConfigurations);
+      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, projectName, lastUpdate, projectConfigurations: projectConfigurations);
       var projectDetailListResponseModel = new ProjectDetailListResponseModel() {Projects = new List<ProjectDetailResponseModel>() {projectDetailResponseModel} };
 
       var mockCwsProjectClient = new Mock<ICwsProjectClient>();
@@ -157,7 +158,7 @@ namespace VSS.MasterData.ProjectTests
       var projectConfigurations = new List<ProjectConfigurationModel>();
       var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
       projectConfigurations.Add(new ProjectConfigurationModel() {FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName});
-      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, projectName, lastUpdate, projectConfigurations);
+      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, projectName, lastUpdate, projectConfigurations: projectConfigurations);
 
       var mockCwsProjectClient = new Mock<ICwsProjectClient>();
       mockCwsProjectClient.Setup(pr => pr.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailResponseModel);
@@ -181,6 +182,54 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
+    public void GetProject_UserProjectUnknown_HappyPath()
+    {
+      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, userProjectRole: UserProjectRoleEnum.Unknown);
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(pr => pr.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailResponseModel);
+
+      var projectDatabaseModelResult = ProjectRequestHelper.GetProject(_projectUid, _customerUid, _userUid,
+        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
+
+      var result = projectDatabaseModelResult.Result;
+      Assert.NotNull(result);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUID);
+      Assert.Equal(UserProjectRoleEnum.Unknown, result.UserProjectRole);
+    }
+
+    [Fact]
+    public void GetProject_UserProjectAdmin_HappyPath()
+    {
+      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, userProjectRole: UserProjectRoleEnum.Admin);
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(pr => pr.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailResponseModel);
+
+      var projectDatabaseModelResult = ProjectRequestHelper.GetProject(_projectUid, _customerUid, _userUid,
+        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
+
+      var result = projectDatabaseModelResult.Result;
+      Assert.NotNull(result);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUID);
+      Assert.Equal(UserProjectRoleEnum.Admin, result.UserProjectRole);
+    }
+
+    [Fact]
+    public void GetProject_UserProjectDefaultAdmin_HappyPath()
+    {
+      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(pr => pr.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailResponseModel);
+
+      var projectDatabaseModelResult = ProjectRequestHelper.GetProject(_projectUid, _customerUid, _userUid,
+        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
+
+      var result = projectDatabaseModelResult.Result;
+      Assert.NotNull(result);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUID);
+      Assert.Equal(UserProjectRoleEnum.Admin, result.UserProjectRole);
+    }
+
+    [Fact]
     public void GetProjectListForCustomer_NoUserUid_HappyPath()
     {
       // todo once intersection utility is complete, this may be able to return projects
@@ -190,7 +239,7 @@ namespace VSS.MasterData.ProjectTests
       var projectConfigurations = new List<ProjectConfigurationModel>();
       var fullName = "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc";
       projectConfigurations.Add(new ProjectConfigurationModel() { FileType = ProjectConfigurationFileType.CALIBRATION.ToString(), FileName = fullName });
-      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, projectName, lastUpdate, projectConfigurations);
+      var projectDetailResponseModel = CreateProjectDetailModel(_customerTrn, _projectTrn, projectName, lastUpdate, projectConfigurations: projectConfigurations);
       var projectDetailListResponseModel = new ProjectDetailListResponseModel() { Projects = new List<ProjectDetailResponseModel>() { projectDetailResponseModel } };
 
       var mockCwsProjectClient = new Mock<ICwsProjectClient>();

@@ -288,7 +288,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var projectRepo = new Mock<ProjectRepository>(configStore, logger);
       var projectGeofence = new ProjectGeofence { GeofenceUID = boundaryUid, ProjectUID = projectUid };
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
-      projectRepo.As<IProjectRepository>().Setup(p => p.DoPolygonsOverlap(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<bool> { true, false });
+      //projectRepo.As<IProjectRepository>().Setup(p => p.DoPolygonsOverlap(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(new List<bool> { true, false });
 
       var geofenceToTest = AutoMapperUtility.Automapper.Map<GeofenceData>(geofenceBoundary);
 

@@ -74,14 +74,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         return ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.OK, -1);
       }
 
-      importedFileTbc = FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(projectId, importedFileTbc);
+      // todo CCSSSCON-396 convert projectId to a ProjectUid
+      var projectUid = Guid.NewGuid();
+
+      importedFileTbc = FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(projectUid, importedFileTbc);
       Logger.LogInformation(
-        $"{nameof(UpsertImportedFileV5TBC)}: projectId {projectId} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
+        $"{nameof(UpsertImportedFileV5TBC)}: projectId {projectId} projectUid {projectUid} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
 
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileTbc.ImportedFileTypeId, ConfigStore, ServiceExceptionHandler);
 
       // this also validates that this customer has access to the projectUid
-      var project = await GetProject(projectId);
+      var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       var fileEntryTask = TccHelper.GetFileInfoFromTccRepository(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
@@ -150,7 +153,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                cwsProjectClient: CwsProjectClient)
               .ProcessAsync(createImportedFile)
           ) as ImportedFileDescriptorSingleResult;
 
@@ -179,7 +183,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                cwsProjectClient: CwsProjectClient)
               .ProcessAsync(importedFileUpsertEvent)
           ) as ImportedFileDescriptorSingleResult;
         }
@@ -211,10 +216,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ImmutableList<DesignDetailV5Result>> GetImportedFilesV5TBC([FromRoute] long projectId, [FromRoute] long? id = null)
     {
-      Logger.LogInformation($"{nameof(GetImportedFilesV5TBC): Starting}");
+      Logger.LogInformation($"{nameof(GetImportedFilesV5TBC)}: projectId {projectId} id {id}");
 
-      var project = await GetProject(projectId);
+      // todo CCSSSCON-396 convert projectId to a ProjectUid
+      var projectUid = Guid.NewGuid();
 
+      // this also validates that this customer has access to the projectUid
+      var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+      
       var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(project.ProjectUID, Logger, UserId, ProjectRepo)
         .ConfigureAwait(false);
 

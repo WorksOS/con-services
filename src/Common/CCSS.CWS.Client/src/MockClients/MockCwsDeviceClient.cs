@@ -56,6 +56,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(deviceResponseModel);
     }
 
+    /* obsolete
     public Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: accountUid {accountUid}");
@@ -79,6 +80,7 @@ namespace CCSS.CWS.Client.MockClients
       log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return Task.FromResult(deviceListResponseModel);
     }
+    */
 
     public Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
