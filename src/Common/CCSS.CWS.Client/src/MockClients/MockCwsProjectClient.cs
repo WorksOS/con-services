@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -56,6 +57,7 @@ namespace CCSS.CWS.Client.MockClients
       {
         AccountTRN = customerTrn,
         ProjectTRN = projectTrn,
+        UserProjectRole = UserProjectRoleEnum.Admin,
         LastUpdate = DateTime.UtcNow.AddDays(-1),
         ProjectSettings = new ProjectSettingsModel()
         {

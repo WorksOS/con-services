@@ -30,8 +30,7 @@ namespace CCSS.CWS.Client
     ///   Gets full project details using a user token.
     ///   The user must have access to this account.
     ///   Cache to include userUid as different users have access to a different project set
-    ///
-    ///   todo once this refactor to use cws projects is stable we may get cws team to generate a detailed list in 1 shot
+    ///   todoJeannie  cws team to generate a detailed list in 1 shot CCSSSCON-409
     /// </summary>
     public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
@@ -41,15 +40,17 @@ namespace CCSS.CWS.Client
       var projectDetailListReponseModel = new ProjectDetailListResponseModel();
       foreach (var project in projectSummaryListResponseModel.Projects)
       {
-        // We can't query details on projects we don't have role in. // todo in next PR Return all, with whatever info we have.
-        if (project.Role == UserProjectRoleEnum.Unknown)
+        // We can't query details on projects we don't have role in.
+        // Return whatever info we have and caller can filter.
+        if (project.UserProjectRole == UserProjectRoleEnum.Unknown)
         {
-          // todo in next PR
-          //projectDetailListReponseModel.Projects.Add(new ProjectDetailResponseModel()
-          //  { AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT), 
-          //    ProjectTRN = project.ProjectTRN,
-          //    ProjectName = project.ProjectName
-          //  });
+          projectDetailListReponseModel.Projects.Add(new ProjectDetailResponseModel
+          {
+            AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
+            ProjectTRN = project.ProjectTRN,
+            ProjectName = project.ProjectName,
+            UserProjectRole = project.UserProjectRole
+          });
           continue;
         }
 
@@ -65,6 +66,7 @@ namespace CCSS.CWS.Client
     ///   Gets projects using a user token.
     ///   The user must have access to this account.
     ///   Cache to include userUid as different users have access to a different project set
+    ///   This ONLY works with a user token. Probably need it to work with app token for tfa (don't know marketing requirements but this would keep our options open.  CCSSSCON-433 todoJeannie
     /// </summary>
     public async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
@@ -102,6 +104,7 @@ namespace CCSS.CWS.Client
     ///   Gets project using a user application token.
     ///   The user must have access to this account.
     ///   The project role depends on the user
+    ///   This ONLY works with a user token, needs to work with an app token now that we have to call TFA: CCSSSCON-434 todoJeannie
     /// </summary>
     public async Task<ProjectDetailResponseModel> GetMyProject(Guid projectUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
@@ -113,6 +116,10 @@ namespace CCSS.CWS.Client
       try
       {
         projectDetailResponseModel = await GetData<ProjectDetailResponseModel>($"/projects/{projectTrn}", projectUid, userUid, null, customHeaders);
+        
+        // get a project, with user role always returns null, but can only be called if the role IS ADMIN todoJeannie maybe get Yazl to change this behaviour?
+        if (userUid != null)
+          projectDetailResponseModel.UserProjectRole = UserProjectRoleEnum.Admin;
       }
       catch (HttpRequestException e)
       {

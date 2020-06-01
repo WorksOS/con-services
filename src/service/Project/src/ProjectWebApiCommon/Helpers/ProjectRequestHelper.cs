@@ -107,6 +107,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           CustomerUID = project.AccountId,
           Name = project.ProjectName,
           ProjectType = ProjectType.Standard,
+          UserProjectRole = project.UserProjectRole,
           ProjectTimeZone = project.ProjectSettings != null ? PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone) : string.Empty,
           ProjectTimeZoneIana = project.ProjectSettings?.TimeZone,
           Boundary = project.ProjectSettings?.Boundary != null ? GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,

@@ -71,11 +71,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var projectUid = Guid.NewGuid();
 
       var projectSummaryListResponseModel = new ProjectSummaryListResponseModel();
-      projectSummaryListResponseModel.Projects.Add(new ProjectSummaryResponseModel()
-      {
-        ProjectTRN = TRNHelper.MakeTRN(projectUid),
-        Role = UserProjectRoleEnum.Admin
-      }
+      projectSummaryListResponseModel.Projects.Add(new ProjectSummaryResponseModel() {ProjectTRN = TRNHelper.MakeTRN(projectUid), UserProjectRole = UserProjectRoleEnum.Admin}
       );
       var route = $"/accounts/{TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT)}/projects";
       var expectedUrl = $"{baseUrl}{route}?from=0&limit=20";

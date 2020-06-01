@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Enums;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
@@ -64,6 +66,14 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("lastUpdate")]
     public DateTime LastUpdate { get; set; }
+
+    /// <summary>
+    /// requesting users role
+    ///    // todoJeannie what about when application context?
+    /// </summary>
+    [JsonProperty("role")]
+    [JsonConverter(typeof(NullableEnumStringConverter), UserProjectRoleEnum.Unknown)]
+    public UserProjectRoleEnum UserProjectRole { get; set; }
 
     /// <summary>
     /// Project name
