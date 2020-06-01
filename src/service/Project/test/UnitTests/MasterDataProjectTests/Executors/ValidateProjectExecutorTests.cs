@@ -34,7 +34,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -56,7 +56,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = null,
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -67,6 +67,27 @@ namespace VSS.MasterData.ProjectTests.Executors
       var result = await executor.ProcessAsync(data);
       Assert.Equal(11, result.Code);
       Assert.Equal("Missing ProjectName.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Create_MissingType()
+    {
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = null,
+        ProjectName = "some project",
+        ProjectType = null,
+        Boundary = CreateNonOverlappingBoundary(),
+        UpdateType = ProjectUpdateType.Created
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(130, result.Code);
+      Assert.Equal("Missing project type.", result.Message);
     }
 
     [Fact]
@@ -81,7 +102,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = projectList.Projects[0].ProjectName,
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -103,7 +124,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = null,
         UpdateType = ProjectUpdateType.Created
       };
@@ -128,7 +149,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateInvalidBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -154,7 +175,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateSelfIntersectingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -180,7 +201,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = projectList.Projects[0].ProjectSettings.Boundary,
         UpdateType = ProjectUpdateType.Created
       };
@@ -300,7 +321,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         UpdateType = ProjectUpdateType.Updated
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
@@ -325,7 +346,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        ProjectType = 1, //TODO: enum for 3d-enabled
+        ProjectType = CwsProjectType.ThreeDEnabled,
         UpdateType = ProjectUpdateType.Updated
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);

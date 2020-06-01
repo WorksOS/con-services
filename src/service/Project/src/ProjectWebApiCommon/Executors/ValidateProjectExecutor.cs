@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +12,6 @@ using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -22,25 +20,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// </summary>
   public class ValidateProjectExecutor : RequestExecutorContainer
   {
-    //private static ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
-
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var data = CastRequestObjectTo<ProjectValidation>(item, errorCode: 68);
 
-      // TODO:
-      // 1. What is the user changes from 3D to non-3D? Do we care about existing data in TRex?
-      // 2. If the user changes from non-3D to 3D it will be an update and there must be a coordinate system file.
-
-      // We only need to validate 3D enabled projects
-      
-      if (data.ProjectType == 0) // TODO: this should be non-3d enabled
+      // Nothing to validate for a non 3d-enabled project
+      if (data.ProjectType.HasValue && data.ProjectType == CwsProjectType.Non3dEnabled) 
         return new ContractExecutionResult();
 
       var userUid = new Guid(userId);
       if (data.UpdateType == ProjectUpdateType.Created)
       {
         //Validate required fields are present
+        if (!data.ProjectType.HasValue)
+        {
+          return new ContractExecutionResult(130, "Missing project type.");
+        }
         if (string.IsNullOrEmpty(data.ProjectName))
         {
           return new ContractExecutionResult(11, "Missing ProjectName.");
@@ -92,9 +87,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           return new ContractExecutionResult(5, "Missing ProjectUID.");
         }
 
-        var typeChanged = data.ProjectType.HasValue;
-        if (typeChanged)
+        if (data.ProjectType.HasValue)
         {
+          //Changing from non 3d-enabled to 3d-enabled.
           // Get the existing project to validate name, boundary and coordinate system file
           var project = await cwsProjectClient.GetMyProject(data.ProjectUid.Value, userUid, customHeaders: customHeaders);
           if (project == null)

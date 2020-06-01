@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
     /// Will be set if a new project or the type is updated.
     /// Otherwise it will be null.
     /// </summary>
-    public int? ProjectType { get; set; }
+    public CwsProjectType? ProjectType { get; set; }
 
     /// <summary>
     /// The request update type this payload represents
