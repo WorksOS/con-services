@@ -430,7 +430,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             .Build<DeleteImportedFileExecutor>(
               LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
               productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, persistantTransferProxy: persistantTransferProxy, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient)
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient, cwsProjectClient: CwsProjectClient)
             .ProcessAsync(deleteImportedFile)
         );
         await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
@@ -599,7 +599,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                cwsProjectClient: CwsProjectClient)
               .ProcessAsync(createImportedFile)
           ) as ImportedFileDescriptorSingleResult;
 
@@ -609,7 +610,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         else
         {
           // this also validates that this customer has access to the projectUid
-          var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo);
+          var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
           var importedFileUpsertEvent = new UpdateImportedFile(
             projectUid, project.ShortRaptorProjectId, importedFileType,
@@ -626,7 +627,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                cwsProjectClient: CwsProjectClient)
               .ProcessAsync(importedFileUpsertEvent)
           ) as ImportedFileDescriptorSingleResult;
 

@@ -78,10 +78,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-      var projectRepo = new Mock<IProjectRepository>();
-      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateProjectEvent>())).ReturnsAsync(1);
-
+      
       var createProjectResponseModel = new CreateProjectResponseModel() {TRN = TRNHelper.MakeTRN("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97", TRNHelper.TRN_PROJECT),};
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();

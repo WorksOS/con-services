@@ -287,13 +287,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var project = new DeleteProjectEvent {ProjectUID = new Guid(projectUid), DeletePermanently = false, ActionUTC = DateTime.UtcNow};
       ProjectDataValidator.Validate(project, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
-      var isDeleted = await ProjectRepo.StoreEvent(project).ConfigureAwait(false);
+      // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
+      var isDeleted = 1;
+      //isDeleted = await ProjectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
-
-      // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
-
+      
       if (!string.IsNullOrEmpty(CustomerUid))
         await NotificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
 

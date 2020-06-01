@@ -15,7 +15,6 @@ using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.FlowJSHandler;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -36,9 +35,6 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public async Task GetCwsImportedFiles_HappyPath()
     {
-      var projectUid = Guid.NewGuid();
-      var customHeaders = new HeaderDictionary();
-
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
         ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>()
@@ -68,7 +64,7 @@ namespace VSS.MasterData.ProjectTests
         .ReturnsAsync(new List<ImportedFile>());
 
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfigurations(projectUid, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfigurations(_projectUid, _customHeaders))
         .ReturnsAsync(projectConfigurationFileListResponse);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
@@ -77,7 +73,7 @@ namespace VSS.MasterData.ProjectTests
       
 
       var controller = CreateFileImportV6Controller();
-      var result = await controller.GetImportedFilesV6(projectUid.ToString());
+      var result = await controller.GetImportedFilesV6(_projectUid.ToString());
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -90,17 +86,13 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public async Task DeleteCwsImportedFile_HappyPath_OneFile()
     {
-      var projectUid = Guid.NewGuid();
-      var customHeaders = new HeaderDictionary();
-
-      var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
-      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
-      var mockProjectRepo = CreateMockProjectRepo();
-      mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList); ;
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      ServiceCollection.AddSingleton(mockCwsProjectClient.Object);
 
       var mockCwsDesignClient = new Mock<ICwsDesignClient>();
-      ServiceCollection
-        .AddSingleton(mockCwsDesignClient.Object);
+      ServiceCollection.AddSingleton(mockCwsDesignClient.Object);
 
       var filename = "MyTestFilename.avoid.svl";
       var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
@@ -113,18 +105,17 @@ namespace VSS.MasterData.ProjectTests
         Size = "66"
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel);
-      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .Returns(Task.CompletedTask);
-      ServiceCollection
-        .AddSingleton(mockCwsProfileSettingsClient.Object);
+      ServiceCollection.AddSingleton(mockCwsProfileSettingsClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
 
       var mockPegasusClient = new Mock<IPegasusClient>();
       var mockWebClient = new Mock<IWebClientWrapper>();
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.CwsAvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
+      var result = await controller.DeleteImportedFileV6(_projectUid, null, ImportedFileType.CwsAvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -133,18 +124,15 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public async Task DeleteCwsImportedFile_HappyPath_OneOfTwoFiles()
     {
-      var projectUid = Guid.NewGuid();
-      var customHeaders = new HeaderDictionary();
-
-      var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
-      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
-      var mockProjectRepo = CreateMockProjectRepo();
-      mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      ServiceCollection.AddSingleton(mockCwsProjectClient.Object);
 
       var createFileResponseModel = new CreateFileResponseModel
         { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
       var mockCwsDesignClient = new Mock<ICwsDesignClient>();
-      mockCwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), customHeaders))
+      mockCwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), _customHeaders))
         .ReturnsAsync(createFileResponseModel);
       ServiceCollection
         .AddSingleton(mockCwsDesignClient.Object);
@@ -172,12 +160,12 @@ namespace VSS.MasterData.ProjectTests
         Size = "99"
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel1);
-      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .Returns(Task.CompletedTask);
       var request = new ProjectConfigurationFileRequestModel{SiteCollectorFilespaceId = Guid.NewGuid().ToString()};
-      mockCwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, request, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, request, _customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel2);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
@@ -187,7 +175,7 @@ namespace VSS.MasterData.ProjectTests
       var mockWebClient = new Mock<IWebClientWrapper>();
       mockWebClient.Setup(w => w.DownloadData(It.IsAny<string>())).Returns(new byte[] {1, 2, 3, 4});
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.CwsAvoidanceZone, filename1, mockPegasusClient.Object, mockWebClient.Object);
+      var result = await controller.DeleteImportedFileV6(_projectUid, null, ImportedFileType.CwsAvoidanceZone, filename1, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -196,13 +184,10 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public async Task DeleteCwsImportedFile_HappyPath_TwoFiles()
     {
-      var projectUid = Guid.NewGuid();
-      var customHeaders = new HeaderDictionary();
-
-      var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
-      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
-      var mockProjectRepo = CreateMockProjectRepo();
-      mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var mockCwsProjectClient = new Mock<ICwsProjectClient>();
+      mockCwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      ServiceCollection.AddSingleton(mockCwsProjectClient.Object);
 
       var filename1 = "MyTestFilename.avoid.svl";
       var filename2 = "MyTestFilename.avoid.dxf";
@@ -218,9 +203,9 @@ namespace VSS.MasterData.ProjectTests
         Size = "66"
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel);
-      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .Returns(Task.CompletedTask);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
@@ -229,7 +214,7 @@ namespace VSS.MasterData.ProjectTests
       var mockPegasusClient = new Mock<IPegasusClient>();
       var mockWebClient = new Mock<IWebClientWrapper>();
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.CwsAvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
+      var result = await controller.DeleteImportedFileV6(_projectUid, null, ImportedFileType.CwsAvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -373,7 +358,7 @@ namespace VSS.MasterData.ProjectTests
 
       var httpContext = new DefaultHttpContext();
       httpContext.RequestServices = ServiceProvider;
-      httpContext.User = new TIDCustomPrincipal(new GenericIdentity(Guid.NewGuid().ToString()), null, null, "Joe Bloggs", false, null);
+      httpContext.User = new TIDCustomPrincipal(new GenericIdentity(_userUid.ToString()), _customerUid.ToString(), null, "Joe Bloggs", false, null);
       var controllerContext = new ControllerContext();
       controllerContext.HttpContext = httpContext;
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();

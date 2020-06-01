@@ -197,26 +197,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets the project.
-    /// </summary>
-    protected async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId)
-    {
-      LogCustomerDetails("GetProject by shortRaptorProjectId", shortRaptorProjectId);
-      var project =
-        (await ProjectRepo.GetProjectsForCustomer(CustomerUid).ConfigureAwait(false)).FirstOrDefault(
-          p => p.ShortRaptorProjectId == shortRaptorProjectId);
-
-      if (project == null)
-      {
-        Logger.LogWarning($"User doesn't have access to legacyProjectId: {shortRaptorProjectId}");
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
-      }
-
-      Logger.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} ProjectUID: {project.ProjectUID} CustomerUID: {project.CustomerUID} retrieved");
-      return project;
-    }
-
-    /// <summary>
     /// Log the Customer and Project details.
     /// </summary>
     protected void LogCustomerDetails(string functionName, string projectUid = "") =>
