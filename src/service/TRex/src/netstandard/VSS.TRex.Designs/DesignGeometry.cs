@@ -9,7 +9,7 @@ namespace VSS.TRex.Designs
   public static class DesignGeometry
   {
     /// <summary>
-    /// Determines if the bounds of a subgrid intersects a given triangle
+    /// Determines if the bounds of a sub grid intersects a given triangle
     /// </summary>
     /// <param name="Extents"></param>
     /// <param name="H1"></param>
@@ -24,7 +24,7 @@ namespace VSS.TRex.Designs
         return true;
       }
 
-      // If any of the subgrid corners sit in the triangle then 'yes'
+      // If any of the sub grid corners sit in the triangle then 'yes'
       {
         if (XYZ.PointInTriangle(H1, H2, V, Extents.MinX, Extents.MinY) ||
             XYZ.PointInTriangle(H1, H2, V, Extents.MinX, Extents.MaxY) ||
@@ -63,6 +63,6 @@ namespace VSS.TRex.Designs
     /// </summary>
     /// <param name="A"></param>
     /// <param name="B"></param>
-    public static void SwapVertices(ref XYZ A, ref XYZ B) => MinMax.Swap(ref A, ref B);
+    public static void SwapVertices(ref XYZ a, ref XYZ b) => MinMax.Swap(ref a, ref b);
   }
 }
