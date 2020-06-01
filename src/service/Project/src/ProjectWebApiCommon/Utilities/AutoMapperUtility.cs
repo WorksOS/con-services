@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using CCSS.Geometry;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
