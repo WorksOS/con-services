@@ -4,7 +4,7 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductionDataSvc.AcceptanceTests", "tests\ProductionDataSvc.AcceptanceTests\ProductionDataSvc.AcceptanceTests.csproj", "{C3C8293E-7739-473E-81A1-5C57E6AAE1A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageComparisonNetcore", "..\..\..\Common\XnaFanImageComparison\ImageComparisonNetcore\ImageComparisonNetcore.csproj", "{38E6F176-3BF2-4338-9507-EF20909DE1FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.IntegrationTests.ImageComparison", "..\..\..\Common\IntegrationTests.ImageComparison\CCSS.IntegrationTests.ImageComparison.csproj", "{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,14 +22,14 @@ Global
 		{C3C8293E-7739-473E-81A1-5C57E6AAE1A4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3C8293E-7739-473E-81A1-5C57E6AAE1A4}.Release|x64.ActiveCfg = Release|x64
 		{C3C8293E-7739-473E-81A1-5C57E6AAE1A4}.Release|x64.Build.0 = Release|x64
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Debug|x64.Build.0 = Debug|Any CPU
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Release|x64.ActiveCfg = Release|Any CPU
-		{38E6F176-3BF2-4338-9507-EF20909DE1FE}.Release|x64.Build.0 = Release|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{EB20C39F-AF0B-4D9A-BADF-9A53894211BA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -106,7 +106,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITpaasEmailProxy, TpaasEmailProxy>();
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
-      services.AddTransient<IDeviceProxy, DeviceV1Proxy>();
       services.AddSingleton<IJobRegistrationManager, JobRegistrationManager>();
       services.AddSingleton<IHangfireMetricScheduler, HangfireMetricScheduler>();
       services.AddTransient<IExportEmailGenerator, ExportEmailGenerator>();

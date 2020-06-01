@@ -83,30 +83,6 @@ namespace VSS.TRex.Designs.SVL
       return result;
     }
 
-    private double AzimuthAt(double Stn)
-    {
-      double TestStn1, TestStn2;
-      double result = Consts.NullDouble;
-
-      if (Stn < (Alignment.StartStation + 0.001))
-        TestStn1 = Alignment.StartStation;
-      else
-        TestStn1 = Stn - 0.001;
-
-      if (Stn > (Alignment.EndStation - 0.001))
-        TestStn2 = Alignment.EndStation;
-      else
-        TestStn2 = Stn + 0.001;
-
-      Alignment.ComputeXY(TestStn1, 0, out double X1, out double Y1);
-      Alignment.ComputeXY(TestStn2, 0, out double X2, out double Y2);
-
-      if (X1 != Consts.NullDouble && Y1 != Consts.NullDouble && X2 != Consts.NullDouble && Y2 != Consts.NullDouble)
-        GeometryUtils.RectToPolar(Y1, X1, Y2, X2, out result, out _);
-
-      return result;
-    }
-
     private void AddOffsetPoints(Fence fence, Fence RHSProfile, double currentPos, bool force)
     {
       double ptX, ptY;

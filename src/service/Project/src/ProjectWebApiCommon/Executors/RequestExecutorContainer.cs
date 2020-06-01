@@ -11,11 +11,11 @@ using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -25,7 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to separate executor logic
-  ///   from controller logic for testability and possible executor versioning.
+  ///   from controller logic for testability and possible executor version.
   /// </summary>
   public abstract class RequestExecutorContainer
   {
@@ -78,11 +78,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// Repository factory used extensively for project DB
     /// </summary>
     protected IProjectRepository projectRepo;
-
-    /// <summary>
-    /// Repository factory used extensively for device
-    /// </summary>
-    protected IDeviceRepository deviceRepo;
 
     /// <summary>
     /// Repository factory used for accessing files in TCC (at present)
@@ -174,7 +169,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null,
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
-      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, IDeviceRepository deviceRepo = null,
+      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
       IFileRepository fileRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
@@ -195,7 +190,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
-      this.deviceRepo = deviceRepo;
       this.fileRepo = fileRepo;
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
@@ -220,7 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     ///   Builds this instance for specified executor type.
     /// </summary>
     public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectRepository projectRepo, DeviceRepository deviceRepo)
+      IProjectRepository projectRepo)
       where TExecutor : RequestExecutorContainer, new()
     {
       return new TExecutor
@@ -228,23 +222,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log = logger.CreateLogger<TExecutor>(),
         configStore = configStore,
         serviceExceptionHandler = serviceExceptionHandler,
-        projectRepo = projectRepo,
-        deviceRepo = deviceRepo
+        projectRepo = projectRepo
       };
     }
 
 
     /// <summary>
-    /// Validates a project identifier.
+    /// Validates that project belongs to the customer.
     /// </summary>
     public async Task ValidateProjectWithCustomer(string customerUid, string projectUid)
     {
-      var project = (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+      var project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders).ConfigureAwait(false))
+          .FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
-      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
-      }
 
       log.LogInformation($"projectUid {projectUid} validated");
     }

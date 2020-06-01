@@ -6,11 +6,26 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
   public class UserResponseModel : IMasterDataModel
   {
+    private string _trn;
+
     /// <summary>
     /// User TRN ID
     /// </summary>
     [JsonProperty("userId")]
-    public string Id { get; set; }
+    public string TRN
+    {
+      get => _trn;
+      set
+      {
+        _trn = value;
+        Id = TRNHelper.ExtractGuidAsString(value);
+      }
+    }
+
+    /// <summary>
+    /// WorksOS user ID; the Guid extracted from the TRN.
+    /// </summary>
+    public string Id { get; private set; }
 
     [JsonProperty("firstName")]
     public string FirstName { get; set; }
@@ -27,9 +42,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("language")]
     public string Language { get; set; }
 
-    public List<string> GetIdentifiers() => new List<string>
-    {
-      Id
-    };
+    public List<string> GetIdentifiers() => new List<string> { TRN, Id };
   }
 }

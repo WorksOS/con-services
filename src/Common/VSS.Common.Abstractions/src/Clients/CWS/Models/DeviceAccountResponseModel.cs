@@ -7,12 +7,27 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
   public class DeviceAccountResponseModel : IMasterDataModel
   {
+    private string _trn;
+
     //Note: There are other properties returned (tccDeviceId) but we only want some of it
     /// <summary>
     /// Account TRN ID
     /// </summary>
     [JsonProperty("accountId")]
-    public string Id { get; set; }
+    public string TRN
+    {
+      get => _trn;
+      set
+      {
+        _trn = value;
+        Id = TRNHelper.ExtractGuidAsString(value);
+      }
+    }
+
+    /// <summary>
+    /// WorksOS account ID; the Guid extracted from the TRN.
+    /// </summary>
+    public string Id { get; private set; }
 
     [JsonProperty("accountName")]
     public string AccountName { get; set; }
@@ -24,6 +39,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public TCCDeviceStatusEnum TccDeviceStatus { get; set; }
     
 
-    public List<string> GetIdentifiers() => new List<string> { Id };
+    public List<string> GetIdentifiers() => new List<string> { TRN, Id };
   }
 }

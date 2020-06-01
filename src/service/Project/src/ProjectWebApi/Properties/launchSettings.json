@@ -1,10 +1,23 @@
 {
   "profiles": {
-    "WebApi": {
+    "WebAPI Localhost": {
       "commandName": "Project",
-      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Localhost"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "WebApi Development": {
+      "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "WebAPI Alpha": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Alpha"
       },
       "applicationUrl": "http://localhost:5000"
     }

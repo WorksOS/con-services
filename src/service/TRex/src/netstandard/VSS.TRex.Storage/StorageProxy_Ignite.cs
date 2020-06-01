@@ -266,7 +266,7 @@ namespace VSS.TRex.Storage
     /// <param name="streamName"></param>
     /// <returns></returns>
     public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelId,
-      FileSystemStreamType streamType, 
+      FileSystemStreamType streamType,
       string streamName)
     {
       try

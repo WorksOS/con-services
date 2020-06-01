@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
+#if Raptor
 using ASNode.DXF.RequestBoundaries.RPC;
 using ASNodeDecls;
+using VLPDDecls;
+#endif
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VLPDDecls;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Models.Files;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -34,20 +37,59 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<LineworkRequest>(item);
+      if (!(item is DxfFileRequest dxfRequest))
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Request is not a DxfFileRequest"));
+      }
+
+      var request = new LineworkRequest(dxfRequest).Validate();
 
       return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
-        ? ProcessForTRex(request)
+        ? await ProcessForTRex(request)
         : ProcessForRaptor(request);
     }
 
-    private DxfLineworkFileResult ProcessForTRex(LineworkRequest request)
+    private async Task<DxfLineworkFileResult> ProcessForTRex(LineworkRequest request)
     {
-      throw new NotImplementedException("TRex Gateway not yet implemented for LineworkFileExecutor");
+#if !RAPTOR
+      try
+      {
+        log.LogDebug($"{nameof(LineworkFileExecutor)}::{nameof(ProcessForTRex)}()");
+
+        var req = new DXFBoundariesRequest(request.CoordinateSystemFileData, ImportedFileType.SiteBoundary, 
+          request.DxfFileData, (DxfUnitsType)request.LineworkUnits, (uint)request.NumberOfBoundariesToProcess,
+          request.ConvertLineStringCoordsToPolygon);
+        var returnResult = await trexCompactionDataProxy.SendDataPostRequest<DxfLineworkFileResult, DXFBoundariesRequest>(req, "linework/boundaries");
+
+        log.LogInformation($"RequestBoundariesFromLineWork: result: {JsonConvert.SerializeObject(returnResult)}");
+
+        if (returnResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        {
+          throw CreateServiceException<LineworkFileExecutor>(returnResult.Code);
+        }
+
+        return new DxfLineworkFileResult(returnResult.Code, returnResult.Message, returnResult.LineworkBoundaries);
+      }
+      catch (ServiceException ex)
+      {
+        var errorMessage = ex.GetResult.Message;
+
+        log.LogError($"RequestBoundariesFromLinework: exception {errorMessage}");
+
+        return new DxfLineworkFileResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage, null);
+      }
+      finally
+      {
+        ContractExecutionStates.ClearDynamic();
+      }
+#else
+      throw new Exception("ProcessForTRex called with RAPTOR defined");
+#endif
     }
 
     private DxfLineworkFileResult ProcessForRaptor(LineworkRequest request)
     {
+#if Raptor
       var returnResult = TASNodeErrorStatus.asneUnknown;
 
       try
@@ -90,6 +132,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         ContractExecutionStates.ClearDynamic();
       }
+#else
+      throw new Exception("ProcessForRaptor called with RAPTOR not defined");
+#endif
     }
   }
 }

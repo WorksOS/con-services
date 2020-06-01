@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   ///     The signature must be retained.
   ///     BC is now compatible with jwt/TID etc.   
   /// </summary>
-  public class ProjectV5TBCController : ProjectBaseController
+  public class ProjectV5TBCController : BaseController<ProjectV5TBCController>
   {
     /// <summary>
     /// Gets or sets the httpContextAccessor.
@@ -50,18 +51,19 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates existing project</remarks>
     [Route("api/v5/projects")]
     [HttpPost]
-    public async Task<ReturnLongV5Result> CreateProjectV5TBC([FromBody] CreateProjectV5Request projectRequest)
+    public async Task<ReturnLongV5Result> CreateProjectTBC([FromBody] CreateProjectV5Request projectRequest)
     {
       if (projectRequest == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 81);
       }
 
-      Logger.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
+      Logger.LogInformation($"{nameof(CreateProjectTBC)} projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
-      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, customerUid);
+      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, CustomerUid);
 
-      ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
+      ProjectDataValidator.Validate(createProjectEvent, new Guid(CustomerUid), new Guid(UserId),
+        Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       projectRequest.CoordinateSystem =
         ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
@@ -69,9 +71,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // Read CoordSystem file from TCC as byte[]. 
       //    Filename and content are used: 
       //      validated via productivity3dProxy
-      //      created in Raptor via productivity3dProxy
-      //      stored in CreateKafkaEvent
-      //    Only Filename is stored in the VL database 
+      //      created in TRex via productivity3dProxy
+      //    Created in cws
       createProjectEvent.CoordinateSystemFileContent =
         await TccHelper
         .GetFileContentFromTcc(projectRequest.CoordinateSystem,
@@ -80,15 +81,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, null, customHeaders, 
-            Productivity3dV1ProxyCoord, projectRepo: ProjectRepo,
-            fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient, cwsDesignClient: CwsDesignClient,
+            CustomerUid, UserId, null, customHeaders, 
+            Productivity3dV1ProxyCoord, fileRepo: FileRepo, 
+            dataOceanClient: DataOceanClient, authn: Authorization,
+            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient, 
+            cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(createProjectEvent)
       );
 
-      Logger.LogDebug("CreateProjectV2. completed successfully");
+      // todo CCSSSCON-396 TBC support need to create a unique shortId for  TBC (hash from ProjectUid perhaps?)
+      Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortRaptorProjectId {createProjectEvent.ShortRaptorProjectId}");
       return ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.Created, createProjectEvent.ShortRaptorProjectId);
     }
 

@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("WriteFileToRepository: Unable to write file to TCC.", 53);
       this.DynamicAddwithOffset("Unable to delete fileDescriptor from TCC. TCC code {0} message {1}", 54);
       this.DynamicAddwithOffset("CreateImportedFile. The uploaded file is not accessible.", 55);
-      this.DynamicAddwithOffset("DeleteImportedFilev. The importedFileUid doesn't exist under this project.", 56);
+      this.DynamicAddwithOffset("DeleteImportedFile. The importedFileUid doesn't exist under this project.", 56);
       this.DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 57);
       this.DynamicAddwithOffset("CreateImportedFile. The file has already been created.", 58);
       this.DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned. {0}", 59);
@@ -129,6 +129,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Device not found in local storage", 125);
       this.DynamicAddwithOffset("Invalid DeviceUid", 126);
       this.DynamicAddwithOffset("Invalid ShortRaptorAssetId", 127);
+      this.DynamicAddwithOffset("Missing DeviceName.", 128);
     }
   }
 }

@@ -24,7 +24,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       log.LogInformation($"GetAssetOnDesignPeriodsExecutor: {JsonConvert.SerializeObject(projectIds)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")}");
 
       List<AssetOnDesignPeriod> assetOnDesignPeriods;
-      bool haveUids = true;
 
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_MACHINEDESIGNS"))
@@ -40,7 +39,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
       else
       {
-        haveUids = false;
         var raptorDesigns = raptorClient.GetOnMachineDesignEvents(projectIds.ProjectId);
 
         if (raptorDesigns == null)
@@ -63,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
               raptorClient,
 #endif
-              configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, deviceProxy: deviceProxy,
+              configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy,
               customHeaders: customHeaders, customerUid: customerUid)
             .ProcessAsync(projectIds) is MachineExecutionResult machineExecutionResult && machineExecutionResult.MachineStatuses.Count > 0)
       {

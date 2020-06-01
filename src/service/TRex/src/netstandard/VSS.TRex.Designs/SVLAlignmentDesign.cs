@@ -17,8 +17,6 @@ namespace VSS.TRex.Designs
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SVLAlignmentDesign>();
 
-    private double _cellSize;
-
     /// <summary>
     /// Represents the master guidance alignment selected from the NFFFile.
     /// </summary>
@@ -27,14 +25,19 @@ namespace VSS.TRex.Designs
     private BoundingWorldExtent3D boundingBox = BoundingWorldExtent3D.Inverted();
 
     /// <summary>
-    /// Constructs a guidance alignment design with a cell size used for computing filter patches
+    /// Constructs a guidance alignment design used for computing filter patches
     /// </summary>
-    /// <param name="cellSize"></param>
-    public SVLAlignmentDesign(double cellSize)
+    public SVLAlignmentDesign()
     {
-      _cellSize = cellSize;
-
       data = new NFFGuidableAlignmentEntity();
+    }
+
+    /// <summary>
+    /// Constructs a guidance alignment design for computing filter patches
+    /// </summary>
+    public SVLAlignmentDesign(NFFGuidableAlignmentEntity data)
+    {
+      this.data = data;
     }
 
     private struct Corner
@@ -268,5 +271,10 @@ namespace VSS.TRex.Designs
       return S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
     }
 
+    /// <summary>
+    /// Obtains the master alignment
+    /// </summary>
+    /// <returns></returns>
+    public NFFGuidableAlignmentEntity GetMasterAlignment() => data;
   }
 }

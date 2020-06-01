@@ -2,8 +2,8 @@
 {
     public enum DesignProfilerRequestResult
     {
-        OK,
         UnknownError,
+        OK,
         CouldNotConnectToServer,
         FailedToConvertClientWGSCoords,
         FailedToLoadDesignFile,

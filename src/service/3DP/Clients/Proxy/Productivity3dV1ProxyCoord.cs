@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -66,16 +67,17 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     }
 
     /// <summary>
-    /// Validates and posts to TRex/Raptor, the CoordinateSystem for the project.
+    /// Validates and posts to TRex, the CoordinateSystem for the project.
     ///  COORDSYSPOST_API_URL HttpPost "api/v1/coordsystem"
     /// </summary>
-    public async Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IHeaderDictionary customHeaders = null)
+    public async Task<CoordinateSystemSettingsResult> CoordinateSystemPost(Guid projectUid, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(CoordinateSystemPost)} coordinateSystemFileName: {coordinateSystemFileName}");
-      var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(legacyProjectId, coordinateSystemFileContent, coordinateSystemFileName);
+      var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(projectUid, coordinateSystemFileContent, coordinateSystemFileName);
 
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/coordsystem");
     }
+
 
     /// <summary>
     /// Posts the coordinate system to Raptor

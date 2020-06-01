@@ -1,5 +1,4 @@
-﻿using System.Web.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Mvc = Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using VSS.Productivity3D.Filter.Abstractions.Models;
@@ -18,9 +17,9 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Get a filter for a project by filter id.
     /// </summary>
-    [Route("api/v1/filter/{projectUid}")]
-    [HttpGet]
-    public FilterData GetMockFilter(string projectUid, [FromUri] string filterUid)
+    [Mvc.Route("api/v1/filter/{projectUid}")]
+    [Mvc.HttpGet]
+    public FilterData GetMockFilter(string projectUid, [Mvc.FromQuery] string filterUid)
     {
       Logger.LogInformation($"{nameof(GetMockFilter)}: projectUid={projectUid}, filterUid={filterUid}");
 
@@ -30,8 +29,8 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Gets the filters for a given project.
     /// </summary>
-    [Route("api/v1/filters/{projectUid}")]
-    [HttpGet]
+    [Mvc.Route("api/v1/filters/{projectUid}")]
+    [Mvc.HttpGet]
     public FilterListData GetMockFilters(string projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockFilters)}: projectUid={projectUid}");

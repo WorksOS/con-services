@@ -6,7 +6,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
   public class DeviceLicenseResponseModel : IMasterDataModel
   {
-    public const int FREE_DEVICE_LICENSE = -1;
     /// <summary>
     /// Total number of device licenses. Value -1 means a free license.
     /// </summary>
@@ -14,6 +13,5 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public int Total { get; set; }
 
     public List<string> GetIdentifiers() => new List<string>();
-
   }
 }

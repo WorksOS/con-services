@@ -19,6 +19,7 @@ using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Proxy;
+using VSS.Productivity3D.TagFileGateway.Common.Services;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileGateway
@@ -61,6 +62,8 @@ namespace VSS.Productivity3D.TagFileGateway
 
             services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
             services.AddSingleton<CacheInvalidationService>();
+
+            services.AddHostedService<TagFileSqsService>();
 
             services.AddOpenTracing(builder =>
             {

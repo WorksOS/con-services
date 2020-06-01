@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
 using VSS.Common.ServiceDiscovery;
 using Xunit;
 using System.Linq;
+using VSS.Common.Abstractions.Clients.CWS;
 
 namespace CCSS.CWS.Client.UnitTests.Staging
 {
@@ -53,7 +53,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
 
       var result = await client.GetDeviceLicenses(new Guid(accountId), headers);
       Assert.NotNull(result);
-      Assert.Equal(DeviceLicenseResponseModel.FREE_DEVICE_LICENSE, result.Total);
+      Assert.Equal(10, result.Total);
     }
   }
 }

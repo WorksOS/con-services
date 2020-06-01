@@ -11,10 +11,19 @@ namespace VSS.TRex.SiteModels.Interfaces
   /// </summary>
   public interface ISiteModels
   {
-    ISiteModel GetSiteModel(Guid ID);
-    ISiteModel GetSiteModel(Guid ID, bool CreateIfNotExist);
+    ISiteModel GetSiteModel(Guid id);
+    ISiteModel GetSiteModel(Guid id, bool createIfNotExist);
 
-    void DropSiteModel(Guid ID);
+    /// <summary>
+    /// Retrieves a site model from persistent storage with no reference to cached
+    /// site models, or attributes of the site model that might otherwise affect its
+    /// retrieval, such as being marked for deletion
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    ISiteModel GetSiteModelRaw(Guid id);
+
+    void DropSiteModel(Guid id);
 
     IStorageProxy PrimaryMutableStorageProxy { get; }
     IStorageProxy PrimaryImmutableStorageProxy { get; }

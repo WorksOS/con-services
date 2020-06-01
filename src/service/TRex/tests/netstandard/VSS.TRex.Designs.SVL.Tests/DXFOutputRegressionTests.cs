@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL.DXF;
+using VSS.TRex.Geometry;
 using Xunit;
 
 namespace VSS.TRex.Designs.SVL.Tests

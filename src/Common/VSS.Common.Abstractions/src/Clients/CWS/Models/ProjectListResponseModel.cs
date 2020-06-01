@@ -33,40 +33,69 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 
   public class ProjectResponseModel : IMasterDataModel
   {
+    private string _accountTrn;
+    private string _projectTrn;
+
     //Note: There are other properties returned but we only want some of it
 
     /// <summary>
     /// account TRN ID
     /// </summary>
     [JsonProperty("accountId")]
-    public string accountId { get; set; }
+    public string AccountTRN
+    {
+      get => _accountTrn;
+      set
+      {
+        _accountTrn = value;
+        AccountId = TRNHelper.ExtractGuidAsString(value);
+      }
+    }
+
+    /// <summary>
+    /// WorksOS account ID; the Guid extracted from the TRN.
+    /// </summary>}
+    public string AccountId { get; private set; }
 
     /// <summary>
     /// project TRN ID
     /// </summary>
     [JsonProperty("projectId")]
-    public string projectId { get; set; }
+    public string ProjectTRN
+    {
+      get => _projectTrn;
+      set
+      {
+        _projectTrn = value;
+        ProjectId = TRNHelper.ExtractGuidAsString(value);
+      }
+    }
+
+    /// <summary>
+    /// WorksOS project ID; the Guid extracted from the TRN.
+    /// </summary>
+    public string ProjectId { get; private set; }
 
     /// <summary>
     /// Project name
     /// </summary>
     [JsonProperty("projectName")]
-    public string projectName { get; set; }
+    public string ProjectName { get; set; }
 
     /// <summary>
     /// cws example = "America/Denver"
     /// </summary>
     [JsonProperty("timezone")]
-    public string timezone { get; set; }
+    public string Timezone { get; set; }
 
     /// <summary>
     /// 3dp supports what types?
     /// </summary>
     [JsonProperty("boundary")]
-    public ProjectBoundary boundary { get; set; }
+    public ProjectBoundary Boundary { get; set; }
 
     public List<string> GetIdentifiers() => 
-      new List<string>   { projectId };
+      new List<string>   { ProjectTRN, ProjectId };
 
   }
 }

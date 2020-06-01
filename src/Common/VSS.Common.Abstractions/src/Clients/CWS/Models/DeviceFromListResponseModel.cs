@@ -7,6 +7,8 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
   public class DeviceFromListResponseModel : IMasterDataModel
   {
+    private string _trn;
+
     //Note: There are other properties returned but we only want some of it
     //   This is returned from a listDeviceFromAccount and returned different fields
     //      to say get deviceBySerial or deviceTRN
@@ -14,7 +16,20 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// Device TRN ID
     /// </summary>
     [JsonProperty("deviceId")]
-    public string Id { get; set; }
+    public string TRN
+    {
+      get => _trn;
+      set
+      {
+        _trn = value;
+        Id = TRNHelper.ExtractGuidAsString(value);
+      }
+    }
+
+    /// <summary>
+    /// WorksOS device ID; the Guid extracted from the TRN.
+    /// </summary>
+    public string Id { get; private set; }
 
     /// <summary>
     /// deviceType
@@ -46,6 +61,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("tccDeviceStatus")]
     public TCCDeviceStatusEnum TccDeviceStatus { get; set; }
 
-    public List<string> GetIdentifiers() => new List<string> { Id };
+    public List<string> GetIdentifiers() => new List<string> { TRN, Id };
   }
 }

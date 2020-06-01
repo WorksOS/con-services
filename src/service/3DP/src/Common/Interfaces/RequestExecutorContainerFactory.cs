@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       IConfigurationStore configStore = null, IFileRepository fileRepo = null,
       ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null,
       ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexConnectedSiteProxy tRexConnectedSiteProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
-      IDeviceProxy deviceProxy = null, IHeaderDictionary customHeaders = null, string customerUid = null)
+      IHeaderDictionary customHeaders = null, string customerUid = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -51,7 +51,6 @@ namespace VSS.Productivity3D.Common.Interfaces
         tRexTagFileProxy,
         tRexConnectedSiteProxy,
         trexCompactionDataProxy,
-        deviceProxy,
         customHeaders,
         customerUid);
 

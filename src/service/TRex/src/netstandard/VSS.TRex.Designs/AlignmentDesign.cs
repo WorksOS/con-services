@@ -7,8 +7,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Interfaces;
-using SubGridUtilities = VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities;
 
 namespace VSS.TRex.Designs
 {

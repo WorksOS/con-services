@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -30,7 +31,7 @@ namespace CCSS.CWS.Client.MockClients
 
       var deviceResponseModel = new DeviceResponseModel()
       {
-        Id = Guid.NewGuid().ToString(),
+        TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
         DeviceType = "EC520",
         DeviceName = "this is a device",
         SerialNumber = serialNumber
@@ -45,7 +46,7 @@ namespace CCSS.CWS.Client.MockClients
       
       var deviceResponseModel = new DeviceResponseModel()
       {
-        Id = deviceUid.ToString(),
+        TRN = TRNHelper.MakeTRN(deviceUid.ToString(),TRNHelper.TRN_DEVICE),
         DeviceType = "EC520",
         DeviceName = "this is a device",
         SerialNumber = "56556565"
@@ -55,6 +56,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(deviceResponseModel);
     }
 
+    /* obsolete
     public Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: accountUid {accountUid}");
@@ -65,7 +67,7 @@ namespace CCSS.CWS.Client.MockClients
         {
           new DeviceFromListResponseModel()
           {
-            Id = Guid.NewGuid().ToString(),
+            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_DEVICE),
             DeviceType = "EC520",
             DeviceName = "this is a device",
             SerialNumber = "56556565",
@@ -78,6 +80,7 @@ namespace CCSS.CWS.Client.MockClients
       log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return Task.FromResult(deviceListResponseModel);
     }
+    */
 
     public Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
@@ -89,14 +92,14 @@ namespace CCSS.CWS.Client.MockClients
         {
           new ProjectResponseModel()
           {
-            accountId = Guid.NewGuid().ToString(),
-            projectId = Guid.NewGuid().ToString(),
-            projectName = "this is a project",
-            timezone = "Timbucktoo",
-            boundary = new ProjectBoundary()
+            AccountTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_ACCOUNT),
+            ProjectTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString()),
+            ProjectName = "this is a project",
+            Timezone = "Timbucktoo",
+            Boundary = new ProjectBoundary()
             {
               type = "Polygon",
-              coordinates = new List<double[,]>() { { new double[2, 2] { { 180, 90 }, { 180, 90 } } } }
+              coordinates = new List<List<double[]>> { new List<double[]> { new[] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } }
             }
           }
         }
@@ -116,7 +119,7 @@ namespace CCSS.CWS.Client.MockClients
         {
           new DeviceAccountResponseModel()
           {
-            Id = Guid.NewGuid().ToString(),
+            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_DEVICE),
             AccountName = "an account name",
             RelationStatus = RelationStatusEnum.Active,
             TccDeviceStatus = TCCDeviceStatusEnum.Pending

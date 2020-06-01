@@ -46,18 +46,6 @@ namespace VSS.Productivity3D.Project.Proxy
       return result.DeviceDescriptor;
     }
 
-    public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IHeaderDictionary customHeaders = null)
-    {
-      log.LogDebug($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
-      var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("shortRaptorAssetId", shortRaptorAssetId.ToString()) };
-      var result = await GetMasterDataItemServiceDiscovery<DeviceDataSingleResult>($"/device/shortRaptorAssetId",
-        shortRaptorAssetId.ToString(), null,
-        customHeaders, queryParams);
-
-      log.LogDebug($"{nameof(GetDevice)} get device for shortRaptorAssetId {shortRaptorAssetId} result: {result.Code}, {result.Message}");
-      return result.DeviceDescriptor;
-    }
-    
     public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForDevice)} deviceUid: {deviceUid}");

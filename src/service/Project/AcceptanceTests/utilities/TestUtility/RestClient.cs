@@ -79,7 +79,7 @@ namespace TestUtility
           {
             case MediaTypes.JSON:
               {
-                Console.WriteLine($"GetProjectDetailsViaWebApiV4. response: {JsonConvert.SerializeObject(responseStream)}");
+                Console.WriteLine($"SendHttpClientRequest. response: {JsonConvert.SerializeObject(responseStream)}");
 
                 return responseStream;
               }

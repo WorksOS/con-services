@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ASNodeDecls;
-using VLPDDecls;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Algorithms;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models.MapHandling;
-using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -21,16 +19,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
   /// </remarks>
   public class DxfLineworkFileResult : ContractExecutionResult
   {
-    public TWGS84LineworkBoundary[] LineworkBoundaries { get; }
+    public WGS84LineworkBoundary[] LineworkBoundaries { get; }
 
-    public DxfLineworkFileResult(TASNodeErrorStatus code, string message, TWGS84LineworkBoundary[] lineworkBoundaries)
+    public DxfLineworkFileResult(int code, string message, WGS84LineworkBoundary[] lineworkBoundaries) : base (code, message)
     {
       LineworkBoundaries = lineworkBoundaries;
-      Message = message;
-      Code = (int)code;
     }
 
-    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon, int maxVerticiesToApproximateTo)
+    public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon, int maxVerticesToApproximateTo)
     {
       if (LineworkBoundaries == null) return null;
 
@@ -43,8 +39,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       foreach (var boundary in LineworkBoundaries)
       {
         var fencePoints = DouglasPeucker.DouglasPeuckerByCount(
-          boundary.Boundary.FencePoints.Select(p => new WGSPoint(p.Lat, p.Lon)).ToArray(), 
-          maxVerticiesToApproximateTo);
+          boundary.Boundary.Select(p => new WGSPoint(p.Lat, p.Lon)).ToArray(),
+          maxVerticesToApproximateTo);
 
         geoJson.Features.Add(new Feature
         {

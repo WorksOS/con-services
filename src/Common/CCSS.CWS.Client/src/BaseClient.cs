@@ -24,19 +24,33 @@ namespace CCSS.CWS.Client
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
 
+    protected int FromRow = 0;
+    protected int RowCount = 200;
+
     protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
-     IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
-     dataCache, serviceResolution)
-    {
-    }
+      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
+      dataCache, serviceResolution)
+    { }
 
     // NOTE: must have a uid or userId for cache key
-    protected Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
+    protected async Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
-      return GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
-        customHeaders, parameters);
+      try
+      {
+        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(), customHeaders, parameters);
+        return result;
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return null;
+        }
+
+        throw;
+      }
     }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
@@ -44,10 +58,23 @@ namespace CCSS.CWS.Client
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
+
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return null;
+        }
+
+        throw;
+      }
     }
 
     protected async Task PostData<TReq>(string route,
@@ -55,10 +82,22 @@ namespace CCSS.CWS.Client
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return;
+        }
+
+        throw;
+      }
     }
 
     protected Task UploadData(string uploadUrl, Stream payload,
@@ -67,16 +106,40 @@ namespace CCSS.CWS.Client
       return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
 
-    protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
+    protected async Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {
-      return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
+      try
+      {
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return null;
+        }
+
+        throw;
+      }
     }
 
-    protected Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
+    protected async Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null)
     {
-      return SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
+      try
+      {
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return;
+        }
+
+        throw;
+      }
     }
 
     protected async Task<TRes> UpdateData<TReq, TRes>(string route,
@@ -84,11 +147,23 @@ namespace CCSS.CWS.Client
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-      return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return null;
+        }
+
+        throw;
+      }
     }
 
     protected async Task UpdateData<TReq>(string route,
@@ -96,11 +171,28 @@ namespace CCSS.CWS.Client
       IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TReq : class
     {
-      var payload = JsonConvert.SerializeObject(request);
+      try
+      {
+        var payload = JsonConvert.SerializeObject(request);
 
-      using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-      // Need to await this, as we need the stream (if we return the task, the stream is disposed)
-      await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return;
+        }
+
+        throw;
+      }
+    }
+
+    protected List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
+    {
+      return new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("from", fromRow.ToString()), new KeyValuePair<string, string>("limit", rowCount.ToString()) };
     }
   }
 }

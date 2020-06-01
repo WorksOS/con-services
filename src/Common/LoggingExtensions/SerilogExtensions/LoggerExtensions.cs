@@ -8,6 +8,7 @@ namespace VSS.Serilog.Extensions
     /// To save time in this code, we won't bother building a string to log if isn't going to be logged
     /// </summary>
     private static bool? _isTraceEnabled;
+    private static bool? _isDebugEnabled;
 
     public static bool IsTraceEnabled(this ILogger logger)
     {
@@ -27,6 +28,26 @@ namespace VSS.Serilog.Extensions
       }
 
       return _isTraceEnabled.Value;
+    }
+
+    public static bool IsDebugEnabled(this ILogger logger)
+    {
+      if (!_isDebugEnabled.HasValue)
+      {
+        _isDebugEnabled = logger.IsEnabled(LogLevel.Debug);
+      }
+
+      return _isDebugEnabled.Value;
+    }
+
+    public static bool IsDebugEnabled<T>(this ILogger<T> logger)
+    {
+      if (!_isDebugEnabled.HasValue)
+      {
+        _isDebugEnabled = logger.IsEnabled(LogLevel.Debug);
+      }
+
+      return _isDebugEnabled.Value;
     }
   }
 }

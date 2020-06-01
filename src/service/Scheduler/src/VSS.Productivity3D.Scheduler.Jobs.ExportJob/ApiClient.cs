@@ -62,19 +62,13 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         // We need to handle both cases differently, as we could lose data if converting binary information to a string
         if (jobRequest.IsBinaryData)
         {
-          using (var ms = new MemoryStream(jobRequest.PayloadBytes))
-          {
-            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms,
-              jobRequest.Timeout, 0);
-          }
+          using var ms = new MemoryStream(jobRequest.PayloadBytes);
+          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
         }
         else if (!string.IsNullOrEmpty(jobRequest.Payload))
         {
-          using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload)))
-          {
-            result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders,
-              ms, jobRequest.Timeout, 0);
-          }
+          using var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload));
+          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
         }
         else
         {

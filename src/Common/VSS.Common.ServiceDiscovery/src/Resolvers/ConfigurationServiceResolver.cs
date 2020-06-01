@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
 
 namespace VSS.Common.ServiceDiscovery.Resolvers
 {
@@ -16,24 +14,24 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
   {
     private const int DEFAULT_PRIORITY = 100;
 
-    private readonly ILogger<ConfigurationServiceResolver> logger;
-    private readonly IConfigurationStore configuration;
+    private readonly ILogger<ConfigurationServiceResolver> _logger;
+    private readonly IConfigurationStore _configuration;
 
     public ConfigurationServiceResolver(ILogger<ConfigurationServiceResolver> logger, IConfigurationStore configuration)
     {
-      this.logger = logger;
-      this.configuration = configuration;
+      _logger = logger;
+      _configuration = configuration;
       Priority = configuration.GetValueInt("ConfigurationServicePriority", DEFAULT_PRIORITY);
     }
 
     public Task<string> ResolveService(string serviceName)
     {
-      var configValue = configuration.GetValueString(serviceName, null);
-      configValue = configValue ?? configuration.GetValueString(serviceName.Replace('-','_'), null);
+      var configValue = _configuration.GetValueString(serviceName, null);
+      configValue ??= _configuration.GetValueString(serviceName.Replace('-', '_'), null);
 
       if (!string.IsNullOrEmpty(configValue))
       {
-        logger.LogDebug($"Service `{serviceName}` was found in configuration");
+        _logger.LogDebug($"Service `{serviceName}` was found in configuration");
         return Task.FromResult(configValue);
       }
 

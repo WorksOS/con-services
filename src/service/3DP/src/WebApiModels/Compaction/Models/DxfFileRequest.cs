@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Http;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
@@ -46,12 +47,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     {
       if (file == null || file.Length <= 0) { return null; }
 
-      using (var ms = new MemoryStream())
-      {
-        file.CopyTo(ms);
+      using var ms = new MemoryStream();
+      file.CopyTo(ms);
 
-        return ms.ToArray();
-      }
+      return ms.ToArray();
     }
+
+    public string GetFileAsBase64EncodedString(IFormFile file) => Convert.ToBase64String(GetFileAsByteArray(file));
   }
 }

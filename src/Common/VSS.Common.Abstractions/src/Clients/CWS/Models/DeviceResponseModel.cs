@@ -6,6 +6,8 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
   public class DeviceResponseModel : IMasterDataModel
   {
+    private string _trn;
+
     //Note: There are other properties returned but we only want some of it
     //    Would save us a lot of work if we could get accountId, and 2xstatus here
     //   getdeviceBySerialNumber also has: deviceNickname, description NO deviceName
@@ -15,7 +17,20 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// Device TRN ID
     /// </summary>
     [JsonProperty("deviceId")]
-    public string Id { get; set; }
+    public string TRN
+    {
+      get => _trn;
+      set
+      {
+        _trn = value;
+        Id = TRNHelper.ExtractGuidAsString(value);
+      }
+    }
+
+    /// <summary>
+    /// WorksOS device ID; the Guid extracted from the TRN.
+    /// </summary>
+    public string Id { get; private set; }
 
     /// <summary>
     /// deviceType
@@ -35,6 +50,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("serialNumber")]
     public string SerialNumber { get; set; }
 
-    public List<string> GetIdentifiers() => new List<string> { Id };
+    public List<string> GetIdentifiers() => new List<string> { TRN, Id };
   }
 }

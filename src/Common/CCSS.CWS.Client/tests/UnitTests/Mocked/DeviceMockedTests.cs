@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -32,7 +33,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       const string expectedSerialNumber = serialNumber;
 
       var deviceResponseModel = new DeviceResponseModel() 
-        { Id = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber};
+        { TRN = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber};
       
       var route = $"/devices/getDeviceWithSerialNumber";
       var queryParameters = new List<KeyValuePair<string, string>>{
@@ -65,7 +66,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       const string expectedSerialNumber = "2002J032SW";
 
       var deviceResponseModel = new DeviceResponseModel()
-      { Id = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber };
+      { TRN= expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber };
 
       var route = $"/devices/{DeviceId}";
       var expectedUrl = $"{baseUrl}{route}";
@@ -86,6 +87,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       });
     }
 
+    /* obsolete
     [Fact]
     public void GetDevicesForAccountTest()
     {
@@ -102,7 +104,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         HasMore = false,
         Devices = new List<DeviceFromListResponseModel>()
         {
-          new DeviceFromListResponseModel() {Id = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber, RelationStatus = relationStatus, TccDeviceStatus = tccDeviceStatus}
+          new DeviceFromListResponseModel() {TRN = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber, RelationStatus = relationStatus, TccDeviceStatus = tccDeviceStatus}
         }
       };
       var route = $"/accounts/{accountId}/devices";
@@ -126,6 +128,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         return true;
       });
     }
+    */
 
     [Fact]
     public void GetProjectsForDeviceTest()
@@ -139,10 +142,10 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         HasMore = false,
         Projects = new List<ProjectResponseModel>()
         {
-          new ProjectResponseModel() {projectId = expectedProjectTrn, accountId = expectedAccountTrn}
+          new ProjectResponseModel() {ProjectTRN = expectedProjectTrn, AccountTRN = expectedAccountTrn}
         }
       };
-      var route = $"/device/{deviceTrn}/projects";
+      var route = $"/devices/{deviceTrn}/projects";
       var expectedUrl = $"{baseUrl}{route}?from=0&limit=20";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
@@ -156,8 +159,8 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Assert.False(result.HasMore);
         Assert.NotNull(result.Projects);
         Assert.Single(result.Projects);
-        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedProjectTrn), result.Projects[0].projectId);
-        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedAccountTrn), result.Projects[0].accountId);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedProjectTrn), result.Projects[0].ProjectId);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedAccountTrn), result.Projects[0].AccountId);
         return true;
       });
     }
@@ -176,7 +179,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         {
           new DeviceAccountResponseModel() 
           {
-            Id = expectedAccountTrn, 
+            TRN = expectedAccountTrn, 
             AccountName = "an account name",
             RelationStatus = RelationStatusEnum.Active,
             TccDeviceStatus = TCCDeviceStatusEnum.Pending

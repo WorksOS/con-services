@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL.DXF
 {

@@ -38,7 +38,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       }
 
       var validType = (importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment)
-                      || importedFileType == ImportedFileType.ReferenceSurface || importedFileType == ImportedFileType.GeoTiff;
+                      || importedFileType == ImportedFileType.ReferenceSurface || importedFileType == ImportedFileType.GeoTiff
+                      || (importedFileType >= ImportedFileType.CwsCalibration && importedFileType <= ImportedFileType.CwsGcsCalibration);
       if (!validType)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -53,7 +54,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
               importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
               importedFileType == ImportedFileType.Alignment && fileExtension == ".svl" ||
-              importedFileType == ImportedFileType.GeoTiff && fileExtension == ".tif"))
+              importedFileType == ImportedFileType.GeoTiff && fileExtension == ".tif" ||
+              importedFileType == ImportedFileType.CwsCalibration && (fileExtension == ".dc" || fileExtension == ".cal") ||
+              importedFileType == ImportedFileType.CwsGeoid && fileExtension == ".ggf" ||
+              importedFileType == ImportedFileType.CwsControlPoints && (fileExtension == ".cpz" || fileExtension == ".csv") ||
+              importedFileType == ImportedFileType.CwsAvoidanceZone && (fileExtension == ".svl" || fileExtension == ".dxf") ||
+              importedFileType == ImportedFileType.CwsFeatureCode && fileExtension == ".fxl" ||
+              importedFileType == ImportedFileType.CwsSiteConfiguration && fileExtension == ".xml" ||
+              importedFileType == ImportedFileType.CwsGcsCalibration && fileExtension == ".cfg")) 
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),

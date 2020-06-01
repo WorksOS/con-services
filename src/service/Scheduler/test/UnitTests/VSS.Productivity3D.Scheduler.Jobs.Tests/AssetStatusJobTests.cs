@@ -44,7 +44,6 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     private Mock<IFleetAssetDetailsProxy> mockFleetAssetDetails = new Mock<IFleetAssetDetailsProxy>();
     private Mock<IFleetAssetSummaryProxy> mockAssetSummaryProxy = new Mock<IFleetAssetSummaryProxy>();
     private Mock<IProductivity3dV2ProxyNotification> mockProductivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-    private Mock<IDeviceProxy> mockDeviceProxy = new Mock<IDeviceProxy>();
 
     [TestInitialize]
     public void TestInitialize()
@@ -58,7 +57,6 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
                        .AddSingleton(mockFleetAssetDetails.Object)
                        .AddSingleton(mockAssetSummaryProxy.Object)
                        .AddSingleton(mockProductivity3dV2ProxyNotification.Object)
-                       .AddSingleton(mockDeviceProxy.Object)
                        .AddTransient<IJob, AssetStatusJob.AssetStatusJob>() // This is the class we are testing
                        .BuildServiceProvider();
 
@@ -67,7 +65,6 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       mockFleetAssetDetails.Reset();
       mockAssetSummaryProxy.Reset();
       mockProductivity3dV2ProxyNotification.Reset();
-      mockDeviceProxy.Reset();
 
       loggerFactory = serviceProvider.GetService<ILoggerFactory>();
     }
@@ -259,12 +256,6 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
             It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(machineResult));
 
-      mockDeviceProxy
-        .Setup(m => m.GetMatchingDevices(
-          It.IsAny<List<long>>(),
-          It.IsAny<IHeaderDictionary>()))
-        .Returns(Task.FromResult<IEnumerable<KeyValuePair<Guid, long>>>(null));
-
       mockAssetStatusServerHubClient
         .Setup(m => m.UpdateAssetLocationsForClient(It.IsAny<AssetAggregateStatus>()))
         .Returns(Task.FromResult(true))
@@ -274,11 +265,6 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       job.Run(null).Wait();
 
       // Validate the calls
-      mockDeviceProxy
-        .Verify(m => m.GetMatchingDevices(
-            It.Is<List<long>>(l => l.Count == 1 && l[0] == machine1.AssetId),
-            It.Is<IHeaderDictionary>(d => DictionaryContentEquals(d, expectedHeaders))),
-          Times.Once);
 
       // CCSSSCON-85 not possible with WM devices
       //// We should not call this if we have not matching 3d/2d assets
@@ -315,6 +301,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         JWTAssertion = "TEST JWT"
       };
 
+      var assetUid = "47C03885-4845-4637-90B5-4CCE5D8DA040";
+
       var machine = new MachineStatus(55743,
         "Test Machine from 3d",
         true,
@@ -324,7 +312,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         0.59915074193701334, // radians
         -1.470376021323053, // radians
         null,
-        null);
+        null,
+        Guid.Parse(assetUid));
 
       var machineResult = new Machine3DStatuses(ContractExecutionStatesEnum.ExecutedSuccessfully);
       machineResult.MachineStatuses.Add(machine);
@@ -332,7 +321,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       var assetDetails = new AssetDetails()
       {
         AssetId = "55743 - test",
-        AssetUid = "47C03885-4845-4637-90B5-4CCE5D8DA040",
+        AssetUid = assetUid,
         LastReportedLocationLatitude = 123.45d,
         LastReportedLocationLongitude = 43.1d,
         LastLocationUpdateUtc = machine.lastKnownTimeStamp.Value.AddSeconds(1),
@@ -345,7 +334,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
         CustomerUid = subscription.CustomerUid,
         ProjectUid = subscription.ProjectUid,
         LocationLastUpdatedUtc = assetDetails.LastLocationUpdateUtc.ToUniversalTime(),
-        AssetUid = Guid.Parse("47C03885-4845-4637-90B5-4CCE5D8DA040"),
+        AssetUid = Guid.Parse(assetUid),
         Design = machine.lastKnownDesignName,
         FuelLevel = assetDetails.FuelLevelLastReported,
         FuelLevelLastUpdatedUtc = assetDetails.FuelReportedTimeUtc,
@@ -372,15 +361,6 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
             It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(machineResult));
 
-      mockDeviceProxy
-        .Setup(m => m.GetMatchingDevices(
-          It.IsAny<List<long>>(),
-          It.IsAny<IHeaderDictionary>()))
-        .Returns(Task.FromResult<IEnumerable<KeyValuePair<Guid, long>>>(new KeyValuePair<Guid, long>[]
-        {
-          new KeyValuePair<Guid, long>(Guid.Parse(assetDetails.AssetUid), machine.AssetId),
-        }));
-
       mockFleetAssetDetails
         .Setup(m => m.GetAssetDetails(
           It.IsAny<string>(),
@@ -396,12 +376,6 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       job.Run(null).Wait();
 
       // Validate the calls
-      mockDeviceProxy
-        .Verify(m => m.GetMatchingDevices(
-            It.Is<List<long>>(l => l.Count == 1 && l[0] == machine.AssetId),
-            It.Is<IHeaderDictionary>(d => DictionaryContentEquals(d, expectedHeaders))),
-          Times.Once);
-
       // We should have this called for our asset uid which matched to the 3d asset id
       mockFleetAssetDetails
         .Verify(m => m.GetAssetDetails(

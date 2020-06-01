@@ -2,14 +2,14 @@
 {
   public enum ProjectConfigurationFileType
   {
-    CALIBRATION = 0,     // WM supports .dc .cal
-    AVOIDANCE_ZONE,      // WM supports .avoid.svl, .avoid.dxf
-    CONTROL_POINTS,      // WM supports .office.csv, .cpz
-    GEOID,               // WM supports .ggf 
-    FEATURE_CODE,        // WM supports .fxl
-    SITE_CONFIGURATION,  // WM supports site.xml
-    SITE_MAP,            // WM supports ??
-    GCS_CALIBRATION      // WM supports .cfg
+    CALIBRATION = 0,         // WM supports .dc .cal
+    AVOIDANCE_ZONE = 1,      // WM supports .avoid.svl, .avoid.dxf
+    CONTROL_POINTS = 2,      // WM supports .office.csv, .cpz
+    GEOID = 3,               // WM supports .ggf 
+    FEATURE_CODE = 4,        // WM supports .fxl
+    SITE_CONFIGURATION = 5,  // WM supports site.xml
+    SITE_MAP = 6,            // WM supports ??
+    GCS_CALIBRATION = 7      // WM supports .cfg
   }
 
   // also design files:

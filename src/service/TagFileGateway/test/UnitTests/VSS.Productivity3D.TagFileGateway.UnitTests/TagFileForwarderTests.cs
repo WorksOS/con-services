@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,7 +28,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     {
         private static IServiceProvider _serviceProvider;
         private static ILoggerFactory _logger;
-        private static Dictionary<string, string> _customHeaders;
+        private static IHeaderDictionary _customHeaders;
 
         private static Mock<IConfigurationStore> _mockStore = new Mock<IConfigurationStore>();
 
@@ -56,7 +57,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         .BuildServiceProvider();
 
             _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
-            _customHeaders = new Dictionary<string, string>();
+            _customHeaders = new HeaderDictionary();
         }
 
         [Fact]
@@ -69,7 +70,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             };
             forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
                 "/tagfiles/direct",
-                It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
+                It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))))
               .Returns(Task.FromResult(new ContractExecutionResult(0)));
 
             var result = forwarder.Object.SendTagFileDirect(request, _customHeaders).Result;
@@ -80,7 +81,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             // Validate we only tried to send the file once - with the correct values
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles/direct",
-              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Once);
+              It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))), Times.Once);
         }
 
         [Fact]
@@ -93,7 +94,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             };
             forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
                 "/tagfiles",
-                It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
+                It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))))
               .Returns(Task.FromResult(new ContractExecutionResult(0)));
 
             var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
@@ -104,7 +105,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             // Validate we only tried to send the file once - with the correct values
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles",
-              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Once);
+              It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))), Times.Once);
         }
 
         [Fact]
@@ -118,7 +119,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             };
             forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
                 "/tagfiles",
-                It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
+                It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))))
               .Callback(() => callCount++)
               .Returns(() =>
               {
@@ -134,7 +135,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles",
-              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(1));
+              It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))), Times.Exactly(1));
         }
 
         [Fact]
@@ -148,7 +149,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             };
             forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
                 "/tagfiles",
-                It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
+                It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))))
               .Callback(() => callCount++)
               .Returns(() =>
               {
@@ -165,7 +166,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles",
-              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(2));
+              It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))), Times.Exactly(2));
         }
 
         [Fact]
@@ -179,7 +180,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             };
             forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
                 "/tagfiles",
-                It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
+                It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))))
               .Callback(() => callCount++)
               .Returns(() =>
               {
@@ -196,7 +197,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles",
-              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(2));
+              It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))), Times.Exactly(2));
         }
 
         [Fact]
@@ -209,7 +210,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             };
             forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
                 "/tagfiles",
-                It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
+                It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))))
               .Returns(() =>
               {
                   throw new Exception("mock-message");
@@ -230,7 +231,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
           
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles",
-              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(3));
+              It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders))), Times.Exactly(3));
         }
     }
 }

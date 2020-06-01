@@ -6,12 +6,27 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
   public class AccountResponseModel : IMasterDataModel
   {
+    private string _trn;
+
     //Note: There are other properties returned but we only want the account id and name
     /// <summary>
     /// Account TRN ID
     /// </summary>
     [JsonProperty("accountId")]
-    public string Id { get; set; }
+    public string TRN
+    {
+      get => _trn;
+      set
+      {
+        _trn = value;
+        Id = TRNHelper.ExtractGuidAsString(value);
+      }
+    }
+   
+    /// <summary>
+    /// WorksOS account ID; the Guid extracted from the TRN.
+    /// </summary>
+    public string Id { get; private set; }
 
     /// <summary>
     /// Account Name
@@ -38,9 +53,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public int ProjectCount { get; set; }
 
 
-    public List<string> GetIdentifiers() => new List<string>
-    {
-      Id
-    };
+    public List<string> GetIdentifiers() => new List<string> { TRN, Id };
   }
 }

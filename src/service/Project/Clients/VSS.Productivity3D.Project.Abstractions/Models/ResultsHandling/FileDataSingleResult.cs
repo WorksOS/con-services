@@ -1,4 +1,5 @@
-﻿using VSS.MasterData.Models.Models;
+﻿using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
@@ -8,11 +9,13 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
   public class FileDataSingleResult : BaseDataResult
   {
     /// <summary>
-    /// Gets or sets the ImportedFile descriptors.
+    /// The file descriptor for a 3dpm imported file
     /// </summary>
-    /// <value>
-    /// The ImportedFile descriptors.
-    /// </value>
     public FileData ImportedFileDescriptor { get; set; }
+
+    /// <summary>
+    /// The file descriptor for a CWS project configuration file
+    /// </summary>
+    public ProjectConfigurationFileResponseModel ProjectConfigFileDescriptor { get; set; }
   }
 }

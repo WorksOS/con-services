@@ -29,7 +29,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     protected static Mock<IASNodeClient> raptorClient;
 #endif
     protected static Mock<IConfigurationStore> configStore;
-    protected static Mock<IDeviceProxy> deviceProxy;
 
     protected static void Init()
     {
@@ -45,7 +44,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       raptorClient = new Mock<IASNodeClient>();
 #endif
       configStore = new Mock<IConfigurationStore>();
-      deviceProxy = new Mock<IDeviceProxy>();
     }
 
     protected void GetTRexMachineIdsMock(List<MachineStatus> machineStatusList, Guid projectUid,
@@ -61,7 +59,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineExecutionResult>(projectUid.ToString(),
           It.IsAny<string>(),
           It.IsAny<IHeaderDictionary>(),
-          It.IsAny<IHeaderDictionary>()))
+          It.IsAny<List<KeyValuePair<string, string>>>()))
         .ReturnsAsync(expectedMachineExecutionResult);
 
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINES")).Returns(enableTRexGateway);

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.MasterData.Proxies;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -24,7 +23,7 @@ namespace MockProjectWebApi.Controllers
         {
           new AccountResponseModel
           {
-            Id = TRNHelper.MakeTRN(HttpContext.Request.Headers["X-VisionLink-CustomerUID"], TRNHelper.TRN_ACCOUNT),
+            TRN = TRNHelper.MakeTRN(HttpContext.Request.Headers["X-VisionLink-CustomerUID"], TRNHelper.TRN_ACCOUNT),
             Name = "Customer from header in TIDAuthentication"
           }
         }

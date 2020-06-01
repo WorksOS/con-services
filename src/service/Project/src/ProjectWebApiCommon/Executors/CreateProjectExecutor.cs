@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -26,20 +25,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var createProjectEvent = CastRequestObjectTo<CreateProjectEvent>(item, errorCode: 68);
 
       ProjectRequestHelper.ValidateProjectBoundary(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
-      await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(createProjectEvent,
+      await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(
+        createProjectEvent.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileContent,
         serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
-      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
-        createProjectEvent.ProjectUID, createProjectEvent.ProjectBoundary,
-        log, serviceExceptionHandler, projectRepo);
+      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID,
+        null, new Guid(userId), createProjectEvent.ProjectBoundary,
+        log, serviceExceptionHandler, cwsProjectClient, customHeaders);
 
       // Write to WM first to obtain their ProjectTRN to use as ProjectUid for our DB etc
       try
       {
         // don't send our timezone, we only need it for WorksOS. WM has their own, calculated from the boundary, for their own uses.
         var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
-        createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
+        createProjectRequestModel.Boundary = GeometryConversion.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
         // CCSSSCON-141 what are exceptions/other error
         var response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
@@ -54,71 +54,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       // now making changes, potentially needing rollback 
-      //  order changes to minimize rollback
-      //    if CreateProjectInDb fails then nothing is done
-      //    if CreateCoordSystem fails then project is deleted
-      //    if AssociateProjectSubscription fails ditto      
-      createProjectEvent = await CreateProjectInDb(createProjectEvent).ConfigureAwait(false);
+      //  order changes to minimize rollback. If any fails, then project is deleted in cws
+      //    if CreateCoordSystem 3dp/Trex fails 
+      //    if tcc and DO write fails
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
-        createProjectEvent.ProjectUID, createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
+        createProjectEvent.ProjectUID, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
-        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
-        cwsDesignClient, cwsProfileSettingsClient).ConfigureAwait(false);
+        productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
+        cwsDesignClient, cwsProfileSettingsClient, cwsProjectClient).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
 
-      log.LogDebug("CreateProject. completed successfully");
       return new ContractExecutionResult();
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item) => throw new NotImplementedException();
 
-    /// <summary>
-    /// Creates a project. Handles both old and new project boundary formats.
-    /// </summary>
-    /// <param name="project">The create project event</param>
-    private async Task<CreateProjectEvent> CreateProjectInDb(CreateProjectEvent project)
-    {
-      log.LogDebug(
-        $"Creating the project in the DB {JsonConvert.SerializeObject(project)}");
-
-      var isCreated = 0;
-      try
-      {
-        isCreated = await projectRepo.StoreEvent(project).ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61, "projectRepo.storeCreateProject", e.Message);
-      }
-
-      if (isCreated == 0)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
-
-      log.LogDebug(
-        $"Created the project in DB. IsCreated: {isCreated}. projectUid: {project.ProjectUID} shortRaptorProjectID: {project.ShortRaptorProjectId}");
-
-      if (project.ShortRaptorProjectId <= 0)
-      {
-        ProjectDatabaseModel existing = null;
-        try
-        {
-          existing = await projectRepo.GetProjectOnly(project.ProjectUID.ToString()).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 42, "projectRepo.GetProjectOnly", e.Message);
-        }
-        if (existing != null && existing.ShortRaptorProjectId > 0)
-          project.ShortRaptorProjectId = existing.ShortRaptorProjectId;
-        else
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 42);
-        }
-      }
-
-      log.LogDebug($"Using Legacy projectId {project.ShortRaptorProjectId} for project {project.ProjectName}");
-
-      return project; // shortRaptorProjectID may have been added
-    }
   }
 }

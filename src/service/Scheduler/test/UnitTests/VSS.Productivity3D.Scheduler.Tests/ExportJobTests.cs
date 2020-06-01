@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       exportJob.GetExportData(Guid.NewGuid(), customHeaders, context).Wait();
 
-      var key = JobStorage.Current.GetConnection().GetJobParameter(context.BackgroundJob.Id, ExportJob.S3KeyStateKey);
+      var key = JobStorage.Current.GetConnection().GetJobParameter(context.BackgroundJob.Id, ExportJob.S3_KEY_STATE_KEY);
       Assert.AreEqual(key, ExportJob.GetS3Key(context.BackgroundJob.Id, expectedFilename));
       ms.Dispose();
     }

@@ -216,9 +216,9 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var filesResult2 = await importFileChild.SendRequestToFileImportV6(ts, importFileArray2, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={HttpUtility.UrlEncode(name)}" }));
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, importFileChild.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
       //Delete parent design
-
+      importFileParent.ImportedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
       var errorResultObj = await importFileParent.SendRequestToFileImportV6(ts, importFileArray, 1, new ImportOptions(HttpMethod.Delete), HttpStatusCode.BadRequest);
-      Assert.Equal("[{\"Key\":\"importedFileUid\",\"Value\":\"The value '' is invalid.\\r\\n\"}]", errorResultObj.Message);
+      Assert.Equal("Cannot delete a design that has reference surfaces", errorResultObj.Message);
     }
 
     [Theory]

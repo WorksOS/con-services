@@ -74,6 +74,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       Assert.Equal(expectedSerialNumber, device.SerialNumber);
     }
 
+    /* obsolete
     [Fact(Skip = "manual testing only")]
     public async Task GetDevicesForAccountTest()
     {
@@ -90,6 +91,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       Assert.NotNull(deviceList);
       Assert.True(deviceList.Devices.Count >= 0);
     }
+    */
 
   }
 }

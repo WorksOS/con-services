@@ -71,10 +71,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useRaptorGatewayDesignImport && importedFile.ImportedFileType != ImportedFileType.GeoTiff)
       {
-        var project =
-          await ProjectRequestHelper.GetProject(importedFile.ProjectUid.ToString(), customerUid, log,
-            serviceExceptionHandler, projectRepo);
-
+        var project = await ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);
+        
         if (importedFile.ImportedFileType == ImportedFileType.DesignSurface ||
             importedFile.ImportedFileType == ImportedFileType.SurveyedSurface)
         {
@@ -118,7 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (importedFile.ImportedFileType == ImportedFileType.GeoTiff)
       {
-        var project = ProjectRequestHelper.GetProject(importedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
+        var project = ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);
 
         var existing = projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
 

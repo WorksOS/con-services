@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -18,7 +19,8 @@ namespace CCSS.CWS.Client.MockClients
   /// </summary>
   public class MockCwsAccountClient : CwsProfileManagerClient, ICwsAccountClient
   {
-    private const string Daves3dDemoCustomerUid = "8abcf851-44c5-e311-aa77-00505688274d";
+    private const string Daves3dDemoCustomerTrn = "trn::profilex:us-west-2:account:8abcf851-44c5-e311-aa77-00505688274d";
+
     public MockCwsAccountClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)
     {
@@ -34,12 +36,12 @@ namespace CCSS.CWS.Client.MockClients
         {
           new AccountResponseModel
           {
-            Id = Daves3dDemoCustomerUid,
+            TRN = Daves3dDemoCustomerTrn,
             Name = "3D Demo customer"
           },
           new AccountResponseModel
           {
-            Id = "158ef953-4967-4af7-81cc-952d47cb6c6f",
+            TRN = "trn::profilex:us-west-2:account:158ef953-4967-4af7-81cc-952d47cb6c6f",
             Name = "WM test Trimble CEC march 26"
           }
         }
@@ -54,16 +56,16 @@ namespace CCSS.CWS.Client.MockClients
     {
       log.LogDebug($"{nameof(GetMyAccount)} Mock: userUid {userUid} customerUid {customerUid}");
 
-      if (string.Compare(customerUid.ToString(), Daves3dDemoCustomerUid, StringComparison.OrdinalIgnoreCase) == 0)
+      if (Daves3dDemoCustomerTrn.Contains(customerUid.ToString()))
         return Task.FromResult(new AccountResponseModel()
         {
-          Id = Daves3dDemoCustomerUid,
+          TRN = Daves3dDemoCustomerTrn,
           Name = "3D Demo customer"
         });
 
       var accountResponseModel = new AccountResponseModel
       {
-        Id = customerUid.ToString(),
+        TRN = TRNHelper.MakeTRN(customerUid.ToString(), TRNHelper.TRN_ACCOUNT),
         Name = "Got this other customer"
       };
 

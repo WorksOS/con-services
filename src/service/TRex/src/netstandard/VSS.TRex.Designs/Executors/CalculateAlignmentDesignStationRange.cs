@@ -25,10 +25,8 @@ namespace VSS.TRex.Designs.Executors
 
         if (siteModel == null)
         {
-          Log.LogWarning($"Failed to obtain site model {projectUid}");
           return (double.MaxValue, double.MinValue);
         }
-
         var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUid, projectUid, siteModel.CellSize, out var lockResult);
 
         if (design == null)

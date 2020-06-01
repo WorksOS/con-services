@@ -8,6 +8,7 @@ using VSS.TRex.Analytics.Foundation.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.Foundation.Coordinators
 {
@@ -42,6 +43,12 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
       var response = new TResponse();
       RequestDescriptor = Guid.NewGuid();
       SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+
+      if (SiteModel == null)
+      {
+        response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
+        return response;
+      }
 
       var aggregator = ConstructAggregator(arg);
       var computor = ConstructComputor(arg, aggregator);

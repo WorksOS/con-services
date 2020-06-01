@@ -311,11 +311,13 @@ namespace VSS.MasterData.Proxies
           {
             return await _dataCache.GetOrCreate(cacheKey, async entry =>
             {
-              entry.SetOptions(opts);
               log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} not found in cache, getting from web api");
               result = await action.Invoke();
               if (result != null)
+              {
+                entry.SetOptions(opts);
                 return new CacheItem<T>(result, result.GetIdentifiers());
+              }
 
               throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
