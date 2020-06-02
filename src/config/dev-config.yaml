@@ -17,6 +17,9 @@ data:
   MYSQL_SERVER_NAME_VSPDB: rds-rpd-mydb04.cfyg2f3omhgy.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
   #Service references
+  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
+  VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-productivity/2.0/export/veta
+  PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-preference/1.0
   #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-UnifiedFleet/1.0
   assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-assetutilization/1.1 
@@ -24,8 +27,6 @@ data:
   cws_designmanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-designmanager-stg/1.0
   cws_profilesettings_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilesettings-stg/1.0
   tpaasemail_public_v1: https://api-stg.trimble.com/t/trimble.com/tpaas-email-service/1.0/emails/
-  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
-  VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-productivity/2.0/export/veta
   #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
   #Misc stuff

@@ -45,10 +45,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.ProjectUid,
             request.BaseFilter,
             request.TopFilter,
-            request.BaseDesignDescriptor.FileUid,
-            request.BaseDesignDescriptor.Offset,
-            request.TopDesignDescriptor.FileUid,
-            request.TopDesignDescriptor.Offset,
+            request.BaseDesignDescriptor?.FileUid ,
+            request.BaseDesignDescriptor?.Offset,
+            request.TopDesignDescriptor?.FileUid,
+            request.TopDesignDescriptor?.Offset,
             request.VolumeCalcType);
 
           return await trexCompactionDataProxy.SendDataPostRequest<SummaryVolumesResult, SummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary", customHeaders);
