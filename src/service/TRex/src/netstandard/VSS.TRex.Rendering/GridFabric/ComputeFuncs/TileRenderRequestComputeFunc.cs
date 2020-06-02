@@ -32,56 +32,64 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
     public TileRenderResponse Invoke(TileRenderRequestArgument arg)
     {
-      var startTime = DateTime.UtcNow;
-
-      Log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
-
       try
       {
-        // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
-        // sub grid results to it.
-        arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
+        var startTime = DateTime.UtcNow;
 
-        Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
+        Log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
-        var render = new RenderOverlayTile
-            (arg.ProjectID,
-             arg.Mode,
-             new XYZ(arg.Extents.MinX, arg.Extents.MinY),
-             new XYZ(arg.Extents.MaxX, arg.Extents.MaxY),
-             arg.CoordsAreGrid,
-             arg.PixelsX, arg.PixelsY,
-             arg.Filters,
-             arg.ReferenceDesign,
-             arg.Palette,
-             Color.Black,
-             arg.TRexNodeID,
-             arg.LiftParams);
-
-        Log.LogInformation("Executing render.ExecuteAsync()");
-
-        using (var bmp = render.ExecuteAsync().WaitAndUnwrapException())
+        try
         {
-          Log.LogInformation($"Render status = {render.ResultStatus}");
+          // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
+          // sub grid results to it.
+          arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
 
-          if (bmp == null)
+          Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
+
+          var render = new RenderOverlayTile
+          (arg.ProjectID,
+            arg.Mode,
+            new XYZ(arg.Extents.MinX, arg.Extents.MinY),
+            new XYZ(arg.Extents.MaxX, arg.Extents.MaxY),
+            arg.CoordsAreGrid,
+            arg.PixelsX, arg.PixelsY,
+            arg.Filters,
+            arg.ReferenceDesign,
+            arg.Palette,
+            Color.Black,
+            arg.TRexNodeID,
+            arg.LiftParams);
+
+          Log.LogInformation("Executing render.ExecuteAsync()");
+
+          using (var bmp = render.ExecuteAsync().WaitAndUnwrapException())
           {
-            Log.LogInformation("Null bitmap returned by executor");
+            Log.LogInformation($"Render status = {render.ResultStatus}");
+
+            if (bmp == null)
+            {
+              Log.LogInformation("Null bitmap returned by executor");
+            }
+
+            // Get the rendering factory from the DI context
+            var renderingFactory = DIContext.Obtain<IRenderingFactory>();
+            var response = renderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+
+            if (response != null)
+              response.ResultStatus = render.ResultStatus;
+
+            return response;
           }
-
-          // Get the rendering factory from the DI context
-          var renderingFactory = DIContext.Obtain<IRenderingFactory>();
-          var response = renderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
-
-          if (response != null)
-            response.ResultStatus = render.ResultStatus;
-
-          return response;
+        }
+        finally
+        {
+          Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
         }
       }
-      finally
+      catch (Exception e)
       {
-         Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
+        Log.LogError(e, "Exception occurred in TileRenderRequestComputeFunc.Invoke()");
+        throw e; // rethrow exception - logging here is for context only
       }
     }
   }

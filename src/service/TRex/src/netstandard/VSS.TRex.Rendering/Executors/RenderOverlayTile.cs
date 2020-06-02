@@ -350,14 +350,17 @@ namespace VSS.TRex.Rendering.Executors
         }
         else
         {
-          Log.LogDebug($"RenderPlanViewTiles Execute: Performing render for request={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, Filter1={Filters.Filters[0]}, Filter2={Filters.Filters[1]}, CutFillDesign=''{CutFillDesign}'' " +
+          Log.LogDebug($"RenderPlanViewTiles Execute: Performing render for request={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, CutFillDesign=''{CutFillDesign}'' " +
                        $"Bound[BL/TR:Lon/Lat]=({BLPoint.X} {BLPoint.Y}, {TRPoint.X} {TRPoint.Y}), Width={NPixelsX}, Height={NPixelsY}");
         }
 
         // Include the details of the filters with the logged tile parameters
-        for (var i = 0; i < (Filters?.Filters.Length ?? 0); i++)
+        if (Filters != null)
         {
-          Log.LogDebug($"Filter({i}): {Filters.Filters[i]}");
+          for (var i = 0; i < Filters.Filters.Length; i++)
+          {
+            Log.LogDebug($"Filter({i}): {Filters.Filters[i]}");
+          }
         }
       }
 
