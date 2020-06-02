@@ -73,7 +73,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
 
       var csib = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSIB("nofile", Convert.FromBase64String(coordinateSystemFileData));
 
-      // Convert grid coordinates into WGS: assemble and convert
+      // Convert grid coordinates into WGS: assemble and convert. Note: 2D conversion only, elevation is set to 0
       var coordinates = boundaries.Boundaries.SelectMany(x => x.Boundary.Points).Select(pt => new XYZ(pt.X, pt.Y,0.0)).ToArray();
 
       // Perform conversion
