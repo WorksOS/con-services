@@ -58,7 +58,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       writer.WriteInt((int)ReturnCode);
       writer.WriteInt((int)ReportType);
       writer.WriteInt(StationOffsetReportDataRowList.Count);
-      for (int i = 0; i < StationOffsetReportDataRowList.Count; i++)
+      for (var i = 0; i < StationOffsetReportDataRowList.Count; i++)
       {
         StationOffsetReportDataRowList[i].ToBinary(writer);
       }
@@ -78,7 +78,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
       ReportType = (ReportType)reader.ReadInt();
       var stationOffsetRowsCount = reader.ReadInt();
       StationOffsetReportDataRowList = new List<StationOffsetReportDataRow_ApplicationService>(stationOffsetRowsCount);
-      for (int i = 0; i < stationOffsetRowsCount; i++)
+      for (var i = 0; i < stationOffsetRowsCount; i++)
       {
         var row = new StationOffsetReportDataRow_ApplicationService();
         row.FromBinary(reader);

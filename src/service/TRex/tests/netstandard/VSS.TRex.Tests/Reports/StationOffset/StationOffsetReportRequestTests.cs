@@ -100,7 +100,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var response = await request.ExecuteAsync(arg);
 
       response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.NoProductionDataFound);
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
     }
 
     [Theory]
