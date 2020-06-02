@@ -143,7 +143,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <returns></returns>
         protected void PrepareArgument()
         {
-            Log.LogInformation($"Preparing argument with TRexNodeId = {TRexNodeId}");
+            var originatingIgniteNodeId = Ignite.GetCluster().GetLocalNode().Id;
+            Log.LogInformation($"Preparing argument with OriginatingIgniteNodeId = {originatingIgniteNodeId}, TRexNodeId = {TRexNodeId}");
 
             arg = new TSubGridsRequestArgument
             {
@@ -154,7 +155,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 ProdDataMaskBytes = ProdDataMask.ToBytes(),
                 SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceOnlyMask.ToBytes(),
                 Filters = Filters,
-                OriginatingIgniteNodeId = Ignite.GetCluster().GetLocalNode().Id,
+                OriginatingIgniteNodeId = originatingIgniteNodeId,
                 TRexNodeID = TRexNodeId,
                 ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet
