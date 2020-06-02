@@ -30,9 +30,9 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
             continue;
 
           var neeCoords = new[] {new XYZ(aggregator.Volume.BoundingExtentGrid.MinX, aggregator.Volume.BoundingExtentGrid.MinY,
-                                       aggregator.Volume.BoundingExtentGrid.MinZ == Consts.NullDouble ? 0 : aggregator.Volume.BoundingExtentGrid.MinZ), 
+                                       aggregator.Volume.BoundingExtentGrid.MinZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MinZ), 
                                  new XYZ(aggregator.Volume.BoundingExtentGrid.MaxX, aggregator.Volume.BoundingExtentGrid.MaxY,
-                                       aggregator.Volume.BoundingExtentGrid.MaxZ == Consts.NullDouble ? 0 : aggregator.Volume.BoundingExtentGrid.MaxZ)};
+                                       aggregator.Volume.BoundingExtentGrid.MaxZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MaxZ)};
 
           var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid);
           var (errorCode, llhCoords) 
