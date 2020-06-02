@@ -130,6 +130,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Invalid DeviceUid", 126);
       this.DynamicAddwithOffset("Invalid ShortRaptorAssetId", 127);
       this.DynamicAddwithOffset("Missing DeviceName.", 128);
+      this.DynamicAddwithOffset("Self-intersecting project boundary.", 129);
+      this.DynamicAddwithOffset("Missing project type.", 130);
     }
   }
 }

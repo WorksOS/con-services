@@ -232,10 +232,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       foreach (var project in projectDatabaseModelList)
       {
         if (string.IsNullOrEmpty(project.Boundary)) continue;
-        if (!PolygonUtils.OverlappingPolygons(project.Boundary, projectBoundary)) continue;
-
-        log.LogInformation($"{nameof(DoesProjectOverlap)}: overlaps project {JsonConvert.SerializeObject(project)}");
-        return true;
+        if (PolygonUtils.OverlappingPolygons(projectBoundary, project.Boundary))
+          return true;
       }
 
       log.LogDebug($"{nameof(DoesProjectOverlap)}: No overlapping projects.");
