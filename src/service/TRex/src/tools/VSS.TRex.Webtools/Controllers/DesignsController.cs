@@ -306,7 +306,6 @@ namespace VSS.TRex.Webtools.Controllers
         var alignmentDesign = new SVLAlignmentDesign();
         alignmentDesign.LoadFromFile(Path.Combine(new[] { localPath, localFileName }));
 
-        // todo when SDK avail
         var extents = new BoundingWorldExtent3D();
         alignmentDesign.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
@@ -314,9 +313,6 @@ namespace VSS.TRex.Webtools.Controllers
         // Create the new design for the site model
         var design = DIContext.Obtain<IAlignmentManager>()
           .Add(siteModelUid, new VSS.TRex.Designs.Models.DesignDescriptor(designUid, string.Empty, localFileName), extents);
-
-        // todo when SDK avail
-        //DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, alignmentDesign.SubGridOverlayIndex());
       }
       catch (Exception e)
       {

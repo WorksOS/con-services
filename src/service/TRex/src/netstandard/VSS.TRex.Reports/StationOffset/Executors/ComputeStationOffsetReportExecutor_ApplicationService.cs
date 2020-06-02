@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
@@ -23,9 +26,9 @@ namespace VSS.TRex.Reports.StationOffset.Executors
   ///     along the station at requested intervals and offsets
   ///     from the alignment design
   /// </summary>
-  public class ComputeStationOffsetReportExecutor_ApplicationService // : SubGridsPipelinedResponseBase
+  public class ComputeStationOffsetReportExecutor_ApplicationService
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeStationOffsetReportExecutor_ApplicationService>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ComputeStationOffsetReportExecutor_ApplicationService>();
 
     public ComputeStationOffsetReportExecutor_ApplicationService()
     {
@@ -36,7 +39,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     /// </summary>
     public async Task<StationOffsetReportRequestResponse_ApplicationService> ExecuteAsync(StationOffsetReportRequestArgument_ApplicationService arg)
     {
-      Log.LogInformation($"Start {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}");
+      _log.LogInformation($"Start {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}");
 
       try
       {
@@ -67,37 +70,52 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           LiftParams = arg.LiftParams
         };
 
-        // alignment sdk will convert interval/offsets into northing/eastings for the project
-        // todo temporarily get mock points until alignment SDK available
-        // var alignmentDesign = DIContext.Obtain<IAlignmentManager>().List(argClusterCompute.ProjectID).Locate(arg.AlignmentDesignUid);
-        // argClusterCompute.Points = alignmentDesign.GetOffsetPointsInNEE(arg.CrossSectionInterval, arg.StartStation, arg.EndStation, arg.Offsets);
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+        var designFiles = DIContext.Obtain<IDesignFiles>();
 
-        argClusterCompute.Points = GetMockPointsFromSiteModel(argClusterCompute.ProjectID, 3);
+        // alignment will convert interval/offsets into northing/eastings for the project
+        var alignmentDesign = designFiles.Lock(arg.AlignmentDesignUid, arg.ProjectID, siteModel.CellSize, out var loadResult) as SVLAlignmentDesign;
 
-        Log.LogInformation($"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: pointCount: {argClusterCompute.Points.Count}");
-        if (argClusterCompute.Points.Count == 0)
+        if (alignmentDesign == null || loadResult != DesignLoadResult.Success)
         {
-          return new StationOffsetReportRequestResponse_ApplicationService() {ReturnCode = ReportReturnCode.NoData, ResultStatus = RequestErrorStatus.NoProductionDataFound};
+          return new StationOffsetReportRequestResponse_ApplicationService { ReturnCode = ReportReturnCode.NoData, ResultStatus = RequestErrorStatus.NoDesignProvided };
+        }
+
+        try
+        {
+          argClusterCompute.Points = alignmentDesign.GetOffsetPointsInNEE(arg.CrossSectionInterval, arg.StartStation, arg.EndStation, arg.Offsets, out var calcResult);
+
+          _log.LogInformation($"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: pointCount: {argClusterCompute.Points.Count}, calcResult: {calcResult}");
+
+          if (argClusterCompute.Points.Count == 0)
+          {
+            return new StationOffsetReportRequestResponse_ApplicationService {ReturnCode = ReportReturnCode.NoData, ResultStatus = RequestErrorStatus.NoProductionDataFound};
+          }
+        }
+        finally
+        {
+          designFiles.UnLock(arg.AlignmentDesignUid, alignmentDesign);
         }
 
         var request = new StationOffsetReportRequest_ClusterCompute();
         var clusterComputeResponse = await request.ExecuteAsync(argClusterCompute);
 
         // Return the core package to the caller
-        var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService()
-          { ReturnCode = clusterComputeResponse.ReturnCode,
+        var applicationResponse = new StationOffsetReportRequestResponse_ApplicationService
+          {
+            ReturnCode = clusterComputeResponse.ReturnCode,
             ResultStatus = clusterComputeResponse.ResultStatus
           };
         applicationResponse.LoadStationOffsets(clusterComputeResponse.StationOffsetRows);
-        Log.LogInformation($"End {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}: ReturnCode {applicationResponse.ReturnCode}.");
+
+        _log.LogInformation($"End {nameof(ComputeStationOffsetReportExecutor_ApplicationService)}: ReturnCode {applicationResponse.ReturnCode}.");
         return applicationResponse;
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: Unexpected exception.");
+        _log.LogError(e, $"{nameof(StationOffsetReportRequestResponse_ApplicationService)}: Unexpected exception.");
         throw;
       }
-
     }
 
     // todo temp until alignment SDK available

@@ -231,7 +231,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       AddDesignProfilerGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl", false);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl");
 
       var request = new AlignmentDesignGeometryRequest();
       var response = await request.ExecuteAsync(new AlignmentDesignGeometryArgument
