@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL;
@@ -15,21 +16,21 @@ namespace VSS.TRex.Designs
 {
   public class SVLAlignmentDesign : DesignBase
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SVLAlignmentDesign>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SVLAlignmentDesign>();
 
     /// <summary>
     /// Represents the master guidance alignment selected from the NFFFile.
     /// </summary>
-    private NFFGuidableAlignmentEntity data;
+    private NFFGuidableAlignmentEntity _data;
 
-    private BoundingWorldExtent3D boundingBox = BoundingWorldExtent3D.Inverted();
+    private BoundingWorldExtent3D _boundingBox = BoundingWorldExtent3D.Inverted();
 
     /// <summary>
     /// Constructs a guidance alignment design used for computing filter patches
     /// </summary>
     public SVLAlignmentDesign()
     {
-      data = new NFFGuidableAlignmentEntity();
+      _data = new NFFGuidableAlignmentEntity();
     }
 
     /// <summary>
@@ -37,10 +38,10 @@ namespace VSS.TRex.Designs
     /// </summary>
     public SVLAlignmentDesign(NFFGuidableAlignmentEntity data)
     {
-      this.data = data;
+      _data = data;
     }
 
-    private struct Corner
+    private readonly struct Corner
     {
       public readonly int X;
       public readonly int Y;
@@ -52,7 +53,7 @@ namespace VSS.TRex.Designs
       }
     }
 
-    private static readonly Corner[] Corners =
+    private static readonly Corner[] _corners =
     {
       new Corner(0, 0),
       new Corner(SubGridTreeConsts.SubGridTreeDimension - 1, 0),
@@ -60,8 +61,13 @@ namespace VSS.TRex.Designs
       new Corner(SubGridTreeConsts.SubGridTreeDimension - 1, SubGridTreeConsts.SubGridTreeDimension - 1)
     };
 
-    public override bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset, 
-      SubGridTreeBitmapSubGridBits mask, SubGridTreeBitmapSubGridBits patch, 
+    /// <summary>
+    /// Computes a filter patch for a sub grid with respect to the alignment and a station/offset range over the alignment.
+    /// Note: This is a CPU intensive operation. TRex currently uses an approach of polygonal spatial filtering with a boundary
+    /// computed from the alignment geometry and station/offset bounds.
+    /// </summary>
+    public override bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
+      SubGridTreeBitmapSubGridBits mask, SubGridTreeBitmapSubGridBits patch,
       double originX, double originY, double cellSize, double offset)
     {
       var leftOffsetValue = -leftOffset;
@@ -73,9 +79,9 @@ namespace VSS.TRex.Designs
       //   SIGLogMessage.PublishNoODS(Self, Format('Constructing filter patch for Stn:%.3f-%.3f, Ofs:%.3f-%.3f, originX:%.3f, originY:%.3f',
       //   [startStn, endStn, LeftOffsetValue, RightOffsetValue, originX, originY]));
 
-      if (data == null)
+      if (_data == null)
       {
-        Log.LogError("No data element provided to SVL filter patch calculation");
+        _log.LogError("No data element provided to SVL filter patch calculation");
         return false;
       }
 
@@ -90,26 +96,24 @@ namespace VSS.TRex.Designs
       var originXPlusHalfCellSize = originX + cellSize / 2;
       var originYPlusHalfCellSize = originY + cellSize / 2;
 
-      for (var i = 0; i < Corners.Length; i++)
+      for (var i = 0; i < _corners.Length; i++)
       {
-        data.ComputeStnOfs(originXPlusHalfCellSize + Corners[i].X * cellSize, originYPlusHalfCellSize + Corners[i].Y * cellSize, out var stn, out var ofs);
+        _data.ComputeStnOfs(originXPlusHalfCellSize + _corners[i].X * cellSize, originYPlusHalfCellSize + _corners[i].Y * cellSize, out var stn, out var ofs);
 
-        if (!(stn != Consts.NullDouble && ofs != Consts.NullDouble && Range.InRange(stn, startStn, endStn)))
+        if (!(stn != Consts.NullDouble && ofs != Consts.NullDouble && Range.InRange(stn, startStn, endStn)) &&
+            !Range.InRange(ofs, leftOffsetValue, rightOffsetValue))
         {
-          if (!Range.InRange(ofs, leftOffsetValue, rightOffsetValue))
-          {
-            if (i == 0)
-              cornersOutOfOffsetRangeSign = Math.Sign(ofs);
+          if (i == 0)
+            cornersOutOfOffsetRangeSign = Math.Sign(ofs);
 
-            if (cornersOutOfOffsetRangeSign == Math.Sign(ofs))
-              cornersOutOfOffsetRange++;
-            else
-              break;
-          }
+          if (cornersOutOfOffsetRangeSign == Math.Sign(ofs))
+            cornersOutOfOffsetRange++;
+          else
+            break;
         }
       }
 
-      if (cornersOutOfOffsetRange == Corners.Length)
+      if (cornersOutOfOffsetRange == _corners.Length)
       {
         // Return success with the empty patch
         //SIGLogMessage.PublishNoODS(Self, 'All corners of patch exceed stn:ofs boundary');
@@ -133,7 +137,7 @@ namespace VSS.TRex.Designs
 
           NFFStationedLineworkEntity element = null;
 
-          data.ComputeStnOfs(originXPlusHalfCellSize + i * cellSize, originYPlusHalfCellSize + j * cellSize,
+          _data.ComputeStnOfs(originXPlusHalfCellSize + i * cellSize, originYPlusHalfCellSize + j * cellSize,
             out var stn, out var ofs, ref element);
 
           if (stn != Consts.NullDouble && ofs != Consts.NullDouble)
@@ -153,15 +157,15 @@ namespace VSS.TRex.Designs
 
     public override List<Fence> GetBoundary()
     {
-      throw new NotImplementedException();
+      return null; // There is no boundary defined for an alignment
     }
 
     public override void GetExtents(out double x1, out double y1, out double x2, out double y2)
     {
-      x1 = boundingBox.MinX;
-      y1 = boundingBox.MinY;
-      x2 = boundingBox.MaxX;
-      y2 = boundingBox.MaxY;
+      x1 = _boundingBox.MinX;
+      y1 = _boundingBox.MinY;
+      x2 = _boundingBox.MaxX;
+      y2 = _boundingBox.MaxY;
     }
 
     public override void GetHeightRange(out double z1, out double z2)
@@ -172,55 +176,61 @@ namespace VSS.TRex.Designs
 
     public override bool HasElevationDataForSubGridPatch(double x, double y)
     {
-      return false;
+      return false; // Alignments do not supply elevation patches
     }
 
     public override bool HasElevationDataForSubGridPatch(int subGridX, int subGridY)
     {
-      return false;
+      return false; // Alignments do not supply elevation patches
     }
 
     public override bool HasFiltrationDataForSubGridPatch(double x, double y)
     {
-      return false;
+      return false; // Alignments do not supply filter patches
     }
 
     public override bool HasFiltrationDataForSubGridPatch(int subGridX, int subGridY)
     {
-      return false;
+      return false; // Alignments do not supply filter patches
     }
 
     public override bool InterpolateHeight(ref int hint, double x, double y, double offset, out double z)
     {
       z = Consts.NullDouble;
-      return false;
+      return false; // Alignments do not supply elevations
     }
 
     public override bool InterpolateHeights(float[,] patch, double originX, double originY, double cellSize, double offset)
     {
-      return false;
+      return false; // Alignments do not supply elevations
     }
 
+    /// <summary>
+    /// Loads the content of an SVL file into a memory model for use
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <param name="saveIndexFiles"></param>
+    /// <returns></returns>
     public override DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true)
     {
       DesignLoadResult result;
-      var NFFFile = SVL.NFFFile.CreateFromFile(fileName);
+      var nffFile = NFFFile.CreateFromFile(fileName);
 
       try
       {
         result = DesignLoadResult.NoAlignmentsFound;
 
-        for (var i = 0; i < NFFFile.GuidanceAlignments.Count; i++)
+        for (var i = 0; i < nffFile.GuidanceAlignments.Count; i++)
         {
-          if (NFFFile.GuidanceAlignments[i].IsMasterAlignment())
+          if (nffFile.GuidanceAlignments[i].IsMasterAlignment())
           {
-            data = NFFFile.GuidanceAlignments[i];
+            _data = nffFile.GuidanceAlignments[i];
 
-            NFFFile.GuidanceAlignments.RemoveAt(i);
+            nffFile.GuidanceAlignments.RemoveAt(i);
 
-            if (data != null)
+            if (_data != null)
             {
-              boundingBox = data.BoundingBox();
+              _boundingBox = _data.BoundingBox();
               result = DesignLoadResult.Success;
             }
 
@@ -230,7 +240,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception in {nameof(LoadFromFile)}");
+        _log.LogError(e, $"Exception in {nameof(LoadFromFile)}");
         result = DesignLoadResult.UnknownFailure;
       }
 
@@ -253,13 +263,13 @@ namespace VSS.TRex.Designs
 
     public (double StartStation, double EndStation) GetStationRange()
     {
-      return (data.StartStation, data.EndStation);
+      return (_data.StartStation, _data.EndStation);
     }
 
     public DesignProfilerRequestResult DetermineFilterBoundary(double startStation, double endStation, double leftOffset, double rightOffset, out Fence fence)
     {
       // ReSharper disable once IdentifierTypo
-      var determinator = new SVLAlignmentBoundaryDeterminator(data, startStation, endStation, leftOffset, rightOffset);
+      var determinator = new SVLAlignmentBoundaryDeterminator(_data, startStation, endStation, leftOffset, rightOffset);
 
       determinator.DetermineBoundary(out var calcResult, out fence);
 
@@ -275,6 +285,89 @@ namespace VSS.TRex.Designs
     /// Obtains the master alignment
     /// </summary>
     /// <returns></returns>
-    public NFFGuidableAlignmentEntity GetMasterAlignment() => data;
+    public NFFGuidableAlignmentEntity GetMasterAlignment() => _data;
+
+    /// <summary>
+    /// Returns a list of coordinates traced over the alignment within the station range specified.
+    ///  This coordinate list is then typically used to produce a station offset report
+    /// </summary>
+    public List<StationOffsetPoint> GetOffsetPointsInNEE(double crossSectionInterval, double startStation, double endStation, double[] offsets, out DesignProfilerRequestResult calcResult)
+    {
+      var result = new List<StationOffsetPoint>(1000);
+
+      double lastX = -1, lastY = -1;
+
+      var subsetStartStation = Math.Max(_data.StartStation, startStation);
+      var subsetEndStation = Math.Min(_data.EndStation, endStation);
+      var currentStation = subsetStartStation;
+      var endTestRequired = false;
+
+      void AddCoord(double x, double y, double station, double offset)
+      {
+        if (lastX == x && lastY == y)
+          return; // don't wont duplicates
+
+        result.Add(new StationOffsetPoint(station, offset, x, y));
+        lastX = x;
+        lastY = y;
+      }
+
+      void AddPointAtStation(double x, double y, double station, double offset, bool rangeTestRequired)
+      {
+        if (rangeTestRequired) // test for end of range
+        {
+          if (startStation >= subsetStartStation && station <= subsetEndStation)
+            AddCoord(x, y, station, offset); // add station if we have it
+        }
+        else
+          AddCoord(x, y, station, offset); 
+      }
+
+      void AddSpotPointsFromElement(NFFStationedLineworkEntity element)
+      {
+        while (currentStation <= element.EndStation)
+        {
+          foreach (var offset in offsets)
+          {
+            element.ComputeXY(currentStation, offset, out var ptX, out var ptY); // get x y at current position
+            AddPointAtStation(ptX, ptY, currentStation, offset, endTestRequired);
+          }
+
+          if (currentStation + crossSectionInterval > subsetEndStation && currentStation < subsetEndStation)
+            currentStation = subsetEndStation; // making sure last point is picked up
+          else
+            currentStation += crossSectionInterval;
+        }
+      }
+
+      // Run down the centre line from start to end station and add these vertices to the point list
+      // Pattern of coords returned will be in order of left to right e.g. -2, -1, 0 (center line) , 1 ,2
+
+      calcResult = DesignProfilerRequestResult.UnknownError;
+
+      if (endStation <= startStation)
+      {
+        calcResult = DesignProfilerRequestResult.InvalidStationValues;
+        return null;
+      }
+
+      // loop through all elements and add vertices where in range
+      foreach (var currentElement in _data.Entities)
+      {
+        if (currentElement.EndStation < subsetStartStation) // ignore any early elements
+          continue;
+
+        if (currentElement.StartStation > subsetEndStation) // are we pass end of range
+          break;
+
+        // See if a test for end of range is required
+        endTestRequired = !(currentElement.StartStation >= subsetStartStation && currentElement.EndStation <= subsetEndStation);
+
+        AddSpotPointsFromElement(currentElement);
+      }
+
+      calcResult = DesignProfilerRequestResult.OK;  // Made it this far so flag OK
+      return result;
+    }
   }
 }
