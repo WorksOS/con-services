@@ -213,8 +213,7 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <param name="fileName"></param>
     /// <param name="constructIndexFilesOnLoad"></param>
     /// <returns></returns>
-    public static Guid AddSVLAlignmentDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName,
-      bool constructIndexFilesOnLoad)
+    public static Guid AddSVLAlignmentDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName)
     {
       var filePathAndName = Path.Combine(filePath, fileName);
 
