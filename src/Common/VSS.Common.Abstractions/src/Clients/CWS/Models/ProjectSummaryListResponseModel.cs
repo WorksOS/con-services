@@ -75,6 +75,23 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("role")]
     public UserProjectRoleEnum UserProjectRole { get; set; }
 
+    /// <summary>
+    /// project boundary
+    /// </summary>
+    [JsonProperty("boundary")]
+    public ProjectBoundary Boundary { get; set; }
+
+    /// <summary>
+    /// time zone in WM format e.g. "Pacific/Auckland"
+    /// </summary>
+    [JsonProperty("timezone")]
+    public string TimeZone { get; set; }
+
+    /// <summary>
+    /// Project type. Todo change to enum once all the cws work is done
+    /// </summary>
+    public int ProjectType { get; set; }
+
 
     public List<string> GetIdentifiers() => new List<string> { ProjectTRN, ProjectId };
 

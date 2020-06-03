@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -37,29 +38,22 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: customerUid {customerUid} userUid {userUid}");
 
       var projectSummaryListResponseModel = await GetProjectsForMyCustomer(customerUid, userUid, customHeaders);
-      var projectDetailListReponseModel = new ProjectDetailListResponseModel();
+      var projectDetailListResponseModel = new ProjectDetailListResponseModel();
       foreach (var project in projectSummaryListResponseModel.Projects)
       {
-        // We can't query details on projects we don't have role in.
-        // Return whatever info we have and caller can filter.
-        if (project.UserProjectRole == UserProjectRoleEnum.Unknown)
+        // Convert the summary model into a details model
+        projectDetailListResponseModel.Projects.Add(new ProjectDetailResponseModel
         {
-          projectDetailListReponseModel.Projects.Add(new ProjectDetailResponseModel
-          {
-            AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
-            ProjectTRN = project.ProjectTRN,
-            ProjectName = project.ProjectName,
-            UserProjectRole = project.UserProjectRole
-          });
-          continue;
-        }
-
-        var projectDetailResponseModel = await GetMyProject(new Guid(project.ProjectId), userUid, customHeaders);
-        projectDetailListReponseModel.Projects.Add(projectDetailResponseModel);
+          AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
+          ProjectTRN = project.ProjectTRN,
+          ProjectName = project.ProjectName,
+          UserProjectRole = project.UserProjectRole,
+          ProjectSettings = new ProjectSettingsModel() {Boundary = project.Boundary, TimeZone = project.TimeZone}
+        });
       }
 
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: projectSummaryListResponseModel {JsonConvert.SerializeObject(projectSummaryListResponseModel)}");
-      return projectDetailListReponseModel;
+      return projectDetailListResponseModel;
     }
 
     /// <summary>
@@ -74,6 +68,7 @@ namespace CCSS.CWS.Client
 
       var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
       var queryParameters = WithLimits(FromRow, RowCount);
+      queryParameters.Add(new KeyValuePair<string, string>("includeSettings", "true"));
       ProjectSummaryListResponseModel projectSummaryListResponseModel = null;
       try
       {
