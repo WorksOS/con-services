@@ -22,10 +22,10 @@ data:
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-preference/1.0
   #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-UnifiedFleet/1.0
-  assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-assetutilization/1.1 
-  cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
-  cws_designmanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-designmanager-stg/1.0
-  cws_profilesettings_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilesettings-stg/1.0
+  assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-assetutilization/1.1
+  cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/connectedsiteprofiles-dev/1.0
+  cws_designmanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-designmanager-dev/1.0
+  cws_profilesettings_public_v1: https://api-stg.trimble.com/t/trimble.com/connectedsiteprofilesettings-dev/1.0
   tpaasemail_public_v1: https://api-stg.trimble.com/t/trimble.com/tpaas-email-service/1.0/emails/
   #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
@@ -109,7 +109,7 @@ data:
   PEGASUS_EXECUTION_WAIT_MILLSECS: "20000"
   PEGASUS_URL: https://api-stg-usw2.trimblepaas.com/processing_stage-v1.0
   SCHEDULER_ENABLE_DXF_TILE_GENERATION: "true"
-#CWS
+  #CWS
   MOCK_CWS_ACCOUNT: "false"
   MOCK_CWS_DESIGN: "false"
   MOCK_CWS_DEVICE: "false"
