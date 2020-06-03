@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 
@@ -25,8 +26,20 @@ namespace VSS.AWS.TransferProxy
     public ITransferProxy NewProxy(string storageKey)
     {
       return _useLocalTransferProxy
-        ? new LocalTransferProxy(_config, _loggerFactory.CreateLogger<LocalTransferProxy>(), storageKey) as ITransferProxy
+        ? new LocalTransferProxy(_config, _loggerFactory.CreateLogger<LocalTransferProxy>(), storageKey)
         : new TransferProxy(_config, _loggerFactory.CreateLogger<TransferProxy>(), storageKey) as ITransferProxy;
+    }
+
+    public ITransferProxy NewProxy(TransferProxyType type)
+    {
+      return type switch
+      {
+        TransferProxyType.DesignImport => NewProxy("AWS_DESIGNIMPORT_BUCKET_NAME"),
+        TransferProxyType.Temporary => NewProxy("AWS_TEMPORARY_BUCKET_NAME"),
+        TransferProxyType.TAGFiles => NewProxy("AWS_TAGFILE_BUCKET_NAME"), // Exports go to temporary bucket currently
+        TransferProxyType.Export => NewProxy("AWS_TEMPORARY_BUCKET_NAME"),
+        _ => throw new ArgumentException($"Unsupported transfer proxy type {type}")
+      };
     }
   }
 }

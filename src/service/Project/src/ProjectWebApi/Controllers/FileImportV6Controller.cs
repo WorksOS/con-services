@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
@@ -52,10 +53,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// File import controller v6
     /// </summary>
-    public FileImportV6Controller(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportV6Controller(IConfigurationStore config,
+                                  ITransferProxyFactory transferProxyFactory, 
                                   IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
                                   IRequestFactory requestFactory)
-      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+      : base(config, transferProxyFactory, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
     /// <summary>
@@ -186,7 +188,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var s3Path = $"project/importedfile/{Guid.NewGuid()}.dat";
       var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
-      var transferProxy = transferProxyFunc(TransferProxyType.Default);
+      var transferProxy = transferProxyFunc(TransferProxyType.Temporary);
       transferProxy.Upload(fileStream, s3Path);
 
       var baseUrl = Request.Host.ToUriComponent();
@@ -240,7 +242,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
-      [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc,
+      [FromServices] ITransferProxyFactory transferProxyFactory,
       [FromServices] ISchedulerProxy schedulerProxy)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
@@ -251,7 +253,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, ConfigStore, ServiceExceptionHandler);
 
       ImportedFileDescriptorSingleResult importedFileResult = null;
-      var transferProxy = transferProxyFunc(TransferProxyType.Default);
+      var transferProxy = transferProxyFactory.NewProxy(TransferProxyType.Temporary);
       Logger.LogInformation(
         $"{nameof(InternalImportedFileV6)}:. filename: {filename} awspath {awsFilePath} projectUid {projectUid} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");

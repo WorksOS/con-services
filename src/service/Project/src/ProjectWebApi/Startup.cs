@@ -16,7 +16,6 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Services;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
@@ -52,7 +51,7 @@ namespace VSS.MasterData.Project.WebAPI
     public override string ServiceName => "Project Service API";
 
     /// <inheritdoc />
-    public override string ServiceDescription => " Project masterdata service";
+    public override string ServiceDescription => "Project masterdata service";
 
     /// <inheritdoc />
     public override string ServiceVersion => "v6";
@@ -75,7 +74,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
-      services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(_ => TransferProxyMethod);
+      services.AddSingleton<ITransferProxyFactory, TransferProxyFactory>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
@@ -94,7 +93,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddCwsClient<ICwsDeviceClient, CwsDeviceClient, MockCwsDeviceClient>(CwsClientMockExtensionMethods.MOCK_DEVICE_KEY);
       services.AddCwsClient<ICwsDesignClient, CwsDesignClient, MockCwsDesignClient>(CwsClientMockExtensionMethods.MOCK_DESIGN_KEY);
       services.AddCwsClient<ICwsProfileSettingsClient, CwsProfileSettingsClient, MockCwsProfileSettingsClient>(CwsClientMockExtensionMethods.MOCK_PROFILE_KEY);	
-	  services.AddTransient<IWebClientWrapper, WebClientWrapper>();
+	    services.AddTransient<IWebClientWrapper, WebClientWrapper>();
 
       services.AddOpenTracing(builder => builder.ConfigureAspNetCore(options => options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping")));
 
@@ -116,15 +115,6 @@ namespace VSS.MasterData.Project.WebAPI
         return next(context);
       });
       _serviceProvider = ServiceProvider;
-    }
-
-    private static ITransferProxy TransferProxyMethod(TransferProxyType type)
-    {
-      return type switch
-      {
-        TransferProxyType.DesignImport => new TransferProxy(_serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"),
-        _ => new TransferProxy(_serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_TEMPORARY_BUCKET_NAME")
-      };
     }
   }
 }

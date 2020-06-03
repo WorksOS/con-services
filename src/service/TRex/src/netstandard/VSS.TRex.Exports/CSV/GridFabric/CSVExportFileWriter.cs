@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -63,7 +64,9 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         ZipFile.CreateFromDirectory(localPath, zipFullPath, CompressionLevel.Optimal, false, Encoding.UTF8);
         // copy zip to S3
         s3FullPath = $"project/{requestArgument.ProjectID}/TRexExport/{uniqueFileName}{ZIP_extension}";
-        fileLoadedOk = S3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);
+
+        var s3FileTransfer = new S3FileTransfer(TransferProxyType.Export);
+        fileLoadedOk = s3FileTransfer.WriteFileToBucket(zipFullPath, s3FullPath, awsBucketName);
 
         // delete the export folder
         localExportPath = FilePathHelper.GetTempFolderForExport(requestArgument.ProjectID, "");

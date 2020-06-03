@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
@@ -33,10 +34,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public FileImportV5TBCController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportV5TBCController(IConfigurationStore config,
+                                     ITransferProxyFactory transferProxyFactory,
                                      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
                                      IRequestFactory requestFactory)
-      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+      : base(config, transferProxyFactory, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
     // PUT: api/v5/projects/{id}/importedfiles

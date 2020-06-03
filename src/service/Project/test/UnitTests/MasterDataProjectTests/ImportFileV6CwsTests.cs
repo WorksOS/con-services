@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -362,8 +363,9 @@ namespace VSS.MasterData.ProjectTests
       var controllerContext = new ControllerContext();
       controllerContext.HttpContext = httpContext;
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
+      var transferProxyFactory = ServiceProvider.GetRequiredService<ITransferProxyFactory>();
       var persistentTransferProxy = ServiceProvider.GetRequiredService<Func<TransferProxyType, ITransferProxy>>();
-      var controller = new FileImportV6Controller(configStore, persistentTransferProxy, null,null,null);
+      var controller = new FileImportV6Controller(configStore, transferProxyFactory, null,null,null);
       controller.ControllerContext = controllerContext;
       return controller;
     }

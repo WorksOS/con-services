@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
@@ -345,7 +346,10 @@ namespace VSS.TRex.Tests.Exports.CSV
           }
         });
 
-      DIBuilder.Continue().Add(x => x.AddSingleton(mockTransferProxy.Object)).Complete();
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(mockTransferProxyFactory.Object)).Complete();
 
       return tempFileName;
     }

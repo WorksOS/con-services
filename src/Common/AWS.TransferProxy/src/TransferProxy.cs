@@ -7,7 +7,6 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using MimeTypes;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -22,20 +21,6 @@ namespace VSS.AWS.TransferProxy
     private readonly ILogger logger;
 
     private const int MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL = 7;
-
-    [Obsolete(
-      "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
-    public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log) : this(configStore, log,
-      "AWS_TEMPORARY_BUCKET_NAME")
-    {
-    }
-
-    [Obsolete(
-      "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
-    public TransferProxy(IConfigurationStore configStore, string storageKey) : this(configStore, new NullLogger<TransferProxy>(),
-      storageKey)
-    {
-    }
 
     public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log, string storageKey)
     {

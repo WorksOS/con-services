@@ -125,9 +125,7 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable));
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable));
-
       services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
-      services.AddTransient<ITransferProxy>(sp => sp.GetRequiredService<ITransferProxyFactory>().NewProxy("AWS_DESIGNIMPORT_BUCKET_NAME"));
 
       ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI(services);
 

@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.TRex.DI;
 using Moq;
+using VSS.AWS.TransferProxy;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Models.Enums;
@@ -43,10 +44,12 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument);
@@ -134,10 +137,12 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument, true);
@@ -186,10 +191,12 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument, true);
@@ -231,10 +238,12 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument, true);
@@ -275,10 +284,12 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument, true);
@@ -323,10 +334,12 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument, true);
@@ -388,10 +401,12 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
       var csvExportFileWriter = new CSVExportFileWriter(requestArgument, true);
