@@ -134,7 +134,6 @@ namespace VSS.TRex.SubGrids.Executors
             && SubGridResultArray[0].GridDataType == GridDataType.HeightAndTime // Height and time sub grids
             && SubGridResultArray[1].GridDataType == GridDataType.HeightAndTime
             && SubGridResultArray[2].GridDataType == GridDataType.HeightAndTime
-          //&& Requests.ReferenceVolumeType == VolumeComputationType.Between2Filters // Between two filters volume request
         )
         {
           SubGrid1 = (ClientHeightAndTimeLeafSubGrid) SubGridResultArray[0];
