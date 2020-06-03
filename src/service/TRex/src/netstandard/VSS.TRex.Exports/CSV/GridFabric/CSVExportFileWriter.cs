@@ -25,7 +25,7 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     private const string CSV_extension = ".csv";
     private const string ZIP_extension = ".zip";
     private readonly CSVExportRequestArgument requestArgument;
-    private readonly string awsBucketNameKey = "AWS_BUCKET_NAME"; // vss-exports-stg/prod
+    private readonly string awsBucketNameKey = "AWS_TEMPORARY_BUCKET_NAME"; // vss-exports-stg/prod
     private readonly string awsBucketName;
     private readonly bool retainLocalCopyForTesting = false;
 

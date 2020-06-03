@@ -26,7 +26,7 @@ namespace VSS.AWS.TransferProxy
     [Obsolete(
       "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
     public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log) : this(configStore, log,
-      "AWS_BUCKET_NAME")
+      "AWS_TEMPORARY_BUCKET_NAME")
     {
     }
 

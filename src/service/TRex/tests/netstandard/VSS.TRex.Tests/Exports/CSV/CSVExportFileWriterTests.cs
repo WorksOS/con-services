@@ -99,8 +99,8 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var originalConfiguration = DIContext.Obtain<IConfigurationStore>();
       var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
-      moqConfiguration.Setup(c => c.GetValueString("AWS_BUCKET_NAME")).Returns((string)null);
-      moqConfiguration.Setup(c => c.GetValueString("AWS_BUCKET_NAME", It.IsAny<string>())).Returns((string)null);
+      moqConfiguration.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns((string)null);
+      moqConfiguration.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME", It.IsAny<string>())).Returns((string)null);
 
       DIBuilder
         .Continue()

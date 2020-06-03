@@ -123,7 +123,7 @@ namespace VSS.MasterData.Project.WebAPI
       return type switch
       {
         TransferProxyType.DesignImport => new TransferProxy(_serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"),
-        _ => new TransferProxy(_serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")
+        _ => new TransferProxy(_serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_TEMPORARY_BUCKET_NAME")
       };
     }
   }
