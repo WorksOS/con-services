@@ -160,6 +160,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => src.UpdateType))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))
+            .ForMember(dest => dest.CoordinateSystemFileSpaceId, opt => opt.MapFrom(src => src.CoordinateSystemFileSpaceId))
             ;
         }
       );

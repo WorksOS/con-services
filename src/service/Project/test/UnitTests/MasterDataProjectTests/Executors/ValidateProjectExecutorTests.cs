@@ -36,7 +36,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -49,27 +50,6 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task ValidateProjectExecutor_Create_MissingName()
-    {
-      var request = new ProjectValidateDto
-      {
-        AccountTrn = _customerTrn,
-        ProjectTrn = null,
-        ProjectName = null,
-        ProjectType = CwsProjectType.ThreeDEnabled,
-        Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created
-      };
-      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
-      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
-      (_loggerFactory, _configStore, ServiceExceptionHandler,
-        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
-      var result = await executor.ProcessAsync(data);
-      Assert.Equal(11, result.Code);
-      Assert.Equal("Missing ProjectName.", result.Message);
-    }
-
-    [Fact]
     public async Task ValidateProjectExecutor_Create_MissingType()
     {
       var request = new ProjectValidateDto
@@ -79,7 +59,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = null,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -88,6 +69,50 @@ namespace VSS.MasterData.ProjectTests.Executors
       var result = await executor.ProcessAsync(data);
       Assert.Equal(130, result.Code);
       Assert.Equal("Missing project type.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Create_MissingFilespaceId()
+    {
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = null,
+        ProjectName = "some project",
+        ProjectType = CwsProjectType.ThreeDEnabled,
+        Boundary = CreateNonOverlappingBoundary(),
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = null
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(132, result.Code);
+      Assert.Equal("Missing coordinate system filespaceId.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Create_MissingName()
+    {
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = null,
+        ProjectName = null,
+        ProjectType = CwsProjectType.ThreeDEnabled,
+        Boundary = CreateNonOverlappingBoundary(),
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(11, result.Code);
+      Assert.Equal("Missing ProjectName.", result.Message);
     }
 
     [Fact]
@@ -104,7 +129,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = projectList.Projects[0].ProjectName,
         ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -126,7 +152,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = null,
-        UpdateType = ProjectUpdateType.Created
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -151,7 +178,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateInvalidBoundary(),
-        UpdateType = ProjectUpdateType.Created
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -177,7 +205,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = CreateSelfIntersectingBoundary(),
-        UpdateType = ProjectUpdateType.Created
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -203,7 +232,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.ThreeDEnabled,
         Boundary = projectList.Projects[0].ProjectSettings.Boundary,
-        UpdateType = ProjectUpdateType.Created
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileSpaceId = "some filespaceid"
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>

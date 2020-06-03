@@ -59,5 +59,23 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
       return createFileResponse;
     }
+
+    /// <summary>
+    /// Gets the file from CWS then downloads file contents. Return contents and file name.
+    /// </summary>
+    public async Task<GetFileWithContentsModel> GetAndDownloadFile(Guid projectUid, string filespaceId, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetAndDownloadFile)}: filespaceId {filespaceId}");
+
+      var projectTrn = TRNHelper.MakeTRN(projectUid);
+      var getFileResponse = await GetData<GetFileResponseModel>($"/projects/{projectTrn}/file/{filespaceId}", projectUid, null, null, customHeaders);
+      
+      log.LogDebug($"{nameof(GetAndDownloadFile)}: getFileResponse {JsonConvert.SerializeObject(getFileResponse)}");
+
+      //We won't monitor status of download as calibration/config files are small so should be quick.
+      var contents = await DownloadData(getFileResponse.DownloadUrl, customHeaders);
+
+      return new GetFileWithContentsModel(getFileResponse, contents);
+    }
   }
 }

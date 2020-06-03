@@ -1,16 +1,23 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Exceptions;
+using VSS.DataOcean.Client.Models;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -44,29 +51,25 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           return new ContractExecutionResult(8, "Missing ProjectBoundary.");
         }
+        if (string.IsNullOrEmpty(data.CoordinateSystemFileSpaceId))
+        {
+          return new ContractExecutionResult(132, "Missing coordinate system filespaceId.");
+        }
 
         //Validate project name not duplicate
         // ProjectUID won't be filled yet
-        var duplicates = await ValidateProjectName(data.CustomerUid, userUid, data.ProjectName,
-          data.ProjectUid, log, serviceExceptionHandler, cwsProjectClient, customHeaders);
+        var duplicates = await ValidateProjectName(data.CustomerUid, userUid, data.ProjectName, data.ProjectUid);
         if (duplicates > 0)
         {
           return new ContractExecutionResult(109, $"ProjectName must be unique. {duplicates} active project duplicates found.");
         }
 
         //Validate project boundary
-        dynamic result = ValidateProjectBoundary(data.ProjectBoundaryWKT);
-        if (result.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        dynamic boundaryResult = ValidateProjectBoundary(data.ProjectBoundaryWKT);
+        if (boundaryResult.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
         {
-          return new ContractExecutionResult(result.code, result.message);
+          return new ContractExecutionResult(boundaryResult.code, boundaryResult.message);
         }
-
-        //Validate coordinate system file
-        /* TODO
-        await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(
-          createProjectEvent.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileContent,
-          serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord);
-          */
 
         //Validate project boundary doesn't overlap existing projects
         log.LogDebug($"Testing if there are overlapping projects for project {data.ProjectName}");
@@ -76,6 +79,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (overlaps)
         {
           return new ContractExecutionResult(43, "Project boundary overlaps another project.");
+        }
+
+        //Validate coordinate system file
+        dynamic coordSysResult = await ValidateCoordinateSystemFile(data.ProjectUid, data.CoordinateSystemFileSpaceId);
+        if (coordSysResult.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        {
+          return new ContractExecutionResult(coordSysResult.code, coordSysResult.message);
         }
       }
 
@@ -87,6 +97,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           return new ContractExecutionResult(5, "Missing ProjectUID.");
         }
 
+        string downloadUrl = null;
+        string filename = null;
         if (data.ProjectType.HasValue)
         {
           //Changing from non 3d-enabled to 3d-enabled.
@@ -100,26 +112,32 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             data.ProjectName = project.ProjectName;
           if (string.IsNullOrEmpty(data.ProjectBoundaryWKT))
             data.ProjectBoundaryWKT = GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary);
+          if (string.IsNullOrEmpty(data.CoordinateSystemFileSpaceId))
+          {
+            var projectConfiguration = project.ProjectSettings.Config?.FirstOrDefault(c => c.FileType == ProjectConfigurationFileType.CALIBRATION.ToString());
+            downloadUrl = projectConfiguration?.FileDownloadLink;
+            //filename format is: "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc"
+            filename = projectConfiguration?.FileName.Split(ProjectConfigurationModel.FilenamePathSeparator)[2].Trim();
+          }
         }
 
         //Validate project name if changed
         if (!string.IsNullOrEmpty(data.ProjectName))
         {
-          var duplicates = await ValidateProjectName(data.CustomerUid, userUid, data.ProjectName, 
-            data.ProjectUid, log, serviceExceptionHandler, cwsProjectClient, customHeaders);
+          var duplicates = await ValidateProjectName(data.CustomerUid, userUid, data.ProjectName, data.ProjectUid);
           if (duplicates > 0)
           {
             return new ContractExecutionResult(109, $"ProjectName must be unique. {duplicates} active project duplicates found.");
           }
         }
 
-        //Validate project boundary of changed
+        //Validate project boundary if changed
         if (!string.IsNullOrEmpty(data.ProjectBoundaryWKT))
         {
-          dynamic result = ValidateProjectBoundary(data.ProjectBoundaryWKT);
-          if (result.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+          dynamic boundaryResult = ValidateProjectBoundary(data.ProjectBoundaryWKT);
+          if (boundaryResult.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
           {
-            return new ContractExecutionResult(result.code, result.message);
+            return new ContractExecutionResult(boundaryResult.code, boundaryResult.message);
           }
           var overlaps =await ProjectRequestHelper.DoesProjectOverlap(data.CustomerUid, data.ProjectUid, userUid,
             data.ProjectBoundaryWKT, log, serviceExceptionHandler, cwsProjectClient, customHeaders);
@@ -129,10 +147,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           }
         }
 
-        /* TODO if coord sys file has changed or project type has changed to 3d enabled
-        await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(
-          updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord);       
-       */
+        //Validate coordinate system file if changed
+        if (!string.IsNullOrEmpty(data.CoordinateSystemFileSpaceId))
+        {
+          dynamic coordSysResult = await ValidateCoordinateSystemFile(data.ProjectUid, data.CoordinateSystemFileSpaceId);
+          if (coordSysResult.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+          {
+            return new ContractExecutionResult(coordSysResult.code, coordSysResult.message);
+          }
+        }
       }
       else if (data.UpdateType == ProjectUpdateType.Deleted)
       {
@@ -149,9 +172,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Validates a project name. Must be unique amongst active projects for the Customer.
     /// </summary>
-    private async Task<int> ValidateProjectName(Guid customerUid, Guid userUid, string projectName, Guid? projectUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    private async Task<int> ValidateProjectName(Guid customerUid, Guid userUid, string projectName, Guid? projectUid)
     {
       log.LogInformation($"{nameof(ValidateProjectName)} projectName: {projectName} projectUid: {projectUid}");
 
@@ -201,6 +222,47 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         return new { code = 129, message = "Self-intersecting project boundary." };
       }
+      return new { code = ContractExecutionStatesEnum.ExecutedSuccessfully, message = ContractExecutionResult.DefaultMessage };
+    }
+
+    /// <summary>
+    /// Validates the coordinate system file in TRex. In CWS this is the project configuration file of type CALIBRATION.
+    /// </summary>
+    private async Task<object> ValidateCoordinateSystemFile(Guid? projectUid, string filespaceId)
+    {
+      /*
+      GetFileWithContentsModel file = null;
+      try
+      {
+        var response = await cwsDesignClient.GetAndDownloadFile(projectUid.Value, filespaceId, customHeaders);
+      }
+      catch (Exception e)
+      {
+        return new { code = 57, message = $"A problem occurred downloading the calibration file. Exception: {e.Message}" };
+      }
+
+      //Validate file in 3dpm (TRex)
+      CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
+      try
+      {
+        //TODO: Extract the actual file name here from CWS one. Waiting on Jeannie's PR.
+        var fileName = CwsFileNameHelper.ExtractFileName(file.FileName);
+        coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
+          .CoordinateSystemValidate(file.FileContents, fileName, customHeaders);
+      }
+      catch (Exception e)
+      {
+        return new { code = 57, message = $"A problem occurred at the validate CoordinateSystem endpoint in 3dpm. Exception: {e.Message}" };
+      }
+
+      if (coordinateSystemSettingsResult == null)
+        return new { code = 46, message = "Invalid CoordinateSystem." };
+
+      if (coordinateSystemSettingsResult.Code != 0) //TASNodeErrorStatus.asneOK
+      {
+        return new { code = 47, message = $"Unable to validate CoordinateSystem in 3dpm: {coordinateSystemSettingsResult.Code} {coordinateSystemSettingsResult.Message}." };
+      }
+      */
       return new { code = ContractExecutionStatesEnum.ExecutedSuccessfully, message = ContractExecutionResult.DefaultMessage };
     }
 

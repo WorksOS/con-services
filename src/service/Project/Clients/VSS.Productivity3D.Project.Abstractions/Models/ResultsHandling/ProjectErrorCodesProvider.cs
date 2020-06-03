@@ -132,6 +132,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing DeviceName.", 128);
       this.DynamicAddwithOffset("Self-intersecting project boundary.", 129);
       this.DynamicAddwithOffset("Missing project type.", 130);
+      this.DynamicAddwithOffset("A problem occurred downloading the calibration file. Exception: {0}", 131);
+      this.DynamicAddwithOffset("Missing coordinate system filespaceId.", 132);
     }
   }
 }
