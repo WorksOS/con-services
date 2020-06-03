@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
@@ -20,6 +21,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class TINSurfaceExportController : BaseController
   {
+
     /// <summary>
     /// Constructor for TIN surface export controller
     /// </summary>
@@ -53,10 +55,19 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<TINSurfaceExportExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .ProcessAsync(compactionSurfaceExportRequest)) as TINSurfaceExportResult;
 
+      if (tinResult?.TINData == null || tinResult?.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        return new CompactionExportResult(tinResult.Code, tinResult.Message);
+
       const string TTM_EXTENSION = ".ttm";
       const string ZIP_EXTENSION = ".zip";
 
       var fullFileName = BuildTINFilePath(compactionSurfaceExportRequest.FileName, ZIP_EXTENSION);
+
+      /* ToDo ITransfer proxy 
+        presignedUrl to be returned instead of fullFileName when implemented in another story
+      var newPath = _transferProxy.Upload(stream, path, contentType);
+      var presignedUrl = _transferProxy.GeneratePreSignedUrl(newPath);
+      */
 
       if (FileSystem.Exists(fullFileName))
         FileSystem.Delete(fullFileName);
