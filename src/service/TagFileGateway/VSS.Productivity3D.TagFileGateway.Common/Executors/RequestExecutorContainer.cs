@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
         protected IConfigurationStore ConfigStore { get; private set; }
         protected IDataCache DataCache { get; private set; }
         protected ITagFileForwarder TagFileForwarder { get; private set; }
-        protected ITransferProxy TransferProxy { get; private set; }
+        protected ITransferProxyFactory TransferProxyFactory { get; private set; }
         protected IWebRequest WebRequest { get; private set; }
         protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
           IConfigurationStore configStore,
           IDataCache dataCache,
           ITagFileForwarder tagFileForwarder,
-          ITransferProxy transferProxy,
+          ITransferProxyFactory transferProxyFactory,
           IWebRequest webRequest)
           where TExecutor : RequestExecutorContainer, new()
         {
@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
                 ConfigStore = configStore,
                 DataCache = dataCache,
                 TagFileForwarder = tagFileForwarder,
-                TransferProxy = transferProxy,
+                TransferProxyFactory = transferProxyFactory,
                 WebRequest = webRequest
             };
             return executor;
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
             ConfigStore = ConfigStore,
             DataCache = DataCache,
             TagFileForwarder = TagFileForwarder,
-            TransferProxy = TransferProxy,
+            TransferProxyFactory = TransferProxyFactory,
             WebRequest = WebRequest
           };
           return executor;

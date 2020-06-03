@@ -168,7 +168,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
       [FromServices] ISchedulerProxy scheduler,
-      [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc)
+      [FromServices] ITransferProxyFactory transferProxyFactory)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
@@ -188,7 +188,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var s3Path = $"project/importedfile/{Guid.NewGuid()}.dat";
       var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
-      var transferProxy = transferProxyFunc(TransferProxyType.Temporary);
+      var transferProxy = transferProxyFactory.NewProxy(TransferProxyType.Temporary);
       transferProxy.Upload(fileStream, s3Path);
 
       var baseUrl = Request.Host.ToUriComponent();
@@ -226,7 +226,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="surveyedUtc"></param>
-    /// <param name="transferProxyFunc"></param>
+    /// <param name="transferProxyFactory"></param>
     /// <param name="schedulerProxy"></param>
     /// <remarks>Import a design file for a project, once the file has been uploaded to AWS</remarks>
     [Route("internal/v4/importedfile")]
@@ -431,7 +431,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           RequestExecutorContainerFactory
             .Build<DeleteImportedFileExecutor>(
               LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, persistantTransferProxy: persistantTransferProxy, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
+              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, persistantTransferProxyFactory: persistantTransferProxyFactory, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
               projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient, cwsProjectClient: CwsProjectClient)
             .ProcessAsync(deleteImportedFile)
         );
@@ -551,7 +551,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
               fileStream, projectUid.ToString(), filename,
               importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-              Logger, ServiceExceptionHandler, persistantTransferProxy);
+              Logger, ServiceExceptionHandler, persistantTransferProxyFactory.NewProxy(TransferProxyType.DesignImport));
           }
 
           if (UseRaptorGatewayDesignImport)
@@ -600,7 +600,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               .Build<CreateImportedFileExecutor>(
                 LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-                persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
+                persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
               .ProcessAsync(createImportedFile)

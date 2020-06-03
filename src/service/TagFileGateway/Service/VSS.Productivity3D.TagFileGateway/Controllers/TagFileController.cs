@@ -34,13 +34,13 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       [FromServices] IConfigurationStore configStore, 
       [FromServices] IDataCache dataCache, 
       [FromServices] ITagFileForwarder tagFileForwarder,
-      [FromServices] ITransferProxy transferProxy,
+      [FromServices] ITransferProxyFactory transferProxyFactory,
       [FromServices] IWebRequest webRequest)
     {
       var isDirect = Request.Path.Value.Contains("/direct");
       _logger.LogInformation($"Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
       var result = await RequestExecutorContainer
-        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxy, webRequest)
+        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest)
         .ProcessAsync(request);
 
       _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       [FromServices] IConfigurationStore configStore, 
       [FromServices] IDataCache dataCache, 
       [FromServices] ITagFileForwarder tagFileForwarder,
-      [FromServices] ITransferProxy transferProxy)
+      [FromServices] ITransferProxyFactory transferProxyFactory)
     {
       // https://forums.aws.amazon.com/thread.jspa?threadID=69413
       // AWS SNS is in text/plain, not application/json - so need to parse manually
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
           configStore,
           dataCache,
           tagFileForwarder,
-          transferProxy,
+          transferProxyFactory,
           webRequest)
         .ProcessAsync(payload);
 

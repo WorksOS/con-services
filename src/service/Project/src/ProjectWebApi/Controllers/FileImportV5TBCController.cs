@@ -108,7 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
               ? importedFileTbc.SurfaceFile.SurveyedUtc
               : (DateTime?)null,
-            Logger, ServiceExceptionHandler, persistantTransferProxy);
+            Logger, ServiceExceptionHandler, persistantTransferProxyFactory.NewProxy(TransferProxyType.DesignImport));
         }
 
         var existing = await ImportedFileRequestDatabaseHelper
@@ -154,7 +154,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-                persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
+                persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
               .ProcessAsync(createImportedFile)

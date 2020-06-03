@@ -12,15 +12,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Proxy;
-using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Productivity3D.Push.Clients.Notifications;
-using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileDump

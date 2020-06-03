@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         TagFileForwarder.Reset();
         TransferProxy.Reset();
         WebRequest.Reset();
-        return RequestExecutorContainer.Build<T>(LoggerFactory, ConfigStore.Object, DataCache.Object, TagFileForwarder.Object, TransferProxy.Object, WebRequest.Object);
+        return RequestExecutorContainer.Build<T>(LoggerFactory, ConfigStore.Object, DataCache.Object, TagFileForwarder.Object, TransferProxyFactory.Object, WebRequest.Object);
     }
 
     public ExecutorBaseFixture()

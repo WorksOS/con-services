@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IJob, AssetStatusJob>();
 
       services.AddTransient<IApiClient, ApiClient>();
-      services.AddTransient<ITransferProxy, TransferProxy>();
+      services.AddTransient<ITransferProxyFactory, TransferProxyFactory>();
 
       // Required for TIDAuthentication  
       // CCSSSCON-216 temporary move to real endpoints when available

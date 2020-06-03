@@ -5,12 +5,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
@@ -26,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportBaseController : BaseController<FileImportBaseController>
   {
-    protected ITransferProxy persistantTransferProxy; 
+    protected ITransferProxyFactory persistantTransferProxyFactory;
     protected IFilterServiceProxy filterServiceProxy;
     protected ITRexImportFileProxy tRexImportFileProxy;
 
@@ -48,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       this._requestFactory = requestFactory;
 
-      this.persistantTransferProxy = transferProxyFactory.NewProxy(TransferProxyType.DesignImport);
+      this.persistantTransferProxyFactory = transferProxyFactory; //.NewProxy(TransferProxyType.DesignImport);
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
 
