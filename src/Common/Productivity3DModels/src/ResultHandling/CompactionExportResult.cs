@@ -12,5 +12,12 @@ namespace VSS.Productivity3D.Models.ResultHandling
     {
       FullFileName = fullFileName;
     }
+    public CompactionExportResult(int code, string message)
+    {
+      FullFileName = string.Empty;
+      Code = code;
+      Message = message;
+    }
+
   }
 }
