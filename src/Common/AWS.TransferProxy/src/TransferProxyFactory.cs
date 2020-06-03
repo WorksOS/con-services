@@ -38,6 +38,8 @@ namespace VSS.AWS.TransferProxy
         TransferProxyType.Temporary => NewProxy("AWS_TEMPORARY_BUCKET_NAME"),
         TransferProxyType.TAGFiles => NewProxy("AWS_TAGFILE_BUCKET_NAME"), 
         TransferProxyType.Export => NewProxy("AWS_TEMPORARY_BUCKET_NAME"), // Exports go to temporary bucket currently
+        TransferProxyType.TagFileGatewayArchive => NewProxy("AWS_ALL_TAGFILE_BUCKET_NAME"),
+        
         _ => throw new ArgumentException($"Unsupported transfer proxy type {type}")
       };
     }

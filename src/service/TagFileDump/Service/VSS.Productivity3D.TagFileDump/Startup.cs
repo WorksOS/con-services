@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.TagFileDump
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, TagFileDumpExecutionStates>();
 
-      services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), sp.GetService<ILogger<TransferProxy>>(), "AWS_ALL_TAGFILE_BUCKET_NAME"));
+      services.AddScoped<ITransferProxyFactory, TransferProxyFactory>();
 
       services.AddOpenTracing(builder =>
       {

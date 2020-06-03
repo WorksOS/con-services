@@ -5,6 +5,7 @@
     Temporary,
     DesignImport,
     Export,
-    TAGFiles
+    TAGFiles,
+    TagFileGatewayArchive
   }
 }
