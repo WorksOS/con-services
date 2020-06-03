@@ -118,7 +118,6 @@ namespace VSS.TRex.Reports.StationOffset.Executors
       }
     }
 
-    // todo temp until alignment SDK available
     private List<StationOffsetPoint> GetMockPointsFromSiteModel(Guid projectUid, int countPointsRequired)
     {
       var points = new List<StationOffsetPoint>();

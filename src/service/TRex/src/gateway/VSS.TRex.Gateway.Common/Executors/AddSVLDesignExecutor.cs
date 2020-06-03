@@ -8,12 +8,12 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -21,11 +21,8 @@ namespace VSS.TRex.Gateway.Common.Executors
   public class AddSVLDesignExecutor : BaseExecutor
   {
     /// <summary>
-    /// TagFileExecutor
+    /// AddSVLDesignExecutor
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="exceptionHandler"></param>
     public AddSVLDesignExecutor(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
@@ -41,9 +38,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Process add design request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<DesignRequest>(item);
@@ -66,22 +60,15 @@ namespace VSS.TRex.Gateway.Common.Executors
               RequestErrorStatus.DesignImportUnableToRetrieveFromS3, designLoadResult.ToString());
         }
 
-        // todo when SDK avail
         var extents = new BoundingWorldExtent3D();
         alignmentDesign.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
-
 
         // Create the new alignment in our site model
         _ = DIContext.Obtain<IAlignmentManager>()
           .Add(request.ProjectUid,
             new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
             extents);
-
-        // todo possibly, when SDK avail
-        /* var existanceMaps = DIContext.Obtain<IExistenceMaps>();
-          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designAlignment.ID, alignmentDesign.SubGridOverlayIndex());
-          */
 
         log.LogInformation($"#Out# AddSVLDesignExecutor. Processed add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
@@ -101,7 +88,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException("Use the asynchronous form of this method");
+      throw new TRexException("Use the asynchronous form of this method");
     }
   }
 }
