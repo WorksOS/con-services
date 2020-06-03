@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -28,7 +29,10 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
           if (!aggregator.Volume.BoundingExtentGrid.IsValidPlanExtent) // No conversion possible
             continue;
 
-          var neeCoords = new[] {new XYZ(aggregator.Volume.BoundingExtentGrid.MinX, aggregator.Volume.BoundingExtentGrid.MinY), new XYZ(aggregator.Volume.BoundingExtentGrid.MaxX, aggregator.Volume.BoundingExtentGrid.MaxY)};
+          var neeCoords = new[] {new XYZ(aggregator.Volume.BoundingExtentGrid.MinX, aggregator.Volume.BoundingExtentGrid.MinY,
+                                       aggregator.Volume.BoundingExtentGrid.MinZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MinZ), 
+                                 new XYZ(aggregator.Volume.BoundingExtentGrid.MaxX, aggregator.Volume.BoundingExtentGrid.MaxY,
+                                       aggregator.Volume.BoundingExtentGrid.MaxZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MaxZ)};
 
           var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid);
           var (errorCode, llhCoords) 

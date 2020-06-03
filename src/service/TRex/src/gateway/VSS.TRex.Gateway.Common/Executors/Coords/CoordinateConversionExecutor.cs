@@ -49,7 +49,8 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var coordinates = request.ConversionCoordinates.Select(cc => new XYZ(cc.X, cc.Y)).ToArray();
+      // Note: This is a 2D conversion only, elevation is set to 0
+      var coordinates = request.ConversionCoordinates.Select(cc => new XYZ(cc.X, cc.Y, 0.0)).ToArray();
 
       (RequestErrorStatus errorStatus, XYZ[] resultCoordinates) conversionResult;
 
