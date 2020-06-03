@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
       SetupFixture();
     }
 
-    private static IDataSmoother SurfaceExportSmootherFactoryMethod()
+    private static IDataSmoother SurfaceExportSmootherFactoryMethod(DataSmootherOperation operation)
     {
       return new ElevationTreeSmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValues);
     }
@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
     {
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<Func<IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
+        .Add(x => x.AddSingleton<Func<DataSmootherOperation, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
         .Complete();
     }
   }
