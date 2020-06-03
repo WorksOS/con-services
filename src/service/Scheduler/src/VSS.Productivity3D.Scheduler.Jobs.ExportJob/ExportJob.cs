@@ -7,6 +7,7 @@ using Hangfire.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
@@ -41,17 +42,19 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
 
     private readonly IApiClient _apiClient;
     private readonly ITransferProxy _transferProxy;
+    private readonly ITransferProxyFactory _transferProxyFactory;
     private readonly ILogger _log;
     private Guid _savedRequestId;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public ExportJob(IApiClient apiClient, ITransferProxy transferProxy, ILoggerFactory logger)
+    public ExportJob(IApiClient apiClient, ITransferProxyFactory transferProxyfactory, ILoggerFactory logger)
     {
       _log = logger.CreateLogger<ExportJob>();
       _apiClient = apiClient;
-      _transferProxy = transferProxy;
+      _transferProxyFactory = transferProxyfactory;
+      _transferProxy = _transferProxyFactory.NewProxy(TransferProxyType.Temporary);
     }
 
     /// <summary>
