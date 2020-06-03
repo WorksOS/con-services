@@ -57,8 +57,7 @@ namespace VSS.Productivity3D.TagFileGateway
             services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
             services.AddScoped<IErrorCodesProvider, TagFileGatewayExecutionStates>();
             services.AddTransient<ITagFileForwarder, TagFileForwarderProxy>();
-            services.AddTransient<ITransferProxy, TransferProxy>(provider => 
-              ActivatorUtilities.CreateInstance<TransferProxy>(provider, "AWS_ALL_TAGFILE_BUCKET_NAME"));
+            services.AddScoped<ITransferProxyFactory, TransferProxyFactory>();
 
             services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
             services.AddSingleton<CacheInvalidationService>();

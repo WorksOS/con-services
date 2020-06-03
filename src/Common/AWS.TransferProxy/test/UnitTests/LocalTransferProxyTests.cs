@@ -20,7 +20,7 @@ namespace VSS.AWS.TransferProxy.UnitTests
 
       var mockStore = new Mock<IConfigurationStore>();
 
-      mockStore.Setup(x => x.GetValueString("AWS_BUCKET_NAME")).Returns("AWS_BUCKET_NAME");
+      mockStore.Setup(x => x.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("AWS_TEMPORARY_BUCKET_NAME");
 
       var transferProxy = new LocalTransferProxy(mockStore.Object, new NullLogger<LocalTransferProxy>(), "UnitTests");
       var key = transferProxy.GeneratePreSignedUrl(s3Key);
@@ -38,10 +38,10 @@ namespace VSS.AWS.TransferProxy.UnitTests
       var result = TimeSpan.FromHours(1);
       var mockStore = new Mock<IConfigurationStore>();
 
-      mockStore.Setup(x => x.GetValueString("AWS_BUCKET_NAME")).Returns("vss-unittests-local");
+      mockStore.Setup(x => x.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("vss-unittests-local");
       mockStore.Setup(x => x.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY")).Returns(result);
 
-      var transferProxy = new LocalTransferProxy(mockStore.Object, new NullLogger<LocalTransferProxy>(), "AWS_BUCKET_NAME");
+      var transferProxy = new LocalTransferProxy(mockStore.Object, new NullLogger<LocalTransferProxy>(), "AWS_TEMPORARY_BUCKET_NAME");
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(originalFileContents)))
       {

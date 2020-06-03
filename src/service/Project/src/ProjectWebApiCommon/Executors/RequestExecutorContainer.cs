@@ -62,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// 
     /// </summary>
-    protected ITransferProxy persistantTransferProxy;
+    protected ITransferProxyFactory persistantTransferProxyFactory;
 
     /// <summary>
     /// Interface to filter service for importFile validation
@@ -168,7 +168,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null,
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
-      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
+      ITransferProxyFactory persistantTransferProxyFactory = null, IFilterServiceProxy filterServiceProxy = null,
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
       IFileRepository fileRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
@@ -186,7 +186,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.productivity3dV1ProxyCoord = productivity3dV1ProxyCoord;
       this.productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
       this.productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
-      this.persistantTransferProxy = persistantTransferProxy;
+      this.persistantTransferProxyFactory = persistantTransferProxyFactory;
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;

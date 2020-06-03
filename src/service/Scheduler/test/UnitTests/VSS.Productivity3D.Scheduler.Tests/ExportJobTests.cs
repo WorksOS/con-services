@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
@@ -40,12 +41,15 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var filename = "dummy";
       var presignedUrl = "some presigned url";
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
+      Mock<ITransferProxyFactory> transferProxyFactory = new Mock<ITransferProxyFactory>();
+      transferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(transferProxy.Object);
+
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
       transferProxy.Setup(t => t.GeneratePreSignedUrl(It.IsAny<string>())).Returns(presignedUrl);
 
       Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
 
-      var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
+      var exportJob = new ExportJob(apiClient.Object, transferProxyFactory.Object, logger.Object);
       var actualLink = exportJob.GetDownloadLink(jobId, filename);
       Assert.AreEqual(presignedUrl, actualLink);
     }
@@ -65,9 +69,12 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
 
+      Mock<ITransferProxyFactory> transferProxyFactory = new Mock<ITransferProxyFactory>();
+      transferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(transferProxy.Object);
+
       Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
 
-      var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
+      var exportJob = new ExportJob(apiClient.Object, transferProxyFactory.Object, logger.Object);
       var result = exportJob.GetExportData(Guid.NewGuid(), customHeaders, context);
     }
 
@@ -101,9 +108,12 @@ namespace VSS.Productivity3D.Scheduler.Tests
         .Returns((Stream stream, string filename, string ct) => filename + ".json"); // Match the filename to the content type for testings
       transferProxy.Setup(t => t.Download(It.IsAny<string>())).Returns(() => Task.FromResult(fileStreamResult));
 
+      Mock<ITransferProxyFactory> transferProxyFactory = new Mock<ITransferProxyFactory>();
+      transferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(transferProxy.Object);
+
       Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
 
-      var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
+      var exportJob = new ExportJob(apiClient.Object, transferProxyFactory.Object, logger.Object);
 
       exportJob.GetExportData(Guid.NewGuid(), customHeaders, context).Wait();
 
@@ -133,9 +143,12 @@ namespace VSS.Productivity3D.Scheduler.Tests
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
       transferProxy.Setup(t => t.Download(It.IsAny<string>())).Returns(() => Task.FromResult(fileStreamResult));
 
+      Mock<ITransferProxyFactory> transferProxyFactory = new Mock<ITransferProxyFactory>();
+      transferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(transferProxy.Object);
+
       Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
 
-      var exportJob = new ExportJob(apiClient.Object, transferProxy.Object, logger.Object);
+      var exportJob = new ExportJob(apiClient.Object, transferProxyFactory.Object, logger.Object);
 
       await Assert.ThrowsExceptionAsync<Exception>(() => exportJob.GetExportData(Guid.NewGuid(), customHeaders, context));
       ms.Dispose();

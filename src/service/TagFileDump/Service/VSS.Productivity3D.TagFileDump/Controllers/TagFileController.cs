@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -12,12 +11,12 @@ namespace VSS.Productivity3D.TagFileDump.Controllers
 {
   public class TagFileController : Controller
   {
-    private readonly ITransferProxy _transferProxy;
+    private readonly ITransferProxyFactory _transferProxyFactory;
     private readonly ILogger<TagFileController> _logger;
 
-    public TagFileController(ITransferProxy transferProxy, ILogger<TagFileController> logger)
+    public TagFileController(ITransferProxyFactory transferProxyFactory, ILogger<TagFileController> logger)
     {
-      _transferProxy = transferProxy;
+      _transferProxyFactory = transferProxyFactory;
       _logger = logger;
     }
 
@@ -54,7 +53,7 @@ namespace VSS.Productivity3D.TagFileDump.Controllers
         // S3 needs a full path including file, but TCC needs a path and filename as two separate variables
         var s3FullPath = path + request.FileName;
 
-        _transferProxy.Upload(data, s3FullPath);
+        _transferProxyFactory.NewProxy(TransferProxyType.TagFileGatewayArchive).Upload(data, s3FullPath);
         _logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
       }
 

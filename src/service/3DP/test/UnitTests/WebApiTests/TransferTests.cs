@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.WebApiTests
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, RaptorResult>()
-        .AddTransient<ITransferProxy, TransferProxy>()
+        .AddTransient<ITransferProxyFactory, TransferProxyFactory>()
         .BuildServiceProvider();
 
       var jobId = "Test_Job_1";
@@ -50,14 +50,14 @@ namespace VSS.Productivity3D.WebApiTests
     ""Message"": ""success""
   }";
       var exportResult = JsonConvert.DeserializeObject<ExportResult>(result);
-      var transfer = serviceProvider.GetRequiredService<ITransferProxy>();
+      var transfer = serviceProvider.GetRequiredService<ITransferProxyFactory>().NewProxy(TransferProxyType.Temporary);
       transfer.Upload(new MemoryStream(exportResult.ExportData), s3Key);
     }
 
     [TestMethod]
     public async Task CanDownloadFileFromS3()
     {
-      var transfer = serviceProvider.GetRequiredService<ITransferProxy>();
+      var transfer = serviceProvider.GetRequiredService<ITransferProxyFactory>().NewProxy(TransferProxyType.Temporary);
       var result = await transfer.Download(s3Key);
       using (var reader = new BinaryReader(result.FileStream))
       {
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApiTests
     [TestMethod]
     public void CanGeneratePreSignedUrl()
     {
-      var transfer = serviceProvider.GetRequiredService<ITransferProxy>();
+      var transfer = serviceProvider.GetRequiredService<ITransferProxyFactory>().NewProxy(TransferProxyType.Temporary);
       var result = transfer.GeneratePreSignedUrl(s3Key);
       Assert.IsFalse(string.IsNullOrEmpty(result));
       Assert.IsTrue(result.Contains(s3Key));

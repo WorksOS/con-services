@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -350,7 +351,13 @@ namespace VSS.MasterData.ProjectTests
 
     private FileImportV6Controller CreateFileImportV6Controller()
     {
-      ServiceCollection.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
+
+      ServiceCollection.AddSingleton(mockTransferProxyFactory.Object);
+
       var mockNotificationHubClient = new Mock<INotificationHubClient>();
       mockNotificationHubClient.Setup(n => n.Notify(It.IsAny<ProjectChangedNotification>())).Returns(Task.CompletedTask);
       ServiceCollection.AddSingleton(mockNotificationHubClient.Object);
@@ -362,8 +369,9 @@ namespace VSS.MasterData.ProjectTests
       var controllerContext = new ControllerContext();
       controllerContext.HttpContext = httpContext;
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      var persistentTransferProxy = ServiceProvider.GetRequiredService<Func<TransferProxyType, ITransferProxy>>();
-      var controller = new FileImportV6Controller(configStore, persistentTransferProxy, null,null,null);
+
+      var transferProxyFactory = ServiceProvider.GetRequiredService<ITransferProxyFactory>();
+      var controller = new FileImportV6Controller(configStore, transferProxyFactory, null,null,null);
       controller.ControllerContext = controllerContext;
       return controller;
     }
@@ -377,12 +385,5 @@ namespace VSS.MasterData.ProjectTests
       ServiceCollection.AddSingleton(mockProjectRepo.Object);
       return mockProjectRepo;
     }
-
-    private ITransferProxy TransferProxyMethod(TransferProxyType type)
-    {
-      return mockTransferProxy;
-    }
-
-    private static ITransferProxy mockTransferProxy = new Mock<ITransferProxy>().Object;
   }
 }

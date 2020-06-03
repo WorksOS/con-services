@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities;
@@ -257,7 +258,8 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
-      var isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
+      var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
+      var isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
       return !isDownloaded ? DesignLoadResult.UnknownFailure : DesignLoadResult.Success;
     }
 
@@ -278,7 +280,8 @@ namespace VSS.TRex.Designs
 
     public override bool RemoveFromStorage(Guid siteModelUid, string fileName)
     {
-      return S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
+      var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
+      return s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
     }
 
     /// <summary>

@@ -42,7 +42,7 @@ data:
   CORECLR_ENABLE_PROFILING: "0"
 #AWS configuration  
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-workos-exports
-  AWS_BUCKET_NAME: s3-pdxa-rpd-workos-exports
+  AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-rpd-workos-exports
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
 #Raptor configuration
   ASNODEIP: 10.97.96.150

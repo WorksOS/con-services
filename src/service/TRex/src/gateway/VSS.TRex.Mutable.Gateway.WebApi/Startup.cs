@@ -71,9 +71,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
 
       services.AddServiceDiscovery();
       services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>();
-
-      services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
-      services.AddTransient<ITransferProxy>(sp => sp.GetRequiredService<ITransferProxyFactory>().NewProxy("AWS_DESIGNIMPORT_BUCKET_NAME"));
+      services.AddSingleton<ITransferProxyFactory, TransferProxyFactory>();
 
       services.AddOpenTracing(builder =>
       {
