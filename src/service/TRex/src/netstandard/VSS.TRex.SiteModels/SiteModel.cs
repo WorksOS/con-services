@@ -930,7 +930,7 @@ return localVersionMap;
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? Consts.kNoDesignName,
-              Consts.kNoDesignNameID, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC,
+              priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC,
               machine.ID));
           }
 
@@ -946,7 +946,7 @@ return localVersionMap;
         {
           var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
           assetOnDesignPeriods.Add(new AssetOnDesignPeriod(machineDesign?.Name ?? Consts.kNoDesignName,
-            Consts.kNoDesignNameID, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
+            priorMachineDesignId, Consts.NULL_LEGACY_ASSETID, priorDateTime, Consts.MAX_DATETIME_AS_UTC, machine.ID));
         }
       }
 
@@ -1000,7 +1000,7 @@ return localVersionMap;
             {
               var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
               assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.NULL_LEGACY_ASSETID,
-                Consts.kNoDesignNameID,
+                priorMachineDesignId,
                 priorLayerId, priorLayerChangeTime,
                 thisLayerChangeTime <= endReportingPeriod ? thisLayerChangeTime : endReportingPeriod, machine.ID,
                 machineDesign?.Name ?? Consts.kNoDesignName));
@@ -1017,7 +1017,7 @@ return localVersionMap;
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);
             assetOnDesignLayerPeriods.Add(new AssetOnDesignLayerPeriod(Consts.NULL_LEGACY_ASSETID,
-              Consts.kNoDesignNameID, priorLayerId, priorLayerChangeTime,
+              priorMachineDesignId, priorLayerId, priorLayerChangeTime,
               endReportingPeriod, machine.ID, machineDesign?.Name ?? Consts.kNoDesignName));
           }
         }
