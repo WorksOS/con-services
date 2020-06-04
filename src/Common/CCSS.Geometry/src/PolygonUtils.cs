@@ -8,7 +8,7 @@ namespace CCSS.Geometry
   public static class PolygonUtils
   {
 
-    const double EPSILON = 0.000001;  // for comparing floating points numbers for equality
+    const double EPSILON = 0.00000001;  // for comparing floating points numbers for equality
 
     /// <summary>
     /// Determines if the point is inside the polygon.

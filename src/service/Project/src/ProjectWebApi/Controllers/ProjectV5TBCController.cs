@@ -1,12 +1,13 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -54,16 +55,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ReturnLongV5Result> CreateProjectTBC([FromBody] CreateProjectV5Request projectRequest)
     {
       if (projectRequest == null)
-      {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 81);
-      }
 
       Logger.LogInformation($"{nameof(CreateProjectTBC)} projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
       var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, CustomerUid);
 
-      ProjectDataValidator.Validate(createProjectEvent, new Guid(CustomerUid), new Guid(UserId),
-        Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(createProjectEvent);
+      var validationResult
+        = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+              CustomerUid, UserId, null, customHeaders,
+              Productivity3dV1ProxyCoord, cwsProjectClient: CwsProjectClient)
+            .ProcessAsync(data)
+        );
+      if (validationResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, validationResult.Code);
 
       projectRequest.CoordinateSystem =
         ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
@@ -81,10 +89,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            CustomerUid, UserId, null, customHeaders, 
-            Productivity3dV1ProxyCoord, fileRepo: FileRepo, 
+            CustomerUid, UserId, null, customHeaders,
+            Productivity3dV1ProxyCoord, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient, 
+            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient,
             cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(createProjectEvent)
@@ -119,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v5/preferences/tcc")]
     [HttpPost]
-    public async Task<ReturnSuccessV5Result> ValidateTccAuthorization(
+    public ReturnSuccessV5Result ValidateTccAuthorization(
       [FromBody] ValidateTccAuthorizationRequest tccAuthorizationRequest)
     {
       if (tccAuthorizationRequest == null)

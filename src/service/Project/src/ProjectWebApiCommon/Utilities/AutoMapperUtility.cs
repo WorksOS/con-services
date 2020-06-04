@@ -5,7 +5,6 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -70,7 +69,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
             .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore());
-          cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()            
+          cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
           cfg.CreateMap<ProjectDatabaseModel, ProjectV6Descriptor>()
@@ -106,7 +105,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.Ignore());
           cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
             .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
-            .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude))); 
+            .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
           // ProjectGeofenceAssociations
           cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();
 
@@ -161,6 +160,43 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))
             ;
+
+          cfg.CreateMap<CreateProjectRequest, ProjectValidation>()
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => Guid.Empty))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.ThreeDEnabled : (CwsProjectType?)null))
+            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Created))
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
+            ;
+
+          cfg.CreateMap<CreateProjectEvent, ProjectValidation>()
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => Guid.Empty))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.ThreeDEnabled : (CwsProjectType?)null))
+            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Created))
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
+            ;
+
+          cfg.CreateMap<UpdateProjectRequest, ProjectValidation>()
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => Guid.Empty))
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUid))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.ThreeDEnabled : (CwsProjectType?)null))
+            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Updated))
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
+            ;
+
+          cfg.CreateMap<DeleteProjectEvent, ProjectValidation>()
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => Guid.Empty))
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUID))
+            .ForMember(dest => dest.ProjectType, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Deleted))
+            .ForMember(dest => dest.ProjectName, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.Ignore())
+            ;
+
         }
       );
 
