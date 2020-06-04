@@ -46,7 +46,7 @@ function Sync-With-S3 {
     $s3host = 's3://s3-pdxa-rpd-geoid-data'
     $awsProfile = 'fsm-okta'
 
-    Remove-Item ./tmp -Recurse
+    Remove-Item ./tmp -Recurse -ErrorAction Continue
 
     Write-Host "`nCopy GeoData files from the container to host..." -ForegroundColor Green
     docker cp ${imageTag}:/app/tgl_geodata/ ./tmp/
@@ -77,11 +77,6 @@ function Exit-With-Code {
     Pop-Location
     Exit $code
 }
-
-Write-Host 'Script Variables:' -ForegroundColor Green
-Write-Host "  Action = $action"
-Write-Host "  NoCache = $noCache"
-Write-Host "  Working Directory ="($pwd).path
 
 # Run the appropriate action.
 switch ($action) {
