@@ -7,6 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SubGridTrees;
@@ -120,8 +121,7 @@ namespace VSS.TRex.SubGrids.Executors
     private void ConvertIntermediarySubGridsToResult(GridDataType RequestGridDataType,
       ref IClientLeafSubGrid[] SubGridResultArray)
     {
-      IClientLeafSubGrid[] NewClientGrids = new IClientLeafSubGrid[SubGridResultArray.Length];
-      ClientHeightAndTimeLeafSubGrid SubGrid1, SubGrid2;
+      var NewClientGrids = new IClientLeafSubGrid[SubGridResultArray.Length];
 
       try
       {
@@ -136,8 +136,8 @@ namespace VSS.TRex.SubGrids.Executors
             && SubGridResultArray[2].GridDataType == GridDataType.HeightAndTime
         )
         {
-          SubGrid1 = (ClientHeightAndTimeLeafSubGrid) SubGridResultArray[0];
-          SubGrid2 = (ClientHeightAndTimeLeafSubGrid) SubGridResultArray[1];
+          var SubGrid1 = (ClientHeightAndTimeLeafSubGrid) SubGridResultArray[0];
+          var SubGrid2 = (ClientHeightAndTimeLeafSubGrid) SubGridResultArray[1];
 
           // Merge the first two results then swap the second and third items so later processing
           // uses the correct two result, and the the third is correctly recycled
@@ -250,74 +250,101 @@ namespace VSS.TRex.SubGrids.Executors
     }
 
     /// <summary>
-    /// Take a sub grid address and request the required client sub grid depending on GridDataType
+    /// Take a sub grid address and a set of requesters and request the required client sub grid depending on GridDataType
     /// </summary>
-    /// <param name="requester"></param>
-    /// <param name="address"></param>
-    private async Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> PerformSubGridRequest(ISubGridRequestor requester, SubGridCellAddress address)
+    private async Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[]> PerformSubGridRequest(ISubGridRequestor[] requesters, SubGridCellAddress address)
     {
-      (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid) result = (ServerRequestResult.UnknownError, null);
+      //################################################
+      // Special case for DesignHeight sub grid requests
+      // Todo: This should be refactored out into another method
+      //################################################
 
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
+        var designHeightResult = new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[] { (ServerRequestResult.UnknownError, null) };
         var getGetDesignHeights = await ReferenceDesignWrapper.Design.GetDesignHeights(localArg.ProjectID, ReferenceDesignWrapper.Offset, address, siteModel.CellSize);
 
-        result.clientGrid = getGetDesignHeights.designHeights;
+        designHeightResult[0].clientGrid = getGetDesignHeights.designHeights;
         if (getGetDesignHeights.errorCode == DesignProfilerRequestResult.OK || getGetDesignHeights.errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
         {
-          result.requestResult = ServerRequestResult.NoError;
-          return result;
+          designHeightResult[0].requestResult = ServerRequestResult.NoError;
+          return designHeightResult;
         }
 
         Log.LogError($"Design profiler sub grid elevation request for {address} failed with error {getGetDesignHeights.errorCode}");
 
-        result.requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
-        return result;
+        designHeightResult[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
+        return designHeightResult;
       }
 
-      // Reach into the sub grid request layer and retrieve an appropriate sub grid
-      var requestSubGridInternalResult = await requester.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested);
-      result.requestResult = requestSubGridInternalResult.requestResult;
-      result.clientGrid = requestSubGridInternalResult.clientGrid;
+      // ##################################
+      // General case for sub grid requests
+      // ##################################
 
-      if (result.requestResult != ServerRequestResult.NoError)
-        Log.LogError($"Request for sub grid {address} request failed with code {result}");
+      var result = new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[requesters.Length];
+
+      var requestCount = 0;
+      // Reach into the sub grid request layer and retrieve an appropriate sub grid
+      foreach (var requester in requesters)
+      {
+        var requestSubGridInternalResult = await requester.RequestSubGridInternal(address, address.ProdDataRequested, address.SurveyedSurfaceDataRequested);
+        var subGridResult = (requestSubGridInternalResult.requestResult, requestSubGridInternalResult.clientGrid);
+
+        if (subGridResult.requestResult != ServerRequestResult.NoError)
+          Log.LogError($"Request for sub grid {address} request failed with code {result}");
+
+        result[requestCount++] = subGridResult;
+      }
 
       // Some request types require additional processing of the sub grid results prior to repatriating the answers back to the caller
       // Convert the computed intermediary grids into the client grid form expected by the caller
-      if (requestSubGridInternalResult.clientGrid?.GridDataType != localArg.GridDataType)
+      if (result[0].clientGrid?.GridDataType != localArg.GridDataType)
       {
         // Convert to an array to preserve the multiple filter semantic giving a list of sub grids to be converted (eg: volumes)
-        IClientLeafSubGrid[] clientArray = { requestSubGridInternalResult.clientGrid };
+        var clientArray = result.Select(x => x.clientGrid).ToArray();
+
         ConvertIntermediarySubGridsToResult(localArg.GridDataType, ref clientArray);
 
         // If the requested data is cut fill derived from elevation data previously calculated, 
         // then perform the conversion here
         if (localArg.GridDataType == GridDataType.CutFill)
         {
-          if (clientArray.Length == 2)
-          {
-            // The cut fill is defined between two production data derived height sub grids
-            // depending on volume type work out height difference
-            CutFillUtilities.ComputeCutFillSubGrid((IClientHeightLeafSubGrid) clientArray[0], // 'base'
-              (IClientHeightLeafSubGrid) clientArray[1]); // 'top'
-          }
-          else
+          if (clientArray.Length == 1)
           {
             // The cut fill is defined between one production data derived height sub grid and a
             // height sub grid to be calculated from a designated design
-
             var computeCutFillSubGridResult = await CutFillUtilities.ComputeCutFillSubGrid(
               clientArray[0], // base
               ReferenceDesignWrapper, // 'top'
               localArg.ProjectID);
 
             if (!computeCutFillSubGridResult.executionResult)
-              result.requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
+            {
+              ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[0].clientGrid);
+              result[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
+            }
+            else
+            {
+              result[0].clientGrid = clientArray[0];
+            }
+          }
+
+          // If the requested data is cut fill derived from two elevation data sub grids previously calculated, 
+          // then perform the conversion here
+          if (clientArray.Length == 2)
+          {
+            // The cut fill is defined between two production data derived height sub grids
+            // depending on volume type work out height difference
+            CutFillUtilities.ComputeCutFillSubGrid((IClientHeightLeafSubGrid)clientArray[0], // 'base'
+              (IClientHeightLeafSubGrid)clientArray[1]); // 'top'
+
+            // ComputeCutFillSubGrid has placed the result of the cut fill computation into clientGrids[0],
+            // so clientGrids[1] can be discarded
+            ClientLeafSubGridFactory.ReturnClientSubGrid(ref clientArray[1]);
+
+            result = new [] {(ServerRequestResult.NoError, clientArray[0])};
           }
         }
-
-        result.clientGrid = clientArray[0];
       }
 
       return result;
@@ -357,22 +384,13 @@ namespace VSS.TRex.SubGrids.Executors
       //Log.LogInformation("Sending {0} sub grids to caller for processing", count);
       //Log.LogInformation($"Requester list contains {Requestors.Length} items");
 
-      var clientGridTasks = new Task<IClientLeafSubGrid>[addressCount][];
-      var clientGrids = new IClientLeafSubGrid[addressCount][];
+      var clientGridTasks = new Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[]>[addressCount];
 
       // Execute a client grid request for each requester and create an array of the results
-      for (var i = 0; i < addressCount; i++)
-      {
-        clientGridTasks[i] = requestors.Select(async x =>
-        {
-          var performSubGridRequestResult = await PerformSubGridRequest(x, addressList[i]);
-          return performSubGridRequestResult.requestResult == ServerRequestResult.NoError ? performSubGridRequestResult.clientGrid : null;
-        }).ToArray();
+      addressList.ForEach((x, i) => clientGridTasks[i] = PerformSubGridRequest(requestors, x));
+      await Task.WhenAll(clientGridTasks);
 
-        await Task.WhenAll(clientGridTasks[i]);
-
-        clientGrids[i] = clientGridTasks[i].Select(c => c.Result).ToArray();
-      }
+      var clientGrids = clientGridTasks.Select(c => c.Result.Select(x => x.requestResult == ServerRequestResult.NoError ? x.clientGrid : null).ToArray()).ToArray();
 
       try
       {

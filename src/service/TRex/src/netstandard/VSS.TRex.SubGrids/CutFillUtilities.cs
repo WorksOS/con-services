@@ -60,7 +60,7 @@ namespace VSS.TRex.SubGrids
         if (subGrid1.Cells[I, J] != Consts.NullHeight)
         {
           if (subGrid2.Cells[I, J] != Consts.NullHeight)
-            subGrid1.Cells[I, J] = subGrid1.Cells[I, J] - subGrid2.Cells[I, J];
+            subGrid1.Cells[I, J] -= subGrid2.Cells[I, J];
           else
             subGrid1.Cells[I, J] = Consts.NullHeight;
         }
