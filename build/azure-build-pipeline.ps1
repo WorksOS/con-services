@@ -180,7 +180,7 @@ Write-Host "  awsRepositoryName = $awsRepositoryName"
 Write-Host "  Working Directory ="($pwd).path
 
 Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
 if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 
 # Run the appropriate action.
