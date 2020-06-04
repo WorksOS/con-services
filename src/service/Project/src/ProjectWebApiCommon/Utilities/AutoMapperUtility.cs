@@ -156,7 +156,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<ProjectValidateDto, ProjectValidation>()
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => TRNHelper.ExtractGuid(src.AccountTrn)))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ProjectTrn) ? null : TRNHelper.ExtractGuid(src.ProjectTrn)))
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
+            //ProjectType mapping will need to be updated if we add more 3DP project types
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType.HasValue ? ProjectType.Standard: (ProjectType?)null))
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => src.UpdateType))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))

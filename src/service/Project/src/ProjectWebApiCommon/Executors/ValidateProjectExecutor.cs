@@ -19,6 +19,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -30,10 +31,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var data = CastRequestObjectTo<ProjectValidation>(item, errorCode: 68);
-
-      // Nothing to validate for a non 3d-enabled project
-      if (data.ProjectType.HasValue && data.ProjectType == CwsProjectType.Non3dEnabled) 
-        return new ContractExecutionResult();
 
       var userUid = new Guid(userId);
       if (data.UpdateType == ProjectUpdateType.Created)

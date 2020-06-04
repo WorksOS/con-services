@@ -1,8 +1,15 @@
-﻿namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
+﻿using System;
+
+namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
 {
+  //Note: WM send an int for this when validating projects.
+  //If new values are added make sure they will work as flags.
+  [Flags]
   public enum CwsProjectType
   {
-    Non3dEnabled = 0,
-    ThreeDEnabled = 1
+    Standard = 0,
+    AcceptsTagFiles = 1
+    //OtherProjectFeatureInTheFuture = 1 << 2
   }
+
 }

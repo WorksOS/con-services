@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -10,7 +11,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   {
     public Guid CustomerUid { get; set; }
     public Guid? ProjectUid { get; set; }
-    public CwsProjectType? ProjectType { get; set; } 
+    public ProjectType? ProjectType { get; set; } 
     public string ProjectName { get; set; }
     public string ProjectBoundaryWKT { get; set; }
     public ProjectUpdateType UpdateType { get; set; }

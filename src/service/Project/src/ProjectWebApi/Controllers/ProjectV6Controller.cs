@@ -312,7 +312,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ContractExecutionResult> IsProjectValid([FromBody]ProjectValidateDto validateDto)
     {
       Logger.LogInformation($"{nameof(IsProjectValid)} Project Validation Check {JsonConvert.SerializeObject(validateDto)}");
-      
+
+      // Nothing to validate for a non 3d-enabled project
+      if (validateDto.ProjectType.HasValue && validateDto.ProjectType == CwsProjectType.Standard)
+        return new ContractExecutionResult();
+
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(validateDto);
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
