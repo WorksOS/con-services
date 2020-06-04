@@ -1,0 +1,51 @@
+trigger:
+  branches:
+    include:
+      - master
+      - releases/*
+      - feature/*
+  paths:
+    include:
+      - "src/services/pulse.api/*"
+
+pool:
+  vmImage: "ubuntu-18.04"
+
+variables:
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/Push"
+
+jobs:
+  - job: BuildTestAndDeploy
+    displayName: "Build, test and Deploy"
+    timeoutInMinutes: 15
+
+    steps:
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action build"
+
+      - task: PowerShell@2
+        displayName: "Run unit tests"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action unittest"
+
+      - task: PublishTestResults@2
+        displayName: "Publish Unit Test Results"
+        continueOnError: true
+        inputs:
+          testResultsFormat: XUnit
+          testResultsFiles: "**/TestResults.xml"
+          searchFolder: "$(rootServiceFolder)/test/UnitTestResults/TestResults.xml"
+
+      - task: PublishCodeCoverageResults@1
+        displayName: "Publish Code Coverage"
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(rootServiceFolder)/test/UnitTestResults/Coverage.xml"
+          pathToSources: "$(rootServiceFolder)"
+          failIfCoverageEmpty: true
