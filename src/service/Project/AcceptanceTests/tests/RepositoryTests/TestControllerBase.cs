@@ -7,7 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.Serilog.Extensions;
 using Xunit;
 
-namespace RepositoryTests.Internal
+namespace RepositoryTests
 {
   public class TestControllerBase
   {

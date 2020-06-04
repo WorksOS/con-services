@@ -42,18 +42,18 @@ namespace IntegrationTests.ExecutorTests
       var customerUidSomeOther = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var userEmailAddress = "whatever@here.there.com";
-      var projectUid = Guid.NewGuid().ToString();
       var settings = string.Empty;
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
 
-      var isCreatedOk = _fixture.CreateCustomerProject(customerUidOfProject, projectUid);
-      Assert.True(isCreatedOk, "unable to create project for Customer");
+      var project = await _fixture.CreateCustomerProject(customerUidOfProject, userId, userEmailAddress);
+      Assert.NotNull(project);
+
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectUID, settings, settingsType);
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
           customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
-          projectRepo: _fixture.ProjectRepo);
+          projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal));
@@ -68,24 +68,24 @@ namespace IntegrationTests.ExecutorTests
       var customerUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var userEmailAddress = "whatever@here.there.com";
-      var projectUid = Guid.NewGuid().ToString();
-      var settings = string.Empty;
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
 
-      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid);
-      Assert.True(isCreatedOk, "unable to create project for Customer");
+      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      Assert.NotNull(project);
+
+      var settings = string.Empty;
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectUID, settings, settingsType);
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
           (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
             customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-            projectRepo: _fixture.ProjectRepo);
-      var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
+            projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
+      var projectSettingsResult = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
-      Assert.NotNull(result);
-      Assert.Equal(projectUid, result.projectUid);
-      Assert.Null(result.settings);
-      Assert.Equal(settingsType, result.projectSettingsType);
+      Assert.NotNull(projectSettingsResult);
+      Assert.Equal(project.ProjectUID, projectSettingsResult.projectUid);
+      Assert.Null(projectSettingsResult.settings);
+      Assert.Equal(settingsType, projectSettingsResult.projectSettingsType);
     }
 
     [Theory]
@@ -97,24 +97,23 @@ namespace IntegrationTests.ExecutorTests
       var customerUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var userEmailAddress = "whatever@here.there.com";
-      var projectUid = Guid.NewGuid().ToString();
-      var settings = @"{firstValue: 10, lastValue: 20}";//"blah";
+      var settings = @"{firstValue: 10, lastValue: 20}";
 
-      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid);
-      Assert.True(isCreatedOk, "unable to create project for Customer");
+      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      Assert.NotNull(project);
 
-      isCreatedOk = _fixture.CreateProjectSettings(projectUid, userId, settings, settingsType);
+      var isCreatedOk = _fixture.CreateProjectSettings(project.ProjectUID, userId, settings, settingsType);
       Assert.True(isCreatedOk, "created projectSettings");
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectUID, settings, settingsType);
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
           customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-          projectRepo: _fixture.ProjectRepo);
+          projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(projectUid, result.projectUid);
+      Assert.Equal(project.ProjectUID, result.projectUid);
       Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
@@ -157,23 +156,23 @@ namespace IntegrationTests.ExecutorTests
       var customerUidSomeOther = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var userEmailAddress = "whatever@here.there.com";
-      var projectUid = Guid.NewGuid();
       var settings = "blah";
       var settingsUpdated = "blah Is Updated";
 
-      var isCreatedOk = _fixture.CreateCustomerProject(customerUidOfProject, projectUid.ToString());
-      Assert.True(isCreatedOk, "unable to create project for Customer");
+      var project = await _fixture.CreateCustomerProject(customerUidOfProject, userId, userEmailAddress);
+      Assert.NotNull(project);
 
-      isCreatedOk = _fixture.CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
+      var isCreatedOk = _fixture.CreateProjectSettings(project.ProjectUID, userId, settings, settingsType);
       Assert.True(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =
-        ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
+        ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectUID, settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
-        customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),       
-        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
+        customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
+        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction,
+        projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("No access to the project for a customer or the project does not exist.", StringComparison.Ordinal));
@@ -188,20 +187,21 @@ namespace IntegrationTests.ExecutorTests
       var customerUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var userEmailAddress = "whatever@here.there.com";
-      var projectUid = Guid.NewGuid();
       var settings = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";//"blah";
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settings, settingsType);
 
-      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid.ToString());
-      Assert.True(isCreatedOk, "unable to create project for Customer");
+      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      Assert.NotNull(project);
+
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectUID, settings, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
+        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction,
+        projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(projectUid.ToString(), result.projectUid);
+      Assert.Equal(project.ProjectUID, result.projectUid);
       Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
@@ -232,27 +232,26 @@ namespace IntegrationTests.ExecutorTests
       var customerUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var userEmailAddress = "whatever@here.there.com";
-      var projectUid = Guid.NewGuid();
       var settings = "blah";
-      //string settingsUpdated = "blah Is Updated";
       var settingsUpdated = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
 
-      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid.ToString());
-      Assert.True(isCreatedOk, "unable to create project for Customer");
+      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      Assert.NotNull(project);
 
-      isCreatedOk = _fixture.CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
+      var isCreatedOk = _fixture.CreateProjectSettings(project.ProjectUID, userId, settings, settingsType);
       Assert.True(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =
-        ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
+        ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectUID, settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
+        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction,
+        projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(projectUid.ToString(), result.projectUid);
+      Assert.Equal(project.ProjectUID, result.projectUid);
       Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
