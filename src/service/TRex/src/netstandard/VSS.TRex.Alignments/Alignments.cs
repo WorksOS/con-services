@@ -9,8 +9,8 @@ namespace VSS.TRex.Alignments
 {
   public class Alignments : List<IAlignment>, IComparable<IAlignment>, IAlignments
   {
-    private const byte kMajorVersion = 1;
-    private const byte kMinorVersion = 3;
+    private const byte MAJOR_VERSION = 1;
+    private const byte MINOR_VERSION = 3;
 
     /// <summary>
     /// No-arg constructor
@@ -30,11 +30,11 @@ namespace VSS.TRex.Alignments
 
     public void Write(BinaryWriter writer)
     {
-      writer.Write(kMajorVersion);
-      writer.Write(kMinorVersion);
+      writer.Write(MAJOR_VERSION);
+      writer.Write(MINOR_VERSION);
       writer.Write(Count);
 
-      foreach (IAlignment alignment in this)
+      foreach (var alignment in this)
       {
         alignment.Write(writer);
       }
@@ -42,39 +42,39 @@ namespace VSS.TRex.Alignments
 
     public void Read(BinaryReader reader)
     {
-      ReadVersionFromStream(reader, out byte MajorVersion, out byte MinorVersion);
+      ReadVersionFromStream(reader, out var majorVersion, out var minorVersion);
 
-      if (MajorVersion != kMajorVersion)
+      if (majorVersion != MAJOR_VERSION)
       {
         throw new FormatException("Major version incorrect");
       }
 
-      if (MinorVersion != kMinorVersion)
+      if (minorVersion != MINOR_VERSION)
       {
         throw new FormatException("Minor version incorrect");
       }
 
-      int theCount = reader.ReadInt32();
-      for (int i = 0; i < theCount; i++)
+      var theCount = reader.ReadInt32();
+      for (var i = 0; i < theCount; i++)
       {
-        Alignment alignment = new Alignment();
+        var alignment = new Alignment();
         alignment.Read(reader);
         Add(alignment);
       }
     }
 
-    private void ReadVersionFromStream(BinaryReader reader, out byte MajorVersion, out byte MinorVersion)
+    private void ReadVersionFromStream(BinaryReader reader, out byte majorVersion, out byte minorVersion)
     {
       // Load file version info
-      MajorVersion = reader.ReadByte();
-      MinorVersion = reader.ReadByte();
+      majorVersion = reader.ReadByte();
+      minorVersion = reader.ReadByte();
     }
 
     public void Assign(IAlignments source)
     {
       Clear();
 
-      foreach (IAlignment alignment in source)
+      foreach (var alignment in source)
       {
         Add(alignment);
       }
@@ -90,14 +90,14 @@ namespace VSS.TRex.Alignments
       DesignDescriptor designDescriptor,
       BoundingWorldExtent3D extents)
     {
-      IAlignment match = Find(x => x.ID == alignmentUid);
+      var match = Find(x => x.ID == alignmentUid);
 
       if (match != null)
       {
         return match;
       }
 
-      IAlignment alignment = new Alignment(alignmentUid, designDescriptor, extents);
+      var alignment = new Alignment(alignmentUid, designDescriptor, extents);
       Add(alignment);
 
       return alignment;
@@ -110,7 +110,7 @@ namespace VSS.TRex.Alignments
     /// <returns></returns>
     public bool RemoveAlignment(Guid alignmentUid)
     {
-      IAlignment match = Find(x => x.ID == alignmentUid);
+      var match = Find(x => x.ID == alignmentUid);
 
       return match != null && Remove(match);
     }
@@ -124,7 +124,7 @@ namespace VSS.TRex.Alignments
     {
       // Note: This happens a lot and the for loop is faster than foreach or Find(x => x.ID)
       // If numbers of Alignments become large a Dictionary<Guid, SS> would be good...
-      for (int i = 0; i < Count; i++)
+      for (var i = 0; i < Count; i++)
         if (this[i].ID == alignmentUid)
           return this[i];
 
@@ -143,7 +143,7 @@ namespace VSS.TRex.Alignments
         return false;
       }
 
-      for (int I = 0; I < Count; I++)
+      for (var I = 0; I < Count; I++)
       {
         if (this[I].ID != other[I].ID)
         {
@@ -158,6 +158,5 @@ namespace VSS.TRex.Alignments
     {
       throw new NotImplementedException();
     }
-
   }
 }

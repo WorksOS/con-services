@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     ///  icdtCellProfile = $00000011;
     ///  icdtCellPasses = $00000012;
     /// </summary>
-    //TODO Move this to a new ENUM
+    //TODO Move this to a new ENUM [RPW: There should already be an enum for this...]
     [JsonProperty(PropertyName = "gridDataType", Required = Required.Always)]
     [Required]
     public int gridDataType { get; set; }

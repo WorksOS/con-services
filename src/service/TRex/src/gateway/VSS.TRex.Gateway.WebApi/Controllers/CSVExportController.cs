@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Web service end point controller for veta export of csv file
     /// 
-    /// TRex stores the exported file on s3 at: AWS_BUCKET_NAME e.g. vss-exports-stg/prod
+    /// TRex stores the exported file on s3 at: AWS_TEMPORARY_BUCKET_NAME e.g. vss-exports-stg/prod
     ///           this bucket is more temporary than other buckets (designs and tagFiles)
     ///
     /// the response fullFileName is in format: "project/{projectUId}/TRexExport/{request.FileName}__{uniqueTRexUid}.zip",

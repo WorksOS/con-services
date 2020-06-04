@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -22,6 +23,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     public Mock<IDataCache> DataCache { get; }
     public Mock<ITagFileForwarder> TagFileForwarder { get; }
     public Mock<ITransferProxy> TransferProxy { get; }
+    public Mock<ITransferProxyFactory> TransferProxyFactory { get; }
     public Mock<IWebRequest> WebRequest { get; }
 
     public T CreateExecutor<T>() where T : RequestExecutorContainer, new()
@@ -32,7 +34,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         TagFileForwarder.Reset();
         TransferProxy.Reset();
         WebRequest.Reset();
-        return RequestExecutorContainer.Build<T>(LoggerFactory, ConfigStore.Object, DataCache.Object, TagFileForwarder.Object, TransferProxy.Object, WebRequest.Object);
+        return RequestExecutorContainer.Build<T>(LoggerFactory, ConfigStore.Object, DataCache.Object, TagFileForwarder.Object, TransferProxyFactory.Object, WebRequest.Object);
     }
 
     public ExecutorBaseFixture()
@@ -42,6 +44,9 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       DataCache = new Mock<IDataCache>(MockBehavior.Strict);
       TagFileForwarder = new Mock<ITagFileForwarder>(MockBehavior.Strict);
       TransferProxy = new Mock<ITransferProxy>(MockBehavior.Strict);
+      TransferProxyFactory = new Mock<ITransferProxyFactory>(MockBehavior.Strict);
+      TransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(TransferProxy.Object);
+
       WebRequest = new Mock<IWebRequest>(MockBehavior.Strict);
 
       ServiceProvider = new ServiceCollection()
@@ -50,7 +55,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         .AddSingleton(ConfigStore.Object)
         .AddSingleton(DataCache.Object)
         .AddSingleton(TagFileForwarder.Object)
-        .AddSingleton(TransferProxy.Object)
+        .AddSingleton(TransferProxyFactory.Object)
         .AddSingleton(WebRequest.Object)
         .BuildServiceProvider();
     }

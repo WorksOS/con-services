@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
@@ -33,10 +34,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public FileImportV5TBCController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportV5TBCController(IConfigurationStore config,
+                                     ITransferProxyFactory transferProxyFactory,
                                      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
                                      IRequestFactory requestFactory)
-      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+      : base(config, transferProxyFactory, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
     // PUT: api/v5/projects/{id}/importedfiles
@@ -106,7 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
               ? importedFileTbc.SurfaceFile.SurveyedUtc
               : (DateTime?)null,
-            Logger, ServiceExceptionHandler, persistantTransferProxy);
+            Logger, ServiceExceptionHandler, persistantTransferProxyFactory.NewProxy(TransferProxyType.DesignImport));
         }
 
         var existing = await ImportedFileRequestDatabaseHelper
@@ -152,7 +154,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-                persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
+                persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
               .ProcessAsync(createImportedFile)

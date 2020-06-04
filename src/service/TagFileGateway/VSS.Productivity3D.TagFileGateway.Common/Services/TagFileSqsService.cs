@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         serviceScope.ServiceProvider.GetService<IConfigurationStore>(),
         serviceScope.ServiceProvider.GetService<IDataCache>(),
         serviceScope.ServiceProvider.GetService<ITagFileForwarder>(),
-        serviceScope.ServiceProvider.GetService<ITransferProxy>(),
+        serviceScope.ServiceProvider.GetService<ITransferProxyFactory>(),
         serviceScope.ServiceProvider.GetService<IWebRequest>());
 
       while (!cancellationToken.IsCancellationRequested)

@@ -16,6 +16,7 @@ using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 using Xunit;
 
 namespace VSS.TRex.Tests.Reports.StationOffset
@@ -53,9 +54,9 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         Filters = new FilterSet(new CombinedFilter()),
         AlignmentDesignUid = Guid.NewGuid(),
         CrossSectionInterval = 50,
-        StartStation = 300,
+        StartStation = 0,
         EndStation = 800, 
-        Offsets = new double[] {-1},
+        Offsets = new double[] {0},
         ReportElevation = true,
         ReportCmv = true,
         Overrides = withOverrides ? new OverrideParameters { OverrideMachineCCV = true, OverridingMachineCCV = 123 } : null
@@ -71,7 +72,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     }
 
     [Fact]
-    public async Task StationOffsetReport_EmptySiteModel()
+    public async Task StationOffsetReport_EmptySiteModel_NoDesign()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -82,34 +83,54 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       var response = await request.ExecuteAsync(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, false));
 
       response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.NoProductionDataFound);
+      response.ResultStatus.Should().Be(RequestErrorStatus.NoDesignProvided);
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task StationOffsetReport_SiteModelWithSingleCell(bool withOverrides)
+    [Fact]
+    public async Task StationOffsetReport_EmptySiteModel_WithDesign()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
 
-      var siteModel = BuildModelForSingleCellElevationAndCmv(ELEVATION_INCREMENT_1_0);
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = new StationOffsetReportRequest_ApplicationService();
+      var arg = SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, false);
+      arg.AlignmentDesignUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl");
+
+      var response = await request.ExecuteAsync(arg);
+
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+    }
+
+    [Theory]
+    [InlineData(false, 2699.7185, 1215.8649)]
+    [InlineData(true, 2699.7185, 1215.8649)]
+    public async Task StationOffsetReport_SiteModelWithSingleCell(bool withOverrides, double pointX, double pointY)
+    {
+      AddClusterComputeGridRouting();
+      AddApplicationGridRouting();
+
+      var siteModel = BuildModelForSingleCellElevationAndCmv(ELEVATION_INCREMENT_1_0, pointX, pointY);
 
       var request = new StationOffsetReportRequest_ApplicationService();
-      var response = await request.ExecuteAsync(SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, withOverrides));
+      var arg = SimpleStationOffsetReportRequestArgument_ApplicationService(siteModel, withOverrides);
+      arg.AlignmentDesignUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl");
+
+      var response = await request.ExecuteAsync(arg);
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
       response.ReportType.Should().Be(ReportType.StationOffset);
       response.StationOffsetReportDataRowList.Should().NotBeNull();
-      response.StationOffsetReportDataRowList.Count.Should().Be(1);
-      response.StationOffsetReportDataRowList[0].Station.Should().Be(1);
+      response.StationOffsetReportDataRowList.Count.Should().Be(5);
+      response.StationOffsetReportDataRowList[0].Station.Should().Be(0.0);
       response.StationOffsetReportDataRowList[0].Offsets.Count.Should().Be(1);
-      response.StationOffsetReportDataRowList[0].Offsets[0].Cmv.Should().Be(34);//S&O doesn't use override targets
-      response.StationOffsetReportDataRowList[0].Offsets[0].Elevation.Should().Be(10);
+      response.StationOffsetReportDataRowList[0].Offsets[0].Cmv.Should().Be(CellPassConsts.NullCCV);
+      response.StationOffsetReportDataRowList[0].Offsets[0].Elevation.Should().Be(CellPassConsts.NullHeight);
     }
 
-    private ISiteModel BuildModelForSingleCellElevationAndCmv(float elevationIncrement)
+    private ISiteModel BuildModelForSingleCellElevationAndCmv(float elevationIncrement, double originX = 0.0, double originY = 0.0)
     {
       var baseTime = DateTime.UtcNow;
       byte baseElevation = 1;
@@ -134,7 +155,10 @@ namespace VSS.TRex.Tests.Reports.StationOffset
         }).ToArray();
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
-        (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+        (siteModel, 
+        SubGridTreeConsts.DefaultIndexOriginOffset + (int)Math.Truncate(originX / siteModel.CellSize),
+        SubGridTreeConsts.DefaultIndexOriginOffset + (int)Math.Truncate(originY / siteModel.CellSize),
+        cellPasses, 1, cellPasses.Length);
 
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 

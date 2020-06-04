@@ -8,7 +8,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     [Fact]
     public void DummyTestForForceNoTestConcurrency()
     {
-      Assert.True(true); //todo finish with Raymond
+      Assert.True(true);
     }
   }
 }

@@ -4,7 +4,6 @@ using System.IO;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
-using VSS.TRex.Common.Types;
 
 namespace VSS.TRex.Alignments.Interfaces
 {
@@ -52,7 +51,5 @@ namespace VSS.TRex.Alignments.Interfaces
     /// <param name="other"></param>
     /// <returns></returns>
     bool Equals(IAlignment other);
-
-    List<StationOffsetPoint> GetOffsetPointsInNEE(double crossSectionInterval, double startStation, double endStation, double[] offsets);
   }
 }

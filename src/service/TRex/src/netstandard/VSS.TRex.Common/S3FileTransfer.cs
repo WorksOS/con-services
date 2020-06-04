@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.TRex.DI;
 
@@ -11,46 +12,51 @@ namespace VSS.TRex.Common
   /// <summary>
   /// Provides an interface to transferProxy for read or write.
   /// </summary>
-  public static class S3FileTransfer
+  public class S3FileTransfer
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<S3FileTransfer>();
 
     const string S3DirectorySeparator = "/";
 
-    private static readonly ILogger Log = Logging.Logger.CreateLogger("S3FileTransfer");
+    private readonly TransferProxyType _type;
+    private readonly ITransferProxy _proxy;
 
+    public S3FileTransfer(TransferProxyType type)
+    {
+      _type = type;
+      _proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(_type);
+    }
+    
     /// <summary>
     /// Reads a file from S3 and places it locally
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="fileName"></param>
-    /// <param name="targetPath"></param>
-    public static async Task<bool> ReadFile(Guid siteModelUid, string fileName, string targetPath)
+    public async Task<bool> ReadFile(Guid siteModelUid, string fileName, string targetPath)
     {
       var s3Path = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
       FileStreamResult fileStreamResult;
 
       try
       {
-        fileStreamResult = await DIContext.Obtain<ITransferProxy>().Download(s3Path).ConfigureAwait(false);
+        fileStreamResult = await _proxy.Download(s3Path).ConfigureAwait(false);
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception reading design from s3:");
+        _log.LogError(e, "Exception reading design from s3:");
         return false;
       }
 
       if (string.IsNullOrEmpty(fileStreamResult.ContentType))
       {
-        Log.LogInformation("Exception setting up download from S3.ContentType unknown, i.e. file doesn't exist.");
+        _log.LogInformation("Exception setting up download from S3.ContentType unknown, i.e. file doesn't exist.");
         return false;
       }
 
       try
       {
         var targetFullPath = Path.Combine(targetPath, fileName);
-        using (fileStreamResult.FileStream)
+        await using (fileStreamResult.FileStream)
         {
-          using (var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
+          await using (var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
           {
             fileStreamResult.FileStream.CopyTo(targetFileStream);
           }
@@ -58,7 +64,7 @@ namespace VSS.TRex.Common
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception writing design file locally:");
+        _log.LogError(e, "Exception writing design file locally:");
         return false;
       }
 
@@ -69,20 +75,16 @@ namespace VSS.TRex.Common
     /// Writes a file to S3
     ///  AWS Transfer Utility will create the 'directory' if not already there
     /// </summary>
-    /// <param name="localFullPath"></param>
-    /// <param name="s3FullPath"></param>
-    public static bool WriteFile(string localFullPath, string s3FullPath)
+    public bool WriteFile(string localFullPath, string s3FullPath)
     {
       try
       {
-        using (var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read))
-        {
-          DIContext.Obtain<ITransferProxy>().Upload(fileStream, s3FullPath);
-        }
+        using var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
+        _proxy.Upload(fileStream, s3FullPath);
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception writing file to s3:");
+        _log.LogError(e, "Exception writing file to s3:");
         return false;
       }
       return true;
@@ -92,21 +94,16 @@ namespace VSS.TRex.Common
     /// Writes a file to S3 to a specific bucket
     ///  AWS Transfer Utility will create the 'directory' if not already there
     /// </summary>
-    /// <param name="localFullPath"></param>
-    /// <param name="s3FullPath"></param>
-    /// <param name="awsBucketName"></param>
-    public static bool WriteFileToBucket(string localFullPath, string s3FullPath, string awsBucketName)
+    public bool WriteFileToBucket(string localFullPath, string s3FullPath, string awsBucketName)
     {
       try
       {
-        using (var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read))
-        {
-          DIContext.Obtain<ITransferProxy>().UploadToBucket(fileStream, s3FullPath, awsBucketName);
-        }
+        using var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
+        _proxy.UploadToBucket(fileStream, s3FullPath, awsBucketName);
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception writing file to s3. bucket: {awsBucketName} :");
+        _log.LogError(e, $"Exception writing file to s3. bucket: {awsBucketName} :");
         return false;
       }
       return true;
@@ -116,10 +113,7 @@ namespace VSS.TRex.Common
     /// Writes a file to S3
     ///  AWS Transfer Utility will create the 'directory' if not already there
     /// </summary>
-    /// <param name="sourcePath"></param>
-    /// <param name="siteModelUid"></param>
-    /// <param name="fileName"></param>
-    public static bool WriteFile(string sourcePath, Guid siteModelUid, string fileName, string destinationFileName = null)
+    public bool WriteFile(string sourcePath, Guid siteModelUid, string fileName, string destinationFileName = null)
     {
       var localFullPath = Path.Combine(sourcePath, fileName);
 
@@ -133,20 +127,17 @@ namespace VSS.TRex.Common
     /// <summary>
     ///  Remove file from storage
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
-    public static bool RemoveFileFromBucket(Guid siteModelUid, string fileName)
+    public bool RemoveFileFromBucket(Guid siteModelUid, string fileName)
     {
       bool res;
       try
       {
         var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
-        res = DIContext.Obtain<ITransferProxy>().RemoveFromBucket(s3FullPath);
+        res = _proxy.RemoveFromBucket(s3FullPath);
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception removing file from storage. file: {fileName} :");
+        _log.LogError(e, $"Exception removing file from storage. file: {fileName} :");
         return false;
       }
       return res;

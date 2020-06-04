@@ -77,7 +77,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
           Log.LogInformation($"{nameof(ConvertBoundary)}: Winding Clockwise.");
           // Reverse ordering...
           for (var i = fence.Points.Count - 1; i >= 0; i--)
-            neeCoords[arrayCount - i - 1] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0);
+            neeCoords[arrayCount - i - 1] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0); // Note: This is a 2D conversion, elevation is set to 0
         }
         else
         {

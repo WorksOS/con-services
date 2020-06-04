@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     protected ICompactionProfileResultHelper profileResultHelper;
 
-    protected ITransferProxy transferProxy;
+    protected ITransferProxyFactory transferProxyFactory;
 
     protected ITRexTagFileProxy tRexTagFileProxy;
 
@@ -178,7 +178,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       ITagProcessor tagProcessor,
 #endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
-      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
+      ITransferProxyFactory transferProxyFactory, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
       IHeaderDictionary customHeaders, string customerUid)
     {
       this.loggerFactory = loggerFactory;
@@ -192,7 +192,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.tileGenerator = tileGenerator;
       this.fileList = fileList;
       this.profileResultHelper = profileResultHelper;
-      this.transferProxy = transferProxy;
+      this.transferProxyFactory = transferProxyFactory;
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.tRexConnectedSiteProxy = tRexConnectedSiteProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;

@@ -52,7 +52,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       if ((geometryResponse.Arcs?.Length ?? 0) > 0)
         coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, x.Z1), new XYZ(x.Y2, x.X2, x.Z2), new XYZ(x.YC, x.XC, x.ZC) }).ToList());
       if ((geometryResponse.Labels?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.X, x.Y, 0)).ToList());
+        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.X, x.Y, 0.0)).ToList());
 
       var (errorCode, convertedCoords) = await _convertCoordinates.NEEToLLH(csib, coords.ToArray());
 

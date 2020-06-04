@@ -9,7 +9,6 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
@@ -25,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportBaseController : BaseController<FileImportBaseController>
   {
-    protected ITransferProxy persistantTransferProxy; 
+    protected ITransferProxyFactory persistantTransferProxyFactory;
     protected IFilterServiceProxy filterServiceProxy;
     protected ITRexImportFileProxy tRexImportFileProxy;
 
@@ -42,12 +41,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    public FileImportBaseController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportBaseController(IConfigurationStore config, ITransferProxyFactory transferProxyFactory,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
     {
       this._requestFactory = requestFactory;
 
-      this.persistantTransferProxy = persistantTransferProxy(TransferProxyType.DesignImport);
+      this.persistantTransferProxyFactory = transferProxyFactory; //.NewProxy(TransferProxyType.DesignImport);
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
 
