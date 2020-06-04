@@ -16,6 +16,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// <summary>
     /// The file descriptor for a CWS project configuration file
     /// </summary>
-    public ProjectConfigurationFileResponseModel ProjectConfigFileDescriptor { get; set; }
+    public ProjectConfigurationModel ProjectConfigFileDescriptor { get; set; }
   }
 }

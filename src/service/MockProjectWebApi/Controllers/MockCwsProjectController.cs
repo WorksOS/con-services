@@ -15,7 +15,7 @@ namespace MockProjectWebApi.Controllers
   {
     private readonly string baseUrl;
     // Map by projectTrn and projectConfigurationType
-    private static Dictionary<string, Dictionary<string, ProjectConfigurationFileResponseModel>> projectConfigFilesMap = new Dictionary<string, Dictionary<string, ProjectConfigurationFileResponseModel>>();
+    private static Dictionary<string, Dictionary<string, ProjectConfigurationModel>> projectConfigFilesMap = new Dictionary<string, Dictionary<string, ProjectConfigurationModel>>();
     // Map filespaceIds to file names in CreateFile for generating sensible responses from Save/Update
     private static Dictionary<string, string> filespaceIdNameMap = new Dictionary<string, string>();
 
@@ -109,9 +109,7 @@ namespace MockProjectWebApi.Controllers
           project = projectDict.Value[projectTrn] as ProjectDetailResponseModel;
           //Get calibration file for project
           var configResult = GetProjectConfiguration(projectTrn, ProjectConfigurationFileType.CALIBRATION.ToString());
-          var config = (configResult.Result as Mvc.OkObjectResult)?.Value as ProjectConfigurationFileResponseModel;
-          //TODO: ProjectConfigurationModel and projectConfigurationFileResponseModel are basically the same. Make one model for both.
-          if (config != null)
+          if ((configResult.Result as Mvc.OkObjectResult)?.Value is ProjectConfigurationModel config)
           {
             project.ProjectSettings.Config.Add(new ProjectConfigurationModel
             {
@@ -195,10 +193,10 @@ namespace MockProjectWebApi.Controllers
     [Mvc.HttpGet]
     public Mvc.ActionResult<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(string projectTrn)
     {
-      List<ProjectConfigurationFileResponseModel> list = null;
+      List<ProjectConfigurationModel> list = null;
       if (projectConfigFilesMap.ContainsKey(projectTrn))
       {
-        list = new List<ProjectConfigurationFileResponseModel>();
+        list = new List<ProjectConfigurationModel>();
         foreach (var key in projectConfigFilesMap[projectTrn].Keys)
         {
           list.Add(projectConfigFilesMap[projectTrn][key]);
@@ -217,25 +215,25 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpGet]
-    public Mvc.ActionResult<ProjectConfigurationFileResponseModel> GetProjectConfiguration(string projectTrn, string projectConfigurationType)
+    public Mvc.ActionResult<ProjectConfigurationModel> GetProjectConfiguration(string projectTrn, string projectConfigurationType)
     {
-      ProjectConfigurationFileResponseModel projectConfigurationFileResponse = null;
+      ProjectConfigurationModel projectConfigurationModel = null;
       if (projectConfigFilesMap.ContainsKey(projectTrn) && projectConfigFilesMap[projectTrn].ContainsKey(projectConfigurationType))
       {
-        projectConfigurationFileResponse = projectConfigFilesMap[projectTrn][projectConfigurationType];
+        projectConfigurationModel = projectConfigFilesMap[projectTrn][projectConfigurationType];
       }
-      Logger.LogInformation($"{nameof(GetProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationFileResponse {JsonConvert.SerializeObject(projectConfigurationFileResponse)}");
+      Logger.LogInformation($"{nameof(GetProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
 
-      if (projectConfigurationFileResponse == null)
+      if (projectConfigurationModel == null)
         return NotFound();
-      return Ok(projectConfigurationFileResponse);
+      return Ok(projectConfigurationModel);
     }
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpPost]
-    public ProjectConfigurationFileResponseModel SaveProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
+    public ProjectConfigurationModel SaveProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
     {
-      var projectConfigurationFileResponse = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileType = projectConfigurationType,
         FileName = !string.IsNullOrEmpty(projectConfigurationFileRequest.MachineControlFilespaceId) ? filespaceIdNameMap[projectConfigurationFileRequest.MachineControlFilespaceId] : null,
@@ -245,41 +243,41 @@ namespace MockProjectWebApi.Controllers
       };
       if (!projectConfigFilesMap.ContainsKey(projectTrn))
       {
-        projectConfigFilesMap.Add(projectTrn, new Dictionary<string, ProjectConfigurationFileResponseModel>());
+        projectConfigFilesMap.Add(projectTrn, new Dictionary<string, ProjectConfigurationModel>());
       }
       if (!projectConfigFilesMap[projectTrn].ContainsKey(projectConfigurationType))
       {
-        projectConfigFilesMap[projectTrn].Add(projectConfigurationType, projectConfigurationFileResponse);
+        projectConfigFilesMap[projectTrn].Add(projectConfigurationType, projectConfigurationModel);
       }
 
-      Logger.LogInformation($"{nameof(SaveProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)} projectConfigurationFileResponse {JsonConvert.SerializeObject(projectConfigurationFileResponse)}");
-      return projectConfigurationFileResponse;
+      Logger.LogInformation($"{nameof(SaveProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)} projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
+      return projectConfigurationModel;
     }
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpPut]
-    public Mvc.ActionResult<ProjectConfigurationFileResponseModel> UpdateProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
+    public Mvc.ActionResult<ProjectConfigurationModel> UpdateProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
     {
-      ProjectConfigurationFileResponseModel projectConfigurationFileResponse = null;
+      ProjectConfigurationModel projectConfigurationModel = null;
       if (projectConfigFilesMap.ContainsKey(projectTrn) && projectConfigFilesMap[projectTrn].ContainsKey(projectConfigurationType))
       {
-        projectConfigurationFileResponse = projectConfigFilesMap[projectTrn][projectConfigurationType];
+        projectConfigurationModel = projectConfigFilesMap[projectTrn][projectConfigurationType];
         if (!string.IsNullOrEmpty(projectConfigurationFileRequest.MachineControlFilespaceId))
         {
-          projectConfigurationFileResponse.FileName = filespaceIdNameMap[projectConfigurationFileRequest.MachineControlFilespaceId];
-          projectConfigurationFileResponse.FileDownloadLink = $"{baseUrl}/another_fake_download_signed_url";
+          projectConfigurationModel.FileName = filespaceIdNameMap[projectConfigurationFileRequest.MachineControlFilespaceId];
+          projectConfigurationModel.FileDownloadLink = $"{baseUrl}/another_fake_download_signed_url";
         }
         if (!string.IsNullOrEmpty(projectConfigurationFileRequest.SiteCollectorFilespaceId))
         {
-          projectConfigurationFileResponse.SiteCollectorFileName = filespaceIdNameMap[projectConfigurationFileRequest.SiteCollectorFilespaceId];
-          projectConfigurationFileResponse.SiteCollectorFileDownloadLink = $"{baseUrl}/another_fake_download_signed_url";
+          projectConfigurationModel.SiteCollectorFileName = filespaceIdNameMap[projectConfigurationFileRequest.SiteCollectorFilespaceId];
+          projectConfigurationModel.SiteCollectorFileDownloadLink = $"{baseUrl}/another_fake_download_signed_url";
         }
       }
 
-      Logger.LogInformation($"{nameof(UpdateProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)} projectConfigurationFileResponse {JsonConvert.SerializeObject(projectConfigurationFileResponse)}");
-      if (projectConfigurationFileResponse == null)
+      Logger.LogInformation($"{nameof(UpdateProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)} projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
+      if (projectConfigurationModel == null)
         return NotFound();
-      return Ok(projectConfigurationFileResponse);
+      return Ok(projectConfigurationModel);
     }
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
