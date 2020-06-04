@@ -180,7 +180,7 @@ Write-Host "  awsRepositoryName = $awsRepositoryName"
 Write-Host "  Working Directory ="($pwd).path
 
 Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile default)
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
 if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 
 # Run the appropriate action.
