@@ -33,12 +33,12 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
       {
         if (machine.lastKnownX != null && machine.lastKnownY != null &&
             machine.lastKnownX != Consts.NullDouble && machine.lastKnownY != Consts.NullDouble)
-          NEECoords.Add(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value, 0.0));
+          NEECoords.Add(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value, 0.0)); // Note: 2D conversion only, elevation set to 0
       }
 
       if (NEECoords.Count > 0)
       {
-        (var errorCode, XYZ[] LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray());
+        var (errorCode, LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray());
      
         // if the count returned is different to that sent, then we can't match with the machines list
         if (errorCode == RequestErrorStatus.OK && NEECoords.Count == LLHCoords.Length)

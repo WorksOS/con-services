@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
@@ -14,7 +15,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public string Name { get; set; }
 
-    public ProjectType ProjectType { get; set; }     
+    public ProjectType ProjectType { get; set; }
+
+    public UserProjectRoleEnum UserProjectRole { get; set; }
 
     public string ProjectTimeZone { get; set; }
      

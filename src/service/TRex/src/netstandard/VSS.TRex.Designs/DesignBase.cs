@@ -43,15 +43,15 @@ namespace VSS.TRex.Designs
 
     public abstract void GetHeightRange(out double z1, out double z2);
 
-    public abstract bool InterpolateHeight(ref int Hint,
-      double X, double Y,
-      double Offset,
-      out double Z);
+    public abstract bool InterpolateHeight(ref int hint,
+      double x, double y,
+      double offset,
+      out double z);
 
-    public abstract bool InterpolateHeights(float[,] Patch, // The receiver of the patch of elevations
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset);
+    public abstract bool InterpolateHeights(float[,] patch, // The receiver of the patch of elevations
+      double originX, double originY,
+      double cellSize,
+      double offset);
 
     // ComputeFilterPatch computes a bit set representing which cells in the
     // sub grid will be selected within the filter (i.e. the design forms a mask
@@ -74,13 +74,13 @@ namespace VSS.TRex.Designs
 
     public bool Locked => FLockCount > 0;
 
-    public abstract bool HasElevationDataForSubGridPatch(double X, double Y);
+    public abstract bool HasElevationDataForSubGridPatch(double x, double y);
 
-    public abstract bool HasElevationDataForSubGridPatch(int SubGridX, int SubGridY);
+    public abstract bool HasElevationDataForSubGridPatch(int subGridX, int subGridY);
 
-    public abstract bool HasFiltrationDataForSubGridPatch(double X, double Y);
+    public abstract bool HasFiltrationDataForSubGridPatch(double x, double y);
 
-    public abstract bool HasFiltrationDataForSubGridPatch(int SubGridX, int SubGridY);
+    public abstract bool HasFiltrationDataForSubGridPatch(int subGridX, int subGridY);
 
     public virtual ISubGridTreeBitMask SubGridOverlayIndex() => null;
 

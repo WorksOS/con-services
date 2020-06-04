@@ -36,18 +36,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string CacheLifeKey => "PROJECT_INTERNAL_CACHE_LIFE";
 
-    public async Task<List<ProjectData>> GetProjects(string customerUid, IHeaderDictionary customHeaders = null)
-    {
-      var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>($"/project/{customerUid}/projects", customerUid, null, customHeaders);
-
-      if (result.Code == 0)
-        return result.ProjectDescriptors;
-
-      log.LogDebug($"Failed to get list of projects: {result.Code}, {result.Message}");
-      return null;
-    }
-
-    public async Task<ProjectData> GetProject(string projectUid, IHeaderDictionary customHeaders = null)
+   public async Task<ProjectData> GetProject(string projectUid, IHeaderDictionary customHeaders = null)
     {
       // ProjectSvc.ProjectController get this from localDB now.
       // response includes customerUid
@@ -64,33 +53,12 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
 
-    /// <summary>
-    /// Called from TFA
-    ///    application token i.e. customHeaders will NOT include customerUid
-    ///    ProjectSvc.ProjectController should be able to get this from localDB now.
-    ///       response to include customerUid
-    /// </summary>
-    public async Task<ProjectData> GetProject(long shortRaptorProjectId, IHeaderDictionary customHeaders = null)
-    {
-      var result = await GetMasterDataItemServiceDiscovery<ProjectDataSingleResult>($"/project/shortId/{shortRaptorProjectId}",
-             shortRaptorProjectId.ToString(),
-             null,
-             customHeaders);
-
-      if (result.Code == 0)
-        return result.ProjectDescriptor;
-
-      log.LogDebug($"Failed to get project with shortRaptorProjectId {shortRaptorProjectId} for applicationContext: {result.Code}, {result.Message}");
-      return null;
-    }
-
-    public async Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
+   /// <summary>
+   /// ProjectInternalController gets a list of projects for customer and returns intersecting depending on current rules
+   /// </summary>
+   public async Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
         double latitude, double longitude, string projectUid = null, IHeaderDictionary customHeaders = null)
     {
-      // ProjectSvc.ProjectController should:
-      //  if projectUid, get it if it overlaps in localDB
-      //    else get overlapping projects in localDB for this CustomerUID
-
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("customerUid", customerUid),
           new KeyValuePair<string, string>( "latitude",latitude.ToString()),

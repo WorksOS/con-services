@@ -20,10 +20,6 @@ namespace CCSS.CWS.Client
   /// </summary>
   public class CwsDeviceClient : CwsProfileManagerClient, ICwsDeviceClient
   {
-    // todoJeannie ProfileX throws exception on anything much over 20 (note that default is 10)
-    private int FromRow = 0;
-    private int RowCount = 20;
-
     public CwsDeviceClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)
     { }
@@ -59,6 +55,7 @@ namespace CCSS.CWS.Client
       return deviceResponseModel;
     }
 
+    /* obsolete
     /// <summary>
     /// 2020_05_05 this is probably obsolete now as devices will at best be done 1 at-a-time CCSSSCON-314
     /// used when UI calls ProjectSvc.GetCustomerDeviceLicense() 
@@ -74,10 +71,11 @@ namespace CCSS.CWS.Client
       queryParameters.Add(new KeyValuePair<string, string>("includeTccRegistrationStatus", "true"));
 
       var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices", accountUid, null, queryParameters, customHeaders);
-      
+
       log.LogDebug($"{nameof(GetDevicesForAccount)}: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return deviceListResponseModel;
     }
+    */
 
     /// <summary>
     /// used by TFA: projectIdExecutor; ProjectBoundariesAtDateExec; ProjectAndAssetUidsExecutor; ProjectAndAssetUidsEarthWorksExecutor
@@ -89,7 +87,7 @@ namespace CCSS.CWS.Client
 
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
       var queryParameters = WithLimits(FromRow, RowCount);
-      var projectListResponseModel = await GetData<ProjectListResponseModel>($"/device/{deviceTrn}/projects", deviceUid, null, queryParameters, customHeaders);
+      var projectListResponseModel = await GetData<ProjectListResponseModel>($"/devices/{deviceTrn}/projects", deviceUid, null, queryParameters, customHeaders);
     
       log.LogDebug($"{nameof(GetProjectsForDevice)}: projectListResponseModel {JsonConvert.SerializeObject(projectListResponseModel)}");
       return projectListResponseModel;
@@ -98,6 +96,7 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// gets accounts related to a device
     ///    should only be 1 RelationStatus.Active
+    /// this is a temp requirement until CCSSSCON-28 todoJeannie
     /// </summary>
     public async Task<DeviceAccountListResponseModel> GetAccountsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
@@ -106,17 +105,9 @@ namespace CCSS.CWS.Client
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
       var queryParameters = WithLimits(FromRow, RowCount);
       var deviceAccountListResponseModel = await GetData<DeviceAccountListResponseModel>($"/devices/{deviceTrn}/accounts", deviceUid, null, queryParameters, customHeaders);
-      
+
       log.LogDebug($"{nameof(GetAccountsForDevice)}: deviceAccountListResponseModel {JsonConvert.SerializeObject(deviceAccountListResponseModel)}");
       return deviceAccountListResponseModel;
-    }
-
-    private List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
-    {
-      return new List<KeyValuePair<string, string>>
-        { new KeyValuePair<string, string>("from", fromRow.ToString()),
-          new KeyValuePair<string, string>("limit", rowCount.ToString())
-        };
     }
   }
 }

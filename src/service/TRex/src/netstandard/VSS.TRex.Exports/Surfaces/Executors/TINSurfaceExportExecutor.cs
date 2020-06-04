@@ -171,7 +171,8 @@ namespace VSS.TRex.Exports.Surfaces.Executors
         }
 
         // Obtain the surface export data smoother and apply it to the tree of queried data before passing it to the decimation engine
-        var dataSmoother = DIContext.Obtain<Func<IDataSmoother>>()() as ITreeDataSmoother<float>;
+        var dataSmoother = DIContext.Obtain<Func<DataSmootherOperation, IDataSmoother>>()(DataSmootherOperation.SurfaceExport) as ITreeDataSmoother<float>;
+
         datastore = dataSmoother?.Smooth(datastore) ?? datastore;
 
         var extents = DataStoreExtents(datastore);

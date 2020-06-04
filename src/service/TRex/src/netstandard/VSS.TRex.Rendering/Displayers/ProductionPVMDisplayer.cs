@@ -8,12 +8,6 @@ namespace VSS.TRex.Rendering.Displayers
   {
     public MapSurface MapView;
 
-    // Various quantities useful when displaying grid data
-    protected double stepXIncrement;
-    protected double stepYIncrement;
-    protected double stepXIncrementOverTwo;
-    protected double stepYIncrementOverTwo;
-
     // Various quantities useful when iterating across cells and drawing them
     protected int north_row, east_col;
     protected double currentNorth;
@@ -66,10 +60,10 @@ namespace VSS.TRex.Rendering.Displayers
     {
       if (_accumulatingScanLine && _cellStripColour != Color.Empty)
       {
-        MapView.DrawRect(_cellStripStartX - stepXIncrementOverTwo,
-          currentNorth - stepYIncrementOverTwo,
-          (_cellStripEndX - _cellStripStartX) + stepXIncrement,
-          stepYIncrement,
+        MapView.DrawRect(_cellStripStartX,
+          currentNorth, 
+          (_cellStripEndX - _cellStripStartX) + cellSizeX,
+          cellSizeY,
           true,
           _cellStripColour);
 
@@ -112,7 +106,7 @@ namespace VSS.TRex.Rendering.Displayers
     }
 
     /// <summary>
-    /// Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// Enables a display context to advertise is it capable of rendering cell information in strips.
     /// </summary>
     /// <returns></returns>
     protected virtual bool SupportsCellStripRendering() => true;
@@ -134,21 +128,18 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var drawCellStrips = SupportsCellStripRendering();
 
-      cellSizeX = valueStoreCellSizeX; //worldWidth / (limitX - originX + 1);
-      cellSizeY = valueStoreCellSizeY; //worldHeight / (limitY - originY + 1);
+      cellSizeX = valueStoreCellSizeX;
+      cellSizeY = valueStoreCellSizeY;
 
-      stepXIncrement = cellSizeX;
-      stepXIncrementOverTwo = cellSizeX / 2;
-
-      stepYIncrement = cellSizeY;
-      stepYIncrementOverTwo = cellSizeY / 2;
+      var worldOriginXWithOffset = worldOriginX + originX * cellSizeX;
+      var worldOriginYWithOffset = worldOriginY + originY * cellSizeY;
 
       north_row = originY;
-      currentNorth = worldOriginY;
+      currentNorth = worldOriginYWithOffset;
 
       for (var y = originY; y <= limitY; y++)
       {
-        currentEast = worldOriginX;
+        currentEast = worldOriginXWithOffset;
 
         if (drawCellStrips)
           DoStartRowScan();
@@ -166,7 +157,9 @@ namespace VSS.TRex.Rendering.Displayers
         }
 
         if (drawCellStrips)
+        {
           DoEndRowScan();
+        }
 
         currentNorth += cellSizeY;
         north_row++;

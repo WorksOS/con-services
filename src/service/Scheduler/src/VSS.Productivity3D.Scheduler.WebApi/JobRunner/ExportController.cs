@@ -4,6 +4,7 @@ using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -22,18 +23,18 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   public class ExportController : Controller
   {
     private IExportJob exportJob;
-    private readonly ITransferProxy transferProxy;
+    private readonly ITransferProxyFactory transferProxyFactory;
     private readonly ILogger log;
     private readonly IJobRunner jobRunner;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public ExportController(ILoggerFactory loggerFactory, IExportJob exportJob, ITransferProxy transferProxy, IJobRunner jobRunner)
+    public ExportController(ILoggerFactory loggerFactory, IExportJob exportJob, ITransferProxyFactory transferProxyFactory, IJobRunner jobRunner)
     {
       log = loggerFactory.CreateLogger<ExportController>();
       this.exportJob = exportJob;
-      this.transferProxy = transferProxy;
+      this.transferProxyFactory = transferProxyFactory;
       this.jobRunner = jobRunner;
     }
 
@@ -98,8 +99,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       if (status.Equals(Hangfire.States.SucceededState.StateName, StringComparison.OrdinalIgnoreCase))
       {
         // Attempt to get the download link that should ve set in the job
-        key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3KeyStateKey);
-        downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DownloadLinkStateKey);
+        key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3_KEY_STATE_KEY);
+        downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DOWNLOAD_LINK_STATE_KEY);
 
         if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(downloadLink))
         {
@@ -153,7 +154,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
             $"Missing job download link for {jobId}"));
       }
 
-      return transferProxy.Download(status.Key).Result;
+      return transferProxyFactory.NewProxy(TransferProxyType.Export).Download(status.Key).Result;
     }
   }
 }

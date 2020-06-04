@@ -7,7 +7,6 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using MimeTypes;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -23,20 +22,6 @@ namespace VSS.AWS.TransferProxy
 
     private const int MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL = 7;
 
-    [Obsolete(
-      "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
-    public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log) : this(configStore, log,
-      "AWS_BUCKET_NAME")
-    {
-    }
-
-    [Obsolete(
-      "Use constructor with storage key. Allows buckets to be used for various purposes without name clashes. This constructor will be removed when Scheduler is updated.")]
-    public TransferProxy(IConfigurationStore configStore, string storageKey) : this(configStore, new NullLogger<TransferProxy>(),
-      storageKey)
-    {
-    }
-
     public TransferProxy(IConfigurationStore configStore, ILogger<TransferProxy> log, string storageKey)
     {
       logger = log;
@@ -49,22 +34,21 @@ namespace VSS.AWS.TransferProxy
       awsLinkExpiry = configStore.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY") ??
                       TimeSpan.FromDays(MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL);
 
-     logger.LogInformation("AWS S3 Now using Assumed Roles");
+      logger.LogInformation("AWS S3 Now using Assumed Roles");
     }
 
     private TransferUtility GetTransferUtility()
     {
-     return new TransferUtility(GetS3Client());
+      return new TransferUtility(GetS3Client());
     }
 
     private IAmazonS3 GetS3Client()
     {
-       return new AmazonS3Client(RegionEndpoint.USWest2);
+      return new AmazonS3Client(RegionEndpoint.USWest2);
     }
 
     public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)
     {
-
       using (var transferUtil = GetTransferUtility())
       {
         var stream = await transferUtil.OpenStreamAsync(bucketName, s3Key);
@@ -92,7 +76,7 @@ namespace VSS.AWS.TransferProxy
     /// <returns>FileStreamResult if the file exists</returns>
     public Task<FileStreamResult> Download(string s3Key) => DownloadFromBucket(s3Key, awsBucketName);
 
-  public void UploadToBucket(Stream stream, string s3Key, string bucketName)
+    public void UploadToBucket(Stream stream, string s3Key, string bucketName)
     {
       using (var transferUtil = GetTransferUtility())
       {
@@ -153,6 +137,5 @@ namespace VSS.AWS.TransferProxy
         return true;
       }
     }
-
   }
 }

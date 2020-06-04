@@ -9,7 +9,6 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
@@ -25,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportBaseController : BaseController<FileImportBaseController>
   {
-    protected ITransferProxy persistantTransferProxy; 
+    protected ITransferProxyFactory persistantTransferProxyFactory;
     protected IFilterServiceProxy filterServiceProxy;
     protected ITRexImportFileProxy tRexImportFileProxy;
 
@@ -42,12 +41,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    public FileImportBaseController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportBaseController(IConfigurationStore config, ITransferProxyFactory transferProxyFactory,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
     {
       this._requestFactory = requestFactory;
 
-      this.persistantTransferProxy = persistantTransferProxy(TransferProxyType.DesignImport);
+      this.persistantTransferProxyFactory = transferProxyFactory; //.NewProxy(TransferProxyType.DesignImport);
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
 
@@ -69,8 +68,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       LogCustomerDetails("GetProject", projectUid);
       var project =
-        (await ProjectRepo.GetProjectsForCustomer(CustomerUid).ConfigureAwait(false)).FirstOrDefault(
-          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+        (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders))
+        .FirstOrDefault(p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
@@ -142,7 +141,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, headers: customHeaders,
-            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, 
+            projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;
 

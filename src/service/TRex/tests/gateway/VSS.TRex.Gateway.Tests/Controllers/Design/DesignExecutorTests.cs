@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -26,7 +27,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.Alignment, "validFileName.svl", "408A150C-B606-E311-9E53-0050568824D7", null)]
     public void DesignRequestValidation_HappyPath(string projectUid, ImportedFileType fileType, string fileName, string designUid, DateTime surveyedUtc)
     {
-      DesignRequest designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), surveyedUtc);
+      var designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), surveyedUtc);
       designSurfaceRequest.Validate();
     }
 
@@ -40,7 +41,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.MassHaulPlan, "validFileName.ttm", "408A150C-B606-E311-9E53-0050568824D7", -1, "File type must be DesignSurface, SurveyedSurface or Alignment")]
     public void DesignRequestValidation_Errors(string projectUid, ImportedFileType fileType, string fileName, string designUid, int expectedCode, string expectedMessage)
     {
-      DesignRequest designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), null);
+      var designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), null);
 
       var ex = Assert.Throws<ServiceException>(() => designSurfaceRequest.Validate());
       Assert.Equal(expectedCode, ex.GetResult.Code);
@@ -54,6 +55,9 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
 
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
+
       var mockConfig = new Mock<IConfigurationStore>();
       mockConfig.Setup(x => x.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME")).Returns("vss-projects-stg");
 
@@ -61,12 +65,14 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton(mockConfig.Object))
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
-      Guid projectUid = Guid.Parse("A11F2458-6666-424F-A995-4426a00771AE");
-      string transferFileName = "TransferTestDesign.ttm";
-      var isWrittenToS3Ok = S3FileTransfer.WriteFile("TestData", projectUid, transferFileName);
+      var projectUid = Guid.Parse("A11F2458-6666-424F-A995-4426a00771AE");
+      var transferFileName = "TransferTestDesign.ttm";
+
+      var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
+      var isWrittenToS3Ok = s3FileTransfer.WriteFile("TestData", projectUid, transferFileName);
       Assert.True(isWrittenToS3Ok);
 
     }
@@ -77,6 +83,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     {
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.RemoveFromBucket(It.IsAny<string>())).Returns(true);
+
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
+
       var mockConfig = new Mock<IConfigurationStore>();
       mockConfig.Setup(x => x.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME")).Returns("vss-projects-stg");
 
@@ -84,12 +94,14 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton(mockConfig.Object))
-        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Add(x => x.AddSingleton(mockTransferProxyFactory.Object))
         .Complete();
 
-      Guid projectUid = Guid.Parse("A11F2458-6666-424F-A995-4426a00771AE");
-      string transferFileName = "TransferTestDesign.ttm";
-      var isDeletedFromS3Ok = S3FileTransfer.RemoveFileFromBucket(projectUid, transferFileName);
+      var projectUid = Guid.Parse("A11F2458-6666-424F-A995-4426a00771AE");
+      var transferFileName = "TransferTestDesign.ttm";
+
+      var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
+      var isDeletedFromS3Ok = s3FileTransfer.RemoveFileFromBucket(projectUid, transferFileName);
       Assert.True(isDeletedFromS3Ok);
 
     }

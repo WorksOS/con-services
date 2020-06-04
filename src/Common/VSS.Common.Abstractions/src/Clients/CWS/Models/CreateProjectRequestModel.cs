@@ -11,11 +11,13 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("accountId")]
     public string TRN { get; private set; }
-    
+
     /// <summary>
     /// WorksOS account ID.
     /// </summary>
-    public string AccountId { 
+    [JsonProperty("accountUid")]
+    public string AccountId
+    {
       get => _id;
       set
       {

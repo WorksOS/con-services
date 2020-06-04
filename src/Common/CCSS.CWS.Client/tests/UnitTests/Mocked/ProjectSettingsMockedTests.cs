@@ -27,27 +27,27 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     public void GetProjectConfiguration()
     {
       var projectUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = "MyTestFilename.dc",
         FileDownloadLink = "http//whatever",
         FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
       string route = $"/projects/{TRNHelper.MakeTRN(projectUid)}/configuration/CALIBRATION";
       var expectedUrl = $"{baseUrl}{route}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
-      MockUtilities.TestRequestSendsCorrectJson("Get a project calibration file", mockWebRequest, null, expectedUrl, HttpMethod.Get, projectConfigurationFileResponseModel, async () =>
+      MockUtilities.TestRequestSendsCorrectJson("Get a project calibration file", mockWebRequest, null, expectedUrl, HttpMethod.Get, projectConfigurationModel, async () =>
       {
         var client = ServiceProvider.GetRequiredService<ICwsProfileSettingsClient>();
         var result = await client.GetProjectConfiguration(projectUid, ProjectConfigurationFileType.CALIBRATION);
 
         Assert.NotNull(result);
-        Assert.Equal(projectConfigurationFileResponseModel.FileName, result.FileName);
+        Assert.Equal(projectConfigurationModel.FileName, result.FileName);
         return true;
       });
     }
@@ -58,25 +58,25 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var projectUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
-        ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>()
+        ProjectConfigurationFiles = new List<ProjectConfigurationModel>()
         {
-          new ProjectConfigurationFileResponseModel()
+          new ProjectConfigurationModel()
           {
             FileName = "MyTestFilename.dc",
             FileDownloadLink = "http//whatever",
             FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
             CreatedAt = DateTime.UtcNow.ToString(),
             UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = "66"
+            Size = 66
           },
-          new ProjectConfigurationFileResponseModel()
+          new ProjectConfigurationModel()
           {
             FileName = "MyTestFilename.avoid.dxf",
             FileDownloadLink = "http//whateverElse",
             FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
             CreatedAt = DateTime.UtcNow.ToString(),
             UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = "66"
+            Size = 66
           }
         }
       };
@@ -109,14 +109,14 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         MachineControlFilespaceId = Guid.NewGuid().ToString()
       };
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = "MyTestFilename.dc",
         FileDownloadLink = "http//whatever",
         FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
 
       string route = $"/projects/{TRNHelper.MakeTRN(projectUid)}/configuration/CALIBRATION";
@@ -124,13 +124,13 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
-      MockUtilities.TestRequestSendsCorrectJson("Create a project calibration file", mockWebRequest, null, expectedUrl, HttpMethod.Post, projectConfigurationFileResponseModel, async () =>
+      MockUtilities.TestRequestSendsCorrectJson("Create a project calibration file", mockWebRequest, null, expectedUrl, HttpMethod.Post, projectConfigurationModel, async () =>
       {
         var client = ServiceProvider.GetRequiredService<ICwsProfileSettingsClient>();
         var result = await client.SaveProjectConfiguration(projectUid, ProjectConfigurationFileType.CALIBRATION, projectConfigurationFileRequestModel);
 
         Assert.NotNull(result);
-        Assert.Equal(projectConfigurationFileResponseModel.FileName, result.FileName);
+        Assert.Equal(projectConfigurationModel.FileName, result.FileName);
         return true;
       });
     }
@@ -144,14 +144,14 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         MachineControlFilespaceId = Guid.NewGuid().ToString()
       };
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = "MyTestFilename.dc",
         FileDownloadLink = "http//whatever",
         FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
 
       string route = $"/projects/{TRNHelper.MakeTRN(projectUid)}/configuration/CALIBRATION";
@@ -159,13 +159,13 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
-      MockUtilities.TestRequestSendsCorrectJson("update a project calibration file", mockWebRequest, null, expectedUrl, HttpMethod.Put, projectConfigurationFileResponseModel, async () =>
+      MockUtilities.TestRequestSendsCorrectJson("update a project calibration file", mockWebRequest, null, expectedUrl, HttpMethod.Put, projectConfigurationModel, async () =>
       {
         var client = ServiceProvider.GetRequiredService<ICwsProfileSettingsClient>();
         var result = await client.UpdateProjectConfiguration(projectUid, ProjectConfigurationFileType.CALIBRATION, projectConfigurationFileRequestModel);
 
         Assert.NotNull(result);
-        Assert.Equal(projectConfigurationFileResponseModel.FileName, result.FileName);
+        Assert.Equal(projectConfigurationModel.FileName, result.FileName);
         return true;
       });
     }

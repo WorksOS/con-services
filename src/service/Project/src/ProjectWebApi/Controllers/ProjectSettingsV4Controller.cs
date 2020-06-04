@@ -11,7 +11,6 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -22,16 +21,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public class ProjectSettingsV4Controller : BaseController<ProjectSettingsV4Controller>
   {
     private readonly IRequestFactory _requestFactory;
-    private readonly INotificationHubClient _notificationHubClient;
 
 
     /// <summary>
     /// Default constructor
     /// </summary>
-    public ProjectSettingsV4Controller(IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
+    public ProjectSettingsV4Controller(IRequestFactory requestFactory)
     {
       this._requestFactory = requestFactory;
-      this._notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
@@ -81,7 +78,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, headers: customHeaders,
-            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, 
+            projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
@@ -115,7 +113,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, headers: customHeaders,
-            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, 
+            projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
@@ -139,7 +138,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<GetProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            CustomerUid, UserId, projectRepo: ProjectRepo)
+            CustomerUid, UserId, headers: customHeaders, 
+            projectRepo: ProjectRepo, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
@@ -152,11 +152,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // You'd like to think these are in the format of a guid, but a simple check will stop any cast exceptions
 
       var userTask = Guid.TryParse(userUid, out var u)
-        ? _notificationHubClient.Notify(new UserChangedNotification(u))
+        ? NotificationHubClient.Notify(new UserChangedNotification(u))
         : Task.CompletedTask;
 
       var projectTask = Guid.TryParse(projectUid, out var p)
-        ? _notificationHubClient.Notify(new ProjectChangedNotification(p))
+        ? NotificationHubClient.Notify(new ProjectChangedNotification(p))
         : Task.CompletedTask;
 
       return Task.WhenAll(userTask, projectTask);

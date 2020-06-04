@@ -43,7 +43,7 @@ namespace MockProjectWebApi.Controllers
 
       var result = new FileDataResult
       {
-        ProjectConfigFileDescriptors =  projConfigFileList ?? new List<ProjectConfigurationFileResponseModel>(),
+        ProjectConfigFileDescriptors =  projConfigFileList ?? new List<ProjectConfigurationModel>(),
         ImportedFileDescriptors = fileList ?? new List<FileData>()
       };
       return result;

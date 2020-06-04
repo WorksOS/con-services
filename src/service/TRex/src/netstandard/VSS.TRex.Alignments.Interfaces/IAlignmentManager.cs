@@ -8,11 +8,8 @@ namespace VSS.TRex.Alignments.Interfaces
   public interface IAlignmentManager
   {
     /// <summary>
-    /// Add a new Alignment to a sitemodel
+    /// Add a new Alignment to a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="designDescriptor"></param>
-    /// <param name="extents"></param>
     IAlignment Add(Guid siteModelUid, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents);
 
     /// <summary>
@@ -23,17 +20,11 @@ namespace VSS.TRex.Alignments.Interfaces
     /// <summary>
     /// Remove a given surveyed surface from a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="alignmentUid"></param>
-    /// <returns></returns>
     bool Remove(Guid siteModelUid, Guid alignmentUid);
 
     /// <summary>
     /// Remove the list of alignments from the site model persisted storage
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="storageProxy"></param>
-    /// <returns></returns>
-    public bool Remove(Guid siteModelID, IStorageProxy storageProxy);
+    public bool Remove(Guid siteModelId, IStorageProxy storageProxy);
   }
 }

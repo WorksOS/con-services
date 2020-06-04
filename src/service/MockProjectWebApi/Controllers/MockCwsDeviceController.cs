@@ -21,7 +21,9 @@ namespace MockProjectWebApi.Controllers
       var deviceResponseModel = new DeviceResponseModel()
       {
         TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-        DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = serialNumber
+        DeviceType = "EC520",
+        DeviceName = "this is a device",
+        SerialNumber = serialNumber
       };
 
       Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)}: serialNumber {serialNumber}. deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
@@ -35,8 +37,8 @@ namespace MockProjectWebApi.Controllers
       var deviceResponseModel = new DeviceResponseModel()
       {
         TRN = deviceTrn,
-        DeviceType = "EC520", 
-        DeviceName = "this is a device", 
+        DeviceType = "EC520",
+        DeviceName = "this is a device",
         SerialNumber = "56556565"
       };
 
@@ -46,6 +48,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v1/accounts/{accountTrn}/devices")]
     [HttpGet]
+    [Obsolete]
     public DeviceListResponseModel GetDevicesForAccount(string accountTrn)
     {
       var deviceListResponseModel = new DeviceListResponseModel()
@@ -79,7 +82,7 @@ namespace MockProjectWebApi.Controllers
             ProjectTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_PROJECT),
             ProjectName = "this is a project",
             Timezone = "Timbucktoo",
-            Boundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<double[,]>() {{new double[2, 2] {{180, 90}, {180, 90}}}}}
+            Boundary = new ProjectBoundary() {type = "Polygon", coordinates = new List<List<double[]>> { new List<double[]> { new double[] { 180, 90 }, new double[] { 180, 90 } }}}
           }
         }
       };

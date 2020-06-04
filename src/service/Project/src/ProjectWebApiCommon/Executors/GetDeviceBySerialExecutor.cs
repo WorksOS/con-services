@@ -18,7 +18,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   public class GetDeviceBySerialExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Processes the GetProjectSettings request
+    /// Processes the Get device by serial number from cws. This uses an application token
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
 
         // now get the customerId and 2xstatus
-        // Note that this step may not be needed in future if/when WM can return these fields in cwsDeviceClient.GetDeviceBySerialNumber()
+        // Note that this step may not be needed in future if/when WM can return these fields in cwsDeviceClient.GetDeviceBySerialNumber() CCSSSCON-28 todoJeannie
         var deviceAccountListDataResult = await cwsDeviceClient.GetAccountsForDevice(new Guid(deviceData.DeviceUID), customHeaders);
         if (deviceAccountListDataResult?.Accounts == null || !deviceAccountListDataResult.Accounts.Any())
         {

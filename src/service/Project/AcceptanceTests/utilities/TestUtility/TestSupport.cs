@@ -474,9 +474,9 @@ namespace TestUtility
             cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
             ExpectedProjectConfigFileDescriptorsListResult = new ImportedFileDescriptorListResult
             {
-              ProjectConfigFileDescriptors = new List<ProjectConfigurationFileResponseModel>
+              ProjectConfigFileDescriptors = new List<ProjectConfigurationModel>
               {
-                new ProjectConfigurationFileResponseModel
+                new ProjectConfigurationModel
                 {
                   FileName = cpCoordinateSystemFileName
                 }

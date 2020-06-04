@@ -1,11 +1,15 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Force.DeepCloner;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Filters;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Rendering.Requests
@@ -22,23 +26,23 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
     public enum ElevationSource
     {
-      MiniminElevation,
+      MinimumElevation,
       MaximumElevation
     }
     [Theory]
-    [InlineData(ElevationSource.MiniminElevation, false, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill)]
+    [InlineData(ElevationSource.MinimumElevation, false, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill)]
     [InlineData(ElevationSource.MaximumElevation, false, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill)]
-    [InlineData(ElevationSource.MiniminElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill)]
+    [InlineData(ElevationSource.MinimumElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill)]
     [InlineData(ElevationSource.MaximumElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill)]
-    [InlineData(ElevationSource.MiniminElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValues)]
+    [InlineData(ElevationSource.MinimumElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValues)]
     [InlineData(ElevationSource.MaximumElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValues)]
-    [InlineData(ElevationSource.MiniminElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValuesOnly)]
+    [InlineData(ElevationSource.MinimumElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValuesOnly)]
     [InlineData(ElevationSource.MaximumElevation, true, ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValuesOnly)]
-    [InlineData(ElevationSource.MiniminElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.NoInfill)]
+    [InlineData(ElevationSource.MinimumElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.NoInfill)]
     [InlineData(ElevationSource.MaximumElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.NoInfill)]
-    [InlineData(ElevationSource.MiniminElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.InfillNullValues)]
+    [InlineData(ElevationSource.MinimumElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.InfillNullValues)]
     [InlineData(ElevationSource.MaximumElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.InfillNullValues)]
-    [InlineData(ElevationSource.MiniminElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.InfillNullValuesOnly)]
+    [InlineData(ElevationSource.MinimumElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.InfillNullValuesOnly)]
     [InlineData(ElevationSource.MaximumElevation, true, ConvolutionMaskSize.Mask5X5, NullInfillMode.InfillNullValuesOnly)]
     public async Task Test_CutFillTile_TAGFile_FlatDesign(ElevationSource elevationSource, bool useSmoothing, ConvolutionMaskSize maskSize, NullInfillMode nullInfillMode)
     {
@@ -58,7 +62,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       var elevation = elevationSource switch
       {
-        ElevationSource.MiniminElevation => (float) siteModel.SiteModelExtent.MinZ,
+        ElevationSource.MinimumElevation => (float) siteModel.SiteModelExtent.MinZ,
         ElevationSource.MaximumElevation => (float) siteModel.SiteModelExtent.MaxZ,
         _ => (float)siteModel.SiteModelExtent.MinZ
       };
@@ -80,7 +84,43 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var fileName = @$"Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "CutFillTile", fileName);
 
-      // var saveFileName = @$"C:\Temp\Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
+      //var saveFileName = @$"C:\Temp\Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
+
+      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, "", path);
+    }
+
+    [Fact]
+    public async Task Test_CutFillTile_TAGFile_FilterToFilter()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      // Construct a site model from a single TAG file
+      var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag") };
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent);
+      var request = new TileRenderRequest();
+
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette);
+
+      // Create a pair of filters to support first -> last cell pass comparison
+      arg.Filters = new FilterSet(new CombinedFilter(), new CombinedFilter());
+      arg.Filters.Filters[0].AttributeFilter.ReturnEarliestFilteredCellPass = true;
+
+      // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
+      // with an additional 1 meter border around the cell
+      arg.Extents = siteModel.SiteModelExtent;
+      arg.Extents.Expand(1.0, 1.0);
+
+      var response = await request.ExecuteAsync(arg);
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+
+      var fileName = "FilterToFilter-CutFill-TestTAGFile.bmp";
+      var path = Path.Combine("TestData", "RenderedTiles", "CutFillTile", fileName);
+
+      //var saveFileName = @"C:\Temp\FilterToFilter-CutFill-TestTAGFile.bmp";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, "", path);
     }

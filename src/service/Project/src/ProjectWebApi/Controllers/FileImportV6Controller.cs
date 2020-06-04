@@ -10,9 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Serilog;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
@@ -38,7 +37,6 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Abstractions.Utilities;
-using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -51,18 +49,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportV6Controller : FileImportBaseController
   {
-    private readonly INotificationHubClient _notificationHubClient;
 
     /// <summary>
     /// File import controller v6
     /// </summary>
-    public FileImportV6Controller(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportV6Controller(IConfigurationStore config,
+                                  ITransferProxyFactory transferProxyFactory, 
                                   IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
-                                  IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
-      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
-    {
-      this._notificationHubClient = notificationHubClient;
-    }
+                                  IRequestFactory requestFactory)
+      : base(config, transferProxyFactory, filterServiceProxy, tRexImportFileProxy, requestFactory)
+    { }
 
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
@@ -172,7 +168,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
       [FromServices] ISchedulerProxy scheduler,
-      [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc)
+      [FromServices] ITransferProxyFactory transferProxyFactory)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
@@ -192,7 +188,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var s3Path = $"project/importedfile/{Guid.NewGuid()}.dat";
       var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read);
-      var transferProxy = transferProxyFunc(TransferProxyType.Default);
+      var transferProxy = transferProxyFactory.NewProxy(TransferProxyType.Temporary);
       transferProxy.Upload(fileStream, s3Path);
 
       var baseUrl = Request.Host.ToUriComponent();
@@ -230,7 +226,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="surveyedUtc"></param>
-    /// <param name="transferProxyFunc"></param>
+    /// <param name="transferProxyFactory"></param>
     /// <param name="schedulerProxy"></param>
     /// <remarks>Import a design file for a project, once the file has been uploaded to AWS</remarks>
     [Route("internal/v4/importedfile")]
@@ -246,7 +242,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
-      [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc,
+      [FromServices] ITransferProxyFactory transferProxyFactory,
       [FromServices] ISchedulerProxy schedulerProxy)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
@@ -257,7 +253,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, ConfigStore, ServiceExceptionHandler);
 
       ImportedFileDescriptorSingleResult importedFileResult = null;
-      var transferProxy = transferProxyFunc(TransferProxyType.Default);
+      var transferProxy = transferProxyFactory.NewProxy(TransferProxyType.Temporary);
       Logger.LogInformation(
         $"{nameof(InternalImportedFileV6)}:. filename: {filename} awspath {awsFilePath} projectUid {projectUid} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
@@ -435,11 +431,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           RequestExecutorContainerFactory
             .Build<DeleteImportedFileExecutor>(
               LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, persistantTransferProxy: persistantTransferProxy, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient)
+              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, persistantTransferProxyFactory: persistantTransferProxyFactory, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient, cwsProjectClient: CwsProjectClient)
             .ProcessAsync(deleteImportedFile)
         );
-        await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+        await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
         Logger.LogInformation(
           $"{nameof(DeleteImportedFileV6)}: Completed successfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
@@ -555,7 +551,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
               fileStream, projectUid.ToString(), filename,
               importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-              Logger, ServiceExceptionHandler, persistantTransferProxy);
+              Logger, ServiceExceptionHandler, persistantTransferProxyFactory.NewProxy(TransferProxyType.DesignImport));
           }
 
           if (UseRaptorGatewayDesignImport)
@@ -604,8 +600,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               .Build<CreateImportedFileExecutor>(
                 LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-                persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+                persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                cwsProjectClient: CwsProjectClient)
               .ProcessAsync(createImportedFile)
           ) as ImportedFileDescriptorSingleResult;
 
@@ -615,7 +612,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         else
         {
           // this also validates that this customer has access to the projectUid
-          var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), CustomerUid, Logger, ServiceExceptionHandler, ProjectRepo);
+          var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
           var importedFileUpsertEvent = new UpdateImportedFile(
             projectUid, project.ShortRaptorProjectId, importedFileType,
@@ -632,7 +629,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                cwsProjectClient: CwsProjectClient)
               .ProcessAsync(importedFileUpsertEvent)
           ) as ImportedFileDescriptorSingleResult;
 
@@ -641,7 +639,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         }
       }
 
-      await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+      await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
       return importedFile;
     }
@@ -895,7 +893,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task DoActivationAndNotification(string projectUid, Dictionary<Guid, bool> filesToUpdate)
     {
       var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
-      var notificationTask = _notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
+      var notificationTask = NotificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
       var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
 
       await Task.WhenAll(notificationTask, raptorTask);

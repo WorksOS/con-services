@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -108,6 +110,34 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         raptorClient,
 #endif
         configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
+    }
+
+    /// <summary>
+    /// Gets a model describing the geometry and station labeling for the master alignment in an alignment design
+    /// Arcs may be optionally converted to poly lines with a specified arc chord tolerance
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="designUid"></param>
+    /// <param name="convertArcsToChords"></param>
+    /// <param name="arcChordTolerance"></param>
+    /// <returns></returns>
+    [ProjectVerifier]
+    [Route("api/v2/designs/alignment/master/geometry")]
+    [HttpGet]
+    public async Task<ContractExecutionResult> GetAlignmentGeometryForRendering(
+      [FromQuery] Guid projectUid, 
+      [FromQuery] Guid designUid, 
+      [FromQuery] bool convertArcsToChords,
+      [FromQuery] double arcChordTolerance)
+    {
+      log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: " + Request.QueryString);
+
+      var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance);
+
+      request.Validate();
+
+      return await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
+        configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
     }
 
     /// <summary>

@@ -79,12 +79,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       var siteModelId = request.ProjectUid.ToString();
 
-      var queryParams = new HeaderDictionary()
+      var queryParams = new List<KeyValuePair<string, string>>
       {
-        { "projectUid", siteModelId },
-        { "designUid", designUid },
-        { "fileName", fileName },
-        { "tolerance", request.Tolerance.ToString(CultureInfo.CurrentCulture) }
+        new KeyValuePair<string, string>( "projectUid", siteModelId ),
+        new KeyValuePair<string, string>("designUid", designUid ),
+        new KeyValuePair<string, string>( "fileName", fileName ),
+        new KeyValuePair<string, string>("tolerance", request.Tolerance.ToString(CultureInfo.CurrentCulture))
       };
 
       var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(siteModelId, "/design/boundaries", customHeaders, queryParams);
@@ -120,7 +120,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         if (designProfilerResult == TDesignProfilerRequestResult.dppiOK && memoryStream != null && memoryStream.Length > 0)
         {
-          // TODO (Aaron) Re do this.
           memoryStream.Position = 0;
           var sr = new StreamReader(memoryStream);
           string geoJSONStr = sr.ReadToEnd();

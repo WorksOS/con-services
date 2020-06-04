@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +7,7 @@ using Hangfire.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
@@ -28,32 +28,33 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     /// <summary>
     /// Used to store the final download link for export jobs
     /// </summary>
-    public const string DownloadLinkStateKey = "downloadLink";
+    public const string DOWNLOAD_LINK_STATE_KEY = "downloadLink";
 
     /// <summary>
     /// Used to store the s3 key for the export jobs
     /// </summary>
-    public const string S3KeyStateKey = "s3Key";
+    public const string S3_KEY_STATE_KEY = "s3Key";
 
     /// <summary>
     /// Location to save incoming Scheduled Job Requests
     /// </summary>
-    private const string S3ScheduleSaveLocation = "background";
+    private const string S3_SCHEDULE_SAVE_LOCATION = "background";
 
-    private readonly IApiClient apiClient;
-    private readonly ITransferProxy transferProxy;
-    private readonly ILogger log;
-
-    private Guid savedRequestId;
+    private readonly IApiClient _apiClient;
+    private readonly ITransferProxy _transferProxy;
+    private readonly ITransferProxyFactory _transferProxyFactory;
+    private readonly ILogger _log;
+    private Guid _savedRequestId;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public ExportJob(IApiClient apiClient, ITransferProxy transferProxy, ILoggerFactory logger)
+    public ExportJob(IApiClient apiClient, ITransferProxyFactory transferProxyfactory, ILoggerFactory logger)
     {
-      log = logger.CreateLogger<ExportJob>();
-      this.apiClient = apiClient;
-      this.transferProxy = transferProxy;
+      _log = logger.CreateLogger<ExportJob>();
+      _apiClient = apiClient;
+      _transferProxyFactory = transferProxyfactory;
+      _transferProxy = _transferProxyFactory.NewProxy(TransferProxyType.Temporary);
     }
 
     /// <summary>
@@ -68,7 +69,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
       var bytes = Encoding.UTF8.GetBytes(data);
       using (var ms = new MemoryStream(bytes))
       {
-        transferProxy.Upload(ms, $"{S3ScheduleSaveLocation}/{guid}");
+        _transferProxy.Upload(ms, $"{S3_SCHEDULE_SAVE_LOCATION}/{guid}");
       }
 
       return guid;
@@ -82,7 +83,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     private async Task<ScheduleJobRequest> DownloadRequest(Guid requestId)
     {
       ScheduleJobRequest request = null;
-      var fileStreamResult = await transferProxy.Download($"{S3ScheduleSaveLocation}/{requestId}");
+      var fileStreamResult = await _transferProxy.Download($"{S3_SCHEDULE_SAVE_LOCATION}/{requestId}");
       using (var ms = new MemoryStream())
       {
         fileStreamResult.FileStream.CopyTo(ms);
@@ -124,7 +125,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     public async Task<string> ExecuteExportProc(ScheduleJobRequest request, IHeaderDictionary customHeaders,
       PerformContext context)
     {
-      var data = await apiClient.SendRequest(request, customHeaders);
+      var data = await _apiClient.SendRequest(request, customHeaders);
       {
         //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
         //where app name and userId (appId or userUid) from JWT
@@ -143,21 +144,21 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
 
           // Transfer proxy will upload the file with a potentially different extension, matching the contenttype
           // So we may get a new path
-          var newPath = transferProxy.Upload(stream, path, contentType);
+          var newPath = _transferProxy.Upload(stream, path, contentType);
 
-          var presignedUrl = transferProxy.GeneratePreSignedUrl(newPath);
+          var presignedUrl = _transferProxy.GeneratePreSignedUrl(newPath);
 
           // Set the results so the results can access the final url easily
           if (context != null)
           {
-            JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3KeyStateKey, newPath);
-            JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, DownloadLinkStateKey, presignedUrl);
+            JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3_KEY_STATE_KEY, newPath);
+            JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, DOWNLOAD_LINK_STATE_KEY, presignedUrl);
           }
           return presignedUrl;
         }
         catch (Exception ex)
         {
-          log.LogError(ex, $"Exception in ApiClient delegate.");
+          _log.LogError(ex, "Exception in ApiClient delegate.");
           throw;
         }
       }
@@ -167,7 +168,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     /// Gets the download link for the completed job.
     /// </summary>
     [Obsolete("Use the JobStorage to store download links, as the requested filename could change")]
-    public string GetDownloadLink(string jobId, string filename) => transferProxy.GeneratePreSignedUrl(GetS3Key(jobId, filename));
+    public string GetDownloadLink(string jobId, string filename) => _transferProxy.GeneratePreSignedUrl(GetS3Key(jobId, filename));
 
     /// <summary>
     /// Gets the S3 key for a job
@@ -180,7 +181,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     public Task Setup(object o, object context)
     {
       var request = o.GetConvertedObject<ScheduleJobRequest>();
-      savedRequestId = SaveRequest(request);
+      _savedRequestId = SaveRequest(request);
 
       return Task.FromResult(true);
     }
@@ -190,12 +191,11 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
       if (!(context is PerformContext))
         throw new ArgumentException($"Wrong context object has been passed {nameof(context)}");
 
-      var headers = o.GetConvertedObject<IHeaderDictionary>();
+      var headers = o.GetConvertedObject<HeaderDictionary>();
 
-      return GetExportData(savedRequestId, headers, context as PerformContext);
+      return GetExportData(_savedRequestId, headers, context as PerformContext);
     }
 
     public Task TearDown(object o, object context) => Task.FromResult(true);
-
   }
 }

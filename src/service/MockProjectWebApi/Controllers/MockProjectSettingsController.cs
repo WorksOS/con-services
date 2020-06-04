@@ -11,13 +11,10 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockProjectSettingsController : BaseController
   {
-    private readonly ProjectService projectService;
 
     public MockProjectSettingsController(ILoggerFactory loggerFactory, IProjectService projectService)
     : base(loggerFactory)
-    {
-      this.projectService = (ProjectService)projectService;
-    }
+    { }
 
     /// <summary>
     /// Gets the project settings targets used in the Raptor service acceptance tests.

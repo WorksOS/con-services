@@ -11,14 +11,12 @@ namespace VSS.TRex.Common.Utilities
   {
     /// <summary>
     /// Not as fast at the .Net implementation but is consistent with the java implementation.
-    /// Weird byte orders to deal with the funky sequence the bytes come out of the the Guid.ToByteArray method
+    /// Weird byte orders to deal with the funky sequence the bytes come out of the Guid.ToByteArray method
     /// </summary>
-    /// <param name="g"></param>
-    /// <returns></returns>
     [ExcludeFromCodeCoverage]
     public static int Hash_Old(Guid g)
     {
-      byte[] bytes = g.ToByteArray();
+      var bytes = g.ToByteArray();
 
       var msb = new [] {
         bytes[6],
@@ -41,15 +39,18 @@ namespace VSS.TRex.Common.Utilities
         bytes[8]
         };
 
-      long hilo = BitConverter.ToInt64(msb, 0) ^ BitConverter.ToInt64(lsb, 0);
+      // ReSharper disable once IdentifierTypo
+      var hilo = BitConverter.ToInt64(msb, 0) ^ BitConverter.ToInt64(lsb, 0);
       return (int)(hilo >> 32) ^ (int)hilo;
     }
 
     public static int Hash(Guid g)
     {
-      byte[] bytes = g.ToByteArray();
-
-      var b = new[] // TODO NETCORE: Declare this as stackalloc'ed when we move to .Net Core
+      // ReSharper disable once SuggestVarOrType_Elsewhere
+      Span<byte> bytes = stackalloc byte[16];
+      g.TryWriteBytes(bytes);
+      
+      ReadOnlySpan<byte> b1 = stackalloc byte[]
       {
         bytes[6],
         bytes[7],
@@ -58,7 +59,11 @@ namespace VSS.TRex.Common.Utilities
         bytes[0],
         bytes[1],
         bytes[2],
-        bytes[3],
+        bytes[3]
+      };
+
+      ReadOnlySpan<byte> b2 = stackalloc byte[]
+      {
         bytes[15],
         bytes[14],
         bytes[13],
@@ -69,9 +74,10 @@ namespace VSS.TRex.Common.Utilities
         bytes[8]
       };
 
-      long hilo = BitConverter.ToInt64(b, 0) ^ BitConverter.ToInt64(b, 8);
+      // ReSharper disable once IdentifierTypo
+      var hilo = BitConverter.ToInt64(b1) ^ BitConverter.ToInt64(b2);
       return (int) (hilo >> 32) ^ (int) hilo;
-    }    
+    }
 
     /* This unsafe implementation has essentially identical performance to Hash()
     public static unsafe int HashExUnsafe(Guid g)

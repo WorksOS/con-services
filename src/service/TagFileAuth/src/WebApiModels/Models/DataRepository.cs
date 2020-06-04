@@ -113,6 +113,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (device == null || string.IsNullOrEmpty(device.DeviceUID))
         return accountProjects;
 
+      // todoJeannie what are the marketing requirements here i.e. do we need to restrict to projects which the device is active in?
+      // what projects does this device have visibility to?
       try
       {
         var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders));
@@ -134,6 +136,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
     }
 
+    ///
+    /// the difference to GetIntersectingProjectsForManual() is that device is required
+    ///
     public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device,
       double latitude, double longitude, out int errorCode)
     {
@@ -159,6 +164,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
             ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
       }
 
+      // todoJeannie what are the marketing requirements here i.e. do we need to restrict to projects which the device is active in?
       // what projects does this device have visibility to?
       try
       {

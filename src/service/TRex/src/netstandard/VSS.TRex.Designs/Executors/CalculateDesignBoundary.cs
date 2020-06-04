@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.Interfaces;
@@ -16,7 +15,7 @@ namespace VSS.TRex.Designs.Executors
 
     private IDesignFiles designs;
 
-    private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
+    private IDesignFiles Designs => designs ??= DIContext.Obtain<IDesignFiles>();
 
     /// <summary>
     /// Default no-args constructor
@@ -36,6 +35,13 @@ namespace VSS.TRex.Designs.Executors
       calcResult = DesignProfilerRequestResult.UnknownError;
 
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID, false);
+
+      if (siteModel == null)
+      {
+        calcResult = DesignProfilerRequestResult.NoSelectedSiteModel;
+        Log.LogError($"Site model {arg.ProjectID} not found");
+        return null;
+      }
 
       var design = Designs.Lock(arg.ReferenceDesign.DesignID, arg.ProjectID, siteModel.CellSize, out var lockResult);
 
@@ -73,7 +79,7 @@ namespace VSS.TRex.Designs.Executors
 
       if (result == null)
       {
-        Log.LogInformation($"Unable to calculate a design bounmdary result for {arg}");
+        Log.LogInformation($"Unable to calculate a design boundary result for {arg}");
         result = new List<Fence>();
       }
 

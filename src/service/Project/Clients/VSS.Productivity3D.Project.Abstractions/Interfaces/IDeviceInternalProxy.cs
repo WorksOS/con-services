@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;

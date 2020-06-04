@@ -11,7 +11,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// Device controller v1
   ///     for the UI to get customer list etc as we have no CustomerSvc yet
   /// </summary>
-  public class DeviceInternalV1Controller : ProjectBaseController
+  public class DeviceInternalV1Controller : BaseController<DeviceInternalV1Controller>
   {
     /// <summary>
     /// Default constructor.
@@ -49,7 +49,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets a list of projects which a device is associated with.
     ///    Get the list from cws.
-    ///  called by TFA ProjectBoundariesAtDateExecutor, ProjectAndAssetUidsExecutor, ProjectAndAssetUidsEarthWorksExecutor, ProjectIdExecutor
+    ///  called by TFA ProjectAndAssetUidsExecutor, ProjectAndAssetUidsEarthWorksExecutor
     /// </summary>
     [HttpGet("internal/v1/device/{deviceUid}/projects")]
     public async Task<ProjectDataListResult> GetProjectsForDevice(string deviceUid)
@@ -59,12 +59,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var deviceIsUid = new DeviceIsUid(deviceUid);
       deviceIsUid.Validate();
 
-
       var projectDataListResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<GetProjectsForDeviceExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            headers: customHeaders,
-            projectRepo: ProjectRepo, cwsDeviceClient: CwsDeviceClient)
+            headers: customHeaders, cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient)
           .ProcessAsync(deviceIsUid)) as ProjectDataListResult;
 
       return projectDataListResult;

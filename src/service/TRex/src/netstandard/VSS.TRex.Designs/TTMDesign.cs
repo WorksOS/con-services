@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
@@ -610,21 +611,23 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
-      var isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
+      var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
+
+      var isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
       if (!isDownloaded)
         return DesignLoadResult.UnknownFailure;
 
       if (loadIndices)
       {
-        isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
+        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
-          return DesignLoadResult.UnableToLoadSubgridIndex;
+          return DesignLoadResult.UnableToLoadSubGridIndex;
 
-        isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
+        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadSpatialIndex;
 
-        isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
+        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), TRexServerConfig.PersistentCacheStoreLocation);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadBoundary;
       }
@@ -652,10 +655,10 @@ namespace VSS.TRex.Designs
         maxHeight = Common.Consts.NullReal;
 
         if (!LoadSubGridIndexFile(localPathAndFileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, saveIndexFiles))
-          return DesignLoadResult.UnableToLoadSubgridIndex;
+          return DesignLoadResult.UnableToLoadSubGridIndex;
 
         if (!LoadSpatialIndexFile(localPathAndFileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, saveIndexFiles))
-          return DesignLoadResult.UnableToLoadSubgridIndex;
+          return DesignLoadResult.UnableToLoadSubGridIndex;
 
         if (!LoadBoundaryFile(localPathAndFileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, saveIndexFiles))
           return DesignLoadResult.UnableToLoadBoundary;
@@ -1034,11 +1037,13 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        if (S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName))
+        var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
+
+        if (s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName))
         {
-          S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
-          S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
-          S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+          s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+          s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+          s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
         }
       }
       catch (Exception e)

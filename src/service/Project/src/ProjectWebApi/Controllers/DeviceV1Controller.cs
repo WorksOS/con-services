@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Internal;
+using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -11,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Device controller v1
   /// </summary>
-  public class DeviceV1Controller : ProjectBaseController
+  public class DeviceV1Controller : BaseController<DeviceV1Controller>
   {
     //TODO: Is this mock data still used ?
 

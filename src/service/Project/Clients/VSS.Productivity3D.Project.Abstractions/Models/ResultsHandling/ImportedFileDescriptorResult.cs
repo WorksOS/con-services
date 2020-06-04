@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// <summary>
     /// The file descriptors for CWS project configuration files
     /// </summary>
-    public ImmutableList<ProjectConfigurationFileResponseModel> ProjectConfigFileDescriptors { get; set; }
+    public ImmutableList<ProjectConfigurationModel> ProjectConfigFileDescriptors { get; set; }
   }
 
   /// <summary>
@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       ImportedFileDescriptor = importedFileDescriptor;
     }
 
-    public ImportedFileDescriptorSingleResult(ProjectConfigurationFileResponseModel projectConfigFileDescriptor)
+    public ImportedFileDescriptorSingleResult(ProjectConfigurationModel projectConfigFileDescriptor)
     {
       ProjectConfigFileDescriptor = projectConfigFileDescriptor;
     }
@@ -62,6 +62,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// <summary>
     /// The file descriptor for a CWS project configuration file
     /// </summary>
-    public ProjectConfigurationFileResponseModel ProjectConfigFileDescriptor { get; set; }
+    public ProjectConfigurationModel ProjectConfigFileDescriptor { get; set; }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -16,34 +17,36 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
 {
   public class SimpleVolumesExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SimpleVolumesExecutor>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SimpleVolumesExecutor>();
 
-    private async Task<SimpleVolumesResponse> ConvertBoundaryFromGridToWGS84(Guid projectUid, SimpleVolumesResponse response)
+    private static async Task<SimpleVolumesResponse> ConvertBoundaryFromGridToWGS84(Guid projectUid, SimpleVolumesResponse response)
     {
       if (!response.BoundingExtentGrid.IsValidPlanExtent)
         return response; // No conversion possible
 
-      var NEECoords = new[]
+      var neeCoords = new[]
       {
-        new XYZ(response.BoundingExtentGrid.MinX, response.BoundingExtentGrid.MinY),
-        new XYZ(response.BoundingExtentGrid.MaxX, response.BoundingExtentGrid.MaxY)
+        new XYZ(response.BoundingExtentGrid.MinX, response.BoundingExtentGrid.MinY,
+              response.BoundingExtentGrid.MinZ == Consts.NullDouble ? 0.0 : response.BoundingExtentGrid.MinZ),
+        new XYZ(response.BoundingExtentGrid.MaxX, response.BoundingExtentGrid.MaxY,
+              response.BoundingExtentGrid.MaxZ == Consts.NullDouble ? 0.0 : response.BoundingExtentGrid.MaxZ)
       };
 
-      (var errorCode, var LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), NEECoords);
+      var (errorCode, llhCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), neeCoords);
 
       if (errorCode == RequestErrorStatus.OK)
       {
         response.BoundingExtentLLH = new BoundingWorldExtent3D
         {
-          MinX = MathUtilities.RadiansToDegrees(LLHCoords[0].X),
-          MinY = MathUtilities.RadiansToDegrees(LLHCoords[0].Y),
-          MaxX = MathUtilities.RadiansToDegrees(LLHCoords[1].X),
-          MaxY = MathUtilities.RadiansToDegrees(LLHCoords[1].Y)
+          MinX = MathUtilities.RadiansToDegrees(llhCoords[0].X),
+          MinY = MathUtilities.RadiansToDegrees(llhCoords[0].Y),
+          MaxX = MathUtilities.RadiansToDegrees(llhCoords[1].X),
+          MaxY = MathUtilities.RadiansToDegrees(llhCoords[1].Y)
         };
       }
       else
       {
-        Log.LogInformation("Summary volume failure, could not convert bounding area from grid to WGS coordinates");
+        _log.LogInformation($"Summary volume failure, could not convert bounding area from grid to WGS coordinates, bounding extents = [{response.BoundingExtentGrid}], error = {errorCode}");
         response.ResponseCode = SubGridRequestsResponseResult.Failure;
       }
 
@@ -54,7 +57,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
     {
       var request = new SimpleVolumesRequest_ClusterCompute();
 
-      Log.LogInformation("Executing SimpleVolumesRequestComputeFunc_ApplicationService.ExecuteAsync()");
+      _log.LogInformation("Executing SimpleVolumesRequestComputeFunc_ApplicationService.ExecuteAsync()");
 
       // Calculate the volumes and convert the grid bounding rectangle into WGS 84 lat/long to return to the caller.
       return await ConvertBoundaryFromGridToWGS84(arg.ProjectID, await request.ExecuteAsync(arg));

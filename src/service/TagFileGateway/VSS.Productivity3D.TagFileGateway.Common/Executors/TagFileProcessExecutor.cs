@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
                 if (failedToConnect)
                     path = $"{CONNECTION_ERROR_FOLDER}/{path}";
 
-                TransferProxy.Upload(data, path);
+                TransferProxyFactory.NewProxy(TransferProxyType.TagFileGatewayArchive).Upload(data, path);
                 Logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
             }
 

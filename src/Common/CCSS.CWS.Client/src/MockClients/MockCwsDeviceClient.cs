@@ -56,6 +56,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(deviceResponseModel);
     }
 
+    /* obsolete
     public Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: accountUid {accountUid}");
@@ -79,6 +80,7 @@ namespace CCSS.CWS.Client.MockClients
       log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return Task.FromResult(deviceListResponseModel);
     }
+    */
 
     public Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
@@ -91,13 +93,13 @@ namespace CCSS.CWS.Client.MockClients
           new ProjectResponseModel()
           {
             AccountTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_ACCOUNT),
-            ProjectTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_PROJECT),
+            ProjectTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString()),
             ProjectName = "this is a project",
             Timezone = "Timbucktoo",
             Boundary = new ProjectBoundary()
             {
               type = "Polygon",
-              coordinates = new List<double[,]>() { { new double[2, 2] { { 180, 90 }, { 180, 90 } } } }
+              coordinates = new List<List<double[]>> { new List<double[]> { new[] { 150.3, 1.2 }, new[] { 150.4, 1.2 }, new[] { 150.4, 1.3 }, new[] { 150.4, 1.4 }, new[] { 150.3, 1.2 } } }
             }
           }
         }

@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using VSS.TRex.Designs.Models;
-using VSS.TRex.Geometry;
 using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Alignments
 {
@@ -19,28 +16,26 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
     /// </summary>
-    private readonly BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+    private readonly BoundingWorldExtent3D _extents = new BoundingWorldExtent3D();
 
     /// <summary>
-    /// Serialises state to a binary writer
+    /// Serializes state to a binary writer
     /// </summary>
-    /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
       writer.Write(ID.ToByteArray());
       DesignDescriptor.Write(writer);
-      extents.Write(writer);
+      _extents.Write(writer);
     }
 
     /// <summary>
-    /// Serialises state in from a binary reader
+    /// Serializes state in from a binary reader
     /// </summary>
-    /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       ID = reader.ReadGuid();
       DesignDescriptor.Read(reader);
-      extents.Read(reader);
+      _extents.Read(reader);
     }
 
     /// <summary>
@@ -56,28 +51,20 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Returns the real world 3D enclosing extents for the Alignment topology, including any configured vertical offset
     /// </summary>
-    public BoundingWorldExtent3D Extents
-    {
-      get
-      {
-        BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
-        return result;
-      }
-    }
+    public BoundingWorldExtent3D Extents => new BoundingWorldExtent3D(_extents);
 
     /// <summary>
     /// No-arg constructor
     /// </summary>
     public Alignment()
     {
-      extents = new BoundingWorldExtent3D();
+      _extents = new BoundingWorldExtent3D();
       DesignDescriptor = new DesignDescriptor();
     }
 
     /// <summary>
     /// Constructor accepting a Binary Reader instance from which to instantiate itself
     /// </summary>
-    /// <param name="reader"></param>
     public Alignment(BinaryReader reader)
     {
       Read(reader);
@@ -86,28 +73,26 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Constructor accepting full Alignment state
     /// </summary>
-    /// <param name="iD">The unque identifier for the Alignment in this site model</param>
+    /// <param name="iD">The unique identifier for the Alignment in this site model</param>
     /// <param name="designDescriptor"></param>
-    /// <param name="extents_"></param>
+    /// <param name="extents"></param>
     public Alignment(Guid iD,
       DesignDescriptor designDescriptor,
-      BoundingWorldExtent3D extents_)
+      BoundingWorldExtent3D extents)
     {
       ID = iD;
       DesignDescriptor = designDescriptor;
-      extents = extents_;
+      _extents = extents;
     }
 
     /// <summary>
     /// Produces a deep clone of the Alignment
     /// </summary>
-    /// <returns></returns>
     public IAlignment Clone() => new Alignment(ID, DesignDescriptor, new BoundingWorldExtent3D(Extents));
 
     /// <summary>
     /// ToString() for Alignment
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return
@@ -115,24 +100,8 @@ namespace VSS.TRex.Alignments
     }
 
     /// <summary>
-    /// Resolves each station/offset to a NEE value
-    /// </summary>
-    /// <param name="crossSectionInterval"></param>
-    /// <param name="startStation"></param>
-    /// <param name="endStation"></param>
-    /// <param name="offsets"></param>
-    /// <returns></returns>
-    public List<StationOffsetPoint> GetOffsetPointsInNEE(double crossSectionInterval, double startStation, double endStation, double[] offsets)
-    {
-      // todo when SDK available
-      return new List<StationOffsetPoint>();
-    }
-
-    /// <summary>
     /// Determine if two Alignments are equal
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     public bool Equals(IAlignment other)
     {
       return other != null && 
@@ -140,6 +109,5 @@ namespace VSS.TRex.Alignments
              DesignDescriptor.Equals(other.DesignDescriptor) &&
              Extents.Equals(other.Extents);
     }
-
   }
 }

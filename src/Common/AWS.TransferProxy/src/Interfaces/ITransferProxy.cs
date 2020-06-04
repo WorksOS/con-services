@@ -8,7 +8,7 @@ namespace VSS.AWS.TransferProxy.Interfaces
   {
     Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName);
     Task<FileStreamResult> Download(string s3Key);
-   
+
     void UploadToBucket(Stream stream, string s3Key, string bucketName);
     void Upload(Stream stream, string s3Key);
     bool RemoveFromBucket(string s3Key);

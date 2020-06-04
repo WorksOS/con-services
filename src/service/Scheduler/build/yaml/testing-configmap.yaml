@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: schedulerservice-testing
 data:
-  AWS_BUCKET_NAME: vss-exports-stg
+  AWS_TEMPORARY_BUCKET_NAME: vss-exports-stg
   AWS_PRESIGNED_URL_EXPIRY: "7.00:00:00"
   DOWNLOAD_FOLDER: "C:/temp/"
   project_service_public_v4: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4

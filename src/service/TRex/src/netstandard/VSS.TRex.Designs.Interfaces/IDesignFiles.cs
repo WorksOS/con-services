@@ -11,12 +11,12 @@ namespace VSS.TRex.Designs.Interfaces
     /// Acquire a lock and reference to the design referenced by the given design UID
     /// </summary>
     /// <param name="designUid"></param>
-    /// <param name="DataModelID"></param>
-    /// <param name="ACellSize"></param>
-    /// <param name="LoadResult"></param>
+    /// <param name="dataModelId"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="loadResult"></param>
     /// <returns></returns>
     IDesignBase Lock(Guid designUid, 
-      Guid DataModelID, double ACellSize, out DesignLoadResult LoadResult);
+      Guid dataModelId, double cellSize, out DesignLoadResult loadResult);
 
     /// <summary>
     /// Release a lock to the design referenced by the given design descriptor

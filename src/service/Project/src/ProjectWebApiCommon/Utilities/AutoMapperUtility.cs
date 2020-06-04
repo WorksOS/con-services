@@ -1,9 +1,13 @@
 ﻿using System;
 using AutoMapper;
+using CCSS.Geometry;
+using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -61,6 +65,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.Boundary, opt => opt.MapFrom(src => src.ProjectBoundary))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
             .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.UserProjectRole, opt => opt.MapFrom(x => UserProjectRoleEnum.Unknown))
             .ForMember(dest => dest.ProjectTimeZoneIana, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
@@ -138,7 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => src.ProjectId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.AccountId))
-            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => RepositoryHelper.ProjectBoundaryToWKT(src.Boundary)))
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))
             .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.Timezone))
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
@@ -146,6 +151,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectType, opt => opt.Ignore())
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
+            ;
+
+          cfg.CreateMap<ProjectValidateDto, ProjectValidation>()
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => TRNHelper.ExtractGuid(src.AccountTrn)))
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ProjectTrn) ? null : TRNHelper.ExtractGuid(src.ProjectTrn)))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
+            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => src.UpdateType))
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))
             ;
         }
       );

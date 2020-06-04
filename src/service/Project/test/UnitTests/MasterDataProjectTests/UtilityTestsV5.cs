@@ -124,6 +124,5 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(project.Name, result.Name);
       Assert.Equal(project.ProjectType, result.ProjectType);
     }
-
   }
 }

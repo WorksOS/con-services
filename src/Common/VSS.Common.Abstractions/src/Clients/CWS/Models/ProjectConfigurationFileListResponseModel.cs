@@ -9,14 +9,14 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
   {
     public ProjectConfigurationFileListResponseModel()
     {
-      ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>();
+      ProjectConfigurationFiles = new List<ProjectConfigurationModel>();
     }
 
     /// <summary>
     /// projectConfigurationFiles
     /// </summary>
     [JsonProperty("projectConfigurationFiles")]
-    public List<ProjectConfigurationFileResponseModel> ProjectConfigurationFiles { get; set; }
+    public List<ProjectConfigurationModel> ProjectConfigurationFiles { get; set; }
 
 
     public List<string> GetIdentifiers() => ProjectConfigurationFiles?
@@ -64,6 +64,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     "moreInfo": "Please provide this id to support, while contacting, TraceId 5e9e3000802cef392f29840ca0864165",
     "message": "Config File not found for given project Id",
     "timestamp": "2020-04-20T23:28:00.050+0000"
-}
+  }
   */
 }

@@ -397,51 +397,52 @@ Huzzah!
       return Result;
     }
 
-    public static void DecomposeSmoothPolylineSegmentToPolyLine(NFFLineworkSmoothedPolyLineVertexEntity StartPt, NFFLineworkSmoothedPolyLineVertexEntity EndPt,
-      double Minimumlength,
-      double MaxSegmentLength,
-      int MaxNumSegments,
-      Action<double, double, DecompositionVertexLocation> DecompCallback)
+    public static void DecomposeSmoothPolyLineSegmentToPolyLine(NFFLineworkSmoothedPolyLineVertexEntity startPt, 
+      NFFLineworkSmoothedPolyLineVertexEntity endPt,
+      double minimumLength,
+      double maxSegmentLength,
+      int maxNumSegments,
+      Action<double, double, double, double, DecompositionVertexLocation> decompositionCallback)
     {
       // How long is this element?
-      double lx = EndPt.X - StartPt.X;
-      double ly = EndPt.Y - StartPt.Y;
-      double Len = MathUtilities.Hypot(lx, ly);
+      var lx = endPt.X - startPt.X;
+      var ly = endPt.Y - startPt.Y;
+      var Len = MathUtilities.Hypot(lx, ly);
 
-      if (Len > Minimumlength)
+      if (Len > minimumLength)
       {
         // Cache these, for speed.
-        double Alpha = EndPt.Alpha;
-        double Beta = EndPt.Beta;
+        var Alpha = endPt.Alpha;
+        var Beta = endPt.Beta;
 
-        // Add the start point of the segment to the polyline vertices
-        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.First);
+        // Add the start point of the segment to the poly line vertices
+        decompositionCallback(startPt.X, startPt.Y, Consts.NullDouble, startPt.Chainage, DecompositionVertexLocation.First);
 
-        // zero co-efficients means a straight line
+        // zero coefficients means a straight line
         if (Alpha != 0 && Beta != 0)
         {
-          double AlphaPlusBeta = Alpha + Beta;
-          double TwoAlphaPlusBeta = AlphaPlusBeta + Alpha;
+          var AlphaPlusBeta = Alpha + Beta;
+          var TwoAlphaPlusBeta = AlphaPlusBeta + Alpha;
 
           // so we want to keep each segment no more than MaxSegmentLength in distance
-          int SegmentCount = (int) Math.Truncate(Len / MaxSegmentLength) + 1;
+          var SegmentCount = (int) Math.Truncate(Len / maxSegmentLength) + 1;
 
           // unless that means millions of segments...
-          if (SegmentCount > MaxNumSegments)
-            SegmentCount = MaxNumSegments;
+          if (SegmentCount > maxNumSegments)
+            SegmentCount = maxNumSegments;
 
-          double Step = 1.0 / SegmentCount;
-          double Ordinate = Step; // not starting at zero, of course.
+          var Step = 1.0 / SegmentCount;
+          var Ordinate = Step; // not starting at zero, of course.
 
           // Now calc each segment.
-          for (int SegmentIdx = 1; SegmentIdx < SegmentCount; SegmentIdx++)
+          for (var SegmentIdx = 1; SegmentIdx < SegmentCount; SegmentIdx++)
           {
-            double o2 = Ordinate * Ordinate;
-            double Cubic = AlphaPlusBeta * o2 * Ordinate - TwoAlphaPlusBeta * o2 + Alpha * Ordinate;
+            var o2 = Ordinate * Ordinate;
+            var Cubic = AlphaPlusBeta * o2 * Ordinate - TwoAlphaPlusBeta * o2 + Alpha * Ordinate;
 
             XYZ pt;
-            pt.X = StartPt.X + lx * Ordinate;
-            pt.Y = StartPt.Y + ly * Ordinate;
+            pt.X = startPt.X + lx * Ordinate;
+            pt.Y = startPt.Y + ly * Ordinate;
 
             if (Cubic != 0.0)
             {
@@ -449,20 +450,20 @@ Huzzah!
               pt.Y += lx * Cubic;
             }
 
-            // Add the vertex to the polyline
-            DecompCallback(pt.X, pt.Y, DecompositionVertexLocation.Intermediate);
+            // Add the vertex to the poly line
+            decompositionCallback(pt.X, pt.Y, Consts.NullDouble, Consts.NullDouble, DecompositionVertexLocation.Intermediate);
 
-            Ordinate = Ordinate + Step;
+            Ordinate += Step;
           }
         }
 
-        // Add the end point of the segment to the polyline vertices
-        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
+        // Add the end point of the segment to the poly line vertices
+        decompositionCallback(endPt.X, endPt.Y, Consts.NullDouble, endPt.Chainage, DecompositionVertexLocation.Last);
       }
       else
       {
-        DecompCallback(StartPt.X, StartPt.Y, DecompositionVertexLocation.First);
-        DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
+        decompositionCallback(startPt.X, startPt.Y, Consts.NullDouble, startPt.Chainage, DecompositionVertexLocation.First);
+        decompositionCallback(endPt.X, endPt.Y, Consts.NullDouble, endPt.Chainage, DecompositionVertexLocation.Last);
       }
     }
 
@@ -556,6 +557,63 @@ Huzzah!
 
       // Add the end point of the segment to the polyline vertices
       DecompCallback(EndPt.X, EndPt.Y, DecompositionVertexLocation.Last);
+    }
+
+    public static void DecomposeArcToPolyline(double x0, double y0, double x1, double y1, double cX, double cY,
+      double angle,
+      double arcChordDist,
+      Action<double, double, DecompositionVertexLocation> decompCallback)
+    {
+      // Decompose an arc from start point[Xstart, Ystart] to end point[Xend, Yend]
+      // with centre point[Xcenter, Ycentre]
+      //  These are world units.
+      //  Angle is in the mathematical sense - +ve for anti-clockwise.and is in RADIANS 
+
+      var relX = x0 - cX; // Position, relative to cX, cY 
+      var relY = y0 - cY;
+      var radius = MathUtilities.Hypot(relX, relY);
+
+      // Decompose arc into line segments with not more than ArcChordDist arc/chord separation
+      // If you know r (radius) and h (arc/chord separation). Then
+      //   d (Chord mid point to circle center distance)  = r - h,
+      //   theta (central angle subtending arc) = 2 arccos(d/r),
+      //   c (chord length) = 2r sin(theta/2),
+
+      var chordToCenterDist = radius - arcChordDist;
+      if (chordToCenterDist < 0)
+        chordToCenterDist = radius / 2;
+
+      var theta = 2 * Math.Acos(chordToCenterDist / radius);
+
+      // If the included angle is too shallow, restrict it to 0.1 degrees
+      if (theta * (180 / Math.PI) < 0.1)
+        theta = 0.1 * (Math.PI / 180);
+
+      var a = theta; //Temporary angle in radians
+      var s = Math.Sin(a); // Sine and cosine of step angle 
+      var c = Math.Cos(a);
+      var a_step = a;
+
+      if (angle >= 0)
+        s = -s;
+
+      angle = Math.Abs(angle);
+
+      decompCallback(x0, y0, DecompositionVertexLocation.First);
+
+      while (a < angle)
+      {
+        var tx = c * relX + s * relY;
+        relY = -s * relX + c * relY;
+        relX = tx;
+
+        decompCallback(cX + relX, cY + relY, DecompositionVertexLocation.Intermediate);
+
+        a += a_step;
+      }
+
+      // Include the last vertex
+      decompCallback(x1, y1, DecompositionVertexLocation.Last);
     }
   }
 }
