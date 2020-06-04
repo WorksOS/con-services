@@ -49,3 +49,15 @@ jobs:
           summaryFileLocation: "$(rootServiceFolder)/test/UnitTestResults/Coverage.xml"
           pathToSources: "$(rootServiceFolder)"
           failIfCoverageEmpty: true
+
+      - task: PowerShell@2
+        displayName: "Publish Service"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action publish"
+
+      - task: PowerShell@2
+        displayName: "Push Docker Image"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action pushImage"
