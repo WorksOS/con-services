@@ -10,7 +10,7 @@ namespace MockProjectWebApi.Services
   public class ImportedFilesService : IImportedFilesService
   {
     public Dictionary<string, List<FileData>> ImportedFiles;
-    public Dictionary<string, List<ProjectConfigurationFileResponseModel>> ProjectConfigFiles;
+    public Dictionary<string, List<ProjectConfigurationModel>> ProjectConfigFiles;
 
     public ImportedFilesService()
     {
@@ -20,16 +20,16 @@ namespace MockProjectWebApi.Services
 
     private void CreateCwsTestData()
     {
-      ProjectConfigFiles = new Dictionary<string, List<ProjectConfigurationFileResponseModel>>();
-      var dimensionsProjectConfigFiles = new List<ProjectConfigurationFileResponseModel>
+      ProjectConfigFiles = new Dictionary<string, List<ProjectConfigurationModel>>();
+      var dimensionsProjectConfigFiles = new List<ProjectConfigurationModel>
       {
-        new ProjectConfigurationFileResponseModel
+        new ProjectConfigurationModel
         {
           FileName = "dimensions.dc",
           FileDownloadLink = "mock download link",
           FileType = ProjectConfigurationFileType.CALIBRATION.ToString()
         },
-        new ProjectConfigurationFileResponseModel
+        new ProjectConfigurationModel
         {
           FileName = "dimensions.avoid.svl",
           FileDownloadLink = "mock download link",
@@ -37,7 +37,7 @@ namespace MockProjectWebApi.Services
           SiteCollectorFileDownloadLink = "mock download link",
           FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString()
         },
-        new ProjectConfigurationFileResponseModel
+        new ProjectConfigurationModel
         {
           FileName = "dimensions.ggf",
           FileDownloadLink = "mock download link",

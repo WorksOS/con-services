@@ -90,12 +90,12 @@ namespace VSS.MasterData.ProjectTests.Executors
       cwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), customHeaders))
         .ReturnsAsync(createFileResponseModel);
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel {FileName = "some coord sys file", FileDownloadLink = "some download link"};
+      var projectConfigurationModel = new ProjectConfigurationModel { FileName = "some coord sys file", FileDownloadLink = "some download link"};
       var cwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       cwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, customHeaders))
-        .ReturnsAsync((ProjectConfigurationFileResponseModel) null);
+        .ReturnsAsync((ProjectConfigurationModel) null);
       cwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), customHeaders))
-        .ReturnsAsync(projectConfigurationFileResponseModel);
+        .ReturnsAsync(projectConfigurationModel);
 
       var httpContextAccessor = new HttpContextAccessor {HttpContext = new DefaultHttpContext()};
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v2/projects");

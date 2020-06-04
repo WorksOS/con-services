@@ -43,7 +43,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Upserts a project configuration file to CWS.
     /// </summary>
-    public static async Task<ProjectConfigurationFileResponseModel> SaveFileToCws(Guid projectUid, string filename, Stream fileContents,
+    public static async Task<ProjectConfigurationModel> SaveFileToCws(Guid projectUid, string filename, Stream fileContents,
       ImportedFileType importedFileType, ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient,
       IHeaderDictionary customHeaders)
     {
@@ -73,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Gets a project configuration file from CWS which has the given file name associated with it.
     /// Control points and avoidance zones can have 2 files associated with the configuration file, one for site collectors and one for machine control.
     /// </summary>
-    public static async Task<ProjectConfigurationFileResponseModel> GetCwsFile(Guid projectUid, string filename, ImportedFileType importedFileType,
+    public static async Task<ProjectConfigurationModel> GetCwsFile(Guid projectUid, string filename, ImportedFileType importedFileType,
       ICwsProfileSettingsClient cwsProfileSettingsClient, IHeaderDictionary customHeaders)
     {
       var existingFile = await GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
@@ -88,7 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Gets a project configuration file from CWS which has the given file type.
     /// Control points and avoidance zones can have 2 files associated with the configuration file, one for site collectors and one for machine control.
     /// </summary>
-    public static Task<ProjectConfigurationFileResponseModel> GetCwsFile(Guid projectUid, ImportedFileType importedFileType,
+    public static Task<ProjectConfigurationModel> GetCwsFile(Guid projectUid, ImportedFileType importedFileType,
       ICwsProfileSettingsClient cwsProfileSettingsClient, IHeaderDictionary customHeaders)
     {
       var fileType = _cwsFileTypeMap[importedFileType];

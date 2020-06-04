@@ -38,25 +38,25 @@ namespace VSS.MasterData.ProjectTests
     {
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
-        ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>()
+        ProjectConfigurationFiles = new List<ProjectConfigurationModel>()
         {
-          new ProjectConfigurationFileResponseModel()
+          new ProjectConfigurationModel()
           {
             FileName = "MyTestFilename.dc",
             FileDownloadLink = "http//whatever",
             FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
             CreatedAt = DateTime.UtcNow.ToString(),
             UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = "66"
+            Size = 66
           },
-          new ProjectConfigurationFileResponseModel()
+          new ProjectConfigurationModel()
           {
             FileName = "MyTestFilename.avoid.dxf",
             FileDownloadLink = "http//whateverElse",
             FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
             CreatedAt = DateTime.UtcNow.ToString(),
             UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = "99"
+            Size = 99
           }
         }
       };
@@ -96,18 +96,18 @@ namespace VSS.MasterData.ProjectTests
       ServiceCollection.AddSingleton(mockCwsDesignClient.Object);
 
       var filename = "MyTestFilename.avoid.svl";
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = filename,
         FileDownloadLink = "http//whatever",
         FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
-        .ReturnsAsync(projectConfigurationFileResponseModel);
+        .ReturnsAsync(projectConfigurationModel);
       mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .Returns(Task.CompletedTask);
       ServiceCollection.AddSingleton(mockCwsProfileSettingsClient.Object);
@@ -140,7 +140,7 @@ namespace VSS.MasterData.ProjectTests
 
       var filename1 = "MyTestFilename.avoid.svl";
       var filename2 = "MyTestFilename.avoid.dxf";
-      var projectConfigurationFileResponseModel1 = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel1 = new ProjectConfigurationModel
       {
         FileName = filename1,
         FileDownloadLink = "http//whatever",
@@ -149,25 +149,25 @@ namespace VSS.MasterData.ProjectTests
         FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
-      var projectConfigurationFileResponseModel2 = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel2 = new ProjectConfigurationModel
       {
         SiteCollectorFileName = filename2,
         SiteCollectorFileDownloadLink = "http//whateverelse",
         FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "99"
+        Size = 99
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
-        .ReturnsAsync(projectConfigurationFileResponseModel1);
+        .ReturnsAsync(projectConfigurationModel1);
       mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .Returns(Task.CompletedTask);
       var request = new ProjectConfigurationFileRequestModel{SiteCollectorFilespaceId = Guid.NewGuid().ToString()};
       mockCwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, request, _customHeaders))
-        .ReturnsAsync(projectConfigurationFileResponseModel2);
+        .ReturnsAsync(projectConfigurationModel2);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
@@ -192,7 +192,7 @@ namespace VSS.MasterData.ProjectTests
 
       var filename1 = "MyTestFilename.avoid.svl";
       var filename2 = "MyTestFilename.avoid.dxf";
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = filename1,
         FileDownloadLink = "http//whatever",
@@ -201,11 +201,11 @@ namespace VSS.MasterData.ProjectTests
         FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
-        .ReturnsAsync(projectConfigurationFileResponseModel);
+        .ReturnsAsync(projectConfigurationModel);
       mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
         .Returns(Task.CompletedTask);
       ServiceCollection
@@ -245,7 +245,7 @@ namespace VSS.MasterData.ProjectTests
       ServiceCollection
         .AddSingleton(mockCwsDesignClient.Object);
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ?null :  filename,
         FileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
@@ -254,13 +254,13 @@ namespace VSS.MasterData.ProjectTests
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, fileType, customHeaders))
-        .ReturnsAsync((ProjectConfigurationFileResponseModel)null);
+        .ReturnsAsync((ProjectConfigurationModel)null);
       mockCwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(projectUid, fileType, It.IsAny<ProjectConfigurationFileRequestModel>(), customHeaders))
-        .ReturnsAsync(projectConfigurationFileResponseModel);
+        .ReturnsAsync(projectConfigurationModel);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
@@ -276,7 +276,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
       Assert.Null(result.ImportedFileDescriptor);
       Assert.NotNull(result.ProjectConfigFileDescriptor);
-      Assert.Equal(projectConfigurationFileResponseModel, result.ProjectConfigFileDescriptor);
+      Assert.Equal(projectConfigurationModel, result.ProjectConfigFileDescriptor);
     }
 
     [Theory]
@@ -303,7 +303,7 @@ namespace VSS.MasterData.ProjectTests
       ServiceCollection
         .AddSingleton(mockCwsDesignClient.Object);
 
-      var createProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var createProjectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : $"{filename}-original",
         FileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
@@ -312,9 +312,9 @@ namespace VSS.MasterData.ProjectTests
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
-      var updateProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var updateProjectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : filename,
         FileDownloadLink = ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, filename) ? null : "http//whatever/updated",
@@ -323,13 +323,13 @@ namespace VSS.MasterData.ProjectTests
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "99"
+        Size = 99
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, fileType, customHeaders))
-        .ReturnsAsync(createProjectConfigurationFileResponseModel);
+        .ReturnsAsync(createProjectConfigurationModel);
       mockCwsProfileSettingsClient.Setup(ps => ps.UpdateProjectConfiguration(projectUid, fileType, It.IsAny<ProjectConfigurationFileRequestModel>(), customHeaders))
-        .ReturnsAsync(updateProjectConfigurationFileResponseModel);
+        .ReturnsAsync(updateProjectConfigurationModel);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
@@ -345,7 +345,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
       Assert.Null(result.ImportedFileDescriptor);
       Assert.NotNull(result.ProjectConfigFileDescriptor);
-      Assert.Equal(updateProjectConfigurationFileResponseModel, result.ProjectConfigFileDescriptor);
+      Assert.Equal(updateProjectConfigurationModel, result.ProjectConfigFileDescriptor);
     }
 
 
