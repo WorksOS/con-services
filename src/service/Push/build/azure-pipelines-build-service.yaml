@@ -59,4 +59,4 @@ jobs:
         displayName: "Push Docker Image"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service Push -action pushImage -branch $(Build.SourceBranchName) -buildNumber $(Build.BuildNumber)"
+          arguments: "-service Push -action pushImage -branch $(Build.SourceBranchName) -buildNumber $(Build.BuildId)"
