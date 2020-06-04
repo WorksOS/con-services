@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -181,7 +182,16 @@ namespace VSS.WebApi.Common
       Services.AddSingleton(loggerFactory);
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
-      app.UseEndpoints(endpoints => endpoints.MapControllers());
+      app.UseEndpoints(AddEndpoints);
+    }
+
+    /// <summary>
+    /// Add endpoints, this should only be called once
+    /// Allow for different applications to extend endpoints if needed
+    /// </summary>
+    protected virtual void AddEndpoints(IEndpointRouteBuilder endpoints)
+    {
+      endpoints.MapControllers();
     }
 
     /// <summary>
