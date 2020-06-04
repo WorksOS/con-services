@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService.Util;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +23,14 @@ namespace VSS.Productivity3D.Push.Controllers
     }
 
     [HttpPost("api/v1/notification/sns")]
-    public IActionResult SnsNotification([FromBody]Message payload)
+    public async Task<IActionResult> SnsNotification()
     {
+      // https://forums.aws.amazon.com/thread.jspa?threadID=69413
+      // AWS SNS is in text/plain, not application/json - so need to parse manually
+      var payloadMs = new MemoryStream();
+      await Request.Body.CopyToAsync(payloadMs);
+      var payload = Message.ParseMessage(Encoding.UTF8.GetString(payloadMs.ToArray()));
+
       bool isValid;
 
       try
