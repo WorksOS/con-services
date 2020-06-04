@@ -44,7 +44,13 @@ namespace VSS.Productivity3D.Push
       {
         return true;
       }
-      
+
+      // Allow SNS Messages through
+      if (context.Request.Path.Value.Contains("/sns"))
+      {
+        return true;
+      }
+
       return base.InternalConnection(context);
     }
   }
