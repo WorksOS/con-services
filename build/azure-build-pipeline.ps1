@@ -17,6 +17,7 @@ enum ReturnCode {
     UNABLE_TO_FIND_TEST_COVERAGE
     IMAGE_TAG_FAILED
     IMAGE_PUSH_FAILED
+    AWS_ECR_LOGIN_FAILED
 }
 
 $services = @{
@@ -137,7 +138,7 @@ function Push-Container-Image {
     docker push $ecrRepository
     if (-not $?) { Exit-With-Code ([ReturnCode]::IMAGE_PUSH_FAILED) }
 
-    Write-Host "`Image push complete" -ForegroundColor Green
+    Write-Host "`nImage push complete" -ForegroundColor Green
 
     Exit-With-Code ([ReturnCode]::SUCCESS)
 }
@@ -177,6 +178,10 @@ Write-Host "  servicePath = $servicePath"
 Write-Host "  serviceName = $serviceName"
 Write-Host "  awsRepositoryName = $awsRepositoryName"
 Write-Host "  Working Directory ="($pwd).path
+
+Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile default)
+if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 
 # Run the appropriate action.
 switch ($action) {
