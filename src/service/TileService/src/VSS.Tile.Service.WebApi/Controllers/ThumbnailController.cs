@@ -55,7 +55,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [HttpGet]
     public async Task<FileResult> GetProjectThumbnailPng(
       [FromQuery] Guid projectUid, 
-      [FromQuery] TileOverlayType[] additionalOverlays)
+      [FromQuery] TileOverlayType[] additionalOverlays,
+      [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetProjectThumbnailPng)}: {Request.QueryString}");
 
@@ -71,9 +72,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
           mode = DisplayMode.Height;
       }
 
-      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
-        null, overlays.ToArray(), DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP,
-        mode, null, true);
+      var tileResult = await GetGeneratedTile(projectUid, null, null, null, null, null,
+        overlays.ToArray(), width ?? DEFAULT_THUMBNAIL_WIDTH, height ?? DEFAULT_THUMBNAIL_HEIGHT, 
+        bbox, MapType.MAP, mode, null, true);
 
       // TODO (Aaron) refactor this repeated code
       //Short-circuit cache time for Archived projects
@@ -92,10 +93,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [HttpGet]
     public async Task<byte[]> GetProjectThumbnailBase64(
       [FromQuery] Guid projectUid,
-      [FromQuery] TileOverlayType[] additionalOverlays)
+      [FromQuery] TileOverlayType[] additionalOverlays,
+      [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetProjectThumbnailBase64)}: {Request.QueryString}");
-      var result = await GetProjectThumbnailPng(projectUid, additionalOverlays);
+      var result = await GetProjectThumbnailPng(projectUid, additionalOverlays, width, height);
       return GetStreamContents(result);
     }
 
@@ -106,11 +108,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [Route("api/v1/projectthumbnail3d/png")]
     [HttpGet]
     public async Task<FileResult> GetProjectThumbnail3DPng(
-      [FromQuery] Guid projectUid)
+      [FromQuery] Guid projectUid, [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetProjectThumbnail3DPng)}: {Request.QueryString}");
 
-      return await GetProjectThumbnailPng(projectUid, new [] {TileOverlayType.ProductionData});
+      return await GetProjectThumbnailPng(projectUid, new [] {TileOverlayType.ProductionData}, width, height);
     }
 
     /// <summary>
@@ -120,11 +122,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [Route("api/v1/projectthumbnail3d/base64")]
     [HttpGet]
     public async Task<byte[]> GetProjectThumbnail3DBase64(
-      [FromQuery] Guid projectUid)
+      [FromQuery] Guid projectUid, [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetProjectThumbnail3DBase64)}: {Request.QueryString}");
 
-      var result = await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.ProductionData });
+      var result = await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.ProductionData }, width, height);
       return GetStreamContents(result);
     }
 
@@ -135,11 +137,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [Route("api/v1/projectthumbnail2d/png")]
     [HttpGet]
     public async Task<FileResult> GetProjectThumbnail2DPng(
-      [FromQuery] Guid projectUid)
+      [FromQuery] Guid projectUid, [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetProjectThumbnail2DPng)}: {Request.QueryString}");
 
-      return await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.LoadDumpData });
+      return await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.LoadDumpData }, width, height);
     }
 
     /// <summary>
@@ -149,11 +151,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [Route("api/v1/projectthumbnail2d/base64")]
     [HttpGet]
     public async Task<byte[]> GetProjectThumbnail2DBase64(
-      [FromQuery] Guid projectUid)
+      [FromQuery] Guid projectUid, [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetProjectThumbnail2DBase64)}: {Request.QueryString}");
 
-      var result = await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.LoadDumpData });
+      var result = await GetProjectThumbnailPng(projectUid, new[] { TileOverlayType.LoadDumpData }, width, height);
       return GetStreamContents(result);
     }
 
@@ -164,12 +166,12 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [Route("api/v1/geofencethumbnail/png")]
     [HttpGet]
     public async Task<FileResult> GetGeofenceThumbnailPng(
-      [FromQuery] Guid geofenceUid)
+      [FromQuery] Guid geofenceUid, [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailPng)}: {Request.QueryString}");
       var tileResult = await GeofenceThumbnailPng(
         (await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders)).FirstOrDefault(gfc =>
-          gfc.GeofenceUID == geofenceUid));
+          gfc.GeofenceUID == geofenceUid), width, height);
 
       return tileResult.Item2;
     }
@@ -180,11 +182,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [Route("api/v1/geofencethumbnail/base64")]
     [HttpGet]
     public async Task<byte[]> GetGeofenceThumbnailBase64(
-      [FromQuery] Guid geofenceUid)
+      [FromQuery] Guid geofenceUid, [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailBase64)}: {Request.QueryString}");
 
-      var result = await GetGeofenceThumbnailPng(geofenceUid);
+      var result = await GetGeofenceThumbnailPng(geofenceUid, width, height);
       return GetStreamContents(result);
     }
 
@@ -193,7 +195,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// </summary>
     [Route("api/v1/geofencethumbnails/base64")]
     [HttpGet]
-    public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsBase64([FromQuery] Guid[] geofenceUids)
+    public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsBase64(
+      [FromQuery] Guid[] geofenceUids, [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailsBase64)}: {Request.QueryString}");
       List<GeofenceData> geofences;
@@ -205,12 +208,12 @@ namespace VSS.Tile.Service.WebApi.Controllers
         geofences = await geofenceProxy.GetGeofences(GetCustomerUid, CustomHeaders);
       }
 
-
       var selectedGeofences = geofenceUids != null && geofenceUids.Length > 0
         ? geofences.Where(g => geofenceUids.Contains(g.GeofenceUID))
         : geofences;
-   
-      var thumbnails = await Task.WhenAll(selectedGeofences.Select(GeofenceThumbnailPng));
+
+      var tasks = selectedGeofences.Select(s =>  GeofenceThumbnailPng(s, width, height));
+      var thumbnails = await Task.WhenAll(tasks);
 
       var result = new MultipleThumbnailsResult
       {
@@ -224,7 +227,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
         var selectedGeofenceUids = selectedGeofences.Select(s => s.GeofenceUID);
         var missingGeofenceUids = geofenceUids.Where(g => !selectedGeofenceUids.Contains(g));
         result.Thumbnails.AddRange(missingGeofenceUids.Select(m => new ThumbnailResult
-          { Uid = m, Data = TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT) }));
+          { Uid = m, Data = TileServiceUtils.EmptyTile(width ?? DEFAULT_THUMBNAIL_WIDTH, height ?? DEFAULT_THUMBNAIL_HEIGHT) }));
       }
 
       return result;
@@ -236,7 +239,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
     [Route("api/v1/geofencethumbnailsraw/base64")]
     [HttpPost]
     public async Task<MultipleThumbnailsResult> GetGeofenceThumbnailsRawBase64(
-      [FromBody] RootObject geoJson)
+      [FromBody] RootObject geoJson,
+      [FromQuery] int? width, [FromQuery] int? height)
     {
       Log.LogDebug($"{nameof(GetGeofenceThumbnailsRawBase64)}: {Request.QueryString}");
 
@@ -259,8 +263,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"A maximum of {MAX_GEOFENCES} boundaries allowed for geofence thumbnails"));
 
-      var thumbnails = await Task.WhenAll(polygons.Select(GeofenceThumbnailPng));
-
+      var tasks = polygons.Select(s => GeofenceThumbnailPng(s, width, height));
+      var thumbnails = await Task.WhenAll(tasks);
+      
       return new MultipleThumbnailsResult
       {
         Thumbnails = thumbnails.Select(thumb => new ThumbnailResult
@@ -275,9 +280,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Multithreaded method to retrieve Geofence PNG
     /// </summary>
-    /// <param name="geofence"></param>
-    /// <returns></returns>
-    private async Task<(Guid, FileResult)> GeofenceThumbnailPng(GeofenceData geofence)
+    private async Task<(Guid, FileResult)> GeofenceThumbnailPng(GeofenceData geofence, int? width, int? height)
     {
       //This appear to be a non-caching request
       //We don't need to do it twice as the very first caching request should be enough
@@ -286,30 +289,28 @@ namespace VSS.Tile.Service.WebApi.Controllers
       if (geofence == null)
       {
         return (Guid.Empty, new FileStreamResult(
-          new MemoryStream(TileServiceUtils.EmptyTile(DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT)), ContentTypeConstants.ImagePng));
+          new MemoryStream(TileServiceUtils.EmptyTile(width ?? DEFAULT_THUMBNAIL_WIDTH, height ?? DEFAULT_THUMBNAIL_HEIGHT)), ContentTypeConstants.ImagePng));
       }
 
       Log.LogDebug($"Generating geofence tile for {geofence.GeofenceUID}");
 
       var bbox = GetBoundingBoxFromWKT(geofence.GeometryWKT);
 
-      var tileResult = await GetGeneratedTile(geofence, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, DEFAULT_THUMBNAIL_WIDTH,
-        DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP, null, true);
+      var tileResult = await GetGeneratedTile(geofence, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, width ?? DEFAULT_THUMBNAIL_WIDTH,
+        height ?? DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP, null, true);
       return (geofence.GeofenceUID, tileResult);
     }
 
     /// <summary>
     /// Multithreaded method to retrieve Geofence PNG
     /// </summary>
-    /// <param name="boundary"></param>
-    /// <returns></returns>
-    private Task<FileResult> GeofenceThumbnailPng(IEnumerable<WGSPoint> boundary)
+    private Task<FileResult> GeofenceThumbnailPng(IEnumerable<WGSPoint> boundary, int? width, int? height)
     {
       var points = boundary.ToList();
       var bbox = GetBoundingBox(points);
 
-      var tileResult = GetGeneratedTile(points, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, DEFAULT_THUMBNAIL_WIDTH,
-        DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP, null, true);
+      var tileResult = GetGeneratedTile(points, DEFAULT_GEOFENCE_THUMBNAIL_OVERLAYS, width ?? DEFAULT_THUMBNAIL_WIDTH,
+        height ?? DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP, null, true);
 
       return tileResult;
     }
