@@ -44,12 +44,6 @@ namespace VSS.Productivity3D.Push.Controllers
       }
       else if(payload.IsNotificationType)
       {
-        if (payload.IsMessageSignatureValid())
-        {
-          _logger.LogWarning($"Bad Request. Message Signature Failed: {JsonConvert.SerializeObject(payload)}");
-          return BadRequest();
-        }
-
         // Got a valid message
         // TODO Action these once CWS define the payload
         _logger.LogInformation($"Received notification, no actions executed currently. Message ID: {payload.MessageId}. Text: {payload.MessageText}");
