@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Newtonsoft.Json;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -162,6 +163,64 @@ namespace VSS.TRex.Tests.Volumes
       var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleTAGFileResponse(response);
+    }
+
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilter_MidTimeToLatest_Execute_SingleTAGFile()
+    {
+      const string expectedResponseText = "{\"Cut\":2.1789614852905275,\"Fill\":0.5822854339599614,\"TotalCoverageArea\":279.75200000000007,\"CutArea\":164.84560000000002,\"FillArea\":72.71240000000002,\"BoundingExtentGrid\":{\"MinX\":537669.2000000001,\"MinY\":5427396.54,\"MaxX\":537675.6600000001,\"MaxY\":5427509.76,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":731.4012000072782,\"CenterX\":537672.4300000002,\"CenterY\":5427453.15,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":true,\"LargestPlanDimension\":113.21999999973923,\"SizeX\":6.460000000079162,\"SizeY\":113.21999999973923,\"SizeZ\":0.0},\"BoundingExtentLLH\":{\"MinX\":1E+308,\"MinY\":1E+308,\"MaxX\":1E+308,\"MaxY\":1E+308,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":0.0,\"CenterX\":1E+308,\"CenterY\":1E+308,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":false,\"LargestPlanDimension\":1E+308,\"SizeX\":0.0,\"SizeY\":0.0,\"SizeZ\":0.0},\"ResponseCode\":1,\"ClusterNode\":\"\",\"NumSubgridsProcessed\":0,\"NumSubgridsExamined\":0,\"NumProdDataSubGridsProcessed\":0,\"NumProdDataSubGridsExamined\":0,\"NumSurveyedSurfaceSubGridsProcessed\":0,\"NumSurveyedSurfaceSubGridsExamined\":0}";
+
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var arg = SimpleDefaultRequestArg(siteModel.ID);
+
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+
+      arg.BaseFilter.AttributeFilter.HasTimeFilter = true;
+      arg.BaseFilter.AttributeFilter.StartTime = DateTime.SpecifyKind(new DateTime((startUtc.Ticks + endUtc.Ticks) / 2), DateTimeKind.Utc);
+
+      var response = await request.ExecuteAsync(arg);
+
+      var responseText = JsonConvert.SerializeObject(response);
+      responseText.Should().Be(expectedResponseText);
+    }
+
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilter_EarliestToMidTime_Execute_SingleTAGFile()
+    {
+      const string expectedResponseText = "{\"Cut\":0.6670116119384775,\"Fill\":2.243906668090823,\"TotalCoverageArea\":279.75200000000007,\"CutArea\":78.72360000000002,\"FillArea\":175.24960000000004,\"BoundingExtentGrid\":{\"MinX\":537669.2000000001,\"MinY\":5427396.54,\"MaxX\":537675.6600000001,\"MaxY\":5427509.76,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":731.4012000072782,\"CenterX\":537672.4300000002,\"CenterY\":5427453.15,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":true,\"LargestPlanDimension\":113.21999999973923,\"SizeX\":6.460000000079162,\"SizeY\":113.21999999973923,\"SizeZ\":0.0},\"BoundingExtentLLH\":{\"MinX\":1E+308,\"MinY\":1E+308,\"MaxX\":1E+308,\"MaxY\":1E+308,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":0.0,\"CenterX\":1E+308,\"CenterY\":1E+308,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":false,\"LargestPlanDimension\":1E+308,\"SizeX\":0.0,\"SizeY\":0.0,\"SizeZ\":0.0},\"ResponseCode\":1,\"ClusterNode\":\"\",\"NumSubgridsProcessed\":0,\"NumSubgridsExamined\":0,\"NumProdDataSubGridsProcessed\":0,\"NumProdDataSubGridsExamined\":0,\"NumSurveyedSurfaceSubGridsProcessed\":0,\"NumSurveyedSurfaceSubGridsExamined\":0}";
+
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var arg = SimpleDefaultRequestArg(siteModel.ID);
+
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+
+      arg.TopFilter.AttributeFilter.HasTimeFilter = true;
+      arg.TopFilter.AttributeFilter.StartTime = DateTime.SpecifyKind(new DateTime((startUtc.Ticks + endUtc.Ticks) / 2), DateTimeKind.Utc);
+
+      var response = await request.ExecuteAsync(arg);
+
+      var responseText = JsonConvert.SerializeObject(response);
+      responseText.Should().Be(expectedResponseText);
     }
 
     private void CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(SimpleVolumesResponse response)
