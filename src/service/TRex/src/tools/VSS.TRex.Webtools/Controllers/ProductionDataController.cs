@@ -718,6 +718,7 @@ namespace VSS.TRex.Webtools.Controllers
           (DisplayMode.CCASummary, "CCA Summary"),
           (DisplayMode.TemperatureDetail, "Temperature Details"),
           (DisplayMode.TemperatureSummary, "Temperature Summary"),
+          (DisplayMode.TemperatureDetail, "Temperature Detail"),
           (DisplayMode.TargetSpeedSummary, "Machine Speed Summary"),
           (DisplayMode.CutFill, "Cut/Fill Statistics"),
           ((DisplayMode)Enum.GetNames(typeof(DisplayMode)).Length, "Elevation Range")
