@@ -60,14 +60,14 @@ namespace VSS.TRex.Tests.SiteModels
       
       var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
       assetOnDesignPeriods.Count.Should().Be(2);
-      assetOnDesignPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[0].OnMachineDesignId.Should().Be(1);
       assetOnDesignPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignPeriods[0].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID); 
       assetOnDesignPeriods[0].AssetUid.Should().Be(machine.ID);
       assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
       assetOnDesignPeriods[0].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
-      assetOnDesignPeriods[1].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[1].OnMachineDesignId.Should().Be(2);
       assetOnDesignPeriods[1].OnMachineDesignName.Should().Be(design2.Name);
       assetOnDesignPeriods[1].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[1].AssetUid.Should().Be(machine.ID);
@@ -94,14 +94,14 @@ namespace VSS.TRex.Tests.SiteModels
 
       var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
       assetOnDesignPeriods.Count.Should().Be(2);
-      assetOnDesignPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[0].OnMachineDesignId.Should().Be(1);
       assetOnDesignPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignPeriods[0].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[0].AssetUid.Should().Be(machine.ID);
       assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
       assetOnDesignPeriods[0].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
-      assetOnDesignPeriods[1].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[1].OnMachineDesignId.Should().Be(2);
       assetOnDesignPeriods[1].OnMachineDesignName.Should().Be(design2.Name);
       assetOnDesignPeriods[1].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[1].AssetUid.Should().Be(machine.ID);
@@ -141,28 +141,28 @@ namespace VSS.TRex.Tests.SiteModels
 
       var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
       assetOnDesignPeriods.Count.Should().Be(4);
-      assetOnDesignPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[0].OnMachineDesignId.Should().Be(1);
       assetOnDesignPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignPeriods[0].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[0].AssetUid.Should().Be(machine1.ID);
       assetOnDesignPeriods[0].StartDate.Should().Be(eventDate1);
       assetOnDesignPeriods[0].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
-      assetOnDesignPeriods[1].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[1].OnMachineDesignId.Should().Be(2);
       assetOnDesignPeriods[1].OnMachineDesignName.Should().Be(design2.Name);
       assetOnDesignPeriods[1].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[1].AssetUid.Should().Be(machine1.ID);
       assetOnDesignPeriods[1].StartDate.Should().Be(eventDate2);
       assetOnDesignPeriods[1].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
-      assetOnDesignPeriods[2].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[2].OnMachineDesignId.Should().Be(2);
       assetOnDesignPeriods[2].OnMachineDesignName.Should().Be(design2.Name);
       assetOnDesignPeriods[2].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[2].AssetUid.Should().Be(machine2.ID);
       assetOnDesignPeriods[2].StartDate.Should().Be(eventDate5);
       assetOnDesignPeriods[2].EndDate.Should().Be(Consts.MAX_DATETIME_AS_UTC);
 
-      assetOnDesignPeriods[3].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignPeriods[3].OnMachineDesignId.Should().Be(1);
       assetOnDesignPeriods[3].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignPeriods[3].MachineId.Should().Be(Consts.NULL_LEGACY_ASSETID);
       assetOnDesignPeriods[3].AssetUid.Should().Be(machine2.ID);
