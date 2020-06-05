@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - master
+      - releases/*
+      - feature/*
+  paths:
+    include:
+      - "src/service/MockProjectWebApi/*"
+
+pool: k8s-fsm
+
+variables:
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/MockProjectWebApi"
+
+jobs:
+  - job: BuildTestAndDeploy
+    displayName: "Build, test and Deploy"
+    timeoutInMinutes: 15
+
+    steps:
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service MockProjectWebApi -action build"
+
+      - task: PowerShell@2
+        displayName: "Publish Service"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service MockProjectWebApi -action publish"
+
+      - task: PowerShell@2
+        displayName: "Push Docker Image"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service MockProjectWebApi -action pushImage -branch $(Build.SourceBranchName) -buildNumber $(Build.BuildId)"

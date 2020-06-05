@@ -21,8 +21,9 @@ enum ReturnCode {
 }
 
 $services = @{
-    Common = 'common'
-    Push   = 'service/Push'
+    Common            = 'common'
+    MockProjectWebApi = 'service/MockProjectWebApi'
+    Push              = 'service/Push'
 }
 
 $servicePath = ''

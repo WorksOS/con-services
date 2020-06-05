@@ -6,7 +6,7 @@ trigger:
       - feature/*
   paths:
     include:
-      - "src/services/pulse.api/*"
+      - "src/service/Push/*"
 
 pool: k8s-fsm
 
