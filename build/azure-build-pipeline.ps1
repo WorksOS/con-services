@@ -59,8 +59,8 @@ function Unit-Test-Solution {
     $buildImage = "$serviceName-build:latest"
 
     if ($(docker images $buildImage -q).Count -eq 0) {
-        Write-Host "Unable to find required build image '$buildImage'." -ForegroundColor Green
-        Write-Host "Found the following '$serviceName*' images:`n" -ForegroundColor Green
+        Write-Host "Unable to find required build image '$buildImage'." -ForegroundColor Red
+        Write-Host "Found the following '$serviceName*' images:`n" -ForegroundColor Red
         docker images $serviceName*
 
         Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_IMAGE)
@@ -142,6 +142,7 @@ function Push-Container-Image {
 
     Exit-With-Code ([ReturnCode]::SUCCESS)
 }
+
 function Exit-With-Code {
     param(
         [ReturnCode][Parameter(Mandatory = $true)]$code
@@ -180,6 +181,7 @@ Write-Host "  awsRepositoryName = $awsRepositoryName"
 Write-Host "  Working Directory ="($pwd).path
 
 Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
+
 aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
 if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 
