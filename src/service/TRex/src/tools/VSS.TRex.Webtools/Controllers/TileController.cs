@@ -25,7 +25,7 @@ namespace VSS.TRex.Webtools.Controllers
   [Route("api/tiles")]
   public class TileController : Controller
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
 
     /// <summary>
     /// Generates a tile.
@@ -92,7 +92,7 @@ namespace VSS.TRex.Webtools.Controllers
           convertedPalette = new CCAPalette();
           break;
         case DisplayMode.CCASummary:
-          convertedPalette = new CCASummaryPalette();  
+          convertedPalette = new CCASummaryPalette();
           break;
         case DisplayMode.CCV:
           convertedPalette = new CMVPalette();
@@ -203,7 +203,7 @@ namespace VSS.TRex.Webtools.Controllers
           temperatureSummaryPalette.TemperatureLevels.Max = overrides?.OverridingTemperatureWarningLevels.Max ?? TEMPERATURE_LEVELS_MAX;
           break;
         default:
-          throw new TRexException($"No implemented colour palette for this mode ({mode})");
+          throw new TRexException($"No implemented color palette for this mode ({mode})");
       }
 
       return convertedPalette;
@@ -229,6 +229,7 @@ namespace VSS.TRex.Webtools.Controllers
         (DisplayMode.MachineSpeed, "Speed"),
         (DisplayMode.TargetSpeedSummary, "Speed Summary"),
         (DisplayMode.TemperatureSummary, "Temperature Summary"),
+        (DisplayMode.TemperatureDetail, "Temperature Details"),
         (DisplayMode.CCA, "CCA"),
         (DisplayMode.CCASummary, "CCA Summary")
       });
