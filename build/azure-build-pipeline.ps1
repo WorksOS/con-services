@@ -3,7 +3,7 @@ PARAM (
     [Parameter(Mandatory = $false)][string]$action,
     [Parameter(Mandatory = $false)][string]$awsRepositoryName = '940327799086.dkr.ecr.us-west-2.amazonaws.com',
     [Parameter(Mandatory = $false)][string]$branch,
-    [Parameter(Mandatory = $false)][string]$buildNumber
+    [Parameter(Mandatory = $false)][string]$buildId
 )
 
 enum ReturnCode {
@@ -105,11 +105,11 @@ function Publish-Service {
     $publishImage = "$serviceName-webapi"
 
     # Ensure required image exists
-    $buildImage = "push-build:latest"
+    $buildImage = "$serviceName-build:latest"
 
     if ($(docker images $buildImage -q).Count -eq 0) {
-        Write-Host "Unable to find required build image '$buildImage'." -ForegroundColor Green
-        Write-Host "Found the following 'pulse*' images:`n" -ForegroundColor Green
+        Write-Host "Unable to find required build image '$buildImage'." -ForegroundColor Red
+        Write-Host "Found the following '$serviceName' images:`n" -ForegroundColor Red
         docker images $serviceName*
 
         Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_IMAGE)
@@ -126,6 +126,23 @@ function Publish-Service {
 
 function Push-Container-Image {
     $publishImage = "$serviceName-webapi"
+
+    if ($(docker images $publishImage -q).Count -eq 0) {
+        Write-Host "Unable to find required publish image '$publishImage'. Looking for build image..." -ForegroundColor Green
+        $publishImage = "$serviceName-build"
+
+        if ($(docker images $publishImage -q).Count -eq 0) {
+            Write-Host "Unable to find required build image '$publishImage'." -ForegroundColor Red
+            Write-Host "Found the following '$serviceName' images:`n" -ForegroundColor Red
+            docker images $serviceName*
+    
+            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_IMAGE)
+        }
+        else {
+            Write-Host "Found fallback image '$publishImage'" -ForegroundColor Green
+        }
+    }
+
     $ecr_prefix = 'rpd-ccss-'
     $branch = $branch -replace '.*/' # Remove everything up to and including the last forward slash.
 
@@ -175,6 +192,8 @@ $serviceName = $service.ToLower()
 
 Write-Host 'Script Variables:' -ForegroundColor Green
 Write-Host "  action = $action"
+Write-Host "  branch = $branch"
+Write-Host "  buildId = $buildId"
 Write-Host "  service = $service"
 Write-Host "  servicePath = $servicePath"
 Write-Host "  serviceName = $serviceName"
