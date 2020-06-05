@@ -128,7 +128,7 @@ namespace VSS.Tile.Service.Common.Services
         case TileOverlayType.ProductionData:
           var bbox =
             $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
-          bitmap = await productivity3DProxyCompactionTile.GetProductionDataTile(Guid.Parse(request.project.ProjectUID), request.filterUid,
+          bitmap = await productivity3DProxyCompactionTile.GetProductionDataTile(request.project.ProjectUID, request.filterUid,
             request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
             bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders, request.ExplicitFilters);
           break;
@@ -166,7 +166,7 @@ namespace VSS.Tile.Service.Common.Services
           break;
         case TileOverlayType.LoadDumpData:
           var loadDumpLocations =
-            await loadDumpProxy.GetLoadDumpLocations(request.project.ProjectUID, request.customHeaders);
+            await loadDumpProxy.GetLoadDumpLocations(request.project.ProjectUID.ToString(), request.customHeaders);
           bitmap = loadDumpTileService.GetLoadDumpBitmap(request.mapParameters, loadDumpLocations);
           break;
       }
