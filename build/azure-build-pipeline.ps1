@@ -146,13 +146,14 @@ function Push-Container-Image {
     $ecr_prefix = 'rpd-ccss-'
     $branch = $branch -replace '.*/' # Remove everything up to and including the last forward slash.
 
-    $versionNumber = $branch + "-" + $buildNumber
+    $versionNumber = $branch + "-" + $buildId
     $ecrRepository = "${awsRepositoryName}/${ecr_prefix}${serviceName}-webapi:${versionNumber}"
 
     Write-Host "`nPushing image '$ecrRepository'..." -ForegroundColor Green
     docker tag $publishImage $ecrRepository
     if (-not $?) { Exit-With-Code ([ReturnCode]::IMAGE_TAG_FAILED) }
 
+exit
     docker push $ecrRepository
     if (-not $?) { Exit-With-Code ([ReturnCode]::IMAGE_PUSH_FAILED) }
 
