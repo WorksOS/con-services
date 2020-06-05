@@ -271,7 +271,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the site model
     /// </summary>
-    public IDesigns Designs => _designs ?? (_designs = DIContext.Obtain<IDesignManager>().List(ID));
+    public IDesigns Designs => _designs ??= DIContext.Obtain<IDesignManager>().List(ID);
 
     public bool DesignsLoaded => _designs != null;
 
@@ -281,8 +281,7 @@ namespace VSS.TRex.SiteModels
     /// This is a list of TTM descriptors which indicate designs
     /// that can be used as a snapshot of an actual ground surface at a specific point in time
     /// </summary>
-    public ISurveyedSurfaces SurveyedSurfaces =>
-      _surveyedSurfaces ?? (_surveyedSurfaces = DIContext.Obtain<ISurveyedSurfaceManager>().List(ID));
+    public ISurveyedSurfaces SurveyedSurfaces => _surveyedSurfaces ??= DIContext.Obtain<ISurveyedSurfaceManager>().List(ID);
 
     public bool SurveyedSurfacesLoaded => _surveyedSurfaces != null;
 
@@ -291,7 +290,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// alignments records all the alignment files that have been imported into the site model
     /// </summary>
-    public IAlignments Alignments => _alignments ?? (_alignments = DIContext.Obtain<IAlignmentManager>().List(ID));
+    public IAlignments Alignments => _alignments ??= DIContext.Obtain<IAlignmentManager>().List(ID);
 
     public bool AlignmentsLoaded => _alignments != null;
 

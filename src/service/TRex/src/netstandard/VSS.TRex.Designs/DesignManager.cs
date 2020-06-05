@@ -40,15 +40,20 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads the set of designs for a site model. If none exist an empty list is returned.
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <returns></returns>
     private IDesigns Load(Guid siteModelID)
     {
       try
       {
-        ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
-
         var designs = DIContext.Obtain<IDesigns>();
+
+        if (designs == null)
+        {
+          Log.LogError("Unable to access designs factory from DI");
+          return null;
+        }
+
+        ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out var ms);
+
         if (ms != null)
         {
           using (ms)
