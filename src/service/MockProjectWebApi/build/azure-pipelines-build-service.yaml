@@ -31,6 +31,12 @@ jobs:
           arguments: "-service Mock -action build"
 
       - task: PowerShell@2
+        displayName: "Publish Service"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Mock -action publish"
+
+      - task: PowerShell@2
         displayName: "Push Docker Image"
         inputs:
           filePath: build/azure-build-pipeline.ps1
