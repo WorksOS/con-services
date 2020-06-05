@@ -70,14 +70,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(GetImportedFilesV6)}: projectUid={projectUid}");
 
-      var projConfigTask = CwsProfileSettingsClient.GetProjectConfigurations(new Guid(projectUid), customHeaders);
-      var importedFileTask = ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, Logger, UserId, ProjectRepo);
-      var tasks = new List<Task> {projConfigTask, importedFileTask};
-      await Task.WhenAll(tasks);
+      var projConfigTask = await CwsProfileSettingsClient.GetProjectConfigurations(new Guid(projectUid), customHeaders);
+      var importedFileTask = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, Logger, UserId, ProjectRepo);
       var result = new ImportedFileDescriptorListResult
       {
-        ProjectConfigFileDescriptors = projConfigTask?.Result?.ProjectConfigurationFiles.ToImmutableList(),
-        ImportedFileDescriptors = importedFileTask?.Result
+        ProjectConfigFileDescriptors = projConfigTask?.ProjectConfigurationFiles.ToImmutableList(),
+        ImportedFileDescriptors = importedFileTask
+
       };
       return result;
     }

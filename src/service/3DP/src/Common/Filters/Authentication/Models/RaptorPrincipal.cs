@@ -121,7 +121,8 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
         var project = await GetProject(projectUid);
         var projectId = project.ShortRaptorProjectId;
 
-        if (projectId > 0)
+        // ProjectIDs can be negative, or positive - but not 0
+        if (projectId != 0)
         {
           legacyProjectIdsCache.TryAdd(projectUid, projectId);
 
@@ -146,12 +147,14 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       async Task<Guid> GetProjectUid()
       {
         var project = await GetProject(projectId);
-
         if (Guid.TryParse(project.ProjectUID, out var projectUid))
         {
-          ProjectUidsCache.TryAdd(projectId, projectUid);
+          if (projectUid != Guid.Empty)
+          {
+            ProjectUidsCache.TryAdd(projectId, projectUid);
 
-          return projectUid;
+            return projectUid;
+          }
         }
 
         throw new ServiceException(
