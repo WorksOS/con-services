@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -21,7 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
   [TestClass]
   public class ProjectVerifierTests
   {
-    private readonly int legacyProjectId = new Random().Next();
+    private long legacyProjectId => projectUid.ToLegacyId();
     private readonly Guid projectUid = Guid.NewGuid();
     private readonly Guid customerUid = Guid.NewGuid();
     private readonly DefaultHttpContext httpContext = new DefaultHttpContext();
@@ -261,7 +262,6 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
     [TestMethod]
     public void Should_not_throw_When_request_body_contains_projectUid()
     {
-      var expectedLegacyID = 3859554467592768945;
       var actionArguments = new Dictionary<string, object>
       {
         {"request", new ProjectID{ProjectUid = projectUid } }
@@ -293,7 +293,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var request = context.ActionArguments["request"] as ProjectID;
 
       Assert.IsNotNull(request);
-      Assert.AreEqual(expectedLegacyID, request.ProjectId);
+      Assert.AreEqual(legacyProjectId, request.ProjectId);
     }
 
     [TestMethod]
