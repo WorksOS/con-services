@@ -253,7 +253,7 @@ namespace VSS.TRex.Caching
       {
         if (_projectContexts.TryGetValue(projectUid, out projectContexts))
         {
-          // Make a clone of this list to facilitate working through the evictions without holding
+          // Make a clone of this list so facilitate working through the evictions without holding
           // a long term lock on the global set of contexts
           projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
         }

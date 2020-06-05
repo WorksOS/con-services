@@ -21,6 +21,9 @@ namespace VSS.TRex.Caching
     {
       var cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
 
+      if (cache == null)
+        return "General Result Cache: No cache";
+
       return $"General Result Cache: Item count = {cache.CurrentNumElements}/{cache.MaxNumElements} Context count = {cache?.ContextCount}/{cache?.ContextRemovalCount}, Project count = {cache?.ProjectCount}, Removed Contexts = {cache.ContextRemovalCount}, Indicative size = {(1.0 * cache?.CurrentSizeInBytes)/1e6:F3}Mb/{(1.0 * cache?.MaxSizeInBytes) / 1e6:F3}Mb";
     }
   }
