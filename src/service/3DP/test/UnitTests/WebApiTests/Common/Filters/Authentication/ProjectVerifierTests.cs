@@ -261,6 +261,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
     [TestMethod]
     public void Should_not_throw_When_request_body_contains_projectUid()
     {
+      var expectedLegacyID = 3859554467592768945;
       var actionArguments = new Dictionary<string, object>
       {
         {"request", new ProjectID{ProjectUid = projectUid } }
@@ -292,7 +293,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var request = context.ActionArguments["request"] as ProjectID;
 
       Assert.IsNotNull(request);
-      Assert.AreEqual(legacyProjectId, request.ProjectId);
+      Assert.AreEqual(expectedLegacyID, request.ProjectId);
     }
 
     [TestMethod]
