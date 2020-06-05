@@ -393,7 +393,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
 #endif
-      return await ProcessWithTRex(project.ProjectUID.ToString(), designDescriptor, customHeaders);
+      return await ProcessWithTRex(project.ProjectUID, designDescriptor, customHeaders);
 #if RAPTOR
       return ProcessWithRaptor(project.LegacyProjectId, designDescriptor);
 #endif
