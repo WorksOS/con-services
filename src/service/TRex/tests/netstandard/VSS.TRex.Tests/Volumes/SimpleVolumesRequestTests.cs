@@ -190,8 +190,9 @@ namespace VSS.TRex.Tests.Volumes
 
       var response = await request.ExecuteAsync(arg);
 
-      var responseText = JsonConvert.SerializeObject(response);
-      responseText.Should().Be(expectedResponseText);
+      // var responseText = JsonConvert.SerializeObject(response);
+      JsonConvert.DeserializeObject<SimpleVolumesResponse>(expectedResponseText).Should().BeEquivalentTo(response);
+
     }
 
     [Fact]
@@ -219,8 +220,8 @@ namespace VSS.TRex.Tests.Volumes
 
       var response = await request.ExecuteAsync(arg);
 
-      var responseText = JsonConvert.SerializeObject(response);
-      responseText.Should().Be(expectedResponseText);
+      // var responseText = JsonConvert.SerializeObject(response);
+      JsonConvert.DeserializeObject<SimpleVolumesResponse>(expectedResponseText).Should().BeEquivalentTo(response);
     }
 
     private void CheckDefaultFilterToFilterSingleFillCellAtOriginResponse(SimpleVolumesResponse response)
