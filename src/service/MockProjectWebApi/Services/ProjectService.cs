@@ -19,18 +19,18 @@ namespace MockProjectWebApi.Services
     {
       ProjectList = new List<ProjectData>
       {
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.Parse("dc509939-88b5-49b6-8c2c-9e8131122e96")},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.Parse("b14bb927-3c10-47b2-b958-4ce7aabbc594"), ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "dc509939-88b5-49b6-8c2c-9e8131122e96"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "b14bb927-3c10-47b2-b958-4ce7aabbc594", ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
         new ProjectData {
-          ProjectUID = Guid.Parse(ConstantsUtil.DIMENSIONS_PROJECT_UID),
+          ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID,
           ProjectType = ProjectType.Standard,
           Name = "DimensionsProject",
           ProjectTimeZone = "Pacific Standard Time",
@@ -41,43 +41,43 @@ namespace MockProjectWebApi.Services
           
         },
         new ProjectData {
-          ProjectUID = Guid.Parse(ConstantsUtil.DIMENSIONS_EMPTY_PROJECT_UID),
+          ProjectUID = ConstantsUtil.DIMENSIONS_EMPTY_PROJECT_UID,
           ProjectTimeZone = "Pacific Standard Time",
           IanaTimeZone = "America/Los_Angeles",
           ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))"
         },
         new ProjectData {
-          ProjectUID = Guid.Parse(ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID)
+          ProjectUID = ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID
         },
-        new ProjectData {ProjectUID = Guid.Parse("a2cb39c7-95a0-4bb1-845f-cb1052467e98"), ProjectTimeZone = "W. Europe Standard Time"},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.Parse("8590b7fc-079e-4b5a-b5ff-8514dadfe985")},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
+        new ProjectData {ProjectUID = "a2cb39c7-95a0-4bb1-845f-cb1052467e98", ProjectTimeZone = "W. Europe Standard Time"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "8590b7fc-079e-4b5a-b5ff-8514dadfe985"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
         new ProjectData {
-          ProjectUID = Guid.Parse("d0a0410e-9fcc-44b1-bf1a-378c891d2ddb"),
+          ProjectUID = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb",
           ProjectGeofenceWKT = "POLYGON((3.010411822 -0.759611604,3.010913674 -0.759617032,3.010916659 -0.759813626,3.010414824 -0.759812544))",
         },
 
-        new ProjectData {ProjectUID = Guid.Parse("8aed6003-b8eb-47b1-941f-096a17468bf0")},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.Parse("04c94921-6343-4ffb-9d35-db9d281743fc")},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
+        new ProjectData {ProjectUID = "8aed6003-b8eb-47b1-941f-096a17468bf0"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "04c94921-6343-4ffb-9d35-db9d281743fc"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
         new ProjectData {
-          ProjectUID = Guid.Parse(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1),
+          ProjectUID = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
           ProjectTimeZone = "Mountain Standard Time",
           IanaTimeZone = "America/Creston",
           ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362,-115.025723657623 36.2101347890754))"
         },
-        new ProjectData {ProjectUID = Guid.Parse(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2)},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
-        new ProjectData {ProjectUID = Guid.NewGuid()},
+        new ProjectData {ProjectUID = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
         new ProjectData
         {
-          ProjectUID = Guid.Parse(ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID),
+          ProjectUID = ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID,
           ProjectType = ProjectType.Standard,
           ProjectTimeZone = "New Zealand Standard Time",
           IsArchived = false
@@ -88,13 +88,13 @@ namespace MockProjectWebApi.Services
         //  ProjectType = ProjectType.LandFill
         //},
         new ProjectData {
-          ProjectUID = Guid.Parse("b7f4af55-2fdb-4878-b3d0-ce748d5dde08"),
+          ProjectUID = "b7f4af55-2fdb-4878-b3d0-ce748d5dde08",
           ProjectType = ProjectType.Standard,
           IsArchived = true
         },
         new ProjectData
         {
-          ProjectUID = Guid.Parse("0583c019-f92a-4762-94c1-ad13a98ecab6"),
+          ProjectUID = "0583c019-f92a-4762-94c1-ad13a98ecab6",
           ProjectType = ProjectType.Standard,
           Name = "Kettlewell Drive - Golden DS",
           ProjectGeofenceWKT = "POLYGON((172.437121306867 -43.5121438699137,172.438280021162 -43.5160497338425,172.442228232831 -43.5154584240685,172.44089785716 -43.5114747124825,172.437121306867 -43.5121438699137))",

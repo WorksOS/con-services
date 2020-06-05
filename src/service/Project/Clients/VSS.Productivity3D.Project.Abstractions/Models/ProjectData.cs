@@ -8,11 +8,17 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
 {
   public class ProjectData : IMasterDataModel
   {
-    public Guid ProjectUID { get; set; }
+    public string ProjectUID { get; set; }
 
     // legacy ProjectID in Gen2 is a bigint. However Raptor can't handle one, and we're unlikely to need to get that big.
-    public long ShortRaptorProjectId => ProjectUID.ToLegacyId();
-    
+    public long ShortRaptorProjectId
+    {
+      get
+      {
+        return Guid.TryParse(ProjectUID, out var g) ? g.ToLegacyId() : 0;
+      }
+    }
+
 
     public ProjectType ProjectType { get; set; }
 

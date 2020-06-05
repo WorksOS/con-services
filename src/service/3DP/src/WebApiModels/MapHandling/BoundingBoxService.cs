@@ -249,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           //Also if doing the project boundary tile we assume the user wants to see that so production data extents not applicable.
           if (overlays.Contains(TileOverlayType.ProductionData) && !overlays.Contains(TileOverlayType.ProjectBoundary))
           {
-            var productionDataExtents = await GetProductionDataExtents(project.ProjectUID, project.ShortRaptorProjectId, filter, userId, customHeaders);
+            var productionDataExtents = await GetProductionDataExtents(Guid.Parse(project.ProjectUID), project.ShortRaptorProjectId, filter, userId, customHeaders);
             if (productionDataExtents != null)
             {
               log.LogDebug(

@@ -147,12 +147,14 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       async Task<Guid> GetProjectUid()
       {
         var project = await GetProject(projectId);
-
-        if (project.ProjectUID != Guid.Empty)
+        if (Guid.TryParse(project.ProjectUID, out var projectUid))
         {
-          ProjectUidsCache.TryAdd(projectId, project.ProjectUID);
+          if (projectUid != Guid.Empty)
+          {
+            ProjectUidsCache.TryAdd(projectId, projectUid);
 
-          return project.ProjectUID;
+            return projectUid;
+          }
         }
 
         throw new ServiceException(

@@ -45,7 +45,7 @@ namespace MockProjectWebApi.Controllers
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockProject)}: projectUid={projectUid}");
-      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUID == projectUid) };
+      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUID == projectUid.ToString()) };
     }
 
 
