@@ -41,3 +41,17 @@ jobs:
         inputs:
           filePath: build/azure-build-pipeline.ps1
           arguments: "-service Mock -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId)"
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: Charts'
+        inputs:
+          PathtoPublish: artifacts/archive/deploy
+          ArtifactName: Charts
+        condition: succeededOrFailed()
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: All Artfiacts'
+        inputs:
+          PathtoPublish: artifacts
+          ArtifactName: Artifacts
+        condition: succeededOrFailed()
