@@ -46,7 +46,7 @@ namespace MockProjectWebApi.Controllers
       Logger.LogInformation($"{nameof(GetMockProject)}: projectUid={projectUid}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Logger.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUID == projectUid.ToString()) };
+      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUID == projectUid) };
     }   
   }
 }

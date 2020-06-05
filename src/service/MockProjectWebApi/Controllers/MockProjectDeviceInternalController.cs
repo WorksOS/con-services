@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Utils;
@@ -36,7 +37,7 @@ namespace MockProjectWebApi.Controllers
         return new ProjectDataListResult()
         {
           ProjectDescriptors = new List<ProjectData>()
-            {new ProjectData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID, ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID, IsArchived = false}}
+            {new ProjectData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = Guid.Parse(ConstantsUtil.DIMENSIONS_PROJECT_UID), IsArchived = false}}
         };
 
       return new ProjectDataListResult(code: 105, message: "Unable to locate projects for device in cws");

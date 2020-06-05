@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID()}
       };
 
-      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid };
       var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectUid = projectUid }}
       };
 
-      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid };
       var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -155,7 +155,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectId = legacyProjectId } }
       };
 
-      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid };
       var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -192,7 +192,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID { ProjectId = legacyProjectId } }
       };
 
-      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = legacyProjectId };
+      var projectData = new ProjectData { ProjectUID = projectUid};
       var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -229,7 +229,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectUid = projectUid } }
       };
 
-      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid };
       var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -266,7 +266,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectUid = projectUid } }
       };
 
-      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = legacyProjectId };
+      var projectData = new ProjectData { ProjectUID = projectUid };
       var contextHeaders = new HeaderDictionary();
 
       var mockProxy = new Mock<IProjectProxy>();

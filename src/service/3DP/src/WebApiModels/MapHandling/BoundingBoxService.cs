@@ -249,7 +249,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
           //Also if doing the project boundary tile we assume the user wants to see that so production data extents not applicable.
           if (overlays.Contains(TileOverlayType.ProductionData) && !overlays.Contains(TileOverlayType.ProjectBoundary))
           {
-            var productionDataExtents = await GetProductionDataExtents(Guid.Parse(project.ProjectUID), project.ShortRaptorProjectId, filter, userId, customHeaders);
+            var productionDataExtents = await GetProductionDataExtents(project.ProjectUID, project.ShortRaptorProjectId, filter, userId, customHeaders);
             if (productionDataExtents != null)
             {
               log.LogDebug(
@@ -393,7 +393,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
 #endif
-      return await ProcessWithTRex(project.ProjectUID, designDescriptor, customHeaders);
+      return await ProcessWithTRex(project.ProjectUID.ToString(), designDescriptor, customHeaders);
 #if RAPTOR
       return ProcessWithRaptor(project.LegacyProjectId, designDescriptor);
 #endif
@@ -508,7 +508,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
           if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
 #endif
-          return await ProcessDesignFilterBoundaryWithTRex(project.ProjectUID, alignDescriptor, customHeaders);
+          return await ProcessDesignFilterBoundaryWithTRex(project.ProjectUID.ToString(), alignDescriptor, customHeaders);
 #if RAPTOR
           var alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);
 
@@ -587,11 +587,11 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #endif
       var queryParams = new List<KeyValuePair<string, string>>
         {
-          new KeyValuePair<string, string>(  "projectUid", project.ProjectUID ),
+          new KeyValuePair<string, string>(  "projectUid", project.ProjectUID.ToString() ),
           new KeyValuePair<string, string>("designUid", alignDescriptor.FileUid.ToString() )
         };
 
-      return await tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationRangeResult>(project.ProjectUID, "/design/alignment/stationrange", customHeaders, queryParams);
+      return await tRexCompactionDataProxy.SendDataGetRequest<AlignmentStationRangeResult>(project.ProjectUID.ToString(), "/design/alignment/stationrange", customHeaders, queryParams);
 #if RAPTOR
       }
       var alignmentDescriptor = RaptorConverters.DesignDescriptor(alignDescriptor);

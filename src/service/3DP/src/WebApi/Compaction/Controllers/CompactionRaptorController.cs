@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       await Task.WhenAll(projectId, designDescriptor);
 
-      var project = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = (int)projectId.Result};
+      var project = new ProjectData { ProjectUID = projectUid };
       var result = new PointsListResult();
       var polygons = await boundingBoxService.GetDesignBoundaryPolygons(project, designDescriptor.Result, CustomHeaders);
       result.PointsList = ConvertPoints(polygons);
@@ -195,7 +195,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var result = new AlignmentPointsResult();
       var alignmentPoints = await boundingBoxService.GetAlignmentPoints(
-        new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = (int)projectId.Result }, 
+        new ProjectData { ProjectUID = projectUid }, 
         alignmentDescriptor.Result);
 
       if (alignmentPoints != null && alignmentPoints.Any())
@@ -230,7 +230,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       foreach (var alignmentDescriptor in alignmentDescriptors.Result)
       {
         var alignmentPoints = await boundingBoxService.GetAlignmentPoints(
-          new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = (int)projectId.Result },
+          new ProjectData { ProjectUID = projectUid },
           alignmentDescriptor,
           0, 0, 0, 0,
           CustomHeaders);
