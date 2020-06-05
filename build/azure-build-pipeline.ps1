@@ -147,7 +147,7 @@ function Push-Container-Image {
     $branch = $branch -replace '.*/' # Remove everything up to and including the last forward slash.
 
     $versionNumber = $branch + "-" + $buildNumber
-    $ecrRepository = "${awsRepositoryName}/${ecr_prefix}${publishImage}:${versionNumber}"
+    $ecrRepository = "${awsRepositoryName}/${ecr_prefix}${serviceName}-webapi:${versionNumber}"
 
     Write-Host "`nPushing image '$ecrRepository'..." -ForegroundColor Green
     docker tag $publishImage $ecrRepository
