@@ -205,10 +205,9 @@ namespace MockProjectWebApi.Controllers
           list.Add(_projectConfigFilesMap[projectTrn][key]);
         }
       }
-      var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
-      {
-        ProjectConfigurationFiles = list
-      };
+
+      var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel();
+      projectConfigurationFileListResponse.AddRange(list);
       Logger.LogInformation($"{nameof(GetProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationFileListResponse {JsonConvert.SerializeObject(projectConfigurationFileListResponse)}");
 
       if (list == null)
