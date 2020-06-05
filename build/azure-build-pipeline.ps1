@@ -153,7 +153,6 @@ function Push-Container-Image {
     docker tag $publishImage $ecrRepository
     if (-not $?) { Exit-With-Code ([ReturnCode]::IMAGE_TAG_FAILED) }
 
-exit
     docker push $ecrRepository
     if (-not $?) { Exit-With-Code ([ReturnCode]::IMAGE_PUSH_FAILED) }
 
