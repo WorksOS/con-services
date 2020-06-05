@@ -14,7 +14,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// </summary>
     public class SimpleVolumesRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<SimpleVolumesRequestComputeFunc_ApplicationService>();
+        private static readonly ILogger _log = Logging.Logger.CreateLogger<SimpleVolumesRequestComputeFunc_ApplicationService>();
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -30,16 +30,20 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         /// <returns></returns>
         public SimpleVolumesResponse Invoke(SimpleVolumesRequestArgument arg)
         {
-            Log.LogInformation($"In {nameof(Invoke)}");
+            _log.LogInformation($"In {nameof(Invoke)}");
 
             try
             {
                 var executor = new SimpleVolumesExecutor();
-                return executor.ExecuteAsync(arg).WaitAndUnwrapException();
+                var response = executor.ExecuteAsync(arg).WaitAndUnwrapException();
+
+                _log.LogInformation($"Simple volumes result is {response}");
+
+                return response;
             }
             finally
             {
-                Log.LogInformation($"Exiting {nameof(Invoke)}");
+                _log.LogInformation($"Exiting {nameof(Invoke)}");
             }
         }
     }
