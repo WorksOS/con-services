@@ -5,22 +5,19 @@ using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class ProjectConfigurationFileListResponseModel : IMasterDataModel
+  public class ProjectConfigurationFileListResponseModel :  List<ProjectConfigurationModel>, IMasterDataModel
   {
     public ProjectConfigurationFileListResponseModel()
     {
-      ProjectConfigurationFiles = new List<ProjectConfigurationModel>();
     }
 
     /// <summary>
     /// projectConfigurationFiles
     /// </summary>
-    [JsonProperty("projectConfigurationFiles")]
-    public List<ProjectConfigurationModel> ProjectConfigurationFiles { get; set; }
+    public List<ProjectConfigurationModel> ProjectConfigurationFiles => this;
 
 
-    public List<string> GetIdentifiers() => ProjectConfigurationFiles?
-                                           .SelectMany(a => a.GetIdentifiers())
+    public List<string> GetIdentifiers() => this.SelectMany(a => a.GetIdentifiers())
                                            .Distinct()
                                            .ToList()
                                          ?? new List<string>();

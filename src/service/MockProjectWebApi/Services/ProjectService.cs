@@ -19,19 +19,18 @@ namespace MockProjectWebApi.Services
     {
       ProjectList = new List<ProjectData>
       {
-        new ProjectData {ShortRaptorProjectId = 1000001, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1000100, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1000102, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1000450, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1000452, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1000544, ProjectUID = "dc509939-88b5-49b6-8c2c-9e8131122e96"},
-        new ProjectData {ShortRaptorProjectId = 1000992, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001151, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001152, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001153, ProjectUID = "b14bb927-3c10-47b2-b958-4ce7aabbc594", ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "dc509939-88b5-49b6-8c2c-9e8131122e96"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "b14bb927-3c10-47b2-b958-4ce7aabbc594", ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
         new ProjectData {
           ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID,
-          ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID,
           ProjectType = ProjectType.Standard,
           Name = "DimensionsProject",
           ProjectTimeZone = "Pacific Standard Time",
@@ -42,47 +41,42 @@ namespace MockProjectWebApi.Services
           
         },
         new ProjectData {
-          ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_EMPTY_PROJECT_ID,
           ProjectUID = ConstantsUtil.DIMENSIONS_EMPTY_PROJECT_UID,
           ProjectTimeZone = "Pacific Standard Time",
           IanaTimeZone = "America/Los_Angeles",
           ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))"
         },
         new ProjectData {
-          ShortRaptorProjectId = ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_ID,
           ProjectUID = ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID
         },
-        new ProjectData {ShortRaptorProjectId = 1001164, ProjectUID = "a2cb39c7-95a0-4bb1-845f-cb1052467e98", ProjectTimeZone = "W. Europe Standard Time"},
-        new ProjectData {ShortRaptorProjectId = 1001184, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001186, ProjectUID = "8590b7fc-079e-4b5a-b5ff-8514dadfe985"},
-        new ProjectData {ShortRaptorProjectId = 1001191, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001209, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "a2cb39c7-95a0-4bb1-845f-cb1052467e98", ProjectTimeZone = "W. Europe Standard Time"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "8590b7fc-079e-4b5a-b5ff-8514dadfe985"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
         new ProjectData {
-          ShortRaptorProjectId = 1001210,
           ProjectUID = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb",
           ProjectGeofenceWKT = "POLYGON((3.010411822 -0.759611604,3.010913674 -0.759617032,3.010916659 -0.759813626,3.010414824 -0.759812544))",
         },
 
-        new ProjectData {ShortRaptorProjectId = 1001214, ProjectUID = "8aed6003-b8eb-47b1-941f-096a17468bf0"},
-        new ProjectData {ShortRaptorProjectId = 1001276, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001280, ProjectUID = "04c94921-6343-4ffb-9d35-db9d281743fc"},
-        new ProjectData {ShortRaptorProjectId = 1001285, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001388, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1001544, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "8aed6003-b8eb-47b1-941f-096a17468bf0"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = "04c94921-6343-4ffb-9d35-db9d281743fc"},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
         new ProjectData {
-          ShortRaptorProjectId = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_ID_1,
           ProjectUID = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
           ProjectTimeZone = "Mountain Standard Time",
           IanaTimeZone = "America/Creston",
           ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362,-115.025723657623 36.2101347890754))"
         },
-        new ProjectData {ShortRaptorProjectId = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_ID_2, ProjectUID = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2},
-        new ProjectData {ShortRaptorProjectId = 1009999, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1012413, ProjectUID = Guid.NewGuid().ToString()},
-        new ProjectData {ShortRaptorProjectId = 1099999, ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
+        new ProjectData {ProjectUID = Guid.NewGuid().ToString()},
         new ProjectData
         {
-          ShortRaptorProjectId = ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_ID,
           ProjectUID = ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID,
           ProjectType = ProjectType.Standard,
           ProjectTimeZone = "New Zealand Standard Time",
@@ -94,14 +88,12 @@ namespace MockProjectWebApi.Services
         //  ProjectType = ProjectType.LandFill
         //},
         new ProjectData {
-          ShortRaptorProjectId = 1111111,
           ProjectUID = "b7f4af55-2fdb-4878-b3d0-ce748d5dde08",
           ProjectType = ProjectType.Standard,
           IsArchived = true
         },
         new ProjectData
         {
-          ShortRaptorProjectId = 1000589,
           ProjectUID = "0583c019-f92a-4762-94c1-ad13a98ecab6",
           ProjectType = ProjectType.Standard,
           Name = "Kettlewell Drive - Golden DS",

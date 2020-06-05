@@ -42,9 +42,15 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <returns></returns>
     private ISurveyedSurfaces Load(Guid siteModelUid)
     {
-      _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out MemoryStream ms);
-
       var ss = DIContext.Obtain<ISurveyedSurfaces>();
+
+      if (ss == null)
+      {
+        Log.LogError("Unable to access surveyed surfaces factory from DI");
+        return null;
+      }
+
+      _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out var ms);
 
       if (ms != null)
       {

@@ -46,12 +46,18 @@ namespace VSS.TRex.Alignments
     {
       try
       {
-        _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, out MemoryStream ms);
-
         var alignments = DIContext.Obtain<IAlignments>();
 
+        if (alignments == null)
+        {
+          Log.LogError("Unable to access IAlignments factory from DI");
+          return null;
+        }
+
+        _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, out var ms);
+
         if (ms != null)
-        { 
+        {
           using (ms)
           {
             alignments.FromStream(ms);

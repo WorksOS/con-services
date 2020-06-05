@@ -58,26 +58,23 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var projectUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
-        ProjectConfigurationFiles = new List<ProjectConfigurationModel>()
+        new ProjectConfigurationModel()
         {
-          new ProjectConfigurationModel()
-          {
-            FileName = "MyTestFilename.dc",
-            FileDownloadLink = "http//whatever",
-            FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
-            CreatedAt = DateTime.UtcNow.ToString(),
-            UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = 66
-          },
-          new ProjectConfigurationModel()
-          {
-            FileName = "MyTestFilename.avoid.dxf",
-            FileDownloadLink = "http//whateverElse",
-            FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
-            CreatedAt = DateTime.UtcNow.ToString(),
-            UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = 66
-          }
+          FileName = "MyTestFilename.dc",
+          FileDownloadLink = "http//whatever",
+          FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
+          CreatedAt = DateTime.UtcNow.ToString(),
+          UpdatedAt = DateTime.UtcNow.ToString(),
+          Size = 66
+        },
+        new ProjectConfigurationModel()
+        {
+          FileName = "MyTestFilename.avoid.dxf",
+          FileDownloadLink = "http//whateverElse",
+          FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
+          CreatedAt = DateTime.UtcNow.ToString(),
+          UpdatedAt = DateTime.UtcNow.ToString(),
+          Size = 66
         }
       };
       string route = $"/projects/{TRNHelper.MakeTRN(projectUid)}/configuration";
