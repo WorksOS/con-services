@@ -70,10 +70,3 @@ jobs:
           PathtoPublish: $(rootServiceFolder)/deploy
           ArtifactName: Charts
         condition: succeededOrFailed()
-
-      # - task: PublishBuildArtifacts@1
-      #   displayName: 'Publish Artifact: All Artfiacts'
-      #   inputs:
-      #     PathtoPublish: artifacts
-      #     ArtifactName: Artifacts
-      #   condition: succeededOrFailed()
