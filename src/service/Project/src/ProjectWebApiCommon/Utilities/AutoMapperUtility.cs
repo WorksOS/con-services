@@ -90,11 +90,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
-          // for v2 BC apis
-          cfg.CreateMap<ProjectDatabaseModel, ProjectV5DescriptorResult>()
-            .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
-            .ForMember(dest => dest.Code, opt => opt.Ignore())
-            .ForMember(dest => dest.Message, opt => opt.Ignore());
+          // for v5 BC apis
           cfg.CreateMap<CreateProjectV5Request, CreateProjectEvent>()
             .ForMember(dest => dest.CustomerUID, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.ProjectBoundary, opt => opt.Ignore()) // done externally
