@@ -3,7 +3,6 @@ using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -16,7 +15,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignPeriods_NoMachineNoDesignsNoEvents()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
       assetOnDesignPeriods.Count.Should().Be(0);
@@ -25,10 +24,9 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetAssetOnDesignPeriods_OneMachineNoDesignsNoEvents()
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       var assetOnDesignPeriods = siteModel.GetAssetOnDesignPeriods();
-      IMachine machine = siteModel.Machines.CreateNew("Test Machine Source", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
       assetOnDesignPeriods.Count.Should().Be(0);
     }
 

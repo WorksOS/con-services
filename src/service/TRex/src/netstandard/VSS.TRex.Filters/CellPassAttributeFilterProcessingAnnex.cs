@@ -70,21 +70,21 @@ namespace VSS.TRex.Filters
              Range.InRange(Elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     } 
 
-    public void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, IClientHeightLeafSubGrid DesignElevations)
+    public void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, IClientHeightLeafSubGrid designElevations)
     {
       // If there is a design specified then initialize the filter using the design elevations
       // queried and supplied by the caller, otherwise the specified Elevation level, offset and thickness
       // are used to calculate an elevation bracket.
 
-      bool ElevationRangeIsLevelAndThicknessOnly = DesignElevations == null;
-      if (ElevationRangeIsLevelAndThicknessOnly)
+      var elevationRangeIsLevelAndThicknessOnly = designElevations == null;
+      if (elevationRangeIsLevelAndThicknessOnly)
       {
         ElevationRangeTopElevationForCell = attributeFilter.ElevationRangeLevel + attributeFilter.ElevationRangeOffset;
         ElevationRangeBottomElevationForCell = ElevationRangeTopElevationForCell - attributeFilter.ElevationRangeThickness;
       }
       else
       {
-        ElevationRangeDesignElevations = DesignElevations;
+        ElevationRangeDesignElevations = designElevations;
       }
 
       ElevationRangeIsInitialized = true;

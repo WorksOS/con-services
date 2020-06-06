@@ -4,7 +4,6 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
