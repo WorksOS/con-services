@@ -5,7 +5,6 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs
@@ -38,7 +37,7 @@ end;
 
   public class DesignFiles : IDesignFiles
   {
-    private readonly Dictionary<Guid, IDesignBase> designs = new Dictionary<Guid, IDesignBase>();
+    private readonly Dictionary<Guid, IDesignBase> _designs = new Dictionary<Guid, IDesignBase>();
 
     /// <summary>
     /// Removes a design from cache and storage
@@ -48,9 +47,9 @@ end;
       if (deleteFile)
         design.RemoveFromStorage(siteModelUid, Path.GetFileName(design.FileName));
 
-      if (designs.TryGetValue(designUid, out _))
+      if (_designs.TryGetValue(designUid, out _))
       {
-        return designs.Remove(designUid);
+        return _designs.Remove(designUid);
       }
 
       return false;
@@ -59,15 +58,15 @@ end;
     /// <summary>
     /// Acquire a lock and reference to the design referenced by the given design descriptor
     /// </summary>
-    public IDesignBase Lock(Guid designUid, Guid dataModelID, double cellSize, out DesignLoadResult loadResult)
+    public IDesignBase Lock(Guid designUid, Guid dataModelId, double cellSize, out DesignLoadResult loadResult)
     {
       IDesignBase design;
 
-      lock (designs)
+      lock (_designs)
       {
-        designs.TryGetValue(designUid, out design);
+        _designs.TryGetValue(designUid, out design);
 
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID);
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
         if (siteModel == null)
         {
           loadResult = DesignLoadResult.SiteModelNotFound;
@@ -99,10 +98,10 @@ end;
           }
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
-          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelID), descriptor.FileName), cellSize, dataModelID);
+          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelId), descriptor.FileName), cellSize, dataModelId);
           design.IsLoading = true;
 
-          designs.Add(designUid, design);
+          _designs.Add(designUid, design);
         }
       }
 
@@ -117,10 +116,10 @@ end;
         if (!File.Exists(design.FileName))
         {
           // TODO we need to take away this async code from the lock
-          loadResult = design.LoadFromStorage(dataModelID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).Result;
+          loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).Result;
           if (loadResult != DesignLoadResult.Success)
           {
-            designs.Remove(designUid);
+            _designs.Remove(designUid);
             return null;
           }
         }
@@ -128,7 +127,7 @@ end;
         loadResult = design.LoadFromFile(design.FileName);
         if (loadResult != DesignLoadResult.Success)
         {
-          designs.Remove(designUid);
+          _designs.Remove(designUid);
           return null;
         }
 
@@ -140,12 +139,9 @@ end;
     /// <summary>
     /// Release a lock to the design referenced by the given design descriptor
     /// </summary>
-    /// <param name="designUid"></param>
-    /// <param name="design"></param>
-    /// <returns></returns>
     public bool UnLock(Guid designUid, IDesignBase design)
     {
-      lock (designs)
+      lock (_designs)
       {
         // Very simple unlock function...
         return true;

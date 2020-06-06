@@ -133,9 +133,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Remove the design list for a site model from the persistent store
     /// </summary>
-    /// <param name="siteModelId"></param>
-    /// <param name="storageProxy"></param>
-    /// <returns></returns>
     public bool Remove(Guid siteModelId, IStorageProxy storageProxy)
     {
       var result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.Designs, DESIGNS_STREAM_NAME);

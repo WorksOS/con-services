@@ -22,7 +22,6 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Constructor accepting a Binary Reader instance from which to instantiate itself
     /// </summary>
-    /// <param name="reader"></param>
     public Alignments(BinaryReader reader)
     {
       Read(reader);
@@ -82,10 +81,6 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Create a new Alignment in the list based on the provided details
     /// </summary>
-    /// <param name="alignmentUid"></param>
-    /// <param name="designDescriptor"></param>
-    /// <param name="extents"></param>
-    /// <returns></returns>
     public IAlignment AddAlignmentDetails(Guid alignmentUid,
       DesignDescriptor designDescriptor,
       BoundingWorldExtent3D extents)
@@ -106,8 +101,6 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Remove a given Alignment from the list of Alignments for a site model
     /// </summary>
-    /// <param name="alignmentUid"></param>
-    /// <returns></returns>
     public bool RemoveAlignment(Guid alignmentUid)
     {
       var match = Find(x => x.ID == alignmentUid);
@@ -118,8 +111,6 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Locates a Alignment in the list with the given GUID
     /// </summary>
-    /// <param name="alignmentUid"></param>
-    /// <returns></returns>
     public IAlignment Locate(Guid alignmentUid)
     {
       // Note: This happens a lot and the for loop is faster than foreach or Find(x => x.ID)
@@ -135,7 +126,6 @@ namespace VSS.TRex.Alignments
     /// Determine if the Alignments in this list are the same as the Alignments in the other list, based on ID comparison
     /// </summary>
     /// <param name="other"></param>
-    /// <returns></returns>
     public bool IsSameAs(Alignments other)
     {
       if (Count != other.Count)
