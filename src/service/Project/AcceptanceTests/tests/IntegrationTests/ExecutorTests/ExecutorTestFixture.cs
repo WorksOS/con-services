@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -6,6 +8,7 @@ using Newtonsoft.Json;
 using Serilog;
 using TestUtility;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
@@ -13,6 +16,9 @@ using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -34,6 +40,7 @@ namespace IntegrationTests.ExecutorTests
     public readonly ILoggerFactory Logger;
     public readonly IServiceExceptionHandler ServiceExceptionHandler;
     public readonly ProjectRepository ProjectRepo;
+    public readonly ICwsProjectClient CwsProjectClient;
     public readonly IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord;
     public readonly IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
     public readonly IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
@@ -47,6 +54,7 @@ namespace IntegrationTests.ExecutorTests
         .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+        .AddTransient<ICwsProjectClient, CwsProjectClient>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
 
         // for serviceDiscovery
@@ -65,6 +73,7 @@ namespace IntegrationTests.ExecutorTests
       Logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
       ServiceExceptionHandler = _serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       ProjectRepo = _serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      CwsProjectClient = _serviceProvider.GetRequiredService<ICwsProjectClient>();
       Productivity3dV1ProxyCoord = _serviceProvider.GetRequiredService<IProductivity3dV1ProxyCoord>();
       Productivity3dV2ProxyNotification = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyNotification>();
       Productivity3dV2ProxyCompaction = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();
@@ -80,28 +89,25 @@ namespace IntegrationTests.ExecutorTests
       };
     }
 
-    public bool CreateCustomerProject(string customerUid, string projectUid)
+
+    public async Task<Project> CreateCustomerProject(string customerUid, string userId, string userEmailAddress)
     {
-      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var validBoundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
+      var createProjectEvent = new CreateProjectEvent() { CustomerUID = new Guid(customerUid), ProjectName = "the project name", ProjectType = ProjectType.Standard, ProjectBoundary = validBoundary };
 
-      var createProjectEvent = new CreateProjectEvent()
-      {
-        CustomerUID = new Guid(customerUid),
-        ProjectUID = new Guid(projectUid),
-        ShortRaptorProjectId = new Random().Next(1, 1999999),
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.Standard,
-        ProjectTimezone = "New Zealand Standard Time",
-        ActionUTC = actionUtc,
-        ProjectBoundary =
-          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
-        CoordinateSystemFileName = "thisLocation\\this.cs"
-      };
+      var createExecutor =
+        RequestExecutorContainerFactory.Build<CreateProjectExecutor>
+        (Logger, ConfigStore, ServiceExceptionHandler,
+          customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
+          cwsProjectClient: CwsProjectClient);
+      await createExecutor.ProcessAsync(createProjectEvent);
 
-      ProjectRepo.StoreEvent(createProjectEvent).Wait();
-      var g = ProjectRepo.GetProject(projectUid); g.Wait();
-      return (g.Result != null ? true : false);
+      // we don't know projectUid from the executor, but if customerUid is unique, there should only be 1 in mockProjectWebApi for i
+      var projectList = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId),
+            Logger.CreateLogger("ExecutorTestFixture"), ServiceExceptionHandler, CwsProjectClient, CustomHeaders(customerUid));
+      if (projectList.Count == 1)
+        return projectList[0];
+      return null;
     }
 
     public bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
