@@ -224,9 +224,15 @@ namespace VSS.TRex.Rendering
 
       // Displayer.ICOptions  = ICOptions;
 
-      // Se the skip-step area control cell selection parameters for this tile render
-      processor.Pipeline.AreaControlSet = new AreaControlSet(true, Displayer.MapView.XPixelSize,
-        Displayer.MapView.YPixelSize, 0, 0, 0);
+      // Set the skip-step area control cell selection parameters for this tile render. Note that the floating point 
+      // skip step algorithm is requested, and a user origin is configured that offsets the sampling grid by half a pixel 
+      // size to matching the skip-stepping the PVM accumulator will use when transcribing cell data from sub grids into
+      // the accumulator. Note that the area control set is not configured with a rotation - this is taken into account
+      // through the mapview rotation configured above
+      processor.Pipeline.AreaControlSet = new AreaControlSet(false, 
+        Displayer.MapView.XPixelSize, Displayer.MapView.YPixelSize,
+        Displayer.MapView.XPixelSize / 2.0, Displayer.MapView.YPixelSize / 2.0,
+        0.0);
 
       // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
       processor.Pipeline.LiftParams = liftParams;

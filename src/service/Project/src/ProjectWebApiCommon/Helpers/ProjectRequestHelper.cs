@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -49,9 +50,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (projects.Projects != null)
         foreach (var project in projects.Projects)
         {
-          var projectDatabaseModel = ConvertCwsToWorksOSProject(project, log);
-          if (projectDatabaseModel != null)
-            projectDatabaseModelList.Add(projectDatabaseModel);
+          if (project.UserProjectRole == UserProjectRoleEnum.Admin)
+          {
+            var projectDatabaseModel = ConvertCwsToWorksOSProject(project, log);
+            if (projectDatabaseModel != null)
+              projectDatabaseModelList.Add(projectDatabaseModel);
+          }
         }
 
       log.LogDebug($"{nameof(GetProjectListForCustomer)} Project list contains {projectDatabaseModelList.Count} projects");

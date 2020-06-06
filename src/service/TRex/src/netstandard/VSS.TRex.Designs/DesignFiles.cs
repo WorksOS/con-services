@@ -59,11 +59,6 @@ end;
     /// <summary>
     /// Acquire a lock and reference to the design referenced by the given design descriptor
     /// </summary>
-    /// <param name="designUid"></param>
-    /// <param name="dataModelID"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="loadResult"></param>
-    /// <returns></returns>
     public IDesignBase Lock(Guid designUid, Guid dataModelID, double cellSize, out DesignLoadResult loadResult)
     {
       IDesignBase design;
@@ -72,21 +67,28 @@ end;
       {
         designs.TryGetValue(designUid, out design);
 
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID);
+        if (siteModel == null)
+        {
+          loadResult = DesignLoadResult.SiteModelNotFound;
+          return null;
+        }
+
         if (design == null)
         {
           // Verify the design does exist in either the designs, surveyed surface or alignment lists for the site model
-          var designRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID)?.Designs.Locate(designUid);
+          var designRef = siteModel.Designs.Locate(designUid);
           var descriptor = designRef?.DesignDescriptor;
 
           if (descriptor == null)
           {
-            var surveyedSurfaceRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID)?.SurveyedSurfaces?.Locate(designUid);
+            var surveyedSurfaceRef = siteModel.SurveyedSurfaces?.Locate(designUid);
             descriptor = surveyedSurfaceRef?.DesignDescriptor;
           }
 
           if (descriptor == null)
           {
-            var alignmentDesignRef = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelID).Alignments?.Locate(designUid);
+            var alignmentDesignRef = siteModel.Alignments?.Locate(designUid);
             descriptor = alignmentDesignRef?.DesignDescriptor;
           }
 

@@ -31,7 +31,6 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     public readonly double OriginX;
     public readonly double OriginY;
 
-    private int _stepX, _stepY;
     private double _stepXIncrement, _stepYIncrement;
     private double _stepXIncrementOverTwo, _stepYIncrementOverTwo;
 
@@ -52,14 +51,8 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
     private void CalculateAccumulatorParameters()
     {
-      var stepsPerPixelX = ValueStoreCellSizeX / SourceCellSize;
-      var stepsPerPixelY = ValueStoreCellSizeY / SourceCellSize;
-
-      _stepX = Math.Max(1, (int)Math.Truncate(stepsPerPixelX));
-      _stepY = Math.Max(1, (int)Math.Truncate(stepsPerPixelY));
-
-      _stepXIncrement = _stepX * SourceCellSize;
-      _stepYIncrement = _stepY * SourceCellSize;
+      _stepXIncrement = ValueStoreCellSizeX;
+      _stepYIncrement = ValueStoreCellSizeY;
 
       _stepXIncrementOverTwo = _stepXIncrement / 2;
       _stepYIncrementOverTwo = _stepYIncrement / 2;
@@ -122,51 +115,48 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
       // Calculate the world coordinate location of the origin (bottom left corner) of this sub grid
       subGridResponses[0].CalculateWorldOrigin(out var subGridWorldOriginX, out var subGridWorldOriginY);
+      var subGridWorldLimitX = subGridWorldOriginX + SubGridTreeConsts.SubGridTreeDimension * SourceCellSize;
+      var subGridWorldLimitY = subGridWorldOriginY + SubGridTreeConsts.SubGridTreeDimension * SourceCellSize;
 
       // Skip-Iterate through the cells assigning them to the value store
 
-      var temp = subGridWorldOriginY / _stepYIncrement;
-      var currentNorth = (Math.Truncate(temp) * _stepYIncrement) - _stepYIncrementOverTwo;
-      var northRow = (int) Math.Floor((currentNorth - subGridWorldOriginY) / SourceCellSize);
-      while (northRow < 0)
+      var originEast = (Math.Truncate(subGridWorldOriginX / _stepXIncrement) * _stepXIncrement) - _stepXIncrementOverTwo;
+      while (originEast < subGridWorldOriginX)
       {
-        northRow += _stepY;
+        originEast += _stepXIncrement;
+      }
+
+      var currentNorth = (Math.Truncate(subGridWorldOriginY / _stepYIncrement) * _stepYIncrement) - _stepYIncrementOverTwo;
+      while (currentNorth < subGridWorldOriginY)
+      {
         currentNorth += _stepYIncrement;
       }
 
-      var valueStoreY = (int)Math.Floor((currentNorth - OriginY) / ValueStoreCellSizeY);
-      while (northRow < SubGridTreeConsts.SubGridTreeDimension)
+      var valueStoreY = (int)Math.Floor((currentNorth - OriginY) / _stepYIncrement);
+
+      while (currentNorth < subGridWorldLimitY)
       {
         if (valueStoreY >= 0 && valueStoreY < CellsHeight)
         {
-          temp = subGridWorldOriginX / _stepXIncrement;
-          var currentEast = (Math.Truncate(temp) * _stepXIncrement) - _stepXIncrementOverTwo;
-          var eastCol = (int) Math.Floor((currentEast - subGridWorldOriginX) / SourceCellSize);
+          var northRow = (int)Math.Floor((currentNorth - subGridWorldOriginY) / SourceCellSize);
+          var currentEast = originEast;
+          var valueStoreX = (int)Math.Floor((currentEast - OriginX) / _stepXIncrement);
 
-          while (eastCol < 0)
+          while (currentEast < subGridWorldLimitX)
           {
-            eastCol += _stepX;
-            currentEast += _stepXIncrement;
-          }
-
-          var valueStoreX = (int)Math.Floor((currentEast - OriginX) / ValueStoreCellSizeX);
-
-          while (eastCol < SubGridTreeConsts.SubGridTreeDimension)
-          {
-            // Transcribe the value at [east_col, north_row] in the sub grid in to the matching location in the value store
+            // Transcribe the value at [eastCol, northRow] in the sub grid into the matching location in the value store
             if (valueStoreX >= 0 && valueStoreX < CellsWidth)
             {
+              var eastCol = (int)Math.Floor((currentEast - subGridWorldOriginX) / SourceCellSize);
               ValueStore[valueStoreX, valueStoreY] = cells[eastCol, northRow];
             }
 
             currentEast += _stepXIncrement;
-            eastCol += _stepX;
             valueStoreX++;
           }
         }
 
         currentNorth += _stepYIncrement;
-        northRow += _stepY;
         valueStoreY++;
       }
 

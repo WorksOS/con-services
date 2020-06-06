@@ -94,10 +94,10 @@ namespace VSS.TRex.SubGrids
         // Get a caching context for the sub grids returned by this requester, but only if the requested grid data type supports it
         ITRexSpatialMemoryCacheContext SubGridCacheContext = null;
 
-        if (EnableGeneralSubGridResultCaching &&
+        if (EnableGeneralSubGridResultCaching && 
             ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)gridDataType])
         {
-          SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
+          SubGridCacheContext = SubGridCache?.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
         }
 
         // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
@@ -117,7 +117,7 @@ namespace VSS.TRex.SubGrids
         return (gridDataType, 
           filter, 
           FilteredSurveyedSurfaces, 
-          SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, surfaceElevationPatchArg.CacheFingerprint())),
+          SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache?.LocateOrCreateContext(siteModel.ID, surfaceElevationPatchArg.CacheFingerprint())),
           surfaceElevationPatchArg as ISurfaceElevationPatchArgument,
           SubGridCacheContext);
       }

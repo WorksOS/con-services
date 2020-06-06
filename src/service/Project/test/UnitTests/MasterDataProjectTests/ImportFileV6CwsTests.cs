@@ -38,28 +38,26 @@ namespace VSS.MasterData.ProjectTests
     {
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
-        ProjectConfigurationFiles = new List<ProjectConfigurationModel>()
+        new ProjectConfigurationModel()
         {
-          new ProjectConfigurationModel()
-          {
-            FileName = "MyTestFilename.dc",
-            FileDownloadLink = "http//whatever",
-            FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
-            CreatedAt = DateTime.UtcNow.ToString(),
-            UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = 66
-          },
-          new ProjectConfigurationModel()
-          {
-            FileName = "MyTestFilename.avoid.dxf",
-            FileDownloadLink = "http//whateverElse",
-            FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
-            CreatedAt = DateTime.UtcNow.ToString(),
-            UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = 99
-          }
+          FileName = "MyTestFilename.dc",
+          FileDownloadLink = "http//whatever",
+          FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
+          CreatedAt = DateTime.UtcNow.ToString(),
+          UpdatedAt = DateTime.UtcNow.ToString(),
+          Size = 66
+        },
+        new ProjectConfigurationModel()
+        {
+          FileName = "MyTestFilename.avoid.dxf",
+          FileDownloadLink = "http//whateverElse",
+          FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
+          CreatedAt = DateTime.UtcNow.ToString(),
+          UpdatedAt = DateTime.UtcNow.ToString(),
+          Size = 99
         }
       };
+
       var mockProjectRepo = CreateMockProjectRepo();
       mockProjectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>()))
         .ReturnsAsync(new List<ImportedFile>());

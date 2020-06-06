@@ -251,7 +251,7 @@ namespace VSS.TRex.Tests.Caching
       // Create the cache with enough elements to hold one per context without eviction
       using (var cache = new TRexSpatialMemoryCache(1, 1000000, 0.5))
       {
-        // Make the number ofg contexts requested, and a separate item to be placed in each one
+        // Make the number of contexts requested, and a separate item to be placed in each one
         var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
         var item1 = new TRexSpatialMemoryCacheContextTests_Element

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -9,7 +10,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
@@ -68,8 +68,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       });
 
       if (simpleVolumesResponse != null)
+      {
+        log.LogWarning($"Volume response is {JsonConvert.SerializeObject(simpleVolumesResponse)}");
         return ConvertResult(simpleVolumesResponse);
+      }
 
+      log.LogWarning("Volume response is null");
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         "Failed to get requested Summary Volumes data"));
     }

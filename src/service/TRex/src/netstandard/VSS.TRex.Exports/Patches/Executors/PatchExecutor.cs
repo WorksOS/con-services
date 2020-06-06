@@ -60,7 +60,6 @@ namespace VSS.TRex.Exports.Patches.Executors
       DisplayMode mode,
       IFilterSet filters,
       DesignOffset cutFillDesign, 
-      //AReferenceVolumeType : TComputeICVolumesType;
       string requestingTRexNodeId,
       int dataPatchPageNumber,
       int dataPatchPageSize,
@@ -72,7 +71,6 @@ namespace VSS.TRex.Exports.Patches.Executors
       Mode = mode;
       Filters = filters;
       CutFillDesign = cutFillDesign; 
-      //ReferenceVolumeType = AReferenceVolumeType;
       RequestingTRexNodeID = requestingTRexNodeId;
       DataPatchPageNumber = dataPatchPageNumber;
       DataPatchPageSize = dataPatchPageSize;
@@ -104,7 +102,7 @@ namespace VSS.TRex.Exports.Patches.Executors
         DIContext.Obtain<IRequestAnalyser>(),
         Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
         && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-        Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
+        Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode, CutFillDesign),
         BoundingIntegerExtent2D.Inverted(),
         LiftParams))
       {
