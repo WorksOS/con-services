@@ -2,8 +2,7 @@ trigger:
   branches:
     include:
       - master
-      - releases/*
-      - feature/*
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
   paths:
     include:
       - "src/service/Push/*"
