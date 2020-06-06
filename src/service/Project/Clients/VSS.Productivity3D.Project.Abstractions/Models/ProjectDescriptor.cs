@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// </value>
     public string ProjectGeofenceWKT { get; set; }
 
-    public int ShortRaptorProjectId { get; set; }
+    public long ShortRaptorProjectId { get; set; }
 
     /// <summary>
     /// Gets or sets the CustomerUID which the project is associated with

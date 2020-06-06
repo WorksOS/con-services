@@ -89,7 +89,7 @@ namespace IntegrationTests.ExecutorTests
     }
 
 
-    public async Task<Project> CreateCustomerProject(string customerUid, string userId, string userEmailAddress)
+    public async Task<ProjectV6DescriptorsSingleResult> CreateCustomerProject(string customerUid, string userId, string userEmailAddress)
     {
       var validBoundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
       var createProjectEvent = new CreateProjectEvent() { CustomerUID = new Guid(customerUid), ProjectName = "the project name", ProjectType = ProjectType.Standard, ProjectBoundary = validBoundary };
@@ -99,14 +99,9 @@ namespace IntegrationTests.ExecutorTests
         (Logger, ConfigStore, ServiceExceptionHandler,
           customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
           cwsProjectClient: CwsProjectClient);
-      await createExecutor.ProcessAsync(createProjectEvent);
-
-      // we don't know projectUid from the executor, but if customerUid is unique, there should only be 1 in mockProjectWebApi for i
-      var projectList = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId),
-            Logger.CreateLogger("ExecutorTestFixture"), ServiceExceptionHandler, CwsProjectClient, CustomHeaders(customerUid));
-      if (projectList.Count == 1)
-        return projectList[0];
-      return null;
+      var result = ( await createExecutor.ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult;
+      
+      return result;
     }
 
     public bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)

@@ -86,7 +86,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         .GetFileContentFromTcc(projectRequest.CoordinateSystem,
           Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
 
-      await WithServiceExceptionTryExecuteAsync(() =>
+      var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
@@ -95,11 +95,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient,
             cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
-          .ProcessAsync(createProjectEvent)
-      );
+          .ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult
+        );
 
-      // todo CCSSSCON-396 TBC support need to create a unique shortId for  TBC (hash from ProjectUid perhaps?)
-      Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortRaptorProjectId {createProjectEvent.ShortRaptorProjectId}");
+      // todo CCSSSCON-396 TBC support needs testing
+      Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortRaptorProjectId {result.ProjectDescriptor.ShortRaptorProjectId}");
       return ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.Created, createProjectEvent.ShortRaptorProjectId);
     }
 

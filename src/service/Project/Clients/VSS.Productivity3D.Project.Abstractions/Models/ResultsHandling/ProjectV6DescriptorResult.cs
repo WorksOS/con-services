@@ -1,5 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -57,20 +59,23 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     public string ProjectUid { get; set; }
 
     /// <summary>
-    /// Gets or sets the project ID from legacy VisionLink
+    /// Gets or sets the project ID for TBC
     /// </summary>
     /// <value>
     /// The legacy project ID.
     /// </value>
-    public int ShortRaptorProjectId { get; set; }
+    public long ShortRaptorProjectId
+    {
+      get { return Guid.TryParse(ProjectUid, out var g) ? g.ToLegacyId() : 0; }
+    }
 
     /// <summary>
-    /// Gets or sets the type of the project.
-    /// </summary>
-    /// <value>
-    /// The type of the project.
-    /// </value>
-    public ProjectType ProjectType { get; set; }
+  /// Gets or sets the type of the project.
+  /// </summary>
+  /// <value>
+  /// The type of the project.
+  /// </value>
+  public ProjectType ProjectType { get; set; }
 
     /// <summary>
     /// What Role the current user has in this project

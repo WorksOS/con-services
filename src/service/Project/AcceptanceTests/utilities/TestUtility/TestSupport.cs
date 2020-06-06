@@ -812,10 +812,6 @@ namespace TestUtility
           {
             pd.CoordinateSystemFileName = eventObject.CoordinateSystem;
           }
-          if (HasProperty(eventObject, "ProjectID"))
-          {
-            pd.ShortRaptorProjectId = int.Parse(eventObject.ShortRaptorProjectId);
-          }
           if (HasProperty(eventObject, "ProjectUID"))
           {
             pd.ProjectUid = eventObject.ProjectUID;

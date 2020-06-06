@@ -121,7 +121,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      await WithServiceExceptionTryExecuteAsync(() =>
+      var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
@@ -129,14 +129,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
-          .ProcessAsync(createProjectEvent)
-      );
-
-      var result = new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID, new Guid(CustomerUid), new Guid(UserId),
-            Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders)
-          .ConfigureAwait(false)));
-
+          .ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult
+        );
+    
       await NotificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(ToString(), JsonConvert.SerializeObject(projectRequest), result);
