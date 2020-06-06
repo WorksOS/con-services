@@ -26,8 +26,10 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
 
       var neeCoords = new[]
       {
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         new XYZ(response.BoundingExtentGrid.MinX, response.BoundingExtentGrid.MinY,
               response.BoundingExtentGrid.MinZ == Consts.NullDouble ? 0.0 : response.BoundingExtentGrid.MinZ),
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         new XYZ(response.BoundingExtentGrid.MaxX, response.BoundingExtentGrid.MaxY,
               response.BoundingExtentGrid.MaxZ == Consts.NullDouble ? 0.0 : response.BoundingExtentGrid.MaxZ)
       };

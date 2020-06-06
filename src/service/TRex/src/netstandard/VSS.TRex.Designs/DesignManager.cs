@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -21,10 +20,10 @@ namespace VSS.TRex.Designs
   /// </summary>
   public class DesignManager : IDesignManager
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignManager>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<DesignManager>();
 
-    private readonly IStorageProxy WriteStorageProxy;
-    private readonly IStorageProxy ReadStorageProxy;
+    private readonly IStorageProxy _writeStorageProxy;
+    private readonly IStorageProxy _readStorageProxy;
 
     public const string DESIGNS_STREAM_NAME = "Designs";
 
@@ -33,14 +32,14 @@ namespace VSS.TRex.Designs
     /// </summary>
     public DesignManager(StorageMutability mutability) 
     {
-       WriteStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy;
-       ReadStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
+       _writeStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy;
+       _readStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
     }
 
     /// <summary>
     /// Loads the set of designs for a site model. If none exist an empty list is returned.
     /// </summary>
-    private IDesigns Load(Guid siteModelID)
+    private IDesigns Load(Guid siteModelId)
     {
       try
       {
@@ -48,11 +47,11 @@ namespace VSS.TRex.Designs
 
         if (designs == null)
         {
-          Log.LogError("Unable to access designs factory from DI");
+          _log.LogError("Unable to access designs factory from DI");
           return null;
         }
 
-        ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out var ms);
+        _readStorageProxy.ReadStreamFromPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out var ms);
 
         if (ms != null)
         {
@@ -79,19 +78,17 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Stores the list of designs for a site model
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="designs"></param>
-    private void Store(Guid siteModelID, IDesigns designs)
+    private void Store(Guid siteModelId, IDesigns designs)
     {
       try
       {
         using var stream = designs.ToStream();
-        WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs);
-        WriteStorageProxy.Commit();
+        _writeStorageProxy.WriteStreamToPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs);
+        _writeStorageProxy.Commit();
 
         // Notify the mutable and immutable grid listeners that attributes of this site model have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModelID, designsChanged: true);
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModelId, designsChanged: true);
       }
       catch (Exception e)
       {
@@ -102,14 +99,11 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Add a new design to a site model
     /// </summary>
-    /// <param name="SiteModelID"></param>
-    /// <param name="designDescriptor"></param>
-    /// <param name="extents"></param>
-    public IDesign Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
+    public IDesign Add(Guid siteModelId, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
-      var designs = Load(SiteModelID);
+      var designs = Load(siteModelId);
       var result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
-      Store(SiteModelID, designs);
+      Store(siteModelId, designs);
 
       return result;
     }
@@ -117,26 +111,21 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Returns the list of all designs known for the site model
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <returns></returns>
-    public IDesigns List(Guid siteModelID)
+    public IDesigns List(Guid siteModelId)
     {
-      Log.LogInformation($"Listing designs from {siteModelID}");
+      _log.LogInformation($"Listing designs from {siteModelId}");
 
-      return Load(siteModelID);
+      return Load(siteModelId);
     }
 
     /// <summary>
     /// Remove a given design from a site model
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="designID"></param>
-    /// <returns></returns>
-    public bool Remove(Guid siteModelID, Guid designID)
+    public bool Remove(Guid siteModelId, Guid designId)
     {
-      IDesigns designs = Load(siteModelID);
-      bool result = designs.RemoveDesign(designID);
-      Store(siteModelID, designs);
+      var designs = Load(siteModelId);
+      var result = designs.RemoveDesign(designId);
+      Store(siteModelId, designs);
 
       return result;
     }
@@ -144,16 +133,16 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Remove the design list for a site model from the persistent store
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="siteModelId"></param>
     /// <param name="storageProxy"></param>
     /// <returns></returns>
-    public bool Remove(Guid siteModelID, IStorageProxy storageProxy)
+    public bool Remove(Guid siteModelId, IStorageProxy storageProxy)
     {
-      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelID, FileSystemStreamType.Designs, DESIGNS_STREAM_NAME);
+      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.Designs, DESIGNS_STREAM_NAME);
 
       if (result != FileSystemErrorStatus.OK)
       {
-        Log.LogInformation($"Removing designs list from project {siteModelID} failed with error {result}");
+        _log.LogInformation($"Removing designs list from project {siteModelId} failed with error {result}");
       }
 
       return result == FileSystemErrorStatus.OK;

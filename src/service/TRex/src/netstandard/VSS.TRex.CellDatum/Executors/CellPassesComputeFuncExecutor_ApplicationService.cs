@@ -14,7 +14,7 @@ namespace VSS.TRex.CellDatum.Executors
 {
   public class CellPassesComputeFuncExecutor_ApplicationService
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CellPassesComputeFuncExecutor_ApplicationService>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CellPassesComputeFuncExecutor_ApplicationService>();
 
     /// <summary>
     /// Constructor
@@ -28,7 +28,7 @@ namespace VSS.TRex.CellDatum.Executors
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)
       {
-        Log.LogError($"Failed to locate site model {arg.ProjectID}");
+        _log.LogError($"Failed to locate site model {arg.ProjectID}");
         return result;
       }
 

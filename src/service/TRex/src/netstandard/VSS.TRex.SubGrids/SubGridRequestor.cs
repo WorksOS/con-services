@@ -67,6 +67,7 @@ namespace VSS.TRex.SubGrids
     private IClientHeightLeafSubGrid _designElevations;
     private IClientHeightLeafSubGrid _surfaceDesignMaskElevations;
 
+    // ReSharper disable once IdentifierTypo
     public SubGridRequestor() { }
 
     /// <summary>

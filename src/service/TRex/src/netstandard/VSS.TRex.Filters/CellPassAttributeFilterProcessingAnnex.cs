@@ -43,32 +43,35 @@ namespace VSS.TRex.Filters
       ElevationRangeDesignElevations = null;
     }
 
-    public bool FilterPassUsingElevationRange(ref CellPass PassValue)
+    public bool FilterPassUsingElevationRange(ref CellPass passValue)
     {
       if (!ElevationRangeIsInitialized)
         throw new TRexFilterProcessingException("Elevation range filter being used without the elevation range data being initialized");
 
-      return (ElevationRangeBottomElevationForCell != Consts.NullDouble) &&
-             Range.InRange(PassValue.Height, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
+      // ReSharper disable once CompareOfFloatsByEqualityOperator
+      return ElevationRangeBottomElevationForCell != Consts.NullDouble &&
+             Range.InRange(passValue.Height, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     }
 
-    public bool FiltersElevation(float Elevation)
+    public bool FiltersElevation(float elevation)
     {
       if (!ElevationRangeIsInitialized)
         throw new TRexFilterProcessingException("Elevation range filter being used without the elevation range data being initialized");
 
+      // ReSharper disable once CompareOfFloatsByEqualityOperator
       return ElevationRangeBottomElevationForCell != Consts.NullDouble &&
-             Range.InRange(Elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
+             Range.InRange(elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     }
 
-    public bool FiltersElevation(double Elevation)
+    public bool FiltersElevation(double elevation)
     {
       if (!ElevationRangeIsInitialized)
         throw new TRexFilterProcessingException("Elevation range filter being used without the elevation range data being initialized");
 
+      // ReSharper disable once CompareOfFloatsByEqualityOperator
       return ElevationRangeBottomElevationForCell != Consts.NullDouble &&
-             Range.InRange(Elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
-    } 
+             Range.InRange(elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
+    }
 
     public void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, IClientHeightLeafSubGrid designElevations)
     {
@@ -90,21 +93,22 @@ namespace VSS.TRex.Filters
       ElevationRangeIsInitialized = true;
     }
 
-    public void InitializeFilteringForCell(ICellPassAttributeFilter attributeFilter, byte ASubGridCellX, byte ASubGridCellY)
+    public void InitializeFilteringForCell(ICellPassAttributeFilter attributeFilter, byte subGridCellX, byte subGridCellY)
     {
       if (!attributeFilter.HasElevationRangeFilter)
         return;
 
       if (ElevationRangeDesignElevations != null)
       {
-        if (ElevationRangeDesignElevations.Cells[ASubGridCellX, ASubGridCellY] == Consts.NullHeight)
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
+        if (ElevationRangeDesignElevations.Cells[subGridCellX, subGridCellY] == Consts.NullHeight)
         {
           ElevationRangeTopElevationForCell = Consts.NullDouble;
           ElevationRangeBottomElevationForCell = Consts.NullDouble;
           return;
         }
 
-        ElevationRangeTopElevationForCell = ElevationRangeDesignElevations.Cells[ASubGridCellX, ASubGridCellY] + attributeFilter.ElevationRangeOffset;
+        ElevationRangeTopElevationForCell = ElevationRangeDesignElevations.Cells[subGridCellX, subGridCellY] + attributeFilter.ElevationRangeOffset;
       }
       else
       {
