@@ -2,11 +2,10 @@ trigger:
   branches:
     include:
       - master
-      - releases/*
-      - feature/*
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
   paths:
     include:
-      - "src/services/pulse.api/*"
+      - "src/service/Push/*"
 
 pool: k8s-fsm
 
@@ -21,6 +20,9 @@ jobs:
     timeoutInMinutes: 15
 
     steps:
+      - checkout: self
+        fetchDepth: 1
+
       - task: PowerShell@2
         displayName: "Build"
         inputs:
@@ -59,4 +61,11 @@ jobs:
         displayName: "Push Docker Image"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service Push -action pushImage -branch $(Build.SourceBranchName) -buildNumber $(Build.BuildId)"
+          arguments: "-service Push -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId)"
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: Charts'
+        inputs:
+          PathtoPublish: $(rootServiceFolder)/deploy
+          ArtifactName: Charts
+        condition: succeededOrFailed()

@@ -3,7 +3,7 @@ PARAM (
     [Parameter(Mandatory = $false)][string]$action,
     [Parameter(Mandatory = $false)][string]$awsRepositoryName = '940327799086.dkr.ecr.us-west-2.amazonaws.com',
     [Parameter(Mandatory = $false)][string]$branch,
-    [Parameter(Mandatory = $false)][string]$buildNumber
+    [Parameter(Mandatory = $false)][string]$buildId
 )
 
 enum ReturnCode {
@@ -22,6 +22,7 @@ enum ReturnCode {
 
 $services = @{
     Common = 'common'
+    Mock   = 'service/MockProjectWebApi'
     Push   = 'service/Push'
 }
 
@@ -71,7 +72,11 @@ function Unit-Test-Solution {
 
     # Build and run containerized unit tests
     Write-Host "`nBuilding unit test container..." -ForegroundColor Green
-    docker build --file $servicePath/build/Dockerfile.unittest --tag $container_name --no-cache --build-arg SERVICE_PATH=$servicePath .
+
+    # We don't require a build context here because everything needed is present in the already present [service]-build image.
+    # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
+    # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
+    Get-Content $servicePath/build/Dockerfile.unittest | docker build --tag $container_name --no-cache --build-arg SERVICE_PATH=$servicePath - 
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
     Write-Host "`nCreating unit test container..." -ForegroundColor Green
@@ -81,7 +86,7 @@ function Unit-Test-Solution {
     docker create --name $unique_container_name $container_name
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_CREATE_FAILED) }
 
-    Write-Host "`nCopying test results and coverage files..." -ForegroundColor Green
+    Write-Host "Copying test results and coverage files..." -ForegroundColor Green
     docker cp $unique_container_name`:/build/$servicePath/test/UnitTests/UnitTestResults/. $servicePath/test/UnitTestResults
 
     if (-not (Test-Path "$servicePath/test/UnitTestResults/TestResults.xml" -PathType Leaf)) {
@@ -104,11 +109,11 @@ function Publish-Service {
     $publishImage = "$serviceName-webapi"
 
     # Ensure required image exists
-    $buildImage = "push-build:latest"
+    $buildImage = "$serviceName-build:latest"
 
     if ($(docker images $buildImage -q).Count -eq 0) {
-        Write-Host "Unable to find required build image '$buildImage'." -ForegroundColor Green
-        Write-Host "Found the following 'pulse*' images:`n" -ForegroundColor Green
+        Write-Host "Unable to find required build image '$buildImage'." -ForegroundColor Red
+        Write-Host "Found the following '$serviceName' images:`n" -ForegroundColor Red
         docker images $serviceName*
 
         Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_IMAGE)
@@ -116,7 +121,12 @@ function Publish-Service {
 
     # Build and run containerized unit tests
     Write-Host "`nBuilding published service container..." -ForegroundColor Green
-    docker build --file $servicePath/build/Dockerfile.runtime --tag $publishImage --no-cache --build-arg SERVICE_PATH=$servicePath .
+
+    # We don't require a build context here because everything needed is present in the already present [service]-build image.
+    # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
+    # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
+    Get-Content $servicePath/build/Dockerfile.runtime | docker build --tag $publishImage --no-cache --build-arg SERVICE_PATH=$servicePath - 
+
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
     Write-Host "`nPublish application complete" -ForegroundColor Green
@@ -125,11 +135,28 @@ function Publish-Service {
 
 function Push-Container-Image {
     $publishImage = "$serviceName-webapi"
+
+    if ($(docker images $publishImage -q).Count -eq 0) {
+        Write-Host "Unable to find required publish image '$publishImage'. Looking for build image..." -ForegroundColor Green
+        $publishImage = "$serviceName-build"
+
+        if ($(docker images $publishImage -q).Count -eq 0) {
+            Write-Host "Unable to find required build image '$publishImage'." -ForegroundColor Red
+            Write-Host "Found the following '$serviceName' images:`n" -ForegroundColor Red
+            docker images $serviceName*
+    
+            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_IMAGE)
+        }
+        else {
+            Write-Host "Found fallback image '$publishImage'" -ForegroundColor Green
+        }
+    }
+
     $ecr_prefix = 'rpd-ccss-'
     $branch = $branch -replace '.*/' # Remove everything up to and including the last forward slash.
 
-    $versionNumber = $branch + "-" + $buildNumber
-    $ecrRepository = "${awsRepositoryName}/${ecr_prefix}${publishImage}:${versionNumber}"
+    $versionNumber = $branch + "-" + $buildId
+    $ecrRepository = "${awsRepositoryName}/${ecr_prefix}${serviceName}-webapi:${versionNumber}"
 
     Write-Host "`nPushing image '$ecrRepository'..." -ForegroundColor Green
     docker tag $publishImage $ecrRepository
@@ -143,10 +170,20 @@ function Push-Container-Image {
     Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
+function TrackTime($Time) {
+    if (!($Time)) { Return Get-Date } Else {
+        return ((Get-Date) - $Time)
+    }
+}
+
 function Exit-With-Code {
     param(
         [ReturnCode][Parameter(Mandatory = $true)]$code
     )
+
+    $executionTime = TrackTime $timeStart
+    $executionMinutes = "{0:N2}" -f $executionTime.TotalMinutes
+    Write-Host "Script completed in ${executionMinutes} minutes."
 
     if ($code -eq [ReturnCode]::SUCCESS) {
         Write-Host "`nExiting: $code" -ForegroundColor Green
@@ -174,6 +211,8 @@ $serviceName = $service.ToLower()
 
 Write-Host 'Script Variables:' -ForegroundColor Green
 Write-Host "  action = $action"
+Write-Host "  branch = $branch"
+Write-Host "  buildId = $buildId"
 Write-Host "  service = $service"
 Write-Host "  servicePath = $servicePath"
 Write-Host "  serviceName = $serviceName"
@@ -184,6 +223,8 @@ Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
 
 aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
 if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
+
+$timeStart = Get-Date
 
 # Run the appropriate action.
 switch ($action) {
