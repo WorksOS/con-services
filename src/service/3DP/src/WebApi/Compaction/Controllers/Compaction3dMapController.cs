@@ -338,7 +338,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "Failed to retrieve raptor data"));
+              "Failed to retrieve data"));
         }
 
         using (var archive = new ZipArchive(zipStream))
@@ -376,7 +376,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to retrieve raptor data"));
+            "Failed to retrieve data"));
       }
 
       // If we have a design request, get the ttm and add it for parsing
