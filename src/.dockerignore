@@ -6,6 +6,7 @@
 
 **/obj/
 **/bin/
+**/logs/
 **/node_modules/
 **/dist/
 
@@ -30,3 +31,5 @@
 LICENSE
 README.md
 
+**/Tools/
+**/pocs/

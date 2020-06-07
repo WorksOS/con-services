@@ -1,0 +1,71 @@
+trigger:
+  branches:
+    include:
+      - master
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
+  paths:
+    include:
+      - "src/service/Push/*"
+
+pool: k8s-fsm
+
+variables:
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/Push"
+
+jobs:
+  - job: BuildTestAndDeploy
+    displayName: "Build, test and Deploy"
+    timeoutInMinutes: 15
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action build"
+
+      - task: PowerShell@2
+        displayName: "Run unit tests"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action unittest"
+
+      - task: PublishTestResults@2
+        displayName: "Publish Unit Test Results"
+        continueOnError: true
+        inputs:
+          testResultsFormat: XUnit
+          testResultsFiles: "**/TestResults.xml"
+          searchFolder: "$(rootServiceFolder)/test/UnitTestResults/TestResults.xml"
+
+      - task: PublishCodeCoverageResults@1
+        displayName: "Publish Code Coverage"
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(rootServiceFolder)/test/UnitTestResults/Coverage.xml"
+          pathToSources: "$(rootServiceFolder)"
+          failIfCoverageEmpty: true
+
+      - task: PowerShell@2
+        displayName: "Publish Service"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action publish"
+
+      - task: PowerShell@2
+        displayName: "Push Docker Image"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service Push -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId)"
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: Charts'
+        inputs:
+          PathtoPublish: $(rootServiceFolder)/deploy
+          ArtifactName: Charts
+        condition: succeededOrFailed()

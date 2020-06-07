@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// <summary>
     /// The file descriptors for CWS project configuration files
     /// </summary>
-    public List<ProjectConfigurationFileResponseModel> ProjectConfigFileDescriptors { get; set; }
+    public List<ProjectConfigurationModel> ProjectConfigFileDescriptors { get; set; }
 
     public List<string> GetIdentifiers() => ImportedFileDescriptors?
                                               .SelectMany(f => f.GetIdentifiers())

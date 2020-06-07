@@ -11,6 +11,7 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
@@ -97,7 +98,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Single(response.ProjectDescriptors);
       Assert.Equal(_customerUid, response.ProjectDescriptors[0].CustomerUID);
       Assert.Equal(_projectUid, response.ProjectDescriptors[0].ProjectUID);
-      Assert.Equal(0, response.ProjectDescriptors[0].ShortRaptorProjectId);
+      Assert.Equal(Guid.Parse(_projectUid).ToLegacyId(), response.ProjectDescriptors[0].ShortRaptorProjectId);
       Assert.Equal(_projectName, response.ProjectDescriptors[0].Name);
       Assert.False(response.ProjectDescriptors[0].IsArchived);
       Assert.Equal(_boundaryString, response.ProjectDescriptors[0].ProjectGeofenceWKT);

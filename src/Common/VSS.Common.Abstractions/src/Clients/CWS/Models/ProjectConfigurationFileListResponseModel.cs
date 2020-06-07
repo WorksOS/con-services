@@ -5,22 +5,19 @@ using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class ProjectConfigurationFileListResponseModel : IMasterDataModel
+  public class ProjectConfigurationFileListResponseModel :  List<ProjectConfigurationModel>, IMasterDataModel
   {
     public ProjectConfigurationFileListResponseModel()
     {
-      ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>();
     }
 
     /// <summary>
     /// projectConfigurationFiles
     /// </summary>
-    [JsonProperty("projectConfigurationFiles")]
-    public List<ProjectConfigurationFileResponseModel> ProjectConfigurationFiles { get; set; }
+    public List<ProjectConfigurationModel> ProjectConfigurationFiles => this;
 
 
-    public List<string> GetIdentifiers() => ProjectConfigurationFiles?
-                                           .SelectMany(a => a.GetIdentifiers())
+    public List<string> GetIdentifiers() => this.SelectMany(a => a.GetIdentifiers())
                                            .Distinct()
                                            .ToList()
                                          ?? new List<string>();
@@ -64,6 +61,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     "moreInfo": "Please provide this id to support, while contacting, TraceId 5e9e3000802cef392f29840ca0864165",
     "message": "Config File not found for given project Id",
     "timestamp": "2020-04-20T23:28:00.050+0000"
-}
+  }
   */
 }

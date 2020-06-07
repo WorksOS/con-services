@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace CCSS.CWS.Client
   ///    However for  control point and avoidance zones (at least), the user can select 2 files.
   ///      One for MachineControl, and the other for SiteCollectors. 
   ///      This is because each machine type supports different formats and content etc. 
-  ///      Indicate in ProjectConfigurationFileRequestModel machineControlFilespaceId and siteCollectorFilespaceId
+  ///      Indicate in ProjectConfigurationModel machineControlFilespaceId and siteCollectorFilespaceId
   /// </summary>
   public class CwsProfileSettingsClient : CwsProfileSettingsManagerClient, ICwsProfileSettingsClient
   {
@@ -42,16 +43,16 @@ namespace CCSS.CWS.Client
     /////   user token
     /////   used by ProjectSvc v6 and v5TBC
     ///// </summary>
-    public async Task<ProjectConfigurationFileResponseModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectConfigurationModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)
     { 
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
-      var projectConfigurationFileResponse = 
-        await GetData<ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
+      var projectConfigurationModel = 
+        await GetData<ProjectConfigurationModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
      
-      log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationFileResponse {JsonConvert.SerializeObject(projectConfigurationFileResponse)}");
-      return projectConfigurationFileResponse;
+      log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
+      return projectConfigurationModel;
     }
 
     ///// <summary>
@@ -77,12 +78,12 @@ namespace CCSS.CWS.Client
     /////   user token
     /////   used by ProjectSvc v6 and v5TBC
     ///// </summary>
-    public async Task<ProjectConfigurationFileResponseModel> SaveProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectConfigurationModel> SaveProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(SaveProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
-      var projectConfigurationResponse = await PostData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
+      var projectConfigurationResponse = await PostData<ProjectConfigurationFileRequestModel, ProjectConfigurationModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
 
       log.LogDebug($"{nameof(SaveProjectConfiguration)}: projectConfigurationResponse {JsonConvert.SerializeObject(projectConfigurationResponse)}");
       return projectConfigurationResponse;
@@ -93,13 +94,13 @@ namespace CCSS.CWS.Client
     /////   user token
     /////   used by ProjectSvc v6 and v5TBC
     ///// </summary>
-    public async Task<ProjectConfigurationFileResponseModel> UpdateProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectConfigurationModel> UpdateProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
       var projectConfigurationResponse = 
-        await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
+        await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
 
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectConfigurationResponse {JsonConvert.SerializeObject(projectConfigurationResponse)}");
       return projectConfigurationResponse;

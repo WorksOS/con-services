@@ -69,9 +69,7 @@ namespace VSS.TRex.Rendering.Executors
     /// </summary>
     public DesignOffset CutFillDesign { get; set; }
 
-    // ComputeICVolumesType ReferenceVolumeType = ComputeICVolumesType.None;
     private readonly IPlanViewPalette ColorPalettes;
-    // ICOptions ICOptions = new ICOptions();
     private readonly Color RepresentColor;
 
     private readonly ILiftParameters LiftParams;
@@ -89,9 +87,7 @@ namespace VSS.TRex.Rendering.Executors
       ushort nPixelsY,
       IFilterSet filters,
       DesignOffset cutFillDesign, 
-      //AReferenceVolumeType : TComputeICVolumesType;
       IPlanViewPalette aColorPalettes,
-      //AICOptions: ...ICOptions;
       Color representColor,
       string requestingTRexNodeId,
       ILiftParameters liftParams
@@ -107,9 +103,7 @@ namespace VSS.TRex.Rendering.Executors
       NPixelsY = nPixelsY;
       Filters = filters;
       CutFillDesign = cutFillDesign; 
-      //ReferenceVolumeType = AReferenceVolumeType;
       ColorPalettes = aColorPalettes;
-      //ICOptions = AICOptions;
       RepresentColor = representColor;
       RequestingTRexNodeID = requestingTRexNodeId;
       LiftParams = liftParams;
@@ -472,9 +466,8 @@ namespace VSS.TRex.Rendering.Executors
             DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
             DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
             DIContext.Obtain<IRequestAnalyser>(),
-            Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
-            Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-            Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
+            Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) && Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+            requestRequiresAccessToDesignFileExistenceMap: Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode, CutFillDesign),
             CellExtents,
             LiftParams
           );
@@ -513,7 +506,6 @@ namespace VSS.TRex.Rendering.Executors
             */
 
           // Renderer.WorkingPalette = WorkingColorPalette;
-          // Renderer.ReferenceVolumeType = FReferenceVolumeType;
 
           Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
           Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);

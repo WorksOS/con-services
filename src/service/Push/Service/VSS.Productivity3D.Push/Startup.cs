@@ -4,6 +4,7 @@ using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -79,14 +80,15 @@ namespace VSS.Productivity3D.Push
     {
       app.UseFilterMiddleware<PushAuthentication>();
       
-      app.UseSignalR(route =>
-      {
-        route.MapHub<NotificationHub>(HubRoutes.NOTIFICATIONS);
-        route.MapHub<AssetStatusClientHub>(HubRoutes.ASSET_STATUS_CLIENT);
-        route.MapHub<AssetStatusServerHub>(HubRoutes.ASSET_STATUS_SERVER);
-      });
-      
       app.UseMvc();
+    }
+
+    protected override void AddEndpoints(IEndpointRouteBuilder endpoints)
+    {
+      base.AddEndpoints(endpoints);
+      endpoints.MapHub<NotificationHub>(HubRoutes.NOTIFICATIONS);
+      endpoints.MapHub<AssetStatusClientHub>(HubRoutes.ASSET_STATUS_CLIENT);
+      endpoints.MapHub<AssetStatusServerHub>(HubRoutes.ASSET_STATUS_SERVER);
     }
 
     /// <inheritdoc />

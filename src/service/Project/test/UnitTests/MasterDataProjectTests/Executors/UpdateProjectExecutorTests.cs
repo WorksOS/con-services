@@ -66,21 +66,21 @@ namespace VSS.MasterData.ProjectTests.Executors
         cwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), _customHeaders))
           .ReturnsAsync(createFileResponseModel);
 
-        var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+        var projectConfigurationModel = new ProjectConfigurationModel
         {
           FileName = "some coord sys file",
           FileDownloadLink = "some download link"
         };
-        var updatedConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+        var updatedConfigurationModel = new ProjectConfigurationModel
         {
           FileName = "updated coord sys file",
           FileDownloadLink = "updated download link"
         };
         var cwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
         cwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, _customHeaders))
-          .ReturnsAsync(projectConfigurationFileResponseModel);
+          .ReturnsAsync(projectConfigurationModel);
         cwsProfileSettingsClient.Setup(ps => ps.UpdateProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), _customHeaders))
-          .ReturnsAsync(updatedConfigurationFileResponseModel);
+          .ReturnsAsync(updatedConfigurationModel);
 
         var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
         productivity3dV1ProxyCoord.Setup(p =>

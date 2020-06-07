@@ -8,6 +8,7 @@
     UnableToLoadSubGridIndex,
     UnableToLoadSpatialIndex,
     DesignDoesNotExist,
-    UnableToLoadBoundary
+    UnableToLoadBoundary,
+    SiteModelNotFound
   }
 }

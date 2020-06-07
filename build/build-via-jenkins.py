@@ -70,9 +70,9 @@ def save_artifacts(server, url, build, id):
     z = zipfile.ZipFile(io.BytesIO(r.content))
     z.extractall("./artifacts/")
     '''Uncomment below to view build directory contents'''
-    # print("Extracted Artifacts\n" + "-" * 30)
-    # for x in os.walk('.'):
-    #     print(x)
+    print("Extracted Artifacts\n" + "-" * 30)
+    for x in os.walk('.'):
+        print(x)
 
 def main(argv):
     url=''

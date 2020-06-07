@@ -9,8 +9,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
-using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Gateway.Common.Executors;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers

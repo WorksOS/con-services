@@ -23,89 +23,86 @@ namespace CCSS.CWS.Client.MockClients
     {
     }
 
-    public Task<ProjectConfigurationFileResponseModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)
+    public Task<ProjectConfigurationModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectConfiguration)} Mock: projectUid {projectUid} projectConfigurationFileType {JsonConvert.SerializeObject(projectConfigurationFileType)}");
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = "MyTestFilename.dc",
         FileDownloadLink = "http//whatever",
         FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
 
-      log.LogDebug($"{nameof(GetProjectConfiguration)} Mock: projectConfigurationFileResponseModel {JsonConvert.SerializeObject(projectConfigurationFileResponseModel)}");
-      return Task.FromResult(projectConfigurationFileResponseModel);
+      log.LogDebug($"{nameof(GetProjectConfiguration)} Mock: projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
+      return Task.FromResult(projectConfigurationModel);
     }
 
     public Task<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(Guid projectUid, IHeaderDictionary customHeaders = null)
     {
       var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
       {
-        ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>()
+        new ProjectConfigurationModel()
         {
-          new ProjectConfigurationFileResponseModel()
-          {
-            FileName = "MyTestFilename.dc",
-            FileDownloadLink = "http//whatever",
-            FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
-            CreatedAt = DateTime.UtcNow.ToString(),
-            UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = "66"
-          },
-          new ProjectConfigurationFileResponseModel()
-          {
-            FileName = "MyTestFilename.avoid.dxf",
-            FileDownloadLink = "http//whateverElse",
-            FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
-            CreatedAt = DateTime.UtcNow.ToString(),
-            UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = "66"
-          }
+          FileName = "MyTestFilename.dc",
+          FileDownloadLink = "http//whatever",
+          FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
+          CreatedAt = DateTime.UtcNow.ToString(),
+          UpdatedAt = DateTime.UtcNow.ToString(),
+          Size = 66
+        },
+        new ProjectConfigurationModel()
+        {
+          FileName = "MyTestFilename.avoid.dxf",
+          FileDownloadLink = "http//whateverElse",
+          FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
+          CreatedAt = DateTime.UtcNow.ToString(),
+          UpdatedAt = DateTime.UtcNow.ToString(),
+          Size = 66
         }
       };
       return Task.FromResult(projectConfigurationFileListResponse);
     }
 
-    public Task<ProjectConfigurationFileResponseModel> SaveProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType,
+    public Task<ProjectConfigurationModel> SaveProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType,
       ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(SaveProjectConfiguration)} Mock: projectUid {projectUid} projectConfigurationFileType {JsonConvert.SerializeObject(projectConfigurationFileType)} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = "MyTestFilename.dc",
         FileDownloadLink = "http//whatever",
         FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
 
-      log.LogDebug($"{nameof(SaveProjectConfiguration)} Mock: projectConfigurationFileResponseModel {JsonConvert.SerializeObject(projectConfigurationFileResponseModel)}");
-      return Task.FromResult(projectConfigurationFileResponseModel);
+      log.LogDebug($"{nameof(SaveProjectConfiguration)} Mock: projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
+      return Task.FromResult(projectConfigurationModel);
     }
 
-    public Task<ProjectConfigurationFileResponseModel> UpdateProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType,
+    public Task<ProjectConfigurationModel> UpdateProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType,
       ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(UpdateProjectConfiguration)} Mock: projectUid {projectUid} projectConfigurationFileType {JsonConvert.SerializeObject(projectConfigurationFileType)} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = "MyTestFilename.dc",
         FileDownloadLink = "http//whatever",
         FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = 66
       };
 
-      log.LogDebug($"{nameof(UpdateProjectConfiguration)} Mock: projectConfigurationFileResponseModel {JsonConvert.SerializeObject(projectConfigurationFileResponseModel)}");
-      return Task.FromResult(projectConfigurationFileResponseModel);
+      log.LogDebug($"{nameof(UpdateProjectConfiguration)} Mock: projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
+      return Task.FromResult(projectConfigurationModel);
     }
 
     public Task DeleteProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)

@@ -15,6 +15,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -42,10 +43,12 @@ namespace VSS.MasterData.ProjectTests.Executors
       createProjectEvent.ActionUTC = DateTime.UtcNow;
       
       var createProjectResponseModel = new CreateProjectResponseModel() { TRN = _projectTrn };
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn, request.ProjectName);
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), _customHeaders)).ReturnsAsync(createProjectResponseModel);
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
 
       var createFileResponseModel = new CreateFileResponseModel
       { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
@@ -53,14 +56,14 @@ namespace VSS.MasterData.ProjectTests.Executors
       cwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), _customHeaders))
         .ReturnsAsync(createFileResponseModel);
 
-      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      var projectConfigurationModel = new ProjectConfigurationModel
       {
         FileName = "some coord sys file",
         FileDownloadLink = "some download link"
       };
       var cwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       cwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(It.IsAny<Guid>(), ProjectConfigurationFileType.CALIBRATION, It.IsAny<ProjectConfigurationFileRequestModel>(), _customHeaders))
-        .ReturnsAsync(projectConfigurationFileResponseModel);
+        .ReturnsAsync(projectConfigurationModel);
 
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v6/projects");
@@ -94,7 +97,11 @@ namespace VSS.MasterData.ProjectTests.Executors
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
         cwsProjectClient: cwsProjectClient.Object, cwsDesignClient: cwsDesignClient.Object,
         cwsProfileSettingsClient: cwsProfileSettingsClient.Object);
-      await executor.ProcessAsync(createProjectEvent);
+      var result = await executor.ProcessAsync(createProjectEvent) as ProjectV6DescriptorsSingleResult;
+
+      Assert.NotNull(result);
+      Assert.False(string.IsNullOrEmpty(result.ProjectDescriptor.ProjectUid));
+      Assert.Equal(request.ProjectName, result.ProjectDescriptor.Name);
     }
   }
 }

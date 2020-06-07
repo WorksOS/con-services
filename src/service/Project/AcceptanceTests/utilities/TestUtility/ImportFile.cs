@@ -78,7 +78,7 @@ namespace TestUtility
       string uri = null;
       if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
       {
-        ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor = new ProjectConfigurationFileResponseModel {FileName = fileDescriptor.Name};
+        ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor = new ProjectConfigurationModel { FileName = fileDescriptor.Name};
 
         uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}&fileUpdatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}";
 

@@ -36,7 +36,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the httpContextAccessor.
     /// </summary>
     protected readonly IHttpContextAccessor HttpContextAccessor;
-    
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -106,32 +106,32 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (projectRequest.CustomerUID.ToString() != CustomerUid)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
 
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(projectRequest);
+      var validationResult
+        = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            CustomerUid, UserId, null, customHeaders,
+            Productivity3dV1ProxyCoord, cwsProjectClient: CwsProjectClient)
+          .ProcessAsync(data)
+      );
+      if (validationResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, validationResult.Code);
+
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
 
-      ProjectDataValidator.Validate(createProjectEvent, new Guid(CustomerUid), new Guid(UserId),
-        Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-
-      // ProjectUID won't be filled yet
-      await ProjectDataValidator.ValidateProjectName(new Guid(CustomerUid), new Guid(UserId), createProjectEvent.ProjectName,
-        createProjectEvent.ProjectUID, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-
-      await WithServiceExceptionTryExecuteAsync(() =>
+      var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            CustomerUid, UserId,null, customHeaders,
+            CustomerUid, UserId, null, customHeaders,
             Productivity3dV1ProxyCoord, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
-          .ProcessAsync(createProjectEvent)
-      );
-
-      var result = new ProjectV6DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID, new Guid(CustomerUid), new Guid(UserId),
-            Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders)
-          .ConfigureAwait(false)));
-
+          .ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult
+        );
+    
       await NotificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(ToString(), JsonConvert.SerializeObject(projectRequest), result);
@@ -190,27 +190,33 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<IActionResult> UpdateProjectV6([FromBody] UpdateProjectRequest projectRequest)
     {
       if (projectRequest == null)
-      {
         return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 40));
-      }
-
       Logger.LogInformation($"{nameof(UpdateProjectV6)}: projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
+
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(projectRequest);
+      data.CustomerUid = new Guid(CustomerUid);
+      var validationResult
+        = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+              CustomerUid, UserId, null, customHeaders,
+              Productivity3dV1ProxyCoord, cwsProjectClient: CwsProjectClient)
+            .ProcessAsync(data)
+        );
+      if (validationResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, validationResult.Code);
+
+
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ActionUTC = DateTime.UtcNow;
-
-      // validation includes check that project exists
-      ProjectDataValidator.Validate(project, new Guid(CustomerUid), new Guid(UserId),
-        Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-      await ProjectDataValidator.ValidateProjectName(new Guid(CustomerUid), new Guid(UserId), project.ProjectName,
-        project.ProjectUID, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpdateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
-            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
+            Productivity3dV1ProxyCoord,
             fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
-            dataOceanClient: DataOceanClient, authn: Authorization, 
+            dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient, cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(project)
       );
@@ -239,18 +245,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<IActionResult> RequestUpdateProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
     {
       if (projectRequest == null)
-      {
         return BadRequest(ServiceExceptionHandler.CreateServiceError(HttpStatusCode.InternalServerError, 39));
-      }
+
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(projectRequest);
+      data.CustomerUid = new Guid(CustomerUid);
+      var validationResult
+        = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+              CustomerUid, UserId, null, customHeaders,
+              Productivity3dV1ProxyCoord, fileRepo: FileRepo,
+              dataOceanClient: DataOceanClient, authn: Authorization,
+              cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
+              cwsProfileSettingsClient: CwsProfileSettingsClient)
+            .ProcessAsync(data)
+        );
+      if (validationResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, validationResult.Code);
 
       // do a quick validation to make sure the project acctually exists (this will also be run in the background task, but a quick response to the UI will be better if the project can't be updated)
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ActionUTC = DateTime.UtcNow;
-      
-      // validation includes check that project exists
-      ProjectDataValidator.Validate(project, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-      await ProjectDataValidator.ValidateProjectName(new Guid(CustomerUid), new Guid(UserId), project.ProjectName,
-        project.ProjectUID, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
       var baseUrl = Request.Host.ToUriComponent();
       var callbackUrl = $"http://{baseUrl}/internal/v6/project";
@@ -285,15 +300,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectV6DescriptorsSingleResult> ArchiveProjectV6([FromRoute] string projectUid)
     {
       LogCustomerDetails("ArchiveProjectV6", projectUid);
-      var project = new DeleteProjectEvent {ProjectUID = new Guid(projectUid), DeletePermanently = false, ActionUTC = DateTime.UtcNow};
-      ProjectDataValidator.Validate(project, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+      var project = new DeleteProjectEvent { ProjectUID = new Guid(projectUid), DeletePermanently = false, ActionUTC = DateTime.UtcNow };
+
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(project);
+      data.CustomerUid = new Guid(CustomerUid);
+      var validationResult
+        = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+              CustomerUid, UserId, null, customHeaders,
+              Productivity3dV1ProxyCoord, cwsProjectClient: CwsProjectClient)
+            .ProcessAsync(data)
+        );
+      if (validationResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, validationResult.Code);
 
       // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
       var isDeleted = 1;
       //isDeleted = await ProjectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
-      
+
       if (!string.IsNullOrEmpty(CustomerUid))
         await NotificationHubClient.Notify(new CustomerChangedNotification(new Guid(CustomerUid)));
 
@@ -322,8 +349,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
-            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
-            fileRepo: FileRepo,
+            Productivity3dV1ProxyCoord, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)

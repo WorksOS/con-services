@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
     public string CustomerUID { get; set; }
 
     // legacy ProjectID in Gen2 is a bigint. However Raptor can't handle one, and we're unlikely to need to get that big.
-    public int ShortRaptorProjectId { get; set; }
+    public int ShortRaptorProjectId { get; }
 
     public string Name { get; set; }
 
