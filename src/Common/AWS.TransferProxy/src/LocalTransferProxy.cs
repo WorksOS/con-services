@@ -90,7 +90,7 @@ namespace VSS.AWS.TransferProxy
         Directory.CreateDirectory(directory);
       }
 
-      using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+      using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Write))
       {
         stream.CopyTo(fs);
       }
