@@ -223,6 +223,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     {
       // get all active projects for customer, excluding this projectUid (i.e. update)
       // todo what are the rules e.g. active, for manual import?
+
+      //TODO: Once we have project type in CWS projects restrict this to 3d enabled
       var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
         .Where(p => !p.IsArchived &&

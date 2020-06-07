@@ -1,25 +1,15 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using CCSS.Geometry;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Exceptions;
-using VSS.DataOcean.Client.Models;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -32,6 +22,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       var data = CastRequestObjectTo<ProjectValidation>(item, errorCode: 68);
 
+      //TODO: Use CustmerUID from data rather than headers or check they match (ask Steve)
+
       var userUid = new Guid(userId);
       if (data.UpdateType == ProjectUpdateType.Created)
       {
@@ -42,11 +34,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
         if (string.IsNullOrEmpty(data.ProjectName))
         {
-          return new ContractExecutionResult(11, "Missing ProjectName.");
+          return new ContractExecutionResult(11, "Missing Project Name.");
         }
         if (string.IsNullOrEmpty(data.ProjectBoundaryWKT))
         {
-          return new ContractExecutionResult(8, "Missing ProjectBoundary.");
+          return new ContractExecutionResult(8, "Missing Project Boundary.");
         }
         if (string.IsNullOrEmpty(data.CoordinateSystemFileSpaceId))
         {
@@ -58,7 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var duplicates = await ValidateProjectName(data.CustomerUid, userUid, data.ProjectName, data.ProjectUid);
         if (duplicates > 0)
         {
-          return new ContractExecutionResult(109, $"ProjectName must be unique. {duplicates} active project duplicates found.");
+          return new ContractExecutionResult(109, $"Project Name must be unique. {duplicates} active project duplicates found.");
         }
 
         //Validate project boundary
@@ -124,7 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           var duplicates = await ValidateProjectName(data.CustomerUid, userUid, data.ProjectName, data.ProjectUid);
           if (duplicates > 0)
           {
-            return new ContractExecutionResult(109, $"ProjectName must be unique. {duplicates} active project duplicates found.");
+            return new ContractExecutionResult(109, $"Project Name must be unique. {duplicates} active project duplicates found.");
           }
         }
 
@@ -196,7 +188,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         if (string.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
         {
-          return new {code=23, message="Missing project boundary."};
+          return new { code=23, message="Missing project boundary." };
         }
 
         if (string.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
@@ -211,7 +203,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         if (string.CompareOrdinal(result, GeofenceValidation.ValidationInvalidPointValue) == 0)
         {
-          return new { code = 111, message = "Invalid project boundary points.Latitudes should be -90 through 90 and Longitude -180 through 180. Points around 0,0 are invalid" }; 
+          return new { code = 111, message = "Invalid project boundary points. Latitudes should be -90 through 90 and Longitude -180 through 180. Points around 0,0 are invalid." }; 
         }
       }
 
@@ -235,7 +227,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       catch (Exception e)
       {
-        return new { code = 57, message = $"A problem occurred downloading the calibration file. Exception: {e.Message}" };
+        return new { code = 131, message = $"A problem occurred downloading the calibration file. Exception: {e.Message}" };
       }
 
       //Validate file in 3dpm (TRex)
