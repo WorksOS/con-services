@@ -333,6 +333,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (result != null)
       {
         var zipStream = (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
+        // If we didn't get a valid file, then we failed to read the ttm from raptor
+        if (zipStream == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to retrieve raptor data"));
+        }
 
         using (var archive = new ZipArchive(zipStream))
         {
