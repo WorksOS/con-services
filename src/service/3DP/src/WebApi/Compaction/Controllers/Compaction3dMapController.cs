@@ -332,7 +332,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (result != null)
       {
-        //  var zipStream = new FileStream(result.FullFileName, FileMode.Open);
         var zipStream = (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
 
         using (var archive = new ZipArchive(zipStream))
