@@ -14,10 +14,10 @@ namespace MockProjectWebApi.Controllers
   public class MockCwsProjectController : BaseController
   {
     private readonly string _baseUrl;
-
+   
     // Map by projectTrn and projectConfigurationType
     private static readonly Dictionary<string, Dictionary<string, ProjectConfigurationModel>> _projectConfigFilesMap = new Dictionary<string, Dictionary<string, ProjectConfigurationModel>>();
-
+    
     // Map filespaceIds to file names in CreateFile for generating sensible responses from Save/Update
     private static readonly Dictionary<string, string> _fileSpaceIdNameMap = new Dictionary<string, string>();
 

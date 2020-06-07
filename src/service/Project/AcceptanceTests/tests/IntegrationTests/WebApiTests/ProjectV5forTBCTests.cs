@@ -1,5 +1,4 @@
-﻿/* todo Jeannie
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -11,11 +10,11 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectV2ForTBCTests : WebApiTestsBase
+  public class ProjectV5ForTBCTests : WebApiTestsBase
   {
     private static List<TBCPoint> _boundaryLL;
 
-    public ProjectV2ForTBCTests()
+    public ProjectV5ForTBCTests()
     {
       _boundaryLL = new List<TBCPoint>
       {
@@ -27,7 +26,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public async Task Create_ProjectV2_All_Ok()
+    public async Task Create_ProjectV5_All_Ok()
     {
       Msg.Title("Project V5TBC", "Create a project");
       var ts = new TestSupport();
@@ -36,10 +35,10 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized);
 
       var response = await CreateProjectV5TBC(ts, "project 1", ProjectType.Standard);
-      var createProjectV2Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
+      var createProjectV5Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
 
-      Assert.Equal(HttpStatusCode.Created, createProjectV2Result.Code);
-      Assert.NotEqual(-1, createProjectV2Result.Id);
+      Assert.Equal(HttpStatusCode.Created, createProjectV5Result.Code);
+      Assert.NotEqual(-1, createProjectV5Result.Id);
     }
 
 
@@ -57,7 +56,7 @@ namespace IntegrationTests.WebApiTests
 
     private static async Task<ReturnSuccessV5Result> ValidateTbcOrgId(TestSupport ts, string orgShortName)
     {
-      var response = await ts.ValidateTbcOrgIdApiV2(orgShortName);
+      var response = await ts.ValidateTbcOrgIdApiV5(orgShortName);
 
       return JsonConvert.DeserializeObject<ReturnSuccessV5Result>(response);
     }
@@ -68,4 +67,3 @@ namespace IntegrationTests.WebApiTests
     }
   }
 }
-*/

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -63,12 +64,11 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
-    public void MapProjectToV4Result()
+    public void MapProjectToV6Result()
     {
       var project = new ProjectDatabaseModel
       {
         ProjectUID = Guid.NewGuid().ToString(),
-        ShortRaptorProjectId = 123,
         ProjectType = ProjectType.Standard,
         Name = "the Name",
         ProjectTimeZone = "NZ stuff",
@@ -84,7 +84,7 @@ namespace VSS.MasterData.ProjectTests
 
       var result = AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project);
       Assert.Equal(project.ProjectUID, result.ProjectUid);
-      Assert.Equal(project.ShortRaptorProjectId, result.ShortRaptorProjectId);
+      Assert.Equal(new Guid(project.ProjectUID).ToLegacyId(), result.ShortRaptorProjectId);
       Assert.Equal(project.ProjectType, result.ProjectType);
       Assert.Equal(project.Name, result.Name);
       Assert.Equal(project.ProjectTimeZone, result.ProjectTimeZone);
@@ -97,32 +97,6 @@ namespace VSS.MasterData.ProjectTests
       var copyOfProject = AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(project);
       Assert.Equal(project.ProjectUID, copyOfProject.ProjectUID);
       Assert.Equal(project.ShortRaptorProjectId, copyOfProject.ShortRaptorProjectId);
-    }
-
-    [Fact]
-    public void MapProjectToV5Result()
-    {
-      var project = new ProjectDatabaseModel
-      {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ShortRaptorProjectId = 123,
-        ProjectType = ProjectType.Standard,
-        Name = "the Name",
-        ProjectTimeZone = "NZ stuff",
-        ProjectTimeZoneIana = "Pacific stuff",
-        CustomerUID = Guid.NewGuid().ToString(),
-        Boundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
-        CoordinateSystemFileName = "",
-        CoordinateSystemLastActionedUTC = new DateTime(2017, 01, 21),
-
-        IsArchived = false,
-        LastActionedUTC = new DateTime(2017, 01, 21)
-      };
-
-      var result = AutoMapperUtility.Automapper.Map<ProjectV5DescriptorResult>(project);
-      Assert.Equal(project.ShortRaptorProjectId, result.ShortRaptorProjectId);
-      Assert.Equal(project.Name, result.Name);
-      Assert.Equal(project.ProjectType, result.ProjectType);
     }
   }
 }
