@@ -27,7 +27,7 @@ jobs:
         displayName: "Update & dump variables"
         inputs:
           targetType: 'inline'
-          script: 'echo "##vso[build.updatebuildnumber]Release $(Version)" && printenv | sort'
+          script: '##vso[build.updatebuildnumber]$(Build.BuildId) && printenv | sort'
 
       - task: PowerShell@2
         displayName: "Build"
