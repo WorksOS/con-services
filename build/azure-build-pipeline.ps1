@@ -21,15 +21,18 @@ enum ReturnCode {
 }
 
 $services = @{
-    Common = 'common'
-    Mock   = 'service/MockProjectWebApi'
-    Push   = 'service/Push'
+    Common     = 'common'
+    FileAccess = 'service/FileAccess'
+    Mock       = 'service/MockProjectWebApi'
+    Push       = 'service/Push'
 }
 
 $servicePath = ''
 $serviceName = ''
 
 function Build-Solution {
+    Login-Aws
+
     $imageTag = "$serviceName-build"
 
     Write-Host "`nBuilding container image '$imageTag'..." -ForegroundColor Green
@@ -134,6 +137,8 @@ function Publish-Service {
 }
 
 function Push-Container-Image {
+    Login-Aws
+
     $publishImage = "$serviceName-webapi"
 
     if ($(docker images $publishImage -q).Count -eq 0) {
@@ -168,6 +173,13 @@ function Push-Container-Image {
     Write-Host "`nImage push complete" -ForegroundColor Green
 
     Exit-With-Code ([ReturnCode]::SUCCESS)
+}
+
+function Login-Aws {
+    Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
+
+    #aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
+    #if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 }
 
 function TrackTime($Time) {
@@ -206,7 +218,7 @@ Set-Location -Path '../src'
 if (!$?) { Exit-With-Code ([ReturnCode]::CANNOT_FIND_PATH) }
 
 # Run the script action.
-$servicePath = $services[$service]
+$servicePath = $services[$service -replace '-']
 $serviceName = $service.ToLower()
 
 Write-Host 'Script Variables:' -ForegroundColor Green
@@ -218,11 +230,6 @@ Write-Host "  servicePath = $servicePath"
 Write-Host "  serviceName = $serviceName"
 Write-Host "  awsRepositoryName = $awsRepositoryName"
 Write-Host "  Working Directory ="($pwd).path
-
-Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
-
-aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
-if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 
 $timeStart = Get-Date
 
