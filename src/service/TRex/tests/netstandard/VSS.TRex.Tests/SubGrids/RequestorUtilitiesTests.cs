@@ -325,7 +325,7 @@ namespace VSS.TRex.Tests.SubGrids
 
       requestors.Length.Should().Be(filters.Length);
 
-      for (int i = 0; i < requestors.Length; i++)
+      for (var i = 0; i < requestors.Length; i++)
       {
         requestors[i].CellOverrideMask.Should().NotBe(null);
       }

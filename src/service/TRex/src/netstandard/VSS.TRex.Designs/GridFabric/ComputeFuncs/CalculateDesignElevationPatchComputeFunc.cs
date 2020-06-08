@@ -21,7 +21,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
             {
                 // Log.LogInformation($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
-                CalculateDesignElevationPatch Executor = new CalculateDesignElevationPatch();
+                var Executor = new CalculateDesignElevationPatch();
 
                 var heightsResult = Executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
 
@@ -34,7 +34,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
             catch (Exception E)
             {
                 Log.LogError(E, "Exception:");
-                return null; 
+                return null;
             }
         }
     }
