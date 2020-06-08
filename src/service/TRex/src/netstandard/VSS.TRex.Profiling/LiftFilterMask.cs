@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Designs.Storage;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Profiling
@@ -129,7 +127,7 @@ namespace VSS.TRex.Profiling
           return result;
         }
 
-        passFilterAnnex.InitializeElevationRangeFilter(passFilter, getDesignHeightsResult.designHeights);      
+        passFilterAnnex.InitializeElevationRangeFilter(passFilter, getDesignHeightsResult.designHeights.Cells);    
       }
 
       result.executionResult = true;
