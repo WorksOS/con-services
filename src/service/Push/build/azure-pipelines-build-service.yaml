@@ -24,9 +24,10 @@ jobs:
         fetchDepth: 1
 
       - task: Bash@3
+        displayName: "Update & dump variables"
         inputs:
           targetType: 'inline'
-          script: 'printenv | sort'
+          script: 'echo "##vso[build.updatebuildnumber]Release $(Version)" && printenv | sort'
 
       - task: PowerShell@2
         displayName: "Build"
