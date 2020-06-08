@@ -24,10 +24,16 @@ jobs:
         fetchDepth: 1
 
       - task: Bash@3
-        displayName: "Update & dump variables"
+        displayName: "Update BUILD_BUILDNUMBER"
         inputs:
           targetType: 'inline'
-          script: '##vso[task.setvariable variable=BUILD_BUILDNUMBER;]$(Build.BuildId) && printenv | sort'
+          script: 'echo "##vso[build.updatebuildnumber]$(Build.BuildId)"'
+
+      - task: Bash@3
+        displayName: "Dump variables"
+        inputs:
+          targetType: 'inline'
+          script: 'printenv | sort'
 
       - task: PowerShell@2
         displayName: "Build"
