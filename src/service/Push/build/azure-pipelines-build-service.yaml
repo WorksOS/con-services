@@ -23,6 +23,11 @@ jobs:
       - checkout: self
         fetchDepth: 1
 
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: 'printenv | sort'
+
       - task: PowerShell@2
         displayName: "Build"
         inputs:
