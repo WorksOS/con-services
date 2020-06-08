@@ -20,7 +20,7 @@ namespace VSS.TRex.Designs
 
     public OptimisedSpatialIndexSubGridTree SpatialIndexOptimised { get; private set; }
 
-    private int[] spatialIndexOptimisedTriangles = null;
+    private int[] spatialIndexOptimisedTriangles;
 
     public int[] SpatialIndexOptimisedTriangles => spatialIndexOptimisedTriangles;
 
@@ -166,7 +166,7 @@ namespace VSS.TRex.Designs
           // a single list of triangles.
 
           // Count the number of triangle references present in the tree
-          int numTriangleReferences = 0;
+          var numTriangleReferences = 0;
           FSpatialIndex.ForEach(x =>
           {
             numTriangleReferences += x?.Count ?? 0;
@@ -178,18 +178,18 @@ namespace VSS.TRex.Designs
 
           /////////////////////////////////////////////////
           // Iterate across all leaf sub grids
-          //Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
+          // Copy all triangle lists into it, and add the appropriate reference blocks in the new tree.
           /////////////////////////////////////////////////
 
-          int copiedCount = 0;
+          var copiedCount = 0;
 
-          TriangleArrayReference arrayReference = new TriangleArrayReference()
+          var arrayReference = new TriangleArrayReference
           {
             Count = 0,
             TriangleArrayIndex = 0
           };
 
-          BoundingWorldExtent3D cellWorldExtent = new BoundingWorldExtent3D();
+          var cellWorldExtent = new BoundingWorldExtent3D();
 
           FSpatialIndex.ScanAllSubGrids(leaf =>
           {
@@ -198,10 +198,10 @@ namespace VSS.TRex.Designs
             // core cell size for the project
             SubGridUtilities.SubGridDimensionalIterator((x, y) =>
             {
-              int CellX = leaf.OriginX + x;
-              int CellY = leaf.OriginY + y;
+              var CellX = leaf.OriginX + x;
+              var CellY = leaf.OriginY + y;
 
-              List<int> triList = FSpatialIndex[CellX, CellY];
+              var triList = FSpatialIndex[CellX, CellY];
 
               if (triList == null)
                 return;
@@ -209,9 +209,8 @@ namespace VSS.TRex.Designs
               /////////////////////////////////////////////////////////////////////////////////////////////////
               // Start: Determine the triangles that definitely cannot cover one or more cells in each sub grid
 
-              double leafCellSize = SpatialIndexOptimised.CellSize / SubGridTreeConsts.SubGridTreeDimension;
-              double halfLeafCellSize = leafCellSize / 2;
-              double halfCellSizeMinusEpsilon = halfLeafCellSize - 0.0001;
+              var leafCellSize = SpatialIndexOptimised.CellSize / SubGridTreeConsts.SubGridTreeDimension;
+              var halfLeafCellSize = leafCellSize / 2;
 
               short trianglesCopiedToLeaf = 0;
 
@@ -220,30 +219,27 @@ namespace VSS.TRex.Designs
               // Compute the bounding structs for the triangles in this sub grid and remove any triangles whose
               // bounding struct is null (ie: no cell centers are covered by its bounding box).
 
-              for (int i = 0; i < triList.Count; i++)
+              for (var i = 0; i < triList.Count; i++)
               {
                 // Get the triangle...
-                Triangle tri = TriangleItems[triList[i]];
+                var tri = TriangleItems[triList[i]];
 
                 // Get the real world bounding box for the triangle
-                // Note: As sampling occurs at cell centers shrink the effective bounding box for each triangle used
-                // for calculating the cell bounding box by half a cell size (less a small Epsilon) so the cell bounding box
-                // captures cell centers falling in the triangle world coordinate bounding box
 
-                XYZ Vertex0 = VertexItems[tri.Vertex0];
-                XYZ Vertex1 = VertexItems[tri.Vertex1];
-                XYZ Vertex2 = VertexItems[tri.Vertex2];
+                var Vertex0 = VertexItems[tri.Vertex0];
+                var Vertex1 = VertexItems[tri.Vertex1];
+                var Vertex2 = VertexItems[tri.Vertex2];
 
-                double TriangleWorldExtent_MinX = Math.Min(Vertex0.X, Math.Min(Vertex1.X, Vertex2.X)) + halfCellSizeMinusEpsilon;
-                double TriangleWorldExtent_MinY = Math.Min(Vertex0.Y, Math.Min(Vertex1.Y, Vertex2.Y)) + halfCellSizeMinusEpsilon;
-                double TriangleWorldExtent_MaxX = Math.Max(Vertex0.X, Math.Max(Vertex1.X, Vertex2.X)) - halfCellSizeMinusEpsilon;
-                double TriangleWorldExtent_MaxY = Math.Max(Vertex0.Y, Math.Max(Vertex1.Y, Vertex2.Y)) - halfCellSizeMinusEpsilon;
+                var TriangleWorldExtent_MinX = Math.Min(Vertex0.X, Math.Min(Vertex1.X, Vertex2.X));
+                var TriangleWorldExtent_MinY = Math.Min(Vertex0.Y, Math.Min(Vertex1.Y, Vertex2.Y));
+                var TriangleWorldExtent_MaxX = Math.Max(Vertex0.X, Math.Max(Vertex1.X, Vertex2.X));
+                var TriangleWorldExtent_MaxY = Math.Max(Vertex0.Y, Math.Max(Vertex1.Y, Vertex2.Y));
 
                 // Calculate cell coordinates relative to the origin of the sub grid
-                int minCellX = (int)Math.Floor((TriangleWorldExtent_MinX - cellWorldExtent.MinX) / leafCellSize);
-                int minCellY = (int)Math.Floor((TriangleWorldExtent_MinY - cellWorldExtent.MinY) / leafCellSize);
-                int maxCellX = (int)Math.Floor((TriangleWorldExtent_MaxX - cellWorldExtent.MinX) / leafCellSize);
-                int maxCellY = (int)Math.Floor((TriangleWorldExtent_MaxY - cellWorldExtent.MinY) / leafCellSize);
+                var minCellX = (int)Math.Floor((TriangleWorldExtent_MinX - cellWorldExtent.MinX) / leafCellSize);
+                var minCellY = (int)Math.Floor((TriangleWorldExtent_MinY - cellWorldExtent.MinY) / leafCellSize);
+                var maxCellX = (int)Math.Floor((TriangleWorldExtent_MaxX - cellWorldExtent.MinX) / leafCellSize);
+                var maxCellY = (int)Math.Floor((TriangleWorldExtent_MaxY - cellWorldExtent.MinY) / leafCellSize);
 
                 // Check if the result bounds are valid - if not, there is no point including it
                 if (minCellX > maxCellX || minCellY > maxCellY)
@@ -267,13 +263,13 @@ namespace VSS.TRex.Designs
 
                 // Check all the cells in the sub grid covered by this bounding box to check if at least one cell will actively probe this triangle
 
-                bool found = false;
-                double _x = cellWorldExtent.MinX + minCellX * leafCellSize + halfLeafCellSize;
+                var found = false;
+                var _x = cellWorldExtent.MinX + minCellX * leafCellSize + halfLeafCellSize;
 
-                for (int cellX = minCellX; cellX <= maxCellX; cellX++)
+                for (var cellX = minCellX; cellX <= maxCellX; cellX++)
                 {
-                  double _y = cellWorldExtent.MinY + minCellY * leafCellSize + halfLeafCellSize;
-                  for (int cellY = minCellY; cellY <= maxCellY; cellY++)
+                  var _y = cellWorldExtent.MinY + minCellY * leafCellSize + halfLeafCellSize;
+                  for (var cellY = minCellY; cellY <= maxCellY; cellY++)
                   {
                     if (XYZ.GetTriangleHeight(Vertex0, Vertex1, Vertex2, _x, _y) != Common.Consts.NullDouble)
                     {
@@ -359,7 +355,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception in TTTMDesign.ConstructSpatialIndex");
+        Log.LogError(e, "Exception in ConstructSpatialIndex");
         return false;
       }
     }
