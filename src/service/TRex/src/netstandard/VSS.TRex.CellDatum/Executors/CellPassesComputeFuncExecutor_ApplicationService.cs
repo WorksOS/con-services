@@ -1,9 +1,5 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
@@ -18,7 +14,7 @@ namespace VSS.TRex.CellDatum.Executors
 {
   public class CellPassesComputeFuncExecutor_ApplicationService
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CellPassesComputeFuncExecutor_ApplicationService>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CellPassesComputeFuncExecutor_ApplicationService>();
 
     /// <summary>
     /// Constructor
@@ -32,7 +28,7 @@ namespace VSS.TRex.CellDatum.Executors
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)
       {
-        Log.LogError($"Failed to locate site model {arg.ProjectID}");
+        _log.LogError($"Failed to locate site model {arg.ProjectID}");
         return result;
       }
 

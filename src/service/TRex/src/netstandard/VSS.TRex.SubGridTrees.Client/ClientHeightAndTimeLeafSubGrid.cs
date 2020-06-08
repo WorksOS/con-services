@@ -56,25 +56,12 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     /// <summary>
-    /// Constructor. Set the grid to HeightAndTime.
+    /// Assign filtered height value from a filtered pass to a cell
     /// </summary>
-    /// <param name="owner"></param>
-    /// <param name="parent"></param>
-    /// <param name="level"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="indexOriginOffset"></param>
-    //public ClientHeightAndTimeLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
-    //{
-    //  Initialise();
-    //}
-
-  /// <summary>
-  /// Assign filtered height value from a filtered pass to a cell
-  /// </summary>
-  /// <param name="cellX"></param>
-  /// <param name="cellY"></param>
-  /// <param name="Context"></param>
-  public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
+    /// <param name="cellX"></param>
+    /// <param name="cellY"></param>
+    /// <param name="Context"></param>
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
     {
       base.AssignFilteredValue(cellX, cellY, Context);
 
@@ -191,7 +178,7 @@ namespace VSS.TRex.SubGridTrees.Client
       return true;
     }
 
-    public bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+    public override bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
       IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilterLambda)
     {
       if (!(surfaceElevationsSource is ClientHeightAndTimeLeafSubGrid surfaceElevations))

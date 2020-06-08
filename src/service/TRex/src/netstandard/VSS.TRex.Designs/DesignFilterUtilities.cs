@@ -16,10 +16,6 @@ namespace VSS.TRex.Designs
         /// Given a design used as an elevation range filter aspect, retrieve the existence map for the design and
         /// includes it in the supplied overall existence map for the query
         /// </summary>
-        /// <param name="siteModel"></param>
-        /// <param name="filter"></param>
-        /// <param name="overallExistenceMap"></param>
-        /// <returns></returns>
         public static bool ProcessDesignElevationsForFilter(ISiteModel siteModel, //Guid siteModelID,
                                                             ICombinedFilter filter,
                                                             ISubGridTreeBitMask overallExistenceMap)
@@ -32,14 +28,14 @@ namespace VSS.TRex.Designs
 
             if (filter.AttributeFilter.HasElevationRangeFilter && filter.AttributeFilter.ElevationRangeDesign.DesignID != Guid.Empty)
             {
-                var DesignExistenceMap = DIContext.Obtain<IExistenceMaps>().GetSingleExistenceMap
+                var designExistenceMap = DIContext.Obtain<IExistenceMaps>().GetSingleExistenceMap
                     (siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.AttributeFilter.ElevationRangeDesign.DesignID);
 
-                if (DesignExistenceMap != null)
+                if (designExistenceMap != null)
                 {
                     // Not sure this is really needed...
-                    DesignExistenceMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModel.CellSize;
-                    overallExistenceMap.SetOp_OR(DesignExistenceMap);
+                    designExistenceMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModel.CellSize;
+                    overallExistenceMap.SetOp_OR(designExistenceMap);
                 }
             }
 

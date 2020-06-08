@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Extensions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -11,6 +10,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+// ReSharper disable once IdentifierTypo
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.SurveyedSurfaces
@@ -19,8 +19,8 @@ namespace VSS.TRex.SurveyedSurfaces
   {
     private const byte VERSION_NUMBER = 1;
 
-    private IExistenceMaps existenceMaps;
-    private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
+    private IExistenceMaps _existenceMaps;
+    private IExistenceMaps GetExistenceMaps() => _existenceMaps ??= DIContext.Obtain<IExistenceMaps>();
 
     /// <summary>
     /// No-arg constructor
@@ -35,7 +35,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
       writer.Write(Count);
 
-      foreach (ISurveyedSurface ss in this)
+      foreach (var ss in this)
       {
         ss.Write(writer);
       }
@@ -45,10 +45,10 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      int theCount = reader.ReadInt32();
-      for (int i = 0; i < theCount; i++)
+      var theCount = reader.ReadInt32();
+      for (var i = 0; i < theCount; i++)
       {
-        SurveyedSurface surveyedSurface = new SurveyedSurface();
+        var surveyedSurface = new SurveyedSurface();
         surveyedSurface.Read(reader);
         Add(surveyedSurface);
       }
@@ -57,8 +57,6 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Determine if the surveyed surfaces in this list are the same as the surveyed surfaces in the other list, based on ID comparison
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     public bool IsSameAs(ISurveyedSurfaces other)
     {
       if (Count != other.Count)
@@ -66,7 +64,7 @@ namespace VSS.TRex.SurveyedSurfaces
         return false;
       }
 
-      for (int I = 0; I < Count; I++)
+      for (var I = 0; I < Count; I++)
       {
         if (this[I].ID != other[I].ID)
         {
@@ -80,11 +78,6 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Create a new surveyed surface in the list based on the provided details
     /// </summary>
-    /// <param name="surveyedSurfaceUid"></param>
-    /// <param name="designDescriptor"></param>
-    /// <param name="asAtDate"></param>
-    /// <param name="extents"></param>
-    /// <returns></returns>
     public ISurveyedSurface AddSurveyedSurfaceDetails(Guid surveyedSurfaceUid,
       DesignDescriptor designDescriptor,
       DateTime asAtDate,
@@ -104,11 +97,9 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Remove a given surveyed surface from the list of surveyed surfaces for a site model
     /// </summary>
-    /// <param name="surveyedSurfaceUid"></param>
-    /// <returns></returns>
     public bool RemoveSurveyedSurface(Guid surveyedSurfaceUid)
     {
-      ISurveyedSurface match = Find(x => x.ID == surveyedSurfaceUid);
+      var match = Find(x => x.ID == surveyedSurfaceUid);
 
       return match != null && Remove(match);
     }
@@ -116,13 +107,11 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Locates a surveyed surface in the list with the given GUID
     /// </summary>
-    /// <param name="surveyedSurfaceUid"></param>
-    /// <returns></returns>
     public ISurveyedSurface Locate(Guid surveyedSurfaceUid)
     {
       // Note: This happens a lot and the for loop is faster than foreach or Find(x => x.ID)
       // If numbers of surveyed surfaces become large a Dictionary<Guid, SS> would be good...
-      for (int i = 0; i < Count; i++)
+      for (var i = 0; i < Count; i++)
         if (this[i].ID == surveyedSurfaceUid)
           return this[i];
 
@@ -133,25 +122,23 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       Clear();
 
-      foreach (ISurveyedSurface ss in source)
+      foreach (var ss in source)
       {
         Add(ss); // formerly Add(ss.Clone());
       }
     }
 
-    public void SortChronologically(bool Descending) => Sort((x, y) => Descending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
+    public void SortChronologically(bool descending) => Sort((x, y) => descending ? y.AsAtDate.CompareTo(x.AsAtDate) : x.AsAtDate.CompareTo(y.AsAtDate));
 
     /// <summary>
     /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="timeStamp"></param>
-    /// <returns></returns>
     public bool HasSurfaceLaterThan(DateTime timeStamp)
     {
-      bool result = false;
+      var result = false;
 
-      for (int i = Count - 1; i >= 0; i--)
+      for (var i = Count - 1; i >= 0; i--)
       {
         if (this[i].AsAtDate.CompareTo(timeStamp) > 0)
         {
@@ -167,17 +154,15 @@ namespace VSS.TRex.SurveyedSurfaces
     /// Determines if there is at least one surveyed surface with an as at date later than the data provided as a DateTime.ToBinary() Int64
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="timeStamp"></param>
-    /// <returns></returns>
     public bool HasSurfaceLaterThan(long timeStamp)
     {
-      DateTime _TimeStamp = DateTime.FromBinary(timeStamp);
+      var localTimeStamp = DateTime.FromBinary(timeStamp);
 
-      bool result = false;
+      var result = false;
 
-      for (int i = Count - 1; i >= 0; i--)
+      for (var i = Count - 1; i >= 0; i--)
       {
-        if (this[i].AsAtDate.CompareTo(_TimeStamp) > 0)
+        if (this[i].AsAtDate.CompareTo(localTimeStamp) > 0)
         {
           result = true;
           break;
@@ -191,13 +176,11 @@ namespace VSS.TRex.SurveyedSurfaces
     /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="timeStamp"></param>
-    /// <returns></returns>
     public bool HasSurfaceEarlierThan(DateTime timeStamp)
     {
-      bool result = false;
+      var result = false;
 
-      for (int i = 0; i < Count; i++)
+      for (var i = 0; i < Count; i++)
       {
         if (this[i].AsAtDate.CompareTo(timeStamp) < 0)
         {
@@ -213,17 +196,15 @@ namespace VSS.TRex.SurveyedSurfaces
     /// Determines if there is at least one surveyed surface with an as at date earlier than the data provided as a DateTime.ToBinary() Int64
     /// Optimal performance will be observed if the list is sorted in ascending chronological order
     /// </summary>
-    /// <param name="timeStamp"></param>
-    /// <returns></returns>
     public bool HasSurfaceEarlierThan(long timeStamp)
     {
-      DateTime _TimeStamp = DateTime.FromBinary(timeStamp);
+      var localTimeStamp = DateTime.FromBinary(timeStamp);
 
-      bool result = false;
+      var result = false;
 
-      for (int i = 0; i < Count; i++)
+      for (var i = 0; i < Count; i++)
       {
-        if (this[i].AsAtDate.CompareTo(_TimeStamp) < 0)
+        if (this[i].AsAtDate.CompareTo(localTimeStamp) < 0)
         {
           result = true;
           break;
@@ -237,43 +218,37 @@ namespace VSS.TRex.SurveyedSurfaces
     /// Perform filtering on a set of surveyed surfaces according to the supplied time constraints.
     /// Note: The list of filtered surveyed surfaces is assumed to be empty at the point it is passed to this method
     /// </summary>
-    /// <param name="HasTimeFilter"></param>
-    /// <param name="StartTime"></param>
-    /// <param name="EndTime"></param>
-    /// <param name="ExcludeSurveyedSurfaces"></param>
-    /// <param name="FilteredSurveyedSurfaceDetails"></param>
-    /// <param name="ExclusionList"></param>
-    public void FilterSurveyedSurfaceDetails(bool HasTimeFilter,
-      DateTime StartTime, DateTime EndTime,
-      bool ExcludeSurveyedSurfaces,
-      ISurveyedSurfaces FilteredSurveyedSurfaceDetails,
-      Guid[] ExclusionList)
+    public void FilterSurveyedSurfaceDetails(bool hasTimeFilter,
+      DateTime startTime, DateTime endTime,
+      bool excludeSurveyedSurfaces,
+      ISurveyedSurfaces filteredSurveyedSurfaceDetails,
+      Guid[] exclusionList)
     {
-      if (ExcludeSurveyedSurfaces)
+      if (excludeSurveyedSurfaces)
         return;
 
-      if (StartTime.Kind != DateTimeKind.Utc || EndTime.Kind != DateTimeKind.Utc)
+      if (startTime.Kind != DateTimeKind.Utc || endTime.Kind != DateTimeKind.Utc)
         throw new ArgumentException("StartTime and EndTime must be UTC date times");
 
-      if (!HasTimeFilter && (ExclusionList?.Length ?? 0) == 0)
+      if (!hasTimeFilter && (exclusionList?.Length ?? 0) == 0)
       {
-        FilteredSurveyedSurfaceDetails.Assign(this);
+        filteredSurveyedSurfaceDetails.Assign(this);
         return;
       }
 
-      FilteredSurveyedSurfaceDetails.Clear();
-      foreach (ISurveyedSurface ss in this)
+      filteredSurveyedSurfaceDetails.Clear();
+      foreach (var ss in this)
       {
-        if (!HasTimeFilter)
+        if (!hasTimeFilter)
         {
-          if (ExclusionList == null || !ExclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
-            FilteredSurveyedSurfaceDetails.Add(ss); // Formerly ss.Clone
+          if (exclusionList == null || !exclusionList.Any(x => x == ss.ID)) // if SS not excluded from project
+            filteredSurveyedSurfaceDetails.Add(ss); // Formerly ss.Clone
         }
         else
         {
-          if (ss.AsAtDate >= StartTime && ss.AsAtDate <= EndTime &&
-              (ExclusionList == null || !ExclusionList.Any(x => x == ss.ID))) // if SS not excluded from project
-            FilteredSurveyedSurfaceDetails.Add(ss); // Formerly ss.Clone
+          if (ss.AsAtDate >= startTime && ss.AsAtDate <= endTime &&
+              (exclusionList == null || !exclusionList.Any(x => x == ss.ID))) // if SS not excluded from project
+            filteredSurveyedSurfaceDetails.Add(ss); // Formerly ss.Clone
         }
       }
     }
@@ -285,39 +260,33 @@ namespace VSS.TRex.SurveyedSurfaces
     /// filtered set of surfaces then the overall existence map for those surfaces will not be computed as it is 
     /// assumed to be the same.
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="Filter"></param>
-    /// <param name="ComparisonList"></param>
-    /// <param name="FilteredSurveyedSurfaces"></param>
-    /// <param name="OverallExistenceMap"></param>
-    /// <returns></returns>
-    public bool ProcessSurveyedSurfacesForFilter(Guid siteModelID,
-      ICombinedFilter Filter,
-      ISurveyedSurfaces ComparisonList,
-      ISurveyedSurfaces FilteredSurveyedSurfaces,
-      ISubGridTreeBitMask OverallExistenceMap)
+    public bool ProcessSurveyedSurfacesForFilter(Guid siteModelId,
+      ICombinedFilter filter,
+      ISurveyedSurfaces comparisonList,
+      ISurveyedSurfaces filteredSurveyedSurfaces,
+      ISubGridTreeBitMask overallExistenceMap)
     {
       // Filter out any surveyed surfaces which don't match current filter (if any) - realistically, this is time filters we're thinking of here
-      FilterSurveyedSurfaceDetails(Filter.AttributeFilter.HasTimeFilter,
-        Filter.AttributeFilter.StartTime, Filter.AttributeFilter.EndTime,
-        Filter.AttributeFilter.ExcludeSurveyedSurfaces(),
-        FilteredSurveyedSurfaces,
-        Filter.AttributeFilter.SurveyedSurfaceExclusionList);
+      FilterSurveyedSurfaceDetails(filter.AttributeFilter.HasTimeFilter,
+        filter.AttributeFilter.StartTime, filter.AttributeFilter.EndTime,
+        filter.AttributeFilter.ExcludeSurveyedSurfaces(),
+        filteredSurveyedSurfaces,
+        filter.AttributeFilter.SurveyedSurfaceExclusionList);
 
-      if (FilteredSurveyedSurfaces != null)
+      if (filteredSurveyedSurfaces != null)
       {
-        if (FilteredSurveyedSurfaces.IsSameAs(ComparisonList))
+        if (filteredSurveyedSurfaces.IsSameAs(comparisonList))
           return true;
 
-        if (FilteredSurveyedSurfaces.Count > 0)
+        if (filteredSurveyedSurfaces.Count > 0)
         {
-          var surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
-            FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
+          var surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelId,
+            filteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
-          if (OverallExistenceMap == null)
+          if (overallExistenceMap == null)
             return false;
 
-          OverallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
+          overallExistenceMap.SetOp_OR(surveyedSurfaceExistenceMap);
         }
       }
 

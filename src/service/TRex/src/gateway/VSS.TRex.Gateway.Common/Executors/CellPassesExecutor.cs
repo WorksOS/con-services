@@ -10,6 +10,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
@@ -38,6 +39,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<CellPassesTRexRequest>();
 
+      // ReSharper disable once PossibleNullReferenceException
       var siteModel = GetSiteModel(request.ProjectUid);
       var filter = ConvertFilter(request.Filter, siteModel);
       var coords = request.CoordsAreGrid
@@ -157,7 +159,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
-      throw new NotImplementedException("Use the asynchronous form of this method");
+      throw new TRexException("Use the asynchronous form of this method");
     }
   }
 }

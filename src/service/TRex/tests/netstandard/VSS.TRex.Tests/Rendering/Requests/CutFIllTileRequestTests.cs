@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs.Models;

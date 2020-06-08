@@ -12,7 +12,6 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
-using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
