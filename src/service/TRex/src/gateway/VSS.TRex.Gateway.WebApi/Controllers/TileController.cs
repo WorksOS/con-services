@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
@@ -37,7 +38,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public async Task<FileResult> GetTile([FromBody] TRexTileRequest request)
     {
-      Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(GetTile)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       ValidateFilterMachines(nameof(GetTile), request.ProjectUid, request.Filter1);
