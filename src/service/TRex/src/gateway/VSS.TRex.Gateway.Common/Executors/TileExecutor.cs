@@ -235,9 +235,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           if (request.Palettes != null)
           {
-            passCountPalette.AbovePassTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
+            passCountPalette.AbovePassTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
             passCountPalette.WithinPassTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[1].Color);
-            passCountPalette.BelowPassTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            passCountPalette.BelowPassTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
           }
 
           passCountPalette.UseMachineTargetPass = !overrides?.OverrideTargetPassCount ?? true;
