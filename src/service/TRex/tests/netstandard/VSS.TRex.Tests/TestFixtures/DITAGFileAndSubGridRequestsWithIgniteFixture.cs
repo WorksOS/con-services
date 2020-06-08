@@ -122,7 +122,8 @@ namespace VSS.TRex.Tests.TestFixtures
           return mutability switch
           {
             StorageMutability.Mutable => mutableIgniteMock,
-            StorageMutability.Immutable => immutableIgniteMock
+            StorageMutability.Immutable => immutableIgniteMock,
+            _ => throw new TRexException("Unknown immutability type")
           };
         }))
         .Complete();
@@ -170,7 +171,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var filePathAndName = Path.Combine(filePath, fileName);
 
       var ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-      var designLoadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad); 
+      var designLoadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad);
       designLoadResult.Should().Be(DesignLoadResult.Success);
 
       var extents = new BoundingWorldExtent3D();
@@ -208,11 +209,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Adds a design identified by a filename and location to the site model
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="filePath"></param>
-    /// <param name="fileName"></param>
-    /// <param name="constructIndexFilesOnLoad"></param>
-    /// <returns></returns>
     public static Guid AddSVLAlignmentDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName)
     {
       var filePathAndName = Path.Combine(filePath, fileName);
@@ -246,26 +242,20 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Adds a surveyed surface identified by a file name and location, plus asAtDate.
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="filePath"></param>
-    /// <param name="fileName"></param>
-    /// <param name="asAtDate"></param>
-    /// <param name="constructIndexFilesOnLoad"></param>
-    /// <returns></returns>
     public static Guid AddSurveyedSurfaceToSiteModel(ref ISiteModel siteModel, string filePath, string fileName, DateTime asAtDate,
      bool constructIndexFilesOnLoad)
     {
       var filePathAndName = Path.Combine(filePath, fileName);
 
-      TTMDesign ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
+      var ttm = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
       var loadResult = ttm.LoadFromFile(filePathAndName, constructIndexFilesOnLoad);
       loadResult.Should().Be(DesignLoadResult.Success);
 
-      BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+      var extents = new BoundingWorldExtent3D();
       ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
       ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
-      Guid surveyedSurfaceUid = Guid.NewGuid();
+      var surveyedSurfaceUid = Guid.NewGuid();
       var existenceMaps = DIContext.Obtain<IExistenceMaps>();
 
       // Create the design surface in the site model
@@ -298,7 +288,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// Creates a new otherwise empty site model configured to provide mutable data representation and adds
     /// an initial bulldozer machine to it
     /// </summary>
-    /// <returns></returns>
     public static ISiteModel NewEmptyModel(bool addDefaultMachine = true)
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
@@ -318,39 +307,37 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Constructs a simple TIN model containing a single triangle at (-25, -25), (25, -25), (0, 25)
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="elevation"></param>
-    /// <returns></returns>
-    public static Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
+    public static Guid ConstructSingleFlatTriangleDesignAboutSingleCellPoint(ref ISiteModel siteModel, float elevation, double x, double y, double size)
     {
       // Make a mutable TIN containing a single triangle and as below and register it to the site model
-      VSS.TRex.Designs.TTM.TrimbleTINModel tin = new TrimbleTINModel();
-      tin.Vertices.InitPointSearch(-100, -100, 100, 100, 3);
-      tin.Triangles.AddTriangle(tin.Vertices.AddPoint(-25, -25, elevation),
-        tin.Vertices.AddPoint(25, -25, elevation),
-        tin.Vertices.AddPoint(0, 25, elevation));
+      var tin = new TrimbleTINModel();
+      tin.Vertices.InitPointSearch(x - 2 * size, y - 2 * size, x + 2 * size, y + 2 * size, 3);
+      tin.Triangles.AddTriangle(tin.Vertices.AddPoint(x - size, y - size, elevation),
+        tin.Vertices.AddPoint(x + size, y - size, elevation),
+        tin.Vertices.AddPoint(x, y + size, elevation));
 
       var tempFileName = Path.GetTempFileName() + ".ttm";
       tin.SaveToFile(tempFileName, true);
 
-      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel
-        (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
+      return AddDesignToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
+    }
+
+    /// <summary>
+    /// Constructs a simple TIN model containing a single triangle at (-25, -25), (25, -25), (0, 25)
+    /// </summary>
+    public static Guid ConstructSingleFlatTriangleDesignAboutOrigin(ref ISiteModel siteModel, float elevation)
+    {
+      return ConstructSingleFlatTriangleDesignAboutSingleCellPoint(ref siteModel, elevation, 0, 0, 25.0);
     }
 
     /// <summary>
     /// Constructs a single triangle design surface as per ConstructSingleFlatTriangleDesignAboutOrigin but allows
     /// the triangle to be offset from the origin.
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="elevation"></param>
-    /// <param name="asAtDate"></param>
-    /// <param name="offsetX"></param>
-    /// <param name="offsetY"></param>
-    /// <returns></returns>
     public static Guid ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref ISiteModel siteModel, float elevation, DateTime asAtDate, double offsetX, double offsetY)
     {
       // Make a mutable TIN containing a single triangle and as below and register it to the site model
-      VSS.TRex.Designs.TTM.TrimbleTINModel tin = new TrimbleTINModel();
+      var tin = new TrimbleTINModel();
       tin.Vertices.InitPointSearch(-100 + offsetX, -100 + offsetY, 100 + offsetX, 100 + offsetY, 3);
       tin.Triangles.AddTriangle(tin.Vertices.AddPoint(-25 + offsetX, -25, elevation),
         tin.Vertices.AddPoint(25 + offsetX, -25 + offsetY, elevation),
@@ -367,17 +354,13 @@ namespace VSS.TRex.Tests.TestFixtures
     /// Constructs a surveyed surface of the same TIN produced by ConstructSingleFlatTriangleDesignAboutOrigin and
     /// with the supplied AsAtData to the site model
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="elevation"></param>
-    /// <param name="asAtDate"></param>
-    /// <returns></returns>
     public static Guid ConstructSingleFlatTriangleSurveyedSurfaceAboutOrigin(ref ISiteModel siteModel, float elevation, DateTime asAtDate)
     {
       return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
     }
 
     /// <summary>
-    /// Constructs a flat design surface comprising two triangles covering the exents of a provided sitemodel.
+    /// Constructs a flat design surface comprising two triangles covering the events of a provided site model.
     /// </summary>
     /// <param name="siteModel"></param>
     /// <param name="elevation"></param>
