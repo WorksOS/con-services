@@ -5,16 +5,22 @@ namespace VSS.Productivity3D.Models.ResultHandling
 {
   public class CompactionExportResult : ContractExecutionResult
   {
-    [JsonProperty(PropertyName = "fullFileName")]
-    public string FullFileName { get; private set; }
+    [JsonProperty(PropertyName = "downloadLink")]
+    public string DownloadLink { get; private set; }
 
-    public CompactionExportResult(string fullFileName)
+    public CompactionExportResult(string downloadLink)
     {
-      FullFileName = fullFileName;
+      DownloadLink = downloadLink;
     }
+
+    public CompactionExportResult()
+    {
+
+    }
+
     public CompactionExportResult(int code, string message)
     {
-      FullFileName = string.Empty;
+      DownloadLink = string.Empty;
       Code = code;
       Message = message;
     }

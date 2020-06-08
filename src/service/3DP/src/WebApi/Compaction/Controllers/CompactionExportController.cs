@@ -252,8 +252,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
       var fileStream = new FileStream(result.FullFileName, FileMode.Open);
 #else
-      var fileStream =
- (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.FullFileName)).FileStream;
+      var fileStream =  (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
 #endif
 
       Log.LogInformation($"GetExportReportVeta completed: ExportData size={fileStream.Length}");
@@ -342,8 +341,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //
       // the response fullFileName is in format: "project/{projectUId}/TRexExport/{request.FileName}__{uniqueTRexUid}.zip",
       //                                    e.g. "project/f13f2458-6666-424f-a995-4426a00771ae/TRexExport/blahDeBlahAmy__70b0f407-67a8-42f6-b0ef-1fa1d36fc71c.zip"
-      var fileStream =
- (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.FullFileName)).FileStream;
+      var fileStream = (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
 #endif
 
       Log.LogInformation($"GetExportReportMachinePasses completed: ExportData size={fileStream.Length}");
@@ -411,8 +409,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
-      var fileStream = new FileStream(result.FullFileName, FileMode.Open);
-
+      var fileStream = (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
       Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
       return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
     }

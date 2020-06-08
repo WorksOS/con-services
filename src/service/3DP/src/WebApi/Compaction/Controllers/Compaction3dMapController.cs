@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 #if RAPTOR
@@ -100,6 +102,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProductionDataTileService tileService;
     private readonly IBoundingBoxHelper boundingBoxHelper;
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
+    private readonly ITransferProxyFactory transferProxyFactory;
 
     /// <summary>
     /// Default Constructor
@@ -116,11 +119,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       IASNodeClient raptorClient,
 #endif
       IBoundingBoxHelper boundingBoxHelper,
-      ITRexCompactionDataProxy trexCompactionDataProxy) : base(configStore, fileImportProxy, settingsManager)
+      ITRexCompactionDataProxy trexCompactionDataProxy,
+      ITransferProxyFactory transferProxyFactory) : base(configStore, fileImportProxy, settingsManager)
     {
       this.tileService = tileService;
       this.boundingBoxHelper = boundingBoxHelper;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
+      this.transferProxyFactory = transferProxyFactory;
     }
 
     /// <summary>
@@ -327,7 +332,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (result != null)
       {
-        var zipStream = new FileStream(result.FullFileName, FileMode.Open);
+        var zipStream = (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
+        // If we didn't get a valid file, then we failed to read the ttm from raptor
+        if (zipStream == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "Failed to retrieve data"));
+        }
 
         using (var archive = new ZipArchive(zipStream))
         {
@@ -364,7 +376,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "Failed to retrieve raptor data"));
+            "Failed to retrieve data"));
       }
 
       // If we have a design request, get the ttm and add it for parsing
