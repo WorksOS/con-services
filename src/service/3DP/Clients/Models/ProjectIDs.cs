@@ -50,8 +50,8 @@ namespace VSS.Productivity3D.Productivity3D.Models
             "ProjectUid must be provided"));
       }
 
-      // seed for gen2 was 1. Seed for Gen3 is 1m.
-      if (ProjectId < 1)
+      // we generate IDs from GUIDS now, 0 and -1 are invalid
+      if (ProjectId == 0 || ProjectId == -1)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
