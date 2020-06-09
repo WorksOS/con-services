@@ -11,45 +11,40 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Determines if the bounds of a sub grid intersects a given triangle
     /// </summary>
-    /// <param name="Extents"></param>
-    /// <param name="H1"></param>
-    /// <param name="H2"></param>
-    /// <param name="V"></param>
-    /// <returns></returns>
-    public static bool SubGridIntersectsTriangle(BoundingWorldExtent3D Extents, XYZ H1, XYZ H2, XYZ V)
+    public static bool SubGridIntersectsTriangle(BoundingWorldExtent3D extents, XYZ h1, XYZ h2, XYZ v)
     {
       // If any of the triangle vertices are in the cell extents then 'yes'
-      if (Extents.Includes(H1.X, H1.Y) || Extents.Includes(H2.X, H2.Y) || Extents.Includes(V.X, V.Y))
+      if (extents.Includes(h1.X, h1.Y) || extents.Includes(h2.X, h2.Y) || extents.Includes(v.X, v.Y))
       {
         return true;
       }
 
       // If any of the sub grid corners sit in the triangle then 'yes'
       {
-        if (XYZ.PointInTriangle(H1, H2, V, Extents.MinX, Extents.MinY) ||
-            XYZ.PointInTriangle(H1, H2, V, Extents.MinX, Extents.MaxY) ||
-            XYZ.PointInTriangle(H1, H2, V, Extents.MaxX, Extents.MaxY) ||
-            XYZ.PointInTriangle(H1, H2, V, Extents.MaxX, Extents.MinY))
+        if (XYZ.PointInTriangle(h1, h2, v, extents.MinX, extents.MinY) ||
+            XYZ.PointInTriangle(h1, h2, v, extents.MinX, extents.MaxY) ||
+            XYZ.PointInTriangle(h1, h2, v, extents.MaxX, extents.MaxY) ||
+            XYZ.PointInTriangle(h1, h2, v, extents.MaxX, extents.MinY))
         {
           return true;
         }
       }
 
       // If any of the extent and triangle lines intersect then also 'yes'
-      if (LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, H1.X, H1.Y, H2.X, H2.Y, out _, out _, false, out _) ||
+      if (LineIntersection.LinesIntersect(extents.MinX, extents.MinY, extents.MaxX, extents.MinY, h1.X, h1.Y, h2.X, h2.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MaxX, extents.MinY, extents.MaxX, extents.MaxY, h1.X, h1.Y, h2.X, h2.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MinX, extents.MaxY, extents.MaxX, extents.MaxY, h1.X, h1.Y, h2.X, h2.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MinX, extents.MinY, extents.MinX, extents.MaxY, h1.X, h1.Y, h2.X, h2.Y, out _, out _, false, out _) ||
 
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, H1.X, H1.Y, V.X, V.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MinX, extents.MinY, extents.MaxX, extents.MinY, h1.X, h1.Y, v.X, v.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MaxX, extents.MinY, extents.MaxX, extents.MaxY, h1.X, h1.Y, v.X, v.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MinX, extents.MaxY, extents.MaxX, extents.MaxY, h1.X, h1.Y, v.X, v.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MinX, extents.MinY, extents.MinX, extents.MaxY, h1.X, h1.Y, v.X, v.Y, out _, out _, false, out _) ||
 
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MaxX, Extents.MinY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MaxX, Extents.MinY, Extents.MaxX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MaxY, Extents.MaxX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _) ||
-          LineIntersection.LinesIntersect(Extents.MinX, Extents.MinY, Extents.MinX, Extents.MaxY, V.X, V.Y, H2.X, H2.Y, out _, out _, false, out _))
+          LineIntersection.LinesIntersect(extents.MinX, extents.MinY, extents.MaxX, extents.MinY, v.X, v.Y, h2.X, h2.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MaxX, extents.MinY, extents.MaxX, extents.MaxY, v.X, v.Y, h2.X, h2.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MinX, extents.MaxY, extents.MaxX, extents.MaxY, v.X, v.Y, h2.X, h2.Y, out _, out _, false, out _) ||
+          LineIntersection.LinesIntersect(extents.MinX, extents.MinY, extents.MinX, extents.MaxY, v.X, v.Y, h2.X, h2.Y, out _, out _, false, out _))
       {
         return true;
       }
@@ -61,8 +56,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Simple utility function for swapping to XYZ vertices
     /// </summary>
-    /// <param name="A"></param>
-    /// <param name="B"></param>
     public static void SwapVertices(ref XYZ a, ref XYZ b) => MinMax.Swap(ref a, ref b);
   }
 }

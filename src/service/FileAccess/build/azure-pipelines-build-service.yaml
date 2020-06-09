@@ -5,15 +5,15 @@ trigger:
       # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
   paths:
     include:
-      - "src/service/Push/*"
+      - "src/service/FileAccess/*"
 
 pool: k8s-fsm
 
 variables:
   buildPlatform: "Any CPU"
   buildConfiguration: "Release"
-  serviceName: Push
-  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/Push"
+  serviceName: File-Access
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/FileAccess"
 
 jobs:
   - job: BuildTestAndDeploy

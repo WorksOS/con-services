@@ -9,14 +9,13 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
-  /// Controller for getting production data cell value and subgrid patches .
+  /// Controller for getting production data cell value and sub grid patches .
   /// </summary>
   [Route("api/v1")]
   public class CellController : BaseController
@@ -27,7 +26,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// Gets the subgrid patches for a given project. Maybe be filtered with a polygon grid.
+    /// Gets the sub grid patches for a given project. Maybe be filtered with a polygon grid.
     /// </summary>
     /// <param name="patchRequest"></param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>

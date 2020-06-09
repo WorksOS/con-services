@@ -32,9 +32,9 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <summary>
     /// Remove the surveyed surface list for a site model from the persistent store
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="siteModelUid"></param>
     /// <param name="storageProxy"></param>
     /// <returns></returns>
-    bool Remove(Guid siteModelID, IStorageProxy storageProxy);
+    bool Remove(Guid siteModelUid, IStorageProxy storageProxy);
   }
 }

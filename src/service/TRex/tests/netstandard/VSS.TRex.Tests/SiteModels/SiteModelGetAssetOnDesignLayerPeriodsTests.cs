@@ -4,7 +4,6 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -102,7 +101,7 @@ namespace VSS.TRex.Tests.SiteModels
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(1);
       assetOnDesignLayerPeriods[0].AssetId.Should().Be(Consts.NULL_LEGACY_ASSETID);
-      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(1);
       assetOnDesignLayerPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[0].LayerId.Should().Be(layerId1);
       assetOnDesignLayerPeriods[0].StartDate.Should().Be(startReportPeriod1);
@@ -143,28 +142,28 @@ namespace VSS.TRex.Tests.SiteModels
 
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(4);
-      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(1);
       assetOnDesignLayerPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[0].LayerId.Should().Be(layerId1);
       assetOnDesignLayerPeriods[0].StartDate.Should().Be(startReportPeriod1);
       assetOnDesignLayerPeriods[0].EndDate.Should().Be(startReportPeriod1.AddMinutes(5));
       assetOnDesignLayerPeriods[0].AssetUid.Should().Be(machine.ID);
 
-      assetOnDesignLayerPeriods[1].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[1].OnMachineDesignId.Should().Be(1);
       assetOnDesignLayerPeriods[1].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[1].LayerId.Should().Be(layerId2);
       assetOnDesignLayerPeriods[1].StartDate.Should().Be(startReportPeriod1.AddMinutes(5));
       assetOnDesignLayerPeriods[1].EndDate.Should().Be(endReportPeriod1);
       assetOnDesignLayerPeriods[1].AssetUid.Should().Be(machine.ID);
 
-      assetOnDesignLayerPeriods[2].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[2].OnMachineDesignId.Should().Be(1);
       assetOnDesignLayerPeriods[2].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[2].LayerId.Should().Be(layerId2);
       assetOnDesignLayerPeriods[2].StartDate.Should().Be(startReportPeriod2);
       assetOnDesignLayerPeriods[2].EndDate.Should().Be(startReportPeriod2.AddMinutes(6));
       assetOnDesignLayerPeriods[2].AssetUid.Should().Be(machine.ID);
 
-      assetOnDesignLayerPeriods[3].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[3].OnMachineDesignId.Should().Be(2);
       assetOnDesignLayerPeriods[3].OnMachineDesignName.Should().Be(design2.Name);
       assetOnDesignLayerPeriods[3].LayerId.Should().Be(layerId3);
       assetOnDesignLayerPeriods[3].StartDate.Should().Be(startReportPeriod2.AddMinutes(6));
@@ -200,7 +199,7 @@ namespace VSS.TRex.Tests.SiteModels
       var assetOnDesignLayerPeriods = siteModel.GetAssetOnDesignLayerPeriods();
       assetOnDesignLayerPeriods.Count.Should().Be(1);
 
-      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(Consts.kNoDesignNameID);
+      assetOnDesignLayerPeriods[0].OnMachineDesignId.Should().Be(1);
       assetOnDesignLayerPeriods[0].OnMachineDesignName.Should().Be(design1.Name);
       assetOnDesignLayerPeriods[0].LayerId.Should().Be(layerId1);
       assetOnDesignLayerPeriods[0].StartDate.Should().Be(startReportPeriod2.AddMinutes(6));

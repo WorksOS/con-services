@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs.Models;
@@ -120,9 +119,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var fileName = "FilterToFilter-CutFill-TestTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "CutFillTile", fileName);
 
-      //var saveFileName = @"C:\Temp\FilterToFilter-CutFill-TestTAGFile.bmp";
+      var saveFileName = ""; // @"C:\Temp\FilterToFilter-CutFill-TestTAGFile.bmp";
 
-      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, "", path);
+      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
   }
 }

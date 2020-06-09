@@ -594,7 +594,7 @@ namespace VSS.TRex.Filters
       PassCountRangeMin = Source.PassCountRangeMin;
       PassCountRangeMax = Source.PassCountRangeMax;
 
-      int SurveyedSurfaceExclusionCount = Source.SurveyedSurfaceExclusionList?.Length ?? 0;
+      var SurveyedSurfaceExclusionCount = Source.SurveyedSurfaceExclusionList?.Length ?? 0;
       SurveyedSurfaceExclusionList = new Guid[SurveyedSurfaceExclusionCount];
       if (Source.SurveyedSurfaceExclusionList != null)
         Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionCount);

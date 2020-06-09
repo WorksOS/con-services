@@ -125,6 +125,20 @@ namespace VSS.TRex.Common
     }
 
     /// <summary>
+    /// Writes a file to S3 and returns booean & out url path to S3 location
+    /// </summary>
+    public bool WriteFile(string localFullPath, Guid siteModelUid, out string preSignedUrl)
+    {
+      preSignedUrl = string.Empty;
+      var fileName = $"{Path.GetFileNameWithoutExtension(localFullPath)}-{Guid.NewGuid()}{Path.GetExtension(localFullPath)}";
+      var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+      var ret = WriteFile(localFullPath, s3FullPath);
+      if (ret)
+        preSignedUrl = GeneratePreSignedUrl(s3FullPath);
+      return ret;
+    }
+
+    /// <summary>
     ///  Remove file from storage
     /// </summary>
     public bool RemoveFileFromBucket(Guid siteModelUid, string fileName)
@@ -141,6 +155,14 @@ namespace VSS.TRex.Common
         return false;
       }
       return res;
+    }
+
+    /// <summary>
+    /// Generate url path to file located on S3
+    /// </summary>
+    public string GeneratePreSignedUrl(string path)
+    {
+      return _proxy.GeneratePreSignedUrl(path);
     }
 
   }

@@ -46,6 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<SummaryVolumesDataRequest>();
 
+      // ReSharper disable once PossibleNullReferenceException
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var baseFilter = ConvertFilter(request.BaseFilter, siteModel);
@@ -54,7 +55,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var summaryVolumesRequest = new SimpleVolumesRequest_ApplicationService();
 
-      var simpleVolumesResponse = await summaryVolumesRequest.ExecuteAsync(new SimpleVolumesRequestArgument()
+      var simpleVolumesResponse = await summaryVolumesRequest.ExecuteAsync(new SimpleVolumesRequestArgument
       {
         ProjectID = siteModel.ID,
         BaseFilter = baseFilter,
