@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Validation
     {
       try
       {
-        if (!((long?) value).HasValue || (long?) value > 0)
+        if (!((long?) value).HasValue || (long?) value != 0)
         {
           return ValidationResult.Success;
         }
