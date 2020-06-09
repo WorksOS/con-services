@@ -248,7 +248,7 @@ namespace VSS.TRex.SubGrids
       // no reference to the cache.
       if (result == ServerRequestResult.NoError && assignationSupported)
       {
-        // Determine if thi sub grid is suitable for storage in the cache
+        // Determine if this sub grid is suitable for storage in the cache
         // Don't add sub grids computed using a non-trivial WMS sieve to the general sub grid cache
         var shouldBeCached = (_subGridCacheContext != null) 
                              && (_areaControlSet.PixelXWorldSize >= _clientGrid.CellSize 
