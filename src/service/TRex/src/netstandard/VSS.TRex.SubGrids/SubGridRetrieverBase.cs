@@ -408,14 +408,6 @@ namespace VSS.TRex.SubGrids
         if (PruneSubGridRetrievalHere())
           return ServerRequestResult.NoError;
 
-        // Determine the bitmask detailing which cells match the cell selection filter
-        if (!SubGridFilterMasks.ConstructSubGridCellFilterMask(_subGridAsLeaf, _siteModel, _filter,
-          cellOverrideMask, _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction,
-          _clientGridAsLeaf.ProdDataMap, _clientGridAsLeaf.FilterMap))
-        {
-          return ServerRequestResult.FailedToComputeDesignFilterPatch;
-        }
-
         // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
 
         SetupForCellPassStackExamination();
@@ -439,12 +431,18 @@ namespace VSS.TRex.SubGrids
 
         // Before iterating over stripes of this sub grid, compute a scan map detailing to the best of our current
         // knowledge, which cells need to be visited so that only cells the filter wants and which are actually
-        // present in the data set are requested
-        _aggregatedCellScanMap.SetAndOf(_clientGridAsLeaf.FilterMap, _globalLatestCells.PassDataExistenceMap);
+        // present in the data set are requested. If the intent is to store the result in a cache then ensure the
+        // entire content is requested for the sub grid.
+        _aggregatedCellScanMap.OrWith(_globalLatestCells.PassDataExistenceMap);
+
         if (_sieveFilterInUse)
           _aggregatedCellScanMap.AndWith(_sieveBitmask); // ... and which are required by any sieve mask
+
         if (_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSieving)
+        {
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.ProdDataMap); // ... and which are in the required production data map
+          _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.FilterMap); // ... and which are in the required filter map
+        }
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
