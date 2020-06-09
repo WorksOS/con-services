@@ -317,7 +317,7 @@ namespace VSS.Pegasus.Client
 
         //4. Delete the execution
         Log.LogDebug($"Deleting execution for {dxfFileName}");
-        await gracefulClient.ExecuteRequest($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Delete, null, 3, false);
+        await gracefulClient.ExecuteRequest($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Delete, null, 0, false);
         */
 
         //5. Get the zoom range from the tile metadata file 

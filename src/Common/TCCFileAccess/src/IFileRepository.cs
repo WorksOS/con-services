@@ -12,11 +12,11 @@ namespace VSS.TCCFileAccess
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    Task<Stream> GetFile(Organization org, string fullName, int retries = 3);
+    Task<Stream> GetFile(Organization org, string fullName, int retries = 0);
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    Task<Stream> GetFile(string filespaceId, string fullName, int retries = 3);
+    Task<Stream> GetFile(string filespaceId, string fullName, int retries = 0);
     Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName);
     Task<bool> CopyFile(string filespaceId, string srcFullName, string dstFullName);
     Task<bool> CopyFile(string srcFilespaceId, string dstFilespaceId, string srcFullName, string dstFullName);

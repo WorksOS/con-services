@@ -117,7 +117,7 @@ namespace VSS.MasterData.Proxies
     }
 
     protected Task<T> SendMasterDataItemServiceDiscoveryNoCache<T>(string route, IHeaderDictionary customHeaders,
-      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 3)
+      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 0)
       where T : class
     {
       return RequestAndReturnData<T>(customHeaders, method, route, queryParameters, payload, retries);
@@ -211,7 +211,7 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    private async Task<TResult> RequestAndReturnData<TResult>(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 3) where TResult : class
+    private async Task<TResult> RequestAndReturnData<TResult>(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 0) where TResult : class
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
