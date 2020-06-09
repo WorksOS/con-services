@@ -224,6 +224,102 @@ namespace VSS.TRex.Tests.Volumes
     }
 
     [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilterWithIntermediary_Execute_SingleCell()
+    {
+      /*  This test recreates the common way the service layer poses a volumes question to the TRex service layer
+          if (VolumeType == VolumeComputationType.Between2Filters)
+          {
+            // Determine if intermediary filter/surface behaviour is required to
+            // support summary volumes
+            if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC // 'From' has As-At Time filter
+                                                         && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
+              && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
+                                                         && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
+            {
+              // Create and use the intermediary filter. The intermediary filter
+              // is create from the Top filter, with the return earliest flag set to true
+              IntermediaryFilter = new CombinedFilter();
+              IntermediaryFilter.AttributeFilter.Assign(TopFilter.AttributeFilter);
+              IntermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
+
+              FilterSet = new FilterSet(new[] {BaseFilter, IntermediaryFilter, TopFilter});
+            }
+            else
+              FilterSet = new FilterSet(BaseFilter, TopFilter);
+          }
+          else
+          {
+            FilterSet = VolumeType == VolumeComputationType.BetweenDesignAndFilter ? new FilterSet(TopFilter) : new FilterSet(BaseFilter);
+          }
+       */
+
+      SimpleVolumesRequestArgument RequestArg(Guid projectUid, ISiteModel model)
+      {
+        var (startUtc, endUtc) = model.GetDateRange();
+
+        return new SimpleVolumesRequestArgument
+        {
+          ProjectID = projectUid,
+          VolumeType = VolumeComputationType.Between2Filters,
+          BaseFilter = new CombinedFilter
+          {
+            AttributeFilter =
+            {
+              ReturnEarliestFilteredCellPass = false,
+              HasTimeFilter = true,
+              StartTime = Consts.MIN_DATETIME_AS_UTC,
+              EndTime = startUtc
+            }
+          },
+          TopFilter = new CombinedFilter
+          {
+            AttributeFilter = new CellPassAttributeFilter
+            {
+              ReturnEarliestFilteredCellPass = false,
+              HasTimeFilter = true,
+              StartTime = startUtc,
+              EndTime = endUtc
+            }
+          },
+          BaseDesign = new DesignOffset(),
+          TopDesign = new DesignOffset(),
+          CutTolerance = 0.001,
+          FillTolerance = 0.001
+        };
+      }
+
+      void CheckVolumesResponse(SimpleVolumesResponse response)
+      {
+        //Was, response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
+        const double EPSILON = 0.000001;
+        response.Should().NotBeNull();
+        response.Cut.Should().BeApproximately(0.99982155303955178, EPSILON);
+        response.Fill.Should().BeApproximately(2.4776475891113323, EPSILON);
+        response.CutArea.Should().BeApproximately(113.86600000000001, EPSILON);
+        response.FillArea.Should().BeApproximately(200.56600000000006, EPSILON);
+        response.TotalCoverageArea.Should().BeApproximately(353.0424, EPSILON);
+
+        response.BoundingExtentGrid.MinX.Should().BeApproximately(537669.2, EPSILON);
+        response.BoundingExtentGrid.MinY.Should().BeApproximately(5427391.44, EPSILON);
+        response.BoundingExtentGrid.MaxX.Should().BeApproximately(537676.34, EPSILON);
+        response.BoundingExtentGrid.MaxY.Should().BeApproximately(5427514.52, EPSILON);
+        response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+        response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+      }
+
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var response = await request.ExecuteAsync(RequestArg(siteModel.ID, siteModel));
+
+      CheckVolumesResponse(response);
+    }
+
+
+    [Fact]
     public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilterWithIntermediary_Execute_SingleTAGFile()
     {
       /*  This test recreates the common way the service layer poses a volumes question to the TRex service layer
@@ -233,7 +329,7 @@ namespace VSS.TRex.Tests.Volumes
             // support summary volumes
             if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC // 'From' has As-At Time filter
                                                          && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
-                                                         && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
+              && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
                                                          && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
             {
               // Create and use the intermediary filter. The intermediary filter
