@@ -63,7 +63,7 @@ namespace VSS.MasterData.ProjectTests
         .ReturnsAsync(new List<ImportedFile>());
 
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfigurations(_projectUid, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfigurations(_projectUid, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(projectConfigurationFileListResponse);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
@@ -104,9 +104,9 @@ namespace VSS.MasterData.ProjectTests
         Size = 66
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(projectConfigurationModel);
-      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, It.IsAny<IHeaderDictionary>()))
         .Returns(Task.CompletedTask);
       ServiceCollection.AddSingleton(mockCwsProfileSettingsClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
@@ -131,7 +131,7 @@ namespace VSS.MasterData.ProjectTests
       var createFileResponseModel = new CreateFileResponseModel
         { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
       var mockCwsDesignClient = new Mock<ICwsDesignClient>();
-      mockCwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), _customHeaders))
+      mockCwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(createFileResponseModel);
       ServiceCollection
         .AddSingleton(mockCwsDesignClient.Object);
@@ -159,12 +159,12 @@ namespace VSS.MasterData.ProjectTests
         Size = 99
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(projectConfigurationModel1);
-      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, It.IsAny<IHeaderDictionary>()))
         .Returns(Task.CompletedTask);
       var request = new ProjectConfigurationFileRequestModel{SiteCollectorFilespaceId = Guid.NewGuid().ToString()};
-      mockCwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, request, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, request, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(projectConfigurationModel2);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
@@ -202,9 +202,9 @@ namespace VSS.MasterData.ProjectTests
         Size = 66
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
-      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, It.IsAny<IHeaderDictionary>()))
         .ReturnsAsync(projectConfigurationModel);
-      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, _customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(_projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, It.IsAny<IHeaderDictionary>()))
         .Returns(Task.CompletedTask);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
