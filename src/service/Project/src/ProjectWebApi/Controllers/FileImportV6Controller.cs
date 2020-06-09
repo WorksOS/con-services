@@ -69,13 +69,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(GetImportedFilesV6)}: projectUid={projectUid}");
 
-      var projConfigTask = await CwsProfileSettingsClient.GetProjectConfigurations(new Guid(projectUid), customHeaders);
-      var importedFileTask = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, Logger, UserId, ProjectRepo);
       var result = new ImportedFileDescriptorListResult
       {
-        ProjectConfigFileDescriptors = projConfigTask?.ProjectConfigurationFiles.ToImmutableList(),
-        ImportedFileDescriptors = importedFileTask
-
+        ImportedFileDescriptors = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, Logger, UserId, ProjectRepo)
       };
       return result;
     }
@@ -561,55 +557,55 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore)
             .ConfigureAwait(false);
         }
+      }
 
-        if (creating)
-        {
-          var createImportedFile = new CreateImportedFile(
-            projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType,
-            fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolderId, parentUid, offset, importedFileUid, dataOceanFileName);
+      if (creating)
+      {
+        var createImportedFile = new CreateImportedFile(
+          projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType,
+          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolderId, parentUid, offset, importedFileUid, dataOceanFileName);
 
-          importedFile = await WithServiceExceptionTryExecuteAsync(() =>
-            RequestExecutorContainerFactory
-              .Build<CreateImportedFileExecutor>(
-                LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-                persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
-                cwsProjectClient: CwsProjectClient)
-              .ProcessAsync(createImportedFile)
-          ) as ImportedFileDescriptorSingleResult;
+        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<CreateImportedFileExecutor>(
+              LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
+              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+              persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+              cwsProjectClient: CwsProjectClient)
+            .ProcessAsync(createImportedFile)
+        ) as ImportedFileDescriptorSingleResult;
 
-          Logger.LogInformation(
-            $"{nameof(UpsertFileInternal)}: Create completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
-        }
-        else
-        {
-          // this also validates that this customer has access to the projectUid
-          var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+        Logger.LogInformation(
+          $"{nameof(UpsertFileInternal)}: Create completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+      }
+      else
+      {
+        // this also validates that this customer has access to the projectUid
+        var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
-          var importedFileUpsertEvent = new UpdateImportedFile(
-            projectUid, project.ShortRaptorProjectId, importedFileType,
-            (importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff)
-              ? surveyedUtc
-              : null,
-            dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
-            Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
-            DataOceanRootFolderId, offset, dataOceanFileName);
+        var importedFileUpsertEvent = new UpdateImportedFile(
+          projectUid, project.ShortRaptorProjectId, importedFileType,
+          (importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff)
+            ? surveyedUtc
+            : null,
+          dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
+          Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
+          DataOceanRootFolderId, offset, dataOceanFileName);
 
-          importedFile = await WithServiceExceptionTryExecuteAsync(() =>
-            RequestExecutorContainerFactory
-              .Build<UpdateImportedFileExecutor>(
-                LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-                tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
-                cwsProjectClient: CwsProjectClient)
-              .ProcessAsync(importedFileUpsertEvent)
-          ) as ImportedFileDescriptorSingleResult;
+        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<UpdateImportedFileExecutor>(
+              LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
+              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+              tRexImportFileProxy: tRexImportFileProxy,
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+              cwsProjectClient: CwsProjectClient)
+            .ProcessAsync(importedFileUpsertEvent)
+        ) as ImportedFileDescriptorSingleResult;
 
-          Logger.LogInformation(
-            $"{nameof(UpsertFileInternal)}: Update completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
-        }
+        Logger.LogInformation(
+          $"{nameof(UpsertFileInternal)}: Update completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
 
       await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
