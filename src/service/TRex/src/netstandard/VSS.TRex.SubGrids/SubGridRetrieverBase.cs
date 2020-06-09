@@ -71,8 +71,8 @@ namespace VSS.TRex.SubGrids
     protected ISubGrid _subGrid;
     protected IServerLeafSubGrid _subGridAsLeaf;
 
-    protected bool _sieveFilterInUse;
-    protected SubGridTreeBitmapSubGridBits _sieveBitmask;
+    private bool _sieveFilterInUse;
+    private SubGridTreeBitmapSubGridBits _sieveBitmask;
 
     protected ProfileCell _cellProfile;
 
@@ -420,13 +420,6 @@ namespace VSS.TRex.SubGrids
           ? GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.CellSize, out _sieveBitmask)
           : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _areaControlSet, _siteModel.CellSize, _assignmentContext, out _sieveBitmask);
 
-        if (!_sieveFilterInUse)
-        {
-          // Reset pixel size parameters to indicate no skip stepping is being performed
-          _areaControlSet.PixelXWorldSize = 0;
-          _areaControlSet.PixelYWorldSize = 0;
-        }
-
         //if (Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
         // Before iterating over stripes of this sub grid, compute a scan map detailing to the best of our current
@@ -438,7 +431,7 @@ namespace VSS.TRex.SubGrids
         if (_sieveFilterInUse)
           _aggregatedCellScanMap.AndWith(_sieveBitmask); // ... and which are required by any sieve mask
 
-        if (_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSieving)
+        if (!_sieveFilterInUse && _prepareGridForCacheStorageIfNoSieving)
         {
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.ProdDataMap); // ... and which are in the required production data map
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.FilterMap); // ... and which are in the required filter map

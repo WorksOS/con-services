@@ -250,7 +250,9 @@ namespace VSS.TRex.SubGrids
       {
         // Determine if thi sub grid is suitable for storage in the cache
         // Don't add sub grids computed using a non-trivial WMS sieve to the general sub grid cache
-        var shouldBeCached = (_subGridCacheContext != null) && !(_areaControlSet.PixelXWorldSize == 0 && _areaControlSet.PixelYWorldSize == 0);
+        var shouldBeCached = (_subGridCacheContext != null) 
+                             && (_areaControlSet.PixelXWorldSize >= _clientGrid.CellSize 
+                                 && _areaControlSet.PixelYWorldSize >= _clientGrid.CellSize);
 
         var clientGrid2 = ClientLeafSubGridFactory.GetSubGrid(_clientGrid.GridDataType);
         clientGrid2.Assign(_clientGrid);
@@ -266,12 +268,9 @@ namespace VSS.TRex.SubGrids
             _log.LogWarning($"Failed to add sub grid {clientGrid2.Moniker()}, data model {_siteModel.ID} to sub grid result cache context [FingerPrint:{_subGridCacheContext.FingerPrint}], returning sub grid to factory as not added to cache");
             ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
           }
-
-          // Replace client grid with the version of the grid with the filter map mask applied to it
-          _clientGrid = clientGrid2;
         }
 
-        _clientGrid = clientGrid2 ?? _clientGrid;
+        _clientGrid = clientGrid2;
       }
 
       //if <config>.Debug_ExtremeLogSwitchB then  SIGLogMessage.PublishNoODS(Nil, 'Completed call to RetrieveSubGrid()');
