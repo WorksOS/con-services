@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,11 @@ using Amazon.SimpleNotificationService.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Productivity.Push.Models.Notifications;
+using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Models;
 
 namespace VSS.Productivity3D.Push.Controllers
 {
@@ -39,7 +44,7 @@ namespace VSS.Productivity3D.Push.Controllers
       }
       catch (AmazonClientException e)
       {
-        _logger.LogWarning($"Falied to validate SNS Message. Error: {e.Message}");
+        _logger.LogWarning($"Failed to validate SNS Message. Error: {e.Message}");
         return BadRequest(e.Message);
       }
 
@@ -54,8 +59,30 @@ namespace VSS.Productivity3D.Push.Controllers
       else if(payload.IsNotificationType)
       {
         // Got a valid message
-        // TODO Action these once CWS define the payload
-        _logger.LogInformation($"Received notification, no actions executed currently. Message ID: {payload.MessageId}. Text: {payload.MessageText}");
+        var notification = JsonConvert.DeserializeObject<CwsTrnUpdate>(payload.MessageText);
+        if (notification != null)
+        {
+          // Iterate all 
+          var trns = notification.UpdatedTrns ?? new List<string>();
+          trns.Add(notification.AccountTrn);
+          trns.Add(notification.ProjectTrn);
+          var tasks = new Task[trns.Count];
+          for (var i = 0; i < trns.Count; i++)
+          {
+            var guid = TRNHelper.ExtractGuid(trns[i]);
+            if (guid.HasValue)
+              tasks[i] = _notificationHubClient.Notify(new ProjectChangedNotification(guid.Value));
+            else
+              _logger.LogWarning($"Failed to extra GUID from TRN: {trns[i]}");
+          }
+
+          await Task.WhenAll(tasks);
+          _logger.LogInformation($"Processed notifications. Total TRNS: {trns.Count}");
+        }
+        else
+        {
+          _logger.LogWarning($"Failed to parse notification message with content: {payload.MessageText}");
+        }
       }
 
       return Ok();
