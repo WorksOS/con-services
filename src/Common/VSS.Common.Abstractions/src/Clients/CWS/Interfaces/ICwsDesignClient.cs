@@ -6,7 +6,7 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
 {
-  [Obsolete("Should use cws directly now")]
+  [Obsolete("UI to use cws directly now")]
   public interface ICwsDesignClient
   {
     Task<CreateFileResponseModel> CreateFile(Guid projectUid, CreateFileRequestModel createFileRequest, IHeaderDictionary customHeaders = null);

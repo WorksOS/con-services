@@ -194,7 +194,7 @@ namespace MockProjectWebApi.Controllers
     #region CWS Profile Settings Client
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration")]
     [Mvc.HttpGet]
-    [Obsolete("Should use cws directly now")]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(string projectTrn)
     {
       List<ProjectConfigurationModel> list = null;
@@ -218,7 +218,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpGet]
-    [Obsolete("Should use cws directly now")]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult<ProjectConfigurationModel> GetProjectConfiguration(string projectTrn, string projectConfigurationType)
     {
       ProjectConfigurationModel projectConfigurationModel = null;
@@ -235,7 +235,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpPost]
-    [Obsolete("Should use cws directly now")]
+    [Obsolete("UI to use cws directly now")]
     public ProjectConfigurationModel SaveProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
     {
       var projectConfigurationModel = new ProjectConfigurationModel
@@ -261,7 +261,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpPut]
-    [Obsolete("Should use cws directly now")]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult<ProjectConfigurationModel> UpdateProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
     {
       ProjectConfigurationModel projectConfigurationModel = null;
@@ -288,7 +288,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpDelete]
-    [Obsolete("Should use cws directly now")]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult DeleteProjectConfiguration(string projectTrn, string projectConfigurationType)
     {
       Logger.LogInformation($"{nameof(DeleteProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType}");

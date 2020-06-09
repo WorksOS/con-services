@@ -30,7 +30,7 @@ namespace CCSS.CWS.Client
   ///      This is because each machine type supports different formats and content etc. 
   ///      Indicate in ProjectConfigurationModel machineControlFilespaceId and siteCollectorFilespaceId
   /// </summary>
-  [Obsolete("Should use cws directly now")]
+  [Obsolete("UI to use cws directly now")]
   public class CwsProfileSettingsClient : CwsProfileSettingsManagerClient, ICwsProfileSettingsClient
   {
     public CwsProfileSettingsClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)

@@ -8,7 +8,7 @@ using VSS.MasterData.Proxies.Interfaces;
 
 namespace CCSS.CWS.Client
 {
-  [Obsolete("Should use cws directly now")]
+  [Obsolete("UI to use cws directly now")]
   public abstract class CwsProfileSettingsManagerClient : BaseClient
   {  
     public override string ExternalServiceName => "cws_profilesettings";
