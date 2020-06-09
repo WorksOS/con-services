@@ -35,8 +35,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       return CheckTPaaS();
     }
 
-    //[Fact(Skip= "manual testing only")]
-    [Fact]
+    [Fact(Skip= "manual testing only")]
     public async Task CreateProjectTest()
     {
       // test requires a user token.
