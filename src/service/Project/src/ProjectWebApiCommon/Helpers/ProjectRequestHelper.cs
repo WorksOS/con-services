@@ -354,14 +354,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
               log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
           }
-
-          //save to CWS
-          using (var ms = new MemoryStream(coordinateSystemFileContent))
-          {
-            //TODO: handle errors from CWS
-            await CwsConfigFileHelper.SaveFileToCws(projectUid, coordinateSystemFileName, ms, ImportedFileType.CwsCalibration,
-              cwsDesignClient, cwsProfileSettingsClient, customHeaders);
-          }
         }
         catch (Exception e)
         {

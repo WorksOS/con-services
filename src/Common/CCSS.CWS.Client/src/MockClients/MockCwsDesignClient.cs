@@ -16,6 +16,7 @@ namespace CCSS.CWS.Client.MockClients
   /// <summary>
   /// Mocks to use until we can get the real endpoints
   /// </summary>
+  [Obsolete("Should use cws directly now")]
   public class MockCwsDesignClient : CwsDesignManagerClient, ICwsDesignClient
   {
     public MockCwsDesignClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
