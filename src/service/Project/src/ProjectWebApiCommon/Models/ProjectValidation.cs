@@ -15,6 +15,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public string ProjectName { get; set; }
     public string ProjectBoundaryWKT { get; set; }
     public ProjectUpdateType UpdateType { get; set; }
-    public string CoordinateSystemFileSpaceId { get; set; }
+    public string CoordinateSystemFileName { get; set; }
+    public byte[] CoordinateSystemFileContent { get; set; }
   }
 }

@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 using Xunit;
 
@@ -29,6 +32,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
+      var coordSystemResult = new CoordinateSystemSettingsResult();
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(coordSystemResult);
+      
       var request = new ProjectValidateDto
       {
         AccountTrn = _customerTrn,
@@ -37,13 +44,14 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] {1,2,3,4,5,6,7,8}
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
-        null, cwsProjectClient: cwsProjectClient.Object);
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -60,7 +68,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = null,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -72,7 +81,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task ValidateProjectExecutor_Create_MissingFilespaceId()
+    public async Task ValidateProjectExecutor_Create_MissingCoordSysFileName()
     {
       var request = new ProjectValidateDto
       {
@@ -82,7 +91,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = null
+        CoordinateSystemFileName = null,
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -90,7 +100,30 @@ namespace VSS.MasterData.ProjectTests.Executors
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(132, result.Code);
-      Assert.Equal("Missing coordinate system filespaceId.", result.Message);
+      Assert.Equal("Missing coordinate system file name.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Create_MissingCoordSysFileContents()
+    {
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = null,
+        ProjectName = "some project",
+        ProjectType = CwsProjectType.AcceptsTagFiles,
+        Boundary = CreateNonOverlappingBoundary(),
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = null
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(133, result.Code);
+      Assert.Equal("Missing coordinate system file contents.", result.Message);
     }
 
     [Fact]
@@ -104,7 +137,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -112,7 +146,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(11, result.Code);
-      Assert.Equal("Missing ProjectName.", result.Message);
+      Assert.Equal("Missing Project Name.", result.Message);
     }
 
     [Fact]
@@ -130,7 +164,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -139,7 +174,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         null, cwsProjectClient: cwsProjectClient.Object);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(109, result.Code);
-      Assert.Equal("ProjectName must be unique. 1 active project duplicates found.", result.Message);
+      Assert.Equal("Project Name must be unique. 1 active project duplicates found.", result.Message);
     }
 
     [Fact]
@@ -153,7 +188,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = null,
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -161,7 +197,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(8, result.Code);
-      Assert.Equal("Missing ProjectBoundary.", result.Message);
+      Assert.Equal("Missing Project Boundary.", result.Message);
     }
 
     [Fact]
@@ -179,7 +215,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateInvalidBoundary(),
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -206,7 +243,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateSelfIntersectingBoundary(),
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -233,7 +271,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = projectList.Projects[0].ProjectSettings.Boundary,
         UpdateType = ProjectUpdateType.Created,
-        CoordinateSystemFileSpaceId = "some filespaceid"
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -273,7 +312,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
-      var request = new ProjectValidateDto {AccountTrn = _customerTrn, ProjectTrn = _projectTrn, ProjectName = "some new project name", UpdateType = ProjectUpdateType.Updated};
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn, ProjectTrn = _projectTrn, ProjectName = "some new project name", UpdateType = ProjectUpdateType.Updated
+      };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
@@ -299,7 +341,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         null, cwsProjectClient: cwsProjectClient.Object);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(109, result.Code);
-      Assert.Equal("ProjectName must be unique. 1 active project duplicates found.", result.Message);
+      Assert.Equal("Project Name must be unique. 1 active project duplicates found.", result.Message);
     }
 
     [Fact]
@@ -346,13 +388,47 @@ namespace VSS.MasterData.ProjectTests.Executors
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
       cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+      
+      var coordSystemResult = new CoordinateSystemSettingsResult();
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(coordSystemResult);
 
       var request = new ProjectValidateDto
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        UpdateType = ProjectUpdateType.Updated
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
+      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateProjectType_MissingCoordSysFileName()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = null,
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -360,8 +436,36 @@ namespace VSS.MasterData.ProjectTests.Executors
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
         null, cwsProjectClient: cwsProjectClient.Object);
       var result = await executor.ProcessAsync(data);
-      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
-      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+      Assert.Equal(132, result.Code);
+      Assert.Equal("Missing coordinate system file name.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateProjectType_MissingCoordSysFileContents()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = null
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(133, result.Code);
+      Assert.Equal("Missing coordinate system file contents.", result.Message);
     }
 
     [Fact]
@@ -377,7 +481,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        UpdateType = ProjectUpdateType.Updated
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -389,6 +495,190 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Equal("Project does not exist.", result.Message);
     }
 
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateCoordSysFile_Valid()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var coordSystemResult = new CoordinateSystemSettingsResult();
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(coordSystemResult);
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
+      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateCoordSysFile_MissingCoordSysFileName()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var coordSystemResult = new CoordinateSystemSettingsResult();
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(coordSystemResult);
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = null,
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(134, result.Code);
+      Assert.Equal("Both coordinate system file name and contents must be provided.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateCoordSysFile_MissingCoordSysFileContents()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var coordSystemResult = new CoordinateSystemSettingsResult();
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(coordSystemResult);
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = null
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(134, result.Code);
+      Assert.Equal("Both coordinate system file name and contents must be provided.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateCoordSysFile_WithException()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var exMessage = "some problem here";
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ThrowsAsync(new Exception(exMessage));
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(57, result.Code);
+      Assert.Equal($"A problem occurred at the validate CoordinateSystem endpoint in 3dpm. Exception: {exMessage}", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateCoordSysFile_NoResult()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync((CoordinateSystemSettingsResult)null);
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(46, result.Code);
+      Assert.Equal("Invalid CoordinateSystem.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UpdateCoordSysFile_Failed()
+    {
+      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
+      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
+
+      var coordSystemResult = new CoordinateSystemSettingsResult{Code = 99, Message = "Failed!"};
+      var coordProxy = new Mock<IProductivity3dV1ProxyCoord>();
+      coordProxy.Setup(cp => cp.CoordinateSystemValidate(It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(coordSystemResult);
+
+      var request = new ProjectValidateDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = _projectTrn,
+        UpdateType = ProjectUpdateType.Updated,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+      };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        coordProxy.Object, cwsProjectClient: cwsProjectClient.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(47, result.Code);
+      Assert.Equal($"Unable to validate CoordinateSystem in 3dpm: {coordSystemResult.Code} {coordSystemResult.Message}.", result.Message);
+    }
 
     [Fact]
     public async Task ValidateProjectExecutor_Delete_Valid()
@@ -416,6 +706,20 @@ namespace VSS.MasterData.ProjectTests.Executors
       var result = await executor.ProcessAsync(data);
       Assert.Equal(5, result.Code);
       Assert.Equal("Missing ProjectUID.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_MismatchedCustomerUid()
+    {
+      var request = new ProjectValidateDto { AccountTrn = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_ACCOUNT)};
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: null);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(135, result.Code);
+      Assert.Equal("Mismatching customerUid.", result.Message);
     }
 
     private ProjectBoundary CreateNonOverlappingBoundary()

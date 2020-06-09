@@ -20,9 +20,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
                             (EC520 and      (CB460, CB450, 	    (Tablet)            (TSC3, Mobile)
 	                           EC520-W)       CB430, CD700)                       
 	      
-      CwsCalibration	          .cal	          .cfg (if present)	  .dc	                .dc
+      Calibration	          .cal	          .cfg (if present)	  .dc	                .dc
                                             or .cal
-      CwsGeoid	                .ggf	          .ggf	              .ggf	              .ggf
+      Geoid	                .ggf	          .ggf	              .ggf	              .ggf
       Control points	      .cpz		                            .office.csv/.csv 	  .office.csv/.csv 
       Avoidance zone	      .avoid.svl		                      .avoid.dxf	        .avoid.dxf
       Feature code library	.fxl		                            .fxl	              .fxl

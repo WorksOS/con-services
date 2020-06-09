@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
+namespace VSS.Common.Abstractions.Clients.CWS.Enums
 {
   //Note: WM send an int for this when validating projects.
   //If new values are added make sure they will work as flags.

@@ -133,7 +133,10 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Self-intersecting project boundary.", 129);
       this.DynamicAddwithOffset("Missing project type.", 130);
       this.DynamicAddwithOffset("A problem occurred downloading the calibration file. Exception: {0}", 131);
-      this.DynamicAddwithOffset("Missing coordinate system filespaceId.", 132);
+      this.DynamicAddwithOffset("Missing coordinate system file name.", 132);
+      this.DynamicAddwithOffset("Missing coordinate system file contents.", 133);
+      this.DynamicAddwithOffset("Both coordinate system file name and contents must be provided.", 134);
+      this.DynamicAddwithOffset("Mismatching customerUid.", 135);
     }
   }
 }

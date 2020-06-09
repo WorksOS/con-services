@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -22,7 +23,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       var data = CastRequestObjectTo<ProjectValidation>(item, errorCode: 68);
 
-      //TODO: Use CustmerUID from data rather than headers or check they match (ask Steve)
+      //Check customerUid in request matches header since some of the API calls use the data and some the header
+      if (data.CustomerUid.ToString() != customHeaders["X-VisionLink-CustomerUID"])
+      {
+        return new ContractExecutionResult(135, "Mismatching customerUid.");
+      }
 
       var userUid = new Guid(userId);
       if (data.UpdateType == ProjectUpdateType.Created)
@@ -40,9 +45,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           return new ContractExecutionResult(8, "Missing Project Boundary.");
         }
-        if (string.IsNullOrEmpty(data.CoordinateSystemFileSpaceId))
+        if (string.IsNullOrEmpty(data.CoordinateSystemFileName))
         {
-          return new ContractExecutionResult(132, "Missing coordinate system filespaceId.");
+          return new ContractExecutionResult(132, "Missing coordinate system file name.");
+        }
+        if (data.CoordinateSystemFileContent == null || data.CoordinateSystemFileContent.Length == 0)
+        {
+          return new ContractExecutionResult(133, "Missing coordinate system file contents.");
         }
 
         //Validate project name not duplicate
@@ -71,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
 
         //Validate coordinate system file
-        dynamic coordSysResult = await ValidateCoordinateSystemFile(data.ProjectUid, data.CoordinateSystemFileSpaceId);
+        dynamic coordSysResult = await ValidateCoordinateSystemFile(data.ProjectUid, data.CoordinateSystemFileName, data.CoordinateSystemFileContent);
         if (coordSysResult.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
         {
           return new ContractExecutionResult(coordSysResult.code, coordSysResult.message);
@@ -86,12 +95,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           return new ContractExecutionResult(5, "Missing ProjectUID.");
         }
 
-        string downloadUrl = null;
-        string filename = null;
         if (data.ProjectType.HasValue)
         {
           //Changing from non 3d-enabled to 3d-enabled.
-          // Get the existing project to validate name, boundary and coordinate system file
+          if (string.IsNullOrEmpty(data.CoordinateSystemFileName))
+          {
+            return new ContractExecutionResult(132, "Missing coordinate system file name.");
+          }
+          if (data.CoordinateSystemFileContent == null || data.CoordinateSystemFileContent.Length == 0)
+          {
+            return new ContractExecutionResult(133, "Missing coordinate system file contents.");
+          }
+          // Get the existing project to validate name and boundary
           var project = await cwsProjectClient.GetMyProject(data.ProjectUid.Value, userUid, customHeaders: customHeaders);
           if (project == null)
           {
@@ -101,13 +116,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             data.ProjectName = project.ProjectName;
           if (string.IsNullOrEmpty(data.ProjectBoundaryWKT))
             data.ProjectBoundaryWKT = GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary);
-          if (string.IsNullOrEmpty(data.CoordinateSystemFileSpaceId))
-          {
-            var projectConfiguration = project.ProjectSettings.Config?.FirstOrDefault(c => c.FileType == ProjectConfigurationFileType.CALIBRATION.ToString());
-            downloadUrl = projectConfiguration?.FileDownloadLink;
-            //filename format is: "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f||2020-03-25 23:03:45.314||BootCamp 2012.dc"
-            filename = projectConfiguration?.FileName.Split(ProjectConfigurationModel.FilenamePathSeparator)[2].Trim();
-          }
         }
 
         //Validate project name if changed
@@ -137,9 +145,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
 
         //Validate coordinate system file if changed
-        if (!string.IsNullOrEmpty(data.CoordinateSystemFileSpaceId))
+        if (!string.IsNullOrEmpty(data.CoordinateSystemFileName) || (data.CoordinateSystemFileContent != null && data.CoordinateSystemFileContent.Length > 0))
         {
-          dynamic coordSysResult = await ValidateCoordinateSystemFile(data.ProjectUid, data.CoordinateSystemFileSpaceId);
+          if (string.IsNullOrEmpty(data.CoordinateSystemFileName) || data.CoordinateSystemFileContent == null || data.CoordinateSystemFileContent.Length == 0)
+            return new ContractExecutionResult(134, "Both coordinate system file name and contents must be provided.");
+          dynamic coordSysResult = await ValidateCoordinateSystemFile(data.ProjectUid, data.CoordinateSystemFileName, data.CoordinateSystemFileContent);
           if (coordSysResult.code != ContractExecutionStatesEnum.ExecutedSuccessfully)
           {
             return new ContractExecutionResult(coordSysResult.code, coordSysResult.message);
@@ -217,27 +227,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     /// Validates the coordinate system file in TRex. In CWS this is the project configuration file of type CALIBRATION.
     /// </summary>
-    private async Task<object> ValidateCoordinateSystemFile(Guid? projectUid, string filespaceId)
+    private async Task<object> ValidateCoordinateSystemFile(Guid? projectUid, string fullFileName, byte[] fileContents)
     {
-      /*
-      GetFileWithContentsModel file = null;
-      try
-      {
-        var response = await cwsDesignClient.GetAndDownloadFile(projectUid.Value, filespaceId, customHeaders);
-      }
-      catch (Exception e)
-      {
-        return new { code = 131, message = $"A problem occurred downloading the calibration file. Exception: {e.Message}" };
-      }
-
       //Validate file in 3dpm (TRex)
       CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
       try
       {
-        //TODO: Extract the actual file name here from CWS one. Waiting on Jeannie's PR.
-        var fileName = CwsFileNameHelper.ExtractFileName(file.FileName);
+        var fileName = CwsFileNameHelper.ExtractFileName(fullFileName);
         coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-          .CoordinateSystemValidate(file.FileContents, fileName, customHeaders);
+          .CoordinateSystemValidate(fileContents, fileName, customHeaders);
       }
       catch (Exception e)
       {
@@ -251,7 +249,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         return new { code = 47, message = $"Unable to validate CoordinateSystem in 3dpm: {coordinateSystemSettingsResult.Code} {coordinateSystemSettingsResult.Message}." };
       }
-      */
+      
       return new { code = ContractExecutionStatesEnum.ExecutedSuccessfully, message = ContractExecutionResult.DefaultMessage };
     }
 

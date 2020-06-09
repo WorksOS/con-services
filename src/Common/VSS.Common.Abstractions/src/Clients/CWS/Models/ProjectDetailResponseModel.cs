@@ -62,6 +62,12 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public string ProjectName { get; set; }
 
     /// <summary>
+    /// Project type
+    /// </summary>
+    [JsonProperty("projectType")]
+    public CwsProjectType ProjectType { get; set; }
+
+    /// <summary>
     /// Project name
     /// </summary>
     [JsonProperty("lastUpdate")]

@@ -17,6 +17,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public ProjectType ProjectType { get; set; }
 
+    //Temporary - until clean up done - used to exclude non-3d projects from overlap test
+    public CwsProjectType CwsProjectType { get; set; }
+
     public UserProjectRoleEnum UserProjectRole { get; set; }
 
     public string ProjectTimeZone { get; set; }

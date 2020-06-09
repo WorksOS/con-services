@@ -111,6 +111,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           CustomerUID = project.AccountId,
           Name = project.ProjectName,
           ProjectType = ProjectType.Standard,
+          CwsProjectType = project.ProjectType,
           UserProjectRole = project.UserProjectRole,
           ProjectTimeZone = project.ProjectSettings != null ? PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone) : string.Empty,
           ProjectTimeZoneIana = project.ProjectSettings?.TimeZone,
@@ -228,10 +229,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       // get all active projects for customer, excluding this projectUid (i.e. update)
       // todo what are the rules e.g. active, for manual import?
 
-      //TODO: Once we have project type in CWS projects restrict this to 3d enabled
       var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
-        .Where(p => !p.IsArchived &&
+        .Where(p => !p.IsArchived && p.CwsProjectType == CwsProjectType.AcceptsTagFiles &&
                     (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
 
       // return once we find any overlapping projects

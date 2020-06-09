@@ -1,4 +1,5 @@
-﻿using VSS.Common.Abstractions.Clients.CWS.Models;
+﻿using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
 {
@@ -23,29 +24,38 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
     public CwsProjectType? ProjectType { get; set; }
 
     /// <summary>
-    /// The request update type this payload represents
+    /// The request update type this payload represents.
     /// </summary>
     public ProjectUpdateType UpdateType { get; set; }
 
     /// <summary>
     /// Represents the project name requested for the project.
     /// Will be set if a new project or the name is updated.
-    /// Otherwise it will be null
+    /// Otherwise it will be null.
     /// </summary>
     public string ProjectName { get; set; }
 
     /// <summary>
-    /// GeoJSON representation of the project boundary
-    /// Will be set if a new project, or the boundary is updated
-    /// Otherwise it will be null
+    /// GeoJSON representation of the project boundary.
+    /// Will be set if a new project, or the boundary is updated.
+    /// Otherwise it will be null.
     /// </summary>
     public ProjectBoundary Boundary { get; set; }
 
     /// <summary>
-    /// DataOcean FileSpace ID for the coordinate system
+    /// File name for the coordinate system
     /// Set if project is being created, or if the Coordinate system is being updated
+    /// or the project type is being updated to 1.
     /// Otherwise it will be null
     /// </summary>
-    public string CoordinateSystemFileSpaceId { get; set; }
+    public string CoordinateSystemFileName { get; set; }
+
+    /// <summary>
+    /// Base64 encoded file contents for the coordinate system.
+    /// Set if project is being created, or if the Coordinate system is being updated
+    /// or the project type is being updated to 1.
+    /// Otherwise it will be null.
+    /// </summary>
+    public byte[] CoordinateSystemFileContent { get; set; }
   }
 }

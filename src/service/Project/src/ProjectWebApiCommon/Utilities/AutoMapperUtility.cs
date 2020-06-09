@@ -68,7 +68,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectTimeZoneIana, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
-            .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore());
+            .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore())
+            .ForMember(dest => dest.CwsProjectType, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
@@ -156,34 +157,41 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => src.UpdateType))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))
-            .ForMember(dest => dest.CoordinateSystemFileSpaceId, opt => opt.MapFrom(src => src.CoordinateSystemFileSpaceId))
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
+            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
             ;
 
           cfg.CreateMap<CreateProjectRequest, ProjectValidation>()
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUID))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => Guid.Empty))
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.ThreeDEnabled : (CwsProjectType?)null))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.AcceptsTagFiles : (CwsProjectType?)null))
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Created))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
+            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
             ;
 
           cfg.CreateMap<CreateProjectEvent, ProjectValidation>()
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUID))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => Guid.Empty))
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.ThreeDEnabled : (CwsProjectType?)null))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.AcceptsTagFiles : (CwsProjectType?)null))
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Created))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
+            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
             ;
 
           cfg.CreateMap<UpdateProjectRequest, ProjectValidation>()
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => Guid.Empty))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUid))
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.ThreeDEnabled : (CwsProjectType?)null))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType == ProjectType.Standard ? CwsProjectType.AcceptsTagFiles : (CwsProjectType?)null))
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Updated))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
+            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
             ;
 
           cfg.CreateMap<DeleteProjectEvent, ProjectValidation>()
@@ -193,6 +201,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Deleted))
             .ForMember(dest => dest.ProjectName, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.Ignore())
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore())
+            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore())
             ;
 
         }

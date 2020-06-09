@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
@@ -81,6 +82,12 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("projectName")]
     public string ProjectName { get; set; }
+
+    /// <summary>
+    /// Project type
+    /// </summary>
+    [JsonProperty("projectType")]
+    public CwsProjectType ProjectType { get; set; }
 
     /// <summary>
     /// cws example = "America/Denver"
