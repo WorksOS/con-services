@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
@@ -13,11 +12,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// The file descriptors for 3dpm imported files
     /// </summary>
     public ImmutableList<ImportedFileDescriptor> ImportedFileDescriptors { get; set; }
-
-    /// <summary>
-    /// The file descriptors for CWS project configuration files
-    /// </summary>
-    public ImmutableList<ProjectConfigurationModel> ProjectConfigFileDescriptors { get; set; }
   }
 
   /// <summary>
@@ -49,19 +43,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       ImportedFileDescriptor = importedFileDescriptor;
     }
 
-    public ImportedFileDescriptorSingleResult(ProjectConfigurationModel projectConfigFileDescriptor)
-    {
-      ProjectConfigFileDescriptor = projectConfigFileDescriptor;
-    }
-
     /// <summary>
     /// The file descriptor for a 3dpm imported file
     /// </summary>
     public ImportedFileDescriptor ImportedFileDescriptor { get; set; }
-
-    /// <summary>
-    /// The file descriptor for a CWS project configuration file
-    /// </summary>
-    public ProjectConfigurationModel ProjectConfigFileDescriptor { get; set; }
   }
 }

@@ -25,7 +25,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
   /// </summary>
   public class SubGridProgressiveResponseRequest : BaseIgniteClass, ISubGridProgressiveResponseRequest
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridProgressiveResponseRequest>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridProgressiveResponseRequest>();
 
     /// <summary>
     /// The compute projection representing the Ignite node identified by _nodeId
@@ -51,12 +51,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
         var result = _compute.Apply(_computeFunc, arg);
 
-        Log.LogDebug($"SubGridProgressiveResponseRequest.Execute() for request {arg.RequestDescriptor} with {arg.Payload.Bytes.Length} bytes completed in {sw.Elapsed}");
+        _log.LogDebug($"SubGridProgressiveResponseRequest.Execute() for request {arg.RequestDescriptor} with {arg.Payload.Bytes.Length} bytes completed in {sw.Elapsed}");
         return result;
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception in {nameof(SubGridProgressiveResponseRequest )}");
+        _log.LogError(e, $"Exception in {nameof(SubGridProgressiveResponseRequest )}");
         return false;
       }
     }
@@ -78,7 +78,18 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         .GetCompute()
         .WithExecutor(BaseIgniteClass.TRexProgressiveQueryCustomThreadPoolName);
 
-      // Log.LogDebug($"Creating SubGridProgressiveResponseRequest instance for node {nodeId} against compute cluster with {_compute.ClusterGroup.GetNodes().Count} nodes");
+      if (_compute == null)
+      {
+        _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Compute cluster projection is null");
+      }
+      else
+      {
+        var projectionSize = _compute?.ClusterGroup?.GetNodes()?.Count ?? 0;
+        if (projectionSize == 0)
+        {
+          _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Topology projection contains no nodes");
+        }
+      }
     }
   }
 }

@@ -82,24 +82,8 @@ namespace MockProjectWebApi.Controllers
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
         var result = new FileDataSingleResult();
-        if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
-        {
-          if (ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, file.flowFilename))
-          {
-            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
-              .SingleOrDefault(f => f.SiteCollectorFileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
-          }
-          else
-          {
-            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
-              .SingleOrDefault(f => f.FileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
-          }
-        }
-        else
-        {
-          result.ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
-            .SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
-        }
+        result.ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
+          .SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
 
         return result;
       }
@@ -134,24 +118,8 @@ namespace MockProjectWebApi.Controllers
       if (projectUid.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
         var result = new FileDataSingleResult();
-        if (ProjectConfigurationFileHelper.IsCwsFileType(importedFileType))
-        {
-          if (ProjectConfigurationFileHelper.IsSiteCollectorType(importedFileType, file.flowFilename))
-          {
-            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
-              .SingleOrDefault(f => f.SiteCollectorFileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
-          }
-          else
-          {
-            result.ProjectConfigFileDescriptor = ImportedFilesService.ProjectConfigFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
-              .SingleOrDefault(f => f.FileName.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
-          }
-        }
-        else
-        {
           result.ImportedFileDescriptor = ImportedFilesService.ImportedFiles[ConstantsUtil.DIMENSIONS_PROJECT_UID]
             .SingleOrDefault(f => f.Name.Equals(file.flowFilename, StringComparison.OrdinalIgnoreCase));
-        }
 
         return result;
       }

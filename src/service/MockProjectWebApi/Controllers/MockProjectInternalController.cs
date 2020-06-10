@@ -16,26 +16,7 @@ namespace MockProjectWebApi.Controllers
     {
       this.projectService = (ProjectService)projectService;
     }
-
-
-    /* obsolete
-    /// <summary>
-    /// Gets  projects for the customer
-    /// The data is mocked.
-    /// </summary>
-    [Route("internal/v6/project/{customerUid}/projects")]
-    [HttpGet]
-    public ProjectDataResult GetMockProjects(Guid customerUid)
-    {
-      Logger.LogInformation($"{nameof(GetMockProjects)}: customerUid={customerUid}");
-      return new ProjectDataResult()
-      {
-        ProjectDescriptors = new List<ProjectData>()
-        { projectService.ProjectList.SingleOrDefault(p => p.CustomerUID == customerUid.ToString()) }
-      };
-    }
-    */
-
+    
     /// <summary>
     /// Gets the project , even if it is archived
     /// The data is mocked.

@@ -177,20 +177,9 @@ namespace VSS.TRex.Gateway.Common.Executors
           convertedPalette = new CutFillPalette();
           break;
         case DisplayMode.Height:
-          var extent = siteModel.GetAdjustedDataModelSpatialExtents(new Guid[0]);
+          convertedPalette = request.Palettes != null ? new HeightPalette(request.Palettes.First().Value, request.Palettes.Last().Value) : new HeightPalette();
 
-          convertedPalette = new HeightPalette(extent.MinZ, extent.MaxZ);
-
-          if (request.Palettes != null)
-          {
-
-            var colors = new Color[request.Palettes.Count];
-
-            for (var i = 0; i < request.Palettes.Count; i++)
-              colors[i] = ColorUtility.UIntToColor(request.Palettes[i].Color);
-
-            ((HeightPalette) convertedPalette).ElevationPalette = colors;
-          }
+          ((HeightPalette)convertedPalette).ElevationPalette = request.Palettes?.Select(p => ColorUtility.UIntToColor(p.Color)).ToArray();
 
           break;
         case DisplayMode.MDP:
@@ -293,15 +282,9 @@ namespace VSS.TRex.Gateway.Common.Executors
           request.Mode != DisplayMode.TargetSpeedSummary &&
           request.Mode != DisplayMode.TemperatureSummary)
       {
-        if (request.Palettes != null)
-        {
-          var transitions = new Transition[request.Palettes.Count];
-
-          for (var i = 0; i < request.Palettes.Count; i++)
-            transitions[i] = new Transition(request.Palettes[i].Value, ColorUtility.UIntToColor(request.Palettes[i].Color));
-
-          convertedPalette.PaletteTransitions = transitions;
-        }
+        convertedPalette = new PaletteBase(request.Palettes != null 
+          ? convertedPalette.PaletteTransitions = request.Palettes.Select(p => new Transition(p.Value, ColorUtility.UIntToColor(p.Color))).ToArray() 
+          : new Transition[0]);
       }
 
       return convertedPalette;

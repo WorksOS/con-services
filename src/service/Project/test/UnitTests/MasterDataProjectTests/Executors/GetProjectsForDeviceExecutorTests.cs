@@ -140,7 +140,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var ex = await Assert.ThrowsAsync<ServiceException>(() => getProjectsForDeviceExecutor.ProcessAsync(new DeviceIsUid(_deviceUid)));
 
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
-      Assert.Equal(104, ex.GetResult.Code);
+      Assert.Equal(2124, ex.GetResult.Code);
     }
   }
 }

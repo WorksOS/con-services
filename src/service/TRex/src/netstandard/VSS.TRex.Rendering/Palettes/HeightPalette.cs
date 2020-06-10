@@ -12,8 +12,8 @@ namespace VSS.TRex.Rendering.Palettes
     private const byte VERSION_NUMBER = 1;
     private readonly Color UndefinedColor = Color.Black;
 
-    private double MinElevation;
-    private double MaxElevation;
+    private double MinElevation = -1000;
+    private double MaxElevation = 1000;
     private double ElevationPerBand;
 
     public Color[] ElevationPalette =

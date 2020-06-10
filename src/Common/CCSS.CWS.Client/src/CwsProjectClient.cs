@@ -31,7 +31,7 @@ namespace CCSS.CWS.Client
     ///   Gets full project details using a user token.
     ///   The user must have access to this account.
     ///   Cache to include userUid as different users have access to a different project set
-    ///   todoJeannie  cws team to generate a detailed list in 1 shot CCSSSCON-409
+    ///   cws team to generate a detailed list in 1 shot CCSSSCON-409
     /// </summary>
     public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
@@ -60,7 +60,7 @@ namespace CCSS.CWS.Client
     ///   Gets projects using a user token.
     ///   The user must have access to this account.
     ///   Cache to include userUid as different users have access to a different project set
-    ///   This ONLY works with a user token. Probably need it to work with app token for tfa (don't know marketing requirements but this would keep our options open.  CCSSSCON-433 todoJeannie
+    ///   This ONLY works with a user token.
     /// </summary>
     public async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
@@ -99,7 +99,7 @@ namespace CCSS.CWS.Client
     ///   Gets project using a user application token.
     ///   The user must have access to this account.
     ///   The project role depends on the user
-    ///   This ONLY works with a user token, needs to work with an app token now that we have to call TFA: CCSSSCON-434 todoJeannie
+    ///   This ONLY works with a user token.
     /// </summary>
     public async Task<ProjectDetailResponseModel> GetMyProject(Guid projectUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
@@ -112,7 +112,7 @@ namespace CCSS.CWS.Client
       {
         projectDetailResponseModel = await GetData<ProjectDetailResponseModel>($"/projects/{projectTrn}", projectUid, userUid, null, customHeaders);
         
-        // get a project, with user role always returns null, but can only be called if the role IS ADMIN todoJeannie maybe get Yazl to change this behaviour?
+        // get a project, with user role always returns null, but can only be called if the role IS ADMIN.
         if (userUid != null)
           projectDetailResponseModel.UserProjectRole = UserProjectRoleEnum.Admin;
       }
@@ -139,7 +139,7 @@ namespace CCSS.CWS.Client
       var createProjectResponseModel = await PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
 
       /* todo
-       BadRequest {"status":400,"code":9040,"message":"Project name is already in account","moreInfo":"Please provide this id to support, while contacting, TraceId 5ece31b18aacd06f7888ceced1a82b2e","timestamp":1590571441686,"fieldErrors":[{"field":"projectName","attemptedValue":"JeanniePMan1"}]}
+       BadRequest {"status":400,"code":9040,"message":"Project name is already in account","moreInfo":"Please provide this id to support, while contacting, TraceId 5ece31b18aacd06f7888ceced1a82b2e","timestamp":1590571441686,"fieldErrors":[{"field":"projectName","attemptedValue":"wotevaPMan1"}]}
 
       Request returned non-ok code InternalServerError with response {"status":500,"code":9047,"message":"Add project failed as project settings save failed","moreInfo":"Please provide this id to support, while contacting, TraceId 5ece3287f81ddbc95b77a00eb8e1a940","timestamp":1590571656489,"fieldErrors":[{"field":"exception","attemptedValue":"org.springframework.web.client.HttpServerErrorException: 500 null"},{"field":"Authorization","attemptedValue":"Bearer 07e73c3eb55f52fd4d0cf92f1d8d0785"},{"field":"Endpoint","attemptedValue":"https://api-stg.trimble.com/t/trimble.com/cws-profilesettings-stg/1.0/projects/{projectId}"},{"field":"Cause","attemptedValue":"500 null"},{"field":"projectId","attemptedValue":"trn::profilex:us-west-2:project:9e598d24-2e82-4641-8976-7bb8639b47fc"}]}
        */

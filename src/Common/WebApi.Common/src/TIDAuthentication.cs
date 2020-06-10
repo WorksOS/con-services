@@ -69,7 +69,7 @@ namespace VSS.WebApi.Common
         var customerUid = string.Empty;
         string customerName;
 
-        // todoJeannie temporary to look into user info while we test.
+        // todo temporary to look into user info while we test.
         log.LogDebug($"{nameof(Invoke)}: TIDAuth context Headers {JsonConvert.SerializeObject(context.Request.Headers, Formatting.None)}");
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];

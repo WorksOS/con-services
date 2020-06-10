@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.Models.Models
     ///   This is a value unique and internal to each system.
     ///        Eventually this should be phased out, but until Raptor is reworked
     ///   Use designName for matching between systems
-    /// This will be obsolete sooon....
+    /// This will be obsolete soon....
     /// </summary>
     [JsonProperty(PropertyName = "designId")]
     public long OnMachineDesignId { get; private set; }

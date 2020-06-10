@@ -280,7 +280,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var ex = await Assert. ThrowsAsync<ServiceException>(() => getDeviceBySerialExecutor.ProcessAsync(new DeviceSerial(_serialNumber)));
 
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
-      Assert.Equal(104, ex.GetResult.Code);
+      Assert.Equal(2124, ex.GetResult.Code);
     }
   }
 }

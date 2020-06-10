@@ -28,7 +28,7 @@ namespace VSS.TRex.Filters.Interfaces
     bool FilterPassUsingElevationRange(ref CellPass passValue);
     bool FiltersElevation(float elevation);
     bool FiltersElevation(double elevation);
-    void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, IClientHeightLeafSubGrid designElevations);
+    void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, float[,] designElevations);
     void InitializeFilteringForCell(ICellPassAttributeFilter attributeFilter, byte subGridCellX, byte subGridCellY);
   }
 }

@@ -1,5 +1,4 @@
-﻿/* todo Jeannie
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using IntegrationTests.UtilityClasses;
@@ -25,8 +24,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         var startDateTime = ts.FirstEventDate;
         ts.IsPublishToWebApi = true;
         var projectEventArray = new[] {
-         "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
-        $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
+         "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+        $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
         await ts.PublishEventCollection(projectEventArray);
 
         var importFile = new ImportFile(uriRoot);
@@ -34,7 +33,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         var fullFilePath = TestFileResolver.GetFullPath(importFilename);
 
         var importFileArray = new[] {
-          "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | SurveyedUtc  | IsActivated | MinZoomLevel | MaxZoomLevel |",
+          "| EventType              | ProjectUid      | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | SurveyedUtc  | IsActivated | MinZoomLevel | MaxZoomLevel |",
          $"| ImportedFileDescriptor | {ts.ProjectUid} | {customerUid} | {fullFilePath} | 8                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | {startDateTime} |true        | 15           | 19           |"};
         var filesResult = await importFile.SendRequestToFileImportV6(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
         ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
@@ -51,8 +50,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         var startDateTime = ts.FirstEventDate;
         ts.IsPublishToWebApi = true;
         var projectEventArray = new[] {
-         "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
-        $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
+         "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+        $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
         await ts.PublishEventCollection(projectEventArray);
 
         var importFile = new ImportFile(uriRoot);
@@ -76,4 +75,3 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     }
   }
 }
-*/
