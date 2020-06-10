@@ -36,13 +36,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           new KeyValuePair<string, string>( "arcChordTolerance", arcChordTolerance)
         };
      
-        var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<AlignmentGeometryResult>(siteModelId, "/design/alignment/centerline/geometry", customHeaders, queryParams);
+        var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<AlignmentGeometryResult>(siteModelId, "/design/alignment/master/geometry", customHeaders, queryParams);
 
         if (returnedResult != null)
-        {
           return returnedResult;
-        }
-
+       
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             $"Failed to get alignment center line geometry for alignment: {designUid}"));
