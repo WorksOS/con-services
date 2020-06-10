@@ -18,13 +18,15 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueGrouper
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueGrouper>();
+        private static readonly ILogger _log = Logging.Logger.CreateLogger<TAGFileBufferQueueGrouper>();
+
+        private static readonly object _lockObj = new object();
 
         /// <summary>
         /// The maximum number of TAG files the grouper will permit in a bucket of TAG file before being committed to the 
         /// full buckets list.
         /// </summary>
-        private static readonly int MaxNumberOfTagFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
+        private static readonly int _maxNumberOfTagFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
 
         /// <summary>
         /// GroupMap is a dictionary (keyed on project UID) of
@@ -54,17 +56,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="key"></param>
         public void Add(ITAGFileBufferQueueKey key)
         {
-            lock (this)
+            lock (_lockObj)
             {
-                if (Log.IsTraceEnabled())
+                if (_log.IsTraceEnabled())
                 { 
-                    Log.LogTrace($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
+                    _log.LogTrace($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
                 }
 
                 if (_groupMap.TryGetValue(key.ProjectUID, out var keyList))
                 {
                     // Check if this bucket is full
-                    if (keyList.Count >= MaxNumberOfTagFilesPerBucket)
+                    if (keyList.Count >= _maxNumberOfTagFilesPerBucket)
                     {
                       _fullBuckets.Add(keyList.ToArray());
                       keyList.Clear();
@@ -93,10 +95,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             {
                 foreach (var bucket in _fullBuckets)
                 { 
-                    if (bucket.Any())
+                    if (bucket.Length > 0)
                     {
                         if (avoidProjects != null && avoidProjects.Any(x => x == bucket[0].ProjectUID))
-                        { 
+                        {
                             continue;
                         }
 
@@ -137,7 +139,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <returns></returns>
         public IEnumerable<ITAGFileBufferQueueKey> Extract(List<Guid> avoidProjects, out Guid projectId)
         {
-            lock (this)
+            lock (_lockObj)
             {
                 // Choose an appropriate project and return the first set of grouped TAG files for it
                 if (!SelectProject(avoidProjects, out projectId))
@@ -165,22 +167,22 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 if (result.Any())
                 {
                     // Add the project to the avoid list
-                    if (Log.IsTraceEnabled())
+                    if (_log.IsTraceEnabled())
                     {
-                        Log.LogTrace($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectId} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                        _log.LogTrace($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectId} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
                     }
 
                     avoidProjects.Add(projectId);
                 }
 
-                Log.LogInformation($"Grouper returning group containing {result.Count()} TAG files");
+                _log.LogInformation($"Grouper returning group containing {result.Count()} TAG files");
 
-                if (Log.IsTraceEnabled())
+                if (_log.IsTraceEnabled())
                 {
                     var count = 0;
                     foreach (var tagFile in result)
                     {
-                        Log.LogTrace($"Returned TAG file {count++} is {tagFile.FileName} representing asset {tagFile.AssetUID} within project {tagFile.ProjectUID}");
+                        _log.LogTrace($"Returned TAG file {count++} is {tagFile.FileName} representing asset {tagFile.AssetUID} within project {tagFile.ProjectUID}");
                     }
                 }
                 
@@ -195,7 +197,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <param name="projectId"></param>
         public void RemoveProjectFromAvoidList(List<Guid> avoidProjects, Guid projectId)
         {
-            lock (this)
+            lock (_lockObj)
             {
                 avoidProjects.Remove(projectId);
             }
