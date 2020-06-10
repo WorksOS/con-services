@@ -132,7 +132,7 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// Determines if the type of the spatial filter is Spatial or Positional
         /// </summary>
-        public bool HasSpatialOrPositionalFilters => IsSpatial || IsPositional || IsDesignMask || IsAlignmentMask;
+        public bool HasSpatialOrPositionalFilters => IsSpatial || IsPositional;
 
         /// <summary>
         /// Determines if a cell given by it's central location is included in the spatial filter

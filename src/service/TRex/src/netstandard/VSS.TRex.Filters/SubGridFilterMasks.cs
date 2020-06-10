@@ -150,7 +150,7 @@ namespace VSS.TRex.Filters
                     }
                 });
             }
-
+          
             PDMask.AndWith(FilterMask);           
 
             return true;

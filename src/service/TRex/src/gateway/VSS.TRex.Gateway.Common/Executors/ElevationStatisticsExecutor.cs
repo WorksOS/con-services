@@ -31,11 +31,13 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
+      var filter = ConvertFilter(request?.Filter, siteModel);
+
       var operation = new ElevationStatisticsOperation();
       var elevationStatisticsResult = await operation.ExecuteAsync(new ElevationStatisticsArgument()
       {
         ProjectID = siteModel.ID,
-        Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
+        Filters = new FilterSet(filter),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
         LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });

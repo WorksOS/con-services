@@ -14,10 +14,10 @@ namespace MockProjectWebApi.Controllers
   public class MockCwsProjectController : BaseController
   {
     private readonly string _baseUrl;
-
+   
     // Map by projectTrn and projectConfigurationType
     private static readonly Dictionary<string, Dictionary<string, ProjectConfigurationModel>> _projectConfigFilesMap = new Dictionary<string, Dictionary<string, ProjectConfigurationModel>>();
-
+    
     // Map filespaceIds to file names in CreateFile for generating sensible responses from Save/Update
     private static readonly Dictionary<string, string> _fileSpaceIdNameMap = new Dictionary<string, string>();
 
@@ -194,6 +194,7 @@ namespace MockProjectWebApi.Controllers
     #region CWS Profile Settings Client
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration")]
     [Mvc.HttpGet]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(string projectTrn)
     {
       List<ProjectConfigurationModel> list = null;
@@ -217,6 +218,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpGet]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult<ProjectConfigurationModel> GetProjectConfiguration(string projectTrn, string projectConfigurationType)
     {
       ProjectConfigurationModel projectConfigurationModel = null;
@@ -233,6 +235,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpPost]
+    [Obsolete("UI to use cws directly now")]
     public ProjectConfigurationModel SaveProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
     {
       var projectConfigurationModel = new ProjectConfigurationModel
@@ -258,6 +261,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpPut]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult<ProjectConfigurationModel> UpdateProjectConfiguration(string projectTrn, string projectConfigurationType, [Mvc.FromBody] ProjectConfigurationFileRequestModel projectConfigurationFileRequest)
     {
       ProjectConfigurationModel projectConfigurationModel = null;
@@ -284,6 +288,7 @@ namespace MockProjectWebApi.Controllers
 
     [Mvc.Route("api/v1/projects/{projectTrn}/configuration/{projectConfigurationType}")]
     [Mvc.HttpDelete]
+    [Obsolete("UI to use cws directly now")]
     public Mvc.ActionResult DeleteProjectConfiguration(string projectTrn, string projectConfigurationType)
     {
       Logger.LogInformation($"{nameof(DeleteProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType}");

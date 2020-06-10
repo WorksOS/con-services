@@ -1,16 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
+﻿using System;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.SurveyedSurfaces
 {
@@ -19,7 +18,7 @@ namespace VSS.TRex.SurveyedSurfaces
   /// </summary>
   public class SurveyedSurfaceManager : ISurveyedSurfaceManager
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SurveyedSurfaceManager>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SurveyedSurfaceManager>();
 
     private readonly IStorageProxy _writeStorageProxy;
     private readonly IStorageProxy _readStorageProxy;
@@ -38,15 +37,13 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Loads the set of surveyed surfaces for a site model. If none exist and empty list is returned.
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <returns></returns>
     private ISurveyedSurfaces Load(Guid siteModelUid)
     {
       var ss = DIContext.Obtain<ISurveyedSurfaces>();
 
       if (ss == null)
       {
-        Log.LogError("Unable to access surveyed surfaces factory from DI");
+        _log.LogError("Unable to access surveyed surfaces factory from DI");
         return null;
       }
 
@@ -66,8 +63,6 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Stores the list of surveyed surfaces for a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="surveyedSurfaces"></param>
     private void Store(Guid siteModelUid, ISurveyedSurfaces surveyedSurfaces)
     {
       using var stream = surveyedSurfaces.ToStream();
@@ -85,10 +80,6 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Add a new surveyed surface to a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="designDescriptor"></param>
-    /// <param name="asAtDate"></param>
-    /// <param name="extents"></param>
     public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
     {
       if (asAtDate.Kind != DateTimeKind.Utc)
@@ -106,7 +97,7 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public ISurveyedSurfaces List(Guid siteModelUid)
     {
-      Log.LogInformation($"Listing surveyed surfaces from site model {siteModelUid}");
+      _log.LogInformation($"Listing surveyed surfaces from site model {siteModelUid}");
 
       return Load(siteModelUid);
     }
@@ -114,13 +105,10 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Remove a given surveyed surface from a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="surveySurfaceUid"></param>
-    /// <returns></returns>
     public bool Remove(Guid siteModelUid, Guid surveySurfaceUid)
     {
       var ss = Load(siteModelUid);
-      bool result = ss.RemoveSurveyedSurface(surveySurfaceUid);
+      var result = ss.RemoveSurveyedSurface(surveySurfaceUid);
       Store(siteModelUid, ss);
 
       return result;
@@ -129,16 +117,13 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Remove the surveyed surface list for a site model from the persistent store
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="storageProxy"></param>
-    /// <returns></returns>
-    public bool Remove(Guid siteModelID, IStorageProxy storageProxy)
+    public bool Remove(Guid siteModelUid, IStorageProxy storageProxy)
     {
-      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelID, FileSystemStreamType.Designs, SURVEYED_SURFACE_STREAM_NAME);
+      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.Designs, SURVEYED_SURFACE_STREAM_NAME);
 
       if (result != FileSystemErrorStatus.OK)
       {
-        Log.LogInformation($"Removing surveyed surfaces list from project {siteModelID} failed with error {result}");
+        _log.LogInformation($"Removing surveyed surfaces list from project {siteModelUid} failed with error {result}");
       }
 
       return result == FileSystemErrorStatus.OK;

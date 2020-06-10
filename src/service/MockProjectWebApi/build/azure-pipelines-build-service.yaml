@@ -1,0 +1,55 @@
+trigger:
+  branches:
+    include:
+      - master
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
+  paths:
+    include:
+      - "src/service/MockProjectWebApi/*"
+
+pool: k8s-fsm
+
+variables:
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  serviceName: "Mock"
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/MockProjectWebApi"
+
+jobs:
+  - job: BuildTestAndDeploy
+    displayName: "Build, test and Deploy"
+    timeoutInMinutes: 15
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: Bash@3
+        displayName: "Update BUILD_BUILDNUMBER"
+        inputs:
+          targetType: 'inline'
+          script: 'echo "##vso[build.updatebuildnumber]$(Build.BuildId)"'
+
+      - task: Bash@3
+        displayName: "Dump variables"
+        inputs:
+          targetType: 'inline'
+          script: 'printenv | sort'
+
+      - task: PowerShell@2
+        displayName: "Build Service"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action build"
+
+      - task: PowerShell@2
+        displayName: "Publish Service"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action publish"
+
+      - task: PowerShell@2
+        displayName: "Push Docker Image"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId)"

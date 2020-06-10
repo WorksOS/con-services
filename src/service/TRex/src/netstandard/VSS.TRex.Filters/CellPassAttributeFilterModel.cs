@@ -388,9 +388,9 @@ namespace VSS.TRex.Filters
       writer.WriteLong(StartTime.ToBinary());
       writer.WriteLong(EndTime.ToBinary());
 
-      int machineCount = MachinesList?.Length ?? 0;
+      var machineCount = MachinesList?.Length ?? 0;
       writer.WriteInt(machineCount);
-      for (int i = 0; i < machineCount; i++)
+      for (var i = 0; i < machineCount; i++)
         writer.WriteGuid(MachinesList[i]);
 
       writer.WriteInt(DesignNameID);
@@ -420,9 +420,9 @@ namespace VSS.TRex.Filters
       writer.WriteByte((byte)LayerState);
       writer.WriteInt(LayerID);
 
-      int SurveyedSurfaceExclusionCount = SurveyedSurfaceExclusionList?.Length ?? 0;
+      var SurveyedSurfaceExclusionCount = SurveyedSurfaceExclusionList?.Length ?? 0;
       writer.WriteInt(SurveyedSurfaceExclusionCount);
-      for (int i = 0; i < SurveyedSurfaceExclusionCount; i++)
+      for (var i = 0; i < SurveyedSurfaceExclusionCount; i++)
         writer.WriteGuid(SurveyedSurfaceExclusionList[i]);
 
       writer.WriteInt(MaterialTemperatureMin); // No Writer.WriteUShort, use int instead
@@ -462,9 +462,9 @@ namespace VSS.TRex.Filters
       StartTime = DateTime.FromBinary(reader.ReadLong());
       EndTime = DateTime.FromBinary(reader.ReadLong());
 
-      int machineCount = reader.ReadInt();
+      var machineCount = reader.ReadInt();
       MachinesList = new Guid[machineCount];
-      for (int i = 0; i < machineCount; i++)
+      for (var i = 0; i < machineCount; i++)
         MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
 
       DesignNameID = reader.ReadInt();
@@ -495,9 +495,9 @@ namespace VSS.TRex.Filters
       LayerState = (LayerState)reader.ReadByte();
       LayerID = reader.ReadInt();
 
-      int surveyedSurfaceCount = reader.ReadInt();
+      var surveyedSurfaceCount = reader.ReadInt();
       SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
-      for (int i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
+      for (var i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
         SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
 
       MaterialTemperatureMin = (ushort)reader.ReadInt();

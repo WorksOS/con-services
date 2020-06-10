@@ -7,7 +7,6 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -30,9 +29,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log, serviceExceptionHandler, cwsProjectClient, customHeaders);
       if (existing == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
-
-      if (existing == null || !string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary))
-        ProjectRequestHelper.ValidateProjectBoundary(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
 
       await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(
         updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent,
@@ -96,7 +92,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           {
             // CCSSSCON-214 what about exception/other error
             updateProjectEvent.ProjectUID = new Guid(response.Id);
-            return response.Id;            
+            return response.Id;
           }
         }
         catch (Exception e)
@@ -110,7 +106,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           // CCSSSCON-214 what are errors?
           var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
-          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel, customHeaders);          
+          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel, customHeaders);
         }
         if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
@@ -118,12 +114,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           // CCSSSCON-214 what are errors?
           var boundary = GeometryConversion.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
           await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary, customHeaders);
-        }        
+        }
         return updateProjectEvent.ProjectUID.ToString();
       }
       return null;
     }
-    
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       throw new NotImplementedException();

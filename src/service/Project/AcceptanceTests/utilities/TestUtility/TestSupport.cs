@@ -12,9 +12,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
@@ -52,9 +50,6 @@ namespace TestUtility
     private static readonly object _shortRaptorProjectIDLock = new object();
 
     private static int _currentShortRaptorProjectID;
-
-    public ImportedFileDescriptorListResult ExpectedProjectConfigFileDescriptorsListResult;
-
     static TestSupport()
     {
       _testConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
@@ -210,14 +205,14 @@ namespace TestUtility
     /// </summary>
     public Task<string> CreateProjectViaWebApiV5TBC(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, List<TBCPoint> boundary)
     {
-      var createProjectV2Request = CreateProjectV5Request.CreateACreateProjectV5Request(
+      var createProjectV5Request = CreateProjectV5Request.CreateACreateProjectV5Request(
       projectType, startDate, endDate, name, timezone, boundary,
         new BusinessCenterFile { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
       );
 
-      var requestJson = createProjectV2Request == null
+      var requestJson = createProjectV5Request == null
         ? null
-        : JsonConvert.SerializeObject(createProjectV2Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        : JsonConvert.SerializeObject(createProjectV5Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
       return CallProjectWebApi("api/v5/projects/", HttpMethod.Post, requestJson, CustomerUid.ToString());
     }
@@ -225,7 +220,7 @@ namespace TestUtility
     /// <summary>
     /// Validate the TBC orgShortName for this customer via the web api. 
     /// </summary>
-    public Task<string> ValidateTbcOrgIdApiV2(string orgShortName)
+    public Task<string> ValidateTbcOrgIdApiV5(string orgShortName)
     {
       var validateTccAuthorizationRequest = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest(orgShortName);
 
@@ -415,6 +410,10 @@ namespace TestUtility
             }
           }
 
+          // this is not setup in our create, but by another process within cws
+          if (oProperty.Name == "UserProjectRole")
+            continue;
+
           Assert.Equal(expectedValue, actualValue);
         }
       }
@@ -472,16 +471,6 @@ namespace TestUtility
           {
             cpCoordinateSystemFileName = eventObject.CoordinateSystem;
             cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
-            ExpectedProjectConfigFileDescriptorsListResult = new ImportedFileDescriptorListResult
-            {
-              ProjectConfigFileDescriptors = new List<ProjectConfigurationModel>
-              {
-                new ProjectConfigurationModel
-                {
-                  FileName = cpCoordinateSystemFileName
-                }
-              }.ToImmutableList()
-            };
           }
            
           if (HasProperty(eventObject, "CustomerUID"))
@@ -725,7 +714,7 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Convert the expected results into dynamic objects and forma list
+    /// Convert the expected results into dynamic objects and form a list
     /// </summary>
     /// <param name="eventArray"></param>
     /// <returns></returns>
@@ -809,10 +798,6 @@ namespace TestUtility
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             pd.CoordinateSystemFileName = eventObject.CoordinateSystem;
-          }
-          if (HasProperty(eventObject, "ProjectID"))
-          {
-            pd.ShortRaptorProjectId = int.Parse(eventObject.ShortRaptorProjectId);
           }
           if (HasProperty(eventObject, "ProjectUID"))
           {

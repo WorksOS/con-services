@@ -114,7 +114,7 @@ namespace VSS.TRex.SubGridTrees.Client
       // and SurveyedSurfaceHeightAndTime results
       true, // SurveyedSurfaceHeightAndTime = 0x0000001C
 
-      false // Progressing volumes = = 0x0000001D
+      false // Progressive volumes = = 0x0000001D
     };
 
     /// <summary>

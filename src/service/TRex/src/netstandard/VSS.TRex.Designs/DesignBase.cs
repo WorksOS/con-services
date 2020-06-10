@@ -12,11 +12,11 @@ namespace VSS.TRex.Designs
 {
   public abstract class DesignBase : IDesignBase
   {
-    private int FLockCount;
+    private int _lockCount;
 
     //      function GetMemorySizeInKB: Integer; Virtual; Abstract;
 
-    public int LockCount => FLockCount; 
+    public int LockCount => _lockCount;
 
     public string FileName { get; set; } = "";
 
@@ -66,13 +66,13 @@ namespace VSS.TRex.Designs
       double cellSize,
       double offset);
 
-    public void WindLock() => Interlocked.Increment(ref FLockCount);
+    public void WindLock() => Interlocked.Increment(ref _lockCount);
 
-    public void UnWindLock() => Interlocked.Decrement(ref FLockCount);
+    public void UnWindLock() => Interlocked.Decrement(ref _lockCount);
 
     public bool IsStale { get; set; }
 
-    public bool Locked => FLockCount > 0;
+    public bool Locked => _lockCount > 0;
 
     public abstract bool HasElevationDataForSubGridPatch(double x, double y);
 

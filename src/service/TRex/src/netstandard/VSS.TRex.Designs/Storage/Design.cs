@@ -23,25 +23,25 @@ namespace VSS.TRex.Designs.Storage
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private DesignElevationSpotRequest elevSpotRequest;
+    private DesignElevationSpotRequest _elevSpotRequest;
 
     /// <summary>
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private DesignElevationPatchRequest elevPatchRequest;
+    private DesignElevationPatchRequest _elevPatchRequest;
 
     /// <summary>
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private DesignProfileRequest profileRequest;
+    private DesignProfileRequest _profileRequest;
 
     /// <summary>
     /// Singleton request used by all designs. This request encapsulates the Ignite reference which
     /// is relatively slow to initialise when making many calls.
     /// </summary>
-    private DesignFilterSubGridMaskRequest filterMaskRequest; 
+    private DesignFilterSubGridMaskRequest _filterMaskRequest;
 
     /// <summary>
     /// Binary serialization logic
@@ -51,7 +51,7 @@ namespace VSS.TRex.Designs.Storage
     {
       writer.Write(ID.ToByteArray());
       DesignDescriptor.Write(writer);
-      extents.Write(writer);
+      _extents.Write(writer);
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ namespace VSS.TRex.Designs.Storage
     {
       ID = reader.ReadGuid();
       DesignDescriptor.Read(reader);
-      extents.Read(reader);
+      _extents.Read(reader);
     }
 
     /// <summary>
@@ -73,27 +73,26 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// The full design descriptor representing the design
     /// </summary>
-    public DesignDescriptor DesignDescriptor { get; private set; }
+    public DesignDescriptor DesignDescriptor { get; }
 
     /// <summary>
     /// Computes a geometric profile across the design given a series of vertices describing the path to be profiled.
     /// </summary>
-    /// <param name="projectUID"></param>
+    /// <param name="projectUid"></param>
     /// <param name="profilePath"></param>
     /// <param name="cellSize"></param>
     /// <param name="offset"></param>
     /// <returns></returns>
-    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset)
+    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, XYZ[] profilePath, double cellSize, double offset)
     {
       (List<XYZS> profile, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
       // Query the DesignProfiler service to get the patch of elevations calculated
       try
       {
-        if (profileRequest == null)
-          profileRequest = new DesignProfileRequest();
+        _profileRequest ??= new DesignProfileRequest();
 
-        var profile = await profileRequest.ExecuteAsync(new CalculateDesignProfileArgument(projectUID, cellSize, DesignDescriptor.DesignID, offset, profilePath));
+        var profile = await _profileRequest.ExecuteAsync(new CalculateDesignProfileArgument(projectUid, cellSize, DesignDescriptor.DesignID, offset, profilePath));
 
         result.profile = profile.Profile;
 
@@ -110,35 +109,32 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// The rectangular bounding extents of the design in grid coordinates
     /// </summary>
-    private readonly BoundingWorldExtent3D extents;
+    private readonly BoundingWorldExtent3D _extents;
 
     /// <summary>
     /// No-arg constructor
     /// </summary>
     public Design()
     {
-      extents = new BoundingWorldExtent3D();
+      _extents = new BoundingWorldExtent3D();
       DesignDescriptor = new DesignDescriptor();
     }
 
     /// <summary>
     /// Returns the real world 3D enclosing extents for the surveyed surface topology, including any configured vertical offset
     /// </summary>
-    public BoundingWorldExtent3D Extents => new BoundingWorldExtent3D(extents);
+    public BoundingWorldExtent3D Extents => new BoundingWorldExtent3D(_extents);
 
     /// <summary>
     /// Constructor accepting full design state
     /// </summary>
-    /// <param name="iD"></param>
-    /// <param name="designDescriptor"></param>
-    /// <param name="extents_"></param>
     public Design(Guid iD,
       DesignDescriptor designDescriptor,
-      BoundingWorldExtent3D extents_)
+      BoundingWorldExtent3D extents)
     {
       ID = iD;
       DesignDescriptor = designDescriptor;
-      extents = extents_;
+      _extents = extents;
     }
 
     /// <summary>
@@ -150,7 +146,6 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// ToString() for Design
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return $"ID:{ID}, DesignID:{DesignDescriptor.DesignID};{DesignDescriptor.Folder};{DesignDescriptor.FileName} [{Extents}]";
@@ -159,8 +154,6 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Determine if two designs are equal
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     public bool Equals(IDesign other)
     {
       return other != null &&
@@ -172,18 +165,13 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Calculates a spot elevation designated location on this design
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="offset"></param>
-    /// <param name="spotX"></param>
-    /// <param name="spotY"></param>
-    public async Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelID, double offset, double spotX, double spotY)
+    public async Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelId, double offset, double spotX, double spotY)
     {
       // Query the DesignProfiler service to get the spot elevation calculated
-      if (elevSpotRequest == null)
-        elevSpotRequest = new DesignElevationSpotRequest();
+      _elevSpotRequest ??= new DesignElevationSpotRequest();
 
-      var response = await elevSpotRequest.ExecuteAsync(new CalculateDesignElevationSpotArgument
-        (siteModelID, spotX, spotY, new DesignOffset(DesignDescriptor.DesignID, offset)));
+      var response = await _elevSpotRequest.ExecuteAsync(new CalculateDesignElevationSpotArgument
+        (siteModelId, spotX, spotY, new DesignOffset(DesignDescriptor.DesignID, offset)));
 
       return (response.Elevation, response.CalcResult);
     }
@@ -191,12 +179,12 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Calculates an elevation sub grid for a designated sub grid on this design
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="siteModelId"></param>
     /// <param name="offset"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
     public async Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(
-      Guid siteModelID, 
+      Guid siteModelId,
       double offset, 
       SubGridCellAddress originCellAddress,
       double cellSize)
@@ -204,16 +192,15 @@ namespace VSS.TRex.Designs.Storage
       // Query the DesignProfiler service to get the patch of elevations calculated
       (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
-      if (elevPatchRequest == null)
-        elevPatchRequest = new DesignElevationPatchRequest();
+      _elevPatchRequest ??= new DesignElevationPatchRequest();
 
-      var response = await elevPatchRequest.ExecuteAsync(new CalculateDesignElevationPatchArgument
+      var response = await _elevPatchRequest.ExecuteAsync(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
         ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, offset),
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
-        ProjectID = siteModelID
+        ProjectID = siteModelId
       });
 
       result.designHeights = response.Heights;
@@ -225,27 +212,26 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="siteModelId"></param>
     /// <param name="originCellAddress"></param>
     /// <param name="cellSize"></param>
     public async Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMask(
-      Guid siteModelID,
+      Guid siteModelId,
       SubGridCellAddress originCellAddress,
       double cellSize)
     {
       // Query the DesignProfiler service to get the requested filter mask
       (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
-      if (filterMaskRequest == null)
-        filterMaskRequest = new DesignFilterSubGridMaskRequest(); 
+      _filterMaskRequest ??= new DesignFilterSubGridMaskRequest(); 
 
-      var maskResponse = await filterMaskRequest.ExecuteAsync(new DesignSubGridFilterMaskArgument
+      var maskResponse = await _filterMaskRequest.ExecuteAsync(new DesignSubGridFilterMaskArgument
       {
         CellSize = cellSize,
         ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, 0),
         OriginX = originCellAddress.X,
         OriginY = originCellAddress.Y,
-        ProjectID = siteModelID
+        ProjectID = siteModelId
       });
 
       result.filterMask = maskResponse?.Bits;

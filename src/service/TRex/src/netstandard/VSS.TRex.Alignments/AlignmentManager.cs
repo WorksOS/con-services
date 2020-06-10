@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Common.Exceptions;
@@ -21,7 +20,7 @@ namespace VSS.TRex.Alignments
   /// </summary>
   public class AlignmentManager : IAlignmentManager
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<AlignmentManager>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AlignmentManager>();
 
     private readonly IStorageProxy _writeStorageProxy;
     private readonly IStorageProxy _readStorageProxy;
@@ -50,7 +49,7 @@ namespace VSS.TRex.Alignments
 
         if (alignments == null)
         {
-          Log.LogError("Unable to access IAlignments factory from DI");
+          _log.LogError("Unable to access IAlignments factory from DI");
           return null;
         }
 
@@ -122,7 +121,7 @@ namespace VSS.TRex.Alignments
     /// </summary>
     public IAlignments List(Guid siteModelUid)
     {
-      Log.LogInformation($"Listing Alignments from site model {siteModelUid}");
+      _log.LogInformation($"Listing Alignments from site model {siteModelUid}");
 
       return Load(siteModelUid);
     }
@@ -145,16 +144,16 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Remove the alignments list for a site model from the persistent store
     /// </summary>
-    /// <param name="siteModelID"></param>
+    /// <param name="siteModelId"></param>
     /// <param name="storageProxy"></param>
     /// <returns></returns>
-    public bool Remove(Guid siteModelID, IStorageProxy storageProxy)
+    public bool Remove(Guid siteModelId, IStorageProxy storageProxy)
     {
-      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelID, FileSystemStreamType.Designs, ALIGNMENTS_STREAM_NAME);
+      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.Designs, ALIGNMENTS_STREAM_NAME);
 
       if (result != FileSystemErrorStatus.OK)
       {
-        Log.LogInformation($"Removing alignments list from project {siteModelID} failed with error {result}");
+        _log.LogInformation($"Removing alignments list from project {siteModelId} failed with error {result}");
       }
 
       return result == FileSystemErrorStatus.OK;

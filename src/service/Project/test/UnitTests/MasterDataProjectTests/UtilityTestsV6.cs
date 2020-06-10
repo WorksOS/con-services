@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -71,7 +72,6 @@ namespace VSS.MasterData.ProjectTests
       var project = new ProjectDatabaseModel
       {
         ProjectUID = Guid.NewGuid().ToString(),
-        ShortRaptorProjectId = 123,
         ProjectType = ProjectType.Standard,
         Name = "the Name",
         ProjectTimeZone = "NZ stuff",
@@ -87,7 +87,7 @@ namespace VSS.MasterData.ProjectTests
 
       var result = AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project);
       Assert.Equal(project.ProjectUID, result.ProjectUid);
-      Assert.Equal(project.ShortRaptorProjectId, result.ShortRaptorProjectId);
+      Assert.Equal(new Guid(project.ProjectUID).ToLegacyId(), result.ShortRaptorProjectId);
       Assert.Equal(project.ProjectType, result.ProjectType);
       Assert.Equal(project.Name, result.Name);
       Assert.Equal(project.ProjectTimeZone, result.ProjectTimeZone);

@@ -17,18 +17,18 @@ namespace VSS.TRex.Filters.Interfaces
     /// </summary>
     double ElevationRangeBottomElevationForCell { get; set; }
 
-    /// <summary>
-    /// Elevation parameters have been initialized in preparation for elevation range filtering, either
-    /// by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
-    /// setting ElevationRangeDesignElevations top contain relevant benchmark elevations
-    /// </summary>
-    bool ElevationRangeIsInitialized { get; set; }
+    // <summary>
+    // Elevation parameters have been initialized in preparation for elevation range filtering, either
+    // by setting ElevationRangeBottomElevationForCell and ElevationRangeTopElevationForCell or by
+    // setting ElevationRangeDesignElevations top contain relevant benchmark elevations
+    // </summary>
+    //bool ElevationRangeIsInitialized { get; set; }
 
     void ClearElevationRangeFilterInitialization();
-    bool FilterPassUsingElevationRange(ref CellPass PassValue);
-    bool FiltersElevation(float Elevation);
-    bool FiltersElevation(double Elevation);
-    void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, IClientHeightLeafSubGrid DesignElevations);
-    void InitializeFilteringForCell(ICellPassAttributeFilter attributeFilter, byte ASubGridCellX, byte ASubGridCellY);
+    bool FilterPassUsingElevationRange(ref CellPass passValue);
+    bool FiltersElevation(float elevation);
+    bool FiltersElevation(double elevation);
+    void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, float[,] designElevations);
+    void InitializeFilteringForCell(ICellPassAttributeFilter attributeFilter, byte subGridCellX, byte subGridCellY);
   }
 }

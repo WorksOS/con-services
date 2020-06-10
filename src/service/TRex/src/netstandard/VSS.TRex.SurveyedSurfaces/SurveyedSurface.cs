@@ -24,7 +24,7 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Readonly property exposing the design descriptor for the underlying topology surface
     /// </summary>
-    public DesignDescriptor DesignDescriptor { get; private set; }
+    public DesignDescriptor DesignDescriptor { get; }
 
     /// <summary>
     /// Readonly attribute for AsAtData
@@ -34,12 +34,11 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// 3D extents bounding box enclosing the underlying design represented by the design descriptor (excluding any vertical offset(
     /// </summary>
-    private BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
+    private readonly BoundingWorldExtent3D _extents = new BoundingWorldExtent3D();
 
     /// <summary>
-    /// Serialises state to a binary writer
+    /// Serializes state to a binary writer
     /// </summary>
-    /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -47,13 +46,12 @@ namespace VSS.TRex.SurveyedSurfaces
       writer.Write(ID.ToByteArray());
       DesignDescriptor.Write(writer);
       writer.Write(AsAtDate.ToBinary());
-      extents.Write(writer);
+      _extents.Write(writer);
     }
 
     /// <summary>
-    /// Serialises state in from a binary reader
+    /// Serializes state in from a binary reader
     /// </summary>
-    /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
@@ -61,7 +59,7 @@ namespace VSS.TRex.SurveyedSurfaces
       ID = reader.ReadGuid();
       DesignDescriptor.Read(reader);
       AsAtDate = DateTime.FromBinary(reader.ReadInt64());
-      extents.Read(reader);
+      _extents.Read(reader);
     }
 
     /// <summary>
@@ -71,7 +69,7 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       get
       {
-        BoundingWorldExtent3D result = new BoundingWorldExtent3D(extents);
+        var result = new BoundingWorldExtent3D(_extents);
         return result;
       }
     }
@@ -99,30 +97,26 @@ namespace VSS.TRex.SurveyedSurfaces
       ID = iD;
       DesignDescriptor = designDescriptor;
       AsAtDate = asAtDate;
-      this.extents = extents;
+      _extents = extents;
     }
 
     /// <summary>
     /// Produces a deep clone of the surveyed surface
     /// </summary>
-    /// <returns></returns>
-    public ISurveyedSurface Clone() => new SurveyedSurface(ID, DesignDescriptor, AsAtDate, new BoundingWorldExtent3D(extents));
+    public ISurveyedSurface Clone() => new SurveyedSurface(ID, DesignDescriptor, AsAtDate, new BoundingWorldExtent3D(_extents));
 
     /// <summary>
     /// ToString() for SurveyedSurface
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return
-        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} [{extents}]";
+        $"ID:{ID}, DesignID:{DesignDescriptor.DesignID} {AsAtDate}; {DesignDescriptor.Folder};{DesignDescriptor.FileName} [{_extents}]";
     }
 
     /// <summary>
     /// Determine if two surveyed surfaces are equal
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     public bool Equals(ISurveyedSurface other)
     {
       return ID == other.ID &&

@@ -19,7 +19,9 @@ namespace VSS.Productivity3D.Productivity3D.Models.Validation
     {
       try
       {
-        if (!((long?) value).HasValue || (long?) value > 0)
+        // Id's can be negative, but not 0 or -1
+        var v = (long?) value;
+        if (!((long?) value).HasValue || !(v == 0 || v == -1))
         {
           return ValidationResult.Success;
         }

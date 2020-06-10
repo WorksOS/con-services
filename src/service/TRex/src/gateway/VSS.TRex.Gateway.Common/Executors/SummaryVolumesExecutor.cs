@@ -46,6 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       if (request == null)
         ThrowRequestTypeCastException<SummaryVolumesDataRequest>();
 
+      // ReSharper disable once PossibleNullReferenceException
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var baseFilter = ConvertFilter(request.BaseFilter, siteModel);

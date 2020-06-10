@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Error accessing database. Exception: {0}", 106);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Already associated geofence is missing from request.", 107);
       this.DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 108);
-      this.DynamicAddwithOffset("UpsertProject Not allowed duplicate, active projectnames: {0}.", 109);
+      this.DynamicAddwithOffset("UpsertProject Not allowed duplicate, active projectnames.", 109);
       this.DynamicAddwithOffset("ProjectGeofenceAssociation: Duplicate GeofenceUids appear in the request body.", 110);
       this.DynamicAddwithOffset("Invalid project boundary points.Latitudes should be -90 through 90 and Longitude -180 through 180. Points around 0,0 are invalid", 111);
       this.DynamicAddwithOffset("Cannot delete a design, surveyed surface, or alignment file which is used in a filter.", 112);

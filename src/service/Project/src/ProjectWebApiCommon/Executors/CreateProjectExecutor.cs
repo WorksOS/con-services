@@ -7,7 +7,7 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -24,15 +24,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       var createProjectEvent = CastRequestObjectTo<CreateProjectEvent>(item, errorCode: 68);
 
-      ProjectRequestHelper.ValidateProjectBoundary(createProjectEvent.ProjectBoundary, serviceExceptionHandler);
       await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(
         createProjectEvent.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileContent,
         serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
-
-      log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
-      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID,
-        null, new Guid(userId), createProjectEvent.ProjectBoundary,
-        log, serviceExceptionHandler, cwsProjectClient, customHeaders);
 
       // Write to WM first to obtain their ProjectTRN to use as ProjectUid for our DB etc
       try
@@ -64,7 +58,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         cwsDesignClient, cwsProfileSettingsClient, cwsProjectClient).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
 
-      return new ContractExecutionResult();
+      return new ProjectV6DescriptorsSingleResult(
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID, new Guid(customerUid), new Guid(userId),
+            log, serviceExceptionHandler, cwsProjectClient, customHeaders)
+          .ConfigureAwait(false)));
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item) => throw new NotImplementedException();

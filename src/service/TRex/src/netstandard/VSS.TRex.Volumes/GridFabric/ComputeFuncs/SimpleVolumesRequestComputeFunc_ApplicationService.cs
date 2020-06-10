@@ -26,8 +26,6 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         /// <summary>
         /// Invokes the simple volumes request with the given simple volumes request argument
         /// </summary>
-        /// <param name="arg"></param>
-        /// <returns></returns>
         public SimpleVolumesResponse Invoke(SimpleVolumesRequestArgument arg)
         {
             _log.LogInformation($"In {nameof(Invoke)}");

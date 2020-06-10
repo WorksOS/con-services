@@ -318,7 +318,7 @@ namespace VSS.TRex.SubGridTrees.Client
       return true;
     }
 
-    public bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+    public override bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
   IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilterLambda)
     {
       if (!(surfaceElevationsSource is ClientHeightAndTimeLeafSubGrid surfaceElevations))

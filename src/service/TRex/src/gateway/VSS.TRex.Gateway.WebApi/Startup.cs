@@ -24,7 +24,8 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Designs.GridFabric.Events;
+using VSS.AWS.TransferProxy.Interfaces;
+using VSS.AWS.TransferProxy;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -34,11 +35,12 @@ namespace VSS.TRex.Gateway.WebApi
     public override string ServiceDescription => "TRex Gateway API";
     public override string ServiceVersion => "v1";
 
+
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
     /// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     /// </summary>
- 
+
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       DIBuilder.New(services)
@@ -66,6 +68,7 @@ namespace VSS.TRex.Gateway.WebApi
       services.AddTransient<IReportDataValidationUtility, ReportDataValidationUtility>();
       services.AddTransient<ICoordinateServiceUtility, CoordinateServiceUtility>();
       services.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory());
+      services.AddSingleton<ITransferProxyFactory, TransferProxyFactory>();
 
       services.AddOpenTracing(builder =>
       {
