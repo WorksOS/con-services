@@ -113,7 +113,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       if (device == null || string.IsNullOrEmpty(device.DeviceUID))
         return accountProjects;
 
-      // todoJeannie what are the marketing requirements here i.e. do we need to restrict to projects which the device is active in?
+      // what are the marketing requirements here e.g. restrict to projects which the device is active in
       // what projects does this device have visibility to?
       try
       {
@@ -164,7 +164,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
             ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
       }
 
-      // todoJeannie what are the marketing requirements here i.e. do we need to restrict to projects which the device is active in?
+      // what are the marketing requirements here e.g. restrict to projects which the device is active in?
       // what projects does this device have visibility to?
       try
       {

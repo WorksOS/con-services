@@ -55,28 +55,6 @@ namespace CCSS.CWS.Client
       return deviceResponseModel;
     }
 
-    /* obsolete
-    /// <summary>
-    /// 2020_05_05 this is probably obsolete now as devices will at best be done 1 at-a-time CCSSSCON-314
-    /// used when UI calls ProjectSvc.GetCustomerDeviceLicense() 
-    /// to load devices for account into DB (to generate shortRaptorAssetId)
-    ///                 response fields: DeviceTRN
-    /// </summary>
-    public async Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null)
-    {
-      log.LogDebug($"{nameof(GetDevicesForAccount)}: accountUid {accountUid}");
-
-      var accountTrn = TRNHelper.MakeTRN(accountUid, TRNHelper.TRN_ACCOUNT);
-      var queryParameters = WithLimits(FromRow, RowCount);
-      queryParameters.Add(new KeyValuePair<string, string>("includeTccRegistrationStatus", "true"));
-
-      var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices", accountUid, null, queryParameters, customHeaders);
-
-      log.LogDebug($"{nameof(GetDevicesForAccount)}: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
-      return deviceListResponseModel;
-    }
-    */
-
     /// <summary>
     /// used by TFA: projectIdExecutor; ProjectBoundariesAtDateExec; ProjectAndAssetUidsExecutor; ProjectAndAssetUidsEarthWorksExecutor
     ///                 response fields: ProjectTRN
@@ -96,7 +74,7 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// gets accounts related to a device
     ///    should only be 1 RelationStatus.Active
-    /// this is a temp requirement until CCSSSCON-28 todoJeannie
+    /// this is a temp requirement until CCSSSCON-28
     /// </summary>
     public async Task<DeviceAccountListResponseModel> GetAccountsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {

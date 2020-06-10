@@ -56,32 +56,6 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(deviceResponseModel);
     }
 
-    /* obsolete
-    public Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IHeaderDictionary customHeaders = null)
-    {
-      log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: accountUid {accountUid}");
-
-      var deviceListResponseModel = new DeviceListResponseModel()
-      {
-        Devices = new List<DeviceFromListResponseModel>()
-        {
-          new DeviceFromListResponseModel()
-          {
-            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_DEVICE),
-            DeviceType = "EC520",
-            DeviceName = "this is a device",
-            SerialNumber = "56556565",
-            RelationStatus = RelationStatusEnum.Active,
-            TccDeviceStatus = TCCDeviceStatusEnum.Pending
-          }
-        }
-      };
-
-      log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
-      return Task.FromResult(deviceListResponseModel);
-    }
-    */
-
     public Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForDevice)} Mock: deviceUid {deviceUid}");
