@@ -58,9 +58,10 @@ namespace VSS.TRex.Tests.Volumes
 
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.ProgressiveVolumes);
 
-      var result = retriever.RetrieveSubGrid(clientGrid, SubGridTreeBitmapSubGridBits.FullMask);
+      var result = retriever.RetrieveSubGrid(clientGrid, SubGridTreeBitmapSubGridBits.FullMask, out var sieveFilterInUse);
 
       result.Should().Be(ServerRequestResult.SubGridNotFound);
+      sieveFilterInUse.Should().BeFalse();
     }
   }
 }

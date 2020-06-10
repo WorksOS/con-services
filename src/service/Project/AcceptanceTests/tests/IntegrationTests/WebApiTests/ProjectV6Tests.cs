@@ -42,57 +42,6 @@ namespace IntegrationTests.WebApiTests
       await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, projectEventArray, true);
     }
 
-    /* todoJeannie
-    [Fact]
-    public async Task CreateStandardProjectWithCoordinateSystem()
-    {
-      var testText = "Project v6 test 3";
-      Msg.Title(testText, "Create standard project with CoordinateSystem.");
-      var ts = new TestSupport();
-      var customerUid = Guid.NewGuid();
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   | CoordinateSystem      | ",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} | BootCampDimensions.dc |" };
-      await ts.PublishEventCollection(projectEventArray);
-      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
-    }
-
-    [Fact]
-    public async Task CreateStandardProjectThenUpdateCoordinateSystem()
-    {
-      var testText = "Project v6 test 4";
-      Msg.Title(testText, "Create standard project then update, change name and add CoordinateSystem.");
-      var ts = new TestSupport();
-      var customerUid = Guid.NewGuid();
-      var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   | ",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} | " };
-      await ts.PublishEventCollection(projectEventArray);
-      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
-
-      // note that customerUID in this list for the http header
-      // note no boundary in update
-      testText += "_Updated";
-      var projectEventArray2 = new[] {
-       "| EventType            | EventDate   | ProjectUID      | ProjectName | ProjectType | CoordinateSystem      | CustomerUID   | ",
-      $"| UpdateProjectRequest | 0d+09:00:00 | {ts.ProjectUid} | {testText}  | Standard    | BootCampDimensions.dc | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray2);
-
-      var projectEventArrayCombined = new[] {
-       "| EventType            | EventDate   | ProjectUID      | ProjectName | ProjectType | CoordinateSystem      | CustomerUID   | ProjectTimezone | ProjectBoundary          | ",
-      $"| UpdateProjectRequest | 0d+09:00:00 | {ts.ProjectUid} | {testText}  | Standard    | BootCampDimensions.dc | {customerUid} |                 | {Boundaries.Boundary1}   |" };
-
-      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArrayCombined, true);
-      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArrayCombined, true);
-    }
-    */
-
     [Fact]
     public async Task CreateStandardProjectThenUpdateBoundary()
     {

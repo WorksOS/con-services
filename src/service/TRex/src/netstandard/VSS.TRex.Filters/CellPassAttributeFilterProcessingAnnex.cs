@@ -28,7 +28,7 @@ namespace VSS.TRex.Filters
     /// A sub grid containing sampled elevations from a benchmark surface defining the bench surface for
     /// an elevation range filter.
     /// </summary>
-    public IClientHeightLeafSubGrid ElevationRangeDesignElevations;
+    public float[,] ElevationRangeDesignElevations;
 
     /// <summary>
     /// Elevation parameters have been initialized in preparation for elevation range filtering, either
@@ -73,7 +73,7 @@ namespace VSS.TRex.Filters
              Range.InRange(elevation, ElevationRangeBottomElevationForCell, ElevationRangeTopElevationForCell);
     }
 
-    public void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, IClientHeightLeafSubGrid designElevations)
+    public void InitializeElevationRangeFilter(ICellPassAttributeFilter attributeFilter, float[,] designElevations)
     {
       // If there is a design specified then initialize the filter using the design elevations
       // queried and supplied by the caller, otherwise the specified Elevation level, offset and thickness
@@ -101,14 +101,14 @@ namespace VSS.TRex.Filters
       if (ElevationRangeDesignElevations != null)
       {
         // ReSharper disable once CompareOfFloatsByEqualityOperator
-        if (ElevationRangeDesignElevations.Cells[subGridCellX, subGridCellY] == Consts.NullHeight)
+        if (ElevationRangeDesignElevations[subGridCellX, subGridCellY] == Consts.NullHeight)
         {
           ElevationRangeTopElevationForCell = Consts.NullDouble;
           ElevationRangeBottomElevationForCell = Consts.NullDouble;
           return;
         }
 
-        ElevationRangeTopElevationForCell = ElevationRangeDesignElevations.Cells[subGridCellX, subGridCellY] + attributeFilter.ElevationRangeOffset;
+        ElevationRangeTopElevationForCell = ElevationRangeDesignElevations[subGridCellX, subGridCellY] + attributeFilter.ElevationRangeOffset;
       }
       else
       {

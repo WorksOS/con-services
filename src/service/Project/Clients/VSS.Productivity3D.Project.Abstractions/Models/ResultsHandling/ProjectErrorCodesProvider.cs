@@ -125,11 +125,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Reference surface already exists", 121);
       this.DynamicAddwithOffset("This endpoint does not support importing reference surfaces", 122);
       this.DynamicAddwithOffset("Unable to retrieve existing file for the update", 123);
-      this.DynamicAddwithOffset("Device not found in ProfileX", 124);
-      this.DynamicAddwithOffset("Device not found in local storage", 125);
-      this.DynamicAddwithOffset("Invalid DeviceUid", 126);
-      this.DynamicAddwithOffset("Invalid ShortRaptorAssetId", 127);
-      this.DynamicAddwithOffset("Missing DeviceName.", 128);
+      this.DynamicAddwithOffset("Device cws service exception: {0}", 124);
       this.DynamicAddwithOffset("Self-intersecting project boundary.", 129);
       this.DynamicAddwithOffset("Missing project type.", 130);
       this.DynamicAddwithOffset("A problem occurred downloading the calibration file. Exception: {0}", 131);

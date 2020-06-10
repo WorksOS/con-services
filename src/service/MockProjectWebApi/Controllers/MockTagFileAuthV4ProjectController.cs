@@ -13,7 +13,6 @@ namespace MockProjectWebApi.Controllers
     { }
 
     [Route("api/v4/project/getUidsEarthWorks")]
-    [Route("api/v4/project/getUidsCTCT")] // this will be obsolete as soon as MockAPI deployed
     [HttpPost]
     public GetProjectAndAssetUidsEarthWorksResult GetProjectAndAssetUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {

@@ -76,47 +76,33 @@ namespace TestUtility
       var fileDescriptor = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
       string uri = null;
-      if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
+      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = fileDescriptor;
+
+      if (importOptions.HttpMethod == HttpMethod.Delete)
       {
-        ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor = new ProjectConfigurationModel { FileName = fileDescriptor.Name};
-
-        uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}&fileUpdatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}";
-
-        if (importOptions.HttpMethod == HttpMethod.Delete)
-        {
-          uri = $"{uri}&filename={fileDescriptor.Name}";
-        }
+        uri = $"api/v6/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
       else
       {
-        ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = fileDescriptor;
+        var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
+        var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
 
-        if (importOptions.HttpMethod == HttpMethod.Delete)
+        uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
+
+        switch (fileDescriptor.ImportedFileTypeName)
         {
-          uri = $"api/v6/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
-        }
-        else
-        {
-          var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
-          var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
-
-          uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
-
-          switch (fileDescriptor.ImportedFileTypeName)
-          {
-            case "SurveyedSurface":
-              uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
-              break;
-            case "Linework":
-              uri = $"{uri}&DxfUnitsType={fileDescriptor.DxfUnitsType}";
-              break;
-            case "ReferenceSurface":
-              uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
-              break;
-            case "GeoTiff":
-              uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
-              break;
-          }
+          case "SurveyedSurface":
+            uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+            break;
+          case "Linework":
+            uri = $"{uri}&DxfUnitsType={fileDescriptor.DxfUnitsType}";
+            break;
+          case "ReferenceSurface":
+            uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
+            break;
+          case "GeoTiff":
+            uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+            break;
         }
       }
 
@@ -142,26 +128,13 @@ namespace TestUtility
       {
         response = await UploadFilesToWebApi(fileDescriptor.Name, uri, fileDescriptor.CustomerUid, importOptions.HttpMethod, statusCode);
       }
-      
+
       if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
       {
-        // Change expected result - fix filename
-        if (ProjectConfigurationFileHelper.IsCwsFileType(fileDescriptor.ImportedFileType))
-        {
-          ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName);
-        }
-        else
-        {
-          ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);
-        }
+        ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);
       }
 
-      return JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response, new JsonSerializerSettings
-      {
-        DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
-        NullValueHandling = NullValueHandling.Ignore,
-        ContractResolver = new CamelCasePropertyNamesContractResolver()
-      });
+      return JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response, new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified, NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver()});
     }
 
     /// <summary>

@@ -23,8 +23,8 @@ namespace IntegrationTests.WebApiTests
       var customerUid = Guid.NewGuid();
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
       
       // Now create the settings
@@ -107,8 +107,8 @@ namespace IntegrationTests.WebApiTests
       var customerUid = Guid.NewGuid();
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
       
       // Now create the settings
@@ -142,8 +142,8 @@ namespace IntegrationTests.WebApiTests
       var customerUid = Guid.NewGuid();
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       // Now create the settings

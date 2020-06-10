@@ -6,6 +6,8 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
+using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -311,11 +313,13 @@ namespace VSS.TRex.Tests.Filters
         [Fact()]
         public void Test_CellPassAttributeFilter_ClearElevationRangeFilterInitialization()
         {
-            var filterAnnex = new CellPassAttributeFilterProcessingAnnex()
+            var filterAnnex = new CellPassAttributeFilterProcessingAnnex
             {
                 ElevationRangeIsInitialized = true,
-                ElevationRangeDesignElevations = new TRex.SubGridTrees.Client.ClientHeightLeafSubGrid(null, null, 6, 1, 0)
+                ElevationRangeDesignElevations = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension]
             };
+
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => filterAnnex.ElevationRangeDesignElevations[x, y] = Consts.NullHeight);
 
             filterAnnex.ClearElevationRangeFilterInitialization();
 

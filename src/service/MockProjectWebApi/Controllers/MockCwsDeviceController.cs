@@ -46,28 +46,7 @@ namespace MockProjectWebApi.Controllers
       return deviceResponseModel;
     }
 
-    [Route("api/v1/accounts/{accountTrn}/devices")]
-    [HttpGet]
-    [Obsolete]
-    public DeviceListResponseModel GetDevicesForAccount(string accountTrn)
-    {
-      var deviceListResponseModel = new DeviceListResponseModel()
-      {
-        Devices = new List<DeviceFromListResponseModel>()
-        {
-          new DeviceFromListResponseModel()
-          {
-            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(),TRNHelper.TRN_DEVICE),
-            DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = "56556565"
-          }
-        }
-      };
-
-      Logger.LogInformation($"{nameof(GetDevicesForAccount)}: accountTrn {accountTrn}. deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
-      return deviceListResponseModel;
-    }
-
-
+ 
     [Route("api/v1/devices/{deviceTrn}/projects")]
     [HttpGet]
     public ProjectListResponseModel GetProjectsForDevice(string deviceTrn)

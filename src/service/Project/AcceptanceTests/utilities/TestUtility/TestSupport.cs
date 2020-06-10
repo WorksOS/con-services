@@ -50,9 +50,6 @@ namespace TestUtility
     private static readonly object _shortRaptorProjectIDLock = new object();
 
     private static int _currentShortRaptorProjectID;
-
-    public ImportedFileDescriptorListResult ExpectedProjectConfigFileDescriptorsListResult;
-
     static TestSupport()
     {
       _testConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
@@ -474,16 +471,6 @@ namespace TestUtility
           {
             cpCoordinateSystemFileName = eventObject.CoordinateSystem;
             cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
-            ExpectedProjectConfigFileDescriptorsListResult = new ImportedFileDescriptorListResult
-            {
-              ProjectConfigFileDescriptors = new List<ProjectConfigurationModel>
-              {
-                new ProjectConfigurationModel
-                {
-                  FileName = cpCoordinateSystemFileName
-                }
-              }.ToImmutableList()
-            };
           }
            
           if (HasProperty(eventObject, "CustomerUID"))
