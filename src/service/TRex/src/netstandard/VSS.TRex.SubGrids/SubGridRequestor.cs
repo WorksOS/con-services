@@ -241,7 +241,7 @@ namespace VSS.TRex.SubGrids
         }
       }
 
-      var result = _retriever.RetrieveSubGrid(_clientGrid, CellOverrideMask);
+      var result = _retriever.RetrieveSubGrid(_clientGrid, CellOverrideMask, out var sieveFilterInUse);
 
       // If a sub grid was retrieved and this is a supported data type in the cache then add it to the cache
       // If the sub grid does not support assignation from a precomputed sub grid then just return the result with 
@@ -250,9 +250,7 @@ namespace VSS.TRex.SubGrids
       {
         // Determine if this sub grid is suitable for storage in the cache
         // Don't add sub grids computed using a non-trivial WMS sieve to the general sub grid cache
-        var shouldBeCached = (_subGridCacheContext != null) 
-                             && (_areaControlSet.PixelXWorldSize >= _clientGrid.CellSize 
-                                 && _areaControlSet.PixelYWorldSize >= _clientGrid.CellSize);
+        var shouldBeCached = _subGridCacheContext != null && !sieveFilterInUse;
 
         var clientGrid2 = ClientLeafSubGridFactory.GetSubGrid(_clientGrid.GridDataType);
         clientGrid2.Assign(_clientGrid);
