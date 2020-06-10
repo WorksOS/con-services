@@ -15,6 +15,7 @@
     Tile,
     TagFileAuth,
     Device,
-    TRexMutableGateway
+    TRexMutableGateway,
+    Entitlements
   }
 }
