@@ -69,7 +69,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 
     /// <summary>
     /// requesting users role
-    ///    // todoJeannie what about when application context?
     /// </summary>
     [JsonProperty("role")]
     [JsonConverter(typeof(NullableEnumStringConverter), UserProjectRoleEnum.Unknown)]
@@ -91,7 +90,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     "projectId": "trn::profilex:us-west-2:project:5d2ab210-5fb4-4e77-90f9-b0b41c9e6e3f",
     "accountId": "trn::profilex:us-west-2:account:158ef953-4967-4af7-81cc-952d47cb6c6f",
     "accountName": "WM TEST TRIMBLECEC MAR 26",
-    "projectName": "JeannieTest",
+    "projectName": "wotevaTest",
     "lastUpdate": "2020-03-25T23:03:42Z",
     "projectStartDate": null,
     "projectEndDate": null,

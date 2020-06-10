@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
 
         // now get the customerId and 2xstatus
-        // Note that this step may not be needed in future if/when WM can return these fields in cwsDeviceClient.GetDeviceBySerialNumber() CCSSSCON-28 todoJeannie
+        // Note that this step may not be needed in future if/when WM can return these fields in cwsDeviceClient.GetDeviceBySerialNumber() CCSSSCON-28
         var deviceAccountListDataResult = await cwsDeviceClient.GetAccountsForDevice(new Guid(deviceData.DeviceUID), customHeaders);
         if (deviceAccountListDataResult?.Accounts == null || !deviceAccountListDataResult.Accounts.Any())
         {

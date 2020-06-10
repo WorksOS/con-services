@@ -104,7 +104,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
   "projects": [
       {
           "projectId": "trn::profilex:us-west-2:project:3f7a1bd9-0072-436b-81a5-91cc5c5d6057",
-          "projectName": "jeannie Test project 2",
+          "projectName": "woteva Test project 2",
           "role": "ADMIN",
           "userCount": 1,
           "deviceCount": 0,
@@ -117,7 +117,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
               "role": null,
               "lifeStatus": null,
               "userId": null,
-              "email": "jeannie_may@trimble.com",
+              "email": "woteva_may@trimble.com",
               "firstName": null,
               "lastName": null,
               "phone": null,
