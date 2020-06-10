@@ -181,7 +181,7 @@ namespace VSS.TRex.IO
         if (_poolCounts[log2].AvailCount >= _poolCounts[log2].PoolCapacity)
         {
           // The pool is full - cut this buffer loose for the GC to look after
-          Log.LogWarning($"Elements buffer pool full (size={_poolCounts[log2].PoolCapacity}) for {typeof(T).Name}[] buffers of size {bufferLength}. Ignoring this returned buffer");
+          Log.LogWarning($"Elements buffer pool full (size={_poolCounts[log2].PoolCapacity}) for {typeof(T).Name}[] buffers of size {bufferLength}, index {log2} in the buffer array. Ignoring this returned buffer");
         }
         else
         {

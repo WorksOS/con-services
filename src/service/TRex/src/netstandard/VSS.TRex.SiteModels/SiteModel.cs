@@ -122,6 +122,7 @@ namespace VSS.TRex.SiteModels
       sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, ID, siteModelMarkedForDeletion: true);
     }
 
+    private readonly object _lockObj = new object();
     private readonly object machineLoadLockObject = new object();
     private readonly object siteProofingRunLockObject = new object();
     private readonly object siteModelMachineDesignsLockObject = new object();
@@ -132,8 +133,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The grid data for this site model
     /// </summary>
-    public IServerSubGridTree Grid =>
-      grid ?? (grid = new ServerSubGridTree(ID, StorageRepresentationToSupply) {CellSize = this.CellSize});
+    public IServerSubGridTree Grid => grid ??= new ServerSubGridTree(ID, StorageRepresentationToSupply) {CellSize = this.CellSize};
 
     public bool GridLoaded => grid != null;
 
@@ -645,7 +645,7 @@ versionMap = null;
     {
       var result = true;
 
-      lock (this)
+      lock (_lockObj)
       {
         if (!SaveMetadataToPersistentStore(storageProxy, false))
         {
@@ -690,7 +690,7 @@ Result = false;
           MS.Position = 0;
           using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
           {
-            lock (this)
+            lock (_lockObj)
             {
               Read(reader);
             }
@@ -751,7 +751,7 @@ Result = false;
       if (existenceMapCopy != null)
         return existenceMapCopy;
 
-      lock (this)
+      lock (_lockObj)
       {
 // Check we this is the winning thread
         existenceMapCopy = existenceMap;
@@ -783,56 +783,56 @@ Result = false;
       }
     }
 
-/* VersionMap commented out in interim pending consistency scope review
-/// <summary>
-/// Saves the content of the existence map to storage
-/// </summary>
-/// <returns></returns>
-private FileSystemErrorStatus SaveProductionDataVersionMapToStorage(IStorageProxy storageProxy)
-{
-var result = FileSystemErrorStatus.OK;
+    /* VersionMap commented out in interim pending consistency scope review
+    /// <summary>
+    /// Saves the content of the existence map to storage
+    /// </summary>
+    /// <returns></returns>
+    private FileSystemErrorStatus SaveProductionDataVersionMapToStorage(IStorageProxy storageProxy)
+    {
+    var result = FileSystemErrorStatus.OK;
 
-if (versionMap != null)
-result = storageProxy.WriteStreamToPersistentStore(ID, kSubGridVersionMapFileName, FileSystemStreamType.SubGridVersionMap, versionMap.ToStream(), versionMap);
+    if (versionMap != null)
+    result = storageProxy.WriteStreamToPersistentStore(ID, kSubGridVersionMapFileName, FileSystemStreamType.SubGridVersionMap, versionMap.ToStream(), versionMap);
 
-return result;
-}
+    return result;
+    }
 
-/// <summary>
-/// Retrieves the content of the existence map from storage
-/// </summary>
-/// <returns></returns>
-private IGenericSubGridTree_Long LoadProductionDataVersionMapFromStorage()
-{
-var versionMapCopy = versionMap;
-if (versionMapCopy != null)
-return versionMapCopy;
+    /// <summary>
+    /// Retrieves the content of the existence map from storage
+    /// </summary>
+    /// <returns></returns>
+    private IGenericSubGridTree_Long LoadProductionDataVersionMapFromStorage()
+    {
+    var versionMapCopy = versionMap;
+    if (versionMapCopy != null)
+    return versionMapCopy;
 
-lock (this)
-{
-// Check we this is the winning thread
-versionMapCopy = versionMap;
-if (versionMapCopy != null)
-return versionMapCopy;
+    lock (_lockObj)
+    {
+    // Check we this is the winning thread
+    versionMapCopy = versionMap;
+    if (versionMapCopy != null)
+    return versionMapCopy;
 
-var localVersionMap = new SubGridTreeSubGridVersionMap();
+    var localVersionMap = new SubGridTreeSubGridVersionMap();
 
-// Read its content from storage 
-var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridVersionMapFileName,
-FileSystemStreamType.SubGridVersionMap, out MemoryStream MS);
+    // Read its content from storage 
+    var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridVersionMapFileName,
+    FileSystemStreamType.SubGridVersionMap, out MemoryStream MS);
 
-if (MS == null)
-Log.LogInformation(
-$"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
-else
-localVersionMap.FromStream(MS);
+    if (MS == null)
+    Log.LogInformation(
+    $"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
+    else
+    localVersionMap.FromStream(MS);
 
-// Replace existence map with the newly read map
-versionMap = localVersionMap;
-return localVersionMap;
-}
-}
-*/
+    // Replace existence map with the newly read map
+    versionMap = localVersionMap;
+    return localVersionMap;
+    }
+    }
+    */
 
     /// <summary>
     /// GetAdjustedDataModelSpatialExtents returns the bounding extent of the production data held in the 
