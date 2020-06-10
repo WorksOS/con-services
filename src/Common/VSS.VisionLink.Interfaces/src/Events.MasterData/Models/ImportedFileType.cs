@@ -11,13 +11,5 @@
     ReferenceSurface = 6,
     MassHaulPlan = 7,
     GeoTiff = 8,
-    // These are the types used by CWS
-    CwsCalibration = 9,
-    CwsAvoidanceZone = 10,
-    CwsControlPoints = 11,
-    CwsGeoid = 12,
-    CwsFeatureCode = 13,
-    CwsSiteConfiguration = 14,
-    CwsGcsCalibration = 15
   }
 }
