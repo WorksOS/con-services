@@ -49,7 +49,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       catch (Exception e)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 104 - 2000, "getProjectsForDeviceExecutor", e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 124, e.Message, e.Message);
       }
 
       return null;
