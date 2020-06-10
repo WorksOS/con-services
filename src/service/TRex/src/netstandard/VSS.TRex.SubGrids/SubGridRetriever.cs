@@ -443,11 +443,19 @@ namespace VSS.TRex.SubGrids
       else
         ProcessCellPasses();
 
-      if (_haveFilteredPass &&
-          (_firstPassMinElev || _filter.AttributeFilter.HasElevationTypeFilter &&
-            (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest)))
+      if (_haveFilteredPass)
       {
-        _assignmentContext.FilteredValue.FilteredPassData = _tempPass;
+        // Minimum elevation mode and highest/lowest height selection filter will place the resulting selected cell pass in _tempPass
+        if (_firstPassMinElev || _filter.AttributeFilter.HasElevationTypeFilter &&
+          (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
+        {
+          _assignmentContext.FilteredValue.FilteredPassData = _tempPass;
+          _assignmentContext.FilteredValue.PassCount = -1;
+          return;
+        }
+        
+        // Otherwise normal single cell pass selection behaviour will place the filtered cell pass into _currentPass
+        _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
         _assignmentContext.FilteredValue.PassCount = -1;
       }
     }
