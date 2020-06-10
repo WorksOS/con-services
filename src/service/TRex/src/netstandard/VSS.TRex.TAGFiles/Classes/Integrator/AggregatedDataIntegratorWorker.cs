@@ -633,9 +633,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // Raptor style sub grid version management is implemented (currently not supported inTRex)
           CommitSiteModelExistenceMapToPersistentStore(siteModelFromDatamodel);
 
+          UpdateSiteModelMetaData(siteModelFromDatamodel);
+
           AddInvalidatedStreamsToRetirementQueue(siteModelFromDatamodel, subGridIntegrator.InvalidatedSpatialStreams);
           PerformSiteModelChangeNotifications(siteModelFromDatamodel);
-          UpdateSiteModelMetaData(siteModelFromDatamodel);
           UpdateTAGTFileProcessingTrackingStatistics(numTagFilesRepresented, totalPassCountInAggregation);
         }
         finally
