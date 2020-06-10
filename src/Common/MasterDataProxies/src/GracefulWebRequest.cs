@@ -100,7 +100,7 @@ namespace VSS.MasterData.Proxies
     /// <returns>A stream content representing the result returned from the endpoint if successful, otherwise null</returns>
     public async Task<HttpContent> ExecuteRequestAsStreamContent(string endpoint, HttpMethod method,
       IHeaderDictionary customHeaders = null, Stream payloadStream = null,
-      int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
+      int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
     {
       _log.LogDebug(
         $"ExecuteRequest() Stream: endpoint {endpoint} " +
@@ -174,7 +174,7 @@ namespace VSS.MasterData.Proxies
     /// <exception cref="HttpRequestException">If the Status Code from the request is not 200.</exception>
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload = null,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
-      int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
+      int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
     {
       // Default to POST
       if (method == null)
@@ -246,7 +246,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     public async Task ExecuteRequest(string endpoint, Stream payload = null,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
-      int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
+      int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
     {
       //Default to POST
       if (method == null)

@@ -19,7 +19,7 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace VSS.DataOcean.Client
 {
   /// <summary>
-  /// This is a client which is used to send requests to the data ocean. It uses GracefulWebRequest which uses HttpClient.
+  /// This is a client which is used to send requests to the data ocean. It uses GracefulWebReGracefulWebRequest which uses HttpClient.
   /// It is a replacement for TCC file access so the public interface mimics that.
   /// </summary>
   public class DataOceanClient : IDataOceanClient
@@ -241,7 +241,7 @@ namespace VSS.DataOcean.Client
       try
       {
         response = await _gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders,
-          null, null, result.Multifile ? 0 : 3);
+          null, null, 0);
       }
       catch (HttpRequestException ex)
       {

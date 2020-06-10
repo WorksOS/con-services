@@ -55,7 +55,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true&parent_id={dataOceanRootFolderId}";
 
       var gracefulMock = new Mock<IWebRequest>();
-      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -90,10 +90,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseTopUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseTopUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedTopBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseSubUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseSubUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedSubBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -116,7 +116,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
 
       var gracefulMock = new Mock<IWebRequest>();
-      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -146,10 +146,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -178,10 +178,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -206,10 +206,10 @@ namespace VSS.DataOcean.Client.UnitTests
       var createUrl = $"{dataOceanBaseUrl}/api/directories";
 
       var gracefulMock = new Mock<IWebRequest>();
-      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+        .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 0,
           false)).ReturnsAsync(new DataOceanDirectoryResult { Directory = expectedFolderResult });
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -249,13 +249,13 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseTopUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseTopUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedTopBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseSubUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseSubUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedSubBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+        .Setup(g => g.ExecuteRequest<DataOceanDirectoryResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 0,
           false)).ReturnsAsync(new DataOceanDirectoryResult { Directory = expectedSubFolderResult });
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -303,13 +303,13 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 3, false))
+        .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 0, false))
         .Returns(Task.CompletedTask);
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -338,10 +338,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -366,7 +366,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true&parent_id={dataOceanRootFolderId}";
 
       var gracefulMock = new Mock<IWebRequest>();
-      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -387,7 +387,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
 
       var gracefulMock = new Mock<IWebRequest>();
-      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -417,10 +417,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -449,10 +449,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -496,13 +496,13 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequestAsStreamContent(TestConstants.DownloadUrl, HttpMethod.Get, null, null, null, 3, false))
+        .Setup(g => g.ExecuteRequestAsStreamContent(TestConstants.DownloadUrl, HttpMethod.Get, null, null, null, 0, false))
         .ReturnsAsync(expectedDownloadResult);
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -536,10 +536,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -600,10 +600,10 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
       gracefulMock
         .Setup(g => g.ExecuteRequestAsStreamContent(substitutedDownloadUrl, HttpMethod.Get, null, null, null, 0, false))
@@ -655,13 +655,13 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseFolderUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFolderBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 3, false))
+        .Setup(g => g.ExecuteRequest<BrowseFilesResult>(browseFileUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequestAsStreamContent(substitutedDownloadUrl, HttpMethod.Get, null, null, null, 3, false))
+        .Setup(g => g.ExecuteRequestAsStreamContent(substitutedDownloadUrl, HttpMethod.Get, null, null, null, 0, false))
         .ReturnsAsync((HttpContent)null);
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
@@ -698,18 +698,18 @@ namespace VSS.DataOcean.Client.UnitTests
       var deleteFileUrl = $"{dataOceanBaseUrl}/api/files/{expectedFileResult.File.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
-      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 0, false))
       .Returns(Task.FromResult(expectedBrowseResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest<DataOceanFileResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3, false))
+        .Setup(g => g.ExecuteRequest<DataOceanFileResult>(createUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 0, false))
         .ReturnsAsync(expectedFileResult);
       gracefulMock
-        .Setup(g => g.ExecuteRequestAsStreamContent(TestConstants.UploadUrl, HttpMethod.Put, null, It.IsAny<Stream>(), null, 3, false))
+        .Setup(g => g.ExecuteRequestAsStreamContent(TestConstants.UploadUrl, HttpMethod.Put, null, It.IsAny<Stream>(), null, 0, false))
         .ReturnsAsync(expectedUploadResult);
-      gracefulMock.Setup(g => g.ExecuteRequest<DataOceanFileResult>(getUrl, null, null, HttpMethod.Get, null, 3, false))
+      gracefulMock.Setup(g => g.ExecuteRequest<DataOceanFileResult>(getUrl, null, null, HttpMethod.Get, null, 0, false))
         .Returns(Task.FromResult(expectedFileResult));
       gracefulMock
-        .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 3, false))
+        .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 0, false))
         .Returns(Task.CompletedTask);
 
       serviceCollection.AddTransient(g => gracefulMock.Object);

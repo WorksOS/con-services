@@ -54,7 +54,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<T> SendRequestInternal<T>(string url, IHeaderDictionary customHeaders,
-      HttpMethod method = null, string payload = null, Stream streamPayload = null, int? timeout = null, int retries = 3)
+      HttpMethod method = null, string payload = null, Stream streamPayload = null, int? timeout = null, int retries = 0)
     {
       // Default to POST
       if (method == null)
@@ -109,7 +109,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="retries">How many times to retry the request (optional)</param>
     /// <returns>The item</returns>
     protected Task<T> SendRequest<T>(string urlKey, string payload, IHeaderDictionary customHeaders,
-      string route = null, HttpMethod method = null, string queryParameters = null, int? timeout = null, int retries = 3)
+      string route = null, HttpMethod method = null, string queryParameters = null, int? timeout = null, int retries = 0)
     {
       log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters.Truncate(_logMaxChar)} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders(_logMaxChar)}");
       return SendRequestInternal<T>(ExtractUrl(urlKey, route, queryParameters), customHeaders, method, payload, timeout: timeout, retries: retries);
