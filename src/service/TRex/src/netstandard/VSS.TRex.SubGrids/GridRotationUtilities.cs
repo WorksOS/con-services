@@ -39,7 +39,7 @@ namespace VSS.TRex.SubGrids
           return false;
       */
 
-      if (areaControlSet.PixelXWorldSize == 0 || areaControlSet.PixelYWorldSize == 0)
+      if (areaControlSet.PixelXWorldSize < siteModelCellSize && areaControlSet.PixelYWorldSize < siteModelCellSize)
         return false;
 
       // Progress through the cells in the grid, starting from the southern most
@@ -123,9 +123,6 @@ namespace VSS.TRex.SubGrids
       out SubGridTreeBitmapSubGridBits sieveBitmask)
     {
       sieveBitmask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-
-      if (areaControlSet.PixelXWorldSize == 0 || areaControlSet.PixelYWorldSize == 0)
-        return false;
 
       if (areaControlSet.PixelXWorldSize < siteModelCellSize && areaControlSet.PixelYWorldSize < siteModelCellSize)
         return false;

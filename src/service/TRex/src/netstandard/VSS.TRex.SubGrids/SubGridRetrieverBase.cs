@@ -71,8 +71,8 @@ namespace VSS.TRex.SubGrids
     protected ISubGrid _subGrid;
     protected IServerLeafSubGrid _subGridAsLeaf;
 
-    protected bool _sieveFilterInUse;
-    protected SubGridTreeBitmapSubGridBits _sieveBitmask;
+    private bool _sieveFilterInUse;
+    private SubGridTreeBitmapSubGridBits _sieveBitmask;
 
     protected ProfileCell _cellProfile;
 
@@ -408,14 +408,6 @@ namespace VSS.TRex.SubGrids
         if (PruneSubGridRetrievalHere())
           return ServerRequestResult.NoError;
 
-        // Determine the bitmask detailing which cells match the cell selection filter
-        if (!SubGridFilterMasks.ConstructSubGridCellFilterMask(_subGridAsLeaf, _siteModel, _filter,
-          cellOverrideMask, _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction,
-          _clientGridAsLeaf.ProdDataMap, _clientGridAsLeaf.FilterMap))
-        {
-          return ServerRequestResult.FailedToComputeDesignFilterPatch;
-        }
-
         // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
 
         SetupForCellPassStackExamination();
@@ -428,23 +420,22 @@ namespace VSS.TRex.SubGrids
           ? GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.CellSize, out _sieveBitmask)
           : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _areaControlSet, _siteModel.CellSize, _assignmentContext, out _sieveBitmask);
 
-        if (!_sieveFilterInUse)
-        {
-          // Reset pixel size parameters to indicate no skip stepping is being performed
-          _areaControlSet.PixelXWorldSize = 0;
-          _areaControlSet.PixelYWorldSize = 0;
-        }
-
         //if (Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
         // Before iterating over stripes of this sub grid, compute a scan map detailing to the best of our current
         // knowledge, which cells need to be visited so that only cells the filter wants and which are actually
-        // present in the data set are requested
-        _aggregatedCellScanMap.SetAndOf(_clientGridAsLeaf.FilterMap, _globalLatestCells.PassDataExistenceMap);
+        // present in the data set are requested. If the intent is to store the result in a cache then ensure the
+        // entire content is requested for the sub grid.
+        _aggregatedCellScanMap.OrWith(_globalLatestCells.PassDataExistenceMap);
+
         if (_sieveFilterInUse)
           _aggregatedCellScanMap.AndWith(_sieveBitmask); // ... and which are required by any sieve mask
-        if (_sieveFilterInUse || !_prepareGridForCacheStorageIfNoSieving)
+
+        if (!_sieveFilterInUse && _prepareGridForCacheStorageIfNoSieving)
+        {
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.ProdDataMap); // ... and which are in the required production data map
+          _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.FilterMap); // ... and which are in the required filter map
+        }
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
