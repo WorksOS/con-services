@@ -282,10 +282,9 @@ namespace VSS.TRex.Gateway.Common.Executors
           request.Mode != DisplayMode.TargetSpeedSummary &&
           request.Mode != DisplayMode.TemperatureSummary)
       {
-        convertedPalette = new PaletteBase(new Transition[0]);
-
-        if (request.Palettes != null)
-          convertedPalette.PaletteTransitions = request.Palettes.Select(p => new Transition(p.Value, ColorUtility.UIntToColor(p.Color))).ToArray();
+        convertedPalette = new PaletteBase(request.Palettes != null 
+          ? convertedPalette.PaletteTransitions = request.Palettes.Select(p => new Transition(p.Value, ColorUtility.UIntToColor(p.Color))).ToArray() 
+          : new Transition[0]);
       }
 
       return convertedPalette;
