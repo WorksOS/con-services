@@ -227,12 +227,12 @@ namespace VSS.TCCFileAccess
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    public Task<Stream> GetFile(Organization org, string fullName, int retries = 3) => GetFileEx(org.filespaceId, fullName, retries);
+    public Task<Stream> GetFile(Organization org, string fullName, int retries = 0) => GetFileEx(org.filespaceId, fullName, retries);
 
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    public async Task<Stream> GetFile(string filespaceId, string fullName, int retries = 3) => await GetFileEx(filespaceId, fullName, retries);
+    public async Task<Stream> GetFile(string filespaceId, string fullName, int retries = 0) => await GetFileEx(filespaceId, fullName, retries);
 
     private async Task<Stream> GetFileEx(string filespaceId, string fullName, int retries)
     {

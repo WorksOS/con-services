@@ -75,7 +75,7 @@ namespace VSS.Pegasus.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 0,
           false)).ReturnsAsync((PegasusExecutionResult)null);
 
       await ProcessWithFailure(gracefulMock, dataOceanMock, $"Failed to create execution for {dxfFullName}", true);
@@ -114,10 +114,10 @@ namespace VSS.Pegasus.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 0,
           false)).ReturnsAsync(expectedExecutionResult);
       gracefulMock
-        .Setup(g => g.ExecuteRequest<PegasusExecutionAttemptResult>(startExecutionUrl, null, null, HttpMethod.Post, null, 3,
+        .Setup(g => g.ExecuteRequest<PegasusExecutionAttemptResult>(startExecutionUrl, null, null, HttpMethod.Post, null, 0,
           false)).ReturnsAsync((PegasusExecutionAttemptResult)null);
 
       await ProcessWithFailure(gracefulMock, dataOceanMock, $"Failed to start execution for {dxfFullName}", true);
@@ -194,13 +194,13 @@ namespace VSS.Pegasus.Client.UnitTests
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
-        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 3,
+        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(createExecutionUrl, It.IsAny<MemoryStream>(), null, HttpMethod.Post, null, 0,
           false)).ReturnsAsync(expectedExecutionResult);
       gracefulMock
-        .Setup(g => g.ExecuteRequest<PegasusExecutionAttemptResult>(startExecutionUrl, null, null, HttpMethod.Post, null, 3,
+        .Setup(g => g.ExecuteRequest<PegasusExecutionAttemptResult>(startExecutionUrl, null, null, HttpMethod.Post, null, 0,
           false)).ReturnsAsync(expectedExecutionAttemptResult);
       gracefulMock
-        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(executionStatusUrl, null, null, HttpMethod.Get, null, 3,
+        .Setup(g => g.ExecuteRequest<PegasusExecutionResult>(executionStatusUrl, null, null, HttpMethod.Get, null, 0,
           false)).ReturnsAsync(expectedExecutionResult);
 
       return ProcessWithSuccess(gracefulMock, dataOceanMock, subFolderPath, true);
