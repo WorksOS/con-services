@@ -6,7 +6,7 @@ namespace CCSS.CWS.Client
   {
     public static bool IsNotFoundException(this Exception e)
     {
-      return e.Message.Contains("404") || e.Message.Contains("NotFound");
+      return e.Message.Contains(":404") || e.Message.Contains("NotFound");
     }
   }
 }
