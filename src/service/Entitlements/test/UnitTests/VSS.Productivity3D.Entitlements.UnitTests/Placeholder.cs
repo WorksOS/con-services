@@ -5,7 +5,7 @@ using Xunit;
 
 namespace VSS.Productivity3D.Entitlements.UnitTests
 {
-    class Placeholder
+    public class Placeholder
     {
       [Fact]
       public void EmptyTest()
