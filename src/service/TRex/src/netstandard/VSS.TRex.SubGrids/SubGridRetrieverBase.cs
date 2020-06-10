@@ -71,7 +71,6 @@ namespace VSS.TRex.SubGrids
     protected ISubGrid _subGrid;
     protected IServerLeafSubGrid _subGridAsLeaf;
 
-    private bool _sieveFilterInUse;
     private SubGridTreeBitmapSubGridBits _sieveBitmask;
 
     protected ProfileCell _cellProfile;
@@ -299,8 +298,11 @@ namespace VSS.TRex.SubGrids
     /// <param name="cellOverrideMask"></param>
     /// <returns></returns>
     public virtual ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
-      SubGridTreeBitmapSubGridBits cellOverrideMask)
+      SubGridTreeBitmapSubGridBits cellOverrideMask,
+      out bool sieveFilterInUse)
     {
+      sieveFilterInUse = false;
+
       if (!Utilities.DerivedGridDataTypesAreCompatible(_gridDataType, clientGrid.GridDataType))
       {
         throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] is not compatible with the grid data type of retriever [{_gridDataType}]");
@@ -416,7 +418,7 @@ namespace VSS.TRex.SubGrids
         // the X and Y pixel world size (used for WMS tile computation)
         _subGrid.CalculateWorldOrigin(out var subGridWorldOriginX, out var subGridWorldOriginY);
 
-        _sieveFilterInUse = _areaControlSet.UseIntegerAlgorithm
+        sieveFilterInUse = _areaControlSet.UseIntegerAlgorithm
           ? GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.CellSize, out _sieveBitmask)
           : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _areaControlSet, _siteModel.CellSize, _assignmentContext, out _sieveBitmask);
 
@@ -428,10 +430,10 @@ namespace VSS.TRex.SubGrids
         // entire content is requested for the sub grid.
         _aggregatedCellScanMap.OrWith(_globalLatestCells.PassDataExistenceMap);
 
-        if (_sieveFilterInUse)
+        if (sieveFilterInUse)
           _aggregatedCellScanMap.AndWith(_sieveBitmask); // ... and which are required by any sieve mask
 
-        if (!_sieveFilterInUse && _prepareGridForCacheStorageIfNoSieving)
+        if (!sieveFilterInUse && _prepareGridForCacheStorageIfNoSieving)
         {
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.ProdDataMap); // ... and which are in the required production data map
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.FilterMap); // ... and which are in the required filter map

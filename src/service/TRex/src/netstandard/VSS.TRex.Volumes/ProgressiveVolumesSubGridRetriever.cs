@@ -124,11 +124,9 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Decorates the base sub grid request logic with additional requirements for progressive requests
     /// </summary>
-    /// <param name="clientGrid"></param>
-    /// <param name="cellOverrideMask"></param>
-    /// <returns></returns>
     public override ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
-      SubGridTreeBitmapSubGridBits cellOverrideMask)
+      SubGridTreeBitmapSubGridBits cellOverrideMask,
+      out bool sieveFilterInUse)
     {
       // Establish the expected number of height layers in the client sub grid
       if (!(clientGrid is IClientProgressiveHeightsLeafSubGrid subGrid))
@@ -146,7 +144,7 @@ namespace VSS.TRex.Volumes
 
       _progressiveClientSubGrid.NumberOfHeightLayers = numHeightLayers; 
 
-      return base.RetrieveSubGrid(clientGrid, cellOverrideMask);
+      return base.RetrieveSubGrid(clientGrid, cellOverrideMask, out sieveFilterInUse);
     }
 
     /// <summary>
