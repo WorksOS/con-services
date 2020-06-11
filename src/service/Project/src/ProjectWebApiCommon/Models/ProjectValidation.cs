@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
