@@ -25,6 +25,8 @@
         AsphaltPaver = 42,
         FourDrumLandfillCompactor = 43,
         Trimmer = 44,
-        ConcretePaver = 45
+        ConcretePaver = 45,
+        CutterSuctionDredge = 46,
+        ExcavatorOnBarge = 47
     }
 }

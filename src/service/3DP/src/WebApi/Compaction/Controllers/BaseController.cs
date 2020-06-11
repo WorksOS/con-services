@@ -455,9 +455,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           {
             await ApplyDateRange(projectUid, filterData);
 
-            var polygonPoints = filterData.PolygonLL?.ConvertAll(p =>
-              new WGSPoint(p.Lat.LatDegreesToRadians(), p.Lon.LonDegreesToRadians()));
-
             var layerMethod = filterData.LayerNumber.HasValue
               ? FilterLayerMethod.TagfileLayerNumber
               : FilterLayerMethod.None;
@@ -468,7 +465,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               returnEarliest = true;
             }
 
-            var raptorFilter = new FilterResult(filterUid, filterData, polygonPoints, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
+            var raptorFilter = new FilterResult(filterUid, filterData, filterData.PolygonLL, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
 
             Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 
