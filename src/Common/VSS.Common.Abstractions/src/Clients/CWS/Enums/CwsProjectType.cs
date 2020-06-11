@@ -11,5 +11,4 @@ namespace VSS.Common.Abstractions.Clients.CWS.Enums
     AcceptsTagFiles = 1
     //OtherProjectFeatureInTheFuture = 1 << 2
   }
-
 }
