@@ -115,7 +115,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
       var expectedContent = new ByteArrayContent(fileContents);
-      mockWebRequest.Setup(s => s.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, It.IsAny<IHeaderDictionary>(), null, null, 3, false))
+      mockWebRequest.Setup(s => s.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, It.IsAny<IHeaderDictionary>(), null, null, 0, false))
         .Returns(Task.FromResult(expectedContent as HttpContent));
 
       MockUtilities.TestRequestSendsCorrectJson("Get and download a file", mockWebRequest, null, expectedUrl, HttpMethod.Get, getFileResponseModel, async () =>
