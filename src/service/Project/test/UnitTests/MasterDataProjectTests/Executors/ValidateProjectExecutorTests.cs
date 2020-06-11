@@ -18,7 +18,7 @@ using Xunit;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class ValidateProjectExecutorTests : UnitTestsDIFixture<CreateProjectExecutorTests>
+  public class ValidateProjectExecutorTests : UnitTestsDIFixture<ValidateProjectExecutorTests>
   {
     public ValidateProjectExecutorTests()
     {
@@ -719,7 +719,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         null, cwsProjectClient: null);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(135, result.Code);
-      Assert.Equal("Mismatching customerUid.", result.Message);
+      Assert.Equal("Mismatched customerUid.", result.Message);
     }
 
     private ProjectBoundary CreateNonOverlappingBoundary()

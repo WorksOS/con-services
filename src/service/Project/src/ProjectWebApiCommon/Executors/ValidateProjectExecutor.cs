@@ -26,9 +26,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var data = CastRequestObjectTo<ProjectValidation>(item, errorCode: 68);
 
       //Check customerUid in request matches header since some of the API calls use the data and some the header
-      if (data.CustomerUid.ToString() != customHeaders["X-VisionLink-CustomerUID"])
+      if (string.Compare(data.CustomerUid.ToString(), customHeaders["X-VisionLink-CustomerUID"], StringComparison.OrdinalIgnoreCase) != 0)
       {
-        return new ContractExecutionResult(135, "Mismatching customerUid.");
+        return new ContractExecutionResult(135, "Mismatched customerUid.");
       }
 
       var userUid = new Guid(userId);
