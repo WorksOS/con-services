@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <returns>A zipped file containing the line work and a result code and message</returns>
     [HttpGet("api/v2/linework/alignment")]
-    [Obsolete("Use the 'api/v2/designs/alignment/master/geometry' endpoint to get DXF data for an alignment.")]
+    [Obsolete("Use the 'api/v2/designs/alignment/master/geometry' endpoint to get geometry data for an alignment.")]
     public async Task<FileResult> GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid, [FromServices] IPreferenceProxy prefProxy)
     {
       Log.LogDebug($"{nameof(GetLineworkFromAlignment)}: projectUid={projectUid} alignmentUid={alignmentUid}");

@@ -16,6 +16,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -40,7 +41,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     {
     }
 
-    public async Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid, IHeaderDictionary customHeaders)
+    public async Task<AlignmentGeometryResult> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid, IHeaderDictionary customHeaders)
     {
       var queryParams = new List<KeyValuePair<string, string>>
       {
@@ -48,12 +49,12 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
         new KeyValuePair<string, string>("alignmentUid", alignmentUid.ToString())
       };
 
-      var result = await GetMasterDataStreamItemServiceDiscoveryNoCache
-        ("/linework/alignment", customHeaders, method: HttpMethod.Get, queryParameters: queryParams);
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<AlignmentGeometryResult>
+        ("/designs/alignment/master/geometry", customHeaders, queryParameters: queryParams);
       if (result != null)
         return result;
 
-      log.LogDebug($"{nameof(GetLineworkFromAlignment)} Failed to get streamed results");
+      log.LogDebug($"{nameof(GetLineworkFromAlignment)} Failed to get alignment geometry result");
       return null;
     }
 
