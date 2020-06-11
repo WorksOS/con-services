@@ -513,7 +513,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       var startTime = DateTime.UtcNow;
 
-      _log.LogInformation("Starting storage proxy Commit()");
+      _log.LogInformation($"Starting storage proxy Commit(). Committing {_storageProxyMutable.PotentialCommitWrittenBytes()} bytes from transacted Byte[] elements");
       _storageProxyMutable.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten);
       _log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
     }
