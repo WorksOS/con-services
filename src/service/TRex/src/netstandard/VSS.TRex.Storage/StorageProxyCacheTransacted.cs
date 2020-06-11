@@ -154,6 +154,8 @@ namespace VSS.TRex.Storage
             lock (PendingTransactedWrites)
             {
               numUpdated = PendingTransactedWrites.Count;
+
+              // PendingTransactedWrites.ForEach(x => base.Put(x.Key, x.Value));
               base.PutAll(PendingTransactedWrites);
             }
 
@@ -201,7 +203,7 @@ namespace VSS.TRex.Storage
 
         public override void IncrementBytesWritten(long bytesWritten) => Interlocked.Add(ref _bytesWritten, bytesWritten);
 
-        public long PotentialCommitWrittenBytes()
+        public override long PotentialCommitWrittenBytes()
         {
           var numBytes = 0;
 

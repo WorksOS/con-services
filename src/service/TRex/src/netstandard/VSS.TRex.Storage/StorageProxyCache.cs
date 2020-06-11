@@ -48,7 +48,7 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Standard Ignite caches do not have pending writes to compute potential bytes written for.
     /// </summary>
-    public long PotentialCommitWrittenBytes() => 0;
+    public virtual long PotentialCommitWrittenBytes() => 0;
 
     public virtual void IncrementBytesWritten(long bytesWritten)
     {
