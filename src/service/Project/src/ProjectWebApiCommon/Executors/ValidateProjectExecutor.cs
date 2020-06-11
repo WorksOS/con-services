@@ -5,6 +5,7 @@ using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -25,7 +26,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var data = CastRequestObjectTo<ProjectValidation>(item, errorCode: 68);
 
       // Nothing to validate for a non 3d-enabled project
-      if (data.ProjectType.HasValue && data.ProjectType == CwsProjectType.Non3dEnabled) 
+      if (data.ProjectType.HasValue && data.ProjectType == CwsProjectType.Standard) 
         return new ContractExecutionResult();
 
       var userUid = new Guid(userId);

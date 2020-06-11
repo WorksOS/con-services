@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -34,7 +35,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -56,7 +57,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = null,
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -102,7 +103,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = projectList.Projects[0].ProjectName,
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -124,7 +125,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = null,
         UpdateType = ProjectUpdateType.Created
       };
@@ -149,7 +150,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateInvalidBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -175,7 +176,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateSelfIntersectingBoundary(),
         UpdateType = ProjectUpdateType.Created
       };
@@ -201,7 +202,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = null,
         ProjectName = "some project",
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = projectList.Projects[0].ProjectSettings.Boundary,
         UpdateType = ProjectUpdateType.Created
       };
@@ -321,7 +322,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         UpdateType = ProjectUpdateType.Updated
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
@@ -346,7 +347,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        ProjectType = CwsProjectType.ThreeDEnabled,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         UpdateType = ProjectUpdateType.Updated
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);

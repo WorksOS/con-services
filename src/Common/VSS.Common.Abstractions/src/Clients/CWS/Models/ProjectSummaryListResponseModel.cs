@@ -2,6 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Enums;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
@@ -88,9 +89,9 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public string TimeZone { get; set; }
 
     /// <summary>
-    /// Project type. Todo change to enum once all the cws work is done
+    /// Project type.
     /// </summary>
-    public int ProjectType { get; set; }
+    public CwsProjectType ProjectType { get; set; }
 
 
     public List<string> GetIdentifiers() => new List<string> { ProjectTRN, ProjectId };

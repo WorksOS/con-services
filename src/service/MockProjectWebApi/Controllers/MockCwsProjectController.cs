@@ -8,6 +8,7 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -45,6 +46,7 @@ namespace MockProjectWebApi.Controllers
         AccountTRN = TRNHelper.MakeTRN(createProjectRequestModel.AccountId, TRNHelper.TRN_ACCOUNT),
         ProjectTRN = newProjectTrn,
         ProjectName = createProjectRequestModel.ProjectName,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         UserProjectRole = UserProjectRoleEnum.Admin,
         LastUpdate = DateTime.UtcNow,
         ProjectSettings = new ProjectSettingsModel()
@@ -146,7 +148,8 @@ namespace MockProjectWebApi.Controllers
             ProjectName = projectDict.Value.ProjectName,
             UserProjectRole = projectDict.Value.UserProjectRole,
             Boundary = projectDict.Value.ProjectSettings.Boundary,
-            TimeZone = projectDict.Value.ProjectSettings.TimeZone
+            TimeZone = projectDict.Value.ProjectSettings.TimeZone,
+            ProjectType = CwsProjectType.AcceptsTagFiles,
           };
           projectSummaryListResponseModel.Projects.Add(projectSummaryResponseModel);
         }
