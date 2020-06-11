@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models.Files;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
@@ -49,6 +50,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         : ProcessForRaptor(request);
     }
 
+
     private async Task<DxfLineworkFileResult> ProcessForTRex(LineworkRequest request)
     {
 #if !RAPTOR
@@ -59,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var req = new DXFBoundariesRequest(request.CoordinateSystemFileData, ImportedFileType.SiteBoundary, 
           request.DxfFileData, (DxfUnitsType)request.LineworkUnits, (uint)request.NumberOfBoundariesToProcess,
           request.ConvertLineStringCoordsToPolygon);
-        var returnResult = await trexCompactionDataProxy.SendDataPostRequest<DxfLineworkFileResult, DXFBoundariesRequest>(req, "linework/boundaries");
+        var returnResult = await trexCompactionDataProxy.SendDataPostRequest<DXFBoundaryResult, DXFBoundariesRequest>(req, "files/dxf/boundaries");
 
         log.LogInformation($"RequestBoundariesFromLineWork: result: {JsonConvert.SerializeObject(returnResult)}");
 
@@ -68,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           throw CreateServiceException<LineworkFileExecutor>(returnResult.Code);
         }
 
-        return new DxfLineworkFileResult(returnResult.Code, returnResult.Message, returnResult.LineworkBoundaries);
+        return new DxfLineworkFileResult(returnResult.Boundaries, returnResult.Code, returnResult.Message);
       }
       catch (ServiceException ex)
       {
