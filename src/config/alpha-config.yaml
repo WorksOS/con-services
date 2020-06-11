@@ -37,13 +37,14 @@ data:
   DOWNLOAD_FOLDER: C:/temp/
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
-  AWS_TAGFILE_BUCKET_NAME: ccss-tag-file-archive
   ENVIRONMENT: ALPHA
   CORECLR_ENABLE_PROFILING: "0"
 #AWS configuration  
-  AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-workos-exports
+  AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-trex-designfiles
   AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-rpd-workos-exports
+  AWS_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-tagfile-archive
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
+  USE_LOCAL_S3_TRANSFER_PROXY_STORE: "false"
 #Raptor configuration
   ASNODEIP: 10.97.96.150
   ENABLE_CONNECTED_SITE_GATEWAY: "false"
