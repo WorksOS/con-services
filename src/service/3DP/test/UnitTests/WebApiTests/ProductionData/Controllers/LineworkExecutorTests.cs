@@ -157,7 +157,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.Message.Should().Be("Success");
-      ((DxfLineworkFileResult) result).LineworkBoundaries.Should().BeEquivalentTo(TestResultBoundary());
+      ((DXFBoundaryResult) result).Boundaries.Should().BeEquivalentTo(TestResultBoundary());
     }
   }
 }
