@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -18,6 +19,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
@@ -31,9 +33,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     private IConfigurationStore configStore;
     private ITRexCompactionDataProxy trexCompactionDataProxy;
 
-    private WGS84LineworkBoundary[] TestResultBoundary()
+    private List<DXFBoundaryResultItem> TestResultBoundary()
     {
-      return new[] {new WGS84LineworkBoundary {Boundary = new[] {new WGSPoint(0, 0), new WGSPoint(1, 0), new WGSPoint(0, 1)}, BoundaryName = "Test", BoundaryType = DXFLineWorkBoundaryType.GenericBoundary}};
+      return new List<DXFBoundaryResultItem> {new DXFBoundaryResultItem(new List<WGSPoint> {new WGSPoint(0, 0), new WGSPoint(1, 0), new WGSPoint(0, 1)}, DXFLineWorkBoundaryType.GenericBoundary, "Test")};
     }
 
     public LineworkExecutorTests()
@@ -55,10 +57,10 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var mockTrexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
       mockTrexCompactionDataProxy.Setup(x => 
-          x.SendDataPostRequest<DxfLineworkFileResult, DXFBoundariesRequest>(It.IsAny<DXFBoundariesRequest>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<bool>()))
+          x.SendDataPostRequest<DXFBoundaryResult, DXFBoundariesRequest>(It.IsAny<DXFBoundariesRequest>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), It.IsAny<bool>()))
       .Returns((DXFBoundariesRequest req, string route, IHeaderDictionary customHeaders, bool mutableGateway) =>
       {
-        return Task.FromResult(new DxfLineworkFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success", TestResultBoundary()));
+        return Task.FromResult(new DXFBoundaryResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success", TestResultBoundary()));
       });
       trexCompactionDataProxy = mockTrexCompactionDataProxy.Object;
     }
