@@ -1,4 +1,5 @@
-﻿using VSS.Common.Abstractions.Clients.CWS.Models;
+﻿using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
 {
