@@ -149,7 +149,7 @@ namespace MockProjectWebApi.Controllers
             UserProjectRole = projectDict.Value.UserProjectRole,
             Boundary = projectDict.Value.ProjectSettings.Boundary,
             TimeZone = projectDict.Value.ProjectSettings.TimeZone,
-            ProjectType = CwsProjectType.AcceptsTagFiles,
+            ProjectType = CwsProjectType.AcceptsTagFiles
           };
           projectSummaryListResponseModel.Projects.Add(projectSummaryResponseModel);
         }

@@ -91,6 +91,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// <summary>
     /// Project type.
     /// </summary>
+    [JsonProperty("projectType")]
     public CwsProjectType ProjectType { get; set; }
 
 

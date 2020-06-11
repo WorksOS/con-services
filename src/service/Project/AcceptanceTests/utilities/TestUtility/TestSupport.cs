@@ -467,12 +467,15 @@ namespace TestUtility
           string cpDescription = null;
           string cpCoordinateSystemFileName = null;
           byte[] cpCoordinateSystemFileContent = null;
+          /* TEMP. Validation now requires coordinate system for all create project
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             cpCoordinateSystemFileName = eventObject.CoordinateSystem;
             cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
-           
+          */
+          cpCoordinateSystemFileName = "BootCampDimensions.dc";
+          cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           if (HasProperty(eventObject, "CustomerUID"))
           {
             cpCustomerUid = eventObject.CustomerUID;

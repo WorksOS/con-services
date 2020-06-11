@@ -11,5 +11,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
   {
     Task<CreateFileResponseModel> CreateFile(Guid projectUid, CreateFileRequestModel createFileRequest, IHeaderDictionary customHeaders = null);
     Task<CreateFileResponseModel> CreateAndUploadFile(Guid projectUid, CreateFileRequestModel createFileRequest, Stream fileContents, IHeaderDictionary customHeaders = null);
+    Task<GetFileWithContentsModel> GetAndDownloadFile(Guid projectUid, string filespaceId, IHeaderDictionary customHeaders = null);
   }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -339,6 +340,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ContractExecutionResult> IsProjectValid([FromBody]ProjectValidateDto validateDto)
     {
       Logger.LogInformation($"{nameof(IsProjectValid)} Project Validation Check {JsonConvert.SerializeObject(validateDto)}");
+
+      // Nothing to validate for a non 3d-enabled project
+      if (validateDto.ProjectType.HasValue && validateDto.ProjectType == CwsProjectType.Standard)
+        return new ContractExecutionResult();
 
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(validateDto);
       var result = await WithServiceExceptionTryExecuteAsync(() =>

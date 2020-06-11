@@ -106,6 +106,18 @@ namespace CCSS.CWS.Client
       return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
 
+    protected async Task<byte[]> DownloadData(string downloadUrl, IHeaderDictionary customHeaders = null)
+    {
+      var response = await webRequest.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders);
+      using (var responseStream = await response.ReadAsStreamAsync())
+      {
+        responseStream.Position = 0;
+        byte[] file = new byte[responseStream.Length];
+        responseStream.Read(file, 0, file.Length);
+        return file;
+      }
+    }
+
     protected async Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
       IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
     {

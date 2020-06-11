@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Serilog;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
@@ -70,6 +71,7 @@ namespace VSS.MasterData.ProjectTests
       _customerTrn = TRNHelper.MakeTRN(_customerUid, TRNHelper.TRN_ACCOUNT);
       _projectUid = Guid.NewGuid();
       _projectTrn = TRNHelper.MakeTRN(_projectUid);
+      _customHeaders.Add("X-VisionLink-CustomerUID", new StringValues(_customerUid.ToString()));
     }
 
     protected ProjectDetailListResponseModel CreateProjectListModel(string customerTrn, string projectTrn, string projectName = "the project name",
@@ -86,6 +88,7 @@ namespace VSS.MasterData.ProjectTests
             AccountTRN = customerTrn,
             ProjectTRN = projectTrn,
             ProjectName = projectName,
+            ProjectType = CwsProjectType.AcceptsTagFiles,
             UserProjectRole = UserProjectRoleEnum.Admin,
             LastUpdate = lastUpdateUtc,
             ProjectSettings = new ProjectSettingsModel()

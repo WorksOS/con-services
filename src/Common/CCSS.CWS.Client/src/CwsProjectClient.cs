@@ -47,6 +47,7 @@ namespace CCSS.CWS.Client
           AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
           ProjectTRN = project.ProjectTRN,
           ProjectName = project.ProjectName,
+          ProjectType = project.ProjectType,
           UserProjectRole = project.UserProjectRole,
           ProjectSettings = new ProjectSettingsModel() {Boundary = project.Boundary, TimeZone = project.TimeZone}
         });

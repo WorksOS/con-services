@@ -12,6 +12,7 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -97,6 +98,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected ICwsDeviceClient cwsDeviceClient;
     protected ICwsDesignClient cwsDesignClient;
     protected ICwsProfileSettingsClient cwsProfileSettingsClient;
+    protected IWebRequest gracefulClient;
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -174,7 +176,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
-      ICwsDesignClient cwsDesignClient = null, ICwsProfileSettingsClient cwsProfileSettingsClient = null)
+      ICwsDesignClient cwsDesignClient = null, ICwsProfileSettingsClient cwsProfileSettingsClient = null,
+      IWebRequest gracefulClient = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -200,6 +203,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.cwsDeviceClient = cwsDeviceClient;
       this.cwsDesignClient = cwsDesignClient;
       this.cwsProfileSettingsClient = cwsProfileSettingsClient;
+      this.gracefulClient = gracefulClient;
     }
 
     /// <summary>
