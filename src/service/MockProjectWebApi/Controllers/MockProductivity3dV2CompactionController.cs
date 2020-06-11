@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -19,12 +20,17 @@ namespace MockProjectWebApi.Controllers
     public MockProductivity3dV2CompactionController(ILoggerFactory loggerFactory) : base(loggerFactory)
     { }
 
-    [Route("api/v2/linework/alignment")]
+    [Route("api/v2/designs/alignment/master/geometry")]
     [HttpGet]
-    public FileResult GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid)
+    public AlignmentGeometryResult GetLineworkFromAlignment([FromQuery] Guid projectUid, [FromQuery] Guid alignmentUid)
     {
-      var zipStream = new FileStream("Resources/Large Sites Road_AlignmentCenterline$.zip", FileMode.Open);
-      return new FileStreamResult(zipStream, ContentTypeConstants.ApplicationZip);
+      return new AlignmentGeometryResult
+      (
+        0,
+        alignmentUid,
+        new[] { new[] { new double[] { 1, 2, 3 } } },
+        new[] { new AlignmentGeometryResultArc(0, 1, 2, 3, 4, 5, 6, 7, 8, true) },
+        new[] { new AlignmentGeometryResultLabel(0, 1, 2, 3), }); ;
     }
 
     /// <summary>
