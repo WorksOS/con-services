@@ -3,6 +3,7 @@ using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using VSS.Serilog.Extensions;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
@@ -33,6 +34,11 @@ namespace VSS.TRex.Storage
     protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> siteModelCache;
 
     protected IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> siteModelMachineCache;
+
+    /// <summary>
+    /// Represents the collection of caches represented by this storage proxy
+    /// </summary>
+    protected IStorageProxyCacheCommit[] CommittableCaches = null;
 
     /// <summary>
     /// Determines the correct cache to read/write particular types of information from/to
@@ -276,5 +282,6 @@ namespace VSS.TRex.Storage
         }
       }
     }
+
   }
 }

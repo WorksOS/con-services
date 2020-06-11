@@ -17,5 +17,7 @@ namespace VSS.TRex.Storage.Interfaces
     string Name { get; }
 
     void Clear();
+
+    long PotentialCommitWrittenBytes();
   }
 }
