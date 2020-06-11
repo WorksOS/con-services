@@ -1,4 +1,5 @@
-﻿using VSS.MasterData.Models.Models;
+﻿using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
@@ -17,31 +18,37 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
     /// <summary>
     /// Zone boundaries
     /// </summary>
+    [JsonProperty("boundingExtents")]
     public BoundingBox3DGrid BoundingExtents { get; private set; }
 
     /// <summary>
     /// Cut volume in m3
     /// </summary>
+    [JsonProperty("cut")]
     public double Cut { get; private set; }
 
     /// <summary>
     /// Fill volume in m3
     /// </summary>
+    [JsonProperty("fill")]
     public double Fill { get; private set; }
 
     /// <summary>
     /// Cut area in m2
     /// </summary>
+    [JsonProperty("cutArea")]
     public double CutArea { get; private set; }
 
     /// <summary>
     /// Fill area in m2
     /// </summary>
+    [JsonProperty("fillArea")]
     public double FillArea { get; private set; }
 
     /// <summary>
     /// Total coverage area (cut + fill + no change) in m2. 
     /// </summary>
+    [JsonProperty("totalCoverageArea")]
     public double TotalCoverageArea { get; private set; }
 
     public bool HasData() => true;
