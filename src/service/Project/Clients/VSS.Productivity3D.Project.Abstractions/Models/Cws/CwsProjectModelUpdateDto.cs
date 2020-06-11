@@ -1,4 +1,5 @@
-﻿using VSS.Common.Abstractions.Clients.CWS.Enums;
+﻿using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
@@ -48,6 +49,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
     /// or the project type is being updated to 1.
     /// Otherwise it will be null
     /// </summary>
+    [JsonProperty(PropertyName = "CoordinateSystemFilename", Required = Required.Default)]
     public string CoordinateSystemFileName { get; set; }
 
     /// <summary>
@@ -56,6 +58,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
     /// or the project type is being updated to 1.
     /// Otherwise it will be null.
     /// </summary>
+    [JsonProperty(PropertyName = "CoordinateSystemData", Required = Required.Default)]
     public byte[] CoordinateSystemFileContent { get; set; }
   }
 }

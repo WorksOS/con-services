@@ -61,6 +61,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, CustomerUid);
 
+      // Read CoordSystem file from TCC as byte[]. 
+      //    Filename and content are used: 
+      //      validated via productivity3dProxy
+      //      created in TRex via productivity3dProxy
+      //    Created in cws
+      createProjectEvent.CoordinateSystemFileContent =
+        await TccHelper
+          .GetFileContentFromTcc(projectRequest.CoordinateSystem,
+            Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
+
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(createProjectEvent);
       var validationResult
         = await WithServiceExceptionTryExecuteAsync(() =>
@@ -76,15 +86,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       projectRequest.CoordinateSystem =
         ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
-      // Read CoordSystem file from TCC as byte[]. 
-      //    Filename and content are used: 
-      //      validated via productivity3dProxy
-      //      created in TRex via productivity3dProxy
-      //    Created in cws
-      createProjectEvent.CoordinateSystemFileContent =
-        await TccHelper
-        .GetFileContentFromTcc(projectRequest.CoordinateSystem,
-          Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
+    
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory

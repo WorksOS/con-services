@@ -233,7 +233,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
       try
       {
-        var fileName = CwsFileNameHelper.ExtractFileName(fullFileName);
+        //TODO: Do CWS pass just the file name or the full file name with TRN etc.
+        var fileName = fullFileName;//CwsFileNameHelper.ExtractFileName(fullFileName);
         coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
           .CoordinateSystemValidate(fileContents, fileName, customHeaders);
       }

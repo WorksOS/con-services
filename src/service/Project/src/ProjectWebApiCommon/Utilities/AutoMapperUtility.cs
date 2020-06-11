@@ -186,7 +186,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<UpdateProjectRequest, ProjectValidation>()
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => Guid.Empty))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUid))
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
+            .ForMember(dest => dest.ProjectType, opt => opt.Ignore())
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Updated))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
