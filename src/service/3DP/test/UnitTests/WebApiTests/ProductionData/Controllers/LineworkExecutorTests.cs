@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -157,7 +158,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.Message.Should().Be("Success");
-      ((DxfLineworkFileResult) result).LineworkBoundaries.Should().BeEquivalentTo(TestResultBoundary().ToArray());
+
+      var testResult = TestResultBoundary().Select(b => new WGS84LineworkBoundary { Boundary = b.Fence.ToArray(), BoundaryName = b.Name, BoundaryType = b.Type }).ToArray();
+      ((DxfLineworkFileResult) result).LineworkBoundaries.Should().BeEquivalentTo(testResult);
     }
   }
 }
