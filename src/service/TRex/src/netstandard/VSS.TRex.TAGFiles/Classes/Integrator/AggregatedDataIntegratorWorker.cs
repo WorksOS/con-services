@@ -27,7 +27,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 {
   public class AggregatedDataIntegratorWorker
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<AggregatedDataIntegratorWorker>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AggregatedDataIntegratorWorker>();
 
     /// <summary>
     /// A queue of the tasks this worker will process into the TRex data stores
@@ -104,7 +104,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     private void AssembleGroupedTagFiles(List<AggregatedDataIntegratorTask> processedTasks,
       AggregatedDataIntegratorTask task)
     {
-      Log.LogInformation("Aggregation Task Process --> Filter tasks to aggregate");
+      _log.LogInformation("Aggregation Task Process --> Filter tasks to aggregate");
 
       // Populate the tasks to process list with the aggregations that will be
       // processed at this time. These tasks are also removed from the main task
@@ -117,7 +117,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         processedTasks.Add(taskToProcess);
       }
 
-      Log.LogInformation($"Aggregation Task Process --> Integrating {processedTasks.Count} TAG file processing tasks for project {task.PersistedTargetSiteModelID}");
+      _log.LogInformation($"Aggregation Task Process --> Integrating {processedTasks.Count} TAG file processing tasks for project {task.PersistedTargetSiteModelID}");
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     {
       // Use the grouped sub grid tree integrator to assemble a single aggregate tree from the set of trees in the processed tasks
 
-      Log.LogDebug($"Aggregation Task Process --> Integrate {processedTasks.Count} cell pass trees");
+      _log.LogDebug($"Aggregation Task Process --> Integrate {processedTasks.Count} cell pass trees");
 
       IServerSubGridTree groupedAggregatedCellPasses;
       if (processedTasks.Count > 1)
@@ -168,7 +168,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Discard all the aggregated cell pass models for the tasks being processed as they have now been aggregated into
       // the model represented by groupedAggregatedCellPasses
 
-      Log.LogDebug("Aggregation Task Process --> Clean up cell pass trees");
+      _log.LogDebug("Aggregation Task Process --> Clean up cell pass trees");
 
       processedTasks.ForEach(x =>
       {
@@ -192,7 +192,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     private EventIntegrator AggregateAllMachineEvents(List<AggregatedDataIntegratorTask> processedTasks,
       AggregatedDataIntegratorTask task)
     {
-      Log.LogDebug("Aggregation Task Process --> Aggregate machine events");
+      _log.LogDebug("Aggregation Task Process --> Aggregate machine events");
 
       var eventIntegrator = new EventIntegrator();
 
@@ -242,7 +242,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
       // read from the datamodel file itself, then synchronously write it to the DataModel
 
-      Log.LogDebug("Aggregation Task Process --> Creating and updating machines in the live site model");
+      _log.LogDebug("Aggregation Task Process --> Creating and updating machines in the live site model");
 
       lock (siteModelFromDatamodel)
       {
@@ -298,7 +298,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Perform machine event integration outside of the SiteModel write access interlock as the
       // individual event lists have independent exclusive locks event integration uses.
 
-      Log.LogDebug("Aggregation Task Process --> Integrating machine events into the live site model");
+      _log.LogDebug("Aggregation Task Process --> Integrating machine events into the live site model");
 
       // Iterate over all the machine events collected in the task
       foreach (var machineFromTask in task.IntermediaryTargetMachines)
@@ -328,7 +328,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           }
           else
           {
-            Log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
+            _log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
             return false;
           }
         }
@@ -350,7 +350,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         return;
 
       // Notify the site model in all contents in the grid that it's attributes have changed
-      Log.LogInformation($"Aggregation Task Process --> Notifying site model attributes changed for {siteModelFromDatamodel.ID}");
+      _log.LogInformation($"Aggregation Task Process --> Notifying site model attributes changed for {siteModelFromDatamodel.ID}");
 
       // Notify the immutable grid listeners that attributes of this site model have changed.
       var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
@@ -372,7 +372,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     private void UpdateSiteModelMetaData(ISiteModel siteModelFromDatamodel)
     {
       // Update the metadata for the site model
-      Log.LogInformation($"Aggregation Task Process --> Updating site model metadata for {siteModelFromDatamodel.ID}");
+      _log.LogInformation($"Aggregation Task Process --> Updating site model metadata for {siteModelFromDatamodel.ID}");
       DIContext.Obtain<ISiteModelMetadataManager>().Update
       (siteModelID: siteModelFromDatamodel.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: siteModelFromDatamodel.SiteModelExtent,
         machineCount: siteModelFromDatamodel.Machines.Count);
@@ -394,7 +394,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       int numTagFilesRepresented,
       out long totalPassCountInAggregation)
     {
-      Log.LogInformation($"Aggregation Task Process --> Labeling aggregated cell pass with correct machine ID for {siteModelFromDatamodel.ID}");
+      _log.LogInformation($"Aggregation Task Process --> Labeling aggregated cell pass with correct machine ID for {siteModelFromDatamodel.ID}");
 
       totalPassCountInAggregation = 0;
 
@@ -448,85 +448,99 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       // ... then integrate them
       var sw2 = Stopwatch.StartNew();
-      Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {numTagFilesRepresented} TAG files (spanning {groupedAggregatedCellPasses?.CountLeafSubGridsInMemory()} sub grids) into primary data model for {siteModelFromDatamodel.ID} spanning {siteModelFromDatamodel.ExistenceMap.CountBits()} sub grids");
+      _log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {numTagFilesRepresented} TAG files (spanning {groupedAggregatedCellPasses?.CountLeafSubGridsInMemory()} sub grids) into primary data model for {siteModelFromDatamodel.ID} spanning {siteModelFromDatamodel.ExistenceMap.CountBits()} sub grids");
 
       if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
       {
-        Log.LogError("Aggregation Task Process --> Aborting due to failure in integration process");
+        _log.LogError("Aggregation Task Process --> Aborting due to failure in integration process");
         return false;
       }
 
-      Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {siteModelFromDatamodel.ID}, in elapsed time of {sw2.Elapsed}");
-
-      TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(numTagFilesRepresented);
-      TAGProcessingStatistics.IncrementTotalCellPassesAggregatedIntoModels(totalPassCountInAggregation);
-
-      // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-      siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable);
+      _log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {siteModelFromDatamodel.ID}, in elapsed time of {sw2.Elapsed}");
 
       return true;
+    }
+
+    /// <summary>
+    /// Advise the segment retirement manager of any segments/sub grids that need to be retired as as result of this integration
+    /// </summary>
+    /// <param name="siteModelFromDatamodel">The site model the changes are being committed to</param>
+    /// <param name="invalidatedSpatialStreams">The streams of data in the persistent store that will be invalidated by updates to sub grids performed by the sub grid integrator</param>
+    private void AddInvalidatedStreamsToRetirementQueue(ISiteModel siteModelFromDatamodel, List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams)
+    {
+      _log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {siteModelFromDatamodel.ID}");
+
+      if (invalidatedSpatialStreams.Count == 0)
+        return;
+
+      // Stamp all the invalidated spatial streams with the project ID
+      invalidatedSpatialStreams.ForEach(x => x.ProjectUID = siteModelFromDatamodel.ID);
+
+      try
+      {
+        var retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
+
+        if (retirementQueue == null)
+        {
+          throw new TRexTAGFileProcessingException("No registered segment retirement queue in DI context");
+        }
+
+        var insertUtc = DateTime.UtcNow;
+
+        retirementQueue.Add(
+          new SegmentRetirementQueueKey {ProjectUID = siteModelFromDatamodel.ID, InsertUTCAsLong = insertUtc.Ticks},
+          new SegmentRetirementQueueItem {InsertUTCAsLong = insertUtc.Ticks, ProjectUID = siteModelFromDatamodel.ID, SegmentKeys = invalidatedSpatialStreams.ToArray()});
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
+        _log.LogCritical("The following segments will NOT be retired as a result:");
+        foreach (var invalidatedItem in invalidatedSpatialStreams)
+        {
+          _log.LogCritical($"{invalidatedItem}");
+        }
+      }
     }
 
     /// <summary>
     /// Commits all data prepared via aggregation and integration of a set of processed TAG files to the site model
     /// persistent store via the transactional data proxy
     /// </summary>
-    /// <param name="siteModelFromDatamodel">The site model the changes are being committed to</param>
-    /// <param name="invalidatedSpatialStreams">The streams of data in the persistent store that will be invalidated by updates to sub grids performed by the sub grid integrator</param>
-    private void CommitAllChangesToPersistentStore(ISiteModel siteModelFromDatamodel,
-      List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams)
+    private void CommitAllEventAndSpatialChangesToPersistentStore()
     {
       // All operations within the transaction to integrate the changes into the live model have completed successfully.
       // Now commit those changes as a block.
 
       var startTime = DateTime.UtcNow;
-      Log.LogInformation("Starting storage proxy Commit()");
+
+      _log.LogInformation("Starting storage proxy Commit()");
       _storageProxyMutable.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten);
-      Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
+      _log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
+    }
 
-      // Advise the segment retirement manager of any segments/sub grids that need to be retired as as result of this integration
-      Log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {siteModelFromDatamodel.ID}");
-      if (invalidatedSpatialStreams.Count > 0)
+    /// <summary>
+    /// Advise the TAG file processing statistics of the number of TAG files, processed cell passes etc  during this aggregation epoch
+    /// </summary>
+    /// <param name="numTagFilesRepresented">The number of source TAG files represented by the tasks this epoch processed</param>
+    /// <param name="totalPassCountInAggregation">The number of cell passes committed in this epoch (includes new and updated cell passes)</param>
+    private void UpdateTAGTFileProcessingTrackingStatistics(int numTagFilesRepresented, long totalPassCountInAggregation)
+    {
+      TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(numTagFilesRepresented);
+      TAGProcessingStatistics.IncrementTotalCellPassesAggregatedIntoModels(totalPassCountInAggregation);
+    }
+
+    /// <summary>
+    /// Persists the modified existence map, machines and other related site model meta data for the processing epoch
+    /// </summary>
+    /// <param name="siteModelFromDatamodel">The site model containing the modified data to be written</param>
+    private void CommitSiteModelExistenceMapToPersistentStore(ISiteModel siteModelFromDatamodel)
+    {
+      // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
+      siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable);
+
+      if (!_storageProxyMutable.Commit())
       {
-        // Stamp all the invalidated spatial streams with the project ID
-        foreach (var key in invalidatedSpatialStreams)
-        {
-          key.ProjectUID = siteModelFromDatamodel.ID;
-        }
-
-        try
-        {
-          var retirementQueue = DIContext.Obtain<ISegmentRetirementQueue>();
-
-          if (retirementQueue == null)
-          {
-            throw new TRexTAGFileProcessingException("No registered segment retirement queue in DI context");
-          }
-
-          var insertUtc = DateTime.UtcNow;
-
-          retirementQueue.Add(
-            new SegmentRetirementQueueKey
-            {
-              ProjectUID = siteModelFromDatamodel.ID,
-              InsertUTCAsLong = insertUtc.Ticks
-            },
-            new SegmentRetirementQueueItem
-            {
-              InsertUTCAsLong = insertUtc.Ticks,
-              ProjectUID = siteModelFromDatamodel.ID,
-              SegmentKeys = invalidatedSpatialStreams.ToArray()
-            });
-        }
-        catch (Exception e)
-        {
-          Log.LogCritical(e, "Unable to add segment invalidation list to segment retirement queue due to exception:");
-          Log.LogCritical("The following segments will NOT be retired as a result:");
-          foreach (var invalidatedItem in invalidatedSpatialStreams)
-          {
-            Log.LogCritical($"{invalidatedItem}");
-          }
-        }
+        _log.LogCritical($"Failed to commit site model existence map and related information for site model {siteModelFromDatamodel.ID} during aggregation epoch");
       }
     }
 
@@ -561,19 +575,19 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       var sw = Stopwatch.StartNew();
       try
       {
-        if (!_tasksToProcess.TryDequeue(out task) || task == null)
+        if (!_tasksToProcess.TryDequeue(out task))
         {
           return true; // There is nothing in the queue to work on so just return true
         }
 
-        Log.LogInformation("Aggregation Task Process: Clearing mutable storage proxy");
+        _log.LogInformation("Aggregation Task Process: Clearing mutable storage proxy");
 
         _storageProxyMutable.Clear();
 
         var siteModelFromDatamodel = ObtainSiteModel(task);
         if (siteModelFromDatamodel == null)
         {
-          Log.LogError($"Unable to lock SiteModel {task.PersistedTargetSiteModelID} from the data model file");
+          _log.LogError($"Unable to lock SiteModel {task.PersistedTargetSiteModelID} from the data model file");
           return false;
         }
 
@@ -586,7 +600,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         if (!(anyMachineEvents || anyCellPasses))
         {
-          Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {task.PersistedTargetSiteModelID}");
+          _log.LogWarning($"Suspicious task with no cell passes or machine events in site model {task.PersistedTargetSiteModelID}");
           return true;
         }
 
@@ -609,9 +623,21 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             return false;
           }
 
-          CommitAllChangesToPersistentStore(siteModelFromDatamodel, subGridIntegrator.InvalidatedSpatialStreams);
-          PerformSiteModelChangeNotifications(siteModelFromDatamodel);
+          // Commit all event and spatial data changes to the store. Note: The site model existence map is not persisted at this point
+          CommitAllEventAndSpatialChangesToPersistentStore();
+
+          // Once all event and spatial data has been committed the independently write and commit the modified information 
+          // for existence map etc contained in the site model. This permits new information to be added to the site model while 
+          // queries are being executed against it. The new information will no be used until the update existence map is saved,
+          // though previously existing sub grids may be visible to queries in an updated state for short periods until 
+          // Raptor style sub grid version management is implemented (currently not supported inTRex)
+          CommitSiteModelExistenceMapToPersistentStore(siteModelFromDatamodel);
+
           UpdateSiteModelMetaData(siteModelFromDatamodel);
+
+          AddInvalidatedStreamsToRetirementQueue(siteModelFromDatamodel, subGridIntegrator.InvalidatedSpatialStreams);
+          PerformSiteModelChangeNotifications(siteModelFromDatamodel);
+          UpdateTAGTFileProcessingTrackingStatistics(numTagFilesRepresented, totalPassCountInAggregation);
         }
         finally
         {
@@ -627,7 +653,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       finally
       {
-        Log.LogInformation($"Aggregation Task Process --> Completed integrating {processedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes in project {task?.PersistedTargetSiteModelID} in elapsed time of {sw.Elapsed}");
+        _log.LogInformation($"Aggregation Task Process --> Completed integrating {processedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes in project {task?.PersistedTargetSiteModelID} in elapsed time of {sw.Elapsed}");
       }
 
       return true;
@@ -640,7 +666,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     public void CompleteTaskProcessing()
     {
-      Log.LogInformation($"Aggregation Task Process --> Dropping cached content for site model {SiteModelID}");
+      _log.LogInformation($"Aggregation Task Process --> Dropping cached content for site model {SiteModelID}");
 
       // Finally, drop the site model context being used to perform the aggregation/integration to free up the cached
       // sub grid and segment information used during this processing epoch.
