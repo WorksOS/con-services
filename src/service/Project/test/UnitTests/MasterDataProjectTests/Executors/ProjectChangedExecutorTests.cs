@@ -158,6 +158,54 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
+    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingCoordinateSystemFileName()
+    {
+      var projectUid = Guid.NewGuid();
+      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
+
+      var request = new ProjectChangeNotificationDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = projectTrn,
+        NotificationType = NotificationType.CoordinateSystem,
+        CoordinateSystemFileName = null,
+        CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+      };
+      var executor = RequestExecutorContainerFactory.Build<ProjectChangedExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
+
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(request));
+
+      Assert.Contains("2132", ex.GetContent);
+      Assert.Contains("Missing coordinate system file name.", ex.GetContent);
+    }
+
+    [Fact]
+    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingCoordinateSystemContents()
+    {
+      var projectUid = Guid.NewGuid();
+      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
+
+      var request = new ProjectChangeNotificationDto
+      {
+        AccountTrn = _customerTrn,
+        ProjectTrn = projectTrn,
+        NotificationType = NotificationType.CoordinateSystem,
+        CoordinateSystemFileName = "some file name",
+        CoordinateSystemFileContent = null
+      };
+      var executor = RequestExecutorContainerFactory.Build<ProjectChangedExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders);
+
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => executor.ProcessAsync(request));
+
+      Assert.Contains("2133", ex.GetContent);
+      Assert.Contains("Missing coordinate system file contents.", ex.GetContent);
+    }
+
+    [Fact]
     public async Task ProjectChangedExecutor_CoordSystemChanged_MismatchedCustomerUid()
     {
       var projectUid = Guid.NewGuid();

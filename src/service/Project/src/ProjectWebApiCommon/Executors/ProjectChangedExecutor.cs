@@ -24,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       //Check customerUid in request matches header since some of the API calls use the data and some the header
       var customerUid = string.IsNullOrEmpty(data.AccountTrn) ? null : TRNHelper.ExtractGuid(data.AccountTrn);
-      if (customerUid.HasValue && customerUid.ToString() != customHeaders["X-VisionLink-CustomerUID"])
+      if (customerUid.HasValue && string.Compare(customerUid.ToString(), customHeaders["X-VisionLink-CustomerUID"], StringComparison.OrdinalIgnoreCase) != 0)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 135);
       }
@@ -33,12 +33,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (data.NotificationType.HasFlag(NotificationType.CoordinateSystem))
       {
-        if (projectUid.HasValue)
-          await SaveCoordinateSystem(projectUid.Value, data.CoordinateSystemFileName, data.CoordinateSystemFileContent);
-        else
-        {
+        if (!projectUid.HasValue)
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 5);
-        }
+
+        if (string.IsNullOrEmpty(data.CoordinateSystemFileName))
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 132);
+
+        if (data.CoordinateSystemFileContent == null || data.CoordinateSystemFileContent.Length == 0)
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 133); 
+
+        await SaveCoordinateSystem(projectUid.Value, data.CoordinateSystemFileName, data.CoordinateSystemFileContent);
       }
 
       if (data.NotificationType.HasFlag(NotificationType.MetaData))
