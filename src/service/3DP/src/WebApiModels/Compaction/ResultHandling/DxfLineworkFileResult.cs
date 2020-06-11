@@ -5,6 +5,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Algorithms;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models.MapHandling;
+using VSS.TRex.Gateway.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
 {
@@ -24,6 +25,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
     public DxfLineworkFileResult(int code, string message, WGS84LineworkBoundary[] lineworkBoundaries) : base (code, message)
     {
       LineworkBoundaries = lineworkBoundaries;
+    }
+
+    public DxfLineworkFileResult(List<DXFBoundaryResultItem> boundaries, int code, string message) : base(code, message)
+    {
+      LineworkBoundaries = boundaries.Select(b => new WGS84LineworkBoundary { Boundary = b.Fence.ToArray(), BoundaryName = b.Name, BoundaryType = b.Type }).ToArray();
     }
 
     public GeoJson ConvertToGeoJson(bool convertLineStringCoordsToPolygon, int maxVerticesToApproximateTo)
