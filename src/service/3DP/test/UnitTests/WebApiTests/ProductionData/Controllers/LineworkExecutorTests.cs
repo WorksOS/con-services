@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
     private List<DXFBoundaryResultItem> TestResultBoundary()
     {
-      return new List<DXFBoundaryResultItem> {new DXFBoundaryResultItem(new List<WGSPoint> {new WGSPoint(0, 0), new WGSPoint(1, 0), new WGSPoint(0, 1)}, DXFLineWorkBoundaryType.GenericBoundary, "Test")};
+      return new List<DXFBoundaryResultItem> { new DXFBoundaryResultItem(new List<WGSPoint> { new WGSPoint(0, 0), new WGSPoint(1, 0), new WGSPoint(0, 1) }, DXFLineWorkBoundaryType.GenericBoundary, "Test") };
     }
 
     public LineworkExecutorTests()
@@ -157,7 +157,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.Message.Should().Be("Success");
-      ((DXFBoundaryResult) result).Boundaries.Should().BeEquivalentTo(TestResultBoundary());
+      ((DxfLineworkFileResult) result).LineworkBoundaries.Should().BeEquivalentTo(TestResultBoundary().ToArray());
     }
   }
 }
