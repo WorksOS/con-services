@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.AWS.TransferProxy;
-using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
@@ -12,6 +10,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Entitlements.Authentication;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
@@ -66,6 +65,7 @@ namespace VSS.Productivity3D.Entitlements
         /// <inheritdoc />
         protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
         {
+          app.UseMiddleware<AuthenticationMiddleware>();
         }
     }
 }
