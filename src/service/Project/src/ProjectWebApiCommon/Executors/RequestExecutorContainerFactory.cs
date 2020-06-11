@@ -10,6 +10,7 @@ using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -34,7 +35,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
       ICwsDesignClient cwsDesignClient = null, ICwsProfileSettingsClient cwsProfileSettingsClient = null,
-      IWebRequest gracefulClient = null
+      IWebRequest gracefulClient = null, INotificationHubClient notificationHubClient = null
       )
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -51,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         productivity3dV1ProxyCoord, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
         persistantTransferProxyFactory, filterServiceProxy, tRexImportFileProxy, projectRepo, fileRepo,
         httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient, cwsProjectClient, cwsDeviceClient,
-        cwsDesignClient, cwsProfileSettingsClient, gracefulClient
+        cwsDesignClient, cwsProfileSettingsClient, gracefulClient, notificationHubClient
         );
 
       return executor;

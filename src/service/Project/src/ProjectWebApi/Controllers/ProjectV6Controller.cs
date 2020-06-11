@@ -335,7 +335,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Called from CWS before a create or update can go ahead, returns pass or fail
     /// </summary>
     /// <param name="validateDto">Update Model</param>
-    /// <returns></returns>
     [HttpPost("api/v6/project/validate")]
     public async Task<ContractExecutionResult> IsProjectValid([FromBody]ProjectValidateDto validateDto)
     {
@@ -363,25 +362,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Called from CWS when a project or Coordinate System has been created / updated / deleted
     /// </summary>
     /// <param name="updateDto">Update Model</param>
-    /// <returns></returns>
     [HttpPost("api/v6/project/notifychange")]
     public async Task<IActionResult> OnProjectChangeNotify([FromBody]ProjectChangeNotificationDto updateDto)
     {
       Logger.LogInformation($"{nameof(OnProjectChangeNotify)} Update Notification {JsonConvert.SerializeObject(updateDto)}");
 
-      var projectGuid = string.IsNullOrEmpty(updateDto.ProjectTrn) ? null : TRNHelper.ExtractGuid(updateDto.ProjectTrn);
-      if (projectGuid.HasValue)
-      {
-        Logger.LogInformation($"Clearing cache related to Project ID: {projectGuid.Value}");
-        await NotificationHubClient.Notify(new ProjectChangedNotification(projectGuid.Value));
-      }
-
-      var accountGuid = string.IsNullOrEmpty(updateDto.AccountTrn) ? null : TRNHelper.ExtractGuid(updateDto.AccountTrn);
-      if (accountGuid.HasValue)
-      {
-        Logger.LogInformation($"Clearing cache related to Project ID: {accountGuid.Value}");
-        await NotificationHubClient.Notify(new CustomerChangedNotification(accountGuid.Value));
-      }
+      await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<ProjectChangedExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            CustomerUid, UserId, null, customHeaders,
+            Productivity3dV1ProxyCoord, fileRepo: FileRepo,
+            dataOceanClient: DataOceanClient, authn: Authorization,
+            cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
+            cwsProfileSettingsClient: CwsProfileSettingsClient, notificationHubClient: NotificationHubClient)
+          .ProcessAsync(updateDto)
+      );
 
       Logger.LogInformation($"{nameof(OnProjectChangeNotify)} Processed Notification");
 

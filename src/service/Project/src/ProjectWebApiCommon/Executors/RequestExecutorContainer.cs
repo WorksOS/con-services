@@ -17,6 +17,7 @@ using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -99,6 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected ICwsDesignClient cwsDesignClient;
     protected ICwsProfileSettingsClient cwsProfileSettingsClient;
     protected IWebRequest gracefulClient;
+    protected INotificationHubClient notificationHubClient;
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -177,7 +179,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
       ICwsDesignClient cwsDesignClient = null, ICwsProfileSettingsClient cwsProfileSettingsClient = null,
-      IWebRequest gracefulClient = null)
+      IWebRequest gracefulClient = null, INotificationHubClient notificationHubClient = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -204,6 +206,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.cwsDesignClient = cwsDesignClient;
       this.cwsProfileSettingsClient = cwsProfileSettingsClient;
       this.gracefulClient = gracefulClient;
+      this.notificationHubClient = notificationHubClient;
     }
 
     /// <summary>

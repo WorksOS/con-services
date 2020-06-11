@@ -26,7 +26,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //Check customerUid in request matches header since some of the API calls use the data and some the header
       if (data.CustomerUid.ToString() != customHeaders["X-VisionLink-CustomerUID"])
       {
-        return new ContractExecutionResult(135, "Mismatching customerUid.");
+        return new ContractExecutionResult(135, "Mismatched customerUid.");
       }
 
       var userUid = new Guid(userId);
