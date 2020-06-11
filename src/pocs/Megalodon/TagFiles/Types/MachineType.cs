@@ -26,6 +26,7 @@
         FourDrumLandfillCompactor = 43,
         Trimmer = 44,
         ConcretePaver = 45,
-        SuctionDredge = 46
+        CutterSuctionDredge = 70,
+        BargeMountedExcavator = 71
     }
 }

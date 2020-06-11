@@ -60,9 +60,8 @@ namespace TagFiles.Utils
       var upperValue = value.ToUpper();
       switch (upperValue)
       {
-        case "HEX": return 25;
-        case "WCN": return 47; 
-        case "CSD": return 46; 
+        case "CSD": return 70;
+        case "HEX": return 71;
         default:
           {
             throw new System.ArgumentException($"Unknown machine type supplied. value:{value}");
