@@ -122,7 +122,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// Target lift thickness for each layer. Value is expressed in meters.
       /// </summary>
-      [JsonConverter(typeof(RaptorNullableConverter), 3.4e+38)]
+      [JsonConverter(typeof(RaptorNullableConverter), -3.4E38F)]
       public float? TargetThickness { get; set; }
 
       /// <summary>
@@ -420,7 +420,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// The target layer thickness value used for the layer
       /// </summary>
-      [JsonConverter(typeof(RaptorNullableConverter), 3.4e+38)]
+      [JsonConverter(typeof(RaptorNullableConverter), -3.4E38F)]
       public float? TargetThickness { get; set; }
 
       /// <summary>
