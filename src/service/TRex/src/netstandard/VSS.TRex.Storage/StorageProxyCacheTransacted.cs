@@ -5,6 +5,7 @@ using Apache.Ignite.Core.Transactions;
 using Microsoft.Extensions.Logging;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Extensions;
+using VSS.TRex.GridFabric;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Storage
@@ -211,8 +212,8 @@ namespace VSS.TRex.Storage
           {
             PendingTransactedWrites.Values.ForEach(x =>
             {
-              if (x is byte[] bytes)
-                numBytes += bytes.Length;
+              if (x is ISerialisedByteArrayWrapper wrapper)
+                numBytes += wrapper.Count;
             });
           }
 
