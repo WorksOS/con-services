@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -19,7 +19,7 @@ namespace VSS.TRex.Storage
   /// </summary>
   public class StorageProxy_Ignite_Transactional : StorageProxy_Ignite
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite_Transactional>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<StorageProxy_Ignite_Transactional>();
 
     private static readonly bool _useAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
       .GetValueBool("USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", true);
@@ -52,21 +52,12 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer?.Name}");
+          _log.LogError(e, $"Exception thrown committing changes to Ignite for {committer?.Name}");
           throw;
         }
       }
 
-      var commitTasks = new List<Task<(int numDeletedLocal, int numUpdatedLocal, long numBytesWrittenLocal)>>
-      {
-        Task.Factory.Run(() => LocalCommit(spatialSubGridDirectoryCache)),
-        Task.Factory.Run(() => LocalCommit(spatialSubGridSegmentCache)),
-        Task.Factory.Run(() => LocalCommit(generalNonSpatialCache)),
-        Task.Factory.Run(() => LocalCommit(siteModelCache)),
-        Task.Factory.Run(() => LocalCommit(spatialDataExistenceMapCache)),
-        Task.Factory.Run(() => LocalCommit(siteModelMachineCache))
-      };
-
+      var commitTasks = CommittableCaches.Select(x => Task.Factory.Run(() => LocalCommit(x))).ToArray();
       var commitResults = commitTasks.WhenAll();
       commitResults.Wait();
 
@@ -105,17 +96,12 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer?.Name}");
+          _log.LogError(e, $"Exception thrown committing changes to Ignite for {committer?.Name}");
           throw;
         }
       }
 
-      LocalCommit(spatialSubGridDirectoryCache);
-      LocalCommit(spatialSubGridSegmentCache);
-      LocalCommit(generalNonSpatialCache);
-      LocalCommit(siteModelCache);
-      LocalCommit(spatialDataExistenceMapCache);
-      LocalCommit(siteModelMachineCache);
+      CommittableCaches.ForEach(LocalCommit);
 
       numDeleted = numDeletedLocal;
       numUpdated = numUpdatedLocal;
@@ -152,18 +138,12 @@ namespace VSS.TRex.Storage
         }
         catch
         {
-          Log.LogError($"Exception thrown clearing changes for cache {committer?.Name}");
+          _log.LogError($"Exception thrown clearing changes for cache {committer?.Name}");
           throw;
         }
       }
 
-      LocalClear(spatialSubGridDirectoryCache);
-      LocalClear(spatialSubGridSegmentCache);
-      LocalClear(generalNonSpatialCache);
-      LocalClear(siteModelCache);
-      LocalClear(spatialDataExistenceMapCache);
-      LocalClear(siteModelMachineCache);
-      
+      CommittableCaches.ForEach(LocalClear);
       ImmutableProxy?.Clear();
     }
   }

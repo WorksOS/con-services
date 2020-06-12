@@ -19,7 +19,7 @@ namespace VSS.TRex.SiteModelChangeMaps
 {
   public class SiteModelChangeProcessorItemHandler : IDisposable
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeProcessorItemHandler>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelChangeProcessorItemHandler>();
 
     public bool Aborted { get; private set; }
 
@@ -50,7 +50,7 @@ namespace VSS.TRex.SiteModelChangeMaps
       _itemQueueCache = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
       _changeMapProxy = new SiteModelChangeMapProxy();
 
-      Log.LogInformation("Starting site model change processor item handler task");
+      _log.LogInformation("Starting site model change processor item handler task");
       var _ = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
     }
 
@@ -78,7 +78,7 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// </summary>
     private void ProcessChangeMapUpdateItems()
     {
-      Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
+      _log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
 
       // Cycle looking for new work to until aborted...
       do
@@ -88,14 +88,14 @@ namespace VSS.TRex.SiteModelChangeMaps
           // Check to see if there is an item to be processed
           if (Active && _queue.TryDequeue(out var item))
           {
-            Log.LogInformation($"Extracted item from queue, ProjectUID:{item.Value.ProjectUID}, added at {item.Value.InsertUTC} in thread {Thread.CurrentThread.ManagedThreadId}");
+            _log.LogInformation($"Extracted item from queue, ProjectUID:{item.Value.ProjectUID}, added at {item.Value.InsertUTC} in thread {Thread.CurrentThread.ManagedThreadId}");
 
             if (ProcessItem(item.Value))
             {
               // Remove the item from the cache
               if (!_itemQueueCache.Remove(item.Key))
               {
-                Log.LogError($"Failed to remove queued change map update item with key: Project = {item.Value.ProjectUID}, insert date = {item.Value.InsertUTC}");
+                _log.LogError($"Failed to remove queued change map update item with key: Project = {item.Value.ProjectUID}, insert date = {item.Value.InsertUTC}");
               }
             }
           }
@@ -106,11 +106,11 @@ namespace VSS.TRex.SiteModelChangeMaps
         }
         catch (Exception e)
         {
-          Log.LogError(e, $"Exception thrown in {nameof(ProcessChangeMapUpdateItems)}");
+          _log.LogError(e, $"Exception thrown in {nameof(ProcessChangeMapUpdateItems)}");
         }
       } while (!Aborted);
 
-      Log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
+      _log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
     }
 
     /// <summary>
@@ -124,13 +124,13 @@ namespace VSS.TRex.SiteModelChangeMaps
       {
         if (item == null)
         {
-          Log.LogError("Item supplied to queue processor is null. Aborting");
+          _log.LogError("Item supplied to queue processor is null. Aborting");
           return false;
         }
 
         if (item.Content == null)
         {
-          Log.LogError("Item supplied to queue processor has no internal content. Aborting");
+          _log.LogError("Item supplied to queue processor has no internal content. Aborting");
           return false;
         }
 
@@ -138,7 +138,7 @@ namespace VSS.TRex.SiteModelChangeMaps
 
         if (siteModel == null)
         {
-          Log.LogError($"Site model {item.ProjectUID} does not exist [deleted?]. Aborting");
+          _log.LogError($"Site model {item.ProjectUID} does not exist [deleted?]. Aborting");
           return false;
         }
 
@@ -149,7 +149,7 @@ namespace VSS.TRex.SiteModelChangeMaps
         // 3. Write record back to store
         // 4. Commit transaction
 
-        Log.LogInformation($"Processing an item: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
+        _log.LogInformation($"Processing an item: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
         var sw = Stopwatch.StartNew();
 
         switch (item.Operation)
@@ -217,17 +217,17 @@ namespace VSS.TRex.SiteModelChangeMaps
           }
 
           default:
-            Log.LogError($"Unknown operation encountered: {(int) item.Operation}");
+            _log.LogError($"Unknown operation encountered: {(int) item.Operation}");
             return false;
         }
 
-        Log.LogInformation($"Completed processing an item in {sw.Elapsed}: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
+        _log.LogInformation($"Completed processing an item in {sw.Elapsed}: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
 
         return true;
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception thrown while processing queued items:");
+        _log.LogError(e, "Exception thrown while processing queued items:");
         throw;
       }
     }

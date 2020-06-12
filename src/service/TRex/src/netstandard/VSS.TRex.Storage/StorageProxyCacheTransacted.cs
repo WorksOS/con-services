@@ -5,6 +5,7 @@ using Apache.Ignite.Core.Transactions;
 using Microsoft.Extensions.Logging;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Extensions;
+using VSS.TRex.GridFabric;
 using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Storage
@@ -17,9 +18,9 @@ namespace VSS.TRex.Storage
     /// <typeparam name="TV"></typeparam>
     public class StorageProxyCacheTransacted<TK, TV> : StorageProxyCache<TK, TV>, IStorageProxyCacheTransacted<TK, TV>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxyCacheTransacted<TK, TV>>();
+        private static readonly ILogger _log = Logging.Logger.CreateLogger<StorageProxyCacheTransacted<TK, TV>>();
 
-        private static readonly bool ReportPendingTransactedDeleteDuplicatesToLog = false;
+        private static readonly bool _reportPendingTransactedDeleteDuplicatesToLog = false;
 
         /// <summary>
         /// The hashed set of elements pending deletion stored in the transacted cache.
@@ -33,7 +34,7 @@ namespace VSS.TRex.Storage
         /// </summary>
         protected readonly Dictionary<TK, TV> PendingTransactedWrites;
 
-        private long BytesWritten;
+        private long _bytesWritten;
 
         public StorageProxyCacheTransacted(ICache<TK, TV> cache, IEqualityComparer<TK> comparer) : base(cache)
         {
@@ -68,9 +69,9 @@ namespace VSS.TRex.Storage
         /// <returns></returns>
         public override bool Remove(TK key)
         {
-          if (Log.IsTraceEnabled())
+          if (_log.IsTraceEnabled())
           {
-            Log.LogTrace($"Removing item from pending transacted writes, cache = {Name}, key = {key}");
+            _log.LogTrace($"Removing item from pending transacted writes, cache = {Name}, key = {key}");
           }
 
           // Remove any uncommitted writes for the deleted item from pending writes
@@ -86,8 +87,8 @@ namespace VSS.TRex.Storage
             pendingTransactedAddFailed = !PendingTransactedDeletes.Add(key);
           }
 
-          if (pendingTransactedAddFailed && ReportPendingTransactedDeleteDuplicatesToLog)
-            Log.LogWarning($"Key {key} is already present in the set of transacted deletes for cache {Name} [Remove]");
+          if (pendingTransactedAddFailed && _reportPendingTransactedDeleteDuplicatesToLog)
+            _log.LogWarning($"Key {key} is already present in the set of transacted deletes for cache {Name} [Remove]");
 
           return true;
         }
@@ -108,9 +109,9 @@ namespace VSS.TRex.Storage
         /// <param name="value"></param>
         public override void Put(TK key, TV value)
         {
-            if (Log.IsTraceEnabled())
+            if (_log.IsTraceEnabled())
             {
-              Log.LogTrace($"Adding item (Put) to pending transacted writes, cache = {Name}, key = {key}");
+              _log.LogTrace($"Adding item (Put) to pending transacted writes, cache = {Name}, key = {key}");
             }
 
             lock (PendingTransactedWrites)
@@ -154,10 +155,12 @@ namespace VSS.TRex.Storage
             lock (PendingTransactedWrites)
             {
               numUpdated = PendingTransactedWrites.Count;
+
+              // PendingTransactedWrites.ForEach(x => base.Put(x.Key, x.Value));
               base.PutAll(PendingTransactedWrites);
             }
 
-            numBytesWritten = BytesWritten;
+            numBytesWritten = _bytesWritten;
 
             Clear();
         }
@@ -178,9 +181,9 @@ namespace VSS.TRex.Storage
         {
           lock (PendingTransactedDeletes)
           {
-            if (Log.IsTraceEnabled())
+            if (_log.IsTraceEnabled())
             {
-              Log.LogTrace($"Clearing {PendingTransactedDeletes.Count} deletes from transacted cache {Name}");
+              _log.LogTrace($"Clearing {PendingTransactedDeletes.Count} deletes from transacted cache {Name}");
             }
 
             PendingTransactedDeletes.Clear();
@@ -188,18 +191,33 @@ namespace VSS.TRex.Storage
 
           lock (PendingTransactedWrites)
           {
-            if (Log.IsTraceEnabled())
+            if (_log.IsTraceEnabled())
             {
-              Log.LogTrace($"Clearing {PendingTransactedDeletes.Count} writes from transacted cache {Name}");
+              _log.LogTrace($"Clearing {PendingTransactedDeletes.Count} writes from transacted cache {Name}");
             }
 
             PendingTransactedWrites.Clear();
           }
 
-          BytesWritten = 0;
+          _bytesWritten = 0;
         }
 
-        public override void IncrementBytesWritten(long bytesWritten) => Interlocked.Add(ref BytesWritten, bytesWritten);
+        public override void IncrementBytesWritten(long bytesWritten) => Interlocked.Add(ref _bytesWritten, bytesWritten);
 
+        public override long PotentialCommitWrittenBytes()
+        {
+          var numBytes = 0;
+
+          lock (PendingTransactedWrites)
+          {
+            PendingTransactedWrites.Values.ForEach(x =>
+            {
+              if (x is ISerialisedByteArrayWrapper wrapper)
+                numBytes += wrapper.Count;
+            });
+          }
+
+          return numBytes;
+        }
     }
 }

@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Transactions;
 using VSS.Serilog.Extensions;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
@@ -23,7 +25,7 @@ namespace VSS.TRex.Storage
   /// </summary>
   public class StorageProxy_Ignite : StorageProxy_IgniteBase, IStorageProxy
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<StorageProxy_Ignite>();
 
     /// <summary>
     /// The reference to a storage proxy representing the immutable data store derived from a mutable data store
@@ -53,6 +55,16 @@ namespace VSS.TRex.Storage
       siteModelCache = nonSpatialCacheFactory(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
       
       siteModelMachineCache = machineCacheFactory(ignite, Mutability, FileSystemStreamType.SiteModelMachineElevationChangeMap);
+
+      CommittableCaches = new IStorageProxyCacheCommit[]
+      {
+        spatialSubGridDirectoryCache,
+        spatialSubGridSegmentCache,
+        generalNonSpatialCache,
+        spatialDataExistenceMapCache,
+        siteModelCache,
+        siteModelMachineCache
+      }.Where(x => x!= null).ToArray();
     }
 
     /// <summary>
@@ -76,8 +88,8 @@ namespace VSS.TRex.Storage
 
         using (var compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
-          if (Log.IsTraceEnabled())
-            Log.LogInformation($"Putting key:{cacheKey} in {NonSpatialCache(streamType).Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
+          if (_log.IsTraceEnabled())
+            _log.LogInformation($"Putting key:{cacheKey} in {NonSpatialCache(streamType).Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
           NonSpatialCache(streamType).Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
 
@@ -88,14 +100,14 @@ namespace VSS.TRex.Storage
           {
             if (!PerformNonSpatialImmutabilityConversion(mutableStream, ImmutableProxy.NonSpatialCache(streamType), cacheKey, streamType, source))
             {
-              Log.LogError("Unable to project an immutable stream");
+              _log.LogError("Unable to project an immutable stream");
               return FileSystemErrorStatus.MutableToImmutableConversionError;
             }
           }
         }
         catch (Exception e)
         {
-          Log.LogError(e, $"Exception performing mutability conversion in {nameof(WriteStreamToPersistentStore)}");
+          _log.LogError(e, $"Exception performing mutability conversion in {nameof(WriteStreamToPersistentStore)}");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -103,7 +115,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception writing stream {streamName} to persistent store");
+        _log.LogError(e, $"Exception writing stream {streamName} to persistent store");
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
     }
@@ -138,8 +150,8 @@ namespace VSS.TRex.Storage
         using (var compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
           var spatialCache = SpatialCache(streamType);
-          if (Log.IsTraceEnabled())
-            Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
+          if (_log.IsTraceEnabled())
+            _log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
           spatialCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
 
@@ -153,7 +165,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError(e, $"Exception performing mutability conversion in {nameof(WriteSpatialStreamToPersistentStore)}");
+          _log.LogError(e, $"Exception performing mutability conversion in {nameof(WriteSpatialStreamToPersistentStore)}");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -161,7 +173,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception writing spatial stream {streamName} to persistent store");
+        _log.LogError(e, $"Exception writing spatial stream {streamName} to persistent store");
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
     }
@@ -199,7 +211,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occurred:");
+        _log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -251,7 +263,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occurred:");
+        _log.LogError(e, "Exception occurred:");
 
         stream = null;
         return FileSystemErrorStatus.UnknownErrorReadingFromFS;
@@ -273,8 +285,8 @@ namespace VSS.TRex.Storage
       {
         var cacheKey = ComputeNamedStreamCacheKey(dataModelId, streamName);
 
-        if (Log.IsTraceEnabled())
-          Log.LogInformation($"Removing key:{cacheKey}");
+        if (_log.IsTraceEnabled())
+          _log.LogInformation($"Removing key:{cacheKey}");
 
         // Remove item from both immutable and mutable caches
         try
@@ -283,7 +295,7 @@ namespace VSS.TRex.Storage
         }
         catch (KeyNotFoundException e)
         {
-          Log.LogError(e, "Exception occurred:");
+          _log.LogError(e, "Exception occurred:");
         }
 
         ImmutableProxy?.RemoveStreamFromPersistentStore(dataModelId, streamType, streamName);
@@ -292,7 +304,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception removing stream {streamName} from persistent store");
+        _log.LogError(e, $"Exception removing stream {streamName} from persistent store");
         return FileSystemErrorStatus.UnknownErrorWritingToFS;
       }
     }
@@ -336,7 +348,7 @@ namespace VSS.TRex.Storage
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occurred:");
+        _log.LogError(e, "Exception occurred:");
 
         return FileSystemErrorStatus.UnknownFailureRemovingFileFromFS;
       }
@@ -417,6 +429,18 @@ namespace VSS.TRex.Storage
       return (ignite ?? DIContext.Obtain<ITRexGridFactory>().Grid(Mutability))
         .GetTransactions()
         .TxStart(concurrency, isolation);
+    }
+
+    /// <summary>
+    /// Determine the amount of bytes that will be written as a result of Commit()
+    /// </summary>
+    public long PotentialCommitWrittenBytes()
+    {
+      long numBytes = 0;
+
+      CommittableCaches.ForEach(x => numBytes += x.PotentialCommitWrittenBytes());
+
+      return numBytes;
     }
   }
 }

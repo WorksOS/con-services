@@ -74,6 +74,8 @@ namespace VSS.TRex.Storage.Interfaces
 
     void Clear();
 
+    long PotentialCommitWrittenBytes();
+
     /*
         function CopyDataModel(const dataModelID : Int64; const DestinationFileName: String): TICFSErrorStatus;
         function SwapDataModel(const dataModelID : Int64; const SourceFileName: String): TICFSErrorStatus;
