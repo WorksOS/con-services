@@ -244,6 +244,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
     {
       var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
+      // TODO - As we do not receive .DXF file contents and insted we get the collection of arrays of vertices 
+      // describing a poly line representation of the alignment center line then we need to revist the code bellow.
+      /*
       //Get generated DXF file from Raptor
       var dxfContents = await productivity3DV2ProxyCompaction.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
       //GracefulWebRequest should throw an exception if the web api call fails but just in case...
@@ -265,7 +268,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             }
           }
         }
-      }
+      }*/
 
       return generatedName;
     }
