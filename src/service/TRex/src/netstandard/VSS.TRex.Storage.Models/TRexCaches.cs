@@ -9,29 +9,29 @@ namespace VSS.TRex.Storage.Caches
     /// </summary>
     public static class TRexCaches
     {
-        private const string kSpatialSubGridDirectoryMutable = "Spatial-SubGridDirectory-Mutable";
-        private const string kSpatialSubGridDirectoryImmutable = "Spatial-SubGridDirectory-Immutable";
+        public const string kSpatialSubGridDirectoryMutable = "Spatial-SubGridDirectory-Mutable";
+        public const string kSpatialSubGridDirectoryImmutable = "Spatial-SubGridDirectory-Immutable";
 
-        private const string kSpatialSubGridSegmentMutable = "Spatial-SubGridSegment-Mutable";
-        private const string kSpatialSubGridSegmentImmutable = "Spatial-SubGridSegment-Immutable";
+        public const string kSpatialSubGridSegmentMutable = "Spatial-SubGridSegment-Mutable";
+        public const string kSpatialSubGridSegmentImmutable = "Spatial-SubGridSegment-Immutable";
 
-        private const string kNonSpatialMutable = "NonSpatial-Mutable";
-        private const string kNonSpatialImmutable = "NonSpatial-Immutable";
-  
-        private const string kSiteModelMetadataCache = "SiteModelMetadata";
-        private const string kSiteModelsCacheMutable = "SiteModels-Mutable";
-        private const string kSiteModelsCacheImmutable = "SiteModels-Immutable";
+        public const string kNonSpatialMutable = "NonSpatial-Mutable";
+        public const string kNonSpatialImmutable = "NonSpatial-Immutable";
 
-        private const string kProductionDataExistenceMapCacheImmutable = "ProductionDataExistenceMap-Immutable";
-        private const string kProductionDataExistenceMapCacheMutable = "ProductionDataExistenceMap-Mutable";
+        public const string kSiteModelMetadataCache = "SiteModelMetadata";
+        public const string kSiteModelsCacheMutable = "SiteModels-Mutable";
+        public const string kSiteModelsCacheImmutable = "SiteModels-Immutable";
 
-        private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
-        private const string kSiteModelChangeMapsCacheName = "SiteModelChangeMaps";
+        public const string kProductionDataExistenceMapCacheImmutable = "ProductionDataExistenceMap-Immutable";
+        public const string kProductionDataExistenceMapCacheMutable = "ProductionDataExistenceMap-Mutable";
 
-        private const string kTAGFileBufferQueueCacheName = "TAGFileBufferQueue";
-        private const string kSiteModelChangeBufferQueueName = "SiteModelChangeBufferQueue";
+        public const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
+        public const string kSiteModelChangeMapsCacheName = "SiteModelChangeMaps";
 
-        private const string kSegmentRetirementQueue = "SegmentRetirementQueue";
+        public const string kTAGFileBufferQueueCacheName = "TAGFileBufferQueue";
+        public const string kSiteModelChangeBufferQueueName = "SiteModelChangeBufferQueue";
+
+        public const string kSegmentRetirementQueue = "SegmentRetirementQueue";
 
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
@@ -41,7 +41,7 @@ namespace VSS.TRex.Storage.Caches
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
-        public static string SpatialSubGridSegmentCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridSegmentImmutable : kSpatialSubGridSegmentMutable;
+        public static string SpatialSubGridSegmentCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridSegmentMutable : kSpatialSubGridSegmentImmutable;
 
         /// <summary>
         /// Returns the name of the event grid cache to use to locate machine event and other non spatial information
