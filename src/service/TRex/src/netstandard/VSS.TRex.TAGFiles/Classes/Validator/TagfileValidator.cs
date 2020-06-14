@@ -71,9 +71,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <summary>
     /// this needs to be public, only for unit tests
     /// </summary>
-    /// <param name="tagDetail"></param>
-    /// <param name="processor"></param>
-    /// <returns></returns>
     public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessible(TagFileDetail tagDetail, TAGFilePreScan preScanState)
     {
       /*
@@ -108,11 +105,24 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
+      if (!preScanState.SeedLatitude.HasValue || !preScanState.SeedLongitude.HasValue || 
+          Math.Abs(preScanState.SeedLatitude.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ||
+          Math.Abs(preScanState.SeedLongitude.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE
+          )
+      {
+        // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
+        // a Consts.NulDouble means it has no SeekLocation (possibly lat/long is the GPS base station loc and need to, in future use NEE CCSSSCON-507
+        var message = $"Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude}";
+        Log.LogWarning(message);
+        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
+      }
+      var seedLatitude = MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0);
+      var seedLongitude = MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0);
+
       var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
         (int)radioType, preScanState.RadioSerial, EC520SerialID, // obsolete tagDetail.tccOrgId,
-        MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0),
-        MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0),
+        seedLatitude, seedLongitude,
         preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC);
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
