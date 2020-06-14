@@ -1,11 +1,11 @@
 ﻿using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
@@ -23,26 +23,26 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// </summary>
   public class SegmentRetirementQueueService : BaseService, IService, ISegmentRetirementQueueService
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
 
-    private static readonly bool ReportDetailedSegmentRetirementActivityToLog = false;
+    private static readonly bool _reportDetailedSegmentRetirementActivityToLog = true;
 
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
     /// The interval between epochs where the service checks to see if there is anything to do. Set to 30 seconds.
     /// </summary>
-    private const int kSegmentRetirementQueueServiceCheckIntervalMS = 30000;
+    private const int SEGMENT_RETIREMENT_QUEUE_SERVICE_CHECK_INTERVAL_MS = 30000;
 
     /// <summary>
     /// Flag set then Cancel() is called to instruct the service to finish operations
     /// </summary>
-    private bool aborted;
+    private bool _aborted;
 
     /// <summary>
     /// The event wait handle used to mediate sleep periods between operation epochs of the service
     /// </summary>
-    private EventWaitHandle waitHandle;
+    private EventWaitHandle _waitHandle;
 
     // Todo: Set the retirement age from the environment/configuration
     public TimeSpan retirementAge = new TimeSpan(0, 10, 0); // Set to 10 minutes as a maximum consistency window
@@ -60,7 +60,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="context"></param>
     public void Init(IServiceContext context)
     {
-      Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} initializing");
+      _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} initializing");
     }
 
     /// <summary>
@@ -69,18 +69,18 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="context"></param>
     public void Execute(IServiceContext context)
     {
-      Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} starting executing");
+      _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} starting executing");
 
-      aborted = false;
-      waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+      _aborted = false;
+      _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
       // Get the ignite grid and cache references
 
-      IIgnite mutableIgnite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
+      var mutableIgnite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
 
       if (mutableIgnite == null)
       {
-        Log.LogError("Mutable Ignite reference in service is null - aborting service execution");
+        _log.LogError("Mutable Ignite reference in service is null - aborting service execution");
         return;
       }
 
@@ -96,13 +96,16 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         {
           // Obtain a specific local mutable storage proxy so as to have a local transactional proxy
           // for this activity
-          IStorageProxy storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+          var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-          Debug.Assert(storageProxy.Mutability == StorageMutability.Mutable, "Non mutable storage proxy available to segment retirement queue");
+          if (storageProxy.Mutability != StorageMutability.Mutable)
+          {
+            throw new TRexException("Non mutable storage proxy available to segment retirement queue");
+          }
 
-          Log.LogInformation("About to query retiree spatial streams from cache");
+          _log.LogInformation("About to query retiree spatial streams from cache");
 
-          DateTime earlierThan = DateTime.UtcNow - retirementAge;
+          var earlierThan = DateTime.UtcNow - retirementAge;
           // Retrieve the list of segments to be retired
           var retirees = queue.Query(earlierThan);
 
@@ -110,31 +113,31 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
           var retireesCount = retirees?.Count ?? 0;
           if (retireesCount > 0)
           {
-            Log.LogInformation($"About to retire {retireesCount} groups of spatial streams from mutable and immutable contexts");
+            _log.LogInformation($"About to retire {retireesCount} groups of spatial streams from mutable and immutable contexts");
 
             if (handler.Process(storageProxy, queueCache, retirees))
             {
-              if (ReportDetailedSegmentRetirementActivityToLog)
-                Log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
+              if (_reportDetailedSegmentRetirementActivityToLog)
+                _log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
 
               // Remove the elements from the segment retirement queue
               queue.Remove(earlierThan);
             }
             else
             {
-              Log.LogError($"Failed to retire {retireesCount} spatial streams from mutable and immutable contexts");
+              _log.LogError($"Failed to retire {retireesCount} spatial streams from mutable and immutable contexts");
             }
           }
         }
         catch (Exception e)
         {
-          Log.LogError(e, "Exception reported while obtaining new group of retirees to process:");
+          _log.LogError(e, "Exception reported while obtaining new group of retirees to process:");
         }
 
-        waitHandle.WaitOne(kSegmentRetirementQueueServiceCheckIntervalMS);
-      } while (!aborted);
+        _waitHandle.WaitOne(SEGMENT_RETIREMENT_QUEUE_SERVICE_CHECK_INTERVAL_MS);
+      } while (!_aborted);
 
-      Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} completed executing");
+      _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} completed executing");
     }
 
     /// <summary>
@@ -143,10 +146,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <param name="context"></param>
     public void Cancel(IServiceContext context)
     {
-      Log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} cancelling");
+      _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} cancelling");
 
-      aborted = true;
-      waitHandle?.Set();
+      _aborted = true;
+      _waitHandle?.Set();
     }
 
     /// <summary>
