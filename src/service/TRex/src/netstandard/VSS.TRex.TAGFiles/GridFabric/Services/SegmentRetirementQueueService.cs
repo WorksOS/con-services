@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
 
-    private static readonly bool _reportDetailedSegmentRetirementActivityToLog = true;
+    private static readonly bool _reportDetailedSegmentRetirementActivityToLog = false;
 
     private const byte VERSION_NUMBER = 1;
 
