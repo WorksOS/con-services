@@ -22,7 +22,6 @@ using VSS.Productivity3D.WebApi.Compaction.Utilities;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
-using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
@@ -43,7 +42,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly IConfigurationStore _configStore;
     private readonly ITRexTagFileProxy _tRexTagFileProxy;
     private readonly ITRexConnectedSiteProxy _tRexConnectedSiteProxy;
-    private readonly IFileRepository _tccRepository;
     private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
@@ -54,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       IASNodeClient raptorClient, 
       ITagProcessor tagProcessor, 
 #endif
-      ILoggerFactory logger, ITransferProxyFactory transferProxyFactory, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, IConfigurationStore configStore, IFileRepository tccRepository)
+      ILoggerFactory logger, ITransferProxyFactory transferProxyFactory, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, IConfigurationStore configStore)
     {
 #if RAPTOR
       _raptorClient = raptorClient;
@@ -66,7 +64,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       _tRexTagFileProxy = tRexTagFileProxy;
       _tRexConnectedSiteProxy = tRexConnectedSiteProxy;
       _configStore = configStore;
-      _tccRepository = tccRepository;
     }
 
     /// <summary>
@@ -172,7 +169,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           _raptorClient, 
           _tagProcessor, 
 #endif
-          _configStore, _tccRepository, transferProxyFactory:_transferProxyFactory,tRexTagFileProxy:_tRexTagFileProxy,tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
+          _configStore, transferProxyFactory:_transferProxyFactory,tRexTagFileProxy:_tRexTagFileProxy,tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
         .ProcessAsync(request) as TagFileDirectSubmissionResult;
 
       if (result?.Code == 0)

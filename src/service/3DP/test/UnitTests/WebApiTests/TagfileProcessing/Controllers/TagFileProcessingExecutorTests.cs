@@ -28,7 +28,6 @@ using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 using VSS.Serilog.Extensions;
-using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
@@ -85,16 +84,6 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
       mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
 
-      // TCC File Repository
-      var mockTccFileRepo = new Mock<IFileRepository>();
-      mockTccFileRepo.Setup(t =>
-        t.PutFile(It.IsAny<string>(),
-          It.IsAny<string>(),
-          It.IsAny<string>(),
-          It.IsAny<Stream>(),
-          It.IsAny<long>()))
-        .Returns(Task.FromResult(true));
-
 #if RAPTOR
       mockTagProcessor.Setup(prj => prj.ProjectDataServerTAGProcessorClient()
           .SubmitTAGFileToTAGFileProcessor(
@@ -118,7 +107,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 #if RAPTOR
           mockRaptorClient.Object, mockTagProcessor.Object,
 #endif
-          mockConfigStore.Object, transferProxyFactory: mockTransferProxyFactory.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders, fileRepo: mockTccFileRepo.Object);
+          mockConfigStore.Object, transferProxyFactory: mockTransferProxyFactory.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
       var result = await submitter.ProcessAsync(request);
 

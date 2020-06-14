@@ -41,7 +41,6 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.TCCFileAccess;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Designs.TTM.Optimised.Exceptions;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -268,8 +267,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
       [FromServices] IASNodeClient raptorClient,
 #endif
-      [FromServices] IProductionDataRequestFactory requestFactory,
-      [FromServices] IFileRepository tccFileRepository)
+      [FromServices] IProductionDataRequestFactory requestFactory)
     {
       const double SURFACE_EXPORT_TOLERANCE = 0.05;
       const byte COORDS_ARRAY_LENGTH = 3;
@@ -383,7 +381,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (design != null)
       {
         var path = design.File.Path + "/" + design.File.FileName;
-        var file = await tccFileRepository.GetFile(design.File.FilespaceId, path);
+        //TODO: Get from TRex or s3 or wherever it now is
+        Stream file = null;//await tccFileRepository.GetFile(design.File.FilespaceId, path);
         using (var ms = new MemoryStream())
         {
           if (file != null)

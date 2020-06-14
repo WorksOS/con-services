@@ -66,7 +66,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddResponseCompression();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
 
       services.AddTransient<IWebRequest, GracefulWebRequest>();

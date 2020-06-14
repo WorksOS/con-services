@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.FileAccess.WebAPI.Models.csproj" />
   </ItemGroup>
 
