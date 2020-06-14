@@ -305,8 +305,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DxfUnitsType dxfUnitsType,
       [FromQuery] DateTime fileCreatedUtc,
       [FromQuery] DateTime fileUpdatedUtc,
-      [FromQuery] DateTime? surveyedUtc = null,
-      [FromQuery] bool uploadToTcc = true)
+      [FromQuery] DateTime? surveyedUtc = null)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
@@ -321,7 +320,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation(
         $"{nameof(UpsertImportedFileV6)}: file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
-      return UpsertFile(file.path, file.flowFilename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc);
+      return UpsertFile(file.path, file.flowFilename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
     }
 
     /// <summary>
@@ -416,7 +415,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<DeleteImportedFileExecutor>(
             LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
             productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, persistantTransferProxyFactory: persistantTransferProxyFactory, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
-            projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient, cwsProjectClient: CwsProjectClient)
+            projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(deleteImportedFile)
       );
       await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
@@ -438,8 +437,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime fileCreatedUtc,
       DateTime fileUpdatedUtc,
       DateTime? surveyedUtc,
-      ISchedulerProxy schedulerProxy,
-      bool uploadToTcc = true)
+      ISchedulerProxy schedulerProxy)
     {
       if (!System.IO.File.Exists(tmpFilePath))
       {
@@ -449,7 +447,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       using (var fileStream = new FileStream(tmpFilePath, FileMode.Open))
       {
         return await UpsertFileInternal(filename, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc: uploadToTcc);
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
       }
     }
 
@@ -467,8 +465,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime? surveyedUtc,
       ISchedulerProxy schedulerProxy,
       Guid? parentUid = null,
-      double? offset = null,
-      bool uploadToTcc = true)
+      double? offset = null)
     {
       ImportedFileDescriptorSingleResult importedFile = null;
 
@@ -484,11 +481,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         creating
           ? $"{nameof(UpsertFileInternal)}. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
           : $"{nameof(UpsertFileInternal)}. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
-
-      if (importedFileType == ImportedFileType.GeoTiff)
-      {
-        uploadToTcc = false;
-      }
 
       FileDescriptor fileDescriptor = null;
 
@@ -526,31 +518,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         if (UseRaptorGatewayDesignImport)
         {
-          if (uploadToTcc)
-          {
-            fileDescriptor = await TccHelper.WriteFileToTCCRepository(
-                fileStream, CustomerUid, projectUid.ToString(), filename,
-                importedFileType == ImportedFileType.SurveyedSurface,
-                surveyedUtc, FileSpaceId, Logger, ServiceExceptionHandler, FileRepo)
-              .ConfigureAwait(false);
-          }
-          // This whole uploadToTCC workflow is strictly only for the TCC -> DataOcean migration.
-          else
-          {
-            Logger.LogDebug($"{nameof(UpsertFileInternal)}. Opted out of uploading to TCC, constructing pseudo fileDescriptor.");
-
-            var tccFileName = Path.GetFileName(filename);
-            if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc != null)
-            {
-              tccFileName = tccFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
-            }
-
-            fileDescriptor = FileDescriptor.CreateFileDescriptor(
-              FileSpaceId,
-              $"/{CustomerUid}/{projectUid}",
-              tccFileName);
-          }
-
           //save copy to DataOcean      
           await DataOceanHelper.WriteFileToDataOcean(
               fileStream, DataOceanRootFolderId, CustomerUid, projectUid.ToString(), dataOceanFileName,
@@ -571,7 +538,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
               productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+              projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
               cwsProjectClient: CwsProjectClient)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
@@ -599,7 +566,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
               productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+              projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
               cwsProjectClient: CwsProjectClient)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;

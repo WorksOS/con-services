@@ -17,10 +17,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// 
     /// </summary>
-    /// <remarks>
-    /// uploadToTCC parameter is used for the TCC to DataOcean migration; when this is completed the parameter could be removed.
-    /// It's presence here is to prevent calling into Raptor on file upsert and not generate extra files, e.g. .prg.
-    /// </remarks>
     public UpdateImportedFile(
       Guid projectUid, long shortRaptorProjectId, ImportedFileType importedFileTypeId,
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId,

@@ -45,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         if (memStream != null && memStream.CanRead && memStream.Length > 0)
         {
           coordSystemFileContent = new byte[memStream.Length];
-          int numBytesToRead = (int)memStream.Length;
+          int numBytesToRead = (int) memStream.Length;
           numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
         }
         else
@@ -99,54 +99,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       log.LogInformation($"GetFileStreamFromTcc: Successfully read memstream. bytesReturned: {memStream?.Length ?? 0}");
       return memStream;
-    }
-
-    /// <summary>
-    /// Writes the importedFile to TCC
-    ///   returns filespaceID; path and filename which identifies it uniquely in TCC
-    ///   this may be a create or update, so ok if it already exists already
-    /// </summary>
-    /// <returns></returns>
-    public static async Task<FileDescriptor> WriteFileToTCCRepository(
-      Stream fileContents, string customerUid, string projectUid,
-      string pathAndFileName, bool isSurveyedSurface, DateTime? surveyedUtc, string fileSpaceId,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
-    {
-      var tccPath = $"/{customerUid}/{projectUid}";
-      string tccFileName = Path.GetFileName(pathAndFileName);
-
-      if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-        tccFileName = tccFileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
-
-      bool ccPutFileResult = false;
-      bool folderAlreadyExists = false;
-      try
-      {
-        log.LogInformation(
-          $"WriteFileToTCCRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-        // check for exists first to avoid an misleading exception in our logs.
-        folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
-        if (folderAlreadyExists == false)
-          await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
-
-        // this does an upsert
-        ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileContents, fileContents.Length)
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
-          e.Message);
-      }
-
-      if (ccPutFileResult == false)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
-      }
-
-      log.LogInformation(
-        $"WriteFileToTCCRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
-      return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
     /// <summary>
@@ -248,58 +200,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation(
         $"CopyFileWithinTccRepository: fileDescriptorTarget {JsonConvert.SerializeObject(fileDescriptorTarget)}");
       return fileDescriptorTarget;
-    }
-
-    /// <summary>
-    /// Deletes the importedFile from TCC
-    /// </summary>
-    /// <returns></returns>
-    public static async Task<ImportedFileInternalResult> DeleteFileFromTCCRepository(FileDescriptor fileDescriptor, string projectUid, string importedFileUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
-    {
-      log.LogInformation($"DeleteFileFromTCCRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
-
-      bool ccFileExistsResult = false;
-      try
-      {
-        ccFileExistsResult = await fileRepo
-          .FileExists(fileDescriptor.FilespaceId, fileDescriptor.Path + '/' + fileDescriptor.FileName)
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        log.LogError(e, $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}");
-        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.FileExists", e.Message);
-      }
-
-      if (ccFileExistsResult == true)
-      {
-        bool ccDeleteFileResult = false;
-        try
-        {
-          ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.FilespaceId,
-              fileDescriptor.Path + '/' + fileDescriptor.FileName)
-            .ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-          log.LogError(e, $"DeleteFileFromTCCRepository DeleteFile failed with exception. importedFileUid:{importedFileUid}.");
-          return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "fileRepo.DeleteFile", e.Message);
-        }
-
-        if (ccDeleteFileResult == false)
-        {
-          log.LogError(
-            $"DeleteFileFromTCCRepository DeleteFile failed to delete importedFileUid:{importedFileUid}.");
-          return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 54);
-        }
-      }
-      else
-      {
-        log.LogInformation(
-          $"DeleteFileFromTCCRepository File doesn't exist in TCC {JsonConvert.SerializeObject(fileDescriptor)}");
-      }
-      return null;
     }
   }
 }
