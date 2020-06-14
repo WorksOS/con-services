@@ -27,7 +27,7 @@ namespace VSS.TRex.Storage.Interfaces
     Task PutAsync(TK key, TV value);
 
     void PutAll(IEnumerable<KeyValuePair<TK, TV>> values);
-    Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> vals);
+    Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> values);
 
 
     ICacheLock Lock(TK key);
