@@ -59,7 +59,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             lock (_lockObj)
             {
                 if (_log.IsTraceEnabled())
-                { 
+                {
                     _log.LogTrace($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
                 }
 
@@ -112,7 +112,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             {
                 // Check the project is not in the avoid list
                 if (avoidProjects != null && avoidProjects.Any(x => x == projectId))
-                { 
+                {
                     continue;
                 }
 

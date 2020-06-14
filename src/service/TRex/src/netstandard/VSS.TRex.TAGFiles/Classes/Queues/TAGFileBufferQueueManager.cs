@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
             var queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
             var handler = new TAGFileBufferQueueItemHandler();
-            var TAGFileFilter = new RemoteTAGFileFilter(handler);  
+            var TAGFileFilter = new RemoteTAGFileFilter(handler);
 
             Log.LogInformation("Creating continuous query");
 
