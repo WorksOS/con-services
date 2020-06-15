@@ -16,7 +16,6 @@ using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;
@@ -76,11 +75,6 @@ namespace VSS.MasterData.ProjectTests.Executors
           It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(new CoordinateSystemSettingsResult());
 
-      var fileRepo = new Mock<IFileRepository>();
-      fileRepo.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      fileRepo.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-        It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
-
       var dataOceanClient = new Mock<IDataOceanClient>();
       dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
@@ -92,8 +86,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<CreateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler, 
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
-        productivity3dV1ProxyCoord.Object,
-        fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
+        productivity3dV1ProxyCoord.Object, httpContextAccessor: httpContextAccessor,
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
         cwsProjectClient: cwsProjectClient.Object, cwsDesignClient: cwsDesignClient.Object,
         cwsProfileSettingsClient: cwsProfileSettingsClient.Object);

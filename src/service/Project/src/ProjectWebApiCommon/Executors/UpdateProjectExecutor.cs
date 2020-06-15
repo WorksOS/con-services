@@ -68,7 +68,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
-          productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
+          productivity3dV1ProxyCoord, configStore, dataOceanClient, authn,
           cwsDesignClient, cwsProfileSettingsClient, cwsProjectClient).ConfigureAwait(false);
         log.LogDebug($"{nameof(UpdateProjectExecutor)}: CreateCoordSystemInProductivity3dAndTcc succeeded");
       }

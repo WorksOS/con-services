@@ -11,12 +11,10 @@ using SixLabors.Primitives;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.TCCFileAccess;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using MasterDataModels = VSS.MasterData.Models.Models;
 
@@ -29,26 +27,21 @@ namespace VSS.Tile.Service.Common.Services
   {
     private readonly IConfigurationStore config;
     private readonly IDataOceanClient dataOceanClient;
-    private readonly IFileRepository tccFileRepo;
     private readonly ILogger log;
     private readonly ITPaaSApplicationAuthentication authn;
-    private readonly string tccFilespaceId;
     private readonly string dataOceanRootFolder;
 
-    public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn, IFileRepository tccRepository)
+    public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn)
     {
       config = configuration;
       this.dataOceanClient = dataOceanClient;
       log = logger.CreateLogger<DxfTileService>();
       this.authn = authn;
-      tccFilespaceId = config.GetValueString("TCCFILESPACEID");
 
       const string DATA_OCEAN_ROOT_FOLDER_ID_KEY = "DATA_OCEAN_ROOT_FOLDER_ID";
       dataOceanRootFolder = configuration.GetValueString(DATA_OCEAN_ROOT_FOLDER_ID_KEY);
       if (string.IsNullOrEmpty(dataOceanRootFolder))
         throw new ArgumentException($"Missing environment variable {DATA_OCEAN_ROOT_FOLDER_ID_KEY}");
-
-      tccFileRepo = tccRepository;
     }
 
     /// <summary>
@@ -128,10 +121,7 @@ namespace VSS.Tile.Service.Common.Services
         var clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
 
         //Join all the DXF tiles into one large tile
-        if (dxfFile.ImportedUtc >= config.GetValueDateTime("TCC_TILE_FALLBACK_DATE", DateTime.Parse("11/22/2019", CultureInfo.CreateSpecificCulture("en-US"))))
-          await JoinDataOceanTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
-        else
-          await JoinTccTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
+        await JoinDataOceanTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
 
         //Now clip the large tile
         tileBitmap.Mutate(ctx => ctx.Crop(clipRect));
@@ -174,39 +164,6 @@ namespace VSS.Tile.Service.Common.Services
               (xTile - (int)tileTopLeft.x) * MasterDataModels.WebMercatorProjection.TILE_SIZE,
               (yTile - (int)tileTopLeft.y) * MasterDataModels.WebMercatorProjection.TILE_SIZE);
             tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
-          }
-        }
-      }
-    }
-
-    private async Task JoinTccTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
-    {
-      var suffix = FileUtils.GeneratedFileSuffix(dxfFile.ImportedFileType);
-      string generatedName = FileUtils.GeneratedFileName(dxfFile.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
-      string zoomPath =
-        $"{FileUtils.ZoomPath(FileUtils.TilePath(dxfFile.Path, generatedName), zoomLevel)}";
-
-      for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
-      {
-        string targetFolder = $"{zoomPath}/{yTile}";
-        //TCC only renders tiles where there is DXF data. So check if any tiles for this y.
-        if (await tccFileRepo.FolderExists(tccFilespaceId, targetFolder))
-        {
-          for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)
-          {
-            string targetFile = $"{targetFolder}/{xTile}.png";
-            if (await tccFileRepo.FileExists(tccFilespaceId, targetFile))
-            {
-              log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
-
-              var file = await tccFileRepo.GetFile(tccFilespaceId, targetFile);
-              Image<Rgba32> tile = Image.Load<Rgba32>(file);
-
-              Point offset = new Point(
-                (xTile - (int)tileTopLeft.x) * MasterDataModels.WebMercatorProjection.TILE_SIZE,
-                (yTile - (int)tileTopLeft.y) * MasterDataModels.WebMercatorProjection.TILE_SIZE);
-              tileBitmap.Mutate(ctx => ctx.DrawImage(tile, PixelBlenderMode.Normal, 1f, offset));
-            }
           }
         }
       }

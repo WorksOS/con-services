@@ -92,8 +92,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
-            Productivity3dV1ProxyCoord, fileRepo: FileRepo,
-            dataOceanClient: DataOceanClient, authn: Authorization,
+            Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient,
             cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
