@@ -380,14 +380,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // If we have a design request, get the ttm and add it for parsing
       if (design != null)
       {
-        var path = design.File.Path + "/" + design.File.FileName;
-        //TODO: Get from TRex or s3 or wherever it now is
-        Stream file = null;//await tccFileRepository.GetFile(design.File.FilespaceId, path);
-        using (var ms = new MemoryStream())
+        //TODO: This used to get the file from TCC. This code to get from s3 needs testing.
+        //Leave for now as this end point is not currently supported.
+        // Retrieve the stored file from AWS
+        var s3FullPath = $"{projectUid}/{design.File.FileName}";
+        var transferProxy = transferProxyFactory.NewProxy(TransferProxyType.Temporary);
+        var fileResult = await transferProxy.Download(s3FullPath);
+        if (fileResult?.FileStream != null)
         {
-          if (file != null)
+          using (var ms = new MemoryStream())
           {
-            file.CopyTo(ms);
+            fileResult.FileStream.CopyTo(ms);
             ms.Seek(0, SeekOrigin.Begin);
             var tin = new TrimbleTINModel();
             tin.LoadFromStream(ms, ms.GetBuffer());
