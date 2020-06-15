@@ -21,13 +21,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\service\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\service\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\..\..\service\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
-    <ProjectReference Include="..\..\..\service\3DP\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
+    <ProjectReference Include="..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
+    <ProjectReference Include="..\..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
+    <ProjectReference Include="..\..\3DP\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
+    <ProjectReference Include="..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
     <ProjectReference Include="..\TagFiles\TagFiles.csproj" />
   </ItemGroup>
 
