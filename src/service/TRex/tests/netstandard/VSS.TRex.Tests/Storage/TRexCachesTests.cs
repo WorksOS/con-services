@@ -12,28 +12,29 @@ namespace VSS.TRex.Tests.Storage
     [Fact]
     public void SpatialCacheName()
     {
-      TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.SubGridDirectory).Should().Be(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Mutable));
-      TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.SubGridSegment).Should().Be(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Mutable));
-      TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SubGridDirectory).Should().Be(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable));
-      TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SubGridSegment).Should().Be(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Immutable));
-      TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.SubGridExistenceMap).Should().Be(TRexCaches.ProductionDataExistenceMapCacheName(StorageMutability.Mutable));
-      TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SubGridExistenceMap).Should().Be(TRexCaches.ProductionDataExistenceMapCacheName(StorageMutability.Immutable));
+      TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.SubGridDirectory).Should().Be(TRexCaches.kSpatialSubGridDirectoryMutable);
+      TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.SubGridSegment).Should().Be(TRexCaches.kSpatialSubGridSegmentMutable);
+      TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SubGridDirectory).Should().Be(TRexCaches.kSpatialSubGridDirectoryImmutable);
+      TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SubGridSegment).Should().Be(TRexCaches.kSpatialSubGridSegmentImmutable);
+      TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.SubGridExistenceMap).Should().Be(TRexCaches.kProductionDataExistenceMapCacheMutable);
+      TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SubGridExistenceMap).Should().Be(TRexCaches.kProductionDataExistenceMapCacheImmutable);
     }
 
     [Fact]
     public void NonSpatialCacheName()
     {
-      TRexCaches.NonSpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.Events).Should().Be(TRexCaches.MutableNonSpatialCacheName());
-      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.Events).Should().Be(TRexCaches.ImmutableNonSpatialCacheName());
+      TRexCaches.NonSpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.Events).Should().Be(TRexCaches.kNonSpatialMutable);
+      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.Events).Should().Be(TRexCaches.kNonSpatialImmutable);
 
-      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SiteModelMachineElevationChangeMap).Should().Be(TRexCaches.SiteModelChangeMapsCacheName());
+      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SiteModelMachineElevationChangeMap).Should().Be(TRexCaches.kSiteModelChangeMapsCacheName);
+      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SiteModelMachineElevationChangeMap).Should().Be(TRexCaches.kSiteModelChangeMapsCacheName);
     }
 
     [Fact]
     public void SiteModelsCacheName()
     {
-      TRexCaches.NonSpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.ProductionDataXML).Should().Be(TRexCaches.SiteModelsCacheName(StorageMutability.Mutable));
-      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.ProductionDataXML).Should().Be(TRexCaches.SiteModelsCacheName(StorageMutability.Immutable));
+      TRexCaches.NonSpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.ProductionDataXML).Should().Be(TRexCaches.kSiteModelsCacheMutable);
+      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.ProductionDataXML).Should().Be(TRexCaches.kSiteModelsCacheImmutable);
     }
 
     [Fact]

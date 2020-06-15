@@ -41,7 +41,7 @@ namespace VSS.TRex.Storage.Caches
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
-        public static string SpatialSubGridSegmentCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridSegmentImmutable : kSpatialSubGridSegmentMutable;
+        public static string SpatialSubGridSegmentCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridSegmentMutable : kSpatialSubGridSegmentImmutable;
 
         /// <summary>
         /// Returns the name of the event grid cache to use to locate machine event and other non spatial information
@@ -51,7 +51,6 @@ namespace VSS.TRex.Storage.Caches
         /// <summary>
         /// Returns the name of the spatial grid cache to use to store immutable cell and cell pass information
         /// </summary>
-        /// <returns></returns>
         public static string ImmutableNonSpatialCacheName() => kNonSpatialImmutable;
 
         public static string SpatialCacheName(StorageMutability mutability, FileSystemStreamType streamType)
