@@ -72,9 +72,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// this needs to be public, only for unit tests
     /// </summary>
     /// <param name="tagDetail"></param>
-    /// <param name="processor"></param>
+    /// <param name="preScanState"></param>
     /// <returns></returns>
-    public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessible(TagFileDetail tagDetail, TAGFilePreScan preScanState)
+    public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessable(TagFileDetail tagDetail, TAGFilePreScan preScanState)
     {
       /*
       Three different types of tagfile submission
@@ -108,16 +108,39 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
+
+      if (
+          (!preScanState.SeedLatitude.HasValue || !preScanState.SeedLongitude.HasValue ||
+            Math.Abs(preScanState.SeedLatitude.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ||
+            Math.Abs(preScanState.SeedLongitude.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE
+          ) &&
+          (!preScanState.SeedNorthing.HasValue || !preScanState.SeedEasting.HasValue ||
+           Math.Abs(preScanState.SeedNorthing.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ||
+           Math.Abs(preScanState.SeedEasting.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE
+          )
+        )
+      {
+        // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
+        // a Consts.NulDouble means it has no SeekLocation (possibly lat/long is the GPS base station loc and need to, in future use NEE CCSSSCON-507
+        var message = $"Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
+        Log.LogWarning(message);
+        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
+      }
+      var seedLatitude = MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0);
+      var seedLongitude = MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0);
+
+      Log.LogInformation($"#Progress# CheckFileIsProcessable. Location: Lat: {preScanState.SeedLatitude} Long: {preScanState.SeedLongitude} Northing: {preScanState.SeedNorthing} Easting: {preScanState.SeedEasting}");
+
       var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
         (int)radioType, preScanState.RadioSerial, EC520SerialID, // obsolete tagDetail.tccOrgId,
-        MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0),
-        MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0),
-        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC);
+        seedLatitude, seedLongitude,
+        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC,
+        preScanState.SeedNorthing, preScanState.SeedEasting);
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
-      Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
+      Log.LogInformation($"#Progress# CheckFileIsProcessable. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
       if (tfaResult?.Code == (int)TRexTagFileResultCode.Valid)
       {
         // if not overriding take TFA projectid
@@ -183,7 +206,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       // Contact TFA service to validate tag file details
-      var tfaResult = await CheckFileIsProcessible(tagDetail, tagFilePresScan).ConfigureAwait(false);
+      var tfaResult = await CheckFileIsProcessable(tagDetail, tagFilePresScan).ConfigureAwait(false);
       return new ContractExecutionResult((int)tfaResult.Code, tfaResult.Message);
     }
   }
