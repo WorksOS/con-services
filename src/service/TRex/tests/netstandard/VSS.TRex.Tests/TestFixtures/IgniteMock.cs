@@ -205,6 +205,23 @@ namespace VSS.TRex.Tests.TestFixtures
         throw new KeyNotFoundException($"Key {key} not found in mock cache");
       });
 
+      mockCache.Setup(x => x.GetAsync(It.IsAny<TK>())).Returns((TK key) =>
+      {
+        var task = new Task<TV>(() =>
+        {
+          lock (mockCacheDictionary)
+          {
+            if (mockCacheDictionary.TryGetValue(key, out var value))
+              return value;
+          }
+
+          throw new KeyNotFoundException($"Key {key} not found in mock cache");
+        });
+        task.Start();
+
+        return task;
+      });
+
       mockCache.Setup(x => x.Put(It.IsAny<TK>(), It.IsAny<TV>())).Callback((TK key, TV value) =>
       {
         lock (mockCacheDictionary)
@@ -215,6 +232,24 @@ namespace VSS.TRex.Tests.TestFixtures
           else
             mockCacheDictionary.Add(key, value);
         }
+      });
+
+      mockCache.Setup(x => x.PutAsync(It.IsAny<TK>(), It.IsAny<TV>())).Returns((TK key, TV value) =>
+      {
+        var task = new Task(() =>
+        {
+          lock (mockCacheDictionary)
+          {
+            // Ignite behaviour is writing an existing key updates the value with no error
+            if (mockCacheDictionary.ContainsKey(key))
+              mockCacheDictionary[key] = value;
+            else
+              mockCacheDictionary.Add(key, value);
+          }
+        });
+        task.Start();
+
+        return task;
       });
 
       mockCache.Setup(x => x.PutIfAbsent(It.IsAny<TK>(), It.IsAny<TV>())).Returns((TK key, TV value) =>

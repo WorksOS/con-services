@@ -1,11 +1,11 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
+﻿using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
@@ -22,15 +22,15 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   /// </summary>
   public class SegmentRetirementQueue : ISegmentRetirementQueue
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueue>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SegmentRetirementQueue>();
 
-    private readonly ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> QueueCache;
+    private readonly ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> _queueCache;
 
     public void Add(ISegmentRetirementQueueKey key, SegmentRetirementQueueItem value)
     {
-      Log.LogInformation($"Adding {value.SegmentKeys?.Length} retirees to queue for project {key.ProjectUID}");
+      _log.LogInformation($"Adding {value.SegmentKeys?.Length} retirees to queue for project {key.ProjectUID}");
 
-      QueueCache.Put(key, value);
+      _queueCache.Put(key, value);
     }
 
     /// <summary>
@@ -40,7 +40,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     {
       var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
 
-      QueueCache = ignite.GetOrCreateCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(
+      if (ignite == null)
+      {
+        throw new TRexException("Failed to obtain mutable grid Ignite reference");
+      }
+
+      _queueCache = ignite.GetOrCreateCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(
         new CacheConfiguration
         {
           Name = TRexCaches.SegmentRetirementQueueCacheName(),
@@ -50,7 +55,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
           // TODO: No backups for now
           Backups = 0,
-          KeepBinaryInStore = true,
+          KeepBinaryInStore = true
         });
     }
 
@@ -71,17 +76,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           Local = true
         };
 
-        var toRemove = QueueCache.Query(query).GetAll().Select(x => x.Key).ToList();
+        var toRemove = _queueCache.Query(query).GetAll().Select(x => x.Key).ToList();
 
-        Log.LogInformation($"Removing {toRemove.Count} retirement groups from retirement queue cache");
+        _log.LogInformation($"Removing {toRemove.Count} retirement groups from retirement queue cache");
 
-        QueueCache.RemoveAll(toRemove);
+        _queueCache.RemoveAll(toRemove);
 
-        Log.LogInformation($"Removed {toRemove.Count} retirement groups from retirement queue cache");
+        _log.LogInformation($"Removed {toRemove.Count} retirement groups from retirement queue cache");
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"{nameof(Remove)} experienced exception while removing retirees from retirement queue:");
+        _log.LogError(e, $"{nameof(Remove)} experienced exception while removing retirees from retirement queue:");
       }
     }
 
@@ -101,11 +106,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           Filter = filter,
           Local = true
         };
-        return QueueCache.Query(query).GetAll().Select(x => x.Value).ToList();
+        return _queueCache.Query(query).GetAll().Select(x => x.Value).ToList();
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"{nameof(Query)} experienced exception while querying retirees:");
+        _log.LogError(e, $"{nameof(Query)} experienced exception while querying retirees:");
         return null;
       }
 
