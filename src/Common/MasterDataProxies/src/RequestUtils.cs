@@ -37,11 +37,11 @@ namespace VSS.MasterData.Proxies
       return customHeaders;
     }
 
-    public static void StripHeaders(this IHeaderDictionary headers, bool isInternal = true)
+    public static IHeaderDictionary StripHeaders(this IHeaderDictionary headers, bool isInternal = true)
     {
       if (headers == null)
       {
-        return;
+        return null;
       }
 
       // Depending of if we are internal, or external, we need different headers to persist or be removed
@@ -53,19 +53,17 @@ namespace VSS.MasterData.Proxies
         ? HeaderConstants.InternalHeaderPrefix
         : new List<string>();
 
-      // Have to store the keys here, or else we modify the dictionary while iterating
-      var keys = headers.Keys.ToList();
-
-      foreach (var headerKey in keys)
+      var customHeaders = new HeaderDictionary();
+      foreach (var header in headers)
       {
-        if (keysToKeep.Any(k => k.Equals(headerKey, StringComparison.OrdinalIgnoreCase)))
-          continue;
+        if (keysToKeep.Any(k => k.Equals(header.Key, StringComparison.OrdinalIgnoreCase)))
+          customHeaders.Add(header);
 
-        if (prefixList.Any(p => headerKey.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
-          continue;
-
-        headers.Remove(headerKey);
+        if (prefixList.Any(p => header.Key.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
+          customHeaders.Add(header); ;
       }
+
+      return customHeaders;
     }
   }
 }
