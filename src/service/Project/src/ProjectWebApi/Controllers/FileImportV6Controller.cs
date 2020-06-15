@@ -518,6 +518,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         if (UseRaptorGatewayDesignImport)
         {
+          //This is needed for ATs.
+          fileDescriptor = FileDescriptor.CreateFileDescriptor(
+            FileSpaceId,
+            $"/{CustomerUid}/{projectUid}",
+            filename);
+
           //save copy to DataOcean      
           await DataOceanHelper.WriteFileToDataOcean(
               fileStream, DataOceanRootFolderId, CustomerUid, projectUid.ToString(), dataOceanFileName,
