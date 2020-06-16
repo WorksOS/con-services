@@ -105,27 +105,17 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
-      double seedLatitude = 0;
-      double seedLongitude = 0;
-      double? seedNorthing = null;
-      double? seedEasting = null;
-      if (preScanState.SeedLatitude.HasValue && (Math.Abs(preScanState.SeedLatitude.Value - Consts.NullDouble) > Consts.TOLERANCE_DECIMAL_DEGREE))
-       seedLatitude = MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLatitude.Value));
-      if (preScanState.SeedLongitude.HasValue && (Math.Abs(preScanState.SeedLongitude.Value - Consts.NullDouble) > Consts.TOLERANCE_DECIMAL_DEGREE))
-        seedLongitude = MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLongitude.Value));
-      if (preScanState.SeedNorthing.HasValue && (Math.Abs(preScanState.SeedNorthing.Value - Consts.NullDouble) > Consts.TOLERANCE_DECIMAL_DEGREE))
-        seedNorthing = MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedNorthing.Value));
-      if (preScanState.SeedEasting.HasValue && (Math.Abs(preScanState.SeedEasting.Value - Consts.NullDouble) > Consts.TOLERANCE_DECIMAL_DEGREE))
-        seedEasting = MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedEasting.Value));
-
-      if (Math.Abs(seedLatitude) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE && (seedNorthing == null || seedEasting == null))
+      double seedLatitude = preScanState.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLatitude.Value)) : 0.0;
+      double seedLongitude = preScanState.SeedLongitude.HasValue ? MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLongitude.Value)) : 0.0;
+      double? seedNorthing = preScanState.SeedNorthing;
+      double? seedEasting = preScanState.SeedEasting;
+      if (Math.Abs(Math.Abs(seedLatitude)) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE && (seedNorthing == null || seedEasting == null))
       {
         // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
         var message = $"Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
         Log.LogWarning(message);
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
       }
-
 
       Log.LogInformation($"#Progress# CheckFileIsProcessable. Location: Lat: {preScanState.SeedLatitude} Long: {preScanState.SeedLongitude} Northing: {preScanState.SeedNorthing} Easting: {preScanState.SeedEasting}");
 

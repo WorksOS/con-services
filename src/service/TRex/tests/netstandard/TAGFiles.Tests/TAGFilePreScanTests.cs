@@ -90,23 +90,23 @@ namespace TAGFiles.Tests
     public void Test_TAGFilePreScan_NEEposition()
     {
       //  Lat/Long refers to the GPS_BASE_Position
-      //    therefore SeedLatitude and SeedLongitude == Consts.NullDouble 
-      //  CCSSSCON-507 should resolve this to a valid SeedLocation
+      //    therefore SeedLatitude and SeedLongitude not available
+      //    NE can be used along with the projects CSIB to resolve to a LL
 
       var preScan = new TAGFilePreScan();
 
-      Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "Bug ccssscon-401 NEE SeedPosition.tag"), FileMode.Open, FileAccess.Read)),
+      Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "SeedPosition-usingNEE.tag"), FileMode.Open, FileAccess.Read)),
         "Pre-scan execute returned false");
 
       preScan.ProcessedEpochCount.Should().Be(1);
       preScan.ReadResult.Should().Be(TAGReadResult.NoError);
-      preScan.SeedLatitude.Should().Be(Consts.NullDouble);
-      preScan.SeedLongitude.Should().Be(Consts.NullDouble);
-      preScan.SeedHeight.Should().Be(Consts.NullDouble);
-      preScan.SeedNorthing.Should().Be(121931.74737617122);
-      preScan.SeedEasting.Should().Be(564022.58097323333);
-      preScan.SeedElevation.Should().Be(398.75510795260766);
-      preScan.SeedTimeUTC.Should().BeNull();
+      preScan.SeedLatitude.Should().Be(null);
+      preScan.SeedLongitude.Should().Be(null);
+      preScan.SeedHeight.Should().Be(null);
+      preScan.SeedNorthing.Should().Be(5876814.5384829007);
+      preScan.SeedEasting.Should().Be(7562822.7801738745);
+      preScan.SeedElevation.Should().Be(127.31059507932183);
+      preScan.SeedTimeUTC.Should().Be(System.DateTime.Parse("2020-06-05T23:29:53.761", System.Globalization.NumberFormatInfo.InvariantInfo));
       preScan.RadioType.Should().Be("torch");
       preScan.RadioSerial.Should().Be("5850F00892");
       preScan.MachineType.Should().Be(MachineType.Excavator);
@@ -141,33 +141,5 @@ namespace TAGFiles.Tests
       preScan.DesignName.Should().Be("Monthey Kontaktboden C2c6");
       preScan.ApplicationVersion.Should().Be("12.20-53094");
     }
-
-    [Fact()]
-    public void Test_TAGFilePreScan_NEEposition()
-    {
-      //  Lat/Long refers to the GPS_BASE_Position
-      //    therefore SeedLatitude and SeedLongitude == Consts.NullDouble 
-      //  CCSSSCON-507 should resolve this to a valid SeedLocation
-
-      var preScan = new TAGFilePreScan();
-
-      Assert.True(preScan.Execute(new FileStream(Path.Combine("TestData", "TAGFiles", "Bug ccssscon-401 NEE SeedPosition.tag"), FileMode.Open, FileAccess.Read)),
-        "Pre-scan execute returned false");
-
-      preScan.ProcessedEpochCount.Should().Be(1);
-      preScan.ReadResult.Should().Be(TAGReadResult.NoError);
-      preScan.SeedLatitude.Should().Be(Consts.NullDouble);
-      preScan.SeedLongitude.Should().Be(Consts.NullDouble);
-      preScan.SeedHeight.Should().Be(Consts.NullDouble);
-      preScan.SeedTimeUTC.Should().BeNull();
-      preScan.RadioType.Should().Be("torch");
-      preScan.RadioSerial.Should().Be("5850F00892");
-      preScan.MachineType.Should().Be(MachineType.Excavator);
-      preScan.MachineID.Should().Be("M316F PAK115");
-      preScan.HardwareID.Should().Be("1639J101YU");
-      preScan.DesignName.Should().Be("L03P");
-      preScan.ApplicationVersion.Should().Be("EW-1.11.0-2019_3 672");
-    }
-
   }
 }
