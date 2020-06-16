@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
@@ -126,41 +126,21 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
       PerformContext context)
     {
       var data = await _apiClient.SendRequest(request, customHeaders);
+      try
       {
-        //TODO: Do we want something like applicationName/customerUid/userId/jobId for S3 path?
-        //where app name and userId (appId or userUid) from JWT
-        try
+        var result = JsonConvert.DeserializeObject<CompactionExportResult>(await data.ReadAsStringAsync());
+        // Set the results so the results can access the final url easily
+        if (context != null)
         {
-          var stream = await data.ReadAsStreamAsync();
-          var contentType = data.Headers.ContentType.MediaType;
-          var path = GetS3Key(context.BackgroundJob.Id, request.Filename);
-
-          if (string.IsNullOrEmpty(contentType))
-          {
-            // The default data will be zip file (for backwards compatability where it defaulted to zip files)
-            path += ".zip";
-            contentType = ContentTypeConstants.ApplicationOctetStream;
-          }
-
-          // Transfer proxy will upload the file with a potentially different extension, matching the contenttype
-          // So we may get a new path
-          var newPath = _transferProxy.Upload(stream, path, contentType);
-
-          var presignedUrl = _transferProxy.GeneratePreSignedUrl(newPath);
-
-          // Set the results so the results can access the final url easily
-          if (context != null)
-          {
-            JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3_KEY_STATE_KEY, newPath);
-            JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, DOWNLOAD_LINK_STATE_KEY, presignedUrl);
-          }
-          return presignedUrl;
+          JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3_KEY_STATE_KEY, GetS3Key(context.BackgroundJob.Id, request.Filename));
+          JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, DOWNLOAD_LINK_STATE_KEY, result.DownloadLink);
         }
-        catch (Exception ex)
-        {
-          _log.LogError(ex, "Exception in ApiClient delegate.");
-          throw;
-        }
+        return result.DownloadLink;
+      }
+      catch (Exception ex)
+      {
+        _log.LogError(ex, "Exception in ApiClient delegate.");
+        throw;
       }
     }
 
