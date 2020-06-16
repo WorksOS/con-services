@@ -75,11 +75,10 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISegmentRetirementQueue>(factory => new SegmentRetirementQueue()))
         .Build()
         .Add(x => x.AddSingleton(new TagProcComputeServer()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
-
-        // Add the central registry of loaded designs
-        .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
 
         // Register the sender for the site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
