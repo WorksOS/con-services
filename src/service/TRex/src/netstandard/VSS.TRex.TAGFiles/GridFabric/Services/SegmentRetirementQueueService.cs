@@ -57,7 +57,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Initializes the service ready for accessing segment keys
     /// </summary>
-    /// <param name="context"></param>
     public void Init(IServiceContext context)
     {
       _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} initializing");
@@ -66,7 +65,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Executes the life cycle of the service until it is aborted
     /// </summary>
-    /// <param name="context"></param>
     public void Execute(IServiceContext context)
     {
       _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} starting executing");
@@ -143,7 +141,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Cancels the current operation context of the service
     /// </summary>
-    /// <param name="context"></param>
     public void Cancel(IServiceContext context)
     {
       _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} cancelling");
@@ -155,7 +152,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -166,7 +162,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
