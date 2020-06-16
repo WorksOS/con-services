@@ -1,12 +1,16 @@
 ﻿using System;
+using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Common;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
@@ -62,7 +66,12 @@ namespace VSS.TRex.Gateway.Common.Executors
           response?.ResultStatus ?? RequestErrorStatus.FailedToConfigureInternalPipeline);
       }
 
-      return new CompactionExportResult(response.fileName);
+      var fullFileName = Path.Combine(Path.GetTempPath(), request.FileName);
+      var s3FileTransfer = new S3FileTransfer(TransferProxyType.Temporary);
+      s3FileTransfer.WriteFile(fullFileName, request.ProjectUid, out var url);
+      if (File.Exists(fullFileName)) // remove temp file
+        File.Delete(fullFileName);
+      return new CompactionExportResult(url);
     }
 
     /// <summary>
