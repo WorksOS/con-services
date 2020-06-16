@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -21,8 +19,8 @@ namespace VSS.Productivity3D.Common.Interfaces
       IASNodeClient raptorClient = null,
       ITagProcessor tagProcessor = null,
 #endif
-      IConfigurationStore configStore = null, IFileRepository fileRepo = null,
-      ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null,
+      IConfigurationStore configStore = null,
+      List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null,
       ITransferProxyFactory transferProxyFactory = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexConnectedSiteProxy tRexConnectedSiteProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
       IHeaderDictionary customHeaders = null, string customerUid = null)
       where TExecutor : RequestExecutorContainer, new()
@@ -43,8 +41,6 @@ namespace VSS.Productivity3D.Common.Interfaces
         tagProcessor,
 #endif
         configStore,
-        fileRepo,
-        tileGenerator,
         fileList,
         profileResultHelper,
         transferProxyFactory,

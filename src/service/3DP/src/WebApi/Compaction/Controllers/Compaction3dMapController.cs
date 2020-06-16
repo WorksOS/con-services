@@ -41,7 +41,6 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
-using VSS.TCCFileAccess;
 using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Designs.TTM.Optimised.Exceptions;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -268,8 +267,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
       [FromServices] IASNodeClient raptorClient,
 #endif
-      [FromServices] IProductionDataRequestFactory requestFactory,
-      [FromServices] IFileRepository tccFileRepository)
+      [FromServices] IProductionDataRequestFactory requestFactory)
     {
       const double SURFACE_EXPORT_TOLERANCE = 0.05;
       const byte COORDS_ARRAY_LENGTH = 3;
@@ -382,13 +380,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // If we have a design request, get the ttm and add it for parsing
       if (design != null)
       {
-        var path = design.File.Path + "/" + design.File.FileName;
-        var file = await tccFileRepository.GetFile(design.File.FilespaceId, path);
-        using (var ms = new MemoryStream())
+        //TODO: This used to get the file from TCC. This code to get from s3 needs testing.
+        //Leave for now as this end point is not currently supported.
+        // Retrieve the stored file from AWS
+        var s3FullPath = $"{projectUid}/{design.File.FileName}";
+        var transferProxy = transferProxyFactory.NewProxy(TransferProxyType.Temporary);
+        var fileResult = await transferProxy.Download(s3FullPath);
+        if (fileResult?.FileStream != null)
         {
-          if (file != null)
+          using (var ms = new MemoryStream())
           {
-            file.CopyTo(ms);
+            fileResult.FileStream.CopyTo(ms);
             ms.Seek(0, SeekOrigin.Begin);
             var tin = new TrimbleTINModel();
             tin.LoadFromStream(ms, ms.GetBuffer());

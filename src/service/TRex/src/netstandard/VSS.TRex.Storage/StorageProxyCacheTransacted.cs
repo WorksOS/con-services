@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Transactions;
 using Microsoft.Extensions.Logging;
@@ -14,8 +15,6 @@ namespace VSS.TRex.Storage
     /// A transacted Storage Proxy that collects mutating changes (write and delete operations) that
     /// may be committed at a single time
     /// </summary>
-    /// <typeparam name="TK"></typeparam>
-    /// <typeparam name="TV"></typeparam>
     public class StorageProxyCacheTransacted<TK, TV> : StorageProxyCache<TK, TV>, IStorageProxyCacheTransacted<TK, TV>
     {
         private static readonly ILogger _log = Logging.Logger.CreateLogger<StorageProxyCacheTransacted<TK, TV>>();
@@ -46,8 +45,6 @@ namespace VSS.TRex.Storage
         /// Provides look-aside get semantics into the transaction writes so that a write-then-read operation 
         /// will always return the value last 'written', even if not yet committed
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public override TV Get(TK key)
         {
           lock (PendingTransactedWrites)
@@ -62,11 +59,26 @@ namespace VSS.TRex.Storage
         }
 
         /// <summary>
+        /// Provides look-aside get semantics into the transaction writes so that a write-then-read operation 
+        /// will always return the value last 'written', even if not yet committed
+        /// </summary>
+        public override Task<TV> GetAsync(TK key)
+        {
+          lock (PendingTransactedWrites)
+          {
+            if (PendingTransactedWrites.TryGetValue(key, out var value))
+            {
+              return Task.FromResult(value);
+            }
+          }
+
+          return base.GetAsync(key);
+        }
+
+        /// <summary>
         /// Removes the given key from the cache. If there has been a previous un-committed remove for the key
         /// then an argument exception is thrown
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public override bool Remove(TK key)
         {
           if (_log.IsTraceEnabled())
@@ -105,8 +117,6 @@ namespace VSS.TRex.Storage
         /// Provides Put semantics into the cache. If there has been a previous uncommitted put for the same key then
         /// the previous value put is discarded and the new value used to replace it.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
         public override void Put(TK key, TV value)
         {
             if (_log.IsTraceEnabled())
@@ -124,18 +134,28 @@ namespace VSS.TRex.Storage
               PendingTransactedWrites.Add(key, value);
             }
 
-            if (value is byte[] bytes)
+            if (value is ISerialisedByteArrayWrapper wrapper)
             {
-              IncrementBytesWritten(bytes.Length);
+              IncrementBytesWritten(wrapper.Count);
             }
         }
 
         /// <summary>
+        /// Provides asynchronous Put semantics into the cache. If there has been a previous uncommitted put for the same key then
+        /// the previous value put is discarded and the new value used to replace it.
+        /// </summary>
+        public override Task PutAsync(TK key, TV value) => Task.Run(() => Put(key, value));
+
+        /// <summary>
         /// Accepts a list of elements to be put and enlists the local Put() semantics to handle them
         /// </summary>
-        /// <param name="values"></param>
         public override void PutAll(IEnumerable<KeyValuePair<TK, TV>> values) => values.ForEach(x => Put(x.Key, x.Value));
-      
+        
+        /// <summary>
+        /// Accepts a list of elements to be put and enlists the local PutAll() semantics to handle them
+        /// </summary>
+        public override Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> values) => Task.Run(() => PutAll(values));
+
         /// <summary>
         /// Commits all pending deletes and writes to the underlying cache
         /// </summary>
@@ -145,22 +165,39 @@ namespace VSS.TRex.Storage
 
         public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
         {
+            long localBytesWritten = 0;
+
             // The generic transactional cache cannot track the size of the elements being 'put' to the cache
             lock (PendingTransactedDeletes)
             {
               numDeleted = PendingTransactedDeletes.Count;
-              base.RemoveAll(PendingTransactedDeletes);
+
+              // TODO: Can (should) this be pooled into a collection of tasks run concurrently?
+              PendingTransactedDeletes.ForEach(async x => await base.RemoveAsync(x));
+              // PendingTransactedDeletes needs ot be ordered to safely call RemoveAll
+              //base.RemoveAll(PendingTransactedDeletes);
             }
 
             lock (PendingTransactedWrites)
             {
               numUpdated = PendingTransactedWrites.Count;
 
-              // PendingTransactedWrites.ForEach(x => base.Put(x.Key, x.Value));
-              base.PutAll(PendingTransactedWrites);
+              // Write all elements one at a time, calculating the cumulative bytes written in the Commit()
+              PendingTransactedWrites.ForEach(async x =>
+              {
+                // TODO: Can (should) this be pooled into a collection of tasks run concurrently?
+                await base.PutAsync(x.Key, x.Value);
+                if (x.Value is ISerialisedByteArrayWrapper wrapper)
+                  localBytesWritten += wrapper.Count;
+              });
+
+              // This option leverages the ICache<>.PutAll() behaviour. This may cause problems with 
+              // large writes and potential out of memory conditions in data regions reported as bugs to Ignite
+              // PendingTransactedWrites needs to be ordered to safely call PutAll
+              //base.PutAll(PendingTransactedWrites);
             }
 
-            numBytesWritten = _bytesWritten;
+            numBytesWritten = localBytesWritten;
 
             Clear();
         }

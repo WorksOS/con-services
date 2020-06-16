@@ -64,5 +64,9 @@
         /// </summary>
         public const string TAG_FILE_BUFFER_QUEUE_DATA_REGION = "TAGFileBufferQueue";
 
+        /// <summary>
+        /// The data region devoted to managing the spatial segment retirement queue entries
+        /// </summary>
+        public const string SPATIAL_SEGMENT_RETIREMENT_QUEUE_DATA_REGION = "SpatialSegmentRetirementQueue";
     }
 }

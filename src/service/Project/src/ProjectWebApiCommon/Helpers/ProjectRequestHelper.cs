@@ -23,7 +23,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -346,7 +345,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
+    /// Create CoordinateSystem in Raptor and save a copy of the file in DataOcean
     /// </summary>
     ///  todo CCSSSCON-351 cleanup parameters once UpdateProject endpoint has been converted
     public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid,
@@ -355,7 +354,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IHeaderDictionary customHeaders,
       IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
-      IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
+      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
       ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient, ICwsProjectClient cwsProjectClient = null)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
@@ -385,20 +384,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
               (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
               coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
-          }
-
-          //and save copy of file in TCC
-          var fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
-          if (string.IsNullOrEmpty(fileSpaceId))
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
-          }
-
-          using (var ms = new MemoryStream(coordinateSystemFileContent))
-          {
-            await TccHelper.WriteFileToTCCRepository(
-              ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
-              false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
 
           //save copy to DataOcean

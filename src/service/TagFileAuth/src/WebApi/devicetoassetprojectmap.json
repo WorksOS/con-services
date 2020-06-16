@@ -14,14 +14,14 @@
       "radioSerial": "b056da49-5883-48e7-90ad-f25b30ef5b6f",
       "deviceType": "6", // SNM940/torch
       "assetUid": "b00c62b3-4eee-472e-9814-c31379e94bd5",
-      "projectUid": "de856e74-85f4-4573-aa6c-5097448f87b5"
+      "projectUid": "fbcc1f4b-60b8-40b0-a369-9137acec0581"
     },
     {
       "note": "TMC machine",
       "radioSerial": "b242007d-265f-4c99-b78c-dc7462095186",
       "deviceType": "6", // SNM940/torch
       "assetUid": "b242007d-265f-4c99-b78c-dc7462095186",
-      "projectUid": "de856e74-85f4-4573-aa6c-5097448f87b5"
+      "projectUid": "fbcc1f4b-60b8-40b0-a369-9137acec0581"
     }
   ]
 }

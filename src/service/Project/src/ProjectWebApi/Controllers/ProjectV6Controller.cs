@@ -126,8 +126,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
-            Productivity3dV1ProxyCoord, fileRepo: FileRepo,
-            dataOceanClient: DataOceanClient, authn: Authorization,
+            Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult
@@ -215,8 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpdateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
-            Productivity3dV1ProxyCoord,
-            fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
+            Productivity3dV1ProxyCoord, httpContextAccessor: HttpContextAccessor,
             dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient, cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(project)
@@ -255,8 +253,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           RequestExecutorContainerFactory
             .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
               CustomerUid, UserId, null, customHeaders,
-              Productivity3dV1ProxyCoord, fileRepo: FileRepo,
-              dataOceanClient: DataOceanClient, authn: Authorization,
+              Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
               cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
               cwsProfileSettingsClient: CwsProfileSettingsClient)
             .ProcessAsync(data)
@@ -349,8 +346,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
-            Productivity3dV1ProxyCoord, fileRepo: FileRepo,
-            dataOceanClient: DataOceanClient, authn: Authorization,
+            Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(data)
@@ -371,8 +367,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<ProjectChangedExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
-            Productivity3dV1ProxyCoord, fileRepo: FileRepo,
-            dataOceanClient: DataOceanClient, authn: Authorization,
+            Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient, notificationHubClient: NotificationHubClient)
           .ProcessAsync(updateDto)

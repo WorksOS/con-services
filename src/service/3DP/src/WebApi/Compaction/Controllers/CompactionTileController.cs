@@ -23,7 +23,6 @@ using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
-using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -46,19 +45,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IBoundingBoxHelper boundingBoxHelper;
 
     /// <summary>
-    /// Used to talk to TCC
-    /// </summary>
-    private readonly IFileRepository fileRepo;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     public CompactionTileController(
       IConfigurationStore configStore,
-      IFileRepository fileRepo, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
+      IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager, IProductionDataTileService tileService, IBoundingBoxHelper boundingBoxHelper) :
       base(configStore, fileImportProxy, settingsManager)
     {
-      this.fileRepo = fileRepo;
       this.tileService = tileService;
       this.boundingBoxHelper = boundingBoxHelper;
     }

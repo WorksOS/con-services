@@ -31,11 +31,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
-using VSS.Productivity3D.WebApi.Models.Notification.Helpers;
-using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Productivity3D.WebApiModels.Notification.Models;
-using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.TRex.Gateway.Common.Proxy;
 
@@ -69,9 +65,7 @@ namespace VSS.Productivity3D.WebApi
       // CCSSSCON-216 temporary move to real endpoints when available
       services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>("MOCK_CWS_ACCOUNT");
 
-      services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
-      services.AddTransient<ITileGenerator, TileGenerator>();
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
       services.AddScoped<ICompactionSettingsManager, CompactionSettingsManager>();
       services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
@@ -80,9 +74,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ITransferProxyFactory, TransferProxyFactory>();
-      services.AddSingleton<IHostedService, AddFileProcessingService>();
-      services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>) provider.GetServices<IHostedService>()
-                                                                                      .First(service => service.GetType() == typeof(AddFileProcessingService)));
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IRaptorFileUploadUtility, RaptorFileUploadUtility>();
 
@@ -97,26 +88,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ITRexConnectedSiteProxy, TRexConnectedSiteV1Proxy>();
       services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>();
       services.AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>();
-
-      //Disable CAP for now #76666
-      /*
-      var serviceProvider = services.BuildServiceProvider();
-      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      services.AddCap(x =>
-      {
-        x.UseMySql(y =>
-        {
-          y.ConnectionString = configStore.GetConnectionString("VSPDB", "MYSQL_CAP_DATABASE_NAME");
-          y.TableNamePrefix = configStore.GetValueString("MYSQL_CAP_TABLE_PREFIX");
-        });
-        x.UseKafka(z =>
-        {
-          z.Servers = $"{configStore.GetValueString("KAFKA_URI")}:{configStore.GetValueString("KAFKA_PORT")}";
-          z.MainConfig.TryAdd("group.id", configStore.GetValueString("KAFKA_CAP_GROUP_NAME"));
-        });
-        x.UseDashboard(); //View dashboard at http://localhost:5000/cap
-      });
-      */
     }
   }
 }

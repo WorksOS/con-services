@@ -150,7 +150,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
-      var fileRepo = new Mock<IFileRepository>();
       var dataOceanClient = new Mock<IDataOceanClient>();
       var authn = new Mock<ITPaaSApplicationAuthentication>();
 
@@ -160,7 +159,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
           productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object,
           cwsProjectClient: cwsProjectClient.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
@@ -227,7 +226,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
+          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
@@ -282,10 +281,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
 
-      var fileRepo = new Mock<IFileRepository>();
-      fileRepo.Setup(fr => fr.FileExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-
       var dataOceanClient = new Mock<IDataOceanClient>();
       dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
@@ -300,7 +295,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, filterServiceProxy: filterServiceProxy.Object,
-          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
+          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 
@@ -564,10 +559,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
 
-      var fileRepo = new Mock<IFileRepository>();
-      fileRepo.Setup(fr => fr.FileExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-
       var dataOceanClient = new Mock<IDataOceanClient>();
       dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
@@ -582,7 +573,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 
@@ -851,10 +842,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
 
-      var fileRepo = new Mock<IFileRepository>();
-      fileRepo.Setup(fr => fr.FileExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-
       var dataOceanClient = new Mock<IDataOceanClient>();
       dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
@@ -869,7 +856,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 
@@ -938,10 +925,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
       projectRepo.Setup(pr => pr.GetReferencedImportedFiles(It.IsAny<string>())).ReturnsAsync(referenceList);
 
-      var fileRepo = new Mock<IFileRepository>();
-      fileRepo.Setup(fr => fr.FileExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-      fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
-
       var dataOceanClient = new Mock<IDataOceanClient>();
       dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
@@ -956,7 +939,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(deleteImportedFile).ConfigureAwait(false));
     }

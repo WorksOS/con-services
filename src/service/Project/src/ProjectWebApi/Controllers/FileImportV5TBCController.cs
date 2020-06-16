@@ -155,7 +155,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
               .ProcessAsync(createImportedFile)
           ) as ImportedFileDescriptorSingleResult;
@@ -185,7 +185,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
-                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
+                projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
               .ProcessAsync(importedFileUpsertEvent)
           ) as ImportedFileDescriptorSingleResult;

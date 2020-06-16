@@ -71,9 +71,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <summary>
     /// this needs to be public, only for unit tests
     /// </summary>
-    /// <param name="tagDetail"></param>
-    /// <param name="preScanState"></param>
-    /// <returns></returns>
     public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessable(TagFileDetail tagDetail, TAGFilePreScan preScanState)
     {
       /*

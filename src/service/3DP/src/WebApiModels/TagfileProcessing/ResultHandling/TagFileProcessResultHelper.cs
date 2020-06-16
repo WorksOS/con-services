@@ -317,7 +317,13 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
             message: "TFA Processing Error: Manual Import: intersecting Projects found, but not the one requested.",
             type: temporary, continuable: false);
         }
-
+        case TRexTagFileResultCode.TFATagFileInvalidLatLong:
+        {
+          return (code: 37,
+            message: "Trex Processing Error: Unable to determine a tag file seed position.",
+            type: temporary, continuable: false);
+        }
+          
         default:
         {
           return (code: (int)resultCode, message: "Unknown error", type: temporary, continuable: false);

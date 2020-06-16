@@ -11,6 +11,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -123,7 +124,7 @@ namespace TAGFiles.Tests
     {
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, 0, 0, timeOfPosition);
+      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
       var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int) DeviceTypeEnum.MANUALDEVICE, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
@@ -183,7 +184,6 @@ namespace TAGFiles.Tests
       Assert.True(result.Code == 3044, "Failed to return correct error code");
       Assert.Equal("Manual Import: cannot import to a Civil type project", result.Message);
     }
-
 
     [Fact(Skip = "Requires live Ignite node")]
     public void Test_TagFileArchive()

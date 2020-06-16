@@ -19,9 +19,9 @@ namespace VSS.TRex.TAGFiles.Executors
   /// </summary>
   public static class ProcessTAGFilesExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger("ProcessTAGFilesExecutor");
+    private static readonly ILogger _log = Logging.Logger.CreateLogger("ProcessTAGFilesExecutor");
 
-    private static readonly int batchSize = DIContext.Obtain<IConfigurationStore>()
+    private static readonly int _batchSize = DIContext.Obtain<IConfigurationStore>()
       .GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH",
         Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
 
@@ -134,12 +134,12 @@ namespace VSS.TRex.TAGFiles.Executors
 
     public static ProcessTAGFileResponse Execute(Guid projectId, IEnumerable<ProcessTAGFileRequestFileItem> tagFiles)
     {
-      var _tagFiles = tagFiles.ToArray(); // Enumerate collection just once
+      var tagFilesArray = tagFiles.ToArray(); // Enumerate collection just once
 
-      if (_tagFiles.Length == 0)
+      if (tagFilesArray.Length == 0)
         return null;
 
-      Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {_tagFiles.Count()} TAG files into project {projectId}");
+      _log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {tagFilesArray.Length} TAG files into project {projectId}");
 
       var response = new ProcessTAGFileResponse();
 
@@ -159,36 +159,34 @@ namespace VSS.TRex.TAGFiles.Executors
       // into the primary persistent model.
       // TODO: Failure of a single TAG file may result in contamination of the results of previous processed TAG files requiring exclusion of the TAG file in question and reprocessing of the list
 
-      Log.LogInformation($"#Progress# Initiating task based conversion of TAG files into project {projectId}");
+      _log.LogInformation($"#Progress# Initiating task based conversion of TAG files into project {projectId}");
 
       try
       {
         using (var commonConverter = new TAGFileConverter())
         {
-          foreach (var tagFile in _tagFiles)
+          foreach (var tagFile in tagFilesArray)
           {
-            using (var fs = new MemoryStream(tagFile.TagFileContent))
+            using var fs = new MemoryStream(tagFile.TagFileContent);
+            try
             {
-              try
+              commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
+
+              response.Results.Add(new ProcessTAGFileResponseItem
               {
-                commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
+                FileName = tagFile.FileName,
+                AssetUid = tagFile.AssetId,
+                Success = commonConverter.ReadResult == TAGReadResult.NoError
+              });
 
-                response.Results.Add(new ProcessTAGFileResponseItem
-                {
-                  FileName = tagFile.FileName, 
-                  AssetUid = tagFile.AssetId, 
-                  Success = commonConverter.ReadResult == TAGReadResult.NoError
-                });
+              _log.LogInformation(
+                $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId}");
+            }
+            catch (Exception e)
+            {
+              _log.LogError(e, $"Processing of TAG file {tagFile.FileName} failed with exception {e.Message}");
 
-                Log.LogInformation(
-                  $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId}");
-              }
-              catch (Exception e)
-              {
-                Log.LogError(e, $"Processing of TAG file {tagFile.FileName} failed with exception {e.Message}");
-
-                response.Results.Add(new ProcessTAGFileResponseItem {FileName = tagFile.FileName, Success = false, Exception = e.ToString()});
-              }
+              response.Results.Add(new ProcessTAGFileResponseItem {FileName = tagFile.FileName, Success = false, Exception = e.ToString()});
             }
           }
 
@@ -201,14 +199,14 @@ namespace VSS.TRex.TAGFiles.Executors
             commonConverter.MachinesTargetValueChangesAggregator);
         }
 
-        worker.ProcessTask(processedTasks, _tagFiles.Length);
+        worker.ProcessTask(processedTasks, tagFilesArray.Length);
       }
       finally
       {
         worker.CompleteTaskProcessing();
       }
 
-      Log.LogInformation($"#Progress# Completed task based conversion of TAG files into project {projectId}");
+      _log.LogInformation($"#Progress# Completed task based conversion of TAG files into project {projectId}");
 
       return response;
     }
