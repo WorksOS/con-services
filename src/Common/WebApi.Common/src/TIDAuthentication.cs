@@ -211,7 +211,11 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// Do we need to validate that that the user is entitled to make the request
     /// </summary>
-    public virtual bool RequireEntitlementValidation(HttpContext context) => true;
+    public virtual bool RequireEntitlementValidation(HttpContext context) 
+    {
+      // Ignore entitlements for localhost requests (e.g acceptance tests)
+        return string.Compare(context.Request.Host.Host, "localhost", StringComparison.InvariantCultureIgnoreCase) != 0;
+    }
 
     /// <summary>
     /// Creates a TID principal. Override in a service to create custom service principals.
