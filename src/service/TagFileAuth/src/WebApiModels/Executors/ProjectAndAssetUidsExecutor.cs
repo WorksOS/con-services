@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
@@ -120,7 +122,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  For ManualImport we want to maximize ability so don't bother checking deviceStatus?
 
       var intersectingProjects = await dataRepository.GetIntersectingProjectsForManual(project, request.Latitude,
-            request.Longitude, device);
+            request.Longitude, device, request.Northing, request.Easting);
       log.LogDebug(
         $"{nameof(HandleManualImport)}: GotIntersectingProjectsForManual: {JsonConvert.SerializeObject(intersectingProjects)}");
 
@@ -136,14 +138,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     private async Task<GetProjectAndAssetUidsResult> HandleAutoImport(GetProjectAndAssetUidsRequest request,
       DeviceData device)
     {
-      // todoMaaverick do we want to check the device states also ?
-
       var deviceAccountDeviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
       log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded DeviceAccount deviceLicenses? {JsonConvert.SerializeObject(deviceAccountDeviceLicenseTotal)}");
       if (deviceAccountDeviceLicenseTotal < 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 1);
 
-      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, out var errorCode);
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, request.Northing, request.Easting, out var errorCode);
+
       log.LogDebug(
         $"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 

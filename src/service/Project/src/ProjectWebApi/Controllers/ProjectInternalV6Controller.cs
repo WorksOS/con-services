@@ -51,12 +51,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v6/project/intersecting")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsListResult> GetIntersectingProjects(string customerUid,
-      double latitude, double longitude, string projectUid)
+      double latitude, double longitude, string projectUid, double? northing, double? easting)
     {
       Logger.LogInformation($"{nameof(GetIntersectingProjects)}");
-
+      
       var projects = await ProjectRequestHelper.GetIntersectingProjects(
-        customerUid, latitude, longitude, projectUid,
+        customerUid, latitude, longitude, projectUid, northing, easting,
         Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders).ConfigureAwait(false);
       return new ProjectV6DescriptorsListResult
       {

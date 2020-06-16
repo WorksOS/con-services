@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using App.Metrics.Health.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -22,6 +25,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// </summary>
   public class DataRepository : IDataRepository
   {
+    private ILogger _log;
+
     // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
     private readonly ICwsAccountClient _cwsAccountClient;
 
@@ -35,9 +40,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     private IHeaderDictionary _mergedCustomHeaders;
 
-    public DataRepository(ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+    public DataRepository(ILogger log, ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       IHeaderDictionary requestCustomHeaders)
     {
+      _log = log;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
@@ -90,7 +96,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     // manual import, no time, optional device
     public async Task<ProjectDataResult> GetIntersectingProjectsForManual(ProjectData project, double latitude, double longitude,
-      DeviceData device = null)
+      DeviceData device = null, double? northing = null, double? easting = null)
     {
       var accountProjects = new ProjectDataResult();
       if (project == null || string.IsNullOrEmpty(project.ProjectUID))
@@ -98,7 +104,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _mergedCustomHeaders));
+        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, northing, easting, _mergedCustomHeaders));
         // should not be possible to get > 1 as call was limited by the projectUid       
         if (accountProjects?.Code == 0 && accountProjects.ProjectDescriptors.Count() != 1)
           return accountProjects;
@@ -140,7 +146,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// the difference to GetIntersectingProjectsForManual() is that device is required
     ///
     public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device,
-      double latitude, double longitude, out int errorCode)
+      double latitude, double longitude, double? northing, double? easting, out int errorCode)
     {
       errorCode = 0;
       var accountProjects = new ProjectDataResult();
@@ -150,7 +156,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this customer have which intersect the lat/long?
       try
       {
-        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders: _mergedCustomHeaders).Result;
+        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, null, northing, easting, customHeaders: _mergedCustomHeaders).Result;
         if (accountProjects?.Code != 0 || !accountProjects.ProjectDescriptors.Any())
         {
           errorCode = 44;

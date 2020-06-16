@@ -400,7 +400,7 @@ namespace WebApiTests.Executors
   )
     {
       projectProxy.Setup(p => p.GetProject(request.ProjectUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectForProjectUid);
-      projectProxy.Setup(p => p.GetIntersectingProjects(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, It.IsAny<HeaderDictionary>()))
+      projectProxy.Setup(p => p.GetIntersectingProjects(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, null, null, It.IsAny<HeaderDictionary>()))
             .ReturnsAsync(projectListForProjectAccountUid);
       cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(projectAccountUid), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDeviceLicenseResponseModel);
 

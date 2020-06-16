@@ -262,7 +262,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, It.IsAny<HeaderDictionary>())).ReturnsAsync(radioSerialDevice);
       if (radioSerialDevice != null)
       {
-        projectProxy.Setup(p => p.GetIntersectingProjects(radioSerialDevice.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<HeaderDictionary>()))
+        projectProxy.Setup(p => p.GetIntersectingProjects(radioSerialDevice.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, null, null, It.IsAny<HeaderDictionary>()))
           .ReturnsAsync(projectListForRadioSerial);
         deviceProxy.Setup(d => d.GetProjectsForDevice(radioSerialDeviceUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectListForRadioSerial);
         cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(radioSerialcustomerUid), It.IsAny<HeaderDictionary>())).ReturnsAsync(radioSerialDeviceLicenseResponseModel);
@@ -271,7 +271,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, It.IsAny<HeaderDictionary>())).ReturnsAsync(ec520Device);
       if (ec520Device != null)
       {
-        projectProxy.Setup(p => p.GetIntersectingProjects(ec520Device.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<HeaderDictionary>()))
+        projectProxy.Setup(p => p.GetIntersectingProjects(ec520Device.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, null, null, It.IsAny<HeaderDictionary>()))
           .ReturnsAsync(projectListForEC520);
         deviceProxy.Setup(d => d.GetProjectsForDevice(ec520Device.DeviceUID, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectListForEC520);
         cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(ec520Device.CustomerUID), It.IsAny<HeaderDictionary>())).ReturnsAsync(ec520DeviceLicenseResponseModel);

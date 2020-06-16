@@ -57,13 +57,15 @@ namespace VSS.Productivity3D.Project.Proxy
    /// ProjectInternalController gets a list of projects for customer and returns intersecting depending on current rules
    /// </summary>
    public async Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
-        double latitude, double longitude, string projectUid = null, IHeaderDictionary customHeaders = null)
+        double latitude, double longitude, string projectUid = null, double? northing = null, double? easting = null, IHeaderDictionary customHeaders = null)
     {
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("customerUid", customerUid),
           new KeyValuePair<string, string>( "latitude",latitude.ToString()),
           new KeyValuePair<string, string>( "longitude",longitude.ToString()),
-          new KeyValuePair<string, string>( "projectUid",projectUid) };
+          new KeyValuePair<string, string>( "projectUid",projectUid),
+          new KeyValuePair<string, string>( "northing", northing?.ToString()),
+          new KeyValuePair<string, string>( "easting",easting?.ToString()) };
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project/intersecting",
         customerUid, null, customHeaders, queryParameters);
 
