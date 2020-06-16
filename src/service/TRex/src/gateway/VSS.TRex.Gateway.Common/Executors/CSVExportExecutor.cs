@@ -65,13 +65,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
           response?.ResultStatus ?? RequestErrorStatus.FailedToConfigureInternalPipeline);
       }
-
-      var fullFileName = Path.Combine(Path.GetTempPath(), request.FileName);
       var s3FileTransfer = new S3FileTransfer(TransferProxyType.Temporary);
-      s3FileTransfer.WriteFile(fullFileName, request.ProjectUid, out var url);
-      if (File.Exists(fullFileName)) // remove temp file
-        File.Delete(fullFileName);
-      return new CompactionExportResult(url);
+      return new CompactionExportResult(s3FileTransfer.GeneratePreSignedUrl(response.fileName));
     }
 
     /// <summary>
