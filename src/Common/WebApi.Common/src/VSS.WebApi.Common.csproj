@@ -53,6 +53,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\service\Entitlements\Clients\VSS.Productivity3D.Entitlements.Abstractions\VSS.Productivity3D.Entitlements.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\service\Entitlements\Clients\VSS.Productivity3D.Entitlements.Proxy\VSS.Productivity3D.Entitlements.Proxy.csproj" />
     <ProjectReference Include="..\..\..\service\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\..\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj" />
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
