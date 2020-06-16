@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assemblies timestamp="06/16/2020 00:44:33">
+  <assembly name="/build/service/Megalodon/test/UnitTests/bin/Debug/netcoreapp3.1/UnitTests.dll" run-date="2020-06-16" run-time="00:44:33" total="41" passed="41" failed="0" skipped="0" time="0.081" errors="0">
+    <errors />
+    <collection total="3" passed="3" failed="0" skipped="0" name="Test collection for UnitTests.SocketTests" time="0.011">
+      <test name="UnitTests.SocketTests.ParseTestFluentAssertions" type="UnitTests.SocketTests" method="ParseTestFluentAssertions" time="0.0089637" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.SocketTests.CreateSocketManager" type="UnitTests.SocketTests" method="CreateSocketManager" time="0.0018139" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.SocketTests.TestFluentAssertions" type="UnitTests.SocketTests" method="TestFluentAssertions" time="0.0002582" result="Pass">
+        <traits />
+      </test>
+    </collection>
+    <collection total="38" passed="38" failed="0" skipped="0" name="Test collection for UnitTests.TagFileTests" time="0.070">
+      <test name="UnitTests.TagFileTests.ParseValidMSD" type="UnitTests.TagFileTests" method="ParseValidMSD" time="0.0322192" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidSER" type="UnitTests.TagFileTests" method="ParseValidSER" time="0.0005012" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidLHB" type="UnitTests.TagFileTests" method="ParseInValidLHB" time="0.0243189" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidGPM" type="UnitTests.TagFileTests" method="ParseValidGPM" time="0.0001762" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.DictionaryCreated" type="UnitTests.TagFileTests" method="DictionaryCreated" time="0.0021251" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidMTP" type="UnitTests.TagFileTests" method="ParseValidMTP" time="0.0009192" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidHDG" type="UnitTests.TagFileTests" method="ParseValidHDG" time="0.0001752" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidLNB" type="UnitTests.TagFileTests" method="ParseValidLNB" time="0.0001382" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidUTM" type="UnitTests.TagFileTests" method="ParseInValidUTM" time="0.0006368" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidHGT" type="UnitTests.TagFileTests" method="ParseInValidHGT" time="0.0002629" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidUTM" type="UnitTests.TagFileTests" method="ParseValidUTM" time="0.0001487" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidRHB" type="UnitTests.TagFileTests" method="ParseInValidRHB" time="0.0004351" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidLEB" type="UnitTests.TagFileTests" method="ParseInValidLEB" time="0.0002288" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidHGT" type="UnitTests.TagFileTests" method="ParseValidHGT" time="0.0001354" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidLHB" type="UnitTests.TagFileTests" method="ParseValidLHB" time="0.0003065" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidLNB" type="UnitTests.TagFileTests" method="ParseInValidLNB" time="0.0004233" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidRNB" type="UnitTests.TagFileTests" method="ParseValidRNB" time="0.0002634" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInvalidEmptyText" type="UnitTests.TagFileTests" method="ParseInvalidEmptyText" time="0.0002944" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidREB" type="UnitTests.TagFileTests" method="ParseValidREB" time="0.0002660" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidMSD" type="UnitTests.TagFileTests" method="ParseInValidMSD" time="0.0005063" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidRHB" type="UnitTests.TagFileTests" method="ParseValidRHB" time="0.0002213" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidTime" type="UnitTests.TagFileTests" method="ParseInValidTime" time="0.0004230" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidMID" type="UnitTests.TagFileTests" method="ParseValidMID" time="0.0001560" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.CreateTagFileClass" type="UnitTests.TagFileTests" method="CreateTagFileClass" time="0.0001595" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidBOG" type="UnitTests.TagFileTests" method="ParseInValidBOG" time="0.0002640" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidBOG" type="UnitTests.TagFileTests" method="ParseValidBOG" time="0.0002927" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidLEB" type="UnitTests.TagFileTests" method="ParseValidLEB" time="0.0001711" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidLAT" type="UnitTests.TagFileTests" method="ParseInValidLAT" time="0.0002329" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidLON" type="UnitTests.TagFileTests" method="ParseInValidLON" time="0.0003069" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidLON" type="UnitTests.TagFileTests" method="ParseValidLON" time="0.0001354" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidRNB" type="UnitTests.TagFileTests" method="ParseInValidRNB" time="0.0002161" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidGPM" type="UnitTests.TagFileTests" method="ParseInValidGPM" time="0.0002300" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidREB" type="UnitTests.TagFileTests" method="ParseInValidREB" time="0.0003329" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidMTP" type="UnitTests.TagFileTests" method="ParseInValidMTP" time="0.0002847" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidDES" type="UnitTests.TagFileTests" method="ParseValidDES" time="0.0002064" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseInValidHDG" type="UnitTests.TagFileTests" method="ParseInValidHDG" time="0.0003791" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidTime" type="UnitTests.TagFileTests" method="ParseValidTime" time="0.0011860" result="Pass">
+        <traits />
+      </test>
+      <test name="UnitTests.TagFileTests.ParseValidLAT" type="UnitTests.TagFileTests" method="ParseValidLAT" time="0.0001493" result="Pass">
+        <traits />
+      </test>
+    </collection>
+  </assembly>
+</assemblies>

@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using TagFiles;
-using VSS.Common.Abstractions.Configuration;
-using FluentAssertions;
-using Xunit;
 using TagFiles.Common;
+using VSS.Common.Abstractions.Configuration;
+using Xunit;
 
-namespace MegalodonUnitTests
+namespace UnitTests
 {
   public class TagFileTests
   {
@@ -50,7 +50,7 @@ namespace MegalodonUnitTests
     public void ParseValidBOG()
     {
       SetupParser();
-      var res = tagFile.ParseText(TagConstants.CHAR_RS + TagConstants.BLADE_ON_GROUND +"1");
+      var res = tagFile.ParseText(TagConstants.CHAR_RS + TagConstants.BLADE_ON_GROUND + "1");
       res.Should().BeTrue("Valid BOG. Result should be true");
     }
 
