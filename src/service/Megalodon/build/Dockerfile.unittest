@@ -1,0 +1,7 @@
+FROM megalodon-build:latest AS unittest
+ARG SERVICE_PATH
+
+WORKDIR /build
+
+# The test results and coverage files can be copied from the container using 'docker cp'.
+RUN dotnet test $SERVICE_PATH/test/UnitTests/UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=UnitTestResults/Coverage.xml --logger xunit --results-directory $SERVICE_PATH/test/UnitTests/UnitTestResults -nowarn:NU1701

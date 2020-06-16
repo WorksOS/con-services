@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 
-namespace MegalodonUnitTests
+namespace UnitTests
 {
   public class TestingConfig : IConfigurationStore
   {
@@ -53,7 +52,7 @@ namespace MegalodonUnitTests
       if (_config.Count < 1)
         Load();
       var tmp = _config[v];
-      return tmp.ToLower() == "true" ? true : false;  
+      return tmp.ToLower() == "true" ? true : false;
 
     }
 

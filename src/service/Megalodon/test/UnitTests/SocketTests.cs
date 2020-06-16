@@ -1,18 +1,16 @@
-﻿using System;
+﻿using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using TagFiles;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
-using FluentAssertions;
 using Xunit;
 
-namespace MegalodonUnitTests
+namespace UnitTests
 {
   public class SocketTests
   {
- //   private ISocketManager _socketManager;
+    //   private ISocketManager _socketManager;
     private IConfigurationStore _config;
-  //  private readonly ILogger _log;
+    //  private readonly ILogger _log;
 
     [Fact]
     public void CreateSocketManager()
@@ -27,7 +25,7 @@ namespace MegalodonUnitTests
     [Fact]
     public void TestFluentAssertions()
     {
-      string a = "bob";
+      var a = "bob";
       a.Should().StartWith("bo").And.EndWith("ob").And.Contain("o").And.HaveLength(3);
     }
 
@@ -35,7 +33,7 @@ namespace MegalodonUnitTests
     [Fact]
     public void ParseTestFluentAssertions()
     {
-      string a = "bob";
+      var a = "bob";
       a.Should().StartWith("bo").And.EndWith("ob").And.Contain("o").And.HaveLength(3);
     }
 
