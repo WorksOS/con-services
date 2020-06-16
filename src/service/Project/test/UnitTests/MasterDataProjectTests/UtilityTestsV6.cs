@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
@@ -8,7 +9,6 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -26,7 +26,7 @@ namespace VSS.MasterData.ProjectTests
     {
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid().ToString(),
-        ProjectType.Standard, "projectName", "NZ whatsup",
+        CwsProjectType.AcceptsTagFiles, "projectName", "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
        null, null);
 
@@ -49,7 +49,7 @@ namespace VSS.MasterData.ProjectTests
     public void MapUpdateProjectRequestToEvent()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, "projectName", "csName", new byte[] { 1, 2, 3 }, null);
+      (Guid.NewGuid(), CwsProjectType.AcceptsTagFiles, "projectName", "csName", new byte[] { 1, 2, 3 }, null);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       Assert.Equal(request.ProjectUid, updateProjectEvent.ProjectUID);
@@ -72,7 +72,7 @@ namespace VSS.MasterData.ProjectTests
       var project = new ProjectDatabaseModel
       {
         ProjectUID = Guid.NewGuid().ToString(),
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Name = "the Name",
         ProjectTimeZone = "NZ stuff",
         ProjectTimeZoneIana = "Pacific stuff",

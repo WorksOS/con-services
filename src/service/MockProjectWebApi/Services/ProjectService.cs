@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using MockProjectWebApi.Utils;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Services
 {
@@ -31,7 +31,7 @@ namespace MockProjectWebApi.Services
         new ProjectData {ProjectUID = "b14bb927-3c10-47b2-b958-4ce7aabbc594", ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
         new ProjectData {
           ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID,
-          ProjectType = ProjectType.Standard,
+          ProjectType = CwsProjectType.AcceptsTagFiles,
           Name = "DimensionsProject",
           ProjectTimeZone = "Pacific Standard Time",
           IanaTimeZone = "America/Los_Angeles",
@@ -78,7 +78,7 @@ namespace MockProjectWebApi.Services
         new ProjectData
         {
           ProjectUID = ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID,
-          ProjectType = ProjectType.Standard,
+          ProjectType = CwsProjectType.AcceptsTagFiles,
           ProjectTimeZone = "New Zealand Standard Time",
           IsArchived = false
         },
@@ -89,13 +89,13 @@ namespace MockProjectWebApi.Services
         //},
         new ProjectData {
           ProjectUID = "b7f4af55-2fdb-4878-b3d0-ce748d5dde08",
-          ProjectType = ProjectType.Standard,
+          ProjectType = CwsProjectType.AcceptsTagFiles,
           IsArchived = true
         },
         new ProjectData
         {
           ProjectUID = "0583c019-f92a-4762-94c1-ad13a98ecab6",
-          ProjectType = ProjectType.Standard,
+          ProjectType = CwsProjectType.AcceptsTagFiles,
           Name = "Kettlewell Drive - Golden DS",
           ProjectGeofenceWKT = "POLYGON((172.437121306867 -43.5121438699137,172.438280021162 -43.5160497338425,172.442228232831 -43.5154584240685,172.44089785716 -43.5114747124825,172.437121306867 -43.5121438699137))",
           ProjectTimeZone = "New Zealand Standard Time",

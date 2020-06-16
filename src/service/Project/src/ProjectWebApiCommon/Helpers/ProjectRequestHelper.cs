@@ -23,7 +23,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -109,8 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           ProjectUID = project.ProjectId,
           CustomerUID = project.AccountId,
           Name = project.ProjectName,
-          ProjectType = ProjectType.Standard,
-          CwsProjectType = project.ProjectType,
+          ProjectType = project.ProjectType,
           UserProjectRole = project.UserProjectRole,
           ProjectTimeZone = project.ProjectSettings != null ? PreferencesTimeZones.IanaToWindows(project.ProjectSettings.TimeZone) : string.Empty,
           ProjectTimeZoneIana = project.ProjectSettings?.TimeZone,
@@ -230,7 +228,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
-        .Where(p => !p.IsArchived && p.CwsProjectType == CwsProjectType.AcceptsTagFiles &&
+        .Where(p => !p.IsArchived && p.ProjectType == CwsProjectType.AcceptsTagFiles &&
                     (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
 
       // return once we find any overlapping projects

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -16,7 +17,6 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests.Executors
 {
@@ -41,7 +41,7 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
 
@@ -83,7 +83,7 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
 
@@ -124,7 +124,7 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
 
@@ -166,7 +166,7 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
 
@@ -208,7 +208,7 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid,
         IsArchived = true
       };
@@ -251,7 +251,7 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
 
@@ -293,7 +293,7 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
 
@@ -336,13 +336,13 @@ namespace WebApiTests.Executors
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
       var projectOfInterest2 = new ProjectData
       {
         ProjectUID = Guid.NewGuid().ToString(),
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid
       };
 

@@ -3,9 +3,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TestUtility;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace IntegrationTests.WebApiTests
@@ -34,7 +34,7 @@ namespace IntegrationTests.WebApiTests
       var serialized = JsonConvert.SerializeObject(_boundaryLL);
       Assert.Equal(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized);
 
-      var response = await CreateProjectV5TBC(ts, "project 1", ProjectType.Standard);
+      var response = await CreateProjectV5TBC(ts, "project 1", CwsProjectType.AcceptsTagFiles);
       var createProjectV5Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
 
       Assert.Equal(HttpStatusCode.Created, createProjectV5Result.Code);
@@ -61,7 +61,7 @@ namespace IntegrationTests.WebApiTests
       return JsonConvert.DeserializeObject<ReturnSuccessV5Result>(response);
     }
 
-    private static Task<string> CreateProjectV5TBC(TestSupport ts, string projectName, ProjectType projectType)
+    private static Task<string> CreateProjectV5TBC(TestSupport ts, string projectName, CwsProjectType projectType)
     {
       return ts.CreateProjectViaWebApiV5TBC(projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, _boundaryLL);
     }
