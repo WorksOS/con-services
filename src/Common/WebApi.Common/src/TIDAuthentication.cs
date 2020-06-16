@@ -13,6 +13,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
+using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
 
 namespace VSS.WebApi.Common
 {
@@ -25,6 +27,7 @@ namespace VSS.WebApi.Common
     protected readonly ILogger<TIDAuthentication> log;
     private readonly ICwsAccountClient accountClient;
     private readonly IConfigurationStore store;
+    private readonly IEntitlementProxy _entitlementProxy;
 
     protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/" };
 
@@ -40,12 +43,14 @@ namespace VSS.WebApi.Common
       ICwsAccountClient accountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
+      IEntitlementProxy entitlementProxy,
       IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<TIDAuthentication>();
       this.accountClient = accountClient;
       _next = next;
       this.store = store;
+      _entitlementProxy = entitlementProxy;
       ServiceExceptionHandler = serviceExceptionHandler;
     }
 
@@ -147,6 +152,27 @@ namespace VSS.WebApi.Common
               await SetResult(error, context);
               return;
             }
+
+            // do we need to check entitlements? If so, this will call out to an another service to check.
+            if (RequireEntitlementValidation(context))
+            {
+              var entitlementRequest = new EntitlementRequestModel()
+              {
+                Feature = DefaultEntitlementFeature, 
+                OrganizationIdentifier = customerUid, 
+                UserEmail = userEmail
+              };
+
+              var result = await _entitlementProxy.IsEntitled(entitlementRequest, customHeaders);
+              if (result == null || !result.IsEntitled)
+              {
+                log.LogWarning($"No entitlement for the request");
+                await SetResult($"User is not entitled to use feature `{DefaultEntitlementFeature}`", context);
+                return;
+              }
+
+              log.LogInformation($"User is entitled to use feature `{DefaultEntitlementFeature}`");
+            }
             customerName = customer.Name;
           }
           catch (Exception e)
@@ -170,6 +196,8 @@ namespace VSS.WebApi.Common
       await _next.Invoke(context);
     }
 
+    public virtual string DefaultEntitlementFeature => "worksos";
+
     /// <summary>
     /// If true, bypasses authentication. Override in a service if required.
     /// </summary>
@@ -179,6 +207,11 @@ namespace VSS.WebApi.Common
     /// If true, the customer-user association is validated. Override in a service if required.
     /// </summary>
     public virtual bool RequireCustomerUid(HttpContext context) => true;
+
+    /// <summary>
+    /// Do we need to validate that that the user is entitled to make the request
+    /// </summary>
+    public virtual bool RequireEntitlementValidation(HttpContext context) => true;
 
     /// <summary>
     /// Creates a TID principal. Override in a service to create custom service principals.
