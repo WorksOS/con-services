@@ -84,11 +84,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           if (deleteImportedFile.ImportedFileType != ImportedFileType.ReferenceSurface)
           {
-            await TccHelper.DeleteFileFromTCCRepository
-              (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(),
-                log, serviceExceptionHandler, fileRepo)
-              .ConfigureAwait(false);
-
             var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(deleteImportedFile.FileDescriptor.FileName,
               deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff,
               deleteImportedFile.ImportedFileUid, deleteImportedFile.SurveyedUtc);

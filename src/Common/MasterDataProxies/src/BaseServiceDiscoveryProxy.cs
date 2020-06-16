@@ -203,10 +203,10 @@ namespace VSS.MasterData.Proxies
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
-      customHeaders.StripHeaders(IsInsideAuthBoundary);
+      var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
       var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
-      var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
+      var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, strippedHeaders, streamPayload)).ReadAsStreamAsync();
       BaseProxyHealthCheck.SetStatus(true, GetType());
       return result;
     }
@@ -216,9 +216,9 @@ namespace VSS.MasterData.Proxies
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
-      customHeaders.StripHeaders(IsInsideAuthBoundary);
+      var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method, retries: retries);
+      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: strippedHeaders, method: method, retries: retries);
       log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
 
       return result;
@@ -229,9 +229,9 @@ namespace VSS.MasterData.Proxies
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
-      customHeaders.StripHeaders(IsInsideAuthBoundary);
+      var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<T>(url, payload: payload, customHeaders: customHeaders, method: method);
+      var result = await webRequest.ExecuteRequest<T>(url, payload: payload, customHeaders: strippedHeaders, method: method);
       log.LogDebug($"{nameof(RequestAndReturnResult)} Result: {JsonConvert.SerializeObject(result)}");
 
       return result;
@@ -242,9 +242,9 @@ namespace VSS.MasterData.Proxies
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
-      customHeaders.StripHeaders(IsInsideAuthBoundary);
+      var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      await webRequest.ExecuteRequest(url, payload: payload, customHeaders: customHeaders, method: method);
+      await webRequest.ExecuteRequest(url, payload: payload, customHeaders: strippedHeaders, method: method);
     }
 
     #endregion

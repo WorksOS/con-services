@@ -13,18 +13,15 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
   public class SegmentRetirementQueueItemHandler
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueItemHandler>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SegmentRetirementQueueItemHandler>();
 
-    private static readonly bool ReportDetailedSegmentRetirementActivityToLog = false;
+    private static readonly bool _reportDetailedSegmentRetirementActivityToLog = false;
 
     /// <summary>
     /// Takes a set of segment retirees and removes them from grid storage in both the mutable grid (the 'local' grid) and
     /// the immutable grid (that it is a client of).
     /// Once items are successfully removed from storage (or are no longer contained in storage) they are removed from the retirement queue.
     /// </summary>
-    /// <param name="storageProxy"></param>
-    /// <param name="cache"></param>
-    /// <param name="retirees"></param>
     public bool Process(IStorageProxy storageProxy, ICache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem> cache, IEnumerable<SegmentRetirementQueueItem> retirees)
     {
       try
@@ -37,19 +34,19 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         // Process all entries in the retirees list, removing each in turn from the cache.
         if (cache == null)
         {
-          Log.LogError($"Cache supplied to segment retirement queue processor is null. {retirees.Count()} retirement groups are pending removal. Aborting");
+          _log.LogError($"Cache supplied to segment retirement queue processor is null. {retirees.Count()} retirement groups are pending removal. Aborting");
           return false;
         }
 
         if (retirees == null)
         {
-          Log.LogError("Retirees list supplied to segment retirement queue processor is null. Aborting");
+          _log.LogError("Retirees list supplied to segment retirement queue processor is null. Aborting");
           return false;
         }
 
         if (storageProxy.ImmutableProxy == null)
         {
-          Log.LogError("Immutable proxy not available in provided storage proxy. Aborting");
+          _log.LogError("Immutable proxy not available in provided storage proxy. Aborting");
           return false;
         }
 
@@ -60,50 +57,50 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
           if (group == null)
           {
-            Log.LogError("Retirees list supplied to segment retirement queue processor contains null items. Aborting");
+            _log.LogError("Retirees list supplied to segment retirement queue processor contains null items. Aborting");
             return false;
           }
 
           if (group.SegmentKeys == null || group.SegmentKeys.Length == 0)
           {
-            Log.LogError("Retiree groups segment keys list is null or empty. Aborting");
+            _log.LogError("Retiree groups segment keys list is null or empty. Aborting");
             return false;
           }
 
           count += group.SegmentKeys.Length;
 
-          Log.LogInformation($"Retiring a group containing {group.SegmentKeys.Length} keys");
+          _log.LogInformation($"Retiring a group containing {group.SegmentKeys.Length} keys");
           foreach (var key in group.SegmentKeys)
           {
-            if (ReportDetailedSegmentRetirementActivityToLog)
-              Log.LogInformation($"About to retire {key}");
+            if (_reportDetailedSegmentRetirementActivityToLog)
+              _log.LogInformation($"About to retire {key}");
 
             if (!spatialSegmentCache.Remove(key))
             {
-              Log.LogError($"Mutable segment retirement cache removal for {key} returned false, aborting");
+              _log.LogError($"Mutable segment retirement cache removal for {key} returned false, aborting");
               return false;
             }
 
             if (!spatialImmutableSegmentCache.Remove(key))
             {
-              Log.LogError($"Immutable segment retirement cache removal for {key} returned false, aborting");
+              _log.LogError($"Immutable segment retirement cache removal for {key} returned false, aborting");
               return false;
             }
           }
         }
 
-        Log.LogInformation($"Prepared {count} retirees for removal in {sw.Elapsed}");
+        _log.LogInformation($"Prepared {count} retirees for removal in {sw.Elapsed}");
 
         sw = Stopwatch.StartNew();        
 
         // Commit all the deletes for this retiree group
         if (storageProxy.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten))
         {
-          Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {sw.Elapsed}");
+          _log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {sw.Elapsed}");
         }
         else
         {
-          Log.LogInformation("Segment retirement commit failed");
+          _log.LogInformation("Segment retirement commit failed");
           return false;
         }
 
@@ -111,7 +108,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception thrown while retiring segments:");
+        _log.LogError(e, "Exception thrown while retiring segments:");
         throw;
       }
     }

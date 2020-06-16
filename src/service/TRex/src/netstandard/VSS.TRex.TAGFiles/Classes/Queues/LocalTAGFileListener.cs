@@ -9,15 +9,15 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class LocalTAGFileListener : ICacheEntryEventListener<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<LocalTAGFileListener>();
+        private static readonly ILogger _log = Logging.Logger.CreateLogger<LocalTAGFileListener>();
 
-        public readonly TAGFileBufferQueueItemHandler handler;
+        private readonly TAGFileBufferQueueItemHandler _handler;
 
-        private bool OutputInformationalMessagesToLog = false;
+        private bool _outputInformationalMessagesToLog = false;
 
         public LocalTAGFileListener(TAGFileBufferQueueItemHandler handler)
         {
-            this.handler = handler;
+            this._handler = handler;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             // to acquire them. 
 
             // Log.LogInformation("About to add TAG file items to the grouper");
-            int countOfCreatedEvents = 0;
+            var countOfCreatedEvents = 0;
 
             foreach (var evt in events)
             {
@@ -42,20 +42,20 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 countOfCreatedEvents++;
                 try
                 {
-                    handler.Add(evt.Key);
-                    if (OutputInformationalMessagesToLog)
-                      Log.LogInformation($"#Progress# Added TAG file item [{evt.Key}] to the grouper");
+                    _handler.Add(evt.Key);
+                    if (_outputInformationalMessagesToLog)
+                      _log.LogInformation($"#Progress# Added TAG file item [{evt.Key}] to the grouper");
                 }
                 catch (Exception e)
                 {
-                    Log.LogError(e, $"Exception occurred adding TAG file item {evt.Key} to the grouper");
+                    _log.LogError(e, $"Exception occurred adding TAG file item {evt.Key} to the grouper");
                 }
             }
 
             if (countOfCreatedEvents > 0)
             {
-              if (OutputInformationalMessagesToLog)
-                Log.LogInformation($"#Progress# Added {countOfCreatedEvents} TAG file items to the grouper");
+              if (_outputInformationalMessagesToLog)
+                _log.LogInformation($"#Progress# Added {countOfCreatedEvents} TAG file items to the grouper");
             }
         }
     }

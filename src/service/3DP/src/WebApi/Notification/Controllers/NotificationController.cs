@@ -17,18 +17,13 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 #if RAPTOR
 using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 #endif
-using VSS.Productivity3D.WebApi.Models.Services;
-using VSS.Productivity3D.WebApiModels.Notification.Models;
-using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Notification.Controllers
@@ -57,19 +52,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// Used to talk to TCC
-    /// </summary>
-    private readonly IFileRepository fileRepo;
-
-    /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     private readonly IConfigurationStore configStore;
-    /// <summary>
-    /// For handling DXF tiles
-    /// </summary>
-    private readonly ITileGenerator tileGenerator;
-
+   
     /// <summary>
     /// For getting imported files for a project
     /// </summary>
@@ -122,9 +108,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger,
-      IFileRepository fileRepo, IConfigurationStore configStore,
-      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileImportProxy fileImportProxy,
+      ILoggerFactory logger, IConfigurationStore configStore,
+      IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
       IFilterServiceProxy filterServiceProxy, IProjectProxy projectProxy, IDataCache dataCache)
     {
 #if RAPTOR
@@ -132,9 +117,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
 #endif
       this.logger = logger;
       log = logger.CreateLogger<NotificationController>();
-      this.fileRepo = fileRepo;
       this.configStore = configStore;
-      this.tileGenerator = tileGenerator;
       this.fileImportProxy = fileImportProxy;
       this.filterServiceProxy = filterServiceProxy;
       this.dataCache = dataCache;
@@ -151,7 +134,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
     /// <param name="dxfUnitsType">A DXF file units type</param>
-    /// <param name="fileQueue"></param>
     [ProjectVerifier]
     [Route("api/v2/notification/addfile")]
     [HttpGet]
@@ -161,61 +143,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId,
-      [FromQuery] DxfUnitsType dxfUnitsType,
-      [FromServices] IEnqueueItem<ProjectFileDescriptor> fileQueue)
+      [FromQuery] DxfUnitsType dxfUnitsType)
     {
       log.LogDebug($"{nameof(GetAddFile)}: " + Request.QueryString);
       var customHeaders = Request.Headers.GetCustomHeaders();
-
-      if (fileType != ImportedFileType.ReferenceSurface)
-      {
-        var projectDescr = await ((RaptorPrincipal)User).GetProject(projectUid);
-        string coordSystem = projectDescr.CoordinateSystemFileName;
-        var fileDes = GetFileDescriptor(fileDescriptor);
-
-        if (fileType == ImportedFileType.Alignment)
-        {
-          var preferences = await userPreferences.GetUserPreferences(Request.Headers.GetCustomHeaders());
-          if (preferences == null)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                "Failed to retrieve preferences for current user"));
-          }
-
-          var units = preferences.Units.UnitsType();
-
-          switch (units)
-          {
-            case UnitsTypeEnum.Metric:
-              dxfUnitsType = DxfUnitsType.Meters;
-              break;
-            case UnitsTypeEnum.Imperial:
-              dxfUnitsType = DxfUnitsType.ImperialFeet;
-              break;
-            case UnitsTypeEnum.US:
-              dxfUnitsType = DxfUnitsType.UsSurveyFeet;
-              break;
-          }
-        }
-
-        var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
-          projectDescr.ShortRaptorProjectId,
-          projectUid, fileDes,
-          coordSystem,
-          dxfUnitsType,
-          fileId,
-          fileType,
-          fileUid,
-          userEmailAddress
-        );
-
-        request.Validate();
-        /*var executor = RequestExecutorContainerFactory.Build<AddFileExecutor>(logger, RaptorClient, null, configStore, fileRepo, tileGenerator);
-        var result = await executor.ProcessAsync(request) as Models.Notification.Models.AddFileResult;*/
-        //Instead, leverage the service
-        fileQueue.EnqueueItem(request);
-      }
 
       //Do we need to validate fileUid ?
       await ClearFilesCaches(projectUid, customHeaders);
@@ -272,7 +203,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         request.Validate();
 
         var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null,
-          configStore, fileRepo, tileGenerator);
+          configStore, fileRepo);
         result = await executor.ProcessAsync(request);
       }
 

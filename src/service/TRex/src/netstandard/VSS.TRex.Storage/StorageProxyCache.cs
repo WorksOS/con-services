@@ -63,22 +63,22 @@ namespace VSS.TRex.Storage
     public virtual TV Get(TK key) => _cache.Get(key);
 
     public virtual Task<TV> GetAsync(TK key) => _cache.GetAsync(key);
-    public bool TryGet(TK key, out TV value) => _cache.TryGet(key, out value);
+    public virtual bool TryGet(TK key, out TV value) => _cache.TryGet(key, out value);
 
-    public Task<CacheResult<TV>> TryGetAsync(TK key) => _cache.TryGetAsync(key);
+    public virtual Task<CacheResult<TV>> TryGetAsync(TK key) => _cache.TryGetAsync(key);
 
     public virtual bool Remove(TK key) => _cache.Remove(key);
-    public Task<bool> RemoveAsync(TK key) => _cache.RemoveAsync(key);
+    public virtual Task<bool> RemoveAsync(TK key) => _cache.RemoveAsync(key);
 
     public virtual void RemoveAll(IEnumerable<TK> keys) => _cache.RemoveAll(keys);
-    public Task RemoveAllAsync(IEnumerable<TK> keys) => _cache.RemoveAllAsync(keys);
+    public virtual Task RemoveAllAsync(IEnumerable<TK> keys) => _cache.RemoveAllAsync(keys);
 
     public virtual Task PutAsync(TK key, TV value) => _cache.PutAsync(key, value);
 
     public virtual void Put(TK key, TV value) => _cache.Put(key, value);
 
     public virtual void PutAll(IEnumerable<KeyValuePair<TK, TV>> values) => _cache.PutAll(values);
-    public Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> values) => _cache.PutAllAsync(values);
+    public virtual Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> values) => _cache.PutAllAsync(values);
 
     public virtual ICacheLock Lock(TK key) => _cache.Lock(key);
   }

@@ -10,9 +10,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.Common.Interfaces
@@ -53,16 +51,6 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     protected IConfigurationStore configStore;
-
-    /// <summary>
-    /// To talk to TCC with
-    /// </summary>
-    protected IFileRepository fileRepo;
-
-    /// <summary>
-    /// For handling DXF tiles
-    /// </summary>
-    protected ITileGenerator tileGenerator;
 
     /// <summary>
     /// For handling imported files
@@ -177,7 +165,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       IASNodeClient raptorClient,
       ITagProcessor tagProcessor,
 #endif
-      IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
+      IConfigurationStore configStore, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
       ITransferProxyFactory transferProxyFactory, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
       IHeaderDictionary customHeaders, string customerUid)
     {
@@ -188,8 +176,6 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.tagProcessor = tagProcessor;
 #endif
       this.configStore = configStore;
-      this.fileRepo = fileRepo;
-      this.tileGenerator = tileGenerator;
       this.fileList = fileList;
       this.profileResultHelper = profileResultHelper;
       this.transferProxyFactory = transferProxyFactory;

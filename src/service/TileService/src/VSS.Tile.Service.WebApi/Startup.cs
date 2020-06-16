@@ -21,7 +21,6 @@ using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
-using VSS.TCCFileAccess;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Interfaces;
@@ -77,8 +76,6 @@ namespace VSS.Tile.Service.WebApi
 
       services.AddSingleton<IProjectProxy, ProjectV6Proxy>();
       services.AddSingleton<IFileImportProxy, FileImportV6Proxy>();
-
-      services.AddSingleton<IFileRepository, FileRepository>();
 
       services.AddSingleton<CacheInvalidationService>();
 

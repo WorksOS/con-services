@@ -32,7 +32,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
   /// </summary>
   public class MutableCacheComputeServer : IgniteServer
   {
-    private static readonly ILogger Log = Logger.CreateLogger<MutableCacheComputeServer>();
+    private static readonly ILogger _log = Logger.CreateLogger<MutableCacheComputeServer>();
 
     /// <summary>
     /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
@@ -40,7 +40,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     /// </summary>
     public MutableCacheComputeServer()
     {
-      Log.LogDebug($"PersistentCacheStoreLocation is: {TRexServerConfig.PersistentCacheStoreLocation}");
+      _log.LogDebug($"PersistentCacheStoreLocation is: {TRexServerConfig.PersistentCacheStoreLocation}");
       if (mutableTRexGrid == null)
       {
         StartTRexGridCacheNode();
@@ -97,9 +97,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.CacheConfiguration = new List<CacheConfiguration>();
 
-      Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
-      Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
-      Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
+      _log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
+      _log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
+      _log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
 
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
@@ -128,7 +128,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         Serializer = new BinarizableSerializer()
       }; 
 
-      bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+      bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out var isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
       cfg.WorkDirectory = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable");
     }
@@ -289,7 +289,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       var cfg = new IgniteConfiguration();
       ConfigureTRexGrid(cfg);
 
-      Log.LogInformation($"Creating new Ignite node for {cfg.IgniteInstanceName}");
+      _log.LogInformation($"Creating new Ignite node for {cfg.IgniteInstanceName}");
 
       try
       {
@@ -297,7 +297,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       }
       finally
       {
-        Log.LogInformation($"Completed creation of new Ignite node: Exists = {mutableTRexGrid != null}, Factory available = {DIContext.Obtain<ITRexGridFactory>() != null}");
+        _log.LogInformation($"Completed creation of new Ignite node: Exists = {mutableTRexGrid != null}, Factory available = {DIContext.Obtain<ITRexGridFactory>() != null}");
       }
 
       // Wait until the grid is active

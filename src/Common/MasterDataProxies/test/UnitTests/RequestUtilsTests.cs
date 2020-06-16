@@ -25,7 +25,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         { HeaderConstants.X_VISION_LINK_CUSTOMER_UID, _precomputedTestValue }
       };
 
-      headers.StripHeaders();
+      headers = headers.StripHeaders() as HeaderDictionary;
 
       Assert.Equal(_precomputedTestValue, headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID]);
     }
@@ -46,7 +46,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         { key.ToUpper(), _precomputedTestValue }
       };
 
-      headers.StripHeaders();
+      headers = headers.StripHeaders() as HeaderDictionary;
 
       Assert.True(headers.ContainsKey(key.ToUpper()));
     }
@@ -69,7 +69,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         { key, _precomputedTestValue }
       };
 
-      headers.StripHeaders();
+      headers = headers.StripHeaders() as HeaderDictionary;
 
       Assert.False(headers.ContainsKey(key));
       Assert.True(headers.ContainsKey(HeaderConstants.AUTHORIZATION));
@@ -100,7 +100,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         { key, _precomputedTestValue }
       };
 
-      headers.StripHeaders(false);
+      headers = headers.StripHeaders(false) as HeaderDictionary;
 
       Assert.False(headers.ContainsKey(key));
       Assert.True(headers.ContainsKey(HeaderConstants.AUTHORIZATION));
@@ -130,7 +130,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         { key, _precomputedTestValue }
       };
 
-      headers.StripHeaders();
+      headers = headers.StripHeaders() as HeaderDictionary;
 
       Assert.True(headers.ContainsKey(key));
     }
@@ -152,7 +152,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         { key, _precomputedTestValue }
       };
 
-      headers.StripHeaders(false);
+      headers = headers.StripHeaders(false) as HeaderDictionary;
 
       Assert.Empty(headers);
     }

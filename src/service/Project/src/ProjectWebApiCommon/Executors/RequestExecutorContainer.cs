@@ -82,11 +82,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IProjectRepository projectRepo;
 
     /// <summary>
-    /// Repository factory used for accessing files in TCC (at present)
-    /// </summary>
-    protected IFileRepository fileRepo;
-
-    /// <summary>
     /// Context of the API call
     /// </summary>
     protected IHttpContextAccessor httpContextAccessor;
@@ -174,7 +169,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxyFactory persistantTransferProxyFactory = null, IFilterServiceProxy filterServiceProxy = null,
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
-      IFileRepository fileRepo = null, IHttpContextAccessor httpContextAccessor = null,
+      IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
@@ -195,7 +190,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
-      this.fileRepo = fileRepo;
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
       this.authn = authn;
