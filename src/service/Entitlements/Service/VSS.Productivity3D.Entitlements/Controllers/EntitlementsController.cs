@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
+using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
 using VSS.Productivity3D.Entitlements.Authentication;
-using VSS.Productivity3D.Entitlements.Common.Models.Request;
-using VSS.Productivity3D.Entitlements.Common.Models.Response;
 
 namespace VSS.Productivity3D.Entitlements.Controllers
 {
@@ -67,7 +67,13 @@ namespace VSS.Productivity3D.Entitlements.Controllers
       if(string.Compare(request.Feature, "worksos", StringComparison.InvariantCultureIgnoreCase) != 0)
         return StatusCode((int) HttpStatusCode.Forbidden);
 
-      var response = EntitlementResponseModel.Ok();
+      var response = new EntitlementResponseModel
+      {
+        Feature = request.Feature, 
+        IsEntitled = true, 
+        OrganizationIdentifier = request.OrganizationIdentifier, 
+        UserEmail = request.UserEmail
+      };
 
       _logger.LogInformation($"Generated Entitlements Response: {JsonConvert.SerializeObject(response)}");
 

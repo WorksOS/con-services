@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\..\..\VSS.Productivity3D.Entitlements.Common\VSS.Productivity3D.Entitlements.Common.csproj" />
   </ItemGroup>
 
 </Project>
