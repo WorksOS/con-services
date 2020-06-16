@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Entitlements.Proxy
       {
         try
         {
-          var result = await GetMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserEmail, customHeaders);
+          var result = await PostMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserEmail, customHeaders);
           if (result == null)
           {
             log.LogInformation($"No Entitlement returned from the Entitlement Service, returned a failed entitlement request to the caller.");
