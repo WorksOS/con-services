@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Utils;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
@@ -37,7 +38,7 @@ namespace MockProjectWebApi.Controllers
         return new ProjectDataListResult()
         {
           ProjectDescriptors = new List<ProjectData>()
-            {new ProjectData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID, IsArchived = false}}
+            {new ProjectData {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID, IsArchived = false, ProjectType = CwsProjectType.AcceptsTagFiles}}
         };
 
       return new ProjectDataListResult(code: 105, message: "Unable to locate projects for device in cws");
