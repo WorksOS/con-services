@@ -25,6 +25,7 @@ $services = @{
     FileAccess = 'service/FileAccess'
     Mock       = 'service/MockProjectWebApi'
     Push       = 'service/Push'
+    Megalodon  = 'service/Megalodon'
 }
 
 $servicePath = ''

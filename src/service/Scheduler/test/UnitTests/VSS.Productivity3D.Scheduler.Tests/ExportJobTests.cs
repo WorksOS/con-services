@@ -79,50 +79,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
     }
 
     [TestMethod]
-    [DataRow("Export Success")]
-    public void CanGetUpdatedFilename(string message)
-    {
-      // We will say our filename is named something different to the content type, and make sure the export function gives us back the correct file name
-
-      const string extension = ".json";
-      const string contentType = ContentTypeConstants.ApplicationJson;
-      var customHeaders = new HeaderDictionary();
-
-      var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy.mp3" };
-      var expectedFilename = scheduleRequest.Filename + extension;
-
-      var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(scheduleRequest)));
-      var fileStreamResult = new FileStreamResult(ms, ContentTypeConstants.ApplicationJson);
-
-      var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
-
-      Mock<IApiClient> apiClient = new Mock<IApiClient>();
-
-      var apiresult = new StringContent("some content", Encoding.UTF8, contentType);
-
-
-      apiClient.Setup(a => a.SendRequest(It.IsAny<ScheduleJobRequest>(), customHeaders)).ReturnsAsync(apiresult);
-
-      Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
-      transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
-        .Returns((Stream stream, string filename, string ct) => filename + ".json"); // Match the filename to the content type for testings
-      transferProxy.Setup(t => t.Download(It.IsAny<string>())).Returns(() => Task.FromResult(fileStreamResult));
-
-      Mock<ITransferProxyFactory> transferProxyFactory = new Mock<ITransferProxyFactory>();
-      transferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(transferProxy.Object);
-
-      Mock<Logging.ILoggerFactory> logger = new Mock<Logging.ILoggerFactory>();
-
-      var exportJob = new ExportJob(apiClient.Object, transferProxyFactory.Object, logger.Object);
-
-      exportJob.GetExportData(Guid.NewGuid(), customHeaders, context).Wait();
-
-      var key = JobStorage.Current.GetConnection().GetJobParameter(context.BackgroundJob.Id, ExportJob.S3_KEY_STATE_KEY);
-      Assert.AreEqual(key, ExportJob.GetS3Key(context.BackgroundJob.Id, expectedFilename));
-      ms.Dispose();
-    }
-
-    [TestMethod]
     [DataRow("BadRequest {\"Code\":2002,\"Message\":\"Failed to get requested export data with error: No data for export\"}")]
     [DataRow("InternalServerError Some general exception message")]
     public async Task CanGetExportDataFailure(string message)

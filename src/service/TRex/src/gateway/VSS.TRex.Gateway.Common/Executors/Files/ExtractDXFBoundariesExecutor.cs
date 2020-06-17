@@ -62,7 +62,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
         return new DXFBoundaryResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success",
           boundaries.Boundaries.Select(x =>
             new DXFBoundaryResultItem(x.Boundary.Points.Select(pt =>
-              new WGSPoint(pt.X, pt.Y)).ToList(), x.Type, x.Name)).ToList());
+              new WGSPoint(pt.Y, pt.X)).ToList(), x.Type, x.Name)).ToList());
       }
 
       if (string.IsNullOrEmpty(coordinateSystemFileData))

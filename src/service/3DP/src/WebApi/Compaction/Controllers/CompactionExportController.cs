@@ -194,7 +194,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
     [HttpGet("api/v2/export/veta")]
-    public async Task<FileResult> GetExportReportVeta(
+    public async Task<CompactionExportResult> GetExportReportVeta(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] string machineNames,
@@ -249,14 +249,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             customHeaders: CustomHeaders)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
-#if RAPTOR
-      var fileStream = new FileStream(result.FullFileName, FileMode.Open);
-#else
-      var fileStream =  (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
-#endif
-
-      Log.LogInformation($"GetExportReportVeta completed: ExportData size={fileStream.Length}");
-      return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
+      Log.LogInformation($"GetExportReportVeta completed");
+      return result;
     }
 
     /// <summary>
@@ -271,7 +265,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">The filter uid to apply to the export results</param>
     [Route("api/v2/export/machinepasses")]
     [HttpGet]
-    public async Task<FileResult> GetExportReportMachinePasses(
+    public async Task<CompactionExportResult> GetExportReportMachinePasses(
       [FromQuery] Guid projectUid,
       [FromQuery] int coordType,
       [FromQuery] int outputType,
@@ -331,21 +325,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             customHeaders: CustomHeaders)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
-
-#if RAPTOR
-      var fileStream = new FileStream(result.FullFileName, FileMode.Open);
-#else
-
-      // TRex stores the exported file on s3 at: AWS_TEMPORARY_BUCKET_NAME e.g. vss-exports-stg/prod
-      //           this bucket is more temporary than other buckets (designs and tagFiles)
-      //
-      // the response fullFileName is in format: "project/{projectUId}/TRexExport/{request.FileName}__{uniqueTRexUid}.zip",
-      //                                    e.g. "project/f13f2458-6666-424f-a995-4426a00771ae/TRexExport/blahDeBlahAmy__70b0f407-67a8-42f6-b0ef-1fa1d36fc71c.zip"
-      var fileStream = (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
-#endif
-
-      Log.LogInformation($"GetExportReportMachinePasses completed: ExportData size={fileStream.Length}");
-      return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
+      Log.LogInformation($"GetExportReportMachinePasses completed");
+      return result;
     }
 
     /// <summary>
@@ -357,7 +338,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="filterUid">The filter uid to apply to the export results</param>
     [Route("api/v2/export/surface")]
     [HttpGet]
-    public async Task<FileResult> GetExportReportSurface(
+    public async Task<CompactionExportResult> GetExportReportSurface(
       [FromQuery] Guid projectUid,
       [FromQuery] string fileName,
       [FromQuery] double? tolerance,
@@ -409,9 +390,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
-      var fileStream = (await transferProxyFactory.NewProxy(TransferProxyType.Temporary).Download(result.DownloadLink)).FileStream;
-      Log.LogInformation($"GetExportReportSurface completed: ExportData size={fileStream.Length}");
-      return new FileStreamResult(fileStream, ContentTypeConstants.ApplicationZip);
+      Log.LogInformation("GetExportReportSurface completed");
+      return result;
     }
 
     #endregion
