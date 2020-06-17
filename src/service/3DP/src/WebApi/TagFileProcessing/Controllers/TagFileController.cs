@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       else if (request.ProjectUid != null)
         projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectUid.Value);
 
-      if (projectData?.ProjectType == CwsProjectType.Standard)
+      if (projectData?.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles) == false)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

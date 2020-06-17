@@ -228,7 +228,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
       var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
-        .Where(p => !p.IsArchived && p.ProjectType == CwsProjectType.AcceptsTagFiles &&
+        .Where(p => !p.IsArchived && p.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles) &&
                     (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
 
       // return once we find any overlapping projects
