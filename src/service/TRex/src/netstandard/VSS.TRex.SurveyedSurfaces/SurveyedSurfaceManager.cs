@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
@@ -47,7 +48,10 @@ namespace VSS.TRex.SurveyedSurfaces
         return null;
       }
 
-      _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out var ms);
+      var task = _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces);
+
+      task.Wait(); // TODO: Move higher later
+      var ms = task.Result.Item2;
 
       if (ms != null)
       {
@@ -63,16 +67,16 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Stores the list of surveyed surfaces for a site model
     /// </summary>
-    private void Store(Guid siteModelUid, ISurveyedSurfaces surveyedSurfaces)
+    private async Task Store(Guid siteModelUid, ISurveyedSurfaces surveyedSurfaces)
     {
-      using var stream = surveyedSurfaces.ToStream();
-      if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME,
+      await using var stream = surveyedSurfaces.ToStream();
+      if (await _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME,
         FileSystemStreamType.SurveyedSurfaces, stream, this) == FileSystemErrorStatus.OK)
       {
         _writeStorageProxy.Commit();
       }
 
-      // Notify the  grid listeners that attributes of this site model have changed.
+      // Notify the grid listeners that attributes of this site model have changed.
       var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
       sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModelUid, surveyedSurfacesChanged: true);
     }

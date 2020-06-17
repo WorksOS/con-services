@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
@@ -24,11 +25,11 @@ namespace VSS.TRex.SiteModelChangeMaps
       _proxyStorageCache = DIContext.Obtain<ISiteModels>().PrimaryImmutableStorageProxy.ProjectMachineCache(FileSystemStreamType.SiteModelMachineElevationChangeMap);
     }
 
-    public SubGridTreeSubGridExistenceBitMask Get(Guid siteModelUid, Guid assetUid)
+    public async Task<SubGridTreeSubGridExistenceBitMask> Get(Guid siteModelUid, Guid assetUid)
     {
       try
       {
-        var cacheItem = _proxyStorageCache.Get(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap));
+        var cacheItem = await _proxyStorageCache.GetAsync(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap));
         var result = new SubGridTreeSubGridExistenceBitMask();
 
         if (cacheItem != null)
@@ -44,14 +45,14 @@ namespace VSS.TRex.SiteModelChangeMaps
       }
     }
 
-    public void Put(Guid siteModelUid, Guid assetUid, SubGridTreeSubGridExistenceBitMask changeMap)
+    public Task Put(Guid siteModelUid, Guid assetUid, SubGridTreeSubGridExistenceBitMask changeMap)
     {
       if (changeMap == null)
       {
         throw new ArgumentException("Change map cannot be null");
       }
 
-      _proxyStorageCache.Put(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap), new SerialisedByteArrayWrapper(changeMap.ToBytes()));
+      return _proxyStorageCache.PutAsync(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap), new SerialisedByteArrayWrapper(changeMap.ToBytes()));
     }
 
     public ICacheLock Lock(Guid siteModelUid, Guid assetUid)

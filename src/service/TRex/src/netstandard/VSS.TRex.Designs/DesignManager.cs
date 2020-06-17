@@ -47,12 +47,13 @@ namespace VSS.TRex.Designs
 
         if (designs == null)
         {
-          _log.LogError("Unable to access designs factory from DI");
-          return null;
+          throw new TRexException("Unable to access designs factory from DI");
         }
 
-        _readStorageProxy.ReadStreamFromPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out var ms);
+        var task = _readStorageProxy.ReadStreamFromPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs);
+        task.Wait();  // TODO: Push higher in chain 
 
+        var ms = task.Result.Item2;
         if (ms != null)
         {
           using (ms)
@@ -83,7 +84,9 @@ namespace VSS.TRex.Designs
       try
       {
         using var stream = designs.ToStream();
-        _writeStorageProxy.WriteStreamToPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs);
+        var task = _writeStorageProxy.WriteStreamToPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs);
+        task.Wait(); // TODO Move higher later
+        
         _writeStorageProxy.Commit();
 
         // Notify the mutable and immutable grid listeners that attributes of this site model have changed

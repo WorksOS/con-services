@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
@@ -122,7 +124,7 @@ namespace VSS.TRex.SiteModels
       sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, ID, siteModelMarkedForDeletion: true);
     }
 
-    private readonly object _lockObj = new object();
+    private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
     private readonly object machineLoadLockObject = new object();
     private readonly object siteProofingRunLockObject = new object();
     private readonly object siteModelMachineDesignsLockObject = new object();
@@ -144,7 +146,14 @@ namespace VSS.TRex.SiteModels
     /// This will never return a null reference. In the case of a site model that does not have any spatial data within it
     /// this will return an empty map rather than null.
     /// </summary>
-    public ISubGridTreeBitMask ExistenceMap => LoadProductionDataExistenceMapFromStorage();
+    public ISubGridTreeBitMask ExistenceMap => DoLoadProductionDataExistenceMapFromStorage();
+
+    private ISubGridTreeBitMask DoLoadProductionDataExistenceMapFromStorage()
+    {
+      var task = LoadProductionDataExistenceMapFromStorage();
+      task.Wait();  // TODO: Push higher in chain 
+      return task.Result;
+    }
 
     /// <summary>
     /// Gets the loaded state of the existence map. This permits testing if a map is loaded without forcing
@@ -192,10 +201,14 @@ namespace VSS.TRex.SiteModels
       if (IsTransient)
         return csib = string.Empty;
 
-      var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
+      var task = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
         CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
-        FileSystemStreamType.CoordinateSystemCSIB,
-        out MemoryStream csibStream);
+        FileSystemStreamType.CoordinateSystemCSIB);
+
+      task.Wait(); // TODO: Push higher in chain 
+
+      var readResult = task.Result.Item1;
+      var csibStream = task.Result.Item2;
 
       if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
         return csib = string.Empty;
@@ -600,11 +613,11 @@ versionMap = null;
     /// <param name="storageProxy"></param>
     /// <param name="commitNow"></param>
     /// <returns></returns>
-    public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = true)
+    public async Task<bool> SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = true)
     {
-      using (var stream = this.ToStream())
+      await using (var stream = this.ToStream())
       {
-        if (storageProxy.WriteStreamToPersistentStore(ID, SiteModelXMLFileName, FileSystemStreamType.ProductionDataXML,
+        if (await storageProxy.WriteStreamToPersistentStore(ID, SiteModelXMLFileName, FileSystemStreamType.ProductionDataXML,
               stream, this) == FileSystemErrorStatus.OK)
         {
           if (commitNow)
@@ -641,18 +654,19 @@ versionMap = null;
     /// </summary>
     /// <param name="storageProxy"></param>
     /// <returns></returns>
-    public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
+    public async Task<bool> SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
     {
       var result = true;
 
-      lock (_lockObj)
+      await _semaphoreSlim.WaitAsync();
+      try
       {
-        if (!SaveMetadataToPersistentStore(storageProxy, false))
+        if (!await SaveMetadataToPersistentStore(storageProxy, false))
         {
           result = false;
         }
 
-        if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
+        if (ExistenceMapLoaded && await SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
         {
           Log.LogError($"Failed to save existence map for site model {ID} to persistent store");
           result = false;
@@ -671,6 +685,10 @@ Result = false;
         siteModelMachineDesigns?.SaveToPersistentStore(storageProxy);
         _siteModelDesigns?.SaveToPersistentStore(ID, storageProxy);
       }
+      finally
+      {
+        _semaphoreSlim.Release();
+      }
 
       if (!result)
         Log.LogError($"Failed to save site model for project {ID} to persistent store");
@@ -678,47 +696,52 @@ Result = false;
       return result;
     }
 
-    public FileSystemErrorStatus LoadFromPersistentStore()
+    public async Task<FileSystemErrorStatus> LoadFromPersistentStore()
     {
-      var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, SiteModelXMLFileName,
-        FileSystemStreamType.ProductionDataXML, out var MS);
+      var (result, ms) = await PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, SiteModelXMLFileName,
+        FileSystemStreamType.ProductionDataXML);
 
-      if (Result == FileSystemErrorStatus.OK && MS != null)
+      if (result == FileSystemErrorStatus.OK && ms != null)
       {
-        using (MS)
+        await using (ms)
         {
-          MS.Position = 0;
-          using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
+          ms.Position = 0;
+          using (var reader = new BinaryReader(ms, Encoding.UTF8, true))
           {
-            lock (_lockObj)
+            await _semaphoreSlim.WaitAsync();
+            try
             {
               Read(reader);
             }
+            finally{
+            {
+              _semaphoreSlim.Release();
+            }}
           }
 
-          if (Result == FileSystemErrorStatus.OK)
+          if (result == FileSystemErrorStatus.OK)
             Log.LogInformation(
               $"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {CellSize}");
           else
-            Log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
+            Log.LogWarning($"Site model ID read ({ID}) failed with error {result}");
         }
       }
 
-      return Result;
+      return result;
     }
 
     /// <summary>
     /// Saves the content of the existence map to storage
     /// </summary>
     /// <returns></returns>
-    private FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
+    private async Task<FileSystemErrorStatus> SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
     {
       var result = FileSystemErrorStatus.OK;
 
       if (existenceMap != null)
       {
-        using var stream = existenceMap.ToStream();
-        result = storageProxy.WriteStreamToPersistentStore(ID, SubGridExistenceMapFileName,
+        await using var stream = existenceMap.ToStream();
+        result = await storageProxy.WriteStreamToPersistentStore(ID, SubGridExistenceMapFileName,
           FileSystemStreamType.SubGridExistenceMap, stream, existenceMap);
       }
 
@@ -745,15 +768,16 @@ Result = false;
     /// Retrieves the content of the existence map from storage
     /// </summary>
     /// <returns></returns>
-    private ISubGridTreeBitMask LoadProductionDataExistenceMapFromStorage()
+    private async Task<ISubGridTreeBitMask> LoadProductionDataExistenceMapFromStorage()
     {
       var existenceMapCopy = existenceMap;
       if (existenceMapCopy != null)
         return existenceMapCopy;
 
-      lock (_lockObj)
+      await _semaphoreSlim.WaitAsync();
+      try
       {
-// Check we this is the winning thread
+        // Check we this is the winning thread
         existenceMapCopy = existenceMap;
         if (existenceMapCopy != null)
           return existenceMapCopy;
@@ -761,14 +785,14 @@ Result = false;
         var localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
 // Read its content from storage 
-        var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, SubGridExistenceMapFileName,
-          FileSystemStreamType.SubGridExistenceMap, out var MS);
+        var (readResult, ms) = await PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, SubGridExistenceMapFileName,
+          FileSystemStreamType.SubGridExistenceMap);
 
-        if (MS != null)
+        if (ms != null)
         {
-          using (MS)
+          await using (ms)
           {
-            localExistenceMap.FromStream(MS);
+            localExistenceMap.FromStream(ms);
           }
         }
         else
@@ -780,6 +804,10 @@ Result = false;
         // Replace existence map with the newly read map
         existenceMap = localExistenceMap;
         return localExistenceMap;
+      }
+      finally
+      {
+        _semaphoreSlim.Release();
       }
     }
 

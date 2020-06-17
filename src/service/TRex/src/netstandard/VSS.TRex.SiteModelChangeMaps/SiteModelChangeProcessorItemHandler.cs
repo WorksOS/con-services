@@ -76,7 +76,7 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// <summary>
     /// A version of ProcessTAGFilesFromGrouper2 that uses task parallelism
     /// </summary>
-    private void ProcessChangeMapUpdateItems()
+    private async Task ProcessChangeMapUpdateItems()
     {
       _log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
 
@@ -90,10 +90,10 @@ namespace VSS.TRex.SiteModelChangeMaps
           {
             _log.LogInformation($"Extracted item from queue, ProjectUID:{item.Value.ProjectUID}, added at {item.Value.InsertUTC} in thread {Thread.CurrentThread.ManagedThreadId}");
 
-            if (ProcessItem(item.Value))
+            if (await ProcessItem(item.Value))
             {
               // Remove the item from the cache
-              if (!_itemQueueCache.Remove(item.Key))
+              if (!await _itemQueueCache.RemoveAsync(item.Key))
               {
                 _log.LogError($"Failed to remove queued change map update item with key: Project = {item.Value.ProjectUID}, insert date = {item.Value.InsertUTC}");
               }
@@ -118,7 +118,7 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// site model.
     /// Once items are processed they are removed from the change map queue retirement queue.
     /// </summary>
-    private bool ProcessItem(ISiteModelChangeBufferQueueItem item)
+    private async Task<bool> ProcessItem(ISiteModelChangeBufferQueueItem item)
     {
       try
       {
@@ -159,29 +159,27 @@ namespace VSS.TRex.SiteModelChangeMaps
             // Add the spatial change to every machine in the site model
             foreach (var machine in siteModel.Machines)
             {
-              using (var l = _changeMapProxy.Lock(item.ProjectUID, machine.ID))
+              using var l = _changeMapProxy.Lock(item.ProjectUID, machine.ID);
+              l.Enter();
+              try
               {
-                l.Enter();
-                try
+                var currentMask = await _changeMapProxy.Get(item.ProjectUID, machine.ID);
+                if (currentMask == null)
                 {
-                  var currentMask = _changeMapProxy.Get(item.ProjectUID, machine.ID);
-                  if (currentMask == null)
-                  {
-                    currentMask = new SubGridTreeSubGridExistenceBitMask();
-                    currentMask.SetOp_OR(siteModel.ExistenceMap);
-                  }
-
-                  // Extract the change map from the item  
-                  var updateMask = new SubGridTreeSubGridExistenceBitMask();
-
-                  updateMask.FromBytes(item.Content);
-                  currentMask.SetOp_OR(updateMask);
-                  _changeMapProxy.Put(item.ProjectUID, machine.ID, currentMask);
+                  currentMask = new SubGridTreeSubGridExistenceBitMask();
+                  currentMask.SetOp_OR(siteModel.ExistenceMap);
                 }
-                finally
-                {
-                  l.Exit();
-                }
+
+                // Extract the change map from the item  
+                var updateMask = new SubGridTreeSubGridExistenceBitMask();
+
+                updateMask.FromBytes(item.Content);
+                currentMask.SetOp_OR(updateMask);
+                await _changeMapProxy.Put(item.ProjectUID, machine.ID, currentMask);
+              }
+              finally
+              {
+                l.Exit();
               }
             }
 
@@ -190,27 +188,25 @@ namespace VSS.TRex.SiteModelChangeMaps
 
           case SiteModelChangeMapOperation.RemoveSpatialChanges: // Subtract from the change map...
           {
-            using (var l = _changeMapProxy.Lock(item.ProjectUID, item.MachineUid))
+            using var l = _changeMapProxy.Lock(item.ProjectUID, item.MachineUid);
+            l.Enter();
+            try
             {
-              l.Enter();
-              try
-              {
-                // Remove the spatial change only from the machine the made the query
-                var currentMask = _changeMapProxy.Get(item.ProjectUID, item.MachineUid);
+              // Remove the spatial change only from the machine the made the query
+              var currentMask = await _changeMapProxy.Get(item.ProjectUID, item.MachineUid);
 
-                if (currentMask != null)
-                {
-                  // Extract the change map from the item  
-                  var updateMask = new SubGridTreeSubGridExistenceBitMask();
-
-                  currentMask.SetOp_ANDNOT(updateMask);
-                  _changeMapProxy.Put(item.ProjectUID, item.MachineUid, currentMask);
-                }
-              }
-              finally
+              if (currentMask != null)
               {
-                l.Exit();
+                // Extract the change map from the item  
+                var updateMask = new SubGridTreeSubGridExistenceBitMask();
+
+                currentMask.SetOp_ANDNOT(updateMask);
+                await _changeMapProxy.Put(item.ProjectUID, item.MachineUid, currentMask);
               }
+            }
+            finally
+            {
+              l.Exit();
             }
 
             break;

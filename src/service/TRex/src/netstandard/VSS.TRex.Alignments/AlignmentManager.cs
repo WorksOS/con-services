@@ -53,8 +53,10 @@ namespace VSS.TRex.Alignments
           return null;
         }
 
-        _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, out var ms);
+        var task = _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments);
+        task.Wait();  // TODO: Push higher in chain 
 
+        var ms = task.Result.Item2;
         if (ms != null)
         {
           using (ms)
@@ -87,7 +89,8 @@ namespace VSS.TRex.Alignments
       try
       {
         using var stream = alignments.ToStream();
-        _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, stream, this);
+        var task = _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, stream, this);
+        task.Wait(); // TODO Move higher later
 
         _writeStorageProxy.Commit();
 

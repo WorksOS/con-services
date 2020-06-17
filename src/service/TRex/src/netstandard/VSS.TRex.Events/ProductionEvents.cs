@@ -534,7 +534,8 @@ namespace VSS.TRex.Events
     {
       using (var mutableStream = GetMutableStream())
       {
-        storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, mutableStream, this);
+        var task = storageProxy.WriteStreamToPersistentStore(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, mutableStream, this);
+        task.Wait(); // TODO Move higher later
       }
 
       EventsChanged = false;
@@ -561,9 +562,11 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public void LoadFromStore(IStorageProxy storageProxy)
     {
-      storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName(),
-        FileSystemStreamType.Events, out MemoryStream MS);
+      var task = storageProxy.ReadStreamFromPersistentStore(SiteModelID, EventChangeListPersistantFileName(),
+        FileSystemStreamType.Events);
+      task.Wait(); // TODO: Move higher later
 
+      var MS = task.Result.Item2;
       if (MS != null)
       {
         using (MS)

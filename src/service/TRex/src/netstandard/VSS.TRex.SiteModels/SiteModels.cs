@@ -52,9 +52,6 @@ namespace VSS.TRex.SiteModels
     /// Retrieves a site model from the persistent store ready for use. If the site model does not
     /// exist it will be created if CreateIfNotExist is true.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="createIfNotExist"></param>
-    /// <returns></returns>
     public ISiteModel GetSiteModel(Guid id, bool createIfNotExist)
     {
       ISiteModel result;
@@ -79,7 +76,10 @@ namespace VSS.TRex.SiteModels
 
       Log.LogInformation($"Loading site model {id} from persistent store");
 
-      if (result.LoadFromPersistentStore() == FileSystemErrorStatus.OK)
+      var task = result.LoadFromPersistentStore();
+      task.Wait();  // TODO: Push higher in chain 
+
+      if (task.Result == FileSystemErrorStatus.OK)
       {
         lock (CachedModels)
         {
@@ -139,7 +139,10 @@ namespace VSS.TRex.SiteModels
       
       var result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
 
-      return result.LoadFromPersistentStore() == FileSystemErrorStatus.OK ? result : null;
+      var task = result.LoadFromPersistentStore();
+      task.Wait();  // TODO: Push higher in chain 
+
+      return task.Result == FileSystemErrorStatus.OK ? result : null;
     }
 
     /// <summary>

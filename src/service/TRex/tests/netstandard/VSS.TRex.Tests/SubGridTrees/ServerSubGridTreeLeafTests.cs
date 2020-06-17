@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using VSS.TRex.Cells;
@@ -302,9 +303,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
           var mockStorage = new Mock<IStorageProxy>();
 
-          MemoryStream stream;
           mockStorage.Setup(x => x.ReadSpatialStreamFromPersistentStore(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<long>(),
-            FileSystemStreamType.SubGridDirectory, out stream)).Returns(FileSystemErrorStatus.OK);
+            FileSystemStreamType.SubGridDirectory)).Returns(Task.FromResult<(FileSystemErrorStatus, MemoryStream)>((FileSystemErrorStatus.OK, null)));
 
           leaf.LoadDirectoryFromFile(mockStorage.Object, "filename").Should().BeFalse();
         }
@@ -317,9 +317,8 @@ namespace VSS.TRex.Tests.SubGridTrees
 
           var mockStorage = new Mock<IStorageProxy>();
 
-          MemoryStream stream;
           mockStorage.Setup(x => x.ReadSpatialStreamFromPersistentStore(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<long>(),
-            FileSystemStreamType.SubGridDirectory, out stream)).Returns(FileSystemErrorStatus.FileDoesNotExist);
+            FileSystemStreamType.SubGridDirectory)).Returns(Task.FromResult<(FileSystemErrorStatus, MemoryStream)>((FileSystemErrorStatus.FileDoesNotExist, null)));
 
           leaf.LoadDirectoryFromFile(mockStorage.Object, "filename").Should().BeFalse();
         }
@@ -333,14 +332,13 @@ namespace VSS.TRex.Tests.SubGridTrees
 
           var mockStorage = new Mock<IStorageProxy>();
 
-          MemoryStream stream;
           mockStorage.Setup(x => x.ReadSpatialStreamFromPersistentStore(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<long>(),
-            FileSystemStreamType.SubGridDirectory, out stream)).Returns(FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull);
+            FileSystemStreamType.SubGridDirectory)).Returns(Task.FromResult<(FileSystemErrorStatus, MemoryStream)>((FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull, null)));
 
           leaf.LoadDirectoryFromFile(mockStorage.Object, "filename").Should().BeFalse();
 
           mockStorage.Setup(x => x.ReadSpatialStreamFromPersistentStore(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<long>(),
-            FileSystemStreamType.SubGridDirectory, out stream)).Returns(FileSystemErrorStatus.GranuleDoesNotExist);
+            FileSystemStreamType.SubGridDirectory)).Returns(Task.FromResult<(FileSystemErrorStatus, MemoryStream)>((FileSystemErrorStatus.GranuleDoesNotExist, null)));
 
           leaf.LoadDirectoryFromFile(mockStorage.Object, "filename").Should().BeFalse();
         }
@@ -350,12 +348,12 @@ namespace VSS.TRex.Tests.SubGridTrees
         {
           var leaf = CreateADefaultEmptyLeaf();
 
-          MemoryStream stream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
+          var stream = new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION);
           leaf.SaveDirectoryToStream(stream);
 
           var mockStorage = new Mock<IStorageProxy>();
           mockStorage.Setup(x => x.ReadSpatialStreamFromPersistentStore(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<long>(),
-            FileSystemStreamType.SubGridDirectory, out stream)).Returns(FileSystemErrorStatus.OK);
+            FileSystemStreamType.SubGridDirectory)).Returns(Task.FromResult<(FileSystemErrorStatus, MemoryStream)>((FileSystemErrorStatus.OK, stream)));
 
           leaf.LoadDirectoryFromFile(mockStorage.Object, "filename").Should().BeTrue();
         }

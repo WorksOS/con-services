@@ -214,7 +214,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Save the leaf information just created
       siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
-      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
+      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy).Wait();
 
       siteModel.PrimaryStorageProxy.Commit();
     }
@@ -274,7 +274,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Save the leaf information just created
       siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
-      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
+      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy).Wait();
     }
 
     public static void AddSingleSubGridWithPasses(ISiteModel siteModel, int cellX, int cellY, IEnumerable<CellPass>[,] passes)
@@ -317,7 +317,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Save the leaf information just created
       siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
-      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
+      siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy).Wait();
     }
 
     /// <summary>

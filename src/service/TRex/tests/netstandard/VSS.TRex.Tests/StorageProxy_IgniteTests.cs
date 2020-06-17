@@ -50,14 +50,14 @@ namespace VSS.TRex.Tests
         }
 
         [Fact]
-        public void Test_StorageProxy_Ignite_RemoveStreamFromPersistentStore_Mutable_Spatial_Existing()
+        public async void Test_StorageProxy_Ignite_RemoveStreamFromPersistentStore_Mutable_Spatial_Existing()
         {
           var proxy = new StorageProxy_Ignite(StorageMutability.Immutable);
 
           var projectUid = Guid.NewGuid();
           var streamName = "StreamToDelete";
 
-          proxy.WriteStreamToPersistentStore(projectUid, streamName, FileSystemStreamType.Designs, new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION), null);
+          await proxy.WriteStreamToPersistentStore(projectUid, streamName, FileSystemStreamType.Designs, new MemoryStream(Consts.TREX_DEFAULT_MEMORY_STREAM_CAPACITY_ON_CREATION), null);
           proxy.RemoveStreamFromPersistentStore(projectUid, FileSystemStreamType.Designs, streamName).Should().Be(FileSystemErrorStatus.OK);
         }
 

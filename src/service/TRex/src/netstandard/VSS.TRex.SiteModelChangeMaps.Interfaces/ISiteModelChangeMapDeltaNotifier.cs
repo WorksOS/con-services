@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SiteModelChangeMaps.Interfaces
@@ -8,6 +9,6 @@ namespace VSS.TRex.SiteModelChangeMaps.Interfaces
     /// <summary>
     /// Creates a change map buffer queue item and places it in to the cache for the service processor to collect
     /// </summary>
-    void Notify(Guid projectUID, DateTime InsertUTC, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation);
+    Task Notify(Guid projectUID, DateTime InsertUTC, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation);
   }
 }

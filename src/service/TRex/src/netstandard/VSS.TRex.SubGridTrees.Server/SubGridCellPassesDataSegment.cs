@@ -247,7 +247,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         if (Result)
         {
-          FSError = storage.WriteSpatialStreamToPersistentStore(
+          var task = storage.WriteSpatialStreamToPersistentStore(
             Owner.Owner.ID,
             FileName,
             Owner.OriginX, Owner.OriginY,
@@ -257,7 +257,9 @@ namespace VSS.TRex.SubGridTrees.Server
             FileSystemStreamType.SubGridSegment,
             stream,
             this);
+          task.Wait(); // Move higher later
 
+          FSError = task.Result;
           Result = FSError == FileSystemErrorStatus.OK;
         }
       }

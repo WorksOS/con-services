@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
@@ -639,18 +640,22 @@ namespace VSS.TRex.SubGridTrees.Server
                 return false;
             }
 
-             var FSError = storageProxy.ReadSpatialStreamFromPersistentStore
-              (Owner.ID, FileName, OriginX, OriginY, 
+            var task = storageProxy.ReadSpatialStreamFromPersistentStore
+              (Owner.ID, FileName, OriginX, OriginY,
                Segment.SegmentInfo.StartTime.Ticks,
                Segment.SegmentInfo.EndTime.Ticks,
-               Segment.SegmentInfo.Version, 
-               FileSystemStreamType.SubGridSegment, out MemoryStream SMS);
+               Segment.SegmentInfo.Version,
+               FileSystemStreamType.SubGridSegment);
+             task.Wait(); // TODO move higher later
 
-             bool Result = FSError == FileSystemErrorStatus.OK;
+             var FSError = task.Result.Item1;
+             var SMS = task.Result.Item2;
+
+             var result = FSError == FileSystemErrorStatus.OK;
 
              try
              {
-               if (!Result)
+               if (!result)
                {
                  Log.LogError(FSError == FileSystemErrorStatus.FileDoesNotExist
                    ? $"Expected leaf sub grid segment {FileName}, model {Owner.ID} does not exist."
@@ -659,14 +664,12 @@ namespace VSS.TRex.SubGridTrees.Server
                else
                {
                  SMS.Position = 0;
-                 using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
-                 {
-                   Result = Segment.Read(reader, loadLatestData, loadAllPasses);
+                 using var reader = new BinaryReader(SMS, Encoding.UTF8, true);
+                 result = Segment.Read(reader, loadLatestData, loadAllPasses);
 
-                   if (loadAllPasses && Segment.PassesData == null)
-                     Log.LogError(
-                       $"Segment {FileName} passes data is null after reading from store with LoadAllPasses=true.");
-                 }
+                 if (loadAllPasses && Segment.PassesData == null)
+                   Log.LogError(
+                     $"Segment {FileName} passes data is null after reading from store with LoadAllPasses=true.");
                }
              }
              finally
@@ -674,7 +677,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 SMS?.Dispose();
              }
 
-             return Result;
+             return result;
         }
 
         public bool RemoveSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegmentInfo segmentInfo)
@@ -720,22 +723,21 @@ namespace VSS.TRex.SubGridTrees.Server
           return true;
         }
 
-        public bool SaveDirectoryToFile(IStorageProxy storage,
-                                        string FileName)
+        public bool SaveDirectoryToFile(IStorageProxy storage, string fileName)
         {
-          using (var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
-          {
-            SaveDirectoryToStream(stream);
+          using var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+          SaveDirectoryToStream(stream);
 
-            bool Result = storage.WriteSpatialStreamToPersistentStore
-                          (Owner.ID, FileName, OriginX, OriginY, -1, -1, _version,
-                            FileSystemStreamType.SubGridDirectory, stream, this) == FileSystemErrorStatus.OK;
+          var task = storage.WriteSpatialStreamToPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, _version,
+            FileSystemStreamType.SubGridDirectory, stream, this);
+          Task.WaitAll();// TODO Move higher later
 
-            if (!Result)
-              Log.LogWarning($"Call to WriteSpatialStreamToPersistentStore failed. Filename:{FileName}");
+          var result = task.Result == FileSystemErrorStatus.OK;
 
-            return Result;
-          }
+          if (!result)
+            Log.LogWarning($"Call to WriteSpatialStreamToPersistentStore failed. Filename:{fileName}");
+
+          return result;
         }
 
       /// <summary>
@@ -791,11 +793,15 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
         {
-           if (_version == 0)
-             Log.LogError($"Version for {Moniker()} is 0");
+            if (_version == 0)
+              Log.LogError($"Version for {Moniker()} is 0");
 
-            var FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, _version,
-                                                                       FileSystemStreamType.SubGridDirectory, out MemoryStream SMS);
+            var task = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, _version,
+                                                                       FileSystemStreamType.SubGridDirectory);
+            task.Wait(); // TODO move higher later
+            var FSError = task.Result.Item1;
+            var SMS = task.Result.Item2;
+
             try
             {
               if (FSError != FileSystemErrorStatus.OK || SMS == null)

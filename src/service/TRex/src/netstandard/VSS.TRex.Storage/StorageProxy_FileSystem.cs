@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Transactions;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
@@ -25,24 +26,24 @@ namespace VSS.TRex.Storage
     {
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType,
+    Task<FileSystemErrorStatus> IStorageProxy.WriteStreamToPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType,
       MemoryStream mutablestream, object source)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks,
+    Task<FileSystemErrorStatus> IStorageProxy.WriteSpatialStreamToPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks,
       long version, FileSystemStreamType streamType, MemoryStream mutableStream, object source)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
+    Task<(FileSystemErrorStatus, MemoryStream)> IStorageProxy.ReadStreamFromPersistentStore(Guid dataModelID, string streamName, FileSystemStreamType streamType)
     {
       throw new NotImplementedException();
     }
 
-    FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks, long version, FileSystemStreamType streamType, out MemoryStream stream)
+    Task<(FileSystemErrorStatus, MemoryStream)> IStorageProxy.ReadSpatialStreamFromPersistentStore(Guid dataModelID, string streamName, int subGridX, int subGridY, long segmentStartDateTicks, long segmentEndDateTicks, long version, FileSystemStreamType streamType)
     {
       throw new NotImplementedException();
     }

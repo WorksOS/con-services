@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
@@ -23,14 +24,14 @@ namespace VSS.TRex.Tests.Events
   public class ProjectImmutableDataEventsTests : IClassFixture<DITagFileFixture>
   {
     [Fact]
-    public void Test_ProjectImmutableSiteModelTest()
+    public async Task Test_ProjectImmutableSiteModelTest()
     {
       var sourceSiteModel = new SiteModel(Guid.NewGuid(), false);
-      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(sourceSiteModel.PrimaryStorageProxy);
+      var result = await sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(sourceSiteModel.PrimaryStorageProxy);
       Assert.True(result, "unable to save SiteModel to Persistent store");
 
       var targetSiteModel = new SiteModel(sourceSiteModel.ID, false);
-      var fileStatus = targetSiteModel.LoadFromPersistentStore();
+      var fileStatus = await targetSiteModel.LoadFromPersistentStore();
       Assert.True(FileSystemErrorStatus.OK == fileStatus, "unable to load SiteModel from Persistent store");
     }
 

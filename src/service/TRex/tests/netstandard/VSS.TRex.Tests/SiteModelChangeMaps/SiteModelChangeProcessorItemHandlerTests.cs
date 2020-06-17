@@ -95,7 +95,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       }
     }
 
-    private void TestSiteModelAndChangeMap_Ingest(ISiteModel siteModel, ISubGridTreeBitMask changeMap, int finalBitCount)
+    private async void TestSiteModelAndChangeMap_Ingest(ISiteModel siteModel, ISubGridTreeBitMask changeMap, int finalBitCount)
     {
       var insertUtc = DateTime.UtcNow;
       var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertUtc);
@@ -113,7 +113,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
       // Check there is now a change map item for the site model with the given content
       var changeMapProxy = new SiteModelChangeMapProxy();
-      var resultChangeMap = changeMapProxy.Get(key.ProjectUID, value.MachineUid);
+      var resultChangeMap = await changeMapProxy.Get(key.ProjectUID, value.MachineUid);
 
       resultChangeMap.Should().NotBeNull();
       resultChangeMap.CountBits().Should().Be(finalBitCount);
@@ -154,7 +154,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       TestSiteModelAndChangeMap_Ingest(siteModel, changeMap, 12);
     }
 
-    private void TestSiteModelAndChangeMap_Query(ISiteModel siteModel, Guid machineUid, ISubGridTreeBitMask changeMap, int finalBitCount)
+    private async void TestSiteModelAndChangeMap_Query(ISiteModel siteModel, Guid machineUid, ISubGridTreeBitMask changeMap, int finalBitCount)
     {
       var insertUtc = DateTime.UtcNow;
       var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertUtc);
@@ -172,7 +172,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
       // Check there is now a change map item for the site model with the given content
       var changeMapProxy = new SiteModelChangeMapProxy();
-      var resultChangeMap = changeMapProxy.Get(key.ProjectUID, value.MachineUid);
+      var resultChangeMap = await changeMapProxy.Get(key.ProjectUID, value.MachineUid);
 
       resultChangeMap.Should().NotBeNull();
       resultChangeMap.CountBits().Should().Be(finalBitCount);
@@ -216,7 +216,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
     }
 
     [Fact]
-    public void ProcessChangeMapUpdateItems_NonEmptyMap_SingleTAGFile_IngestAndQuery_MultipleMachines()
+    public async void ProcessChangeMapUpdateItems_NonEmptyMap_SingleTAGFile_IngestAndQuery_MultipleMachines()
     {
       var tagFiles = new[]
       {
@@ -230,13 +230,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       TestSiteModelAndChangeMap_Ingest(siteModel, siteModel.ExistenceMap, 12);
 
       var mapProxy = new SiteModelChangeMapProxy();
-      mapProxy.Get(siteModel.ID, firstMachine.ID).CountBits().Should().Be(12);
-      mapProxy.Get(siteModel.ID, secondMachine.ID).CountBits().Should().Be(12);
+      (await mapProxy.Get(siteModel.ID, firstMachine.ID)).CountBits().Should().Be(12);
+      (await mapProxy.Get(siteModel.ID, secondMachine.ID)).CountBits().Should().Be(12);
 
       TestSiteModelAndChangeMap_Query(siteModel, firstMachine.ID, siteModel.ExistenceMap, 0);
 
       // Check second machine still has the change map from the TAG file.
-      mapProxy.Get(siteModel.ID, secondMachine.ID).CountBits().Should().Be(12);
+      (await mapProxy.Get(siteModel.ID, secondMachine.ID)).CountBits().Should().Be(12);
       TestSiteModelAndChangeMap_Query(siteModel, secondMachine.ID, siteModel.ExistenceMap, 0);
     }
   }

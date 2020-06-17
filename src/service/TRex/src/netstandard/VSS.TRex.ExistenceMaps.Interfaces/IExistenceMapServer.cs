@@ -1,4 +1,5 @@
-﻿using VSS.TRex.GridFabric;
+﻿using System.Threading.Tasks;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.Interfaces
@@ -10,7 +11,7 @@ namespace VSS.TRex.ExistenceMaps.Interfaces
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    ISerialisedByteArrayWrapper GetExistenceMap(INonSpatialAffinityKey key);
+    Task<ISerialisedByteArrayWrapper> GetExistenceMap(INonSpatialAffinityKey key);
 
     /// <summary>
     /// Set or update a given existence map given its key.

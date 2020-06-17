@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
@@ -66,7 +67,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
     private void SaveAndVerifyNotEmpty(ISiteModel model)
     {
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
+      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy).Wait();
       model.PrimaryStorageProxy.Commit();
       IsModelEmpty(model).Should().BeFalse();
     }
@@ -125,7 +126,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 1, false));
-      new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
+      _ = new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
@@ -230,7 +231,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     }
 
     [Fact]
-    public void DeleteModel_WithCSIB()
+    public async Task DeleteModel_WithCSIB()
     {
       AddApplicationGridRouting();
 
@@ -241,7 +242,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       csibStream.Write(new byte[] {70, 71, 72, 73}, 0, 4);
       csibStream.Position = 0;
 
-      model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
+      await model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
         CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
         FileSystemStreamType.CoordinateSystemCSIB,
         csibStream, null);

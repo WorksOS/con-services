@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
@@ -35,11 +36,13 @@ namespace VSS.TRex.CoordinateSystems.Executors
         // Add the coordinate system to the cache
         var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-        using (MemoryStream csibStream = new MemoryStream(Encoding.ASCII.GetBytes(CSIB)))
+        using (var csibStream = new MemoryStream(Encoding.ASCII.GetBytes(CSIB)))
         {
-          var status = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
+          var task = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
             FileSystemStreamType.CoordinateSystemCSIB, csibStream, CSIB);
+          task.Wait();
 
+          var status = task.Result;
           if (status != FileSystemErrorStatus.OK)
             return false;
         }

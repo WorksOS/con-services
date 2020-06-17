@@ -58,7 +58,8 @@ namespace VSS.TRex.SiteModels
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
       using var stream = this.ToStream();
-      storageProxy.WriteStreamToPersistentStore(DataModelID, PROOFING_RUN_LIST_STREAM_NAME, FileSystemStreamType.ProofingRuns, stream, this);
+      var task = storageProxy.WriteStreamToPersistentStore(DataModelID, PROOFING_RUN_LIST_STREAM_NAME, FileSystemStreamType.ProofingRuns, stream, this);
+      task.Wait(); // TODO Move higher later
     }
 
     /// <summary>
@@ -83,7 +84,11 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void LoadFromPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.ReadStreamFromPersistentStore(DataModelID, PROOFING_RUN_LIST_STREAM_NAME, FileSystemStreamType.ProofingRuns, out MemoryStream ms);
+      var task = storageProxy.ReadStreamFromPersistentStore(DataModelID, PROOFING_RUN_LIST_STREAM_NAME, FileSystemStreamType.ProofingRuns);
+
+      task.Wait(); // TODO: Move higher later
+      var ms = task.Result.Item2; 
+      
       if (ms == null)
         return;
 

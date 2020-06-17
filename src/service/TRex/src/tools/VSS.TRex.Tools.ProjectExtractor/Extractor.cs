@@ -19,7 +19,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
 {
   public class Extractor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<Extractor>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<Extractor>();
 
     private readonly ISiteModel _siteModel;
     private readonly string _projectOutputPath;
@@ -57,18 +57,22 @@ namespace VSS.TRex.Tools.ProjectExtractor
         foreach (var evtList in ProductionEventLists.ProductionEventTypeValues)
         {
           var eventsFileName = ProductionEvents.EventChangeListPersistantFileName(machine.InternalSiteModelMachineIndex, evtList);
-          var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, eventsFileName, FileSystemStreamType.Events, out MemoryStream MS);
+          var task = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, eventsFileName, FileSystemStreamType.Events);
 
-          if (readResult != FileSystemErrorStatus.OK || MS == null)
+          task.Wait(); // TODO: Move higher later
+          var readResult = task.Result.Item1;
+          var ms = task.Result.Item2;
+
+          if (readResult != FileSystemErrorStatus.OK || ms == null)
           {
-            Log.LogError($"Failed to read directory stream for {eventsFileName} with error {readResult}, or read stream is null");
+            _log.LogError($"Failed to read directory stream for {eventsFileName} with error {readResult}, or read stream is null");
             Console.WriteLine($"Failed to read directory stream for {eventsFileName} with error {readResult}, or read stream is null");
             continue;
           }
 
-          using (MS)
+          using (ms)
           {
-            File.WriteAllBytes(Path.Combine(basePath, eventsFileName), MS.ToArray());
+            File.WriteAllBytes(Path.Combine(basePath, eventsFileName), ms.ToArray());
           }
         }
       }
@@ -86,12 +90,17 @@ namespace VSS.TRex.Tools.ProjectExtractor
       _siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(address =>
       {
         var fileName = ServerSubGridTree.GetLeafSubGridFullFileName(address);
-        var FSError = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(_siteModel.ID, fileName, address.X, address.Y, -1, -1, 1,
-          FileSystemStreamType.SubGridDirectory, out var MS);
+        var task = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore(_siteModel.ID, fileName, address.X, address.Y, -1, -1, 1,
+          FileSystemStreamType.SubGridDirectory);
+        task.Wait(); // TODO move higher later
+
+        var FSError = task.Result.Item1;
+        var MS = task.Result.Item2;
+
 
         if (FSError != FileSystemErrorStatus.OK || MS == null)
         {
-          Log.LogError($"Failed to read directory stream for {fileName} with error {FSError}, or read stream is null");
+          _log.LogError($"Failed to read directory stream for {fileName} with error {FSError}, or read stream is null");
           Console.WriteLine($"Failed to read directory stream for {fileName} with error {FSError}, or read stream is null");
           return;
         }
@@ -108,17 +117,22 @@ namespace VSS.TRex.Tools.ProjectExtractor
             
             MS.Position = 0;
             if (subGrid.LoadDirectoryFromStream(MS))
-            {
+            { 
               subGrid.Directory.SegmentDirectory.ForEach(segment =>
               {
                 var segmentFileName = segment.FileName(address.X, address.Y);
-                var FSErrorSegment = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore
+                task = _siteModel.PrimaryStorageProxy.ReadSpatialStreamFromPersistentStore
                 (_siteModel.ID, segmentFileName, address.X, address.Y, segment.StartTime.Ticks, segment.EndTime.Ticks, segment.Version,
-                  FileSystemStreamType.SubGridDirectory, out var MSSegment);
+                  FileSystemStreamType.SubGridDirectory);
+
+                task.Wait(); // TODO move higher later
+
+                var FSErrorSegment = task.Result.Item1;
+                var MSSegment = task.Result.Item2;
 
                 if (FSErrorSegment != FileSystemErrorStatus.OK)
                 {
-                  Log.LogError($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
+                  _log.LogError($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
                   Console.WriteLine($"Failed to read segment stream for {segmentFileName} with error {FSErrorSegment}");
                   return;
                 }
@@ -131,7 +145,7 @@ namespace VSS.TRex.Tools.ProjectExtractor
             }
             else
             {
-              Log.LogError($"Failed to read directory stream for {fileName}");
+              _log.LogError($"Failed to read directory stream for {fileName}");
             }
           }
         }
@@ -140,22 +154,26 @@ namespace VSS.TRex.Tools.ProjectExtractor
 
     public void ExtractSiteModelFile(string fileName, FileSystemStreamType streamType)
     {
-      var readResult = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, fileName, streamType, out var MS);
+      var task = _siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(_siteModel.ID, fileName, streamType);
+      task.Wait(); // TODO: move this higher later
 
-      if (readResult != FileSystemErrorStatus.OK || MS == null)
+      var readResult = task.Result.Item1;
+      var ms = task.Result.Item2;
+
+      if (readResult != FileSystemErrorStatus.OK || ms == null)
       {
-        Log.LogInformation($"Failed to read file {fileName} of type {streamType}, (readResult = {readResult}), or stream is null");
+        _log.LogInformation($"Failed to read file {fileName} of type {streamType}, (readResult = {readResult}), or stream is null");
         Console.WriteLine($"Failed to read file {fileName} of type {streamType}, (readResult = {readResult}), or stream is null");
         Console.WriteLine($"Failed to read existence map (readResult = {readResult}), or stream is null");
       }
       else
       {
-        using (MS)
+        using (ms)
         {
           var basePath = Path.Combine(_projectOutputPath);
           Directory.CreateDirectory(basePath);
 
-          File.WriteAllBytes(Path.Combine(basePath, fileName), MS.ToArray());
+          File.WriteAllBytes(Path.Combine(basePath, fileName), ms.ToArray());
         }
       }
     }

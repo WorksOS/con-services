@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.TRex.DI;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.ExistenceMaps.Interfaces;
@@ -64,16 +65,16 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public ISerialisedByteArrayWrapper GetExistenceMap(INonSpatialAffinityKey key)
+        public Task<ISerialisedByteArrayWrapper> GetExistenceMap(INonSpatialAffinityKey key)
         {
             try
             {
-                return _designTopologyExistenceMapsCache.Get(key);
+                return _designTopologyExistenceMapsCache.GetAsync(key);
             }
             catch (KeyNotFoundException)
             {
                 // If the key is not present, return a null/empty array
-                return null;
+                return Task.FromResult<ISerialisedByteArrayWrapper>(null);
             }
         }
 

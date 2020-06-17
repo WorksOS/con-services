@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
@@ -16,7 +17,7 @@ namespace VSS.TRex.SiteModelChangeMaps
   /// </summary>
   public class SiteModelChangeMapDeltaNotifier : ISiteModelChangeMapDeltaNotifier
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeMapDeltaNotifier>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelChangeMapDeltaNotifier>();
 
     private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> _queueCache;
 
@@ -33,11 +34,11 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// <param name="changeMap"></param>
     /// <param name="origin"></param>
     /// <param name="operation"></param>
-    public void Notify(Guid projectUid, DateTime insertUtc, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation)
+    public Task Notify(Guid projectUid, DateTime insertUtc, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation)
     {
-      Log.LogInformation($"Adding site model change map notification for project {projectUid}");
+      _log.LogInformation($"Adding site model change map notification for project {projectUid}");
 
-      _queueCache.Put(new SiteModelChangeBufferQueueKey(projectUid, insertUtc), 
+      return _queueCache.PutAsync(new SiteModelChangeBufferQueueKey(projectUid, insertUtc),
         new SiteModelChangeBufferQueueItem
         {
           ProjectUID = projectUid,

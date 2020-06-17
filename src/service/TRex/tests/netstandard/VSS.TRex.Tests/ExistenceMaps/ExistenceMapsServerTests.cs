@@ -52,7 +52,7 @@ namespace VSS.TRex.Tests.ExistenceMaps
     }
 
     [Fact]
-    public void GetExistenceMap()
+    public async void GetExistenceMap()
     {
       var server = new ExistenceMapServer();
       Guid projectUid = Guid.NewGuid();
@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.ExistenceMaps
 
       server.SetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Get"), new SerialisedByteArrayWrapper(setMap));
 
-      var getMap = server.GetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Get"));
+      var getMap = await server.GetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Get"));
 
       setMap.SequenceEqual(getMap.Bytes).Should().BeTrue();
     }

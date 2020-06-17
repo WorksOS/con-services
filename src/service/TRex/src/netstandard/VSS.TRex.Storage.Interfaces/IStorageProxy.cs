@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Transactions;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
@@ -16,13 +17,13 @@ namespace VSS.TRex.Storage.Interfaces
 
     StorageMutability Mutability { get; set; }
 
-    FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID,
+    Task<FileSystemErrorStatus> WriteStreamToPersistentStore(Guid dataModelID,
       string streamName,
       FileSystemStreamType streamType,
-      MemoryStream mutablestream,
+      MemoryStream mutableStream,
       object source);
 
-    FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
+    Task<FileSystemErrorStatus> WriteSpatialStreamToPersistentStore(Guid dataModelID,
       string streamName,
       int subGridX, int subGridY,
       long segmentStartDateTicks, 
@@ -32,19 +33,17 @@ namespace VSS.TRex.Storage.Interfaces
       MemoryStream mutableStream,
       object source);
 
-    FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelID,
+    Task<(FileSystemErrorStatus, MemoryStream)> ReadStreamFromPersistentStore(Guid dataModelID,
       string streamName,
-      FileSystemStreamType streamType,
-      out MemoryStream stream);
+      FileSystemStreamType streamType);
 
-    FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
+    Task<(FileSystemErrorStatus, MemoryStream)> ReadSpatialStreamFromPersistentStore(Guid dataModelID,
       string streamName,
       int subGridX, int subGridY,
       long segmentStartDateTicks, 
       long segmentEndDateTicks,
       long version,
-      FileSystemStreamType streamType,
-      out MemoryStream stream);
+      FileSystemStreamType streamType);
 
     FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID,
       FileSystemStreamType streamType,

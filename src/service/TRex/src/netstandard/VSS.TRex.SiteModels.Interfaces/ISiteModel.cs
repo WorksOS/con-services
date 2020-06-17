@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Interfaces;
@@ -130,12 +131,12 @@ IGenericSubGridTree_Long VersionMap { get; }
     string CSIB();
     bool CSIBLoaded { get; }
 
-    void Include(ISiteModel Source);
+    void Include(ISiteModel source);
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
-    bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = false);
-    bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy);
-    FileSystemErrorStatus LoadFromPersistentStore();
+    Task<bool> SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = false);
+    Task<bool> SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy);
+    Task<FileSystemErrorStatus> LoadFromPersistentStore();
 
     bool RemoveMetadataFromPersistentStore(IStorageProxy storageProxy);
 
@@ -145,7 +146,7 @@ IGenericSubGridTree_Long VersionMap { get; }
     /// datamodel, excepting those identified in the SurveyedSurfaceExclusionList
     /// </summary>
     /// <returns></returns>
-    BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList);
+    BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] surveyedSurfaceExclusionList);
 
     /// <summary>
     /// GetDateRange returns the chronological extents of production data in the site model.

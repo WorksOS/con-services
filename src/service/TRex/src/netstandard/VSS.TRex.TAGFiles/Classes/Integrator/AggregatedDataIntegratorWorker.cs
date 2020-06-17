@@ -536,7 +536,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     private void CommitSiteModelExistenceMapToPersistentStore(ISiteModel siteModelFromDatamodel)
     {
       // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-      siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable);
+      siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable).Wait(); // TODO: Move higher later
 
       if (!_storageProxyMutable.Commit())
       {

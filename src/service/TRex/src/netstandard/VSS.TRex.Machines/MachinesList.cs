@@ -174,7 +174,8 @@ namespace VSS.TRex.Machines
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
       using var stream = this.ToStream();
-      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, stream, this);
+      var task = storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, stream, this);
+      task.Wait(); // TODO Move higher later
     }
 
     /// <summary>
@@ -199,7 +200,11 @@ namespace VSS.TRex.Machines
     /// </summary>
     public void LoadFromPersistentStore(IStorageProxy storageProxy)
     {
-      storageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines, out MemoryStream MS);
+      var task = storageProxy.ReadStreamFromPersistentStore(DataModelID, MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines);
+      task.Wait();
+
+      var MS = task.Result.Item2;
+
       if (MS == null)
         return;
 

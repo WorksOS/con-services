@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
 
 
     [Fact]
-    public void Execute()
+    public async void Execute()
     {
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
@@ -120,7 +120,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
       service.Aborted.Should().BeTrue();
 
       var proxy = new SiteModelChangeMapProxy();
-      var resultChangeMap = proxy.Get(projectGuid, siteModel.Machines.First().ID);
+      var resultChangeMap = await proxy.Get(projectGuid, siteModel.Machines.First().ID);
 
       resultChangeMap.CountBits().Should().Be(1);
       resultChangeMap[SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset].Should().BeTrue();
