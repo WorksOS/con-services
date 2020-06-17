@@ -33,6 +33,16 @@ namespace VSS.TRex.Storage
         /// </summary>
         protected readonly Dictionary<TK, TV> PendingTransactedWrites;
 
+        /// <summary>
+        /// The total number of writes made to pending transacted writes, including updates of already existing elements
+        /// </summary>
+        protected long NumWritesToPendingTransactedWrites;
+
+        /// <summary>
+        /// The total number of reads made from pending transacted writes, that did not result in Get()'s to the underlying cache
+        /// </summary>
+        protected long NumReadsFromPendingTransactedWrites;
+
         private long _bytesWritten;
 
         public StorageProxyCacheTransacted(ICache<TK, TV> cache, IEqualityComparer<TK> comparer) : base(cache)
@@ -51,6 +61,7 @@ namespace VSS.TRex.Storage
           {
             if (PendingTransactedWrites.TryGetValue(key, out var value))
             {
+              NumReadsFromPendingTransactedWrites++;
               return value;
             }
           }
@@ -68,6 +79,7 @@ namespace VSS.TRex.Storage
           {
             if (PendingTransactedWrites.TryGetValue(key, out var value))
             {
+              NumReadsFromPendingTransactedWrites++;
               return Task.FromResult(value);
             }
           }
@@ -132,6 +144,8 @@ namespace VSS.TRex.Storage
 
               // Add the pending write request to the collection
               PendingTransactedWrites.Add(key, value);
+
+              NumWritesToPendingTransactedWrites++;
             }
 
             if (value is ISerialisedByteArrayWrapper wrapper)
