@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
@@ -15,6 +16,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     public bool Success { get; set; }
 
     public string Exception { get; set; }
+
+    public TAGReadResult ReadResult { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -39,6 +42,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
       writer.WriteGuid(AssetUid);
       writer.WriteBoolean(Success);
       writer.WriteString(Exception);
+      writer.WriteInt((int)ReadResult);
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -49,6 +53,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
       AssetUid = reader.ReadGuid() ?? Guid.Empty;
       Success = reader.ReadBoolean();
       Exception = reader.ReadString();
+      ReadResult = (TAGReadResult)reader.ReadInt();
     }
   }
 }

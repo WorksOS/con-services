@@ -22,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueManager>();
 
         /// <summary>
-        /// The query handle created by the continuous query. Used to get the initial scan query handle and 
+        /// The query handle created by the continuous query. Used to get the initial scan query handle and
         /// to dispose the continuous query when no longer needed.
         /// </summary>
         private IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;

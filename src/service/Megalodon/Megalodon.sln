@@ -23,8 +23,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Abs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Proxy", "..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj", "{6D364EE3-8117-4C34-8E30-E1CCDC1F6ABB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.WebApi.Models", "..\3DP\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj", "{39864807-3A0A-4324-965D-FC04863B903F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Models", "..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj", "{EB91D5E2-7FA9-4EFB-9FE4-473185CDA3F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Abstractions", "..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj", "{94F002CB-01A1-40F8-813C-743D2C618FBA}"

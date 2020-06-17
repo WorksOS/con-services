@@ -21,9 +21,7 @@ namespace VSS.TRex.TAGFiles.Executors
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger("ProcessTAGFilesExecutor");
 
-    private static readonly int _batchSize = DIContext.Obtain<IConfigurationStore>()
-      .GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH",
-        Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
+    private static readonly int _batchSize = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
 
     /*
     public static ProcessTAGFileResponse Execute_Legacy_IndividualModelsWithWhenAny(Guid ProjectID, Guid AssetID,
@@ -104,7 +102,8 @@ namespace VSS.TRex.TAGFiles.Executors
 
           response.Results.Add(new ProcessTAGFileResponseItem
           {
-            FileName = TAGFile.FileName, Success = converter.ReadResult == TAGReadResult.NoError
+            FileName = TAGFile.FileName, Success = converter.ReadResult == TAGReadResult.NoError,
+    ReadResult = converter.ReadResult
           });
         }
         catch (Exception E)
@@ -176,17 +175,18 @@ namespace VSS.TRex.TAGFiles.Executors
               {
                 FileName = tagFile.FileName,
                 AssetUid = tagFile.AssetId,
-                Success = commonConverter.ReadResult == TAGReadResult.NoError
+                Success = commonConverter.ReadResult == TAGReadResult.NoError,
+                ReadResult = commonConverter.ReadResult
               });
 
               _log.LogInformation(
-                $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId}");
+                $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId} with result {commonConverter.ReadResult}");
             }
             catch (Exception e)
             {
               _log.LogError(e, $"Processing of TAG file {tagFile.FileName} failed with exception {e.Message}");
 
-              response.Results.Add(new ProcessTAGFileResponseItem {FileName = tagFile.FileName, Success = false, Exception = e.ToString()});
+              response.Results.Add(new ProcessTAGFileResponseItem {FileName = tagFile.FileName, Success = false, Exception = e.Message, ReadResult = commonConverter.ReadResult });
             }
           }
 

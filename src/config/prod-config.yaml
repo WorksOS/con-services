@@ -22,8 +22,8 @@ data:
   MYSQL_SERVER_NAME_ReadVSPDB: rds-csp-mydb01.custtyfqh3uu.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
 #Service references
-  cws_profilemanager_public_v1: https://api-trimble.com/t/trimble.com/cws-profilemanager/1.0
-  cws_designmanager_public_v1: https://api-trimble.com/t/trimble.com/cws-designmanager/1.0
+  cws_profilemanager_public_v1: https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0
+  cws_designmanager_public_v1: https://api.trimble.com/t/trimble.com/cws-designmanager/1.0
   cws_profilesettings_public_v1: https://api.trimble.com/t/trimble.com/cws-profilesettings/1.0
   PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/ccss-worksos-preference/1.0
   TILE_BASE_URL: http://tile.prod.ccss.eks/internal/v1
