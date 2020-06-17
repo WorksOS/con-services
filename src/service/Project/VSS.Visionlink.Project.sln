@@ -134,6 +134,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TagFileAuth", "TagFileAuth"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{C2DC3454-B5D8-41B7-BE4B-91C6032E8A00}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Proxy", "..\Entitlements\Clients\VSS.Productivity3D.Entitlements.Proxy\VSS.Productivity3D.Entitlements.Proxy.csproj", "{9CE48FCB-9752-4B6E-A91F-E2F71AE49677}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Abstractions", "..\Entitlements\Clients\VSS.Productivity3D.Entitlements.Abstractions\VSS.Productivity3D.Entitlements.Abstractions.csproj", "{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entitlements", "Entitlements", "{B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -328,6 +334,14 @@ Global
 		{C2DC3454-B5D8-41B7-BE4B-91C6032E8A00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2DC3454-B5D8-41B7-BE4B-91C6032E8A00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2DC3454-B5D8-41B7-BE4B-91C6032E8A00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CE48FCB-9752-4B6E-A91F-E2F71AE49677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE48FCB-9752-4B6E-A91F-E2F71AE49677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CE48FCB-9752-4B6E-A91F-E2F71AE49677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE48FCB-9752-4B6E-A91F-E2F71AE49677}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -390,6 +404,9 @@ Global
 		{F191557C-814C-4516-95CC-75C15A650C6A} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{75AA41D5-6BAB-48B3-813D-56F1A7C2A8E3} = {0B171363-3F4B-4614-B74A-AC6155E644FF}
 		{C2DC3454-B5D8-41B7-BE4B-91C6032E8A00} = {75AA41D5-6BAB-48B3-813D-56F1A7C2A8E3}
+		{9CE48FCB-9752-4B6E-A91F-E2F71AE49677} = {B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD}
+		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7} = {B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD}
+		{B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD} = {0B171363-3F4B-4614-B74A-AC6155E644FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}

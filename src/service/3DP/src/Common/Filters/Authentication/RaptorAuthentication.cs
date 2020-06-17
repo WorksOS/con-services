@@ -5,6 +5,7 @@ using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
@@ -24,8 +25,9 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       ICwsAccountClient cwsAccountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
+      IEntitlementProxy entitlementProxy,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
+      IProjectProxy projectProxy) : base(next, cwsAccountClient, store, logger, entitlementProxy, serviceExceptionHandler)
     {
       this.projectProxy = projectProxy;
     }

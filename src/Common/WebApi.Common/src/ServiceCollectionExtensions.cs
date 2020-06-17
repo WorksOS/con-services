@@ -12,6 +12,8 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
+using VSS.Productivity3D.Entitlements.Proxy;
 using VSS.WebApi.Common.Swagger;
 
 namespace VSS.WebApi.Common
@@ -71,6 +73,7 @@ namespace VSS.WebApi.Common
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddTransient<IEntitlementProxy, EntitlementProxy>(); // required for license validation
 
       return services;
     }

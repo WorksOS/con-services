@@ -1,4 +1,7 @@
-﻿namespace VSS.Productivity3D.Entitlements.Common.Models.Request
+﻿using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+
+namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Request
 {
   public class EntitlementRequestModel
   {

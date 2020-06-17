@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Middleware
@@ -19,7 +20,8 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
       ICwsAccountClient cwsAccountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
+      IEntitlementProxy entitlementProxy,
+      IServiceExceptionHandler serviceExceptionHandler) : base(next, cwsAccountClient, store, logger, entitlementProxy, serviceExceptionHandler)
     {
     }
 
