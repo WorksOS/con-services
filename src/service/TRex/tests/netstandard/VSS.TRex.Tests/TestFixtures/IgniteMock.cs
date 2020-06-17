@@ -291,6 +291,24 @@ namespace VSS.TRex.Tests.TestFixtures
         return false;
       });
 
+      mockCache.Setup(x => x.RemoveAsync(It.IsAny<TK>())).Returns((TK key) =>
+      {
+          var task = new Task<bool>(() =>
+          {
+              if (mockCacheDictionary.ContainsKey(key))
+              {
+                  mockCacheDictionary.Remove(key);
+
+                  return true;
+              }
+
+              return false;
+          });
+          task.Start();
+
+          return task;
+      });
+
       mockCache.Setup(x => x.PutAll(It.IsAny<IEnumerable<KeyValuePair<TK, TV>>>())).Callback((IEnumerable<KeyValuePair<TK, TV>> values) =>
       {
         values.ForEach(value =>
