@@ -4,6 +4,7 @@ using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Push
@@ -13,7 +14,8 @@ namespace VSS.Productivity3D.Push
     private ILogger log;
     
 
-    public PushAuthentication(RequestDelegate next, ICwsAccountClient cwsAccountClient, IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
+    public PushAuthentication(RequestDelegate next, ICwsAccountClient cwsAccountClient, IConfigurationStore store, ILoggerFactory logger, IEntitlementProxy entitlementProxy, IServiceExceptionHandler serviceExceptionHandler) 
+      : base(next, cwsAccountClient, store, logger, entitlementProxy, serviceExceptionHandler)
     {
       log = logger.CreateLogger<PushAuthentication>();
     }
@@ -21,6 +23,11 @@ namespace VSS.Productivity3D.Push
     public override bool RequireCustomerUid(HttpContext context)
     {
       return false;
+    }
+
+    public override bool RequireEntitlementValidation(HttpContext context)
+    {
+      return false; 
     }
 
     public override bool InternalConnection(HttpContext context)

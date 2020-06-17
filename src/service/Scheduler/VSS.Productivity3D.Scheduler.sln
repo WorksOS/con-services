@@ -122,6 +122,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Proxy", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Proxy\VSS.Productivity3D.3DAssetMgmt.Proxy.csproj", "{65DFBE62-5A2B-4694-AA99-E6346514484E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entitlements", "Entitlements", "{CBF6B71E-0F64-4795-B8F6-E53452733347}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Abstractions", "..\Entitlements\Clients\VSS.Productivity3D.Entitlements.Abstractions\VSS.Productivity3D.Entitlements.Abstractions.csproj", "{B7593E43-4552-43B7-A7EE-9E1F5DFF65C7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Proxy", "..\Entitlements\Clients\VSS.Productivity3D.Entitlements.Proxy\VSS.Productivity3D.Entitlements.Proxy.csproj", "{835CD71F-7072-42B7-BC6C-906083C951FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -304,6 +310,14 @@ Global
 		{65DFBE62-5A2B-4694-AA99-E6346514484E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65DFBE62-5A2B-4694-AA99-E6346514484E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65DFBE62-5A2B-4694-AA99-E6346514484E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7593E43-4552-43B7-A7EE-9E1F5DFF65C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7593E43-4552-43B7-A7EE-9E1F5DFF65C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7593E43-4552-43B7-A7EE-9E1F5DFF65C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7593E43-4552-43B7-A7EE-9E1F5DFF65C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{835CD71F-7072-42B7-BC6C-906083C951FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{835CD71F-7072-42B7-BC6C-906083C951FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{835CD71F-7072-42B7-BC6C-906083C951FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{835CD71F-7072-42B7-BC6C-906083C951FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -361,6 +375,9 @@ Global
 		{1A7F0BD6-AAB9-4C3A-9784-825F4C7C14F2} = {07B2A0F4-2234-4EBB-8921-137B7056E395}
 		{1C1BEF27-1A0B-4B54-BDB9-445BBA38FA47} = {1A7F0BD6-AAB9-4C3A-9784-825F4C7C14F2}
 		{65DFBE62-5A2B-4694-AA99-E6346514484E} = {1A7F0BD6-AAB9-4C3A-9784-825F4C7C14F2}
+		{CBF6B71E-0F64-4795-B8F6-E53452733347} = {07B2A0F4-2234-4EBB-8921-137B7056E395}
+		{B7593E43-4552-43B7-A7EE-9E1F5DFF65C7} = {CBF6B71E-0F64-4795-B8F6-E53452733347}
+		{835CD71F-7072-42B7-BC6C-906083C951FB} = {CBF6B71E-0F64-4795-B8F6-E53452733347}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CC1F5C8-4B54-4A38-8EA5-D5DB089670E1}
