@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -63,7 +65,8 @@ namespace VSS.Productivity3D.Entitlements.Proxy
 
         try
         {
-          var result = await PostMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserEmail, customHeaders);
+          await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request)));
+          var result = await PostMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserEmail, customHeaders, null, ms);
           if (result == null)
           {
             log.LogInformation($"No Entitlement returned from the Entitlement Service, returned a failed entitlement request to the caller.");
