@@ -74,22 +74,24 @@ namespace VSS.TRex.GridFabric.Servers.Compute
                 { "Owner", TRexGrids.ImmutableGridName() }
             };
 
-      // Configure the Ignite 2.1 persistence layer to store our data
-      // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
+      // Configure the Ignite persistence layer to store our data
       cfg.DataStorageConfiguration = new DataStorageConfiguration
       {
         WalMode = WalMode.Fsync,
         PageSize = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_PAGE_SIZE,
 
         StoragePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable", "Persistence"),
-        WalArchivePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable", "WalArchive"),
         WalPath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable", "WalStore"),
+        WalArchivePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable", "WalArchive"),
+
+        WalSegmentSize = 512 * 1024 * 1024, // Set the WalSegmentSize to 512Mb to better support high write loads (can be set to max 2Gb)
+        MaxWalArchiveSize = (long)10 * 512 * 1024 * 1024, // Ensure there are 10 segments in the WAL archive at the defined segment size
 
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
           Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
-          InitialSize = 128 * 1024 * 1024,  // 128 MB
-          MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB
+          InitialSize = 128 * 1024 * 1024,  // 128 MB // TODO: This needs to be added to configuration
+          MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB // TODO: This needs to be added to configuration
 
           PersistenceEnabled = true
         }
@@ -106,7 +108,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableCacheComputeServer"));
 
       // Set an Ignite metrics heartbeat of 10 seconds
-      cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
+      cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10); // TODO: This needs to be added to configuration
 
       cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE);
 
@@ -125,7 +127,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {
-        LocalPort = 47100,
+        LocalPort = 47100
       };
 
       cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.12.0.jar=8088:prometheusConfig.yaml");
@@ -157,7 +159,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.CommunicationSpi = new TcpCommunicationSpi
       {
         LocalAddress = "127.0.0.1",
-        LocalPort = 47100,
+        LocalPort = 47100
       };
       return cfg;
     }
