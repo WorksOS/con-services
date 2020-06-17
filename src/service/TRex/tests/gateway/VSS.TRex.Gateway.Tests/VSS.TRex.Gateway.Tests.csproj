@@ -56,6 +56,9 @@
     <None Update="TestData\BootCamp 2012.dc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\DXFBoundaryResult.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Original Ground Survey - DesignMap.dxf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Text.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -136,6 +137,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     {
       var dxfFileName = "Original Ground Survey - DesignMap.dxf";
       var csFileName = "BootCamp 2012.dc";
+      var expectedResultFileName = "DXFBoundaryResult.json";
+
+      var jsonString = File.ReadAllText(Path.Combine("TestData", expectedResultFileName));
+      var expectedResult = JsonSerializer.Deserialize<DXFBoundaryResult>(jsonString);
 
       var request = new DXFBoundariesRequest(
         Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", csFileName))),
@@ -151,22 +156,24 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.Message.Should().Be("Success");
 
-/*      if (result is DXFBoundaryResult boundary)
+      if (result is DXFBoundaryResult boundary)
       {
-        boundary.Boundaries.Count.Should().Be(expectedBoundaryCount);
+        boundary.Boundaries.Should().HaveCount(expectedResult.Boundaries.Count);
 
-        if (expectedBoundaryCount > 0)
+        for (var i = 0; i < boundary.Boundaries.Count; i++)
         {
-          boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
-          boundary.Boundaries[0].Name.Should().Be(expectedName);
-          boundary.Boundaries[0].Type.Should().Be(expectedType);
+          boundary.Boundaries[i].Name.Should().Be(expectedResult.Boundaries[i].Name);
+          boundary.Boundaries[i].Type.Should().Be(expectedResult.Boundaries[i].Type);
+
+          for (var n = 0; i < boundary.Boundaries[i].Fence.Count; n++)
+          {
+            boundary.Boundaries[i].Fence[n].Lat.Should().Be(expectedResult.Boundaries[i].Fence[n].Lat);
+            boundary.Boundaries[i].Fence[n].Lon.Should().Be(expectedResult.Boundaries[i].Fence[n].Lon);
+          }
         }
       }
       else
-      {
         false.Should().BeTrue(); // fail the test
-      }
-*/    
     }
   }
 }
