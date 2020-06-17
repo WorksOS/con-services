@@ -40,6 +40,7 @@ data:
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
   ENVIRONMENT: DEV
   CORECLR_ENABLE_PROFILING: "0"
+  ENABLE_ENTITLEMENTS_CHECKING: "true"
 #AWS configuration  
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-trex-designfiles
   AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-rpd-workos-exports
