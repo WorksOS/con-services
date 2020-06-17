@@ -159,29 +159,27 @@ namespace VSS.TRex.SiteModelChangeMaps
             // Add the spatial change to every machine in the site model
             foreach (var machine in siteModel.Machines)
             {
-              using (var l = _changeMapProxy.Lock(item.ProjectUID, machine.ID))
+              var l = _changeMapProxy.Lock(item.ProjectUID, machine.ID);
+              l.Enter();
+              try
               {
-                l.Enter();
-                try
+                var currentMask = _changeMapProxy.Get(item.ProjectUID, machine.ID);
+                if (currentMask == null)
                 {
-                  var currentMask = _changeMapProxy.Get(item.ProjectUID, machine.ID);
-                  if (currentMask == null)
-                  {
-                    currentMask = new SubGridTreeSubGridExistenceBitMask();
-                    currentMask.SetOp_OR(siteModel.ExistenceMap);
-                  }
-
-                  // Extract the change map from the item  
-                  var updateMask = new SubGridTreeSubGridExistenceBitMask();
-
-                  updateMask.FromBytes(item.Content);
-                  currentMask.SetOp_OR(updateMask);
-                  _changeMapProxy.Put(item.ProjectUID, machine.ID, currentMask);
+                  currentMask = new SubGridTreeSubGridExistenceBitMask();
+                  currentMask.SetOp_OR(siteModel.ExistenceMap);
                 }
-                finally
-                {
-                  l.Exit();
-                }
+
+                // Extract the change map from the item  
+                var updateMask = new SubGridTreeSubGridExistenceBitMask();
+
+                updateMask.FromBytes(item.Content);
+                currentMask.SetOp_OR(updateMask);
+                _changeMapProxy.Put(item.ProjectUID, machine.ID, currentMask);
+              }
+              finally
+              {
+                l.Exit();
               }
             }
 
@@ -190,27 +188,25 @@ namespace VSS.TRex.SiteModelChangeMaps
 
           case SiteModelChangeMapOperation.RemoveSpatialChanges: // Subtract from the change map...
           {
-            using (var l = _changeMapProxy.Lock(item.ProjectUID, item.MachineUid))
+            var l = _changeMapProxy.Lock(item.ProjectUID, item.MachineUid);
+            l.Enter();
+            try
             {
-              l.Enter();
-              try
-              {
-                // Remove the spatial change only from the machine the made the query
-                var currentMask = _changeMapProxy.Get(item.ProjectUID, item.MachineUid);
+              // Remove the spatial change only from the machine the made the query
+              var currentMask = _changeMapProxy.Get(item.ProjectUID, item.MachineUid);
 
-                if (currentMask != null)
-                {
-                  // Extract the change map from the item  
-                  var updateMask = new SubGridTreeSubGridExistenceBitMask();
-
-                  currentMask.SetOp_ANDNOT(updateMask);
-                  _changeMapProxy.Put(item.ProjectUID, item.MachineUid, currentMask);
-                }
-              }
-              finally
+              if (currentMask != null)
               {
-                l.Exit();
+                // Extract the change map from the item  
+                var updateMask = new SubGridTreeSubGridExistenceBitMask();
+
+                currentMask.SetOp_ANDNOT(updateMask);
+                _changeMapProxy.Put(item.ProjectUID, item.MachineUid, currentMask);
               }
+            }
+            finally
+            {
+              l.Exit();
             }
 
             break;
