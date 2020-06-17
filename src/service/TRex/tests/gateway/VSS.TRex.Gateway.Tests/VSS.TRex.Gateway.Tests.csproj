@@ -53,6 +53,12 @@
     <None Update="TestData\Binary lesson-3.dxf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\BootCamp 2012.dc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\Original Ground Survey - DesignMap.dxf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\Southern Motorway 55 point polygon.dxf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

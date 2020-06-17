@@ -130,5 +130,43 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       Func<Task> act = async () => await executor.ProcessAsync(request);
       act.Should().Throw<ServiceException>().WithMessage($"Error processing file: {DXFUtilitiesResult.UnknownFileFormat}");
     }
+
+    [Fact]
+    public async void Boundary_Points_Validation()
+    {
+      var dxfFileName = "Original Ground Survey - DesignMap.dxf";
+      var csFileName = "BootCamp 2012.dc";
+
+      var request = new DXFBoundariesRequest(
+        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", csFileName))),
+        ImportedFileType.SiteBoundary,
+        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", dxfFileName))),
+        DxfUnitsType.UsSurveyFeet, 1, false);
+
+      var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
+      executor.Should().NotBeNull();
+
+      var result = await executor.ProcessAsync(request);
+      result.Should().NotBeNull();
+      result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+      result.Message.Should().Be("Success");
+
+/*      if (result is DXFBoundaryResult boundary)
+      {
+        boundary.Boundaries.Count.Should().Be(expectedBoundaryCount);
+
+        if (expectedBoundaryCount > 0)
+        {
+          boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
+          boundary.Boundaries[0].Name.Should().Be(expectedName);
+          boundary.Boundaries[0].Type.Should().Be(expectedType);
+        }
+      }
+      else
+      {
+        false.Should().BeTrue(); // fail the test
+      }
+*/    
+    }
   }
 }
