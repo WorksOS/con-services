@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Serilog.Extensions;
 
@@ -31,9 +32,10 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var mockLoggerFactoryProxy = new Mock<ILoggerFactory>();
       var mockServiceExceptionProxy = new Mock<IServiceExceptionHandler>();
       var mockProjectProxy = new Mock<IProjectProxy>();
+      var mockEntitlements = new Mock<IEntitlementProxy>();
 
       var raptorAuthentication = new RaptorAuthentication(MockRequestDelegate,
-        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, mockLoggerFactoryProxy.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
+        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, mockLoggerFactoryProxy.Object, mockEntitlements.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
 
       var request = new DefaultHttpContext().Request;
       request.Path = "/device/patches";
@@ -54,9 +56,10 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var mockLoggerFactoryProxy = new Mock<ILoggerFactory>();
       var mockServiceExceptionProxy = new Mock<IServiceExceptionHandler>();
       var mockProjectProxy = new Mock<IProjectProxy>();
+      var mockEntitlements = new Mock<IEntitlementProxy>();
 
       var raptorAuthentication = new RaptorAuthentication(MockRequestDelegate,
-        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, mockLoggerFactoryProxy.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
+        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, mockLoggerFactoryProxy.Object, mockEntitlements.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
 
       var request = new DefaultHttpContext().Request;
       request.Path = "/device/patches";
@@ -77,9 +80,10 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var mockLoggerFactoryProxy = new Mock<ILoggerFactory>();
       var mockServiceExceptionProxy = new Mock<IServiceExceptionHandler>();
       var mockProjectProxy = new Mock<IProjectProxy>();
+      var mockEntitlements = new Mock<IEntitlementProxy>();
 
       var raptorAuthentication = new RaptorAuthentication(MockRequestDelegate,
-        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, mockLoggerFactoryProxy.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
+        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, mockLoggerFactoryProxy.Object, mockEntitlements.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
 
       var request = new DefaultHttpContext().Request;
       request.Path = "/productiondata/patches";
@@ -100,9 +104,10 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var loggerFactoryProxy = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log"));
       var mockServiceExceptionProxy = new Mock<IServiceExceptionHandler>();
       var mockProjectProxy = new Mock<IProjectProxy>();
+      var mockEntitlements = new Mock<IEntitlementProxy>();
 
       var raptorAuthentication = new RaptorAuthentication(MockRequestDelegate,
-        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, loggerFactoryProxy, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
+        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, loggerFactoryProxy, mockEntitlements.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
 
       var request = new DefaultHttpContext().Request;
       request.Path = "/api/v2/tagfiles";
@@ -123,9 +128,10 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var loggerFactoryProxy = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log"));
       var mockServiceExceptionProxy = new Mock<IServiceExceptionHandler>();
       var mockProjectProxy = new Mock<IProjectProxy>();
+      var mockEntitlements = new Mock<IEntitlementProxy>();
 
       var raptorAuthentication = new RaptorAuthentication(MockRequestDelegate,
-        mockCwsAccountClient.Object, mockConfigStoreProxy.Object,loggerFactoryProxy, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
+        mockCwsAccountClient.Object, mockConfigStoreProxy.Object,loggerFactoryProxy, mockEntitlements.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
 
       var request = new DefaultHttpContext().Request;
       request.Path = "/device/patches";
@@ -146,9 +152,10 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var loggerFactoryProxy = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log"));
       var mockServiceExceptionProxy = new Mock<IServiceExceptionHandler>();
       var mockProjectProxy = new Mock<IProjectProxy>();
+      var mockEntitlements = new Mock<IEntitlementProxy>();
 
       var raptorAuthentication = new RaptorAuthentication(MockRequestDelegate,
-        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, loggerFactoryProxy, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
+        mockCwsAccountClient.Object, mockConfigStoreProxy.Object, loggerFactoryProxy, mockEntitlements.Object, mockServiceExceptionProxy.Object, mockProjectProxy.Object);
 
       var request = new DefaultHttpContext().Request;
       request.Path = "/api/v2/tagfiles";
