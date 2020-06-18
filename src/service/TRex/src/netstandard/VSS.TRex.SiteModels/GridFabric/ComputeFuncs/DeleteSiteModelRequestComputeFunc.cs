@@ -15,7 +15,7 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
   /// </summary>
   public class DeleteSiteModelRequestComputeFunc : BaseComputeFunc, IComputeFunc<DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<DeleteSiteModelRequestComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<DeleteSiteModelRequestComputeFunc>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -26,7 +26,7 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
 
     public DeleteSiteModelRequestResponse Invoke(DeleteSiteModelRequestArgument arg)
     {
-      Log.LogInformation("In GridRequestComputeFunc.Invoke()");
+      _log.LogInformation("In GridRequestComputeFunc.Invoke()");
 
       try
       {
@@ -34,21 +34,21 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
         {
           var request = new DeleteSiteModelComputeFuncExecutor(arg);
 
-          Log.LogInformation("Executing request.ExecuteAsync()");
+          _log.LogInformation("Executing request.ExecuteAsync()");
 
           if (!request.ExecuteAsync().WaitAndUnwrapException())
-            Log.LogError($"Request execution failed");
+            _log.LogError($"Request execution failed: {request?.Response?.Result ?? DeleteSiteModelResult.UnknownError}");
 
           return request.Response;
         }
         finally
         {
-          Log.LogInformation("Exiting GridRequestComputeFunc.Invoke()");
+          _log.LogInformation("Exiting GridRequestComputeFunc.Invoke()");
         }
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Unhandled exception in {nameof(Invoke)}");
+        _log.LogError(e, $"Unhandled exception in {nameof(Invoke)}");
         return new DeleteSiteModelRequestResponse {Result = DeleteSiteModelResult.UnhandledException};
       }
     }

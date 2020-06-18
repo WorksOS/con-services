@@ -148,7 +148,7 @@ namespace VSS.TRex.Events.Interfaces
     /// <summary>
     /// Saves the event lists for this machine to the persistent store
     /// </summary>
-    void RemoveMachineEventsFromPersistentStore(IStorageProxy storageProxy);
+    void RemoveMachineEventsFromPersistentStore(IStorageProxy storageProxy, bool exceptOverrideEvents);
 
     bool LoadEventsForMachine(IStorageProxy storageProxy);
 

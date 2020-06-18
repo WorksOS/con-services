@@ -1,6 +1,4 @@
 ﻿using System;
-using VSS.TRex.Common;
-using VSS.TRex.Types;
 using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Events.Models

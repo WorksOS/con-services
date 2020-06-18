@@ -304,13 +304,20 @@ namespace VSS.TRex.Events
       }
     }
 
-    public void RemoveMachineEventsFromPersistentStore(IStorageProxy storageProxy)
+    private bool IsOverrideEvent(ProductionEventType evt) => evt == ProductionEventType.DesignOverride || evt == ProductionEventType.LayerOverride;
+
+    public void RemoveMachineEventsFromPersistentStore(IStorageProxy storageProxy, bool exceptOverrideEvents)
     {
       if (SiteModel.IsTransient)
         throw new TRexPersistencyException($"Site model {SiteModel.ID} is a transient site model. Transient site models may not remove events from the persistent store.");
 
       foreach (var evt in ProductionEventTypeValues)
       {
+        if (exceptOverrideEvents && IsOverrideEvent(evt))
+        {
+          continue;
+        }
+
         LoadFromStore(GetEventList(evt), evt, storageProxy);
         allEventsForMachine[(int)evt]?.RemoveFromStore(storageProxy);
       }
