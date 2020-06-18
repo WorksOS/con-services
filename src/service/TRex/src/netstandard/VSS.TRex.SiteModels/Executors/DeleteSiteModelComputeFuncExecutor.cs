@@ -109,7 +109,7 @@ namespace VSS.TRex.SiteModels.Executors
     }
 
     /// <summary>
-    /// Executor that implements requesting and rendering grid information to create the grid rows
+    /// Executor that implements deletion of the project
     /// </summary>
     /// <returns></returns>
     public async Task<bool> ExecuteAsync()
