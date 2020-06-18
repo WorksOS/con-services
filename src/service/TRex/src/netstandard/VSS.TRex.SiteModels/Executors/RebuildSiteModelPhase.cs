@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.SiteModels.Executors
 {
-  public enum SiteModelRebuildPhase
+  public enum RebuildSiteModelPhase
   {
     Unknown,
 

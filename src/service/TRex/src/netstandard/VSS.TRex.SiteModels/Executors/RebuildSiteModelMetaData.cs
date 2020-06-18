@@ -1,4 +1,6 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.SiteModels.Executors
@@ -7,7 +9,7 @@ namespace VSS.TRex.SiteModels.Executors
   {
     private static byte VERSION_NUMBER = 1;
 
-    SiteModelRebuildPhase Phase { get; set; }
+    RebuildSiteModelPhase Phase { get; set; }
 
     /// <summary>
     /// The UTC date at which the last update to this metadata was made
@@ -35,7 +37,7 @@ namespace VSS.TRex.SiteModels.Executors
 
       ProjectUid = reader.ReadGuid() ?? Guid.Empty;
       LastUpdateUtcTicks = reader.ReadLong();
-      Phase = (SiteModelRebuildPhase)reader.ReadInt();
+      Phase = (RebuildSiteModelPhase)reader.ReadInt();
       LastSubmittedTagFile = reader.ReadString();
       LastProcessedTagFile = reader.ReadString();
     }
