@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 {
@@ -15,10 +14,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public string Name { get; set; }
 
-    public ProjectType ProjectType { get; set; }
-
-    //Temporary - until clean up done - used to exclude non-3d projects from overlap test
-    public CwsProjectType CwsProjectType { get; set; }
+    public CwsProjectType ProjectType { get; set; }
 
     public UserProjectRoleEnum UserProjectRole { get; set; }
 

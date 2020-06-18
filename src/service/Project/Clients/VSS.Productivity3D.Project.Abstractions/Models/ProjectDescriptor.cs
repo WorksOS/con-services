@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {
@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// <value>
     /// The type of the project.
     /// </value>
-    public ProjectType ProjectType { get; set; }
+    public CwsProjectType ProjectType { get; set; }
 
     /// <summary>
     /// Gets the name of the project type.

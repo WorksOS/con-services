@@ -21,8 +21,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var customerUid = Guid.NewGuid();
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);
@@ -44,8 +44,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var startDateTime = ts.FirstEventDate;
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);
@@ -84,8 +84,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var startDateTime = ts.FirstEventDate;
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    |                 | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);

@@ -68,8 +68,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectTimeZoneIana, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
-            .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore())
-            .ForMember(dest => dest.CwsProjectType, opt => opt.Ignore());
+            .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
@@ -152,8 +151,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<ProjectValidateDto, ProjectValidation>()
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => TRNHelper.ExtractGuid(src.AccountTrn)))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ProjectTrn) ? null : TRNHelper.ExtractGuid(src.ProjectTrn)))
-            //ProjectType mapping will need to be updated if we add more 3DP project types
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType.HasValue ? ProjectType.Standard: (ProjectType?)null))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
             .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => src.UpdateType))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))

@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.DataOcean.Client;
@@ -41,7 +42,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task UpdateProjectExecutor_HappyPath()
     {
-      var projectType = ProjectType.Standard;
+      var projectType = CwsProjectType.AcceptsTagFiles;
       var existingProject = await CreateProject(_projectUid.ToString(), projectType);
 
       if (existingProject.ProjectUID != null)
@@ -107,7 +108,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       }
     }
 
-    private async Task<ProjectDatabaseModel> CreateProject(string projectUid, ProjectType projectType)
+    private async Task<ProjectDatabaseModel> CreateProject(string projectUid, CwsProjectType projectType)
     {
       var createProjectEvent = new CreateProjectEvent
       {

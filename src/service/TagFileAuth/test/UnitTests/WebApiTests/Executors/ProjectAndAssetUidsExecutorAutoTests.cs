@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -14,7 +15,6 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests.Executors
 {
@@ -35,7 +35,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
+      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = CwsProjectType.AcceptsTagFiles, CustomerUID = projectAccountUid };
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
@@ -85,7 +85,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
+      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = CwsProjectType.AcceptsTagFiles, CustomerUID = projectAccountUid };
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", "ec520Serial", 91, 181, DateTime.UtcNow.AddDays(-3));
 
@@ -119,7 +119,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
+      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = CwsProjectType.AcceptsTagFiles, CustomerUID = projectAccountUid };
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
@@ -154,7 +154,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
+      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = CwsProjectType.AcceptsTagFiles, CustomerUID = projectAccountUid };
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
@@ -188,7 +188,7 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
+      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = CwsProjectType.AcceptsTagFiles, CustomerUID = projectAccountUid };
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
@@ -222,8 +222,8 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
-      var projectOfInterest2 = new ProjectData { ProjectUID = Guid.NewGuid().ToString(), ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
+      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = CwsProjectType.AcceptsTagFiles, CustomerUID = projectAccountUid };
+      var projectOfInterest2 = new ProjectData { ProjectUID = Guid.NewGuid().ToString(), ProjectType = CwsProjectType.AcceptsTagFiles, CustomerUID = projectAccountUid };
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 

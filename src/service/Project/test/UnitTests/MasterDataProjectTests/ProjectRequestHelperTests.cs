@@ -19,7 +19,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Serilog.Extensions;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.MasterData.ProjectTests
@@ -139,7 +138,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(_projectUid.ToString(), result[0].ProjectUID);
       Assert.Equal(_customerUid.ToString(), result[0].CustomerUID);
       Assert.Equal(projectName, result[0].Name);
-      Assert.Equal(ProjectType.Standard, result[0].ProjectType);
+      Assert.Equal(CwsProjectType.AcceptsTagFiles, result[0].ProjectType);
       Assert.Equal("New Zealand Standard Time", result[0].ProjectTimeZone);
       Assert.Equal("Pacific/Auckland", result[0].ProjectTimeZoneIana);
       Assert.Equal("POLYGON((150.3 1.2,150.4 1.2,150.4 1.3,150.4 1.4,150.3 1.2))", result[0].Boundary);
@@ -171,7 +170,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(_projectUid.ToString(), result.ProjectUID);
       Assert.Equal(_customerUid.ToString(), result.CustomerUID);
       Assert.Equal(projectName, result.Name);
-      Assert.Equal(ProjectType.Standard, result.ProjectType);
+      Assert.Equal(CwsProjectType.AcceptsTagFiles, result.ProjectType);
       Assert.Equal("New Zealand Standard Time", result.ProjectTimeZone);
       Assert.Equal(projectDetailResponseModel.ProjectSettings.TimeZone, result.ProjectTimeZoneIana);
       Assert.Equal("POLYGON((150.3 1.2,150.4 1.2,150.4 1.3,150.4 1.4,150.3 1.2))", result.Boundary);

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -45,8 +45,8 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void MapCreateProjectV5RequestToEvent()
     {
-      var requestedProjectType = ProjectType.Standard;
-      var expectedProjectType = ProjectType.Standard;
+      var requestedProjectType = CwsProjectType.AcceptsTagFiles;
+      var expectedProjectType = CwsProjectType.AcceptsTagFiles;
       var request = CreateProjectV5Request.CreateACreateProjectV5Request
         (requestedProjectType, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
@@ -69,7 +69,7 @@ namespace VSS.MasterData.ProjectTests
       var project = new ProjectDatabaseModel
       {
         ProjectUID = Guid.NewGuid().ToString(),
-        ProjectType = ProjectType.Standard,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         Name = "the Name",
         ProjectTimeZone = "NZ stuff",
         ProjectTimeZoneIana = "Pacific stuff",

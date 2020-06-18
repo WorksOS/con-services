@@ -12,7 +12,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   {
     public Guid CustomerUid { get; set; }
     public Guid? ProjectUid { get; set; }
-    public ProjectType? ProjectType { get; set; } 
+    public CwsProjectType? ProjectType { get; set; } 
     public string ProjectName { get; set; }
     public string ProjectBoundaryWKT { get; set; }
     public ProjectUpdateType UpdateType { get; set; }

@@ -338,7 +338,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(IsProjectValid)} Project Validation Check {JsonConvert.SerializeObject(validateDto)}");
 
       // Nothing to validate for a non 3d-enabled project
-      if (validateDto.ProjectType.HasValue && validateDto.ProjectType == CwsProjectType.Standard)
+      if (validateDto.ProjectType.HasValue && !validateDto.ProjectType.Value.HasFlag(CwsProjectType.AcceptsTagFiles))
         return new ContractExecutionResult();
 
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(validateDto);
