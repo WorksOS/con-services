@@ -3,29 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
-using VSS.Common.Abstractions.Clients.CWS;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Configuration;
-using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.WebApi.Common;
 using Xunit;
-using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
@@ -70,7 +55,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var customHeaders = new HeaderDictionary();
 
       var request = CreateProjectV5Request.CreateACreateProjectV5Request
-      (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+      (CwsProjectType.AcceptsTagFiles, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid.ToString());
       Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);

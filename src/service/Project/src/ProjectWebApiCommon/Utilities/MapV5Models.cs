@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -23,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       var internalPoints = AutoMapperUtility.Automapper.Map<List<Point>>(source.BoundaryLL);
       createProjectEvent.ProjectBoundary =
         GeofenceValidation.GetWicketFromPoints(GeofenceValidation.MakingValidPoints(internalPoints));
-      createProjectEvent.ProjectType = ProjectType.Standard;
+      createProjectEvent.ProjectType = CwsProjectType.AcceptsTagFiles;
       return createProjectEvent;
     }
   }

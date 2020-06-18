@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Exceptions;
@@ -31,7 +32,7 @@ namespace VSS.MasterData.ProjectTests
     public void ValidateUpsertProjectRequest_GoodBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (_projectUid, ProjectType.Standard, "the projectName", "the project description", null, _validBoundary);
+      (_projectUid, CwsProjectType.AcceptsTagFiles, "the projectName", "the project description", null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -47,7 +48,7 @@ namespace VSS.MasterData.ProjectTests
     public void ValidateUpsertProjectRequest_InvalidBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (_projectUid, ProjectType.Standard, "the projectName", null, null, _invalidBoundary);
+      (_projectUid, CwsProjectType.AcceptsTagFiles, "the projectName", null, null, _invalidBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -66,7 +67,7 @@ namespace VSS.MasterData.ProjectTests
     {
       var projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (_projectUid, ProjectType.Standard, projectName, "the project description", null, _validBoundary);
+      (_projectUid, CwsProjectType.AcceptsTagFiles, projectName, "the project description", null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -85,7 +86,7 @@ namespace VSS.MasterData.ProjectTests
       var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTests>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (_projectUid, ProjectType.Standard, projectName, null, null, _validBoundary);
+      (_projectUid, CwsProjectType.AcceptsTagFiles, projectName, null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -109,7 +110,7 @@ namespace VSS.MasterData.ProjectTests
     {
       var projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (_projectUid, ProjectType.Standard, projectName, null, null, _validBoundary);
+      (_projectUid, CwsProjectType.AcceptsTagFiles, projectName, null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -136,7 +137,7 @@ namespace VSS.MasterData.ProjectTests
     {
       var projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (_projectUid, ProjectType.Standard, projectName, null, null, _validBoundary);
+      (_projectUid, CwsProjectType.AcceptsTagFiles, projectName, null, null, _validBoundary);
 
       var projectList = new ProjectDetailListResponseModel()
       {
@@ -162,7 +163,7 @@ namespace VSS.MasterData.ProjectTests
       // note that this should NEVER occur as the first duplicate shouldn't have been allowed
       var projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (_projectUid, ProjectType.Standard, projectName, null, null, _validBoundary);
+      (_projectUid, CwsProjectType.AcceptsTagFiles, projectName, null, null, _validBoundary);
 
       var projectList = new ProjectDetailListResponseModel()
       {

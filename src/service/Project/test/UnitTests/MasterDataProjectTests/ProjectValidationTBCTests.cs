@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.MasterData.ProjectTests
@@ -47,7 +46,7 @@ namespace VSS.MasterData.ProjectTests
     public void ValidateCreateProjectV5Request_HappyPath()
     {
       var request = CreateProjectV5Request.CreateACreateProjectV5Request
-      (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+      (CwsProjectType.AcceptsTagFiles, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid.ToString());
       Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);
@@ -69,7 +68,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var request = CreateProjectV5Request.CreateACreateProjectV5Request
-      (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+      (CwsProjectType.AcceptsTagFiles, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
       var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid.ToString());
 
@@ -100,7 +99,7 @@ namespace VSS.MasterData.ProjectTests
       };
 
       var request = CreateProjectV5Request.CreateACreateProjectV5Request
-      (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
+      (CwsProjectType.AcceptsTagFiles, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
       var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid.ToString());
 

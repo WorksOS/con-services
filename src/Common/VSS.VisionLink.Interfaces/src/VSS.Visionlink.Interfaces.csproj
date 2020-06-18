@@ -11,4 +11,8 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

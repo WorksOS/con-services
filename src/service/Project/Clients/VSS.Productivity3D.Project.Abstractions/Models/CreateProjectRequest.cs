@@ -1,6 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {
@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// The type of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectType", Required = Required.Always)]
-    public ProjectType ProjectType { get; set; }
+    public CwsProjectType ProjectType { get; set; }
 
     /// <summary>
     /// The name of the project.
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// Create instance of CreateProjectRequest
     /// </summary>
     public static CreateProjectRequest CreateACreateProjectRequest(string customerUid,
-      ProjectType projectType, string projectName, string projectTimezone, string projectBoundary,
+      CwsProjectType projectType, string projectName, string projectTimezone, string projectBoundary,
       string coordinateSystemFileName, byte[] coordinateSystemFileContent
       )
     {
