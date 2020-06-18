@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
@@ -98,16 +99,19 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       FailureDetails details = null;
       if (status.Equals(Hangfire.States.SucceededState.StateName, StringComparison.OrdinalIgnoreCase))
       {
-        // Attempt to get the download link that should ve set in the job
-        key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3_KEY_STATE_KEY);
-        downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DOWNLOAD_LINK_STATE_KEY);
-
-        if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(downloadLink))
+        if (Request.Path.Value.Contains("export"))
         {
-          log.LogWarning("S3Key or Downloadlink not set in background job, attempting to find it via the original request");
-          var filename = (jobData?.Job.Args[0] as ScheduleJobRequest).Filename ?? jobId;
-          key = ExportJob.GetS3Key(jobId, filename);
-          downloadLink = exportJob.GetDownloadLink(jobId, filename);
+          // Attempt to get the download link that should ve set in the job
+          key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3_KEY_STATE_KEY);
+          downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DOWNLOAD_LINK_STATE_KEY);
+
+          if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(downloadLink))
+          {
+            log.LogWarning("S3Key or Downloadlink not set in background job, attempting to find it via the original request");
+            var filename = (jobData?.Job.Args[0] as ScheduleJobRequest).Filename ?? jobId;
+            key = ExportJob.GetS3Key(jobId, filename);
+            downloadLink = exportJob.GetDownloadLink(jobId, filename);
+          }
         }
       }
       else if (status.Equals(Hangfire.States.DeletedState.StateName, StringComparison.OrdinalIgnoreCase))
