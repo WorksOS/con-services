@@ -61,6 +61,7 @@ namespace VSS.TRex.SiteModels.Executors
       //***********************************
       // TODO: LOTS OF STUFF HAPPENING HERE
       /*
+       * 0. Check that the project referenced in the request is not already undergoing a rebuild operation
        * 1. Perform project deletion step and record result from that. Abort if there is an issue.
        * 2. The request saves progress state and metadata into a special cache to monitor progress
        * 
