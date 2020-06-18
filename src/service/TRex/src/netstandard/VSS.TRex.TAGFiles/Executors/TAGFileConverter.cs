@@ -157,17 +157,14 @@ namespace VSS.TRex.TAGFiles.Executors
         Machine = Machines.Locate(assetUid, isJohnDoe) ?? Machines.CreateNew("", "", MachineType.Unknown, DeviceTypeEnum.MANUALDEVICE, isJohnDoe, assetUid);
         if (Machine.MachineType == MachineType.Unknown)
         {
-          // Unknow machine. Prescan to determine machinetype for swather creation
-          /*
+          // Unknown machine. Prescan to determine machinetype for swather creation
           var tagFilePreScan = new TAGFilePreScan();
           tagFilePreScan.Execute(tagData);
           tagData.Position = 0; // reset
-          if (tagFilePreScan.ReadResult != TAGReadResult.NoError)
-            return false;
-          else
+          if (tagFilePreScan.ReadResult == TAGReadResult.NoError)
             Machine.MachineType = tagFilePreScan.MachineType;
-          */
-          Machine.MachineType = MachineType.CutterSuctionDredge;
+          else
+            return false;
         }
         var holdMachineType = Machine.MachineType;
 
