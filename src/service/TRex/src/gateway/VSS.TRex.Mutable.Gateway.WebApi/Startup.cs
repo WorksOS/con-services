@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.ServiceDiscovery;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Proxy;
@@ -23,6 +22,8 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -67,6 +68,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
          .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
          .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
+         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
          .Build();
 
       services.AddServiceDiscovery();

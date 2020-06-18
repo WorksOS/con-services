@@ -60,8 +60,6 @@ namespace MockProjectWebApi
       services.AddSingleton<IFiltersService, FiltersService>();
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
       services.AddSingleton<IProjectService, ProjectService>();
-      //services.AddTransient<IWebRequest, GracefulWebRequest>();
-      //services.AddTransient<IEntitlementProxy, EntitlementProxy>(); // required for license validation
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
