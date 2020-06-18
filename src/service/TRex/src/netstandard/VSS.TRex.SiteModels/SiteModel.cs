@@ -122,6 +122,16 @@ namespace VSS.TRex.SiteModels
       sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, ID, siteModelMarkedForDeletion: true);
     }
 
+    public void RemovedMarkForDeletion()
+    {
+      // Note this site model as being ready for use after a deletion operation
+      IsMarkedForDeletion = false;
+
+      // Save the deletion state to persistent storage. This will be reflected to the immutable proxy if this is the mutable context
+      // Once saved, grid activities attempting access the site model will be allowed access again
+      SaveMetadataToPersistentStore(PrimaryStorageProxy);
+    }
+
     private readonly object _lockObj = new object();
     private readonly object machineLoadLockObject = new object();
     private readonly object siteProofingRunLockObject = new object();
@@ -506,6 +516,11 @@ versionMap = null;
     {
       CellSize = cellSize;
       Grid.CellSize = cellSize;
+    }
+
+    public void UnloadCSIB()
+    {
+      csib = null;
     }
 
     public void Include(ISiteModel Source)

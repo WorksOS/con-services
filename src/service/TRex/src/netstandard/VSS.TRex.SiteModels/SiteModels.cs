@@ -131,8 +131,6 @@ namespace VSS.TRex.SiteModels
     /// site models, or attributes of the site model that might otherwise affect its
     /// retrieval, such as being marked for deletion
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
     public ISiteModel GetSiteModelRaw(Guid id)
     {
       Log.LogInformation($"Loading site model {id} from persistent store as raw read");

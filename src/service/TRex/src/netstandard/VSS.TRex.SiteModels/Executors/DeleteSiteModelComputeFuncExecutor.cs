@@ -100,11 +100,11 @@ namespace VSS.TRex.SiteModels.Executors
     /// Removes all the event elements for all machines within the site model
     /// </summary>
     /// <param name="storageProxy"></param>
-    private void RemovalAllMachineEvents(IStorageProxy storageProxy)
+    private void RemovalAllMachineEvents(IStorageProxy storageProxy, bool exceptOverrideEvents)
     {
       foreach (var machine in _siteModel.Machines)
       {
-        _siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex]?.RemoveMachineEventsFromPersistentStore(storageProxy);
+        _siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex]?.RemoveMachineEventsFromPersistentStore(storageProxy, exceptOverrideEvents);
       }
     }
 
@@ -114,7 +114,7 @@ namespace VSS.TRex.SiteModels.Executors
     /// <returns></returns>
     public async Task<bool> ExecuteAsync()
     {
-      _log.LogInformation($"Performing Execute for DataModel:{_deleteSiteModelRequestArgument?.ProjectID}");
+      _log.LogInformation($"Performing Execute for DataModel:{_deleteSiteModelRequestArgument?.ProjectID}, with selectivity {_deleteSiteModelRequestArgument.Selectivity}");
 
       if (Response.Result != DeleteSiteModelResult.OK)
       {
@@ -153,70 +153,93 @@ namespace VSS.TRex.SiteModels.Executors
       // Begin removal of data elements from the site model
       //***************************************************
 
-      // Remove all spatial data
-      if (!RemoveAllSpatialCellPassData(storageProxy))
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.TagFileDerivedData))
       {
-        Response.Result = DeleteSiteModelResult.FailedToRemoveSubGrids;
-        return false;
+        // Remove all spatial data
+        if (!RemoveAllSpatialCellPassData(storageProxy))
+        {
+          Response.Result = DeleteSiteModelResult.FailedToRemoveSubGrids;
+          return false;
+        }
+
+        // Remove all event data
+        RemovalAllMachineEvents(storageProxy, _deleteSiteModelRequestArgument.Selectivity != DeleteSiteModelSelectivity.All);
+
+        // Remove the machines list for the site model. If the override events are being maintained, then 
+        // recreate machines with jsut basic information
+        if (_deleteSiteModelRequestArgument.Selectivity == DeleteSiteModelSelectivity.All)
+        {
+          MachinesList.RemoveFromPersistentStore(_siteModel.ID, storageProxy);
+        }
+        else
+        {
+          _siteModel.Machines.ClearTAGFileStateData(storageProxy);
+        }
+
+        // Remove the site model machine designs list for the site model
+        SiteModelMachineDesignList.RemoveFromPersistentStore(_siteModel.ID, storageProxy);
+
+        // Remove the proofing run list for the site model
+        SiteProofingRunList.RemoveFromPersistentStore(_siteModel.ID, storageProxy);
+
+        // Remove the site model production designs list from the site model
+        SiteModelDesignList.RemoveFromPersistentStoreStatic(_siteModel.ID, storageProxy);
       }
 
-      // Remove all event data
-      RemovalAllMachineEvents(storageProxy);
-
-      // Remove the machines list for the site model
-      MachinesList.RemoveFromPersistentStore(_siteModel.ID, storageProxy);
-
-      // Remove the site model machine designs list for the site model
-      SiteModelMachineDesignList.RemoveFromPersistentStore(_siteModel.ID, storageProxy);
-
-      // Remove the proofing run list for the site model
-      SiteProofingRunList.RemoveFromPersistentStore(_siteModel.ID, storageProxy);
-
-      // Remove the site model production designs list from the site model
-      SiteModelDesignList.RemoveFromPersistentStoreStatic(_siteModel.ID, storageProxy);
-
-      // **********************************************
-      // Remove the list of designs from the site model
-      // **********************************************
-      if (!DIContext.Obtain<IDesignManager>().Remove(_siteModel.ID, storageProxy))
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.Designs))
       {
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove site designs");
-        Response.Result = DeleteSiteModelResult.FailedToRemoveSiteDesigns;
-        return false;
+        // **********************************************
+        // Remove the list of designs from the site model
+        // **********************************************
+        if (!DIContext.Obtain<IDesignManager>().Remove(_siteModel.ID, storageProxy))
+        {
+          _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove site designs");
+          Response.Result = DeleteSiteModelResult.FailedToRemoveSiteDesigns;
+          return false;
+        }
       }
 
-      // ********************************************************
-      // Remove the list of surveyed surfaces from the site model
-      // ********************************************************
-
-      if (!DIContext.Obtain<ISurveyedSurfaceManager>().Remove(_siteModel.ID, storageProxy))
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.SurveyedSurfaces))
       {
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove surveyed surfaces");
-        Response.Result = DeleteSiteModelResult.FailedToRemoveSurveyedSurfaces;
-        return false;
+        // ********************************************************
+        // Remove the list of surveyed surfaces from the site model
+        // ********************************************************
+
+        if (!DIContext.Obtain<ISurveyedSurfaceManager>().Remove(_siteModel.ID, storageProxy))
+        {
+          _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove surveyed surfaces");
+          Response.Result = DeleteSiteModelResult.FailedToRemoveSurveyedSurfaces;
+          return false;
+        }
       }
 
-      // *************************************************
-      // Remove the list of alignments from the site model
-      // *************************************************
-
-      if (!DIContext.Obtain<IAlignmentManager>().Remove(_siteModel.ID, storageProxy))
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.Alignments))
       {
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove alignments");
-        Response.Result = DeleteSiteModelResult.FailedToRemoveAlignments;
-        return false;
+        // *************************************************
+        // Remove the list of alignments from the site model
+        // *************************************************
+
+        if (!DIContext.Obtain<IAlignmentManager>().Remove(_siteModel.ID, storageProxy))
+        {
+          _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove alignments");
+          Response.Result = DeleteSiteModelResult.FailedToRemoveAlignments;
+          return false;
+        }
       }
 
-      // ************************************************
-      // Remove the coordinate system from the site model
-      // ************************************************
-
-      // TODO: CSIB add/remove/read support could be wrapped into a more central location as a manager (currently controlled here, Add CSIB activity and SiteModel class)
-      if (storageProxy.RemoveStreamFromPersistentStore(_siteModel.ID, FileSystemStreamType.CoordinateSystemCSIB, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName) != FileSystemErrorStatus.OK)
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.CoordinateSystem))
       {
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove CSIB");
-        Response.Result = DeleteSiteModelResult.FailedToRemoveCSIB;
-        return false;
+        // ************************************************
+        // Remove the coordinate system from the site model
+        // ************************************************
+
+        // TODO: CSIB add/remove/read support could be wrapped into a more central location as a manager (currently controlled here, Add CSIB activity and SiteModel class)
+        if (storageProxy.RemoveStreamFromPersistentStore(_siteModel.ID, FileSystemStreamType.CoordinateSystemCSIB, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName) != FileSystemErrorStatus.OK)
+        {
+          _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to remove CSIB");
+          Response.Result = DeleteSiteModelResult.FailedToRemoveCSIB;
+          return false;
+        }
       }
 
       // ****************************************************************************************************************
@@ -235,45 +258,61 @@ namespace VSS.TRex.SiteModels.Executors
 
       _log.LogInformation($"Deleting site model {_siteModel.ID}: Primary commit removed {numDeleted} elements");
 
-      // Remove the site model meta data entry for the site model
-      // TODO: This is a non transacted operation and could be facaded with the storage proxy cache pattern as an internal implementation concern (this is only a mutable grid activity)
-      DIContext.Obtain<ISiteModelMetadataManager>().Remove(_siteModel.ID);
-      Response.NumRemovedElements++;
-
-      //*************************
-      // Remove the existence map
-      //*************************
-      _siteModel.RemoveProductionDataExistenceMapFromStorage(storageProxy);
-
-      if (!storageProxy.Commit(out _, out _, out _))
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.SiteModelMetadata))
       {
-        Response.Result = DeleteSiteModelResult.FailedToCommitExistenceMapRemoval;
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to commit existence map removal");
-        return false;
+        // Remove the site model meta data entry for the site model
+        // TODO: This is a non transacted operation and could be facaded with the storage proxy cache pattern as an internal implementation concern (this is only a mutable grid activity)
+        DIContext.Obtain<ISiteModelMetadataManager>().Remove(_siteModel.ID);
+        Response.NumRemovedElements++;
+      }
+
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.TagFileDerivedData))
+      {
+        //*************************
+        // Remove the existence map
+        //*************************
+        _siteModel.RemoveProductionDataExistenceMapFromStorage(storageProxy);
+
+        if (!storageProxy.Commit())
+        {
+          Response.Result = DeleteSiteModelResult.FailedToCommitExistenceMapRemoval;
+          _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to commit existence map removal");
+          return false;
+        }
+
+        Response.NumRemovedElements++;
+      }
+
+      if (_deleteSiteModelRequestArgument.Selectivity.HasFlag(DeleteSiteModelSelectivity.SiteModel))
+      {
+        //************************************************************
+        // Remove the site model persistent storage for the site model
+        //************************************************************
+        var productionDataXmlResult = _siteModel.RemoveMetadataFromPersistentStore(storageProxy);
+        if (!productionDataXmlResult)
+        {
+          Response.Result = DeleteSiteModelResult.FailedToRemoveProjectMetadata;
+          _log.LogError($"Deleting site model {_siteModel.ID}: Unable to remove site model persistent store");
+          return false;
+        }
+
+        if (!storageProxy.Commit(out _, out _, out _))
+        {
+          _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to commit site model metadata removal");
+          return false;
+        }
+      }
+
+      // If the delete operation had partial selectivity enabled, then remove the delete flag from the site model
+      if (_deleteSiteModelRequestArgument.Selectivity != DeleteSiteModelSelectivity.All)
+      {
+        // Instruct the site model to remove the deletion mark against it to allow operations to continue as normal
+        _siteModel.RemovedMarkForDeletion();
       }
 
       Response.NumRemovedElements++;
 
-      //************************************************************
-      // Remove the site model persistent storage for the site model
-      //************************************************************
-      var productionDataXmlResult = _siteModel.RemoveMetadataFromPersistentStore(storageProxy);
-      if (!productionDataXmlResult)
-      {
-        Response.Result = DeleteSiteModelResult.FailedToRemoveProjectMetadata;
-        _log.LogError($"Deleting site model {_siteModel.ID}: Unable to remove site model persistent store");
-        return false;
-      }
-
-      if (!storageProxy.Commit(out _, out _, out _))
-      {
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to commit site model metadata removal");
-        return false;
-      }
-
-      Response.NumRemovedElements++;
-
-      _log.LogInformation($"Deleting site model {_siteModel.ID}: Complete");
+      _log.LogInformation($"Deleting site model {_siteModel.ID} with selectivity = {_deleteSiteModelRequestArgument.Selectivity}: Complete");
 
       Response.Result = DeleteSiteModelResult.OK;
       return true;

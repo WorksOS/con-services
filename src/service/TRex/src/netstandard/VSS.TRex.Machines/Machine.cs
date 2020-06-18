@@ -7,6 +7,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Designs.TTM.Optimised;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Machines
 {
@@ -167,6 +168,19 @@ namespace VSS.TRex.Machines
       LastKnownLayerId = reader.ReadUInt16();
       CompactionDataReported = reader.ReadBoolean();
       CompactionSensorType = (CompactionSensorType)reader.ReadInt32();
+    }
+
+    /// <summary>
+    /// Removes all state in the machine obtained from TAG file processing apart from identity information 
+    /// </summary>
+    public void ClearTAGFileStateData()
+    {
+      LastKnownX = Common.Consts.NullDouble;
+      LastKnownY = Common.Consts.NullDouble;
+      LastKnownPositionTimeStamp = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+      LastKnownDesignName = string.Empty;
+      LastKnownLayerId = CellPassConsts.NullLayerID;
+      CompactionDataReported = false;
     }
   }
 }

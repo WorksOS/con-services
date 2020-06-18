@@ -43,6 +43,8 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     void MarkForDeletion();
 
+    void RemovedMarkForDeletion();
+
     /// <summary>
     /// The grid data for this site model
     /// </summary>
@@ -129,6 +131,7 @@ IGenericSubGridTree_Long VersionMap { get; }
 
     string CSIB();
     bool CSIBLoaded { get; }
+    void UnloadCSIB();
 
     void Include(ISiteModel Source);
     void Write(BinaryWriter writer);

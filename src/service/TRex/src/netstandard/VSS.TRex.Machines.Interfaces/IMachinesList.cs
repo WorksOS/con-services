@@ -73,6 +73,11 @@ namespace VSS.TRex.Machines.Interfaces
       bool isJohnDoeMachine,
       Guid machineID);
 
+    /// <summary>
+    /// Removes all state in the machine obtained from TAG file processing apart from identity information 
+    /// </summary>
+    void ClearTAGFileStateData(IStorageProxy storageProxy);
+
     void SaveToPersistentStore(IStorageProxy storageProxy);
     void RemoveFromPersistentStore(IStorageProxy storageProxy);
     void LoadFromPersistentStore(IStorageProxy storageProxy);
