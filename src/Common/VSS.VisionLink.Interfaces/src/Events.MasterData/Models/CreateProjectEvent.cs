@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Visionlink.Interfaces.Events.MasterData.Models
@@ -9,7 +10,7 @@ namespace VSS.Visionlink.Interfaces.Events.MasterData.Models
     public Guid CustomerUID { get; set; }
     public int ShortRaptorProjectId { get; set; }
     public string ProjectName { get; set; }   
-    public ProjectType ProjectType { get; set; }
+    public CwsProjectType ProjectType { get; set; }
     public string ProjectTimezone { get; set; }   
     public string ProjectBoundary { get; set; }
     public string CoordinateSystemFileName { get; set; }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -14,7 +15,6 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests.Executors
 {
@@ -100,7 +100,7 @@ namespace WebApiTests.Executors
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceData);
       cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceLicenseResponseModel);
-      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData> { new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = ProjectType.Standard, Name = "thisProject" }, new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = ProjectType.Standard, Name = "otherProject" } } };
+      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData> { new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles, Name = "thisProject" }, new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles, Name = "otherProject" } } };
       projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<HeaderDictionary>())).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projects);
 
@@ -142,7 +142,7 @@ namespace WebApiTests.Executors
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceData);
       cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceLicenseResponseModel);
-      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData> { new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = ProjectType.Standard, Name = "thisProject" }, new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = ProjectType.Standard, Name = "otherProject" } } };
+      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData> { new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles, Name = "thisProject" }, new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles, Name = "otherProject" } } };
       projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<HeaderDictionary>())).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(new ProjectDataResult());
 
@@ -163,7 +163,7 @@ namespace WebApiTests.Executors
       var deviceDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceData);
       cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceDeviceLicenseResponseModel);
-      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { new ProjectData() { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = ProjectType.Standard } } };
+      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { new ProjectData() { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles } } };
       projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<HeaderDictionary>())).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projects);
 
@@ -184,7 +184,7 @@ namespace WebApiTests.Executors
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceData);
       cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceLicenseResponseModel);
-      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { new ProjectData() { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = ProjectType.Standard } } };
+      var projects = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { new ProjectData() { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles } } };
       projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projects);

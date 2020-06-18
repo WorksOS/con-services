@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Abstractions.MasterData.Interfaces;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {
@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     }
 
 
-    public ProjectType ProjectType { get; set; }
+    public CwsProjectType ProjectType { get; set; }
 
     public string Name { get; set; }
    

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -203,7 +203,7 @@ namespace TestUtility
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
-    public Task<string> CreateProjectViaWebApiV5TBC(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, List<TBCPoint> boundary)
+    public Task<string> CreateProjectViaWebApiV5TBC(string name, DateTime startDate, DateTime endDate, string timezone, CwsProjectType projectType, List<TBCPoint> boundary)
     {
       var createProjectV5Request = CreateProjectV5Request.CreateACreateProjectV5Request(
       projectType, startDate, endDate, name, timezone, boundary,
@@ -485,7 +485,7 @@ namespace TestUtility
             cpDescription = eventObject.Description;
           }
           var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpCustomerUid,
-            (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            (CwsProjectType)Enum.Parse(typeof(CwsProjectType), eventObject.ProjectType),
             eventObject.ProjectName, eventObject.ProjectTimezone,
             eventObject.ProjectBoundary, cpCoordinateSystemFileName, cpCoordinateSystemFileContent);
           jsonString = JsonConvert.SerializeObject(cprequest, JsonSettings);
@@ -506,7 +506,7 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "ProjectType"))
           {
-            updateProjectRequest.ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
+            updateProjectRequest.ProjectType = (CwsProjectType)Enum.Parse(typeof(CwsProjectType), eventObject.ProjectType);
           }         
           if (HasProperty(eventObject, "ProjectBoundary"))
           {
@@ -736,7 +736,7 @@ namespace TestUtility
           {
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (CwsProjectType)Enum.Parse(typeof(CwsProjectType), eventObject.ProjectType),
             ProjectGeofenceWKT = eventObject.ProjectBoundary,
           };
           if (HasProperty(eventObject, "IsArchived"))
@@ -791,7 +791,7 @@ namespace TestUtility
           {
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (CwsProjectType)Enum.Parse(typeof(CwsProjectType), eventObject.ProjectType),
             ProjectGeofenceWKT = eventObject.ProjectBoundary,
           };
           if (HasProperty(eventObject, "IsArchived"))

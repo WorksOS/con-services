@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -80,6 +81,28 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       _log.LogDebug($"{nameof(PostTagFileNonDirectSubmission)}: request {serializedRequest}");
 
+      //Check it's a 3dp project
+      ProjectData projectData = null;
+
+      if (request.ProjectId != null)
+        projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectId.Value);
+      else if (request.ProjectUid != null)
+        projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectUid.Value);
+
+      if (projectData != null && projectData.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles) == false)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "The project is standard and does not accept tag files."));
+      }
+
+      if (projectData?.IsArchived == true)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "The project has been archived and this function is not allowed."));
+      }
+
       //First submit tag file to connected site gateway
       // Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
@@ -100,20 +123,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 #pragma warning restore 4014
 
       //Now submit tag file to Raptor and/or TRex
-      ProjectData projectData = null;
-
-      if (request.ProjectId != null)
-        projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectId.Value);
-      else if (request.ProjectUid != null)
-        projectData = await ((RaptorPrincipal)User).GetProject(request.ProjectUid.Value);
-
-      if (projectData != null && projectData.IsArchived)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "The project has been archived and this function is not allowed."));
-      }
-
       Task<WGS84Fence> boundary = null;
       if (request.ProjectUid != null)
       {

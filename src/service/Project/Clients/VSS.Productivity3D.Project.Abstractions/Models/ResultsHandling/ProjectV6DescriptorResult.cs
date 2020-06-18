@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
   /// <value>
   /// The type of the project.
   /// </value>
-  public ProjectType ProjectType { get; set; }
+  public CwsProjectType ProjectType { get; set; }
 
     /// <summary>
     /// What Role the current user has in this project

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -35,7 +36,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var coordSystemFileContent = "Some dummy content";
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid().ToString(),
-        ProjectType.Standard, "projectName", "NZ whatsup",
+        CwsProjectType.AcceptsTagFiles, "projectName", "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         "some coord file", System.Text.Encoding.ASCII.GetBytes(coordSystemFileContent));
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);

@@ -8,7 +8,6 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 
 namespace MockProjectWebApi.Controllers
 {
