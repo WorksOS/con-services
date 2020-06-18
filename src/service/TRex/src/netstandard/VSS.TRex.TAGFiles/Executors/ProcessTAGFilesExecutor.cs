@@ -169,18 +169,16 @@ namespace VSS.TRex.TAGFiles.Executors
             using var fs = new MemoryStream(tagFile.TagFileContent);
             try
             {
-              commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
-
+              var readResult = commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
               response.Results.Add(new ProcessTAGFileResponseItem
               {
                 FileName = tagFile.FileName,
                 AssetUid = tagFile.AssetId,
-                Success = commonConverter.ReadResult == TAGReadResult.NoError,
-                ReadResult = commonConverter.ReadResult
+                Success = commonConverter.ReadResult == TAGReadResult.NoError && readResult == true
               });
 
               _log.LogInformation(
-                $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId} with result {commonConverter.ReadResult}");
+                $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId} machinetype {commonConverter.Machine.MachineType} with result {commonConverter.ReadResult}");
             }
             catch (Exception e)
             {

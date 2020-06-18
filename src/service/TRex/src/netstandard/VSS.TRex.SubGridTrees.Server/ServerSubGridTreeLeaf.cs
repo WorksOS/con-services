@@ -135,7 +135,7 @@ namespace VSS.TRex.SubGridTrees.Server
           SetIsMutable(mutability == StorageMutability.Mutable);
         }
 
-        public void AddPass(int cellX, int cellY, CellPass Pass)
+        public void AddPass(int cellX, int cellY, CellPass Pass, bool lowestPassOnly = false)
         {
             var Segment = _cells.SelectSegment(Pass.Time);
 
@@ -149,8 +149,12 @@ namespace VSS.TRex.SubGridTrees.Server
                 Segment.AllocateFullPassStacks();
 
             // Add the processed pass to the cell
-
-            if (Segment.PassesData.LocateTime(cellX, cellY, Pass.Time, out int PassIndex))
+            if (Segment.PassesData.PassCount(cellX, cellY) == 0)
+            {
+              Segment.PassesData.AddPass(cellX, cellY, Pass);
+              CellPassAdded(Pass);
+            }
+            else if (Segment.PassesData.LocateTime(cellX, cellY, Pass.Time, out int PassIndex))
             {
                 // Replace the existing cell pass with the new one. The assumption
                 // here is that more than one machine will never cross a cell center position
@@ -161,8 +165,19 @@ namespace VSS.TRex.SubGridTrees.Server
             }
             else
             {
+              if (lowestPassOnly)
+              {
+                if (Pass.Height < Segment.PassesData.Pass(cellX,cellY,0).Height)
+                {
+                  Segment.PassesData.ReplacePass(cellX, cellY, 0, Pass);
+                  SetDirty();
+                }
+              }
+              else
+              {
                 Segment.PassesData.AddPass(cellX, cellY, Pass);
                 CellPassAdded(Pass);
+              }
             }
 
           Segment.Dirty = true;
