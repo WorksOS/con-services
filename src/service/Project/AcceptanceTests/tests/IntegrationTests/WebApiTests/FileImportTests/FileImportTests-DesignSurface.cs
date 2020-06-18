@@ -73,7 +73,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       ts.CompareTheActualImportFileWithExpectedV6(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
     }
 
-    [Theory(Skip = "Get the build passing then put back (due to mockwebapi changes)")]
+    [Theory]
     [InlineData("api/v6/importedfile")]
     public async Task TestImportANewFileThenUpdateTheDesignSurfaceFile(string uriRoot)
     {
