@@ -58,7 +58,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           TreatAsJohnDoe = request.TreatAsJohnDoe,
           TAGFileName = request.FileName,
           TagFileContent = request.Data,
-          TCCOrgID = request.OrgId
+          TCCOrgID = request.OrgId,
+          AddToArchive = true
         };
 
         var res = await submitRequest.ExecuteAsync(arg);

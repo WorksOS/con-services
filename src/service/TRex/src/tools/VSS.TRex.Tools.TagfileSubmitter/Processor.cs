@@ -52,7 +52,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           AssetID = assetId,
           TagFileContent = bytes,
           TAGFileName = Path.GetFileName(fileName),
-          TreatAsJohnDoe = treatAsJohnDoe
+          TreatAsJohnDoe = treatAsJohnDoe,
+          AddToArchive = true
         };
       }
 

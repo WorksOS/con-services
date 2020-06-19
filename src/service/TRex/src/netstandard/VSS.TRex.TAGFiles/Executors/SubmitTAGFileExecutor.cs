@@ -42,7 +42,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
     /// <param name="treatAsJohnDoe">The TAG file will be processed as if it were a john doe machine is projectId is also specified</param>
     /// <returns></returns>
-    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId, bool treatAsJohnDoe)
+    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId, bool treatAsJohnDoe, bool addTAGFileToArchive)
     {
       if (OutputInformationalRequestLogging)
         Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
@@ -78,11 +78,12 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tag file
-            if (TagFileArchiving)
+            if (TagFileArchiving && addTAGFileToArchive)
             {
               Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);
             }
+
             // switch from nullable to not nullable
             var validProjectId = td.projectId ?? Guid.Empty;
             var validAssetId = td.assetId ?? Guid.Empty;
