@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.SiteModels.Executors
+﻿namespace VSS.TRex.SiteModels.Interfaces
 {
   public enum RebuildSiteModelPhase
   {

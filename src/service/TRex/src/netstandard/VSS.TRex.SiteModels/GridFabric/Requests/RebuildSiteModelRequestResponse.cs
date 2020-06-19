@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.SiteModels.Interfaces;
 
@@ -13,6 +14,11 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     private static byte VERSION_NUMBER = 1;
 
     /// <summary>
+    /// The project being rebuilt this response refers to
+    /// </summary>
+    public Guid ProjectUid { get; set; }
+
+    /// <summary>
     /// The result of any require project deletion activity before the main activity of rebuilding the project is started
     /// </summary>
     public DeleteSiteModelResult DeletionResult;
@@ -23,14 +29,19 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     public long NumRemovedElements;
 
     /// <summary>
-    /// The result of this rebuild request. As this process may be long, this response will chiefly indicate the 
+    /// The result of this rebuild request. As this process may be long, this response will chiefly indicate the
     /// success or failure of starting the overall process of rebuilding a project.
     /// </summary>
     public RebuildSiteModelResult RebuildResult;
 
+    public RebuildSiteModelRequestResponse() { }
 
-    public RebuildSiteModelRequestResponse()
+    public RebuildSiteModelRequestResponse(Guid projectUid)
     {
+      ProjectUid = projectUid;
+
+      DeletionResult = DeleteSiteModelResult.Pending;
+      RebuildResult = RebuildSiteModelResult.Pending;
     }
 
     /// <summary>
@@ -40,6 +51,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
+      writer.WriteGuid(ProjectUid);
       writer.WriteInt((int)DeletionResult);
       writer.WriteLong(NumRemovedElements);
 
@@ -53,6 +65,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      ProjectUid = reader.ReadGuid() ?? Guid.Empty;
 
       DeletionResult = (DeleteSiteModelResult)reader.ReadInt();
       NumRemovedElements = reader.ReadLong();

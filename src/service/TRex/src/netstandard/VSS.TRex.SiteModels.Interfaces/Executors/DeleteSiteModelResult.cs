@@ -13,6 +13,11 @@
     FailedToRemoveSiteDesigns = 8,
     FailedToRemoveSurveyedSurfaces = 9,
     FailedToRemoveAlignments = 10,
-    FailedToRemoveCSIB = 11
+    FailedToRemoveCSIB = 11,
+
+    /// <summary>
+    /// Notes if another request (eg: project rebuilding) is pending a deletion operation
+    /// </summary>
+    Pending = 12
   }
 }

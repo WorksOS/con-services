@@ -6,5 +6,6 @@
     OK = 1,
     UnhandledException = 2,
     UnableToLocateSiteModel = 3,
+    Pending
   }
 }

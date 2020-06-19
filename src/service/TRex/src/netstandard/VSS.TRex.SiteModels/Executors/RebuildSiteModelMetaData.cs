@@ -2,19 +2,23 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels.Executors
 {
-  public class RebuildSiteModelMetaData : IBinarizable, IFromToBinary
+  public class RebuildSiteModelMetaData : IRebuildSiteModelMetaData, IBinarizable, IFromToBinary
   {
     private static byte VERSION_NUMBER = 1;
 
-    RebuildSiteModelPhase Phase { get; set; }
+    /// <summary>
+    /// The current phase of project rebuilding this project is in
+    /// </summary>
+    public RebuildSiteModelPhase Phase { get; set; }
 
     /// <summary>
     /// The UTC date at which the last update to this metadata was made
     /// </summary>
-    long LastUpdateUtcTicks { get; set; }
+    public long LastUpdateUtcTicks { get; set; }
 
     /// <summary>
     /// Project being rebuilt
@@ -27,7 +31,7 @@ namespace VSS.TRex.SiteModels.Executors
     public string LastSubmittedTagFile { get; set; }
 
     /// <summary>
-    /// The last knwon processed TAG file
+    /// The last known processed TAG file
     /// </summary>
     public string LastProcessedTagFile { get; set; }
 
