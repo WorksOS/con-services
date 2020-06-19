@@ -49,7 +49,7 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
       catch (Exception e)
       {
         _log.LogError(e, $"Unhandled exception in {nameof(Invoke)}");
-        return new RebuildSiteModelRequestResponse { RebuildResult = RebuildSiteModelResult.UnhandledException };
+        return new RebuildSiteModelRequestResponse(arg.ProjectID) { RebuildResult = RebuildSiteModelResult.UnhandledException };
       }
     }
   }

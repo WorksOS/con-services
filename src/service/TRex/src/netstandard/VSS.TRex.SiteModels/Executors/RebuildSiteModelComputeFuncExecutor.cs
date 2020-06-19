@@ -15,7 +15,7 @@ namespace VSS.TRex.SiteModels.Executors
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
     /// </summary>
-    public RebuildSiteModelRequestResponse Response { get; } = new RebuildSiteModelRequestResponse { RebuildResult = RebuildSiteModelResult.OK };
+    public RebuildSiteModelRequestResponse Response { get; } = null;
 
     private readonly RebuildSiteModelRequestArgument _rebuildSiteModelRequestArgument;
     private readonly ISiteModel _siteModel;
@@ -25,6 +25,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     public RebuildSiteModelComputeFuncExecutor(RebuildSiteModelRequestArgument arg)
     {
+      Response = new RebuildSiteModelRequestResponse(arg.ProjectID) { RebuildResult = RebuildSiteModelResult.OK };
+
       _rebuildSiteModelRequestArgument = arg;
       if (arg != null)
         _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModelRaw(arg.ProjectID);
@@ -66,13 +68,12 @@ namespace VSS.TRex.SiteModels.Executors
        * 
        * 0(a). Check that the project referenced in the request is not already undergoing a rebuild operation. If there is an existing
        *       rebuild process active then abort. If there is an existing entry in the Complete state then continue with the rebuild.
-       * 0(b). Set phase state to Deleting
-       * 1. Perform project deletion step and record result from that. Abort if there is an issue.
+       * <- At this point the request may return to the caller all steps after this point execute asynchronously outside the context of this executor ->
+       * 1(a). Set phase state to Deleting
+       * 1(b). Perform project deletion step and record result from that. Abort if there is an issue.
        * 2. Set phase state to Scanning
        *  
-       * <- At this point the request may return to the caller all steps after this point execute asynchronously outside the context of this executor ->
-       * 
-       * 2. Scan S3 Tag file archive bucket looking for entries in the form "[/Projects]/{projectUid}[/Machines]/{machineUid}/*.tag
+       *        * 2. Scan S3 Tag file archive bucket looking for entries in the form "[/Projects]/{projectUid}[/Machines]/{machineUid}/*.tag
        * 3. Sort all Tag file based on date, according to the same logic present in the TagFileSubmitter utility in TRex
        * 4(a). Set phase state to Submitting
        * 4(b). Submit all discovered, sorted, tag files using the SubmitTagFile request. Each request defines the project Uid (from the 

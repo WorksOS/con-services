@@ -33,6 +33,8 @@ namespace VSS.TRex.Storage.Caches
 
         public const string kSegmentRetirementQueue = "SegmentRetirementQueue";
 
+        public const string kSiteModelRebuilderMetaDataCacheName = "SiteModelRebuilderMetaData";
+
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
@@ -130,7 +132,11 @@ namespace VSS.TRex.Storage.Caches
         /// <summary>
         /// Name of the cache holding queued & buffered TAG files awaiting processing
         /// </summary>
-        /// <returns></returns>
         public static string SiteModelChangeBufferQueueCacheName() => kSiteModelChangeBufferQueueName;
+
+        /// <summary>
+        /// Name of the cache holding queued & buffered TAG files awaiting processing
+        /// </summary>
+        public static string SiteModelRebuilderMetaDataCacheName() => kSiteModelRebuilderMetaDataCacheName;
   }
 }
