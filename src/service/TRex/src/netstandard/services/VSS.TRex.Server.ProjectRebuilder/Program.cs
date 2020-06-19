@@ -18,6 +18,9 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage;
 using VSS.TRex.SiteModels.Executors;
+using VSS.AWS.TransferProxy.Interfaces;
+using VSS.AWS.TransferProxy;
+using VSS.TRex.GridFabric;
 
 namespace VSS.TRex.Server.ProjectRebuilder
 {
@@ -37,7 +40,13 @@ namespace VSS.TRex.Server.ProjectRebuilder
         .Add(x => x.AddSingleton<Func<IStorageProxyCache<Guid, IRebuildSiteModelMetaData>>>(
           () => new StorageProxyCache<Guid, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
             .Grid(StorageMutability.Immutable)?
-            .GetCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
+            .GetOrCreateCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
+        )
+
+        .Add(x => x.AddSingleton<Func<IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>>>(
+          () => new StorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>()
+            .Grid(StorageMutability.Immutable)?
+            .GetOrCreateCache<(Guid, int), ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
         )
 
         //******************************************
@@ -45,16 +54,16 @@ namespace VSS.TRex.Server.ProjectRebuilder
         // *****************************************
 
         // Add the singleton reference to the transacted site model change map cache
-        .Add(x => x.AddSingleton<Func<IStorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>>>(
-          () => new StorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
-            .Grid(StorageMutability.Immutable)?
-            .GetCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new RebuildSiteModelMetaDataKeyEqualityComparer())
-        ))
+        //.Add(x => x.AddSingleton<Func<IStorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>>>(
+        //  () => new StorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
+        //    .Grid(StorageMutability.Immutable)?
+        //    .GetCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new RebuildSiteModelMetaDataKeyEqualityComparer())
+        //))
 
-//        .Build()
-//        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
-//        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
-//        .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
+        //        .Build()
+        //        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        //        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
+        //        .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 //        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
 //        .Build()
@@ -86,6 +95,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
 //
 //        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
         .Complete();
     }
 

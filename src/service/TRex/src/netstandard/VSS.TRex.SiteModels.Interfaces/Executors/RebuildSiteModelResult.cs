@@ -6,6 +6,7 @@
     OK = 1,
     UnhandledException = 2,
     UnableToLocateSiteModel = 3,
-    Pending
+    FailedToDeleteSiteModel = 4,
+    Pending = 5
   }
 }

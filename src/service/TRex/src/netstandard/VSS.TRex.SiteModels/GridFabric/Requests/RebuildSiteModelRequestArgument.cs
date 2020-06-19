@@ -1,7 +1,9 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.SiteModels.Interfaces.Requests;
 
 namespace VSS.TRex.SiteModels.GridFabric.Requests
 {
@@ -25,6 +27,12 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     public DeleteSiteModelSelectivity DeletionSelectivity { get; set; }
 
     /// <summary>
+    /// Denotes the type of S3 transfer proxy the site model rebuilder should use to scan and source TAG files for reprocessing
+    /// This allows different sources such as the primary TAG file archive, or a prepared project migration bucket to be referenced
+    /// </summary>
+    public TransferProxyType OriginS3TransferProxy { get; set; }
+
+    /// <summary>
     /// Serializes content to the writer
     /// </summary>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -35,6 +43,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
 
       writer.WriteGuid(ProjectID);
       writer.WriteInt((int)DeletionSelectivity);
+      writer.WriteInt((int)OriginS3TransferProxy);
     }
 
     /// <summary>
@@ -48,6 +57,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       DeletionSelectivity = (DeleteSiteModelSelectivity)reader.ReadInt();
+      OriginS3TransferProxy = (TransferProxyType)reader.ReadInt();
     }
   }
 }

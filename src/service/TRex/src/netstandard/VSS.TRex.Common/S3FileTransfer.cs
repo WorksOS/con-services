@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -165,5 +167,13 @@ namespace VSS.TRex.Common
       return _proxy.GeneratePreSignedUrl(path);
     }
 
+    /// <summary>
+    /// Returns a (possible incomplete) collection from the bucket that match the given pefix.
+    /// The continuationToken is non-null/non-empty is there are more keys to query
+    /// </summary>
+    public Task<(List<string>, string)> ListKeys(string prefix, int maxKeys, string continuationToken)
+    {
+      return _proxy.ListKeys(prefix, maxKeys, continuationToken);
+    }
   }
 }

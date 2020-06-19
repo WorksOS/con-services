@@ -19,16 +19,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     public Guid ProjectUid { get; set; }
 
     /// <summary>
-    /// The result of any require project deletion activity before the main activity of rebuilding the project is started
-    /// </summary>
-    public DeleteSiteModelResult DeletionResult;
-
-    /// <summary>
-    /// The number of elements removed in the project deletion stage
-    /// </summary>
-    public long NumRemovedElements;
-
-    /// <summary>
     /// The result of this rebuild request. As this process may be long, this response will chiefly indicate the
     /// success or failure of starting the overall process of rebuilding a project.
     /// </summary>
@@ -39,8 +29,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     public RebuildSiteModelRequestResponse(Guid projectUid)
     {
       ProjectUid = projectUid;
-
-      DeletionResult = DeleteSiteModelResult.Pending;
       RebuildResult = RebuildSiteModelResult.Pending;
     }
 
@@ -52,11 +40,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ProjectUid);
-      writer.WriteInt((int)DeletionResult);
-      writer.WriteLong(NumRemovedElements);
-
       writer.WriteInt((int)RebuildResult);
-
     }
 
     /// <summary>
@@ -67,10 +51,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectUid = reader.ReadGuid() ?? Guid.Empty;
-
-      DeletionResult = (DeleteSiteModelResult)reader.ReadInt();
-      NumRemovedElements = reader.ReadLong();
-
       RebuildResult = (RebuildSiteModelResult)reader.ReadInt();
     }
   }
