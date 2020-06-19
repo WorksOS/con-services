@@ -13,6 +13,11 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage;
+using VSS.TRex.SiteModels.Executors;
 
 namespace VSS.TRex.Server.ProjectRebuilder
 {
@@ -23,6 +28,28 @@ namespace VSS.TRex.Server.ProjectRebuilder
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+
+        //***********************************************
+        // Injected factories for non-transacted proxies
+        // **********************************************
+
+        // Add the singleton reference to the non-transacted site model change map cache
+        .Add(x => x.AddSingleton<Func<IStorageProxyCache<Guid, IRebuildSiteModelMetaData>>>(
+          () => new StorageProxyCache<Guid, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
+            .Grid(StorageMutability.Immutable)?
+            .GetCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
+        )
+
+        //******************************************
+        // Injected factories for transacted proxies
+        // *****************************************
+
+        // Add the singleton reference to the transacted site model change map cache
+        .Add(x => x.AddSingleton<Func<IStorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>>>(
+          () => new StorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
+            .Grid(StorageMutability.Immutable)?
+            .GetCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new RebuildSiteModelMetaDataKeyEqualityComparer())
+        ))
 
 //        .Build()
 //        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
