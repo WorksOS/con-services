@@ -10,6 +10,12 @@
     Deleting,
 
     /// <summary>
+    /// Source location containing TAG files is being scanned for appropriate TAG files and other data
+    /// required to support the rebulding process
+    /// </summary>
+    Scanning,
+
+    /// <summary>
     /// TAG files are currently being submitted into the project
     /// </summary>
     Submitting,

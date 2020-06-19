@@ -61,26 +61,41 @@ namespace VSS.TRex.SiteModels.Executors
       //***********************************
       // TODO: LOTS OF STUFF HAPPENING HERE
       /*
-       * 0. Check that the project referenced in the request is not already undergoing a rebuild operation
-       * 1. Perform project deletion step and record result from that. Abort if there is an issue.
-       * 2. The request saves progress state and metadata into a special cache to monitor progress
+       * Prerequisite: The request saves progress state and metadata into a special cache to monitor. Phase state changes chould 
+       * cause notification to be send to the push notification service.
        * 
+       * 0(a). Check that the project referenced in the request is not already undergoing a rebuild operation. If there is an existing
+       *       rebuild process active then abort. If there is an existing entry in the Complete state then continue with the rebuild.
+       * 0(b). Set phase state to Deleting
+       * 1. Perform project deletion step and record result from that. Abort if there is an issue.
+       * 2. Set phase state to Scanning
+       *  
        * <- At this point the request may return to the caller all steps after this point execute asynchronously outside the context of this executor ->
        * 
        * 2. Scan S3 Tag file archive bucket looking for entries in the form "[/Projects]/{projectUid}[/Machines]/{machineUid}/*.tag
        * 3. Sort all Tag file based on date, according to the same logic present in the TagFileSubmitter utility in TRex
-       * 4. Submit all discovered, sorted, tag files using the SubmitTagFile request. Each request defines the project Uid (from the 
+       * 4(a). Set phase state to Submitting
+       * 4(b). Submit all discovered, sorted, tag files using the SubmitTagFile request. Each request defines the project Uid (from the 
        *    request) and the {machineUid} from the key for the Tag file. As each batch of TAG files are submitted this progress is updated in the
        *    tracking metadata to aid in restarting the process if it is interrupted
        * 5. Once all tag files are submitted then the tracking state is update to reflect the submission phase is complete
+       *    -> Set pahse state to Monitoring
        * 6. Determination of rebuild completion or progress estimation is not yet defined, but this could be managed by tagging TAG files 
        *    in the processing queue with state that causes the TAG file processor to emit message based on on the tracking indication state on that file.
        * 7. An adidtional progress tracking request will be implemented to return the progress/tracking state metadata to allow a client to 
        *    track and display this to a user if required.
+       * 8. Set phase state to complete
        */
       //***********************************
 
-      _log.LogInformation($"Deleting site model {_siteModel.ID} with selectivity = {_rebuildSiteModelRequestArgument.DeletionSelectivity}: Complete");
+      // Check for existing rebuild
+      // ...
+
+      // Perform deletion
+      // ...
+
+      // Return to caller - all operations now are asynchronous
+      _log.LogInformation($"Rebuild site model {_siteModel.ID} with selectivity = {_rebuildSiteModelRequestArgument.DeletionSelectivity}: In progress");
 
       Response.RebuildResult = RebuildSiteModelResult.OK;
       return true;
