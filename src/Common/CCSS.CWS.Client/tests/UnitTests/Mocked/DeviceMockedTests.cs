@@ -27,14 +27,14 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     public void GetDeviceBySerialNumberTest()
     {
       const string serialNumber = "2002J032SW";
-      const string expectedDeviceId = "trn::profilex:us-west-2:device:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97"; 
+      const string expectedDeviceId = "trn::profilex:us-west-2:device:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
       const string expectedDeviceType = "CB460";
       const string expectedDeviceName = "The device Name";
       const string expectedSerialNumber = serialNumber;
 
-      var deviceResponseModel = new DeviceResponseModel() 
-        { TRN = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber};
-      
+      var deviceResponseModel = new DeviceResponseModel()
+      { TRN = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber };
+
       var route = $"/devices/getDeviceWithSerialNumber";
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("serialNumber", serialNumber)};
@@ -66,7 +66,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       const string expectedSerialNumber = "2002J032SW";
 
       var deviceResponseModel = new DeviceResponseModel()
-      { TRN= expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber };
+      { TRN = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber };
 
       var route = $"/devices/{DeviceId}";
       var expectedUrl = $"{baseUrl}{route}";
@@ -146,14 +146,14 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         }
       };
       var route = $"/devices/{deviceTrn}/projects";
-      var expectedUrl = $"{baseUrl}{route}?from=0&limit=20";
+      var expectedUrl = $"{baseUrl}{route}?from=0&limit=20&includeProjectSettings=true";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
       MockUtilities.TestRequestSendsCorrectJson("Get projects for a device", mockWebRequest, null, expectedUrl, HttpMethod.Get, projectListResponseModel, async () =>
       {
         var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
-        var result = await client.GetProjectsForDevice(TRNHelper.ExtractGuid(deviceTrn).Value);
+        var result = await client.GetProjectsForDevice(TRNHelper.ExtractGuid(deviceTrn).Value, true);
 
         Assert.NotNull(result);
         Assert.False(result.HasMore);
@@ -177,9 +177,9 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         HasMore = false,
         Accounts = new List<DeviceAccountResponseModel>()
         {
-          new DeviceAccountResponseModel() 
+          new DeviceAccountResponseModel()
           {
-            TRN = expectedAccountTrn, 
+            TRN = expectedAccountTrn,
             AccountName = "an account name",
             RelationStatus = RelationStatusEnum.Active,
             TccDeviceStatus = TCCDeviceStatusEnum.Pending

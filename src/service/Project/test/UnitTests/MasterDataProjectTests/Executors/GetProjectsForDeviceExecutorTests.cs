@@ -82,7 +82,7 @@ namespace VSS.MasterData.ProjectTests.Executors
             ProjectName = _projectName, Timezone = _timeZone, Boundary = _projectBoundary
           }}};
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
-      cwsDeviceClient.Setup(pr => pr.GetProjectsForDevice(It.IsAny<Guid>(), _customHeaders))
+      cwsDeviceClient.Setup(pr => pr.GetProjectsForDevice(It.IsAny<Guid>(), true, _customHeaders))
         .ReturnsAsync(cwsProjects);
 
       var getProjectsForDeviceExecutor = RequestExecutorContainerFactory.Build<GetProjectsForDeviceExecutor>
@@ -109,7 +109,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     {
       var cwsProjects = new ProjectListResponseModel();
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
-      cwsDeviceClient.Setup(pr => pr.GetProjectsForDevice(It.IsAny<Guid>(), _customHeaders))
+      cwsDeviceClient.Setup(pr => pr.GetProjectsForDevice(It.IsAny<Guid>(), true, _customHeaders))
         .ReturnsAsync(cwsProjects);
 
       var getProjectsForDeviceExecutor = RequestExecutorContainerFactory.Build<GetProjectsForDeviceExecutor>
@@ -131,7 +131,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError));
 
       var cwsDeviceClient = new Mock<ICwsDeviceClient>();
-      cwsDeviceClient.Setup(pr => pr.GetProjectsForDevice(It.IsAny<Guid>(), _customHeaders))
+      cwsDeviceClient.Setup(pr => pr.GetProjectsForDevice(It.IsAny<Guid>(), true, _customHeaders))
         .ThrowsAsync(exception);
 
       var getProjectsForDeviceExecutor = RequestExecutorContainerFactory.Build<GetProjectsForDeviceExecutor>
