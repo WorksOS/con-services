@@ -72,12 +72,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (potentialProjects.ProjectDescriptors.Count > 1)
         return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: potentialProjects.ProjectDescriptors[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
-      
-      var deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
+
       return GetProjectAndAssetUidsEarthWorksResult.FormatResult(
         potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID,
         potentialProjects.ProjectDescriptors[0].CustomerUID,
-        (deviceLicenseTotal > 0));
+        true); // todo for DesignTimeNodeWriter return true
+      //(deviceLicenseTotal > 0));
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

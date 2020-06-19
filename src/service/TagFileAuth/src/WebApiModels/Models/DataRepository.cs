@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -22,9 +20,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
-    private readonly ICwsAccountClient _cwsAccountClient;
-
     // We need to use ProjectSvc IProjectProxy as that's where the project data is
     private readonly IProjectInternalProxy _projectProxy;
 
@@ -35,10 +30,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     private IHeaderDictionary _mergedCustomHeaders;
 
-    public DataRepository(ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+    public DataRepository(ITPaaSApplicationAuthentication authorization, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       IHeaderDictionary requestCustomHeaders)
     {
-      _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
       _mergedCustomHeaders = requestCustomHeaders;
@@ -48,29 +42,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         _mergedCustomHeaders.Add(header);
       }
     }
-
-    #region account
-
-    public async Task<int> GetDeviceLicenses(string customerUid)
-    {
-      if (string.IsNullOrEmpty(customerUid))
-        return 0;
-
-      try
-      {
-        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), _mergedCustomHeaders))?.Total ?? 0;
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "cwsAccount", e.Message));
-      }
-    }
-
-    #endregion account
-
-
+    
     #region project
     public async Task<ProjectData> GetProject(string projectUid)
     {
