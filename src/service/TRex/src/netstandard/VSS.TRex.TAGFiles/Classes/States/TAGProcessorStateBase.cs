@@ -33,9 +33,6 @@ namespace VSS.TRex.TAGFiles.Classes.States
     private XYZ _LeftRearPoint = XYZ.Null;
     private XYZ _RightRearPoint = XYZ.Null;
 
-    public XYZ LastRightPoint { get => _RightPoint; }
-    public XYZ LastLeftPoint { get => _LeftPoint; }
-
     // Declarations that hold values from read records & declarations for processing state information
 
     // CalculateMachineSpeed calculates the speed of the machine in meters per second

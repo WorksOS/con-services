@@ -166,14 +166,13 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     {
       _processedEpochNumber++;
 
-
       // Construct local geometric state and rotate measure epochs due to left and right side point measurement of cutter head
       // ie: Measurement context is co-linear with cutter head motion
       FirstLeftPoint = heightInterpolator1.V1;
       FirstRightPoint = heightInterpolator1.V2;
 
-      LastLeftPoint = Processor.LastLeftPoint;   //heightInterpolator2.V1;
-      LastRightPoint = Processor.LastRightPoint;  //heightInterpolator2.V2;
+      LastLeftPoint = heightInterpolator2.V2;
+      LastRightPoint = heightInterpolator2.V3;
 
       // turn blade 90 degrees
       RotateBlade90(ref FirstLeftPoint, ref FirstRightPoint);
