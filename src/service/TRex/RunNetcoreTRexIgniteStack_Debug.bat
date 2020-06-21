@@ -14,4 +14,5 @@ timeout 4
 start /D "src/netstandard/services/VSS.TRex.Server.QuantizedMesh/bin/Debug/netcoreapp3.1/" "QuantizedMesh" cmd.exe /k "dotnet VSS.TRex.Server.QuantizedMesh.dll"
 timeout 4
 start /D "src/netstandard/services/VSS.TRex.Server.Reports/bin/Debug/netcoreapp3.1/" "Reports" cmd.exe /k "dotnet VSS.TRex.Server.Reports.dll"
-
+timeout 4
+start /D "src/netstandard/services/VSS.TRex.Server.ProjectRebuilder/bin/Debug/netcoreapp3.1/" "ProjectRebuilder" cmd.exe /k "dotnet VSS.TRex.Server.ProjectRebuilder.dll"
