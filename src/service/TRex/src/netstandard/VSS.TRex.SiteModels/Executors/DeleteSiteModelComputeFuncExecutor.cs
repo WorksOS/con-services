@@ -112,7 +112,6 @@ namespace VSS.TRex.SiteModels.Executors
     /// <summary>
     /// Executor that implements deletion of the project
     /// </summary>
-    /// <returns></returns>
     public async Task<bool> ExecuteAsync()
     {
       _log.LogInformation($"Performing Execute for DataModel:{_deleteSiteModelRequestArgument?.ProjectID}, with selectivity {_deleteSiteModelRequestArgument.Selectivity}");
@@ -120,7 +119,7 @@ namespace VSS.TRex.SiteModels.Executors
       if (Response.Result != DeleteSiteModelResult.OK)
       {
         _log.LogInformation($"Deleting site model {_siteModel.ID}: Initial execution response state not OK ({Response.Result}) - aborting request");
-        return false;
+        return Response.Result == DeleteSiteModelResult.UnableToLocateSiteModel;
       }
 
       _log.LogInformation($"Deleting site model {_siteModel.ID}: Initiating");

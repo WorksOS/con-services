@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
+using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -7,6 +9,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 {
   public class SiteModelRebuilderManagerTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private void AddApplicationGridRouting()
+    {
+      IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
+    }
+
     [Fact]
     public void Creation()
     {

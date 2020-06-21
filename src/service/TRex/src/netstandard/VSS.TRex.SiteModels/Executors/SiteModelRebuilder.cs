@@ -147,7 +147,8 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     private void AdvancePhase(ref RebuildSiteModelPhase currentPhase)
     {
-      UpdatePhase(NextPhase(currentPhase));
+      currentPhase = NextPhase(currentPhase);
+      UpdatePhase(currentPhase);
     }
 
     /// <summary>
@@ -339,22 +340,32 @@ namespace VSS.TRex.SiteModels
     {
       _log.LogInformation($"Starting rebuilding project {ProjectUid}");
 
-      // Get metadata. If one exists and it is 'Complete', then reset it
-      _metadata = GetMetaData(ProjectUid);
       var currentPhase = RebuildSiteModelPhase.Unknown;
 
       if (_metadata != null)
       {
-        if (_metadata.Phase == RebuildSiteModelPhase.Complete)
+        // Initial execution with metadata provided - no need to read metadata from persistence
+        // Do need to save it into the cache...
+        UpdateMetaData();
+      }
+      else
+      {
+        // Get metadata. If one exists and it is 'Complete', then reset it
+        _metadata = GetMetaData(ProjectUid);
+
+        if (_metadata != null)
         {
-          _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
-          // Reset the metadata to start the process
-          UpdatePhase(RebuildSiteModelPhase.Unknown);
-        }
-        else
-        {
-          _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
-          currentPhase = _metadata.Phase;
+          if (_metadata.Phase == RebuildSiteModelPhase.Complete)
+          {
+            _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
+            // Reset the metadata to start the process
+            UpdatePhase(RebuildSiteModelPhase.Unknown);
+          }
+          else
+          {
+            _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
+            currentPhase = _metadata.Phase;
+          }
         }
       }
 
