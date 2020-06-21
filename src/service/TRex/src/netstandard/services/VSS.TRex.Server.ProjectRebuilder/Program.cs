@@ -17,6 +17,8 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
+using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Heartbeats;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage;
@@ -88,6 +90,8 @@ namespace VSS.TRex.Server.ProjectRebuilder
         //        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
         .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
+
+        .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Complete();
     }
 
@@ -144,6 +148,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelRebuilderHeartbeatLogger());
     }
 
     static async Task<int> Main()

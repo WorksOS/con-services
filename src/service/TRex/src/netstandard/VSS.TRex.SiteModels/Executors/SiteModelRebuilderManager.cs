@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
@@ -14,7 +16,7 @@ namespace VSS.TRex.SiteModels
   /// <summary>
   /// Manages the life cycle of activities in the project rebuilder across the set of projects being rebuilt
   /// </summary>
-  public class SiteModelRebuilderManager
+  public class SiteModelRebuilderManager : ISiteModelRebuilderManager
   {
     private static ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilderManager>();
 
@@ -57,9 +59,30 @@ namespace VSS.TRex.SiteModels
         FilesCache = FilesCache
       };
 
-      Rebuilders.Add(projectUid, (rebuilder, rebuilder.ExecuteAsync()));
-
+      lock (Rebuilders)
+      {
+        Rebuilders.Add(projectUid, (rebuilder, rebuilder.ExecuteAsync()));
+      }
       return true;
+    }
+
+    /// <summary>
+    /// The total number of rebuilders being managed by the rebuild project manager
+    /// </summary>
+    public int RebuildCount()
+    {
+      lock (Rebuilders)
+      {
+        return Rebuilders.Count;
+      }
+    }
+
+    public IRebuildSiteModelMetaData[] GetRebuilersState()
+    {
+      lock (Rebuilders)
+      {
+        return Rebuilders.Values.Select(x => x.Item1.Metadata).ToArray();
+      }
     }
   }
 }
