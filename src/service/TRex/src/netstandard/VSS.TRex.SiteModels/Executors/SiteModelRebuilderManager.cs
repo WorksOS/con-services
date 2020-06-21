@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
@@ -20,7 +19,7 @@ namespace VSS.TRex.SiteModels
   {
     private static ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilderManager>();
 
-    private Dictionary<Guid, (SiteModelRebuilder, Task<IRebuildSiteModelMetaData>)> Rebuilders = new Dictionary<Guid, (SiteModelRebuilder, Task<IRebuildSiteModelMetaData>)>();
+    private Dictionary<Guid, (ISiteModelRebuilder, Task<IRebuildSiteModelMetaData>)> Rebuilders = new Dictionary<Guid, (ISiteModelRebuilder, Task<IRebuildSiteModelMetaData>)>();
 
     /// <summary>
     /// The storage proxy cache for the rebuilder to use for tracking metadata
@@ -52,12 +51,10 @@ namespace VSS.TRex.SiteModels
         return false;
       }
 
-      var rebuilder = new SiteModelRebuilder(projectUid, archiveTAGFiles)
-      {
-        // Inject cahces
-        MetadataCache = MetadataCache,
-        FilesCache = FilesCache
-      };
+      var rebuilder = DIContext.Obtain<Func<Guid, bool, ISiteModelRebuilder>>()(projectUid, archiveTAGFiles);
+      // Inject cahces
+      rebuilder.MetadataCache = MetadataCache;
+      rebuilder.FilesCache = FilesCache;
 
       lock (Rebuilders)
       {

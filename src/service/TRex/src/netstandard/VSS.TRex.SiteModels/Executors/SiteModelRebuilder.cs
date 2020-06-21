@@ -28,7 +28,7 @@ namespace VSS.TRex.SiteModels
   /// Defines and manages the activites executed asynchronously to rebuild a project. This class is instantiated
   /// by the project rebuilder manager for each project sbeing rebuilt
   /// </summary>
-  public class SiteModelRebuilder
+  public class SiteModelRebuilder : ISiteModelRebuilder
   {
     private static ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilder>();
 
@@ -45,22 +45,17 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The storage proxy cache for the rebuilder to use for tracking metadata
     /// </summary>
-    public IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData> MetadataCache { get; set; } 
+    public IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData> MetadataCache { get; set; }
 
     /// <summary>
     /// The storage proxy cache for the rebuilder to use to store names of TAG files requested from S3
     /// </summary>
-    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; set; } 
+    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; set; }
 
     /// <summary>
     /// Project ID of this project this rebuilder is managing
     /// </summary>
     public Guid ProjectUid { get; }
-
-    /// <summary>
-    /// The response tht will be provided to the caller when complete
-    /// </summary>
-    //private RebuildSiteModelRequestResponse _response;
 
     private IRebuildSiteModelMetaData _metadata;
     public IRebuildSiteModelMetaData Metadata => _metadata;
@@ -84,6 +79,9 @@ namespace VSS.TRex.SiteModels
      // _response = new RebuildSiteModelRequestResponse(projectUid);
     }
 
+    /// <summary>
+    /// Aborts the current project rebuild operation in it's current state
+    /// </summary>
     public void Abort()
     {
       _aborted = true;

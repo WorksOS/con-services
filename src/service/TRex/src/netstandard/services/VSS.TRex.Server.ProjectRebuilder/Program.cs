@@ -91,6 +91,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
         .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
 
+        .Add(x => x.AddSingleton<Func<Guid, bool, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles) => new SiteModelRebuilder(projectUid, archiveTAGFiles)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Complete();
     }
