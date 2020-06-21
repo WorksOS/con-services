@@ -12,7 +12,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
     [Fact]
     public void Creation()
     {
-      var rebuilder = new SiteModelRebuilder(Guid.NewGuid());
+      var rebuilder = new SiteModelRebuilder(Guid.NewGuid(), false);
       rebuilder.Should().NotBeNull();
     }
 

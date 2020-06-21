@@ -45,12 +45,12 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The storage proxy cache for the rebuilder to use for tracking metadata
     /// </summary>
-    public IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData> MetadataCache { get; set; } // = DIContext.Obtain<Func<IStorageProxyCache<Guid, IRebuildSiteModelMetaData>>>()();
+    public IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData> MetadataCache { get; set; } 
 
     /// <summary>
     /// The storage proxy cache for the rebuilder to use to store names of TAG files requested from S3
     /// </summary>
-    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; set; } // gl//DIContext.Obtain<Func<IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>>>()();
+    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; set; } 
 
     /// <summary>
     /// Project ID of this project this rebuilder is managing
@@ -60,19 +60,28 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The response tht will be provided to the caller when complete
     /// </summary>
-    private RebuildSiteModelRequestResponse _response;
+    //private RebuildSiteModelRequestResponse _response;
 
-    private IRebuildSiteModelMetaData _metadata = new RebuildSiteModelMetaData();
+    private IRebuildSiteModelMetaData _metadata;
+    public IRebuildSiteModelMetaData Metadata => _metadata;
 
     private bool _aborted = false;
 
     private CancellationTokenSource _cancellationSource = new CancellationTokenSource();
 
-    public SiteModelRebuilder(Guid projectUid)
+    public SiteModelRebuilder(Guid projectUid, bool archiveTAGFiles)
     {
       ProjectUid = projectUid;
 
-      _response = new RebuildSiteModelRequestResponse(projectUid);
+      RebuildSiteModelFlags flags = archiveTAGFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
+
+      _metadata = new RebuildSiteModelMetaData()
+      {
+        ProjectUID = projectUid,
+        Flags = flags
+      };
+
+     // _response = new RebuildSiteModelRequestResponse(projectUid);
     }
 
     public void Abort()
@@ -126,7 +135,8 @@ namespace VSS.TRex.SiteModels
         RebuildSiteModelPhase.Deleting => RebuildSiteModelPhase.Scanning,
         RebuildSiteModelPhase.Scanning => RebuildSiteModelPhase.Submitting,
         RebuildSiteModelPhase.Submitting => RebuildSiteModelPhase.Monitoring,
-        RebuildSiteModelPhase.Monitoring => RebuildSiteModelPhase.Complete,
+        RebuildSiteModelPhase.Monitoring => RebuildSiteModelPhase.Completion,
+        RebuildSiteModelPhase.Completion => RebuildSiteModelPhase.Complete,
         RebuildSiteModelPhase.Complete => RebuildSiteModelPhase.Unknown,
         _ => throw new TRexException($"Unknown rebuild site model phase {phase}")
       };
@@ -214,7 +224,7 @@ namespace VSS.TRex.SiteModels
       var tagFileCollection = new List<string>();
 
       // Read all collections into a single list
-      for (var i = 0; i < _metadata.NumberOfTAGFilesFromS3; i++)
+      for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
       {
         var key = new NonSpatialAffinityKey(ProjectUid, i.ToString(CultureInfo.InvariantCulture));
         try
@@ -308,8 +318,21 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Performs any required clean up when moving into the Completed state.
     /// </summary>
-    private void ExecuteCompletion()
+    private async Task ExecuteCompletion()
     {
+      // Remove all the collections of TAG file keys
+      for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
+      {
+        var key = new NonSpatialAffinityKey(ProjectUid, i.ToString(CultureInfo.InvariantCulture));
+        try
+        {
+          await FilesCache.RemoveAsync(key);
+        }
+        catch (KeyNotFoundException)
+        {
+          _log.LogWarning($"Key {key} not found while removing file key collections for project {ProjectUid}.");
+        }
+      }
     }
 
     private async Task<IRebuildSiteModelMetaData> Execute()
@@ -362,13 +385,14 @@ namespace VSS.TRex.SiteModels
             if (!await ExecuteMonitoring())
               return _metadata;
             break;
+
+          case RebuildSiteModelPhase.Completion:
+            await ExecuteCompletion();
+            break;
         }
 
         AdvancePhase(ref currentPhase);
       }
-
-      if (currentPhase == RebuildSiteModelPhase.Complete)
-        ExecuteCompletion();
 
       _metadata.RebuildResult = RebuildSiteModelResult.OK;
       UpdateMetaData();
@@ -379,9 +403,6 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Coordinate rebuilding of a project, returning a Tasl for the caller to manahgw.
     /// </summary>
-    public Task<IRebuildSiteModelMetaData> ExecuteAsync()
-    {
-      return Task.Run(() => Execute());
-    }
+    public Task<IRebuildSiteModelMetaData> ExecuteAsync() => Task.Run(Execute);
   }
 }

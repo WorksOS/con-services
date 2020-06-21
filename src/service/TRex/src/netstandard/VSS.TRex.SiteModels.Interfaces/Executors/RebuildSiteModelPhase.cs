@@ -26,6 +26,11 @@
     Monitoring,
 
     /// <summary>
+    /// Performing cleanup operations prior to the process being completed
+    /// </summary>
+    Completion,
+
+    /// <summary>
     /// All site model rebuild operations are complete
     /// </summary>
     Complete
