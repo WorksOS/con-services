@@ -41,16 +41,27 @@ namespace CCSS.CWS.Client
       var projectDetailListResponseModel = new ProjectDetailListResponseModel();
       foreach (var project in projectSummaryListResponseModel.Projects)
       {
-        // Convert the summary model into a details model
-        projectDetailListResponseModel.Projects.Add(new ProjectDetailResponseModel
+        // Convert the summary model into a details model.
+        //If the project doesn't belong to the user and the user is not admin there will not be a boundary.
+        //We can get the boundary (currently only 3dp projects) using metadata.
+        ProjectDetailResponseModel details = null;
+        if (project.Boundary == null)
         {
-          AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
-          ProjectTRN = project.ProjectTRN,
-          ProjectName = project.ProjectName,
-          ProjectType = project.ProjectType,
-          UserProjectRole = project.UserProjectRole,
-          ProjectSettings = new ProjectSettingsModel() {Boundary = project.Boundary, TimeZone = project.TimeZone}
-        });
+          details = await GetProject(new Guid(project.ProjectId), userUid, true, customHeaders);
+        }
+        else
+        {
+          details = new ProjectDetailResponseModel
+          {
+            AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
+            ProjectTRN = project.ProjectTRN,
+            ProjectName = project.ProjectName,
+            ProjectType = project.ProjectType,
+            UserProjectRole = project.UserProjectRole,
+            ProjectSettings = new ProjectSettingsModel {Boundary = project.Boundary, TimeZone = project.TimeZone}
+          };
+        }
+        projectDetailListResponseModel.Projects.Add(details);
       }
 
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: projectSummaryListResponseModel {JsonConvert.SerializeObject(projectSummaryListResponseModel)}");
@@ -104,17 +115,28 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<ProjectDetailResponseModel> GetMyProject(Guid projectUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
     {
-      log.LogDebug($"{nameof(GetMyProject)}: projectUid {projectUid} userUid {userUid}");
+      return await GetProject(projectUid, userUid, false, customHeaders);
+    }
+
+    /// <summary>
+    /// Get project details. Metadata required if getting project boundary for a project not belonging to user who is not an admin.
+    /// </summary>
+    private async Task<ProjectDetailResponseModel> GetProject(Guid projectUid, Guid? userUid = null, bool useMetadata = false, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetProject)}: projectUid {projectUid} userUid {userUid}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
       ProjectDetailResponseModel projectDetailResponseModel = null;
 
       try
       {
-        projectDetailResponseModel = await GetData<ProjectDetailResponseModel>($"/projects/{projectTrn}", projectUid, userUid, null, customHeaders);
-        
+        var route = $"/projects/{projectTrn}";
+        if (useMetadata)
+          route = $"{route}/metadata";
+        projectDetailResponseModel = await GetData<ProjectDetailResponseModel>(route, projectUid, userUid, null, customHeaders);
+
         // get a project, with user role always returns null, but can only be called if the role IS ADMIN.
-        if (userUid != null)
+        if (userUid != null && !useMetadata)
           projectDetailResponseModel.UserProjectRole = UserProjectRoleEnum.Admin;
       }
       catch (HttpRequestException e)
@@ -122,11 +144,11 @@ namespace CCSS.CWS.Client
         /*
           todo what are possible exceptions?
         */
-        log.LogError(e, $"{nameof(GetMyProject)}: failed to get project. ");
+        log.LogError(e, $"{nameof(GetProject)}: failed to get project. ");
         throw;
       }
 
-      log.LogDebug($"{nameof(GetMyProject)}: projectDetailResponseModel {JsonConvert.SerializeObject(projectDetailResponseModel)}");
+      log.LogDebug($"{nameof(GetProject)}: projectDetailResponseModel {JsonConvert.SerializeObject(projectDetailResponseModel)}");
       return projectDetailResponseModel;
     }
 
