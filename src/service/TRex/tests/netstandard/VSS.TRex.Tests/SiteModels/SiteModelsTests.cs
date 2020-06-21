@@ -43,6 +43,21 @@ namespace VSS.TRex.Tests.SiteModels
     }
 
     [Fact]
+    public void GetSiteModel_WithMarkedForDeletion_FlagRemoval()
+    {
+      var sm = new TRex.SiteModels.SiteModels();
+
+      var siteModelId = Guid.NewGuid();
+      var siteModel = sm.GetSiteModel(siteModelId, true);
+
+      siteModel.MarkForDeletion();
+      sm.GetSiteModel(siteModelId, false).Should().BeNull("Site models marked for deletion cannot be returned for standard query operations");
+
+      siteModel.RemovedMarkForDeletion();
+      sm.GetSiteModel(siteModelId, false).Should().NotBeNull("Site models marked for deletion can be returned to active duty after partial delete operations");
+    }
+
+    [Fact]
     public void GetSiteModelRaw_WithoutMarkedForDeletion()
     {
       var sm = new TRex.SiteModels.SiteModels();

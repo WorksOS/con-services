@@ -16,7 +16,14 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     /// The project the request is relevant to
     /// </summary>
     public Guid ProjectID { get; set; }
-    
+
+    /// <summary>
+    /// Defines how selective the site model delete operation should be.
+    /// Selectivity allows certain portions of a site model to be deleted to help with operations
+    /// like rebuilding projects on demand.
+    /// </summary>
+    public DeleteSiteModelSelectivity Selectivity { get; set; }
+
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
@@ -28,6 +35,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ProjectID);
+      writer.WriteInt((int)Selectivity);
   }
 
     /// <summary>
@@ -41,6 +49,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
+      Selectivity = (DeleteSiteModelSelectivity) reader.ReadInt();
     }
   }
 }

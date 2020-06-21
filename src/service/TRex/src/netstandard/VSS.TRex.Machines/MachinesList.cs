@@ -8,6 +8,8 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Common.Extensions;
 
 namespace VSS.TRex.Machines
 {
@@ -191,6 +193,16 @@ namespace VSS.TRex.Machines
     public static void RemoveFromPersistentStore(Guid dataModelId, IStorageProxy storageProxy)
     {
       storageProxy.RemoveStreamFromPersistentStore(dataModelId, FileSystemStreamType.Machines, MACHINES_LIST_STREAM_NAME);
+    }
+
+    /// <summary>
+    /// Removes all state in the machine obtained from TAG file processing apart from identity information 
+    /// </summary>
+    public void ClearTAGFileStateData(IStorageProxy storageProxy)
+    {
+      ForEach(x => x.ClearTAGFileStateData());
+
+      SaveToPersistentStore(storageProxy);
     }
 
     /// <summary>

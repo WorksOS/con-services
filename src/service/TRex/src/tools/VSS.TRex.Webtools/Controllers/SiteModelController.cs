@@ -91,7 +91,8 @@ namespace VSS.TRex.Webtools.Controllers
       var response = await deleter.ExecuteAsync(new DeleteSiteModelRequestArgument
       {
         ExternalDescriptor = Guid.NewGuid(), 
-        ProjectID = siteModelUid
+        ProjectID = siteModelUid,
+        Selectivity = DeleteSiteModelSelectivity.All
       });
 
       return new JsonResult(response);
