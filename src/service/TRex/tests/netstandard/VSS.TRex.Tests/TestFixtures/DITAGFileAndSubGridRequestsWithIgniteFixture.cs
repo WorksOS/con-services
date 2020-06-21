@@ -43,6 +43,13 @@ using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.SiteModels;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.Storage.Caches;
+using VSS.TRex.GridFabric;
+using VSS.TRex.SiteModels.Executors;
+using VSS.TRex.GridFabric.Affinity;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -79,6 +86,22 @@ namespace VSS.TRex.Tests.TestFixtures
         PipelineProcessorTaskStyle.ProgressiveVolumes => new VolumesComputationTask(),
 
         _ => null
+      };
+    }
+
+    static private IStorageProxyCacheCommit RebuildSiteModelCacheFactory(RebuildSiteModelCacheType cacheType)
+    {
+      return cacheType switch
+      {
+        RebuildSiteModelCacheType.Metedata =>
+          new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new NonSpatialAffinityKeyEqualityComparer()),
+
+        RebuildSiteModelCacheType.KeyCollections =>
+          new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()), new NonSpatialAffinityKeyEqualityComparer()),
+
+        _ => throw new TRexException($"Unknown rebuild site model cache type: {cacheType}")
       };
     }
 
@@ -126,6 +149,9 @@ namespace VSS.TRex.Tests.TestFixtures
             _ => throw new TRexException("Unknown immutability type")
           };
         }))
+        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => RebuildSiteModelCacheFactory(cacheType)))
+        .Add(x => x.AddSingleton<Func<Guid, bool, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles) => new SiteModelRebuilder(projectUid, archiveTAGFiles)))
+        .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Complete();
 
       ResetDynamicMockedIgniteContent();

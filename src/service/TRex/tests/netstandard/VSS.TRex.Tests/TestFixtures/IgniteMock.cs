@@ -394,6 +394,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the mocked cache for the summary site model meta data
       AddMockedCacheToIgniteMock<Guid, ISiteModelMetadata>();
+
+      // Create the mocked cache for the rebuild site mode metadata store and any other cache using this signature
+      AddMockedCacheToIgniteMock<INonSpatialAffinityKey, IRebuildSiteModelMetaData>();
     }
 
     private void TestIBinarizableSerializationForItem(object item)

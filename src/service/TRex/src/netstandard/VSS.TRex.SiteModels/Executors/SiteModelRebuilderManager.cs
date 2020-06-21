@@ -19,6 +19,9 @@ namespace VSS.TRex.SiteModels
   {
     private static ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilderManager>();
 
+    /// <summary>
+    /// The collection of rebuilder the manager is looking after
+    /// </summary>
     private Dictionary<Guid, (ISiteModelRebuilder, Task<IRebuildSiteModelMetaData>)> Rebuilders = new Dictionary<Guid, (ISiteModelRebuilder, Task<IRebuildSiteModelMetaData>)>();
 
     /// <summary>
