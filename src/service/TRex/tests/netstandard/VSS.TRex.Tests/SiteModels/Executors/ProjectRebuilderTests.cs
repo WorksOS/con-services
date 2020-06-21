@@ -24,9 +24,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 
       var metaData = new RebuildSiteModelMetaData()
       {
-        ProjectUid = sitemodel.ID
+        ProjectUID = sitemodel.ID
       };
-
 
       Assert.True(false);
     }

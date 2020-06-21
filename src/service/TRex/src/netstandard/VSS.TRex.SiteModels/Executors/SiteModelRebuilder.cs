@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.AWS.TransferProxy;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric;
-using VSS.TRex.IO.Helpers;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Utilities;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.Requests;
 
 namespace VSS.TRex.SiteModels
 {
@@ -34,14 +38,19 @@ namespace VSS.TRex.SiteModels
     private const int kMonitoringDelayMS = 10000;
 
     /// <summary>
+    /// The key name to be used for the metadata entries in the metadata cache (one per project)
+    /// </summary>
+    private static string kMetadataKeyName = "metadata";
+
+    /// <summary>
     /// The storage proxy cache for the rebuilder to use for tracking metadata
     /// </summary>
-    private IStorageProxyCache<Guid, IRebuildSiteModelMetaData> _metadataCache = DIContext.Obtain<Func<IStorageProxyCache<Guid, IRebuildSiteModelMetaData>>>()();
+    public IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData> MetadataCache { get; set; } // = DIContext.Obtain<Func<IStorageProxyCache<Guid, IRebuildSiteModelMetaData>>>()();
 
     /// <summary>
     /// The storage proxy cache for the rebuilder to use to store names of TAG files requested from S3
     /// </summary>
-    private IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper> _filesCache = DIContext.Obtain<Func<IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>>>()();
+    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; set; } // gl//DIContext.Obtain<Func<IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>>>()();
 
     /// <summary>
     /// Project ID of this project this rebuilder is managing
@@ -72,11 +81,14 @@ namespace VSS.TRex.SiteModels
       _cancellationSource.Cancel();
     }
 
+    /// <summary>
+    /// Reads the rebuld site model metadata for the given project from the persistent cache
+    /// </summary>
     private IRebuildSiteModelMetaData GetMetaData(Guid projectUid)
     {
       try
       {
-        return _metadataCache.Get(projectUid);
+        return MetadataCache.Get(new NonSpatialAffinityKey(projectUid, kMetadataKeyName));
       }
       catch (KeyNotFoundException)
       {
@@ -85,21 +97,47 @@ namespace VSS.TRex.SiteModels
       }
     }
 
+    /// <summary>
+    /// Updates the state of the rebuild site meta data for the project in the persistent store
+    /// </summary>
     private void UpdateMetaData()
     {
       _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
-      _metadataCache.Put(ProjectUid, _metadata);
-
+      MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, kMetadataKeyName), _metadata);
     }
+
+    /// <summary>
+    /// Moves the metadata to the next phases in the process
+    /// </summary>
     private void UpdatePhase(RebuildSiteModelPhase phase)
     {
       _metadata.Phase = phase;
       UpdateMetaData();
     }
 
+    /// <summary>
+    /// Defines the phase state transitions
+    /// </summary>
+    private RebuildSiteModelPhase NextPhase(RebuildSiteModelPhase phase)
+    {
+      return phase switch
+      {
+        RebuildSiteModelPhase.Unknown => RebuildSiteModelPhase.Deleting,
+        RebuildSiteModelPhase.Deleting => RebuildSiteModelPhase.Scanning,
+        RebuildSiteModelPhase.Scanning => RebuildSiteModelPhase.Submitting,
+        RebuildSiteModelPhase.Submitting => RebuildSiteModelPhase.Monitoring,
+        RebuildSiteModelPhase.Monitoring => RebuildSiteModelPhase.Complete,
+        RebuildSiteModelPhase.Complete => RebuildSiteModelPhase.Unknown,
+        _ => throw new TRexException($"Unknown rebuild site model phase {phase}")
+      };
+    }
+
+    /// <summary>
+    /// Moves to the next processing phase given the currnt phase
+    /// </summary>
     private void AdvancePhase(ref RebuildSiteModelPhase currentPhase)
     {
-      UpdatePhase(currentPhase++);
+      UpdatePhase(NextPhase(currentPhase));
     }
 
     /// <summary>
@@ -147,9 +185,9 @@ namespace VSS.TRex.SiteModels
       var runningCount = 0;
       do
       {
-        var (candidateTAGFiles, nextContinuation) = await s3FileTransfer.ListKeys($"/{_metadata.ProjectUid}", 1000, continuation);
+        var (candidateTAGFiles, nextContinuation) = await s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
         continuation = nextContinuation;
-        runningCount += candidateTAGFiles.Count;
+        runningCount += candidateTAGFiles.Length;
 
         // Put the candidate TAG files into the cache
         var sb = new StringBuilder(2 * (candidateTAGFiles.Sum(x => x.Length) + 1));
@@ -159,8 +197,8 @@ namespace VSS.TRex.SiteModels
         using (var compressedStream = MemoryStreamCompression.Compress(ms))
         {
           if (_log.IsTraceEnabled())
-            _log.LogInformation($"Putting block of {candidateTAGFiles.Count} TAG file names for project {ProjectUid}");
-          _filesCache.Put((ProjectUid, runningCount), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
+            _log.LogInformation($"Putting block of {candidateTAGFiles.Length} TAG file names for project {ProjectUid}");
+          FilesCache.Put(new NonSpatialAffinityKey(ProjectUid, runningCount.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
       } while (!string.IsNullOrEmpty(continuation));
 
@@ -171,12 +209,87 @@ namespace VSS.TRex.SiteModels
     /// Iterates over all elements stored in the file cache and requests those files from 3, submitting them
     /// to the TAG file processor as it goes.
     /// </summary>
-    private void ExecuteTAGFileSubmission()
+    private async Task<bool> ExecuteTAGFileSubmission()
     {
+      var tagFileCollection = new List<string>();
+
+      // Read all collections into a single list
+      for (var i = 0; i < _metadata.NumberOfTAGFilesFromS3; i++)
+      {
+        var key = new NonSpatialAffinityKey(ProjectUid, i.ToString(CultureInfo.InvariantCulture));
+        try
+        {
+          using var ms = new MemoryStream((await FilesCache.GetAsync(key)).Bytes);
+          var uncompressedTagFileCollection = MemoryStreamCompression.Decompress(ms);
+          tagFileCollection.AddRange(Encoding.UTF8.GetString(uncompressedTagFileCollection.ToArray()).Split('|'));
+        }
+        catch (KeyNotFoundException e)
+        {
+          _log.LogError(e, $"Key {key} not found. Aborting.");
+          _metadata.RebuildResult = RebuildSiteModelResult.UnableToLocateTAGFileKeyCollection;
+          UpdateMetaData();
+          return false;
+        }
+      }
+
+      // Sort the list based on time contained in the name of the tag file
+      tagFileCollection.OrderBy(x => Convert.ToUInt64(x.Split('/')[1].Split("--")[2]));
+
+      var s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
+
+      var foundPointToStartSubmittingTAGFiles = string.IsNullOrEmpty(_metadata.LastSubmittedTagFile);
+
+      // Iterate across the sorted collection submitting each one in turn to the TAG file processor. 
+      // After successful submission update metadata with name of submitted file
+      foreach (var tagFileKey in tagFileCollection)
+      {
+        // Make some determinaton that the key looks valid and defines a *.tag file
+        // TODO - complete this check
+
+
+        // If the last submitted tag file is not null in the metadata until that key is encountered before
+        // submitting more TAG files
+        if (!foundPointToStartSubmittingTAGFiles)
+        {
+          foundPointToStartSubmittingTAGFiles = _metadata.LastSubmittedTagFile.Equals(tagFileKey, StringComparison.InvariantCultureIgnoreCase);
+
+          if (!foundPointToStartSubmittingTAGFiles)
+            continue;
+        }
+
+        // Determine the asset ID from the key of form '<{MachineUid}>/<TagFileName>'
+        var split = tagFileKey.Split('/');
+        var assetID = Guid.Parse(split[0]);
+        var tagFileName = split[1];
+
+        // Read the content of the TAG file from S3
+        var tagFile = await s3FileTransfer.Proxy.Download(tagFileKey);
+        using var ms = new MemoryStream();
+        await tagFile.FileStream.CopyToAsync(ms);
+
+        // Submit the file...
+        var submissionRequest = new SubmitTAGFileRequest();
+        var submissionResult = await submissionRequest.ExecuteAsync(new SubmitTAGFileRequestArgument
+        {
+          ProjectID = ProjectUid,
+          AssetID = assetID,
+          AddToArchive = _metadata.Flags.HasFlag(RebuildSiteModelFlags.AddProcessedTagFileToArchive),
+          TAGFileName = tagFileName,
+          TreatAsJohnDoe = false, // Todo: Determine if this setting has consequences for processing files in the same way as the original model
+                                  // Todo: It may be necessary to relate this to the preserved machine information in the model beign rebuilt
+          TagFileContent = ms.ToArray()
+        });
+
+        // Update the metadata
+        _metadata.LastSubmittedTagFile = tagFileKey;
+        UpdateMetaData();
+      }
+
+      return true;
     }
 
     /// <summary>
-    /// Waits for the process to be complete before advancing to the next phase
+    /// Waits for the process to be complete before advancing to the next phase. Can be cancelled through Abort()
     /// </summary>
     private async Task<bool> ExecuteMonitoring()
     {
@@ -241,11 +354,13 @@ namespace VSS.TRex.SiteModels
             break;
 
           case RebuildSiteModelPhase.Submitting:
-            ExecuteTAGFileSubmission();
+            if (!await ExecuteTAGFileSubmission())
+              return _metadata;
             break;
 
           case RebuildSiteModelPhase.Monitoring:
-            ExecuteMonitoring();
+            if (!await ExecuteMonitoring())
+              return _metadata;
             break;
         }
 
@@ -254,6 +369,9 @@ namespace VSS.TRex.SiteModels
 
       if (currentPhase == RebuildSiteModelPhase.Complete)
         ExecuteCompletion();
+
+      _metadata.RebuildResult = RebuildSiteModelResult.OK;
+      UpdateMetaData();
 
       return _metadata;
     }
