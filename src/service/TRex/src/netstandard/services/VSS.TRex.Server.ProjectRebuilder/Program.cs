@@ -37,17 +37,17 @@ namespace VSS.TRex.Server.ProjectRebuilder
         // **********************************************
 
         // Add the singleton reference to the non-transacted site model change map cache
-        .Add(x => x.AddSingleton<Func<IStorageProxyCache<Guid, IRebuildSiteModelMetaData>>>(
-          () => new StorageProxyCache<Guid, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
-            .Grid(StorageMutability.Immutable)?
-            .GetOrCreateCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
-        )
-
-        .Add(x => x.AddSingleton<Func<IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>>>(
-          () => new StorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>()
-            .Grid(StorageMutability.Immutable)?
-            .GetOrCreateCache<(Guid, int), ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
-        )
+        //.Add(x => x.AddSingleton<Func<IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>>>(
+        //  () => new StorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
+        //    .Grid(StorageMutability.Mutable)?
+        //    .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
+        //)
+        //
+        //.Add(x => x.AddSingleton<Func<IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>>>(
+        //  () => new StorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>()
+        //    .Grid(StorageMutability.Mutable)?
+        //    .GetCache<(Guid, int), ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
+        //)
 
         //******************************************
         // Injected factories for transacted proxies
