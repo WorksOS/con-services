@@ -1,99 +1,91 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
-using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Configuration;
-using VSS.TRex.Common.Interfaces;
-using System.Threading;
-using VSS.TRex.Storage.Models;
-using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
-using VSS.TRex.GridFabric.Servers.Client;
-using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Caches;
-using VSS.TRex.Storage;
-using VSS.TRex.SiteModels.Executors;
-using VSS.AWS.TransferProxy.Interfaces;
-using VSS.AWS.TransferProxy;
+using VSS.TRex.Common.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
+using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
+using VSS.TRex.GridFabric.Servers.Client;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Server.ProjectRebuilder
 {
   class Program
   {
+    static private IStorageProxyCacheCommit CacheFactory(RebuildSiteModelCacheType cacheType)
+    {
+      return cacheType switch
+      {
+        RebuildSiteModelCacheType.Metedata =>
+          new StorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())),
+
+        RebuildSiteModelCacheType.KeyCollections =>
+          new StorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName())),
+
+        _ => throw new TRexException($"Unknown rebuild site model cache type: {cacheType}")
+      };
+    }
+
     private static void DependencyInjection()
     {
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
 
-        //***********************************************
-        // Injected factories for non-transacted proxies
-        // **********************************************
-
-        // Add the singleton reference to the non-transacted site model change map cache
-        //.Add(x => x.AddSingleton<Func<IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>>>(
-        //  () => new StorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
-        //    .Grid(StorageMutability.Mutable)?
-        //    .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
-        //)
-        //
-        //.Add(x => x.AddSingleton<Func<IStorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>>>(
-        //  () => new StorageProxyCache<(Guid, int), ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>()
-        //    .Grid(StorageMutability.Mutable)?
-        //    .GetCache<(Guid, int), ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderMetaDataCacheName())))
-        //)
-
-        //******************************************
-        // Injected factories for transacted proxies
-        // *****************************************
-
-        // Add the singleton reference to the transacted site model change map cache
-        //.Add(x => x.AddSingleton<Func<IStorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>>>(
-        //  () => new StorageProxyCacheTransacted<Guid, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>()
-        //    .Grid(StorageMutability.Immutable)?
-        //    .GetCache<Guid, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new RebuildSiteModelMetaDataKeyEqualityComparer())
-        //))
+        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => CacheFactory(cacheType)))
 
         //        .Build()
         //        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
         //        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         //        .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
-//        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
-//        .Build()
-//        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
-//        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
-//        .Build()
-//        .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
-//        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
-//        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-//        .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
-//        .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
-//        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
-//        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-//        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
-//        .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
+        //        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        //        .Build()
+        //        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        //        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
+        //        .Build()
+        //        .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+        //        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        //        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        //        .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
+        //        .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
+        //        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
+        //        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
+        //        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
+        //        .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
-//
-//        // Register the listener for site model attribute change notifications
-//        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
-//
-//        // Register the factory for the CellProfileAnalyzer for detailed call pass/lift cell profiles
-//        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<ProfileCell>>>(
-//          factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams)
-//            => new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams)))
-//
-//        // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
-//        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
-//          factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder) => null))
-//
-//        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+        //
+        //        // Register the listener for site model attribute change notifications
+        //        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        //
+        //        // Register the factory for the CellProfileAnalyzer for detailed call pass/lift cell profiles
+        //        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<ProfileCell>>>(
+        //          factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams)
+        //            => new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams)))
+        //
+        //        // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
+        //        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
+        //          factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder) => null))
+        //
+        //        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
         .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
         .Complete();
@@ -166,7 +158,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         Log.LogInformation("Creating service");
         Log.LogDebug("Creating service");
 
-        var server = new ApplicationServiceServer(new[] {ServerRoles.PROJECT_REBUILDER_ROLE });
+        var server = new ApplicationServiceServer(new[] { ServerRoles.PROJECT_REBUILDER_ROLE });
 
         var cancelTokenSource = new CancellationTokenSource();
         AppDomain.CurrentDomain.ProcessExit += (s, e) =>
