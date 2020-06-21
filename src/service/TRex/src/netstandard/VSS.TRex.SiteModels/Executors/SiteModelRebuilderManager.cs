@@ -77,11 +77,11 @@ namespace VSS.TRex.SiteModels
       }
     }
 
-    public IRebuildSiteModelMetaData[] GetRebuilersState()
+    public List<IRebuildSiteModelMetaData> GetRebuilersState()
     {
       lock (Rebuilders)
       {
-        return Rebuilders.Values.Select(x => x.Item1.Metadata).ToArray();
+        return Rebuilders.Values.Select(x => x.Item1.Metadata).ToList();
       }
     }
   }
