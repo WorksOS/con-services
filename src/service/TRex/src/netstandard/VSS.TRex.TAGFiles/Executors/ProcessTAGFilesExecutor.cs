@@ -174,6 +174,7 @@ namespace VSS.TRex.TAGFiles.Executors
               {
                 FileName = tagFile.FileName,
                 AssetUid = tagFile.AssetId,
+                ReadResult = commonConverter.ReadResult,
                 Success = commonConverter.ReadResult == TAGReadResult.NoError && readResult == true
               });
 
