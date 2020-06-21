@@ -18,6 +18,6 @@ namespace VSS.AWS.TransferProxy.Interfaces
 
     string GeneratePreSignedUrl(string s3Key);
 
-    Task<(List<string>, string)> ListKeys(string prefix, int maxKeys, string continuationToken = "");
+    Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = "");
   }
 }

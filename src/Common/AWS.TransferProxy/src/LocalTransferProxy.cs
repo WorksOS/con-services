@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -126,5 +128,24 @@ namespace VSS.AWS.TransferProxy
       return true;
     }
 
+    /// <summary>
+    /// Lists all files with path/name that matches the given prefix
+    /// </summary>
+    /// <param name="prefix"></param>
+    /// <param name="maxKeys"></param>
+    /// <param name="continuationToken"></param>
+    /// <returns></returns>
+    public Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = "")
+    {
+      // The prefix will be identifying a folder within the local context of the fake bucker in the file system
+
+      var localPrefix = (prefix.StartsWith("/") ? prefix.Substring(1) : prefix).Replace('/', Path.DirectorySeparatorChar);
+      var directory = Path.Combine(_rootLocalTransferProxyFolder, _awsBucketName, localPrefix);
+
+      // Get the list of files from directory
+      var files = Directory.GetFiles(directory);
+
+      return Task.FromResult((files, ""));
+    }
   }
 }

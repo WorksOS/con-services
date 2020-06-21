@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -21,12 +19,12 @@ namespace VSS.TRex.Common
     const string S3DirectorySeparator = "/";
 
     private readonly TransferProxyType _type;
-    private readonly ITransferProxy _proxy;
+    public readonly ITransferProxy Proxy;
 
     public S3FileTransfer(TransferProxyType type)
     {
       _type = type;
-      _proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(_type);
+      Proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(_type);
     }
     
     /// <summary>
@@ -39,7 +37,7 @@ namespace VSS.TRex.Common
 
       try
       {
-        fileStreamResult = await _proxy.Download(s3Path).ConfigureAwait(false);
+        fileStreamResult = await Proxy.Download(s3Path).ConfigureAwait(false);
       }
       catch (Exception e)
       {
@@ -82,7 +80,7 @@ namespace VSS.TRex.Common
       try
       {
         using var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
-        _proxy.Upload(fileStream, s3FullPath);
+        Proxy.Upload(fileStream, s3FullPath);
       }
       catch (Exception e)
       {
@@ -101,7 +99,7 @@ namespace VSS.TRex.Common
       try
       {
         using var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
-        _proxy.UploadToBucket(fileStream, s3FullPath, awsBucketName);
+        Proxy.UploadToBucket(fileStream, s3FullPath, awsBucketName);
       }
       catch (Exception e)
       {
@@ -149,7 +147,7 @@ namespace VSS.TRex.Common
       try
       {
         var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
-        res = _proxy.RemoveFromBucket(s3FullPath);
+        res = Proxy.RemoveFromBucket(s3FullPath);
       }
       catch (Exception e)
       {
@@ -164,16 +162,24 @@ namespace VSS.TRex.Common
     /// </summary>
     public string GeneratePreSignedUrl(string path)
     {
-      return _proxy.GeneratePreSignedUrl(path);
+      return Proxy.GeneratePreSignedUrl(path);
     }
 
     /// <summary>
     /// Returns a (possible incomplete) collection from the bucket that match the given pefix.
     /// The continuationToken is non-null/non-empty is there are more keys to query
     /// </summary>
-    public Task<(List<string>, string)> ListKeys(string prefix, int maxKeys, string continuationToken)
+    public Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken)
     {
-      return _proxy.ListKeys(prefix, maxKeys, continuationToken);
+      try
+      {
+        return Proxy.ListKeys(prefix, maxKeys, continuationToken);
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Exception listing keys fpr prefix {prefix}");
+        return Task.FromResult((new string[0], ""));
+      }
     }
   }
 }
