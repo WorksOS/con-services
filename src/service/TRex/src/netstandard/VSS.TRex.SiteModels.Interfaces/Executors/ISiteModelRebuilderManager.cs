@@ -8,6 +8,6 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
   {
     int RebuildCount();
 
-    List<IRebuildSiteModelMetaData> GetRebuilersState();
+    List<IRebuildSiteModelMetaData> GetRebuildersState();
   }
 }

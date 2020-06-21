@@ -36,7 +36,7 @@ namespace VSS.TRex.SiteModels
 
     public SiteModelRebuilderManager()
     {
-      MetadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metedata)
+      MetadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
         as IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>;
 
       FilesCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.KeyCollections)
@@ -81,7 +81,7 @@ namespace VSS.TRex.SiteModels
     /// Supplies a vector of meta data state relating to project builders present in the manager
     /// </summary>
     /// <returns></returns>
-    public List<IRebuildSiteModelMetaData> GetRebuilersState()
+    public List<IRebuildSiteModelMetaData> GetRebuildersState()
     {
       lock (Rebuilders)
       {

@@ -50,6 +50,7 @@ using VSS.TRex.Storage.Caches;
 using VSS.TRex.GridFabric;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.GridFabric.Affinity;
+using VSS.AWS.TransferProxy;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -93,7 +94,7 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       return cacheType switch
       {
-        RebuildSiteModelCacheType.Metedata =>
+        RebuildSiteModelCacheType.Metadata =>
           new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
             .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new NonSpatialAffinityKeyEqualityComparer()),
 
@@ -150,7 +151,7 @@ namespace VSS.TRex.Tests.TestFixtures
           };
         }))
         .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => RebuildSiteModelCacheFactory(cacheType)))
-        .Add(x => x.AddSingleton<Func<Guid, bool, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles) => new SiteModelRebuilder(projectUid, archiveTAGFiles)))
+        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Complete();
 

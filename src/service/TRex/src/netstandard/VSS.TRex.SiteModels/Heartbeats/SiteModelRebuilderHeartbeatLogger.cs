@@ -28,7 +28,7 @@ namespace VSS.TRex.SiteModels.Heartbeats
       sb.Append("Number of projects being rebuilt: ").Append(manager.RebuildCount());
 
       if (manager.RebuildCount() > 0)
-        sb.AppendJoin(", ", manager.GetRebuilersState().Select(x => $"{x.ProjectUID} - {x.Phase}"));
+        sb.AppendJoin(", ", manager.GetRebuildersState().Select(x => $"{x.ProjectUID} - {x.Phase}"));
 
       return sb.ToString();
     }

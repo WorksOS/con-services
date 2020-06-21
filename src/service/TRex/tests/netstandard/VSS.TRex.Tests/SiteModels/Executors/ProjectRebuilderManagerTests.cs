@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
     {
       var rebuilder = new SiteModelRebuilderManager();
 
-      var state = rebuilder.GetRebuilersState();
+      var state = rebuilder.GetRebuildersState();
       state.Should().NotBeNull();
       state.Count.Should().Be(0);
     }

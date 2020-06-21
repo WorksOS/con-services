@@ -34,7 +34,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
     {
       return cacheType switch
       {
-        RebuildSiteModelCacheType.Metedata =>
+        RebuildSiteModelCacheType.Metadata =>
           new StorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
             .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())),
 
@@ -91,7 +91,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
         .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
 
-        .Add(x => x.AddSingleton<Func<Guid, bool, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles) => new SiteModelRebuilder(projectUid, archiveTAGFiles)))
+        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Complete();
     }

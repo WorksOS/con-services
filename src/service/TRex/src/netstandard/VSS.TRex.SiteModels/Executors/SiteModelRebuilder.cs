@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -64,7 +65,7 @@ namespace VSS.TRex.SiteModels
 
     private CancellationTokenSource _cancellationSource = new CancellationTokenSource();
 
-    public SiteModelRebuilder(Guid projectUid, bool archiveTAGFiles)
+    public SiteModelRebuilder(Guid projectUid, bool archiveTAGFiles, TransferProxyType originS3TransferProxy)
     {
       ProjectUid = projectUid;
 
@@ -73,7 +74,8 @@ namespace VSS.TRex.SiteModels
       _metadata = new RebuildSiteModelMetaData()
       {
         ProjectUID = projectUid,
-        Flags = flags
+        Flags = flags,
+        OriginS3TransferProxy = originS3TransferProxy
       };
 
      // _response = new RebuildSiteModelRequestResponse(projectUid);
