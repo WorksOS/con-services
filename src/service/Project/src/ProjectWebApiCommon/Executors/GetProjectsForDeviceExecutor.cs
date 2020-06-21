@@ -25,7 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
-        var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceIsUid.DeviceUid), customHeaders);
+        var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceIsUid.DeviceUid), true, customHeaders);
         if (projectsFromCws?.Projects == null || !projectsFromCws.Projects.Any())
         {
           var message = "Unable to locate projects for device in cws";

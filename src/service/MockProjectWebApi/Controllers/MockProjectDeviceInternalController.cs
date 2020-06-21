@@ -38,7 +38,11 @@ namespace MockProjectWebApi.Controllers
         return new ProjectDataListResult()
         {
           ProjectDescriptors = new List<ProjectData>()
-            {new ProjectData {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID, IsArchived = false, ProjectType = CwsProjectType.AcceptsTagFiles}}
+            {new ProjectData
+            {
+              CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID, IsArchived = false, ProjectType = CwsProjectType.AcceptsTagFiles,
+              ProjectGeofenceWKT = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+            }}
         };
 
       return new ProjectDataListResult(code: 105, message: "Unable to locate projects for device in cws");

@@ -43,10 +43,10 @@ namespace CCSS.CWS.Client.MockClients
     public Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDeviceByDeviceUid)} Mock: deviceUid {deviceUid}");
-      
+
       var deviceResponseModel = new DeviceResponseModel()
       {
-        TRN = TRNHelper.MakeTRN(deviceUid.ToString(),TRNHelper.TRN_DEVICE),
+        TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
         DeviceType = "EC520",
         DeviceName = "this is a device",
         SerialNumber = "56556565"
@@ -56,7 +56,7 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(deviceResponseModel);
     }
 
-    public Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
+    public Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, bool includeProjectSettings = true, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForDevice)} Mock: deviceUid {deviceUid}");
 
