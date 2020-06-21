@@ -284,6 +284,32 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       });
     }
 
+    /// <summary>
+    /// Create the caches that 
+    /// </summary>
+    private void InstantiateRebuildSiteModelCacheReferences()
+    {
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelRebuilderMetaDataCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+        AffinityFunction = new MutableNonSpatialAffinityFunction(),
+        Backups = 0,
+        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
+      });
+
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+        AffinityFunction = new MutableNonSpatialAffinityFunction(),
+        Backups = 0,
+        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
+      });
+    }
+
     public void StartTRexGridCacheNode()
     {
       var cfg = new IgniteConfiguration();
@@ -313,6 +339,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       InstantiateSiteModelExistenceMapsCacheReference();
       InstantiateSiteModelsCacheReference();
+
+      InstantiateRebuildSiteModelCacheReferences();
 
       // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time
       var _ = DIContext.Obtain<ISiteModelMetadataManager>();
