@@ -69,6 +69,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
          .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
          .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
+         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
          .Build();
 
       services.AddServiceDiscovery();
