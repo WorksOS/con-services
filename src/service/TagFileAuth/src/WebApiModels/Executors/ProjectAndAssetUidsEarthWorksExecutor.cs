@@ -27,7 +27,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   public class ProjectAndAssetUidsEarthWorksExecutor : RequestExecutorContainer
   {
     ///  <summary>
-    ///  Processes the get project Uid request and finds the Uid of the project corresponding to the given location and devices Customer and relevant deviceLicenses.
+    ///  Processes the get project Uid request and finds the Uid of the project corresponding to the given location and devices Customer
+    ///      and relevant deviceLicenses. (todo what are new cutfill rules for WorksOS?).
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {

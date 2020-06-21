@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       ProjectData project = null;
 
-      // manualImport, the project must be there and have deviceLicenses
+      // manualImport, the project must be there
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
         project = await dataRepository.GetProject(request.ProjectUid);
