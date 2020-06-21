@@ -40,7 +40,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ProjectUid);
-      writer.WriteInt((int)RebuildResult);
+      writer.WriteByte((byte)RebuildResult);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectUid = reader.ReadGuid() ?? Guid.Empty;
-      RebuildResult = (RebuildSiteModelResult)reader.ReadInt();
+      RebuildResult = (RebuildSiteModelResult)reader.ReadByte();
     }
   }
 }

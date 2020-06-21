@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.SiteModels.Interfaces
 {
-  public enum RebuildSiteModelPhase
+  public enum RebuildSiteModelPhase : byte
   {
     Unknown,
 

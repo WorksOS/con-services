@@ -1,6 +1,6 @@
 ﻿namespace VSS.TRex.SiteModels.Interfaces
 {
-  public enum DeleteSiteModelResult
+  public enum DeleteSiteModelResult : byte
   {
     UnknownError = 0,
     OK = 1,

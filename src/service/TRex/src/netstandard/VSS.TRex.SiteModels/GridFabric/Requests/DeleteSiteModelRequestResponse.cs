@@ -26,7 +26,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt((int)Result);
+      writer.WriteByte((byte)Result);
       writer.WriteLong(NumRemovedElements);
     }
 
@@ -37,7 +37,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Result = (DeleteSiteModelResult)reader.ReadInt();
+      Result = (DeleteSiteModelResult)reader.ReadByte();
       NumRemovedElements = reader.ReadLong();
     }
   }

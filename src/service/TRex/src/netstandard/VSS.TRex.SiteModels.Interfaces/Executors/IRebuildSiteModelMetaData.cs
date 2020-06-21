@@ -1,10 +1,12 @@
 ﻿using System;
 using VSS.AWS.TransferProxy;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Requests;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
-  public interface IRebuildSiteModelMetaData
+  public interface IRebuildSiteModelMetaData : IProjectAffinity
   {
     /// <summary>
     /// The current phase of project rebuilding this project is in
@@ -12,14 +14,14 @@ namespace VSS.TRex.SiteModels.Interfaces
     RebuildSiteModelPhase Phase { get; set; }
 
     /// <summary>
+    /// A set of flags governing aspects of site model rebuilding, such as archival of TAG files processed during the rebuild
+    /// </summary>
+    RebuildSiteModelFlags Flags { get; set; }
+
+    /// <summary>
     /// The UTC date at which the last update to this metadata was made
     /// </summary>
     long LastUpdateUtcTicks { get; set; }
-
-    /// <summary>
-    /// Project being rebuilt
-    /// </summary>
-    public Guid ProjectUid { get; set; }
 
     /// <summary>
     /// Defines how selective the site model delete operation should be.
@@ -49,6 +51,11 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// The number of tag files extracted from the S3 repository ready to submit for processing
     /// </summary>
     public int NumberOfTAGFilesFromS3 { get; set; }
+
+    /// <summary>
+    /// The number of collections of tag file keys extracted from the S3 repository have been submitted into the file cache
+    /// </summary>
+    public int NumberOfTAGFileKeyCollections { get; set; }
 
     /// <summary>
     /// The last known submitted TAG file

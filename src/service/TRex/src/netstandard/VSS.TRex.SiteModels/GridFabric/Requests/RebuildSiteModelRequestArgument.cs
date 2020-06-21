@@ -43,7 +43,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
 
       writer.WriteGuid(ProjectID);
       writer.WriteInt((int)DeletionSelectivity);
-      writer.WriteInt((int)OriginS3TransferProxy);
+      writer.WriteByte((byte)OriginS3TransferProxy);
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       DeletionSelectivity = (DeleteSiteModelSelectivity)reader.ReadInt();
-      OriginS3TransferProxy = (TransferProxyType)reader.ReadInt();
+      OriginS3TransferProxy = (TransferProxyType)reader.ReadByte();
     }
   }
 }

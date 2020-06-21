@@ -4,6 +4,7 @@ using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Requests;
 
 namespace VSS.TRex.SiteModels.Executors
@@ -18,6 +19,11 @@ namespace VSS.TRex.SiteModels.Executors
     public RebuildSiteModelPhase Phase { get; set; }
 
     /// <summary>
+    /// A set of flags governing aspects of site model rebuilding, such as archival of TAG files processed during the rebuild
+    /// </summary>
+    public RebuildSiteModelFlags Flags { get; set; }
+
+    /// <summary>
     /// The UTC date at which the last update to this metadata was made
     /// </summary>
     public long LastUpdateUtcTicks { get; set; }
@@ -25,7 +31,7 @@ namespace VSS.TRex.SiteModels.Executors
     /// <summary>
     /// Project being rebuilt
     /// </summary>
-    public Guid ProjectUid { get; set; }
+    public Guid ProjectUID { get; set; }
 
     /// <summary>
     /// Defines how selective the site model delete operation should be.
@@ -57,6 +63,11 @@ namespace VSS.TRex.SiteModels.Executors
     public int NumberOfTAGFilesFromS3 { get; set; }
 
     /// <summary>
+    /// The number of collections of tag file keys extracted from the S3 repository have been submitted into the file cache
+    /// </summary>
+    public int NumberOfTAGFileKeyCollections { get; set; }
+
+    /// <summary>
     /// The last known submitted TAG file
     /// </summary>
     public string LastSubmittedTagFile { get; set; }
@@ -70,38 +81,42 @@ namespace VSS.TRex.SiteModels.Executors
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectUid = reader.ReadGuid() ?? Guid.Empty;
+      ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+      Flags = (RebuildSiteModelFlags)reader.ReadByte();
       DeletionSelectivity = (DeleteSiteModelSelectivity)reader.ReadInt();
 
-      OriginS3TransferProxy = (TransferProxyType)reader.ReadInt();
+      OriginS3TransferProxy = (TransferProxyType)reader.ReadByte();
       NumberOfTAGFilesFromS3 = reader.ReadInt();
+      NumberOfTAGFileKeyCollections = reader.ReadInt();
 
       LastUpdateUtcTicks = reader.ReadLong();
-      Phase = (RebuildSiteModelPhase)reader.ReadInt();
+      Phase = (RebuildSiteModelPhase)reader.ReadByte();
       LastSubmittedTagFile = reader.ReadString();
       LastProcessedTagFile = reader.ReadString();
 
-      DeletionResult = (DeleteSiteModelResult)reader.ReadInt();
-      RebuildResult = (RebuildSiteModelResult)reader.ReadInt();
+      DeletionResult = (DeleteSiteModelResult)reader.ReadByte();
+      RebuildResult = (RebuildSiteModelResult)reader.ReadByte();
     }
 
     public void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteGuid(ProjectUid);
+      writer.WriteGuid(ProjectUID);
+      writer.WriteByte((byte)Flags);
       writer.WriteInt((int)DeletionSelectivity);
 
-      writer.WriteInt((int)OriginS3TransferProxy);
+      writer.WriteByte((byte)OriginS3TransferProxy);
       writer.WriteInt(NumberOfTAGFilesFromS3);
+      writer.WriteInt(NumberOfTAGFileKeyCollections);
 
       writer.WriteLong(LastUpdateUtcTicks);
-      writer.WriteInt((int)Phase);
+      writer.WriteByte((byte)Phase);
       writer.WriteString(LastSubmittedTagFile);
       writer.WriteString(LastProcessedTagFile);
 
-      writer.WriteInt((int)DeletionResult);
-      writer.WriteInt((int)RebuildResult);
+      writer.WriteByte((byte)DeletionResult);
+      writer.WriteByte((byte)RebuildResult);
     }
 
     /// <summary>

@@ -1,12 +1,16 @@
-﻿namespace VSS.TRex.SiteModels.Interfaces
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+
+namespace VSS.TRex.SiteModels.Interfaces
 {
-  public enum RebuildSiteModelResult
+  public enum RebuildSiteModelResult : byte
   {
     UnknownError = 0,
     OK = 1,
     UnhandledException = 2,
     UnableToLocateSiteModel = 3,
     FailedToDeleteSiteModel = 4,
-    Pending = 5
+    Pending = 5,
+    UnableToLocateTAGFileKeyCollection = 6
+
   }
 }
