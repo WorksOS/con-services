@@ -80,9 +80,9 @@ namespace VSS.TRex.GridFabric.Grids
     private static void AddDIEntries()
     {
       DIBuilder.Continue()
-        .Add(x => x.AddSingleton<IActivatePersistentGridServer>(new ActivatePersistentGridServer()))
+        .Add(x => x.AddSingleton<IActivatePersistentGridServer, ActivatePersistentGridServer>())
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => Ignition.TryGetIgnite(gridName) ?? (cfg == null ? null : Ignition.Start(cfg))))
-        .Add(x => x.AddSingleton<ITRexGridFactory>(new TRexGridFactory()));
+        .Add(x => x.AddSingleton<ITRexGridFactory, TRexGridFactory>());
     }
 
     private void StopGrid(StorageMutability mutability)

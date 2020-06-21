@@ -73,7 +73,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         //        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
         //        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
         //        .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
-        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger, TRexHeartBeatLogger>())
         //
         //        // Register the listener for site model attribute change notifications
         //        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
@@ -109,7 +109,9 @@ namespace VSS.TRex.Server.ProjectRebuilder
         typeof(VSS.TRex.Exports.Patches.PatchResult),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Common.SubGridsPipelinedResponseBase),
-        typeof(VSS.TRex.Logging.Logger),
+        */
+        typeof(VSS.TRex.Logging.Logger)
+        /*
         typeof(VSS.TRex.DI.DIContext),
         typeof(VSS.TRex.Storage.StorageProxy),
         typeof(VSS.TRex.SiteModels.SiteModel),
@@ -164,7 +166,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         Log.LogInformation("Creating service");
         Log.LogDebug("Creating service");
 
-        var server = new ApplicationServiceServer(new[] { ServerRoles.PROJECT_REBUILDER_ROLE });
+        var server = new MutableClientServer(new[] { ServerRoles.PROJECT_REBUILDER_ROLE });
 
         var cancelTokenSource = new CancellationTokenSource();
         AppDomain.CurrentDomain.ProcessExit += (s, e) =>
