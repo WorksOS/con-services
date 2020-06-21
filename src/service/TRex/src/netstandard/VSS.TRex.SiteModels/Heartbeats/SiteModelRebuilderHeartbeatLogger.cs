@@ -25,7 +25,7 @@ namespace VSS.TRex.SiteModels.Heartbeats
       var manager = DIContext.Obtain<ISiteModelRebuilderManager>();
 
       var sb = new StringBuilder();
-      sb.Append($"Number of projects being rebuilt {manager.RebuildCount()}");
+      sb.Append("Number of projects being rebuilt: ").Append(manager.RebuildCount());
 
       if (manager.RebuildCount() > 0)
         sb.AppendJoin(", ", manager.GetRebuilersState().Select(x => $"{x.ProjectUID} - {x.Phase}"));

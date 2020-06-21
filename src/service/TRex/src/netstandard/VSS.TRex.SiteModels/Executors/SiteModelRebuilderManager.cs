@@ -25,12 +25,12 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// The storage proxy cache for the rebuilder to use for tracking metadata
     /// </summary>
-    private IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData> MetadataCache { get; set; }
+    private IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData> MetadataCache { get; }
 
     /// <summary>
     /// The storage proxy cache for the rebuilder to use to store names of TAG files requested from S3
     /// </summary>
-    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; set; }
+    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; }
 
     public SiteModelRebuilderManager()
     {
@@ -77,6 +77,10 @@ namespace VSS.TRex.SiteModels
       }
     }
 
+    /// <summary>
+    /// Supplies a vector of meta data state relating to project builders present in the manager
+    /// </summary>
+    /// <returns></returns>
     public List<IRebuildSiteModelMetaData> GetRebuilersState()
     {
       lock (Rebuilders)
