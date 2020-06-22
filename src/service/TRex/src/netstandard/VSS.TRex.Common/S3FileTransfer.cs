@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Common
@@ -12,14 +13,18 @@ namespace VSS.TRex.Common
   /// <summary>
   /// Provides an interface to transferProxy for read or write.
   /// </summary>
-  public class S3FileTransfer
+  public class S3FileTransfer : IS3FileTransfer
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<S3FileTransfer>();
 
     const string S3DirectorySeparator = "/";
 
     private readonly TransferProxyType _type;
-    public readonly ITransferProxy Proxy;
+
+    /// <summary>
+    /// Represents the underlying AWS S3 transfer proxy if require 
+    /// </summary>
+    public ITransferProxy Proxy { get; }
 
     public S3FileTransfer(TransferProxyType type)
     {
@@ -125,7 +130,7 @@ namespace VSS.TRex.Common
     }
 
     /// <summary>
-    /// Writes a file to S3 and returns booean & out url path to S3 location
+    /// Writes a file to S3 and returns boolean & out url path to S3 location
     /// </summary>
     public bool WriteFile(string localFullPath, Guid siteModelUid, out string preSignedUrl)
     {
@@ -166,7 +171,7 @@ namespace VSS.TRex.Common
     }
 
     /// <summary>
-    /// Returns a (possible incomplete) collection from the bucket that match the given pefix.
+    /// Returns a (possible incomplete) collection from the bucket that match the given prefix.
     /// The continuationToken is non-null/non-empty is there are more keys to query
     /// </summary>
     public Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken)
