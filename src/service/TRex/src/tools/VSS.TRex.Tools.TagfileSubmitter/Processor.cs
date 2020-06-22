@@ -54,7 +54,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           TagFileContent = bytes,
           TAGFileName = Path.GetFileName(fileName),
           TreatAsJohnDoe = treatAsJohnDoe,
-          Flags = TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive
+          SubmissionFlags = TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive
         };
       }
 

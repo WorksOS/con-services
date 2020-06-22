@@ -46,7 +46,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// <summary>
     /// States if the TAG fie should be added to the TAG file archive during processing
     /// </summary>
-    public TAGFileSubmissionFlags Flags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
+    public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
 
     /// <summary>
     ///  Default no-arg constructor
@@ -67,7 +67,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       writer.WriteString(TCCOrgID);
       writer.WriteByteArray(TagFileContent);
       writer.WriteBoolean(TreatAsJohnDoe);
-      writer.WriteInt((int)Flags);
+      writer.WriteInt((int)SubmissionFlags);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -87,10 +87,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         TreatAsJohnDoe = reader.ReadBoolean();
       }
 
-      Flags = TAGFileSubmissionFlags.AddToArchive;
+      SubmissionFlags = TAGFileSubmissionFlags.AddToArchive;
       if (messageVersion >= 3)
       {
-        Flags = (TAGFileSubmissionFlags)reader.ReadInt();
+        SubmissionFlags = (TAGFileSubmissionFlags)reader.ReadInt();
       }
     }
   }

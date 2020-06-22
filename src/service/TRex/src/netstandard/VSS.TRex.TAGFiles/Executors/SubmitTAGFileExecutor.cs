@@ -20,9 +20,9 @@ namespace VSS.TRex.TAGFiles.Executors
   ///  
   public class SubmitTAGFileExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-    private static readonly bool TagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
+    private static readonly bool _tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
 
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
@@ -42,10 +42,11 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
     /// <param name="treatAsJohnDoe">The TAG file will be processed as if it were a john doe machine is projectId is also specified</param>
     /// <returns></returns>
-    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId, bool treatAsJohnDoe, bool addTAGFileToArchive)
+    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, 
+      string tccOrgId, bool treatAsJohnDoe, TAGFileSubmissionFlags tagFileSubmissionFlags)
     {
       if (OutputInformationalRequestLogging)
-        Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
+        _log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
       
       var response = new SubmitTAGFileResponse
       {
@@ -78,9 +79,9 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tag file
-            if (TagFileArchiving && addTAGFileToArchive)
+            if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive))
             {
-              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
+              _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);
             }
 
@@ -89,7 +90,7 @@ namespace VSS.TRex.TAGFiles.Executors
             var validAssetId = td.assetId ?? Guid.Empty;
 
             if (OutputInformationalRequestLogging)
-              Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetUID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe:{td.IsJohnDoe} ");
+              _log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetUID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe:{td.IsJohnDoe} ");
 
             var tagKey = new TAGFileBufferQueueKey(tagFileName, validProjectId, validAssetId);
             var tagItem = new TAGFileBufferQueueItem
@@ -100,7 +101,7 @@ namespace VSS.TRex.TAGFiles.Executors
               FileName = tagFileName,
               Content = tagFileContent,
               IsJohnDoe = td.IsJohnDoe,
-              SubmissionFlags = addTAGFileToArchive ? TAGFileSubmissionFlags.AddToArchive : TAGFileSubmissionFlags.None
+              SubmissionFlags = tagFileSubmissionFlags
             };
 
             if (_queue == null)
@@ -127,7 +128,7 @@ namespace VSS.TRex.TAGFiles.Executors
               response.Message = "SubmitTAGFileResponse. Failed to submit tag file to processing queue. Request already exists";
               response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
 
-              Log.LogWarning(response.Message);
+              _log.LogWarning(response.Message);
             }
           }
           else
@@ -138,13 +139,13 @@ namespace VSS.TRex.TAGFiles.Executors
         catch (Exception e) // catch all exceptions here
         {
           response.Message = e.Message;
-          Log.LogError(e, $"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:");
+          _log.LogError(e, $"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:");
         }
       }
       finally
       {
         if (OutputInformationalRequestLogging)
-          Log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message} Code:{response.Code}");
+          _log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message} Code:{response.Code}");
       }
       return response;
     }

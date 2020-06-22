@@ -294,7 +294,7 @@ namespace VSS.TRex.SiteModels.Executors
         {
           ProjectID = ProjectUid,
           AssetID = assetID,
-          Flags = _metadata.Flags.HasFlag(RebuildSiteModelFlags.AddProcessedTagFileToArchive) ? TAGFileSubmissionFlags.AddToArchive : TAGFileSubmissionFlags.None |
+          SubmissionFlags = _metadata.Flags.HasFlag(RebuildSiteModelFlags.AddProcessedTagFileToArchive) ? TAGFileSubmissionFlags.AddToArchive : TAGFileSubmissionFlags.None |
                   TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
           TAGFileName = tagFileName,
           TreatAsJohnDoe = false, // Todo: Determine if this setting has consequences for processing files in the same way as the original model
