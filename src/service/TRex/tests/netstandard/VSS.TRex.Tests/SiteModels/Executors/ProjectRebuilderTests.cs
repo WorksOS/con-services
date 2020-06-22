@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 
       // Push the tag file into the S3 bucket 
       var s3Proxy = new S3FileTransfer(TransferProxyType.TAGFiles);
-      s3Proxy.WriteFile(tagFiles[0], $"{siteModel.ID}/{siteModel.Machines[0].ID}/{tagFiles[0]}");
+      s3Proxy.WriteFile(tagFiles[0], $"{siteModel.ID}/{siteModel.Machines[0].ID}/{Path.GetFileName(tagFiles[0])}");
 
       var rebuilder = CreateBuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
 
