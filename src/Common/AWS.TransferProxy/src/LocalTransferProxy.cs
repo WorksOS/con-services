@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,7 +17,7 @@ namespace VSS.AWS.TransferProxy
     /// <summary>
     /// The location in the local temp folder to create buckets representing S3 buckets local S3 clients will access in place of AWS::S3
     /// </summary>
-    private readonly string _rootLocalTransferProxyFolder = Path.Combine(Path.GetTempPath(), "MockLocalS3Store");
+    private readonly string _rootLocalTransferProxyFolder = Path.Combine(Path.GetTempPath(), $"MockLocalS3Store-{DateTime.UtcNow.Ticks}");
 
     private readonly string _awsBucketName;
     private readonly ILogger _logger;
