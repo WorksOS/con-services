@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
@@ -9,9 +10,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// Represents an internal TAG file item to be processed into a site model. It defines the underlying filename for 
     /// the TAG file, and the content of the file as a byte array
     /// </summary>
-    public class ProcessTAGFileRequestFileItem : IFromToBinary 
+    public class ProcessTAGFileRequestFileItem : IFromToBinary
     {
-        private const byte VERSION_NUMBER = 1;
+        private const byte VERSION_NUMBER = 2;
+        private static byte[] VERSION_NUMBERS = {1, 2};
 
         public string FileName { get; set; }
 
@@ -20,6 +22,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         public Guid AssetId { get; set; }
 
         public bool IsJohnDoe { get; set; }
+    
+        /// <summary>
+        /// States if the TAG fie should be added to the TAG file archive during processing
+        /// </summary>
+        public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
 
         /// <summary>
         /// Default no-arg constructor
@@ -44,16 +51,26 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         writer.WriteGuid(AssetId);
         writer.WriteBoolean(IsJohnDoe);
         writer.WriteByteArray(TagFileContent);
+        writer.WriteInt((int)SubmissionFlags);
       }
 
       public void FromBinary(IBinaryRawReader reader)
       {
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+        var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
         FileName = reader.ReadString();
         AssetId = reader.ReadGuid() ?? Guid.Empty;
         IsJohnDoe = reader.ReadBoolean();
         TagFileContent = reader.ReadByteArray();
-      }
+
+        if (messageVersion >= 2)
+        {
+          SubmissionFlags = (TAGFileSubmissionFlags)reader.ReadInt();
+        }
+        else
+        {
+          SubmissionFlags = TAGFileSubmissionFlags.AddToArchive;
+        }
+    }
   }
 }

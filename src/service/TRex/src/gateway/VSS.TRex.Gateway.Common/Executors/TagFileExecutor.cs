@@ -59,7 +59,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           TAGFileName = request.FileName,
           TagFileContent = request.Data,
           TCCOrgID = request.OrgId,
-          AddToArchive = true
+          Flags = TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive
         };
 
         var res = await submitRequest.ExecuteAsync(arg);

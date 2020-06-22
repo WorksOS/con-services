@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using FluentAssertions;
 using VSS.AWS.TransferProxy;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
@@ -17,6 +19,17 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 {
   public class SiteModelRebuilderTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private ISiteModelRebuilder CreateBuilder(Guid projectUid, bool archiveTAGFiles, TransferProxyType transferProxyType)
+    {
+      return new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)
+      {
+        MetadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
+                  as IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>,
+        FilesCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.KeyCollections)
+               as IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>
+      };
+    }
+
     private void AddApplicationGridRouting()
     {
       IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
@@ -32,18 +45,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
     [Fact]
     public void ValidateNoActiveRebuilderForProject()
     {
-      // Create sitemodel, add project metadata for it, check validator hates it...
-  //    var sitemodel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-
- //     var metaData = new RebuildSiteModelMetaData()
- //     {
- //       ProjectUID = sitemodel.ID
- //     };
-
-      var rebuilder = new SiteModelRebuilder(Guid.NewGuid(), false, TransferProxyType.TAGFiles);
-
-      rebuilder.MetadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
-        as IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>;
+      var rebuilder = CreateBuilder(Guid.NewGuid(), false, TransferProxyType.TAGFiles);
 
       Assert.True(rebuilder.ValidateNoAciveRebuilderForProject(Guid.NewGuid()));
     }
@@ -55,18 +57,29 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 
       // Create sitemodel, add project metadata for it, check validator hates it...
       var sitemodel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-
-      var rebuilder = new SiteModelRebuilder(sitemodel.ID, false, TransferProxyType.TAGFiles)
-      {
-        MetadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
-                        as IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>,
-        FilesCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.KeyCollections)
-                     as IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>
-      };
-
+      var rebuilder = CreateBuilder(sitemodel.ID, false, TransferProxyType.TAGFiles);
       var result = await rebuilder.ExecuteAsync();
 
       result.Should().NotBeNull();
+      result.DeletionResult.Should().Be(DeleteSiteModelResult.OK);
+    }
+
+    [Fact] async void ExecuteAsync_SingleTAGFile()
+    {
+      // Construct a site model from a single TAG file
+      var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag") };
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+
+      // Push the tag file into the S3 bucket 
+      var s3Proxy = new S3FileTransfer(TransferProxyType.TAGFiles);
+      s3Proxy.WriteFile(tagFiles[0], $"{siteModel.ID}/{siteModel.Machines[0].ID}/{tagFiles[0]}");
+
+      var rebuilder = CreateBuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
+
+      var result = await rebuilder.ExecuteAsync();
+      result.Should().NotBeNull();
+      result.DeletionResult.Should().Be(DeleteSiteModelResult.OK);
+      result.RebuildResult.Should().Be(RebuildSiteModelResult.OK);
     }
   }
 }

@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.TAGFiles.Types;
 
 /*

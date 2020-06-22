@@ -52,7 +52,7 @@ namespace VSS.TRex.TAGFiles.Executors
         FileName = tagFileName,
         Success = false,
         Message = "TRex unknown result (SubmitTAGFileResponse.Execute)",
-        Code = (int)TRexTagFileResultCode.TRexUnknownException
+        Code = (int)TRexTagFileResultCode.TRexUnknownException,
       };
 
       try
@@ -99,7 +99,8 @@ namespace VSS.TRex.TAGFiles.Executors
               AssetID = validAssetId,
               FileName = tagFileName,
               Content = tagFileContent,
-              IsJohnDoe = td.IsJohnDoe
+              IsJohnDoe = td.IsJohnDoe,
+              SubmissionFlags = addTAGFileToArchive ? TAGFileSubmissionFlags.AddToArchive : TAGFileSubmissionFlags.None
             };
 
             if (_queue == null)

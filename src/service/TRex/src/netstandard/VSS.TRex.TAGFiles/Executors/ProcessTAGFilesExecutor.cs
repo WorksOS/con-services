@@ -9,6 +9,7 @@ using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
@@ -176,7 +177,8 @@ namespace VSS.TRex.TAGFiles.Executors
                 FileName = tagFile.FileName,
                 AssetUid = tagFile.AssetId,
                 Success = commonConverter.ReadResult == TAGReadResult.NoError,
-                ReadResult = commonConverter.ReadResult
+                ReadResult = commonConverter.ReadResult,
+                SubmissionFlags = tagFile.SubmissionFlags
               });
 
               _log.LogInformation(
@@ -186,7 +188,14 @@ namespace VSS.TRex.TAGFiles.Executors
             {
               _log.LogError(e, $"Processing of TAG file {tagFile.FileName} failed with exception {e.Message}");
 
-              response.Results.Add(new ProcessTAGFileResponseItem {FileName = tagFile.FileName, Success = false, Exception = e.Message, ReadResult = commonConverter.ReadResult });
+              response.Results.Add(new ProcessTAGFileResponseItem
+              {
+                FileName = tagFile.FileName,
+                Success = false,
+                Exception = e.Message,
+                ReadResult = commonConverter.ReadResult,
+                SubmissionFlags = tagFile.SubmissionFlags
+              });
             }
           }
 

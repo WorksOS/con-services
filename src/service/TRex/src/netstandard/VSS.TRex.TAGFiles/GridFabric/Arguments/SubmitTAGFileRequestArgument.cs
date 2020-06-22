@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
@@ -45,7 +46,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// <summary>
     /// States if the TAG fie should be added to the TAG file archive during processing
     /// </summary>
-    public bool AddToArchive { get; set; } = true;
+    public TAGFileSubmissionFlags Flags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
 
     /// <summary>
     ///  Default no-arg constructor
@@ -66,7 +67,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       writer.WriteString(TCCOrgID);
       writer.WriteByteArray(TagFileContent);
       writer.WriteBoolean(TreatAsJohnDoe);
-      writer.WriteBoolean(AddToArchive);
+      writer.WriteInt((int)Flags);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -86,9 +87,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         TreatAsJohnDoe = reader.ReadBoolean();
       }
 
+      Flags = TAGFileSubmissionFlags.AddToArchive;
       if (messageVersion >= 3)
       {
-        AddToArchive = reader.ReadBoolean();
+        Flags = (TAGFileSubmissionFlags)reader.ReadInt();
       }
     }
   }

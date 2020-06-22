@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.SiteModels.Interfaces.Executors
 {
@@ -9,5 +9,7 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
     int RebuildCount();
 
     List<IRebuildSiteModelMetaData> GetRebuildersState();
+
+    void TAGFileProcessed(Guid projectUid, IProcessTAGFileResponseItem[] responseItems);
   }
 }

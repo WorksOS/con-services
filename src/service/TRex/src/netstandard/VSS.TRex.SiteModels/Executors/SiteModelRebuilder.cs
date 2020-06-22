@@ -22,6 +22,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Utilities;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.SiteModels
 {
@@ -111,8 +112,11 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     private void UpdateMetaData()
     {
-      _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
-      MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, kMetadataKeyName), _metadata);
+      lock (_metadata)
+      {
+        _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
+        MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, kMetadataKeyName), _metadata);
+      }
     }
 
     /// <summary>
@@ -189,7 +193,7 @@ namespace VSS.TRex.SiteModels
     /// Scans the source S3 lcoation for all tag files to be submitted and places these names into a cache to 
     /// be used as the source for the TAG files submisstion phase.
     /// </summary>
-    private async Task ExecuteTAGFileScanning()
+    private async Task<bool> ExecuteTAGFileScanning()
     {
       var s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
       var continuation = string.Empty;
@@ -209,11 +213,13 @@ namespace VSS.TRex.SiteModels
         {
           if (_log.IsTraceEnabled())
             _log.LogInformation($"Putting block of {candidateTAGFiles.Length} TAG file names for project {ProjectUid}");
-          FilesCache.Put(new NonSpatialAffinityKey(ProjectUid, runningCount.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
+          await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, runningCount.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
       } while (!string.IsNullOrEmpty(continuation));
 
       _metadata.NumberOfTAGFilesFromS3 = runningCount;
+
+      return true;
     }
 
     /// <summary>
@@ -284,11 +290,12 @@ namespace VSS.TRex.SiteModels
         {
           ProjectID = ProjectUid,
           AssetID = assetID,
-          AddToArchive = _metadata.Flags.HasFlag(RebuildSiteModelFlags.AddProcessedTagFileToArchive),
+          Flags = _metadata.Flags.HasFlag(RebuildSiteModelFlags.AddProcessedTagFileToArchive) ? TAGFileSubmissionFlags.AddToArchive : TAGFileSubmissionFlags.None |
+                  TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
           TAGFileName = tagFileName,
           TreatAsJohnDoe = false, // Todo: Determine if this setting has consequences for processing files in the same way as the original model
                                   // Todo: It may be necessary to relate this to the preserved machine information in the model beign rebuilt
-          TagFileContent = ms.ToArray()
+          TagFileContent = ms.ToArray(),
         });
 
         // Update the metadata
@@ -309,8 +316,12 @@ namespace VSS.TRex.SiteModels
       {
         await Task.Delay(kMonitoringDelayMS, token);
 
-        // Check progress...
-        // Todo: To be defined
+        // Check progress
+        if (_metadata.NumberOfTAGFileProcessed >= _metadata.NumberOfTAGFilesFromS3)
+        {
+          // Finished!
+          return true;
+        }
       }
 
       return !_aborted && !token.IsCancellationRequested;
@@ -319,7 +330,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Performs any required clean up when moving into the Completed state.
     /// </summary>
-    private async Task ExecuteCompletion()
+    private async Task<bool> ExecuteCompletion()
     {
       // Remove all the collections of TAG file keys
       for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
@@ -334,6 +345,8 @@ namespace VSS.TRex.SiteModels
           _log.LogWarning($"Key {key} not found while removing file key collections for project {ProjectUid}.");
         }
       }
+
+      return true;
     }
 
     private async Task<IRebuildSiteModelMetaData> Execute()
@@ -384,7 +397,8 @@ namespace VSS.TRex.SiteModels
             break;
 
           case RebuildSiteModelPhase.Scanning:
-            await ExecuteTAGFileScanning();
+            if (!await ExecuteTAGFileScanning())
+              return _metadata;
             break;
 
           case RebuildSiteModelPhase.Submitting:
@@ -398,7 +412,8 @@ namespace VSS.TRex.SiteModels
             break;
 
           case RebuildSiteModelPhase.Completion:
-            await ExecuteCompletion();
+            if (!await ExecuteCompletion())
+              return _metadata;
             break;
         }
 
@@ -415,5 +430,19 @@ namespace VSS.TRex.SiteModels
     /// Coordinate rebuilding of a project, returning a Tasl for the caller to manahgw.
     /// </summary>
     public Task<IRebuildSiteModelMetaData> ExecuteAsync() => Task.Run(Execute);
+
+    /// <summary>
+    /// Notifies the rebuilder that a TAG file marked with notify after processing has been processed
+    /// </summary>
+    public void TAGFilesProcessed(IProcessTAGFileResponseItem[] responseItems)
+    {
+      // Make a note of the last file processed
+      _metadata.LastProcessedTagFile = responseItems[responseItems.Length - 1].FileName;
+
+      // Update the count of obvserved files processed
+      _metadata.NumberOfTAGFileProcessed += responseItems.Length;
+
+      UpdateMetaData();
+    }
   }
 }

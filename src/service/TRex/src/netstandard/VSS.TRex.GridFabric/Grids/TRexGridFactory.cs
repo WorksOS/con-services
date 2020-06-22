@@ -31,7 +31,7 @@ namespace VSS.TRex.GridFabric.Grids
     /// <returns></returns>
     public IIgnite Grid(StorageMutability mutability, IgniteConfiguration cfg = null)
     {
-      return igniteGrids[(int) mutability] ?? (igniteGrids[(int) mutability] = IgniteGridFactory(TRexGrids.GridName(mutability), cfg));
+      return igniteGrids[(int) mutability] ??= IgniteGridFactory(TRexGrids.GridName(mutability), cfg);
     }
 
     private void CreateCache()

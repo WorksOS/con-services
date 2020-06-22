@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.SiteModels.Interfaces.Executors
 {
@@ -38,5 +39,10 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
     /// Coordinate rebuilding of a project, returning a Tasl for the caller to manahgw.
     /// </summary>
     Task<IRebuildSiteModelMetaData> ExecuteAsync();
+
+    /// <summary>
+    /// Notifies the rebuilder that a TAG file marked with notify after processing has been processed
+    /// </summary>
+    void TAGFilesProcessed(IProcessTAGFileResponseItem[] responseItems);
   }
 }

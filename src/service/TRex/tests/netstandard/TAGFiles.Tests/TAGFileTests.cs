@@ -3,13 +3,13 @@ using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Classes.States;
-using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-        public class TAGFileTests : IClassFixture<DILoggingFixture>
+    public class TAGFileTests : IClassFixture<DILoggingFixture>
     {
         [Fact]
         public void Test_TAGFile_Creation()

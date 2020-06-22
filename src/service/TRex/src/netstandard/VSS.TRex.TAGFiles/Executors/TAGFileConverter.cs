@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
@@ -16,16 +14,16 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
-using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
-    /// <summary>
-    /// Converts a TAG file from the vector based measurements of the machine's operation into the cell pass
-    /// and events based description used in a TRex data model
-    /// </summary>
-    public class TAGFileConverter : IDisposable
+  /// <summary>
+  /// Converts a TAG file from the vector based measurements of the machine's operation into the cell pass
+  /// and events based description used in a TRex data model
+  /// </summary>
+  public class TAGFileConverter : IDisposable
     {
         private static readonly ILogger Log = Logger.CreateLogger<TAGFileConverter>();
 

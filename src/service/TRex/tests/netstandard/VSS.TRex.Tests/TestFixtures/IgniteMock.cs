@@ -26,6 +26,7 @@ using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 using VSS.TRex.TAGFiles.Models;
@@ -94,6 +95,16 @@ namespace VSS.TRex.Tests.TestFixtures
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISiteModelAttributesChangedEvent> listener, object topic) =>
+        {
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
+        });
+
+      mockMessaging
+        .Setup(x => x.LocalListen(It.IsAny<IMessageListener<IRebuildSiteModelTAGNotifierEvent>>(), It.IsAny<object>()))
+        .Callback((IMessageListener<IRebuildSiteModelTAGNotifierEvent> listener, object topic) =>
         {
           lock (messagingDictionary)
           {

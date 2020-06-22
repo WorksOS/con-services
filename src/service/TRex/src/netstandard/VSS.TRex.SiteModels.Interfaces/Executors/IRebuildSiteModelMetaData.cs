@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.AWS.TransferProxy;
+﻿using VSS.AWS.TransferProxy;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Requests;
@@ -66,5 +65,10 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// The last known processed TAG file
     /// </summary>
     public string LastProcessedTagFile { get; set; }
+
+    /// <summary>
+    /// The number of TAG file reported processed by the TAG file processor
+    /// </summary>
+    public int NumberOfTAGFileProcessed { get; set; }
   }
 }

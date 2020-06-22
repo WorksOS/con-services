@@ -61,16 +61,6 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       // TODO...
       Assert.True(false);
     }
-
-    [Fact]
-    public void NextTest()
-    {
-      // Test we fail creafully if the rebuild request cannot access the delete request
-      AddApplicationGridRouting();
-
-      // TODO...
-      Assert.True(false);
-    }
   }
 }
 

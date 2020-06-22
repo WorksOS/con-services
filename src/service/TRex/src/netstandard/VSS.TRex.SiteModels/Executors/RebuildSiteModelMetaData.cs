@@ -77,6 +77,11 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     public string LastProcessedTagFile { get; set; }
 
+    /// <summary>
+    /// The number of TAG file reported processed by the TAG file processor
+    /// </summary>
+    public int NumberOfTAGFileProcessed { get; set; }
+
     public void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
@@ -88,6 +93,7 @@ namespace VSS.TRex.SiteModels.Executors
       OriginS3TransferProxy = (TransferProxyType)reader.ReadByte();
       NumberOfTAGFilesFromS3 = reader.ReadInt();
       NumberOfTAGFileKeyCollections = reader.ReadInt();
+      NumberOfTAGFileProcessed = reader.ReadInt();
 
       LastUpdateUtcTicks = reader.ReadLong();
       Phase = (RebuildSiteModelPhase)reader.ReadByte();
@@ -109,6 +115,7 @@ namespace VSS.TRex.SiteModels.Executors
       writer.WriteByte((byte)OriginS3TransferProxy);
       writer.WriteInt(NumberOfTAGFilesFromS3);
       writer.WriteInt(NumberOfTAGFileKeyCollections);
+      writer.WriteInt(NumberOfTAGFileProcessed);
 
       writer.WriteLong(LastUpdateUtcTicks);
       writer.WriteByte((byte)Phase);

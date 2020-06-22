@@ -48,7 +48,6 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.GridFabric;
-using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.AWS.TransferProxy;
 

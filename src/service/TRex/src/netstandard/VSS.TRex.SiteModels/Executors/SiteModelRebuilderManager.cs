@@ -9,6 +9,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.SiteModels
 {
@@ -86,6 +87,28 @@ namespace VSS.TRex.SiteModels
       lock (Rebuilders)
       {
         return Rebuilders.Values.Select(x => x.Item1.Metadata).ToList();
+      }
+    }
+
+    /// <summary>
+    /// Handles an event generated from the TAG file processor that a TAG file has been processed with the notifiy rebuilder flag set on it
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="responseItem"></param>
+    public void TAGFileProcessed(Guid projectUid, IProcessTAGFileResponseItem[] responseItems)
+    {
+      lock (Rebuilders)
+      {
+        if (Rebuilders.TryGetValue(projectUid, out var rebuilder))
+        {
+          _log.LogWarning($"Site model rebuilder manager received {responseItems.Length} TAG file notifications for {projectUid}");
+
+          rebuilder.Item1.TAGFilesProcessed(responseItems);
+        }
+        else
+        {
+          _log.LogWarning($"Site model rebuilder manager found no active rebuilder for project {projectUid}");
+        }
       }
     }
   }
