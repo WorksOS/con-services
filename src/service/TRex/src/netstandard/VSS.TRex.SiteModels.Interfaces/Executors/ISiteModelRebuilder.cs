@@ -30,13 +30,13 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
     IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> FilesCache { get; set; }
 
     /// <summary>
-    /// Ensures there is no current rebuilding activity for this projecy.
+    /// Ensures there is no current rebuilding activity for this project.
     /// The exception is when there exists a metadata record for the project and the phase is complete
     /// </summary>
-    bool ValidateNoAciveRebuilderForProject(Guid projectUid);
+    bool ValidateNoActiveRebuilderForProject(Guid projectUid);
 
     /// <summary>
-    /// Coordinate rebuilding of a project, returning a Tasl for the caller to manahgw.
+    /// Coordinate rebuilding of a project, returning a Tasl for the caller to manage.
     /// </summary>
     Task<IRebuildSiteModelMetaData> ExecuteAsync();
 

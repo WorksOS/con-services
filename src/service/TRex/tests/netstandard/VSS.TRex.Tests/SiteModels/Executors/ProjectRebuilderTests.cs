@@ -6,7 +6,7 @@ using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
     {
       var rebuilder = CreateBuilder(Guid.NewGuid(), false, TransferProxyType.TAGFiles);
 
-      Assert.True(rebuilder.ValidateNoAciveRebuilderForProject(Guid.NewGuid()));
+      Assert.True(rebuilder.ValidateNoActiveRebuilderForProject(Guid.NewGuid()));
     }
 
     [Fact]
@@ -66,6 +66,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 
     [Fact] async void ExecuteAsync_SingleTAGFile()
     {
+      AddApplicationGridRouting();
+
       // Construct a site model from a single TAG file
       var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag") };
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
@@ -77,9 +79,16 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
       var rebuilder = CreateBuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
 
       var result = await rebuilder.ExecuteAsync();
+
       result.Should().NotBeNull();
       result.DeletionResult.Should().Be(DeleteSiteModelResult.OK);
       result.RebuildResult.Should().Be(RebuildSiteModelResult.OK);
+
+      result.NumberOfTAGFileKeyCollections.Should().Be(1);
+      result.NumberOfTAGFilesProcessed.Should().Be(1);
+      result.NumberOfTAGFilesFromS3.Should().Be(1);
+
+      result.LastProcessedTagFile.Should().Be(tagFiles[0]);
     }
   }
 }

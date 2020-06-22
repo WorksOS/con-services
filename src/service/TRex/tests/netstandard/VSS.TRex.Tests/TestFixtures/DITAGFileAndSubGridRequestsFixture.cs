@@ -4,7 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
@@ -102,6 +106,8 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register the mapper between requests operating in a pipeline and the listeners responding to 
         // partial responses of subgrids
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
 
         .Complete();
     }

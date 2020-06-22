@@ -92,6 +92,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
           var tempPersistencePathForTests = Path.GetTempPath();
           config.Setup(c => c.GetValueString("PERSISTENT_CACHE_STORE_LOCATION", It.IsAny<string>())).Returns(tempPersistencePathForTests);
+
+          config.Setup(c => c.GetValueBool("USE_LOCAL_S3_TRANSFER_PROXY_STORE", It.IsAny<bool>())).Returns(true);
+
           return config;
         }))
         .Build()

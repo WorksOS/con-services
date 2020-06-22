@@ -50,6 +50,7 @@ using VSS.TRex.Storage.Caches;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.AWS.TransferProxy;
+using VSS.TRex.SiteModels.Executors;
 
 namespace VSS.TRex.Tests.TestFixtures
 {

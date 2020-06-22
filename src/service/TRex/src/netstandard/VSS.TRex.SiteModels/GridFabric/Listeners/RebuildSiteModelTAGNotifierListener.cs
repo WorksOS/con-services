@@ -6,7 +6,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using System.Threading.Tasks;
@@ -72,7 +71,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
 
       // Create a messaging group the cluster can use to send messages back to and establish a local listener
       // All nodes (client and server) want to know about TAG file processing notifications
-      MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(Storage.Models.StorageMutability.Immutable)?.GetCluster().GetMessaging();
+      MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(Storage.Models.StorageMutability.Mutable)?.GetCluster().GetMessaging();
 
       if (MsgGroup != null)
         MsgGroup.LocalListen(this, MessageTopicName);

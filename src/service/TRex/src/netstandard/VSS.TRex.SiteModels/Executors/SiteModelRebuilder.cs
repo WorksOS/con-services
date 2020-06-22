@@ -14,7 +14,6 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
@@ -24,15 +23,15 @@ using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Models;
 
-namespace VSS.TRex.SiteModels
+namespace VSS.TRex.SiteModels.Executors
 {
   /// <summary>
-  /// Defines and manages the activites executed asynchronously to rebuild a project. This class is instantiated
-  /// by the project rebuilder manager for each project sbeing rebuilt
+  /// Defines and manages the activities executed asynchronously to rebuild a project. This class is instantiated
+  /// by the project rebuilder manager for each projects being rebuilt
   /// </summary>
   public class SiteModelRebuilder : ISiteModelRebuilder
   {
-    private static ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilder>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilder>();
 
     /// <summary>
     /// Length of time to wait between monitoring epochs
@@ -70,7 +69,7 @@ namespace VSS.TRex.SiteModels
     {
       ProjectUid = projectUid;
 
-      RebuildSiteModelFlags flags = archiveTAGFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
+      var flags = archiveTAGFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
 
       _metadata = new RebuildSiteModelMetaData()
       {
@@ -131,7 +130,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Defines the phase state transitions
     /// </summary>
-    private RebuildSiteModelPhase NextPhase(RebuildSiteModelPhase phase)
+    private static RebuildSiteModelPhase NextPhase(RebuildSiteModelPhase phase)
     {
       return phase switch
       {
@@ -147,7 +146,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Moves to the next processing phase given the currnt phase
+    /// Moves to the next processing phase given the current phase
     /// </summary>
     private void AdvancePhase(ref RebuildSiteModelPhase currentPhase)
     {
@@ -156,10 +155,10 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Ensures there is no current rebuilding activity for this projecy.
+    /// Ensures there is no current rebuilding activity for this project.
     /// The exception is when there exists a metadata record for the project and the phase is complete
     /// </summary>
-    public bool ValidateNoAciveRebuilderForProject(Guid projectUid)
+    public bool ValidateNoActiveRebuilderForProject(Guid projectUid)
     {
       var metadata = GetMetaData(projectUid);
 
@@ -167,7 +166,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Performs a partial delection of the site model ready for data to be reprocessed into it.
+    /// Performs a partial deletion of the site model ready for data to be reprocessed into it.
     /// </summary>
     private async Task<bool> ExecuteProjectDelete()
     {
@@ -190,8 +189,8 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Scans the source S3 lcoation for all tag files to be submitted and places these names into a cache to 
-    /// be used as the source for the TAG files submisstion phase.
+    /// Scans the source S3 location for all tag files to be submitted and places these names into a cache to 
+    /// be used as the source for the TAG files submission phase.
     /// </summary>
     private async Task<bool> ExecuteTAGFileScanning()
     {
@@ -208,8 +207,8 @@ namespace VSS.TRex.SiteModels
         var sb = new StringBuilder(2 * (candidateTAGFiles.Sum(x => x.Length) + 1));
         sb.AppendJoin('|', candidateTAGFiles);
 
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
-        using (var compressedStream = MemoryStreamCompression.Compress(ms))
+        await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
+        await using (var compressedStream = MemoryStreamCompression.Compress(ms))
         {
           if (_log.IsTraceEnabled())
             _log.LogInformation($"Putting block of {candidateTAGFiles.Length} TAG file names for project {ProjectUid}");
@@ -236,7 +235,7 @@ namespace VSS.TRex.SiteModels
         var key = new NonSpatialAffinityKey(ProjectUid, i.ToString(CultureInfo.InvariantCulture));
         try
         {
-          using var ms = new MemoryStream((await FilesCache.GetAsync(key)).Bytes);
+          await using var ms = new MemoryStream((await FilesCache.GetAsync(key)).Bytes);
           var uncompressedTagFileCollection = MemoryStreamCompression.Decompress(ms);
           tagFileCollection.AddRange(Encoding.UTF8.GetString(uncompressedTagFileCollection.ToArray()).Split('|'));
         }
@@ -260,7 +259,7 @@ namespace VSS.TRex.SiteModels
       // After successful submission update metadata with name of submitted file
       foreach (var tagFileKey in tagFileCollection)
       {
-        // Make some determinaton that the key looks valid and defines a *.tag file
+        // Make some determination that the key looks valid and defines a *.tag file
         // TODO - complete this check
 
 
@@ -281,7 +280,7 @@ namespace VSS.TRex.SiteModels
 
         // Read the content of the TAG file from S3
         var tagFile = await s3FileTransfer.Proxy.Download(tagFileKey);
-        using var ms = new MemoryStream();
+        await using var ms = new MemoryStream();
         await tagFile.FileStream.CopyToAsync(ms);
 
         // Submit the file...
@@ -317,7 +316,7 @@ namespace VSS.TRex.SiteModels
         await Task.Delay(kMonitoringDelayMS, token);
 
         // Check progress
-        if (_metadata.NumberOfTAGFileProcessed >= _metadata.NumberOfTAGFilesFromS3)
+        if (_metadata.NumberOfTAGFilesProcessed >= _metadata.NumberOfTAGFilesFromS3)
         {
           // Finished!
           return true;
@@ -427,7 +426,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Coordinate rebuilding of a project, returning a Tasl for the caller to manahgw.
+    /// Coordinate rebuilding of a project, returning a Task for the caller to manage.
     /// </summary>
     public Task<IRebuildSiteModelMetaData> ExecuteAsync() => Task.Run(Execute);
 
@@ -439,8 +438,8 @@ namespace VSS.TRex.SiteModels
       // Make a note of the last file processed
       _metadata.LastProcessedTagFile = responseItems[responseItems.Length - 1].FileName;
 
-      // Update the count of obvserved files processed
-      _metadata.NumberOfTAGFileProcessed += responseItems.Length;
+      // Update the count of observed files processed
+      _metadata.NumberOfTAGFilesProcessed += responseItems.Length;
 
       UpdateMetaData();
     }
