@@ -27,7 +27,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   public class ProjectAndAssetUidsEarthWorksExecutor : RequestExecutorContainer
   {
     ///  <summary>
-    ///  Processes the get project Uid request and finds the Uid of the project corresponding to the given location and devices Customer and relevant deviceLicenses.
+    ///  Processes the get project Uid request and finds the Uid of the project corresponding to the given location and devices Customer
+    ///      and relevant deviceLicenses. (todo what are new cutfill rules for WorksOS?).
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -72,12 +73,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (potentialProjects.ProjectDescriptors.Count > 1)
         return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: potentialProjects.ProjectDescriptors[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
-      
-      var deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
+
       return GetProjectAndAssetUidsEarthWorksResult.FormatResult(
         potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID,
         potentialProjects.ProjectDescriptors[0].CustomerUID,
-        (deviceLicenseTotal > 0));
+        true); // todo for now, just return true
+      //(deviceLicenseTotal > 0));
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
