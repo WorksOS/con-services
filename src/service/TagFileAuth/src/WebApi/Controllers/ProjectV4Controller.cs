@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///                    31 "Manual Import: The Projects account cannot have not have a free device entitlement."
     ///                    36 "ProjectUid is present, but invalid"
     ///                    37 "Auto Import: Either Radio Serial or ec520 Serial must be provided"
-    ///                    38 "Unable to find the Project requested"
+    ///                    38 "Manual Import: Unable to find the Project requested"
     ///         Errors: HttpStatusCode.InternalServerError (retryable?)
     ///           17  "A problem occurred accessing a service. Service: {0} Exception: {1}"
     ///            

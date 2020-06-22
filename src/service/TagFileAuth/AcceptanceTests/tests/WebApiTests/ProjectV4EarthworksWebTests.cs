@@ -14,8 +14,8 @@ namespace WebApiTests
       // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately
       var cbRadioserial = dimensionsSerial;
       var ec50Serial = string.Empty;
-      double latitude = 89;
-      double longitude = 130;
+      double latitude = 15;
+      double longitude = 180;
       var tagFileTimestamp = DateTime.UtcNow.AddDays(-10);
 
       var getProjectAndAssetUidsEarthWorksRequest = new GetProjectAndAssetUidsEarthWorksRequest(cbRadioserial,

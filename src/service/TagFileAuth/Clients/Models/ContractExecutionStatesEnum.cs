@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("GetProjectUid internal error", 35);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
       DynamicAddwithOffset("Auto Import: Either Radio Serial or ec520 Serial must be provided", 37);
-      DynamicAddwithOffset("Unable to find the Project requested", 38);
+      DynamicAddwithOffset("Manual Import: Unable to find the Project requested", 38);
       DynamicAddwithOffset("Manual Import: got asset. Unable to locate any valid project, or asset subscriptions", 39);
       DynamicAddwithOffset("Manual Import: no asset provided or identifiable. Unable to locate any valid project subscriptions", 40);
       DynamicAddwithOffset("Manual Import: project does not intersect the location provided", 41);
