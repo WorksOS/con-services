@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
@@ -35,17 +36,17 @@ namespace VSS.TRex.SiteModels.Executors
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilder>();
 
-    private const int kMonitoringDelayMS = 10000;
+    private const int MONITORING_DELAY_MS = 10000;
       
     /// <summary>
     /// Length of time to wait between monitoring epochs
     /// </summary>
-    private int MonitoringDelayMS = DIContext.Obtain<IConfigurationStore>().GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", kMonitoringDelayMS);
+    private readonly int _monitoringDelayMs = DIContext.Obtain<IConfigurationStore>().GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", MONITORING_DELAY_MS);
 
     /// <summary>
     /// The key name to be used for the metadata entries in the metadata cache (one per project)
     /// </summary>
-    private static string kMetadataKeyName = "metadata";
+    private static readonly string _metadataKeyName = "metadata";
 
     /// <summary>
     /// The storage proxy cache for the rebuilder to use for tracking metadata
@@ -67,15 +68,15 @@ namespace VSS.TRex.SiteModels.Executors
 
     private bool _aborted = false;
 
-    private CancellationTokenSource _cancellationSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
 
-    private S3FileTransfer _s3FileTransfer;
+    private readonly IS3FileTransfer _s3FileTransfer;
 
-    public SiteModelRebuilder(Guid projectUid, bool archiveTAGFiles, TransferProxyType originS3TransferProxy)
+    public SiteModelRebuilder(Guid projectUid, bool archiveTagFiles, TransferProxyType originS3TransferProxy)
     {
       ProjectUid = projectUid;
 
-      var flags = archiveTAGFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
+      var flags = archiveTagFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
 
       _metadata = new RebuildSiteModelMetaData
       {
@@ -84,7 +85,7 @@ namespace VSS.TRex.SiteModels.Executors
         OriginS3TransferProxy = originS3TransferProxy
       };
 
-      var _s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
+      _s3FileTransfer = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(_metadata.OriginS3TransferProxy);
     }
 
     /// <summary>
@@ -97,13 +98,13 @@ namespace VSS.TRex.SiteModels.Executors
     }
 
     /// <summary>
-    /// Reads the rebuld site model metadata for the given project from the persistent cache
+    /// Reads the rebuild site model metadata for the given project from the persistent cache
     /// </summary>
     private IRebuildSiteModelMetaData GetMetaData(Guid projectUid)
     {
       try
       {
-        return MetadataCache.Get(new NonSpatialAffinityKey(projectUid, kMetadataKeyName));
+        return MetadataCache.Get(new NonSpatialAffinityKey(projectUid, _metadataKeyName));
       }
       catch (KeyNotFoundException)
       {
@@ -120,7 +121,7 @@ namespace VSS.TRex.SiteModels.Executors
       lock (_metadata)
       {
         _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
-        MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, kMetadataKeyName), _metadata);
+        MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, _metadataKeyName), _metadata);
       }
     }
 
@@ -203,22 +204,22 @@ namespace VSS.TRex.SiteModels.Executors
       var continuation = string.Empty;
       do
       {
-        var (candidateTAGFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
+        var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
         continuation = nextContinuation;
 
         // Put the candidate TAG files into the cache
-        var sb = new StringBuilder(2 * (candidateTAGFiles.Sum(x => x.Length) + 1));
-        sb.AppendJoin('|', candidateTAGFiles);
+        var sb = new StringBuilder(2 * (candidateTagFiles.Sum(x => x.Length) + 1));
+        sb.AppendJoin('|', candidateTagFiles);
 
         await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
         await using (var compressedStream = MemoryStreamCompression.Compress(ms))
         {
           if (_log.IsTraceEnabled())
-            _log.LogInformation($"Putting block of {candidateTAGFiles.Length} TAG file names for project {ProjectUid}");
+            _log.LogInformation($"Putting block of {candidateTagFiles.Length} TAG file names for project {ProjectUid}");
           await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, _metadata.NumberOfTAGFileKeyCollections.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
 
-        _metadata.NumberOfTAGFilesFromS3 = candidateTAGFiles.Length;
+        _metadata.NumberOfTAGFilesFromS3 += candidateTagFiles.Length;
         _metadata.NumberOfTAGFileKeyCollections++;
 
         UpdateMetaData();
@@ -283,7 +284,7 @@ namespace VSS.TRex.SiteModels.Executors
 
         // Determine the asset ID from the key of form '<{MachineUid}>/<TagFileName>'
         var split = tagFileKey.Split('/');
-        var assetID = Guid.Parse(split[1]);
+        var assetUid = Guid.Parse(split[1]);
         var tagFileName = split[2];
 
         // Read the content of the TAG file from S3
@@ -296,7 +297,7 @@ namespace VSS.TRex.SiteModels.Executors
         var submissionResult = await submissionRequest.ExecuteAsync(new SubmitTAGFileRequestArgument
         {
           ProjectID = ProjectUid,
-          AssetID = assetID,
+          AssetID = assetUid,
           SubmissionFlags = _metadata.Flags.HasFlag(RebuildSiteModelFlags.AddProcessedTagFileToArchive) ? TAGFileSubmissionFlags.AddToArchive : TAGFileSubmissionFlags.None |
                   TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
           TAGFileName = tagFileName,
@@ -320,9 +321,16 @@ namespace VSS.TRex.SiteModels.Executors
     private async Task<bool> ExecuteMonitoring()
     {
       var token = _cancellationSource.Token;
-      while (!_aborted || !token.IsCancellationRequested)
+      while (!_aborted && !token.IsCancellationRequested)
       {
-        await Task.Delay(MonitoringDelayMS, token);
+        try
+        {
+          await Task.Delay(_monitoringDelayMs, token);
+        }
+        catch (Exception e)
+        {
+          throw e;
+        }
 
         // Check progress
         if (_metadata.NumberOfTAGFilesProcessed >= _metadata.NumberOfTAGFilesFromS3)
