@@ -342,7 +342,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       lock (MockedCacheDictionaries)
       {
-        MockedCacheDictionaries.Add(mockCacheDictionary);
+        MockedCacheDictionaries.Add(cacheName, mockCacheDictionary);
       }
 
       return mockCache.Object;
@@ -373,7 +373,7 @@ namespace VSS.TRex.Tests.TestFixtures
     /// A list of the dictionaries containing all mocked cache entries, useful for tests that want to look at
     /// the caches in terms of a collection
     /// </summary>
-    public List<IDictionary> MockedCacheDictionaries; 
+    public Dictionary<string, IDictionary> MockedCacheDictionaries;
 
     /// <summary>
     /// Removes and recreates any dynamic content contained in the Ignite mock. References to the mocked Ignite context are accessed via the TRex
@@ -383,7 +383,7 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       // Create the dictionary to contain all the mocked caches
       CacheDictionary = new Dictionary<string, object>();
-      MockedCacheDictionaries = new List<IDictionary>();
+      MockedCacheDictionaries = new Dictionary<string, IDictionary>();
 
       // Create the mocked cache for the existence maps cache and any other cache using this signature
       AddMockedCacheToIgniteMock<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();

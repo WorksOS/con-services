@@ -37,14 +37,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
     private static bool IsModelEmpty(ISiteModel model)
     {
-      var clear1 = !IgniteMock.Mutable.MockedCacheDictionaries.Any(cache => cache.Keys.Count > 0) &&
-                   !IgniteMock.Immutable.MockedCacheDictionaries.Any(cache => cache.Keys.Count > 0);
+      var clear1 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
+                   !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
 
       // Perform a belt and braces check to ensure there were no pending uncommitted changes.
       model.PrimaryStorageProxy.Commit();
 
-      var clear2 = !IgniteMock.Mutable.MockedCacheDictionaries.Any(cache => cache.Keys.Count > 0) &&
-                   !IgniteMock.Immutable.MockedCacheDictionaries.Any(cache => cache.Keys.Count > 0);
+      var clear2 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
+                   !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
 
       return clear1 && clear2;
     }
