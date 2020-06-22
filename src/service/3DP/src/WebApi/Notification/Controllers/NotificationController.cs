@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     private readonly IConfigurationStore configStore;
-   
+
     /// <summary>
     /// For getting imported files for a project
     /// </summary>
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// </summary>
     public NotificationController(
 #if RAPTOR
-      IASNodeClient raptorClient, 
+      IASNodeClient raptorClient,
 #endif
       ILoggerFactory logger, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
@@ -168,11 +168,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId,
       [FromQuery] long? legacyFileId
-      )
+    )
     {
       log.LogDebug($"{nameof(GetDeleteFile)}: " + Request.QueryString);
-      var projectDescr = await ((RaptorPrincipal)User).GetProject(projectUid);
-      var customHeaders = Request.Headers.GetCustomHeaders();
 
       //Cannot delete a design or alignment file that is used in a filter
       //TODO: When scheduled reports are implemented, extend this check to them as well.
@@ -190,32 +188,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
           }
         }
       }
-#if RAPTOR
-      ContractExecutionResult result;
-      if (fileType == ImportedFileType.ReferenceSurface)
-        result = new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Delete file notification successful");
-      else
-      {
-        FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-        var request = ProjectFileDescriptor.CreateProjectFileDescriptor(
-          projectDescr.LegacyProjectId, projectUid, fileDes, null, DxfUnitsType.Meters, fileId, fileType, fileUid,
-          userEmailAddress, legacyFileId);
-        request.Validate();
-
-        var executor = RequestExecutorContainerFactory.Build<DeleteFileExecutor>(logger, raptorClient, null,
-          configStore, fileRepo);
-        result = await executor.ProcessAsync(request);
-      }
-
-      await ClearFilesCaches(projectUid, customHeaders);
-      dataCache.RemoveByTag(projectUid.ToString());
-      cache.InvalidateReponseCacheForProject(projectUid);
-      log.LogInformation($"{nameof(GetDeleteFile)} returned: " + Response.StatusCode);
-      return result;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
+      return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Delete file notification successful");
     }
 
 

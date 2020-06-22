@@ -50,17 +50,29 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       DeleteImportedFileEvent deleteImportedFileEvent = null;
       if (useTrexGatewayDesignImport && deleteImportedFile.IsDesignFileType)
       {
-        await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid,
-          deleteImportedFile.ImportedFileType, deleteImportedFile.FileDescriptor.FileName,
-          deleteImportedFile.ImportedFileUid,
-          deleteImportedFile.SurveyedUtc,
-          log, customHeaders, serviceExceptionHandler,
-          tRexImportFileProxy).ConfigureAwait(false);
-
         // DB change must be made before productivity3dV2ProxyNotification.DeleteFile is called as it calls back here to get list of Active files
         deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
           (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false);
+
+        //Need this so 3dp can check if design or alignment file used in 3dp filters
+        var importedFileInternalResult = await ImportedFileRequestHelper.NotifyRaptorDeleteFile
+          (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileType,
+            deleteImportedFile.ImportedFileUid, deleteImportedFile.FileDescriptor,
+            deleteImportedFile.ImportedFileId, deleteImportedFile.LegacyImportedFileId,
+            log, customHeaders, productivity3dV2ProxyNotification)
+          .ConfigureAwait(false);
+
+        //Now delete in TRex
+        if (importedFileInternalResult == null)
+        {
+          await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid,
+            deleteImportedFile.ImportedFileType, deleteImportedFile.FileDescriptor.FileName,
+            deleteImportedFile.ImportedFileUid,
+            deleteImportedFile.SurveyedUtc,
+            log, customHeaders, serviceExceptionHandler,
+            tRexImportFileProxy).ConfigureAwait(false);
+        }
       }
 
       if (useRaptorGatewayDesignImport)
