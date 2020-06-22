@@ -43,7 +43,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       private void IntegrateMachineDesignEventNames()
       {
         // ensure that 1 copy of the machineDesignName exists in the targetSiteModels List,
-        //    and we reflect THAT Id in the source list
+        // and we reflect THAT Id in the source list
+
         for (var I = 0; I < _sourceLists.MachineDesignNameIDStateEvents.Count(); I++)
         {
           _sourceLists.MachineDesignNameIDStateEvents.GetStateAtIndex(I, out var dateTime, out var machineDesignId);
@@ -102,6 +103,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// </summary>
         private void IntegrateMachineEvents()
         {
+            if (_sourceLists == null)
+              return;
+
             IntegrateMachineDesignEventNames();
 
             IProductionEvents sourceStartEndRecordedDataList = _sourceLists.StartEndRecordedDataEvents;

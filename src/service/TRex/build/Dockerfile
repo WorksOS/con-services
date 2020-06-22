@@ -12,6 +12,7 @@ ENV TPAAS_AUTH_URL=https://identity-stg.trimble.com/i/oauth2 \
 
 #Bring libs accross
 COPY --from=build_container /trex/libs/ /trex/libs/
+COPY --from=build_container /trex/bin/ /trex/bin/
 
 WORKDIR /trex
 

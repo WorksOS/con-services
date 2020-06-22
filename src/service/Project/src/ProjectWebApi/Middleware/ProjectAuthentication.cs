@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -32,6 +33,27 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
       if (isCustomersEndpoint)
         return false;
       return true;
+    }
+
+    public override bool RequireEntitlementValidation(HttpContext context)
+    {
+      // These are called from Works Manager when creating a project
+      // Works Manager doesn't use the same licensing as WorksOS Currently 
+      var acceptedPaths = new List<string> 
+      {
+        "project/notifyassociation", 
+        "project/notifychange", 
+        "project/validate"
+
+      };
+      var path = context.Request.Path.Value.ToLower();
+      foreach (var acceptedPath in acceptedPaths)
+      {
+        if (path.Contains(acceptedPath))
+          return false;
+      }
+
+      return base.RequireEntitlementValidation(context);
     }
 
     /// <summary>
