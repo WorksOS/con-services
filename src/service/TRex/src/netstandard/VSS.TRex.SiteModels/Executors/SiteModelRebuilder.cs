@@ -69,20 +69,22 @@ namespace VSS.TRex.SiteModels.Executors
 
     private CancellationTokenSource _cancellationSource = new CancellationTokenSource();
 
+    private S3FileTransfer _s3FileTransfer;
+
     public SiteModelRebuilder(Guid projectUid, bool archiveTAGFiles, TransferProxyType originS3TransferProxy)
     {
       ProjectUid = projectUid;
 
       var flags = archiveTAGFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
 
-      _metadata = new RebuildSiteModelMetaData()
+      _metadata = new RebuildSiteModelMetaData
       {
         ProjectUID = projectUid,
         Flags = flags,
         OriginS3TransferProxy = originS3TransferProxy
       };
 
-     // _response = new RebuildSiteModelRequestResponse(projectUid);
+      var _s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
     }
 
     /// <summary>
@@ -198,11 +200,10 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     private async Task<bool> ExecuteTAGFileScanning()
     {
-      var s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
       var continuation = string.Empty;
       do
       {
-        var (candidateTAGFiles, nextContinuation) = await s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
+        var (candidateTAGFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
         continuation = nextContinuation;
 
         // Put the candidate TAG files into the cache
@@ -242,7 +243,11 @@ namespace VSS.TRex.SiteModels.Executors
         {
           await using var ms = new MemoryStream((await FilesCache.GetAsync(key)).Bytes);
           var uncompressedTagFileCollection = MemoryStreamCompression.Decompress(ms);
-          tagFileCollection.AddRange(Encoding.UTF8.GetString(uncompressedTagFileCollection.ToArray()).Split('|'));
+
+          if (uncompressedTagFileCollection.Length > 0) // Check the collection is not empty
+          {
+            tagFileCollection.AddRange(Encoding.UTF8.GetString(uncompressedTagFileCollection.ToArray()).Split('|'));
+          }
         }
         catch (KeyNotFoundException e)
         {
@@ -261,8 +266,6 @@ namespace VSS.TRex.SiteModels.Executors
 
         return fileSplit.Length == 3 ? Convert.ToUInt64(fileSplit[2]) : 0;
       }).ToList();
-
-      var s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
 
       var submittedCount = 0;
 
@@ -284,7 +287,7 @@ namespace VSS.TRex.SiteModels.Executors
         var tagFileName = split[2];
 
         // Read the content of the TAG file from S3
-        var tagFile = await s3FileTransfer.Proxy.Download(tagFileKey);
+        var tagFile = await _s3FileTransfer.Proxy.Download(tagFileKey);
         await using var ms = new MemoryStream();
         await tagFile.FileStream.CopyToAsync(ms);
 
