@@ -8,7 +8,7 @@ namespace WebApiTests
 {
   public class ProjectV4EarthworksWebTests : ExecutorTestData
   {
-    [Fact(Skip = "until mockProjectWebApi deployed")]
+    [Fact]
     public async Task NoProjectProvided_Happy_DeviceAndSingleProjectFound()
     {
       // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately

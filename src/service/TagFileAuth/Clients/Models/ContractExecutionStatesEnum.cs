@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Projects found at the location provided, however the device does not have access to it/those", 45);
       DynamicAddwithOffset("Manual Import: internal unhandled path", 46);
       DynamicAddwithOffset("Auto Import: unable to identify the device by this serialNumber", 47);
-      DynamicAddwithOffset("unused", 48);
+      DynamicAddwithOffset("Manual Import: cannot import to a project which doesn't accept tag files", 48);
       DynamicAddwithOffset("More than 1 project meets the location requirements", 49);
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
       DynamicAddwithOffset("Must contain a EC520 serial number", 51);

@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders };
-      dataRepository = new DataRepository(authorization, projectProxy, deviceProxy, requestCustomHeaders);
+      dataRepository = new DataRepository(logger, authorization, projectProxy, deviceProxy, requestCustomHeaders);
       return executor;
     }
   }
