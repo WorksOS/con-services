@@ -118,11 +118,11 @@ namespace VSS.TRex.SiteModels.Executors
 
       if (Response.Result != DeleteSiteModelResult.OK)
       {
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Initial execution response state not OK ({Response.Result}) - aborting request");
+        _log.LogInformation($"Deleting site model {_deleteSiteModelRequestArgument?.ProjectID}: Initial execution response state not OK ({Response.Result}) - aborting request");
         return Response.Result == DeleteSiteModelResult.UnableToLocateSiteModel;
       }
 
-      _log.LogInformation($"Deleting site model {_siteModel.ID}: Initiating");
+      _log.LogInformation($"Deleting site model {_deleteSiteModelRequestArgument?.ProjectID}: Initiating");
 
       if (!_siteModel.IsMarkedForDeletion)
       {
