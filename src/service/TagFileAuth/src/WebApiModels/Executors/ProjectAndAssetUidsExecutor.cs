@@ -88,13 +88,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 38);
 
       if (project.ProjectType != CwsProjectType.AcceptsTagFiles)
-        return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 48);
+        return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 53);
 
       // New requirement for WorksOS.
       if (project.IsArchived)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 43);
 
-      // we need to retain ability to identify specific error codes 38, 43, 41, 48
+      // we need to retain ability to identify specific error codes 38, 43, 41, 53
       var intersects = PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, request.Latitude, request.Longitude);
       log.LogDebug($"{nameof(HandleManualImport)}: la/long is with project?: {intersects}");
 
@@ -106,8 +106,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     private GetProjectAndAssetUidsResult HandleAutoImport(GetProjectAndAssetUidsRequest request, DeviceData device)
     {
-      // no checking of device or project states or WM licensing at this stage
-
       if (device == null || device.Code != 0 || device.DeviceUID == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
