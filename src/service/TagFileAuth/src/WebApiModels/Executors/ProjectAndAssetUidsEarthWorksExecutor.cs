@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       return GetProjectAndAssetUidsEarthWorksResult.FormatResult(
         potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID,
         potentialProjects.ProjectDescriptors[0].CustomerUID,
-        true); // todo for DesignTimeNodeWriter return true
+        true); // todo for now, just return true
       //(deviceLicenseTotal > 0));
     }
 
