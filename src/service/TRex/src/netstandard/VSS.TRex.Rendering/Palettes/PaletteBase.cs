@@ -30,7 +30,7 @@ namespace VSS.TRex.Rendering.Palettes
 
       for (var i = PaletteTransitions.Length - 1; i >= 0; i--)
       {
-        if (value >= PaletteTransitions[i].Value)
+        if (value <= PaletteTransitions[i].Value)
         {
           color = PaletteTransitions[i].Color;
           break;
