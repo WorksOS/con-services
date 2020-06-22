@@ -41,7 +41,7 @@ namespace VSS.TRex.SiteModels.Executors
     public DeleteSiteModelSelectivity DeletionSelectivity { get; set; }
 
     /// <summary>
-    /// The result of the deletion stage of the project rebuidl
+    /// The result of the deletion stage of the project rebuild
     /// </summary>
     public DeleteSiteModelResult DeletionResult { get; set; }
 
@@ -78,6 +78,11 @@ namespace VSS.TRex.SiteModels.Executors
     public string LastProcessedTagFile { get; set; }
 
     /// <summary>
+    /// The number of TAG files submitted to the TAG file processor
+    /// </summary>
+    public int NumberOfTAGFilesSubmitted { get; set; }
+
+    /// <summary>
     /// The number of TAG file reported processed by the TAG file processor
     /// </summary>
     public int NumberOfTAGFilesProcessed { get; set; }
@@ -93,6 +98,7 @@ namespace VSS.TRex.SiteModels.Executors
       OriginS3TransferProxy = (TransferProxyType)reader.ReadByte();
       NumberOfTAGFilesFromS3 = reader.ReadInt();
       NumberOfTAGFileKeyCollections = reader.ReadInt();
+      NumberOfTAGFilesSubmitted = reader.ReadInt();
       NumberOfTAGFilesProcessed = reader.ReadInt();
 
       LastUpdateUtcTicks = reader.ReadLong();
@@ -115,6 +121,7 @@ namespace VSS.TRex.SiteModels.Executors
       writer.WriteByte((byte)OriginS3TransferProxy);
       writer.WriteInt(NumberOfTAGFilesFromS3);
       writer.WriteInt(NumberOfTAGFileKeyCollections);
+      writer.WriteInt(NumberOfTAGFilesSubmitted);
       writer.WriteInt(NumberOfTAGFilesProcessed);
 
       writer.WriteLong(LastUpdateUtcTicks);

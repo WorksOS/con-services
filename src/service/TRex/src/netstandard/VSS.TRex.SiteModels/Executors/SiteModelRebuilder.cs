@@ -253,7 +253,7 @@ namespace VSS.TRex.SiteModels.Executors
 
       var s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
 
-      var foundPointToStartSubmittingTAGFiles = string.IsNullOrEmpty(_metadata.LastSubmittedTagFile);
+      var submittedCount = 0;
 
       // Iterate across the sorted collection submitting each one in turn to the TAG file processor. 
       // After successful submission update metadata with name of submitted file
@@ -262,16 +262,10 @@ namespace VSS.TRex.SiteModels.Executors
         // Make some determination that the key looks valid and defines a *.tag file
         // TODO - complete this check
 
+        submittedCount++;
 
-        // If the last submitted tag file is not null in the metadata until that key is encountered before
-        // submitting more TAG files
-        if (!foundPointToStartSubmittingTAGFiles)
-        {
-          foundPointToStartSubmittingTAGFiles = _metadata.LastSubmittedTagFile.Equals(tagFileKey, StringComparison.InvariantCultureIgnoreCase);
-
-          if (!foundPointToStartSubmittingTAGFiles)
-            continue;
-        }
+        if (_metadata.NumberOfTAGFilesSubmitted >= submittedCount)
+          continue;
 
         // Determine the asset ID from the key of form '<{MachineUid}>/<TagFileName>'
         var split = tagFileKey.Split('/');
@@ -293,12 +287,13 @@ namespace VSS.TRex.SiteModels.Executors
                   TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
           TAGFileName = tagFileName,
           TreatAsJohnDoe = false, // Todo: Determine if this setting has consequences for processing files in the same way as the original model
-                                  // Todo: It may be necessary to relate this to the preserved machine information in the model beign rebuilt
+                                  // Todo: It may be necessary to relate this to the preserved machine information in the model being rebuilt
           TagFileContent = ms.ToArray(),
         });
 
         // Update the metadata
         _metadata.LastSubmittedTagFile = tagFileKey;
+        _metadata.NumberOfTAGFilesSubmitted = submittedCount;
         UpdateMetaData();
       }
 

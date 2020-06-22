@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -137,15 +138,33 @@ namespace VSS.AWS.TransferProxy
     /// <returns></returns>
     public Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = "")
     {
-      // The prefix will be identifying a folder within the local context of the fake bucker in the file system
+      var files = new List<string>();
 
+      // The prefix will be identifying a folder within the local context of the fake bucket in the file system
       var localPrefix = (prefix.StartsWith("/") ? prefix.Substring(1) : prefix).Replace('/', Path.DirectorySeparatorChar);
-      var directory = Path.Combine(_rootLocalTransferProxyFolder, _awsBucketName, localPrefix);
+      var directory = Path.Combine(_rootLocalTransferProxyFolder, _awsBucketName);
+
+      void ProcessFilesInFolder(string folder)
+      {
+        void AddFilesForFolder(string fileFolder) => files.AddRange(Directory.GetFiles(fileFolder).Select(x => x.Substring(directory.Length)));
+
+        // If it is a single file, just process it
+        if (File.Exists(folder))
+        {
+          AddFilesForFolder(folder);
+        }
+        else
+        {
+          foreach (var f in Directory.GetDirectories(folder))
+            ProcessFilesInFolder(f);
+          AddFilesForFolder(folder);
+        }
+      }
 
       // Get the list of files from directory
-      var files = Directory.GetFiles(directory);
+      ProcessFilesInFolder(Path.Combine(directory, localPrefix));
 
-      return Task.FromResult((files, ""));
+      return Task.FromResult((files.ToArray(), ""));
     }
   }
 }

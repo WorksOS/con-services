@@ -67,6 +67,11 @@ namespace VSS.TRex.SiteModels.Interfaces
     public string LastProcessedTagFile { get; set; }
 
     /// <summary>
+    /// The number of TAG files submitted to the TAG file processor
+    /// </summary>
+    public int NumberOfTAGFilesSubmitted { get; set; }
+
+    /// <summary>
     /// The number of TAG file reported processed by the TAG file processor
     /// </summary>
     public int NumberOfTAGFilesProcessed { get; set; }
