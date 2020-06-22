@@ -8,9 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
@@ -33,10 +35,12 @@ namespace VSS.TRex.SiteModels.Executors
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelRebuilder>();
 
+    private const int kMonitoringDelayMS = 10000;
+      
     /// <summary>
     /// Length of time to wait between monitoring epochs
     /// </summary>
-    private const int kMonitoringDelayMS = 10000;
+    private int MonitoringDelayMS = DIContext.Obtain<IConfigurationStore>().GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", kMonitoringDelayMS);
 
     /// <summary>
     /// The key name to be used for the metadata entries in the metadata cache (one per project)
@@ -196,12 +200,10 @@ namespace VSS.TRex.SiteModels.Executors
     {
       var s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
       var continuation = string.Empty;
-      var runningCount = 0;
       do
       {
         var (candidateTAGFiles, nextContinuation) = await s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
         continuation = nextContinuation;
-        runningCount += candidateTAGFiles.Length;
 
         // Put the candidate TAG files into the cache
         var sb = new StringBuilder(2 * (candidateTAGFiles.Sum(x => x.Length) + 1));
@@ -212,11 +214,14 @@ namespace VSS.TRex.SiteModels.Executors
         {
           if (_log.IsTraceEnabled())
             _log.LogInformation($"Putting block of {candidateTAGFiles.Length} TAG file names for project {ProjectUid}");
-          await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, runningCount.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
+          await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, _metadata.NumberOfTAGFileKeyCollections.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
-      } while (!string.IsNullOrEmpty(continuation));
 
-      _metadata.NumberOfTAGFilesFromS3 = runningCount;
+        _metadata.NumberOfTAGFilesFromS3 = candidateTAGFiles.Length;
+        _metadata.NumberOfTAGFileKeyCollections++;
+
+        UpdateMetaData();
+      } while (!string.IsNullOrEmpty(continuation));
 
       return true;
     }
@@ -269,8 +274,8 @@ namespace VSS.TRex.SiteModels.Executors
 
         // Determine the asset ID from the key of form '<{MachineUid}>/<TagFileName>'
         var split = tagFileKey.Split('/');
-        var assetID = Guid.Parse(split[0]);
-        var tagFileName = split[1];
+        var assetID = Guid.Parse(split[1]);
+        var tagFileName = split[2];
 
         // Read the content of the TAG file from S3
         var tagFile = await s3FileTransfer.Proxy.Download(tagFileKey);
@@ -308,7 +313,7 @@ namespace VSS.TRex.SiteModels.Executors
       var token = _cancellationSource.Token;
       while (!_aborted || !token.IsCancellationRequested)
       {
-        await Task.Delay(kMonitoringDelayMS, token);
+        await Task.Delay(MonitoringDelayMS, token);
 
         // Check progress
         if (_metadata.NumberOfTAGFilesProcessed >= _metadata.NumberOfTAGFilesFromS3)
@@ -431,7 +436,8 @@ namespace VSS.TRex.SiteModels.Executors
     public void TAGFilesProcessed(IProcessTAGFileResponseItem[] responseItems)
     {
       // Make a note of the last file processed
-      _metadata.LastProcessedTagFile = responseItems[responseItems.Length - 1].FileName;
+      if (responseItems.Length > 0)
+        _metadata.LastProcessedTagFile = responseItems[responseItems.Length - 1].FileName;
 
       // Update the count of observed files processed
       _metadata.NumberOfTAGFilesProcessed += responseItems.Length;

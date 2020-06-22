@@ -12,6 +12,9 @@ using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.ComputeFuncs;
+using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -33,6 +36,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
     private void AddApplicationGridRouting()
     {
       IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
+      IgniteMock.Mutable.AddApplicationGridRouting<SubmitTAGFileComputeFunc, SubmitTAGFileRequestArgument, SubmitTAGFileResponse>();
     }
 
     [Fact]
