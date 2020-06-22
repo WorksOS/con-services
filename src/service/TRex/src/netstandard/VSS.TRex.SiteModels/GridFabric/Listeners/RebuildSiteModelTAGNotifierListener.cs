@@ -34,18 +34,23 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
     {
       try
       {
-        _log.LogInformation($"Received notification of TAG file processing for {message.ProjectUid}, #TAG files = {message.ResponseItems.Length}");
 
-        // Tell the rebuilder manager instance about the notification
-        var rebuilderManager = DIContext.Obtain<ISiteModelRebuilderManager>();
-        if (rebuilderManager != null)
+        var responseCount = message.ResponseItems?.Length ?? 0;
+        _log.LogInformation($"Received notification of TAG file processing for {message.ProjectUid}, #TAG files = {responseCount}");
+
+        if (responseCount > 0)
         {
-          Task.Run(() => rebuilderManager.TAGFileProcessed(message.ProjectUid, message.ResponseItems));
-        }
-        else
-        {
-          _log.LogError("No ISiteModelRebuilderManager instance available from DIContext to send TAg file processing notification to");
-          return false;
+          // Tell the rebuilder manager instance about the notification
+          var rebuilderManager = DIContext.Obtain<ISiteModelRebuilderManager>();
+          if (rebuilderManager != null)
+          {
+            Task.Run(() => rebuilderManager.TAGFileProcessed(message.ProjectUid, message.ResponseItems));
+          }
+          else
+          {
+            _log.LogError("No ISiteModelRebuilderManager instance available from DIContext to send TAg file processing notification to");
+            return false;
+          }
         }
       }
       catch (Exception e)

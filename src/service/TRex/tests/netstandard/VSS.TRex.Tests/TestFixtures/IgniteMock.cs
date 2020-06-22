@@ -80,6 +80,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var messagingDictionary = new Dictionary<object, object>(); // topic => listener
 
       mockMessaging = new Mock<IMessaging>(MockBehavior.Strict);
+
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISerialisedByteArrayWrapper> listener, object topic) =>
@@ -124,6 +125,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()));
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<IDesignChangedEvent>>(), It.IsAny<object>()));
+      mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<IRebuildSiteModelTAGNotifierEvent>>(), It.IsAny<object>()));
 
       mockMessaging
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))

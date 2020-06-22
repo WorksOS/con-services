@@ -11,6 +11,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
@@ -19,9 +20,11 @@ using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Executors;
+using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Heartbeats;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
@@ -94,6 +97,9 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
         .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
+        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>(factory => proxyType => new S3FileTransfer(proxyType)))
+        .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener, RebuildSiteModelTAGNotifierListener>())
+
         .Complete();
     }
 

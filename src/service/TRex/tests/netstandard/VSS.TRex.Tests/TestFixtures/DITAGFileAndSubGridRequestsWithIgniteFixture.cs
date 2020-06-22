@@ -51,6 +51,8 @@ using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.SiteModels.Executors;
+using VSS.TRex.SiteModels.GridFabric.Listeners;
+using VSS.TRex.SiteModels.Interfaces.Listeners;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -155,13 +157,17 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
 
+        // Register the listener for site model rebuild TAG file processing notifications
+        .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener>(new RebuildSiteModelTAGNotifierListener()))
+
         .Complete();
 
       ResetDynamicMockedIgniteContent();
 
-      // Start the 'mocked' listener
+      // Start the 'mocked' listeners
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
       DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+      DIContext.Obtain<IRebuildSiteModelTAGNotifierListener>().StartListening();
     }
 
     public static void ResetDynamicMockedIgniteContent()
