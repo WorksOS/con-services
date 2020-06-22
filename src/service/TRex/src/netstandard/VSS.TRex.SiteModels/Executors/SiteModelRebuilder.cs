@@ -254,7 +254,13 @@ namespace VSS.TRex.SiteModels.Executors
       }
 
       // Sort the list based on time contained in the name of the tag file
-      tagFileCollection.OrderBy(x => Convert.ToUInt64(x.Split('/')[1].Split("--")[2]));
+      tagFileCollection = tagFileCollection.OrderBy(x =>
+      {
+        var keySplit = x.Split('/');
+        var fileSplit = keySplit[2].Split("--");
+
+        return fileSplit.Length == 3 ? Convert.ToUInt64(fileSplit[2]) : 0;
+      }).ToList();
 
       var s3FileTransfer = new S3FileTransfer(_metadata.OriginS3TransferProxy);
 
