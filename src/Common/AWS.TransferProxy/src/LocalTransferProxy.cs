@@ -146,7 +146,8 @@ namespace VSS.AWS.TransferProxy
 
       void ProcessFilesInFolder(string folder)
       {
-        void AddFilesForFolder(string fileFolder) => files.AddRange(Directory.GetFiles(fileFolder).Select(x => x.Substring(directory.Length)));
+        // Transform full paths into S3 relevant keys without the leading '/'
+        void AddFilesForFolder(string fileFolder) => files.AddRange(Directory.GetFiles(fileFolder).Select(x => x.Substring(directory.Length + 1).Replace(Path.DirectorySeparatorChar, '/')));
 
         // If it is a single file, just process it
         if (File.Exists(folder))
