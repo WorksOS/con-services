@@ -13,12 +13,12 @@ steps:
   - task: DotNetCoreCLI@2
     displayName: "dotnet build"
     inputs:
-      projects: "{{ parameters.servicePath }}/{{ parameters.solution }}"
+      projects: "${{ parameters.servicePath }}/${{ parameters.solution }}"
       arguments: "-nowarn:NU1701"
 
   - task: DotNetCoreCLI@2
     displayName: "dotnet test"
     inputs:
       command: test
-      projects: "{{ parameters.servicePath }}/{{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
-      testRunTitle: "{{ parameters.solution }}"
+      projects: "${{ parameters.servicePath }}/${{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
+      testRunTitle: "${{ parameters.solution }}"
