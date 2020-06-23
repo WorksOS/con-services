@@ -80,6 +80,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 
       // Install an active builder into the manager to cause the failure.
       var rebuilder = new SiteModelRebuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
+      rebuilder.MetadataCache = metadataCache;
       rebuilder.ValidateNoActiveRebuilderForProject(siteModel.ID).Should().BeTrue();
     }
 

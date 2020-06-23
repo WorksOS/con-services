@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.Tests.TestFixtures;

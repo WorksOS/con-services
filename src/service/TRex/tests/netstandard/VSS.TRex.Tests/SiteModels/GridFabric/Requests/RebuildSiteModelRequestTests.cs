@@ -106,16 +106,6 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       state.Count.Should().Be(1);
     }
 
-    [Fact]
-    public void FailWithNoDeleteProjectRequest()
-    {
-      // Test we fail nicely if the rebuild request cannot access the delete request
-      AddPrimaryApplicationGridRouting();
-
-      // TODO...
-      Assert.True(false);
-    }
-
     public void Dispose()
     {
       DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
