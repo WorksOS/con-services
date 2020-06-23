@@ -116,7 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           CoordinateSystemFileName = coordinateSystemFileName,
           CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUtc,
           IsArchived = false, 
-          LastActionedUTC = project.LastUpdate
+          LastActionedUTC = project.LastUpdate ?? DateTime.UtcNow
         };
       return projectDatabaseModel;
     }

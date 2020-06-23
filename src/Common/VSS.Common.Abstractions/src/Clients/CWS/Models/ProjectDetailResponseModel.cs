@@ -71,7 +71,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// Project name
     /// </summary>
     [JsonProperty("lastUpdate")]
-    public DateTime LastUpdate { get; set; }
+    public DateTime? LastUpdate { get; set; }
 
     /// <summary>
     /// requesting users role
