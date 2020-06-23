@@ -2,17 +2,28 @@ parameters:
   - name: servicePath
     type: string
     default: false
+  - name: solution
+    type: string
+    default: false
+  - name: testFolder
+    type: string
+    default: false
 
-steps:
-  - task: DotNetCoreCLI@2
-    displayName: "dotnet build"
-    inputs:
-      projects: "{{ parameters.servicepath }}/{{ parameters.solution }}"
-      arguments: "-nowarn:NU1701"
+jobs:
+  - job: BuildAndTest
+    displayName: "Build and Test solution"
+    timeoutInMinutes: 20
 
-  - task: DotNetCoreCLI@2
-    displayName: "dotnet test"
-    inputs:
-      command: test
-      projects: "{{ parameters.servicepath }}/{{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
-      testRunTitle: "{{ parameters.solution }}"
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet build"
+        inputs:
+          projects: "{{ parameters.servicepath }}/{{ parameters.solution }}"
+          arguments: "-nowarn:NU1701"
+
+      - task: DotNetCoreCLI@2
+        displayName: "dotnet test"
+        inputs:
+          command: test
+          projects: "{{ parameters.servicepath }}/{{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
+          testRunTitle: "{{ parameters.solution }}"
