@@ -43,5 +43,5 @@ jobs:
     - template: build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/3DP/'
-        solution: '$(rootServiceFolder)/3DP/VSS.Productivity3D.Service.sln'
+        solution: 'VSS.Productivity3D.Service.sln'
         testFolder: 'test'
