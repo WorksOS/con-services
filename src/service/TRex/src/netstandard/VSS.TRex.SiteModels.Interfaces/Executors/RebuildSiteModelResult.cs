@@ -10,7 +10,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     UnableToLocateSiteModel = 3,
     FailedToDeleteSiteModel = 4,
     Pending = 5,
-    UnableToLocateTAGFileKeyCollection = 6
-
+    UnableToLocateTAGFileKeyCollection = 6,
+    Aborted = 7
   }
 }

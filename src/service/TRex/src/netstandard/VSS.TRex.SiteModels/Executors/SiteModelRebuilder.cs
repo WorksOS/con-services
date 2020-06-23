@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Serilog.Extensions;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
@@ -332,14 +331,7 @@ namespace VSS.TRex.SiteModels.Executors
       var token = _cancellationSource.Token;
       while (!_aborted && !token.IsCancellationRequested)
       {
-        try
-        {
-          await Task.Delay(_monitoringDelayMs, token);
-        }
-        catch (Exception e)
-        {
-          throw e;
-        }
+        await Task.Delay(_monitoringDelayMs, token);
 
         // Check progress
         if (_metadata.NumberOfTAGFilesProcessed >= _metadata.NumberOfTAGFilesFromS3)
@@ -412,7 +404,7 @@ namespace VSS.TRex.SiteModels.Executors
 
       // Move to the current Phase and start processing from that point
 
-      while (_metadata.Phase != RebuildSiteModelPhase.Complete)
+      while (!_aborted && _metadata.Phase != RebuildSiteModelPhase.Complete)
       {
         switch (currentPhase)
         {
@@ -448,7 +440,7 @@ namespace VSS.TRex.SiteModels.Executors
         AdvancePhase(ref currentPhase);
       }
 
-      _metadata.RebuildResult = RebuildSiteModelResult.OK;
+      _metadata.RebuildResult = _aborted ? RebuildSiteModelResult.Aborted : RebuildSiteModelResult.OK;
       UpdateMetaData();
 
       return _metadata;
