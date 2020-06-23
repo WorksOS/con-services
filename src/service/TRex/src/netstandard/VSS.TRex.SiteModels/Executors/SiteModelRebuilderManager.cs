@@ -46,7 +46,7 @@ namespace VSS.TRex.SiteModels
 
     public bool Rebuild(Guid projectUid, bool archiveTAGFiles)
     {
-      _log.LogInformation($"Site model rebuilder executing rebuild for proejct {projectUid}, archiving tag files = {archiveTAGFiles}");
+      _log.LogInformation($"Site model rebuilder executing rebuild for project {projectUid}, archiving tag files = {archiveTAGFiles}");
 
       // Check if there is an existing rebuilder 
       if (Rebuilders.TryGetValue(projectUid, out var existingRebuilder))
@@ -56,7 +56,7 @@ namespace VSS.TRex.SiteModels
       }
 
       var rebuilder = DIContext.Obtain<Func<Guid, bool, ISiteModelRebuilder>>()(projectUid, archiveTAGFiles);
-      // Inject cahces
+      // Inject caches
       rebuilder.MetadataCache = MetadataCache;
       rebuilder.FilesCache = FilesCache;
 
@@ -64,6 +64,30 @@ namespace VSS.TRex.SiteModels
       {
         Rebuilders.Add(projectUid, (rebuilder, rebuilder.ExecuteAsync()));
       }
+      return true;
+    }
+
+    /// <summary>
+    /// Accepts a builder instantiated out side the manager to be handed to the manager to look after.
+    /// Note: The manager wil NOT manage life cycle initiation of the rebuilder passed to it and will
+    ///       NOT create a Task to represent it's execution, nor will it inject the caches into the passed builder.
+    ///       Use Rebuild() if this behaviour is required
+    /// This call will fail if there is a rebuilder for the same project already present
+    /// </summary>
+    public bool AddRebuilder(ISiteModelRebuilder rebuilder)
+    {
+      // Check if there is an existing rebuilder 
+      if (Rebuilders.TryGetValue(rebuilder.ProjectUid, out var existingRebuilder))
+      {
+        _log.LogError($"A site model rebuilder for project {rebuilder.ProjectUid} is already present, current phase is {existingRebuilder.Item1.Metadata.Phase}");
+        return false;
+      }
+
+      lock (Rebuilders)
+      {
+        Rebuilders.Add(rebuilder.ProjectUid, (rebuilder, null));
+      }
+
       return true;
     }
 
@@ -81,7 +105,6 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Supplies a vector of meta data state relating to project builders present in the manager
     /// </summary>
-    /// <returns></returns>
     public List<IRebuildSiteModelMetaData> GetRebuildersState()
     {
       lock (Rebuilders)
@@ -91,10 +114,8 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// Handles an event generated from the TAG file processor that a TAG file has been processed with the notifiy rebuilder flag set on it
+    /// Handles an event generated from the TAG file processor that a TAG file has been processed with the notify rebuilder flag set on it
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="responseItem"></param>
     public void TAGFileProcessed(Guid projectUid, IProcessTAGFileResponseItem[] responseItems)
     {
       lock (Rebuilders)

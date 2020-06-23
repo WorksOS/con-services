@@ -11,5 +11,7 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
     List<IRebuildSiteModelMetaData> GetRebuildersState();
 
     void TAGFileProcessed(Guid projectUid, IProcessTAGFileResponseItem[] responseItems);
+
+    bool AddRebuilder(ISiteModelRebuilder rebuilder);
   }
 }

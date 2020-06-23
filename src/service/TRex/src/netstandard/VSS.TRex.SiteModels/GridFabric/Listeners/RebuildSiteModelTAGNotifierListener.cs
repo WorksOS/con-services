@@ -49,7 +49,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
           }
           else
           {
-            _log.LogError("No ISiteModelRebuilderManager instance available from DIContext to send TAg file processing notification to");
+            _log.LogError("No ISiteModelRebuilderManager instance available from DIContext to send TAG file processing notification to");
             return false;
           }
         }

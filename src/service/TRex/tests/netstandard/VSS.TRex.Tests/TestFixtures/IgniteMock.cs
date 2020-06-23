@@ -12,6 +12,7 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
 using Apache.Ignite.Core.Transactions;
+using FluentAssertions;
 using Moq;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Extensions;
@@ -24,6 +25,7 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
@@ -139,6 +141,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           if (lstnr is SubGridListener listener)
             listener.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
+          else if (lstnr is RebuildSiteModelTAGNotifierListener listener2)
+            listener2.Invoke(Guid.Empty, message as RebuildSiteModelTAGNotifierEvent);
           else
             if (lstnr != null)
               throw new TRexException($"Type of listener ({lstnr}) not SubGridListener as expected.");
@@ -160,6 +164,8 @@ namespace VSS.TRex.Tests.TestFixtures
             listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
           else if (lstnr is DesignChangedEventListener listener3)
             listener3.Invoke(Guid.Empty, message as DesignChangedEvent);
+          else if (lstnr is RebuildSiteModelTAGNotifierListener listener4)
+            listener4.Invoke(Guid.Empty, message as RebuildSiteModelTAGNotifierEvent);
           else
             if (lstnr != null)
               throw new TRexException($"Type of listener ({lstnr}) not SubGridListener or SiteModelAttributesChangedEventListener or DesignChangedEvent as expected.");

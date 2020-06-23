@@ -49,10 +49,35 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Listeners
       TestBinarizable_ReaderWriterHelper.RoundTripSerialise(listener2);
     }
 
+
     [Fact]
-    public void Invoke_WithNoSiteModels()
+    public void Invoke_WithNoResponseItems()
     {
       var message = new RebuildSiteModelTAGNotifierEvent();
+      var listener = new RebuildSiteModelTAGNotifierListener();
+      listener.Invoke(Guid.Empty, message).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Invoke_WithNoRebuilderManager()
+    {
+      var message = new RebuildSiteModelTAGNotifierEvent
+      {
+        ProjectUid = Guid.NewGuid(),
+        ResponseItems = new[]
+        {
+          new ProcessTAGFileResponseItem
+          {
+            AssetUid = Guid.NewGuid(),
+            Exception = "",
+            FileName = "ATagFile.tag",
+            ReadResult = TAGReadResult.NoError,
+            SubmissionFlags = TAGFileSubmissionFlags.AddToArchive | TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
+            Success = true
+          }
+        }
+      };
+
       var listener = new RebuildSiteModelTAGNotifierListener();
       listener.Invoke(Guid.Empty, message).Should().BeFalse();
     }
@@ -70,7 +95,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Listeners
     [Fact]
     public void Invoke_WithSiteModels()
     {
-      var message = new RebuildSiteModelTAGNotifierEvent()
+      var message = new RebuildSiteModelTAGNotifierEvent
       {
         ProjectUid = Guid.NewGuid(),
         ResponseItems = new[]

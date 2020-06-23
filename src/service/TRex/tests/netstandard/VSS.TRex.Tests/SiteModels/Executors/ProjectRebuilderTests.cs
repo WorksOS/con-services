@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Nito.AsyncEx.Synchronous;
 using VSS.AWS.TransferProxy;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Extensions;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
@@ -69,8 +70,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 
       // Create sitemodel, add project metadata for it, check validator hates it...
       var sitemodel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      sitemodel.SaveMetadataToPersistentStore(sitemodel.PrimaryStorageProxy, true);
+
       var rebuilder = CreateBuilder(sitemodel.ID, false, TransferProxyType.TAGFiles);
-      var result = await rebuilder.ExecuteAsync();
+      var result = rebuilder.ExecuteAsync().WaitAndUnwrapException();
 
       result.Should().NotBeNull();
       result.DeletionResult.Should().Be(DeleteSiteModelResult.OK);
@@ -86,13 +89,18 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       // Push the tag file into the S3 bucket 
-      var s3Proxy = new S3FileTransfer(TransferProxyType.TAGFiles);
+
+      var s3Proxy = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(TransferProxyType.TAGFiles);
       s3Proxy.WriteFile(tagFiles[0], $"{siteModel.ID}/{siteModel.Machines[0].ID}/{Path.GetFileName(tagFiles[0])}");
 
       var rebuilder = CreateBuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
 
+      // Add the rebuilder to the manager in a 'hands-off' mode to allow notification routing to it.
+      var manager = DIContext.Obtain<ISiteModelRebuilderManager>();
+      manager.AddRebuilder(rebuilder).Should().BeTrue();
+
+      // Start the rebuild executing
       var rebuilderTask = rebuilder.ExecuteAsync();
-      //var result = await rebuilder.ExecuteAsync();
 
       // Wait until the rebuilder is in the monitoring state and then inject the contents of the tag file buffer queue cache into the handler
       while (rebuilder.Metadata.Phase != RebuildSiteModelPhase.Monitoring)
@@ -121,7 +129,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
       result.NumberOfTAGFilesProcessed.Should().Be(1);
       result.NumberOfTAGFilesFromS3.Should().Be(1);
 
-      result.LastProcessedTagFile.Should().Be(tagFiles[0]);
+      result.LastProcessedTagFile.Should().Be(Path.GetFileName(tagFiles[0]));
     }
   }
 }
