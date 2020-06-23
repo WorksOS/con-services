@@ -7,7 +7,7 @@ trigger:
     include:
       - "src/service/Megalodon/*"
 
-pool: k8s-fsm
+pool: fsm-merino-services
 
 variables:
   buildPlatform: "Any CPU"
