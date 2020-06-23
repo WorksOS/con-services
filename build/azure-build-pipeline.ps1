@@ -5,7 +5,7 @@ PARAM (
     [Parameter(Mandatory = $false)][string]$branch,
     [Parameter(Mandatory = $false)][string]$buildId,
     [Parameter(Mandatory = $false)][string]$systemAccessToken,
-    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true"
+    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$collectCoverage = "true"
 )
 
