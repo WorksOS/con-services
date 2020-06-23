@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - master
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
+  paths:
+    include:
+      - "src/Common/*"
+
+pool: fsm-merino-services
+
+variables:
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  serviceName: Common
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/Common"
+
+jobs:
+  - job: BuildTestCommon
+    displayName: "Build & Test Common.sln"
+    timeoutInMinutes: 20
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action build"
+
+      - task: PowerShell@2
+        displayName: "Run unit tests"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action unittest -collectCoverage false"
+
+      # TODO Add remaining service solutions.
