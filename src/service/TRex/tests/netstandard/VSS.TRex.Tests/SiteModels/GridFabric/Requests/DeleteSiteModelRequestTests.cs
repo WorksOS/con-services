@@ -4,10 +4,12 @@ using System.Linq;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.Events.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
@@ -52,20 +54,30 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       IsModelEmpty(model).Should().BeTrue();
     }
 
-    private void DeleteTheModel(ISiteModel model)
+    private void DeleteTheModel(ref ISiteModel model, DeleteSiteModelSelectivity selectivity, bool assertEmpty = true)
     {
       var modelId = model.ID;
 
       var request = new DeleteSiteModelRequest();
-      var response = request.Execute(new DeleteSiteModelRequestArgument {ProjectID = modelId});
+      var response = request.Execute(new DeleteSiteModelRequestArgument
+      {
+        ProjectID = modelId,
+        Selectivity = selectivity
+      });
 
       response.Result.Should().Be(DeleteSiteModelResult.OK);
 
-      VerifyModelIsEmpty(model);
+      if (assertEmpty)
+        VerifyModelIsEmpty(model);
+
+      // Re-get the site model to support direct examinations in the case of partial deletions
+      // This may return null, which means the site model no longer exists as an identifiable element in the persistent store
+      model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
     }
 
     private void SaveAndVerifyNotEmpty(ISiteModel model)
     {
+      model.Machines.ForEach(x => model.MachinesTargetValues[x.InternalSiteModelMachineIndex]?.SaveMachineEventsToPersistentStore(model.PrimaryStorageProxy));
       model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
       model.PrimaryStorageProxy.Commit();
       IsModelEmpty(model).Should().BeFalse();
@@ -100,39 +112,31 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.SaveMetadataToPersistentStore(model.PrimaryStorageProxy, true);
       IsModelEmpty(model).Should().BeFalse();
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, DeleteSiteModelSelectivity.All);
     }
 
-    [Fact]
-    public void DeleteEmptyModel_TAGFileIngestPersistence()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All, 0)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData, 1)]
+    public void DeleteModel_WithMachines(DeleteSiteModelSelectivity selectivity, int expectedMachineCount)
     {
       AddApplicationGridRouting();
 
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
+      model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 0, false));
+      var _ = new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.Machines.Count ?? 0).Should().Be(expectedMachineCount);
     }
 
-    [Fact]
-    public void DeleteModel_WithMachines()
-    {
-      AddApplicationGridRouting();
-
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
-      model.Should().NotBeNull();
-
-      model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 1, false));
-      new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
-      SaveAndVerifyNotEmpty(model);
-
-      DeleteTheModel(model);
-    }
-
-    [Fact]
-    public void DeleteModel_WithMachineEvents()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
+    public void DeleteModel_WithMachineEvents(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -142,11 +146,71 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(DateTime.UtcNow, AutoVibrationState.Auto);
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.MachinesTargetValues[0].AutoVibrationStateEvents.Count() ?? 0).Should().Be(0);
     }
 
-    [Fact]
-    public void DeleteModel_WithProofingRuns()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All, 0)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData, 1)]
+    public void DeleteModel_WithMachineEvents_WithOverrideEvents_DesignOverride(DeleteSiteModelSelectivity selectivity, int expectedOverrideCount)
+    {
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      model.Should().NotBeNull();
+
+      model.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(DateTime.UtcNow, AutoVibrationState.Auto);
+      model.MachinesTargetValues[0].DesignOverrideEvents.PutValueAtDate(DateTime.UtcNow, new OverrideEvent<int>(DateTime.UtcNow, 1));
+
+      SaveAndVerifyNotEmpty(model);
+
+      var request = new DeleteSiteModelRequest();
+      var response = request.Execute(new DeleteSiteModelRequestArgument {ProjectID = model.ID, Selectivity = selectivity});
+
+      response.Result.Should().Be(DeleteSiteModelResult.OK);
+      IsModelEmpty(model).Should().Be(selectivity == DeleteSiteModelSelectivity.All); // Because the override event should not be removed
+
+      model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
+
+      (model?.MachinesTargetValues[0]?.AutoVibrationStateEvents.Count() ?? 0).Should().Be(0);
+      if (selectivity == DeleteSiteModelSelectivity.TagFileDerivedData)
+        model.MachinesTargetValues[0].DesignOverrideEvents.Count().Should().Be(expectedOverrideCount);
+    }
+
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All, 0)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData, 1)]
+    public void DeleteModel_WithMachineEvents_WithOverrideEvents_LayerOverride(DeleteSiteModelSelectivity selectivity, int expectedOverrideCount)
+    {
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      model.Should().NotBeNull();
+
+      model.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(DateTime.UtcNow, AutoVibrationState.Auto);
+      model.MachinesTargetValues[0].LayerOverrideEvents.PutValueAtDate(DateTime.UtcNow, new OverrideEvent<ushort>(DateTime.UtcNow, 1)); 
+
+      SaveAndVerifyNotEmpty(model);
+
+      var request = new DeleteSiteModelRequest();
+      var response = request.Execute(new DeleteSiteModelRequestArgument { ProjectID = model.ID, Selectivity = selectivity });
+
+      response.Result.Should().Be(DeleteSiteModelResult.OK);
+      IsModelEmpty(model).Should().Be(selectivity == DeleteSiteModelSelectivity.All); // Because the override event should not be removed
+
+      model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
+
+      (model?.MachinesTargetValues[0]?.AutoVibrationStateEvents.Count() ?? 0).Should().Be(0);
+
+      if (selectivity == DeleteSiteModelSelectivity.TagFileDerivedData)
+        model.MachinesTargetValues[0].LayerOverrideEvents.Count().Should().Be(expectedOverrideCount);
+    }
+
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
+    public void DeleteModel_WithProofingRuns(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -156,11 +220,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.SiteProofingRuns.Add(new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1)));
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.SiteProofingRuns?.Count ?? 0).Should().Be(0);
     }
 
-    [Fact]
-    public void DeleteModel_WithSiteModelMachineDesigns()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
+    public void DeleteModel_WithSiteModelMachineDesigns(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -168,13 +235,23 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SiteModelMachineDesigns.Add(new SiteModelMachineDesign(-1, "Test Name"));
+      model.SiteModelMachineDesigns.Count.Should().Be(2);
+
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+
+      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the defualt design is present
+      {
+        model.SiteModelMachineDesigns.Count.Should().Be(1);
+        model.SiteModelMachineDesigns[0].Id.Should().Be(0);
+      }
     }
 
-    [Fact]
-    public void DeleteModel_WithSiteModelDesigns()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
+    public void DeleteModel_WithSiteModelDesigns(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -184,11 +261,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.SiteModelDesigns.Add(new SiteModelDesign("Test name", new BoundingWorldExtent3D(0, 0, 1, 1)));
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.SiteModelDesigns?.Count ?? 0).Should().Be(0);
     }
 
-    [Fact]
-    public void DeleteModel_WithSiteDesigns()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.Designs)]
+    public void DeleteModel_WithSiteDesigns(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -198,11 +278,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       DIContext.Obtain<IDesignManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.Designs?.Count ?? 0).Should().Be(0);
     }
 
-    [Fact]
-    public void DeleteModel_WithSurveyedSurfaces()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.SurveyedSurfaces)]
+    public void DeleteModel_WithSurveyedSurfaces(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -212,11 +295,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       DIContext.Obtain<ISurveyedSurfaceManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.SurveyedSurfaces?.Count ?? 0).Should().Be(0);
     }
 
-    [Fact]
-    public void DeleteModel_WithAlignments()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.Alignments)]
+    public void DeleteModel_WithAlignments(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -226,11 +312,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       DIContext.Obtain<IAlignmentManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.Alignments.Count ?? 0).Should().Be(0);
     }
 
-    [Fact]
-    public void DeleteModel_WithCSIB()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.CoordinateSystem)]
+    public void DeleteModel_WithCSIB(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -249,11 +338,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.CSIB().Should().NotBeEmpty();
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      model?.CSIB().Should().BeNullOrEmpty();
     }
 
-    [Fact]
-    public void DeleteModel_WithSummaryMetadata()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
+    public void DeleteModel_WithSummaryMetadata(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -263,11 +355,19 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       DIContext.Obtain<ISiteModelMetadataManager>().Add(model.ID, new SiteModelMetadata());
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+
+      if (selectivity != DeleteSiteModelSelectivity.All)
+      {
+        model.Should().NotBeNull();
+        DIContext.Obtain<ISiteModelMetadataManager>().Get(model.ID).Should().BeNull();
+      }
     }
 
-    [Fact]
-    public void DeleteModel_WithExistenceMap()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
+    public void DeleteModel_WithExistenceMap(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
@@ -277,11 +377,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.ExistenceMap[0, 0] = true;
       SaveAndVerifyNotEmpty(model);
 
-      DeleteTheModel(model);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+      (model?.ExistenceMap?.CountBits() ?? 0).Should().Be(0);
     }
 
-    [Fact]
-    public void DeleteModel_WithTagFile()
+    [Theory]
+    [InlineData(DeleteSiteModelSelectivity.All)]
+    [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
+    public void DeleteModel_WithTagFile(DeleteSiteModelSelectivity selectivity)
     {
       var tagFiles = new[] {Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),};
 
@@ -292,10 +395,39 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       SaveAndVerifyNotEmpty(model);
 
-      // Delete project requests must be made to the mutable grid
-      model.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+      DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
+    }
 
-      DeleteTheModel(model);
+    [Fact]
+    public void PartialDeleteModel_WithTagFile_AllTAGFileDerivedData()
+    {
+      var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"), };
+
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      model.Should().NotBeNull();
+
+      SaveAndVerifyNotEmpty(model);
+
+      DeleteTheModel(ref model, DeleteSiteModelSelectivity.TagFileDerivedData, false);
+      model.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void PartialDeleteModel_WithTagFile_NonTAGFileDerivedData()
+    {
+      var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"), };
+
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      model.Should().NotBeNull();
+
+      SaveAndVerifyNotEmpty(model);
+
+      DeleteTheModel(ref model, DeleteSiteModelSelectivity.NonTagFileDerivedData, false);
+      model.Should().NotBeNull();
     }
   }
 }

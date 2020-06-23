@@ -176,7 +176,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     private bool DesignExists(Guid projectUid, ImportedFileType fileType, Guid designUid)
     {
       return GetDesignsForSiteModel(projectUid, fileType).DesignFileDescriptors.ToList()
-        .Exists(x => (string.Compare(x.DesignUid, designUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
+        .Exists(x => (string.Compare(x.DesignUid, designUid.ToString(), StringComparison.OrdinalIgnoreCase) == 0));
     }
   }
 }

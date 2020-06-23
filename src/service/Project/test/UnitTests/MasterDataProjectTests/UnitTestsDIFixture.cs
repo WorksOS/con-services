@@ -112,6 +112,7 @@ namespace VSS.MasterData.ProjectTests
         AccountTRN = customerTrn,
         ProjectTRN = projectTrn,
         ProjectName = projectName,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
         UserProjectRole = userProjectRole,
         LastUpdate = lastUpdateUtc,
         ProjectSettings = new ProjectSettingsModel()

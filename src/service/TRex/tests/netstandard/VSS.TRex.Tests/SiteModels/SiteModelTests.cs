@@ -170,6 +170,22 @@ namespace VSS.TRex.Tests.SiteModels
       newSiteModel.CSIBLoaded.Should().Be(true);
       newSiteModel.CSIB().Should().Be(original);
     }
+    
+    /// <summary>
+    /// CSIB related tests have subtlely different semantics so are kept long hand...
+    /// </summary>
+    [Fact]
+    public void Test_SiteModel__UnloadCSIB()
+    {
+      var siteModel = new SiteModel(Guid.NewGuid(), false);
+      siteModel.CSIBLoaded.Should().Be(false);
+
+      var _ = siteModel.CSIB();
+      siteModel.CSIBLoaded.Should().Be(true);
+
+      siteModel.UnloadCSIB();
+      siteModel.CSIBLoaded.Should().Be(false);
+    }
 
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveCSIB()

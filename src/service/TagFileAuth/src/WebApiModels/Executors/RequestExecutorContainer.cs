@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -28,7 +26,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     private ITPaaSApplicationAuthentication authorization;
     private IHeaderDictionary requestCustomHeaders;
 
-    private ICwsAccountClient cwsAccountClient;
     private IProjectInternalProxy projectProxy;
     private IDeviceInternalProxy deviceProxy;
 
@@ -74,11 +71,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///   Builds this instance for specified executor type.
     /// </summary>
     public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       IHeaderDictionary requestCustomHeaders)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders };
+      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders };
       dataRepository = new DataRepository(logger, authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
       return executor;
     }

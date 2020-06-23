@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       ProjectData project = null;
 
-      // manualImport, the project must be there and have deviceLicenses
+      // manualImport, the project must be there
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
         project = await dataRepository.GetProject(request.ProjectUid);
@@ -70,10 +70,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           if (project.IsArchived)
             return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 43);
-          var projectAccountDeviceLicenseTotal = await dataRepository.GetDeviceLicenses(project.CustomerUID);
-          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded ProjectAccount deviceLicenses? {JsonConvert.SerializeObject(projectAccountDeviceLicenseTotal)}");
-          if (projectAccountDeviceLicenseTotal < 1)
-            return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 31);
         }
         else
         {
@@ -138,10 +134,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     private async Task<GetProjectAndAssetUidsResult> HandleAutoImport(GetProjectAndAssetUidsRequest request,
       DeviceData device)
     {
-      var deviceAccountDeviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
-      log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded DeviceAccount deviceLicenses? {JsonConvert.SerializeObject(deviceAccountDeviceLicenseTotal)}");
-      if (deviceAccountDeviceLicenseTotal < 1)
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 1);
 
       var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, request.Northing, request.Easting, out var errorCode);
 

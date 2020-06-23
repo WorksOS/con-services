@@ -59,14 +59,16 @@ namespace CCSS.CWS.Client
     /// used by TFA: projectIdExecutor; ProjectBoundariesAtDateExec; ProjectAndAssetUidsExecutor; ProjectAndAssetUidsEarthWorksExecutor
     ///                 response fields: ProjectTRN
     /// </summary>
-    public async Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, bool includeProjectSettings = true, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForDevice)}: deviceUid {deviceUid}");
 
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
       var queryParameters = WithLimits(FromRow, RowCount);
+      if (includeProjectSettings)
+        queryParameters.Add(new KeyValuePair<string, string>("includeProjectSettings", "true"));
       var projectListResponseModel = await GetData<ProjectListResponseModel>($"/devices/{deviceTrn}/projects", deviceUid, null, queryParameters, customHeaders);
-    
+
       log.LogDebug($"{nameof(GetProjectsForDevice)}: projectListResponseModel {JsonConvert.SerializeObject(projectListResponseModel)}");
       return projectListResponseModel;
     }

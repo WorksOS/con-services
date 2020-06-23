@@ -99,6 +99,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.CWS.Client", "..\..\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{D06A4706-DBFC-47E4-BD71-0DC8C58E08C0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entitlements", "Entitlements", "{6390BB58-C969-4555-94A8-A1452E324038}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Abstractions", "..\Entitlements\Clients\VSS.Productivity3D.Entitlements.Abstractions\VSS.Productivity3D.Entitlements.Abstractions.csproj", "{8C3C0460-4FF5-473A-94D8-BADFD9E417CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Proxy", "..\Entitlements\Clients\VSS.Productivity3D.Entitlements.Proxy\VSS.Productivity3D.Entitlements.Proxy.csproj", "{6E1C0972-5AC3-4C62-8E62-434F77CB05B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -245,6 +251,14 @@ Global
 		{D06A4706-DBFC-47E4-BD71-0DC8C58E08C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D06A4706-DBFC-47E4-BD71-0DC8C58E08C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D06A4706-DBFC-47E4-BD71-0DC8C58E08C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C3C0460-4FF5-473A-94D8-BADFD9E417CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C3C0460-4FF5-473A-94D8-BADFD9E417CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C3C0460-4FF5-473A-94D8-BADFD9E417CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C3C0460-4FF5-473A-94D8-BADFD9E417CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E1C0972-5AC3-4C62-8E62-434F77CB05B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E1C0972-5AC3-4C62-8E62-434F77CB05B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E1C0972-5AC3-4C62-8E62-434F77CB05B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E1C0972-5AC3-4C62-8E62-434F77CB05B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -291,6 +305,9 @@ Global
 		{AB3A0EB2-5FB2-4192-A953-61AA48CE144C} = {C18B851C-3E4D-4ED9-9609-9FF7C3195011}
 		{36CE8CD3-CB1D-4F3E-B942-14A784752112} = {1ED51BDC-5ABE-4348-A22D-61600795C649}
 		{D06A4706-DBFC-47E4-BD71-0DC8C58E08C0} = {1ED51BDC-5ABE-4348-A22D-61600795C649}
+		{6390BB58-C969-4555-94A8-A1452E324038} = {33448EDF-8D57-47F8-B702-F21DEA204323}
+		{8C3C0460-4FF5-473A-94D8-BADFD9E417CE} = {6390BB58-C969-4555-94A8-A1452E324038}
+		{6E1C0972-5AC3-4C62-8E62-434F77CB05B1} = {6390BB58-C969-4555-94A8-A1452E324038}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D2BA766-D429-41F3-A2EA-489911F8D544}

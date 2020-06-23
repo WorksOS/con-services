@@ -1,23 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Configuration;
+using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
+using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
 using VSS.Productivity3D.Entitlements.Authentication;
-using VSS.Productivity3D.Entitlements.Common.Models.Request;
-using VSS.Productivity3D.Entitlements.Common.Models.Response;
 
 namespace VSS.Productivity3D.Entitlements.Controllers
 {
   public class EntitlementsController : Controller
   {
+    private const string ENTITLEMENTS_ACCEPT_EMAIL_KEY = "ENTITLEMENTS_ALLOWED_EMAILS";
+    private readonly IConfigurationStore _configurationStore;
     private readonly ILogger<EntitlementsController> _logger;
+    private static List<string> AcceptedEmails;
 
-    public EntitlementsController(ILogger<EntitlementsController> logger)
+    public EntitlementsController(IConfigurationStore configurationStore,ILogger<EntitlementsController> logger)
     {
+      _configurationStore = configurationStore;
       _logger = logger;
+      if (AcceptedEmails == null)
+      {
+        _logger.LogInformation($"Loading testing entitlement accepted emails");
+        LoadTestingEmails();
+      }
     }
 
     public EntitlementUserClaim User
@@ -67,11 +79,41 @@ namespace VSS.Productivity3D.Entitlements.Controllers
       if(string.Compare(request.Feature, "worksos", StringComparison.InvariantCultureIgnoreCase) != 0)
         return StatusCode((int) HttpStatusCode.Forbidden);
 
-      var response = EntitlementResponseModel.Ok();
+      var isEmailAccepted = AcceptedEmails.Contains(request.UserEmail.ToLower());
+      _logger.LogInformation($"{request.UserEmail} {(isEmailAccepted ? "is an accepted email" : "is not in the allowed list")}");
+
+      var response = new EntitlementResponseModel
+      {
+        Feature = request.Feature, 
+        IsEntitled = isEmailAccepted, 
+        OrganizationIdentifier = request.OrganizationIdentifier, 
+        UserEmail = request.UserEmail
+      };
 
       _logger.LogInformation($"Generated Entitlements Response: {JsonConvert.SerializeObject(response)}");
 
       return Json(response);
+    }
+
+    /// <summary>
+    /// While we wait for a real entitlement server, we will use a list of hardcoded emails
+    /// These will be loaded from env, once.
+    /// </summary>
+    private void LoadTestingEmails()
+    {
+      var data = _configurationStore.GetValueString(ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty);
+      if (string.IsNullOrEmpty(data))
+      {
+        _logger.LogWarning($"No Allowed Emails for Entitlements loaded");
+        AcceptedEmails = new List<string>();
+      }
+
+        
+      AcceptedEmails = data.Split(';').Select(e => e.ToLower().Trim()).ToList();
+      foreach (var email in AcceptedEmails)
+      {
+        _logger.LogInformation($"Accepting entitlements from `{email}`");
+      }
     }
   }
 }

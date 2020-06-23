@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -27,7 +26,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   {
     private ILogger _log;
 
-    // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
     private readonly ICwsAccountClient _cwsAccountClient;
 
     // We need to use ProjectSvc IProjectProxy as that's where the project data is
@@ -44,7 +42,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       IHeaderDictionary requestCustomHeaders)
     {
       _log = log;
-      _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
       _mergedCustomHeaders = requestCustomHeaders;
@@ -55,8 +52,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
     }
 
-    #region account
 
+    #region account
+    /// <summary>
+    /// We could use the ProjectSvc ICustomerProxy to then call IAccountClient. For now, just go straight to client.
+    /// </summary>
+    [Obsolete("Not used at present. As per SP, leave in case needed in future")]
     public async Task<int> GetDeviceLicenses(string customerUid)
     {
       if (string.IsNullOrEmpty(customerUid))

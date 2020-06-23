@@ -46,5 +46,10 @@ namespace VSS.TRex.Machines.Interfaces
     /// </summary>
     /// <param name="reader"></param>
     void Read(BinaryReader reader);
+
+    /// <summary>
+    /// Removes all state in the machine obtained from TAG file processing apart from identity information 
+    /// </summary>
+    void ClearTAGFileStateData();
   }
 }

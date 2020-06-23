@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Serilog;
 using TestUtility;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
@@ -17,7 +18,6 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -92,7 +92,7 @@ namespace IntegrationTests.ExecutorTests
     public async Task<ProjectV6DescriptorsSingleResult> CreateCustomerProject(string customerUid, string userId, string userEmailAddress)
     {
       var validBoundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
-      var createProjectEvent = new CreateProjectEvent() { CustomerUID = new Guid(customerUid), ProjectName = "the project name", ProjectType = ProjectType.Standard, ProjectBoundary = validBoundary };
+      var createProjectEvent = new CreateProjectEvent() { CustomerUID = new Guid(customerUid), ProjectName = "the project name", ProjectType = CwsProjectType.AcceptsTagFiles, ProjectBoundary = validBoundary };
 
       var createExecutor =
         RequestExecutorContainerFactory.Build<CreateProjectExecutor>

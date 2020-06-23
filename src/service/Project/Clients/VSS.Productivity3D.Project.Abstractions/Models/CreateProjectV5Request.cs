@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {
@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// Project type: Standard = 0 (default), Landfill = 1, ProjectMonitoring = 2 
     /// </summary>
     [JsonProperty(PropertyName = "ProjectType", Required = Required.Always)]
-    public ProjectType ProjectType { get; set; }
+    public CwsProjectType ProjectType { get; set; }
 
     /// <summary>
     /// The project name, between 1 and 30 characters long. It must be unique.
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// Create instance of CreateProjectV2Request
     /// </summary>
     public static CreateProjectV5Request CreateACreateProjectV5Request(
-      ProjectType projectType, DateTime projectStartDate, DateTime projectEndDate, string projectName,
+      CwsProjectType projectType, DateTime projectStartDate, DateTime projectEndDate, string projectName,
       string projectTimezone, List<TBCPoint> boundaryLL,
       BusinessCenterFile coordinateSystem
       )

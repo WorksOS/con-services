@@ -7,6 +7,10 @@ using MockProjectWebApi.Services;
 using MockProjectWebApi.Utils;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
+using VSS.Productivity3D.Entitlements.Proxy;
 using VSS.WebApi.Common;
 
 namespace MockProjectWebApi
@@ -53,10 +57,13 @@ namespace MockProjectWebApi
       });
 
       services.AddMvc();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IFiltersService, FiltersService>();
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
       services.AddSingleton<IProjectService, ProjectService>();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      services.AddTransient<IEntitlementProxy, EntitlementProxy>(); // required for license validation
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)

@@ -57,7 +57,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Initializes the service ready for accessing segment keys
     /// </summary>
-    /// <param name="context"></param>
     public void Init(IServiceContext context)
     {
       _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} initializing");
@@ -66,84 +65,92 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// Executes the life cycle of the service until it is aborted
     /// </summary>
-    /// <param name="context"></param>
     public void Execute(IServiceContext context)
     {
-      _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} starting executing");
-
-      _aborted = false;
-      _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-      // Get the ignite grid and cache references
-
-      var mutableIgnite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
-
-      if (mutableIgnite == null)
+      try
       {
-        _log.LogError("Mutable Ignite reference in service is null - aborting service execution");
-        return;
+        _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} starting executing");
+
+        _aborted = false;
+        _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+        // Get the ignite grid and cache references
+
+        var mutableIgnite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
+
+        if (mutableIgnite == null)
+        {
+          _log.LogError("Mutable Ignite reference in service is null - aborting service execution");
+          return;
+        }
+
+        var queueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+
+        var queue = new SegmentRetirementQueue();
+        var handler = new SegmentRetirementQueueItemHandler();
+
+        // Cycle looking for new work to do until aborted...
+        do
+        {
+          try
+          {
+            // Obtain a specific local mutable storage proxy so as to have a local transactional proxy
+            // for this activity
+            var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+
+            if (storageProxy.Mutability != StorageMutability.Mutable)
+            {
+              throw new TRexException("Non mutable storage proxy available to segment retirement queue");
+            }
+
+            _log.LogInformation("About to query retiree spatial streams from cache");
+
+            var earlierThan = DateTime.UtcNow - retirementAge;
+            // Retrieve the list of segments to be retired
+            var retirees = queue.Query(earlierThan);
+
+            // Pass the list to the handler for action
+            var retireesCount = retirees?.Count ?? 0;
+            if (retireesCount > 0)
+            {
+              _log.LogInformation($"About to retire {retireesCount} groups of spatial streams from mutable and immutable contexts");
+
+              if (handler.Process(storageProxy, queueCache, retirees))
+              {
+                if (_reportDetailedSegmentRetirementActivityToLog)
+                  _log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
+
+                // Remove the elements from the segment retirement queue
+                queue.Remove(earlierThan);
+              }
+              else
+              {
+                _log.LogError($"Failed to retire {retireesCount} spatial streams from mutable and immutable contexts");
+              }
+            }
+          }
+          catch (Exception e)
+          {
+            _log.LogError(e, "Exception reported while obtaining new group of retirees to process:");
+          }
+
+          _waitHandle.WaitOne(SEGMENT_RETIREMENT_QUEUE_SERVICE_CHECK_INTERVAL_MS);
+        } while (!_aborted);
+
       }
-
-      var queueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
-
-      var queue = new SegmentRetirementQueue();
-      var handler = new SegmentRetirementQueueItemHandler();
-
-      // Cycle looking for new work to do until aborted...
-      do
+      catch (Exception e)
       {
-        try
-        {
-          // Obtain a specific local mutable storage proxy so as to have a local transactional proxy
-          // for this activity
-          var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
-
-          if (storageProxy.Mutability != StorageMutability.Mutable)
-          {
-            throw new TRexException("Non mutable storage proxy available to segment retirement queue");
-          }
-
-          _log.LogInformation("About to query retiree spatial streams from cache");
-
-          var earlierThan = DateTime.UtcNow - retirementAge;
-          // Retrieve the list of segments to be retired
-          var retirees = queue.Query(earlierThan);
-
-          // Pass the list to the handler for action
-          var retireesCount = retirees?.Count ?? 0;
-          if (retireesCount > 0)
-          {
-            _log.LogInformation($"About to retire {retireesCount} groups of spatial streams from mutable and immutable contexts");
-
-            if (handler.Process(storageProxy, queueCache, retirees))
-            {
-              if (_reportDetailedSegmentRetirementActivityToLog)
-                _log.LogInformation($"Successfully retired {retireesCount} spatial streams from mutable and immutable contexts");
-
-              // Remove the elements from the segment retirement queue
-              queue.Remove(earlierThan);
-            }
-            else
-            {
-              _log.LogError($"Failed to retire {retireesCount} spatial streams from mutable and immutable contexts");
-            }
-          }
-        }
-        catch (Exception e)
-        {
-          _log.LogError(e, "Exception reported while obtaining new group of retirees to process:");
-        }
-
-        _waitHandle.WaitOne(SEGMENT_RETIREMENT_QUEUE_SERVICE_CHECK_INTERVAL_MS);
-      } while (!_aborted);
-
-      _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} completed executing");
+        _log.LogError(e, $"Unhandled exception occurred in {nameof(SegmentRetirementQueueService)}");
+      }
+      finally
+      {
+        _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} completed executing");
+      }
     }
 
     /// <summary>
     /// Cancels the current operation context of the service
     /// </summary>
-    /// <param name="context"></param>
     public void Cancel(IServiceContext context)
     {
       _log.LogInformation($"{nameof(SegmentRetirementQueueService)} {context.Name} cancelling");
@@ -155,7 +162,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -166,7 +172,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
