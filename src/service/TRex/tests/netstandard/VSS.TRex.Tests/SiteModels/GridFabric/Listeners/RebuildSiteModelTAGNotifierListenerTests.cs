@@ -94,7 +94,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Listeners
     [Fact]
     public void StartListening()
     {
-      var listener = new RebuildSiteModelTAGNotifierListener() {MessageTopicName = "TestMessageTopic"};
+      var listener = new RebuildSiteModelTAGNotifierListener {MessageTopicName = "TestMessageTopic"};
       listener.StartListening();
     }
 

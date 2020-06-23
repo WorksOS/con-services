@@ -32,10 +32,11 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
 
     public bool Invoke(Guid nodeId, IRebuildSiteModelTAGNotifierEvent message)
     {
+      var responseCount = 0;
       try
       {
 
-        var responseCount = message.ResponseItems?.Length ?? 0;
+        responseCount = message.ResponseItems?.Length ?? 0;
         _log.LogInformation($"Received notification of TAG file processing for {message.ProjectUid}, #TAG files = {responseCount}");
 
         if (responseCount > 0)
@@ -60,7 +61,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
       }
       finally
       {
-        _log.LogInformation($"Completed handling of notification of TAG file processing for {message.ProjectUid}, #TAG files = {message.ResponseItems.Length}");
+        _log.LogInformation($"Completed handling of notification of TAG file processing for {message.ProjectUid}, #TAG files = {responseCount}");
       }
 
       return true;
