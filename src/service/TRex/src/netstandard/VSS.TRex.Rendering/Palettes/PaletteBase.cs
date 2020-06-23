@@ -30,6 +30,25 @@ namespace VSS.TRex.Rendering.Palettes
 
       for (var i = PaletteTransitions.Length - 1; i >= 0; i--)
       {
+        if (value >= PaletteTransitions[i].Value)
+        {
+          color = PaletteTransitions[i].Color;
+          break;
+        }
+      }
+
+      return color;
+    }
+
+    /// <summary>
+    /// Cutfill palette in reverse order to others
+    /// </summary>
+    public Draw.Color ChooseCutFillColour(float value)
+    {
+      var color = Draw.Color.Empty;
+
+      for (var i = PaletteTransitions.Length - 1; i >= 0; i--)
+      {
         if (value <= PaletteTransitions[i].Value)
         {
           color = PaletteTransitions[i].Color;
@@ -39,6 +58,7 @@ namespace VSS.TRex.Rendering.Palettes
 
       return color;
     }
+
 
     /// <summary>
     /// Logic to choose a colour from the set of transitions depending on the value. Slow but simple for the POC...
