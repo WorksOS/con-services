@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     public ContractExecutionStatesEnum()
     {
       DynamicAddwithOffset("success", 0);
-      DynamicAddwithOffset("Manual Import: The Devices account cannot have not have a free device entitlement.", 1);
+      DynamicAddwithOffset("unused", 1);
       DynamicAddwithOffset("AssetId, if present, must be >= -1", 2);
       DynamicAddwithOffset("ProjectId, if present, must be -1, -2, -3 or > 0", 3);
       DynamicAddwithOffset("Must have valid error number", 4);
@@ -47,22 +47,22 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("GetProjectUid internal error", 35);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
       DynamicAddwithOffset("Auto Import: Either Radio Serial or ec520 Serial must be provided", 37);
-      DynamicAddwithOffset("Unable to find the Project requested", 38);
+      DynamicAddwithOffset("Manual Import: Unable to find the Project requested", 38);
       DynamicAddwithOffset("Manual Import: got asset. Unable to locate any valid project, or asset subscriptions", 39);
       DynamicAddwithOffset("Manual Import: no asset provided or identifiable. Unable to locate any valid project subscriptions", 40);
-      DynamicAddwithOffset("Manual Import: no intersecting projects found", 41);
+      DynamicAddwithOffset("Manual Import: project does not intersect the location provided", 41);
       DynamicAddwithOffset("Manual Import: project does not intersect location and time provided", 42);
       DynamicAddwithOffset("Manual Import: cannot import to an archived project", 43);
-      DynamicAddwithOffset("No projects found at the location provided", 44);
-      DynamicAddwithOffset("Projects found at the location provided, however the device does not have access to it/those", 45);
+      DynamicAddwithOffset("Auto Import: No projects found at the location provided", 44);
+      DynamicAddwithOffset("unused1", 45);
       DynamicAddwithOffset("Manual Import: internal unhandled path", 46);
       DynamicAddwithOffset("Auto Import: unable to identify the device by this serialNumber", 47);
-      DynamicAddwithOffset("unused", 48);
+      DynamicAddwithOffset("Auto Import: No projects found for this device", 48);
       DynamicAddwithOffset("More than 1 project meets the location requirements", 49);
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
       DynamicAddwithOffset("Must contain a EC520 serial number", 51);
       DynamicAddwithOffset("Asset found, but has no valid subscriptions", 52);
-      DynamicAddwithOffset("Raptor asset ids no longer supported", 53);
+      DynamicAddwithOffset("Manual Import: cannot import to a project which doesn't accept tag files", 53);
 
       // these error numbers come from calls to projectService
       DynamicAddwithOffset("Unable to locate device by serialNumber in cws", 100);
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("There is >1 active account for the device in cws", 103);
       DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 104);
       DynamicAddwithOffset("Unable to locate projects for device in cws", 105);
-      DynamicAddwithOffset("Project accountId differs between WorksOS and WorksManager", 106);
+      DynamicAddwithOffset("unused2", 106);
     }
 
     /// <summary>
