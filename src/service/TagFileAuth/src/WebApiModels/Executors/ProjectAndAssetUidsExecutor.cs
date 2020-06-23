@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (project == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 38);
 
-      if (project.ProjectType != CwsProjectType.AcceptsTagFiles)
+      if (!project.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles))
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 53);
 
       // New requirement for WorksOS.

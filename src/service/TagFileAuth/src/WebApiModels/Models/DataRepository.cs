@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         var intersectingProjects = new ProjectDataResult();
         foreach (var project in deviceProjects.ProjectDescriptors)
         {
-          if (project.ProjectType == CwsProjectType.AcceptsTagFiles 
+          if (project.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles)
               && !project.IsArchived  
               && PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, latitude, longitude))
             intersectingProjects.ProjectDescriptors.Add(project);
