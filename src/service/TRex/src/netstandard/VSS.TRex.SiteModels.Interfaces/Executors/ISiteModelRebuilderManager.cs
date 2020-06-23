@@ -12,6 +12,8 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
 
     void TAGFileProcessed(Guid projectUid, IProcessTAGFileResponseItem[] responseItems);
 
+    bool Rebuild(Guid projectUid, bool archiveTAGFiles);
+
     bool AddRebuilder(ISiteModelRebuilder rebuilder);
   }
 }

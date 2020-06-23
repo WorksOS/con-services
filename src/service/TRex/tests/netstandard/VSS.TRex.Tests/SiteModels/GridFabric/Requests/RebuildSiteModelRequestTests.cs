@@ -1,6 +1,16 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using VSS.AWS.TransferProxy;
+using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.SiteModels.Interfaces.Requests;
+using VSS.TRex.TAGFiles.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.GridFabric.ComputeFuncs;
+using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -10,7 +20,13 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
   public class RebuildSiteModelRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private void AddPrimaryApplicationGridRouting() => IgniteMock.Mutable.AddApplicationGridRouting<RebuildSiteModelRequestComputeFunc, RebuildSiteModelRequestArgument, RebuildSiteModelRequestResponse>();
-    private void AddSecondaryApplicationGridRouting() => IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
+
+    private void AddSecondaryApplicationGridRouting()
+    {
+      IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
+      IgniteMock.Mutable.AddApplicationGridRouting<SubmitTAGFileComputeFunc, SubmitTAGFileRequestArgument, SubmitTAGFileResponse>();
+      IgniteMock.Mutable.AddApplicationGridRouting<ProcessTAGFileComputeFunc, ProcessTAGFileRequestArgument, ProcessTAGFileResponse>();
+    }
 
     private void AddApplicationGridRouting()
     {
@@ -32,30 +48,70 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     }
 
     [Fact]
-    public void FailWithPreexistingRebuild()
+    public async void FailWithNonExistentSiteModel()
     {
-      // Test we fail creafully if the rebuild request cannot access the delete request
       AddPrimaryApplicationGridRouting();
 
-      // TODO...
-      Assert.True(false);
+      var projectUid = Guid.NewGuid();
+      var request = new RebuildSiteModelRequest();
+      var arg = new RebuildSiteModelRequestArgument
+      {
+        DeletionSelectivity = DeleteSiteModelSelectivity.TagFileDerivedData,
+        OriginS3TransferProxy = TransferProxyType.TAGFiles,
+        ProjectID = projectUid
+      };
+
+      var result = await request.ExecuteAsync(arg);
+
+      result.Should().NotBeNull();
+      result.RebuildResult.Should().Be(RebuildSiteModelResult.UnableToLocateSiteModel);
     }
 
+    [Fact]
+    public async void FailWithPreexistingRebuild()
+    {
+      AddPrimaryApplicationGridRouting();
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
+
+      // Install an active builder into the manager to cause the failure.
+      DIContext.Obtain<ISiteModelRebuilderManager>().AddRebuilder(new SiteModelRebuilder(siteModel.ID, false, TransferProxyType.TAGFiles));
+
+      var request = new RebuildSiteModelRequest();
+      var arg = new RebuildSiteModelRequestArgument
+      {
+        DeletionSelectivity = DeleteSiteModelSelectivity.TagFileDerivedData, OriginS3TransferProxy = TransferProxyType.TAGFiles, ProjectID = siteModel.ID
+      };
+
+      var result = await request.ExecuteAsync(arg);
+
+      result.Should().NotBeNull();
+      result.RebuildResult.Should().Be(RebuildSiteModelResult.OK);
+    }
 
     [Fact]
     public void SucceedWithPreexistingRebuildInCompleteState()
     {
-      // Test we fail creafully if the rebuild request cannot access the delete request
       AddPrimaryApplicationGridRouting();
 
-      // TODO...
-      Assert.True(false);
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
+
+      // Install an active builder into the manager to cause the failure.
+      var rebuilder = new SiteModelRebuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
+      rebuilder.Metadata.Phase = RebuildSiteModelPhase.Complete;
+      DIContext.Obtain<ISiteModelRebuilderManager>().AddRebuilder(rebuilder);
+
+      var result = DIContext.Obtain<ISiteModelRebuilderManager>().Rebuild(siteModel.ID, false);
+
+      result.Should().BeTrue();
     }
 
     [Fact]
     public void FailWithNoDeleteProjectRequest()
     {
-      // Test we fail creafully if the rebuild request cannot access the delete request
+      // Test we fail nicely if the rebuild request cannot access the delete request
       AddPrimaryApplicationGridRouting();
 
       // TODO...

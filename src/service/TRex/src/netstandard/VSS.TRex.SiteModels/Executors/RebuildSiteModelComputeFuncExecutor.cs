@@ -56,7 +56,7 @@ namespace VSS.TRex.SiteModels.Executors
 
       if (Response.RebuildResult != RebuildSiteModelResult.OK)
       {
-        _log.LogInformation($"Rebuilding site model {_siteModel.ID}: Initial execution response state not OK ({Response.RebuildResult}) - aborting request");
+        _log.LogInformation($"Rebuilding site model {_rebuildSiteModelRequestArgument?.ProjectID}: Initial execution response state not OK ({Response.RebuildResult}) - aborting request");
         return false;
       }
 
