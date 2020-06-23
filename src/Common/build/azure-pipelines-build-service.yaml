@@ -13,7 +13,7 @@ variables:
   buildPlatform: "Any CPU"
   buildConfiguration: "Release"
   serviceName: Common
-  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/Common"
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service"
 
 jobs:
   - job: BuildTestCommon
@@ -42,6 +42,6 @@ jobs:
     steps:
     - template: build-service.yaml
       parameters:
-        servicePath: '$(System.DefaultWorkingDirectory)/src/3DP/'
-        solution: '$(System.DefaultWorkingDirectory)/src/3DP/VSS.Productivity3D.Service.sln'
+        servicePath: '$(rootServiceFolder)/3DP/'
+        solution: '$(rootServiceFolder)/3DP/VSS.Productivity3D.Service.sln'
         testFolder: 'test'
