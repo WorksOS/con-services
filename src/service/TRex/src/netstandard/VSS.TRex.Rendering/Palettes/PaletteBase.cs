@@ -41,19 +41,51 @@ namespace VSS.TRex.Rendering.Palettes
     }
 
     /// <summary>
-    /// Cutfill palette in reverse order to others
+    /// Cutfill palette logic
     /// </summary>
     public Draw.Color ChooseCutFillColour(float value)
     {
+      // Cutfill pallete is in descending order and typically will be 7 colours with a zero centre point value
+      // value either side of centre point is the torrence for a match in volume
       var color = Draw.Color.Empty;
+
+      int ptr;
+      if (value < 0)
+        ptr = PaletteTransitions.Length - 1; // move up palette
+      else
+        ptr = 0; // move down palette
 
       for (var i = PaletteTransitions.Length - 1; i >= 0; i--)
       {
-        if (value <= PaletteTransitions[i].Value)
+
+        if (value == 0)
         {
-          color = PaletteTransitions[i].Color;
+          if (value == PaletteTransitions[ptr].Value)
+          {
+            color = PaletteTransitions[ptr].Color;
+            break;
+          }
+        }
+        else if (value > 0)
+        {
+          if (value >= PaletteTransitions[ptr].Value && PaletteTransitions[ptr].Value >= 0)
+          {
+            color = PaletteTransitions[ptr].Color;
+            break;
+          }
+        }
+        else
+        if (value <= PaletteTransitions[ptr].Value)
+        {
+          color = PaletteTransitions[ptr].Color;
           break;
         }
+
+        if (value < 0)
+          ptr--;
+        else
+          ptr++;
+
       }
 
       return color;
