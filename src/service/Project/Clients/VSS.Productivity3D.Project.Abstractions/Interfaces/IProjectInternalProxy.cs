@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces
     Task<ProjectData> GetProject(string projectUid, IHeaderDictionary customHeaders = null);
 
     Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
-        double latitude, double longitude, string projectUid = null, double? northing = null, double? easting = null, IHeaderDictionary customHeaders = null);
+        double latitude, double longitude, string projectUid = null, IHeaderDictionary customHeaders = null);
 
   }
 }

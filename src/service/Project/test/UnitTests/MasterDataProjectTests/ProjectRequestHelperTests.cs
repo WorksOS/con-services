@@ -245,7 +245,7 @@ namespace VSS.MasterData.ProjectTests
       mockCwsProjectClient.Setup(pr => pr.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailListResponseModel);
 
       var projectDatabaseModelList = ProjectRequestHelper.GetIntersectingProjects(_customerUid.ToString(), 89, 179,
-        _projectUid.ToString(), null, null, _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
+        _projectUid.ToString(), _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
 
       var result = projectDatabaseModelList.Result;
       Assert.NotNull(result);

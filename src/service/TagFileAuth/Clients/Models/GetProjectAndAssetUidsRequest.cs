@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     public bool HasNE => Northing.HasValue && Easting.HasValue;
 
 
-    private GetProjectAndAssetUidsRequest()
+    public GetProjectAndAssetUidsRequest()
     { }
 
     public GetProjectAndAssetUidsRequest

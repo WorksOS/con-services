@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net;
@@ -9,7 +8,6 @@ using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
@@ -96,6 +94,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 43);
 
       // we need to retain ability to identify specific error codes 38, 43, 41, 53
+      if (!request.HasLatLong && request.HasNE)
+      {
+        var convertedLL = await dataRepository.ConvertNEtoLL(request.ProjectUid, request.Northing.Value, request.Easting.Value);
+        if (convertedLL == null)
+          return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 18);
+        request.Longitude = convertedLL.ConversionCoordinates[0].X;
+        request.Latitude = convertedLL.ConversionCoordinates[0].Y;
+      }
+
       var intersects = PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, request.Latitude, request.Longitude);
       log.LogDebug($"{nameof(HandleManualImport)}: la/long is with project?: {intersects}");
 
@@ -110,7 +117,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (device == null || device.Code != 0 || device.DeviceUID == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
-      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, request.Northing, request.Easting, out var errorCode);
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(request, device, out var errorCode);
 
       log.LogDebug($"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 

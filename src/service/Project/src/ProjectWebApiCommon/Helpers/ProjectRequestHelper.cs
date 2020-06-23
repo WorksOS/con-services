@@ -34,8 +34,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   public partial class ProjectRequestHelper
   {
 
-    public const double TOLERANCE_DECIMAL_DEGREE = 1e-10;
-
     /// <summary>
     /// Gets a Project list for customer uid.
     ///  Includes all projects, regardless of archived state and user role
@@ -97,15 +95,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var extractedCalibrationFileOk = false;
       var coordinateSystemFileName = string.Empty;
       DateTime? coordinateSystemLastActionedUtc = null;
-      if (project.ProjectSettings?.Config!= null && project.ProjectSettings.Config.Any())
-         extractedCalibrationFileOk = ExtractCalibrationFileDetails(project.ProjectSettings.Config, out coordinateSystemFileName, out coordinateSystemLastActionedUtc);
+      if (project.ProjectSettings?.Config != null && project.ProjectSettings.Config.Any())
+        extractedCalibrationFileOk = ExtractCalibrationFileDetails(project.ProjectSettings.Config, out coordinateSystemFileName, out coordinateSystemLastActionedUtc);
       if (project.ProjectSettings?.Boundary == null || project.ProjectSettings?.TimeZone == null)
         log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} contains no boundary or timezone");
       if (!extractedCalibrationFileOk)
         log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} contains no calibrationFile.");
 
       var projectDatabaseModel =
-        new ProjectDatabaseModel() 
+        new ProjectDatabaseModel()
         {
           ProjectUID = project.ProjectId,
           CustomerUID = project.AccountId,
@@ -117,7 +115,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           Boundary = project.ProjectSettings?.Boundary != null ? GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,
           CoordinateSystemFileName = coordinateSystemFileName,
           CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUtc,
-          IsArchived = false, 
+          IsArchived = false,
           LastActionedUTC = project.LastUpdate ?? DateTime.UtcNow
         };
       return projectDatabaseModel;
@@ -174,7 +172,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation($"Project projectUid: {projectUid} retrieved");
       return true;
     }
-    
+
     /// <summary>
     /// Gets a Project, even if archived.
     ///    Return project even if null. This is called internally from TFA,
@@ -201,7 +199,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///   if projectUid is provided, this is a manual import so don't consider itself as potentially overlapping
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
-      string customerUid, double latitude, double longitude, string projectUid, double? northing, double? easting,
+      string customerUid, double latitude, double longitude, string projectUid,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
     {
       // get projects for customer using application token i.e. no user
@@ -209,22 +207,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var projectDatabaseModelList = (await GetProjectListForCustomer(new Guid(customerUid), null,
           log, serviceExceptionHandler, cwsProjectClient, customHeaders))
         .Where(p => string.IsNullOrEmpty(projectUid) || !p.IsArchived);
-
-      /* todoJeannie
-      DynamicAddwithOffset("Must contain a location: lat/long or northing/easting", 136);
-      DynamicAddwithOffset("Unable to determine lat/long for requested northing/easting", 137);
-      DynamicAddwithOffset("A problem occurred attempting to get CSIB for project. Exception: {0}", 138);
-
-        if (!request.HasLatLong)
-        {
-          var latlongDegrees = await dataRepository.GenerateLatLong(project.ProjectUID, request.Northing.Value, request.Easting.Value);
-          if (Math.Abs(latlongDegrees.Lat) < ProjectAndAssetUidsHelper.TOLERANCE_DECIMAL_DEGREE && Math.Abs(latlongDegrees.Lon) < ProjectAndAssetUidsHelper.TOLERANCE_DECIMAL_DEGREE)
-            return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 55);
-          request.Latitude = latlongDegrees.Lat;
-          request.Longitude = latlongDegrees.Lon;
-          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded the projects CSIB {JsonConvert.SerializeObject(latlongDegrees)}");
-        }
-    */
 
       // return a list at this stage to be used for logging in TFA, but other potential use in future.
       var projects = projectDatabaseModelList.Where(project => !string.IsNullOrEmpty(project.Boundary))
@@ -258,50 +240,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
 
       log.LogDebug($"{nameof(DoesProjectOverlap)}: No overlapping projects.");
-      return false; 
+      return false;
     }
 
-    /// <summary>
-    /// Convert projects northing/easting to a lat/long
-    ///   obtains projects CSIB to call NE-->LL conversion
-    ///  Note: this comes from a v2 manual import and assumes project already found and ok so far
-    /// </summary>
-    public async Task<WGSPoint> GenerateLatLong(string projectUid, double northing, double easting)
-    {
-      var projectCSIB = await GetCSIBFromTRex(projectUid);
-
-      var northingEasting = new WGSPoint(northing, easting); // todoJeannie Aaron to establish new NEE class
-      var latLongDegrees = new WGSPoint(0, 0); // 0,0 is invalid lat/long
-      if (!string.IsNullOrEmpty(projectCSIB))
-      {
-        //todoJeannie latLongDegrees = AaronsNewConvertCoordinates.NEEToLLH(projectCSIB, northingEasting);
-        latLongDegrees = new WGSPoint(50, 50);
-      }
-
-      return latLongDegrees;
-    }
-
-
-    /// <summary>
-    /// Get CSIB/s for a project
-    ///    this is cached in proxy
-    /// </summary>
-    public async Task<string> GetCSIBFromTRex(string projectUid)
-    {
-      return string.Empty;
-      // todo via ProjectSv --> 3dp --> Trex
-      //try
-      //{
-      //  var returnResult = await _tRexCompactionDataProxy.SendDataGetRequest<CSIBResult>(projectUid, $"/projects/{projectUid}/csib", _customHeaders, isCachingRequired: true);
-      //  return returnResult.CSIB;
-      //}
-      //catch (Exception e)
-      //{
-      //  throw new ServiceException(HttpStatusCode.InternalServerError,
-      //    TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-      //      ContractExecutionStatesEnum.InternalProcessingError, 53, e.Message));
-      //}
-    }
 
     #region coordSystem
 

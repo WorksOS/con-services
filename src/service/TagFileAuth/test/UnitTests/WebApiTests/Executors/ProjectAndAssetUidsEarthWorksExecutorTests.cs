@@ -101,10 +101,10 @@ namespace WebApiTests.Executors
         ProjectDescriptors = new List<ProjectData>
         { new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles, Name = "thisProject",
             IsArchived = false,
-            ProjectGeofenceWKT = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))" },
+            ProjectGeofenceWKT = projectBoundary},
           new ProjectData { ProjectUID = _projectUidToBeDiscovered, CustomerUID = _deviceCustomerUid, ProjectType = CwsProjectType.AcceptsTagFiles, Name = "otherProject",
             IsArchived = false,
-            ProjectGeofenceWKT = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))" } }
+            ProjectGeofenceWKT = projectBoundary } }
       };
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projects);
 
@@ -122,8 +122,6 @@ namespace WebApiTests.Executors
       _projectAndAssetUidsEarthWorksRequest.Validate();
 
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceData);
-
-      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null, null, It.IsAny<HeaderDictionary>())).ReturnsAsync(new ProjectDataResult());
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(new ProjectDataResult());
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,

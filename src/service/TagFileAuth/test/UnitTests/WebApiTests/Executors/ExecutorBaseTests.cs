@@ -31,6 +31,11 @@ namespace WebApiTests.Executors
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected ILoggerFactory loggerFactory;
 
+    protected string projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))";
+    protected double insideLat = 15;   // lat == Y == northing 
+    protected double insideLong = 180; // long == X == easting 
+    protected double outsideLat = 50;
+
     [TestInitialize]
     public virtual void InitTest()
     {

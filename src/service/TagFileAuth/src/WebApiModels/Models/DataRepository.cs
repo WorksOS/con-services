@@ -9,17 +9,17 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
-using CoordinateSystemFileValidationRequest = VSS.MasterData.Models.Models.CoordinateSystemFileValidationRequest;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
@@ -107,8 +107,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     // Need to obtain 1 polygon which this device (DeviceTRN) lat/long lies within
-    public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device, double latitude, double longitude,
-      double? northing, double? easting, out int errorCode)
+    public ProjectDataResult GetIntersectingProjectsForDevice(GetProjectAndAssetUidsRequest request, DeviceData device, out int errorCode)
     {
       errorCode = 0;
       var deviceProjects = new ProjectDataResult();
@@ -131,9 +130,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         foreach (var project in deviceProjects.ProjectDescriptors)
         {
           if (project.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles)
-              && !project.IsArchived  
-              && PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, latitude, longitude))
-            intersectingProjects.ProjectDescriptors.Add(project);
+              && !project.IsArchived)
+          {
+            if (!request.HasLatLong && request.HasNE)
+            {
+              var convertedLL = this.ConvertNEtoLL(project.ProjectUID, request.Northing.Value, request.Easting.Value).Result;
+              if (convertedLL != null)
+              {
+                request.Longitude = convertedLL.ConversionCoordinates[0].X;
+                request.Latitude = convertedLL.ConversionCoordinates[0].Y;
+              }
+            }
+            if (request.HasLatLong && PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, request.Latitude, request.Longitude))
+              intersectingProjects.ProjectDescriptors.Add(project);
+          }
         }
         if (!intersectingProjects.ProjectDescriptors.Any())
           errorCode = 44;
@@ -148,7 +158,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     #endregion project
-
 
     #region device
 
@@ -171,11 +180,31 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #endregion device
 
-    #region TRex
-    public Task<CoordinateConversionResult> ConvertNEtoLL(CoordinateConversionRequest request)
+    #region coordSystem
+
+    public async Task<CoordinateConversionResult> ConvertNEtoLL(string projectUID, double northing, double easting)
     {
-      return _tRexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", _mergedCustomHeaders);
+      var request = new CoordinateConversionRequest(new Guid(projectUID), TwoDCoordinateConversionType.NorthEastToLatLon, new[] {new TwoDConversionCoordinate(easting, northing)});
+
+      try
+      {
+        var result = await _tRexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", _mergedCustomHeaders);
+        _log.LogDebug($"{nameof(ConvertNEtoLL)}: CoordinateConversionRequest {JsonConvert.SerializeObject(request)} CoordinateConversionResult {JsonConvert.SerializeObject(result)}");
+        if (result == null || result.ConversionCoordinates == null || result.ConversionCoordinates.Length != 1 ||
+            result.ConversionCoordinates[0].X < -180 || result.ConversionCoordinates[0].X > 180 ||
+            result.ConversionCoordinates[0].Y < -90 || result.ConversionCoordinates[0].Y > 90)
+          return null;
+
+        return result;
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "tRex", e.Message));
+      }
     }
-    #endregion TRex
+
+    #endregion coordSystem
   }
 }

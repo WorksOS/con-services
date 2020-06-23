@@ -9,6 +9,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Exceptions;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
@@ -60,6 +62,7 @@ namespace WebApiTests.Executors
           radioSerialDevice, projectListForRadioSerial,
           null, null,
           ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+          null,
           expectedGetProjectAndAssetUidsResult, expectedCode: 3038, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(38)
         );
     }
@@ -92,6 +95,7 @@ namespace WebApiTests.Executors
           radioSerialDevice, projectListForRadioSerial,
           null, null,
           ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+          null, 
           expectedGetProjectAndAssetUidsResult, expectedCode: 3043, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(43)
         );
     }
@@ -107,11 +111,11 @@ namespace WebApiTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid,
         IsArchived = false,
-        ProjectGeofenceWKT = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))",
+        ProjectGeofenceWKT = projectBoundary
 
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 50, 180, DateTime.UtcNow.AddDays(-3));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, outsideLat, insideLong, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
@@ -125,6 +129,7 @@ namespace WebApiTests.Executors
           radioSerialDevice, projectListForRadioSerial,
           null, null,
           ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+          null, 
           expectedGetProjectAndAssetUidsResult, expectedCode: 3041, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(41)
         );
     }
@@ -140,11 +145,10 @@ namespace WebApiTests.Executors
         ProjectType = CwsProjectType.AcceptsTagFiles,
         CustomerUID = projectAccountUid,
         IsArchived = false,
-        ProjectGeofenceWKT = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))",
-
+        ProjectGeofenceWKT = projectBoundary
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 15, 180, DateTime.UtcNow.AddDays(-3));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, insideLat, insideLong, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
@@ -159,9 +163,123 @@ namespace WebApiTests.Executors
         radioSerialDevice, projectListForRadioSerial,
         null, null,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        null, 
         expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
       );
     }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_Project_NoDevice_UsingLL()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
+        ProjectUID = projectUid,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
+        CustomerUID = projectAccountUid,
+        IsArchived = false,
+        ProjectGeofenceWKT = projectBoundary
+      };
+
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, insideLat, insideLong, DateTime.UtcNow.AddDays(-3));
+      var projectForProjectUid = projectOfInterest;
+
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = (DeviceData)null;
+      var projectListForRadioSerial = (ProjectDataResult)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, String.Empty);
+
+      await ExecuteManual
+      (getProjectAndAssetUidsRequest, projectForProjectUid,
+        radioSerialDevice, projectListForRadioSerial,
+        null, null,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        null,
+        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+      );
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_Project_NoDevice_UsingNE()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
+        ProjectUID = projectUid,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
+        CustomerUID = projectAccountUid,
+        IsArchived = false,
+        ProjectGeofenceWKT = projectBoundary
+      };
+
+      var northing = 67.8;
+      var easting = 21.3;
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 0, 0, DateTime.UtcNow.AddDays(-3), northing, easting);
+      // expected convertNEtoLL result
+      var points = new[] { new TwoDConversionCoordinate(insideLong, insideLat) }; // todoJeannie which way around
+      var coordinateConversionResult = new CoordinateConversionResult(points);
+
+      var projectForProjectUid = projectOfInterest;
+
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = (DeviceData)null;
+      var projectListForRadioSerial = (ProjectDataResult)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, String.Empty);
+
+      await ExecuteManual
+      (getProjectAndAssetUidsRequest, projectForProjectUid,
+        radioSerialDevice, projectListForRadioSerial,
+        null, null,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        coordinateConversionResult,
+        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+      );
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Manual_Happy_Project_NoValidPosition_Calculated()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
+        ProjectUID = projectUid,
+        ProjectType = CwsProjectType.AcceptsTagFiles,
+        CustomerUID = projectAccountUid,
+        IsArchived = false,
+        ProjectGeofenceWKT = projectBoundary
+      };
+
+      var northing = 67.8;
+      var easting = 21.3;
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 0, 0, DateTime.UtcNow.AddDays(-3), northing, easting);
+      var coordinateConversionResult = new CoordinateConversionResult(new TwoDConversionCoordinate[0]);
+
+      var projectForProjectUid = projectOfInterest;
+
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = (DeviceData)null;
+      var projectListForRadioSerial = (ProjectDataResult)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, String.Empty);
+
+      await ExecuteManual
+      (getProjectAndAssetUidsRequest, projectForProjectUid,
+        radioSerialDevice, projectListForRadioSerial,
+        null, null,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        coordinateConversionResult,
+        expectedGetProjectAndAssetUidsResult, expectedCode: 3018, expectedMessage: "Manual Import: Unable to determine lat/long from northing/easting position"
+      );
+    }
+
 
     [TestMethod]
     public async Task TRexExecutor_Sad_InvalidParameters()
@@ -182,6 +300,7 @@ namespace WebApiTests.Executors
       DeviceData radioSerialDevice, ProjectDataResult projectListForRadioSerial,
       DeviceData ec520Device, ProjectDataResult projectListForEC520,
       ICustomRadioSerialProjectMap customRadioSerialProjectMap,
+      CoordinateConversionResult coordinateConversionResult,
       GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
   )
     {
@@ -194,6 +313,13 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, It.IsAny<HeaderDictionary>())).ReturnsAsync(ec520Device);
       if (ec520Device != null)
         deviceProxy.Setup(d => d.GetProjectsForDevice(ec520Device.DeviceUID, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectListForEC520);
+
+      if (coordinateConversionResult != null)
+        tRexCompactionDataProxy.Setup(x => x.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(
+            It.IsAny<CoordinateConversionRequest>(),
+            It.IsAny<string>(),
+            It.IsAny<HeaderDictionary>(), false))
+          .ReturnsAsync(coordinateConversionResult);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore, authorization.Object,

@@ -133,10 +133,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing coordinate system file contents.", 133);
       this.DynamicAddwithOffset("Both coordinate system file name and contents must be provided.", 134);
       this.DynamicAddwithOffset("Mismatched customerUid.", 135);
-
-      DynamicAddwithOffset("Must contain a location: lat/long or northing/easting", 136);
-      DynamicAddwithOffset("Unable to determine lat/long for requested northing/easting", 137);
-      DynamicAddwithOffset("A problem occurred attempting to get CSIB for project. Exception: {0}", 138);
     }
   }
 }
