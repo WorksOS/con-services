@@ -204,6 +204,9 @@ namespace VSS.TRex.SiteModels.Executors
       var continuation = string.Empty;
       do
       {
+        if (_aborted)
+          return false;
+
         var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
         continuation = nextContinuation;
 
@@ -239,6 +242,9 @@ namespace VSS.TRex.SiteModels.Executors
       // Read all collections into a single list
       for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
       {
+        if (_aborted)
+          return false;
+
         var key = new NonSpatialAffinityKey(ProjectUid, i.ToString(CultureInfo.InvariantCulture));
         try
         {
@@ -274,6 +280,9 @@ namespace VSS.TRex.SiteModels.Executors
       // After successful submission update metadata with name of submitted file
       foreach (var tagFileKey in tagFileCollection)
       {
+        if (_aborted)
+          return false;
+
         // Make some determination that the key looks valid and defines a *.tag file
         // TODO - complete this check
 
@@ -351,6 +360,9 @@ namespace VSS.TRex.SiteModels.Executors
       // Remove all the collections of TAG file keys
       for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
       {
+        if (_aborted)
+          return false;
+
         var key = new NonSpatialAffinityKey(ProjectUid, i.ToString(CultureInfo.InvariantCulture));
         try
         {

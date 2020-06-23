@@ -15,5 +15,8 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
     bool Rebuild(Guid projectUid, bool archiveTAGFiles);
 
     bool AddRebuilder(ISiteModelRebuilder rebuilder);
+
+    // All rebuilders present in the manager are aborted
+    void AbortAll();
   }
 }

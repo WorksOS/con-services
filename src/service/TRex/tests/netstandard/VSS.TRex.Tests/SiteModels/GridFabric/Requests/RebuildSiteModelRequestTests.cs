@@ -65,6 +65,9 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       result.Should().NotBeNull();
       result.RebuildResult.Should().Be(RebuildSiteModelResult.UnableToLocateSiteModel);
+
+      // Clean up state...
+      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
 
     [Fact]
@@ -88,6 +91,28 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       result.Should().NotBeNull();
       result.RebuildResult.Should().Be(RebuildSiteModelResult.OK);
+
+      // Clean up state...
+      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
+    }
+
+    [Fact]
+    public void RebuildIsReflectedInManagerState()
+    {
+      AddPrimaryApplicationGridRouting();
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
+
+      var manager = DIContext.Obtain<ISiteModelRebuilderManager>();
+      var result = manager.Rebuild(siteModel.ID, false);
+      result.Should().BeTrue();
+
+      var state = manager.GetRebuildersState();
+      state.Count.Should().Be(1);
+
+      // Clean up state...
+      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
 
     [Fact]
@@ -103,9 +128,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       rebuilder.Metadata.Phase = RebuildSiteModelPhase.Complete;
       DIContext.Obtain<ISiteModelRebuilderManager>().AddRebuilder(rebuilder);
 
-      var result = DIContext.Obtain<ISiteModelRebuilderManager>().Rebuild(siteModel.ID, false);
+      var manager = DIContext.Obtain<ISiteModelRebuilderManager>();
+      var result = manager.Rebuild(siteModel.ID, false);
 
-      result.Should().BeTrue();
+      var state = manager.GetRebuildersState();
+      state.Count.Should().Be(1);
+
+      // Clean up state...
+      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
 
     [Fact]
@@ -116,6 +146,9 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       // TODO...
       Assert.True(false);
+
+      // Clean up state...
+      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
   }
 }

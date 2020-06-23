@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
@@ -89,6 +90,17 @@ namespace VSS.TRex.SiteModels
       }
 
       return true;
+    }
+
+    /// <summary>
+    /// Aborts all rebuilders known by the manager
+    /// </summary>
+    public void AbortAll()
+    {
+      lock (Rebuilders)
+      {
+        Rebuilders.ForEach(x => x.Value.Item1.Abort());
+      }
     }
 
     /// <summary>

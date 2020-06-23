@@ -44,5 +44,10 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
     /// Notifies the rebuilder that a TAG file marked with notify after processing has been processed
     /// </summary>
     void TAGFilesProcessed(IProcessTAGFileResponseItem[] responseItems);
+
+    /// <summary>
+    /// Abort execution of the rebuilder
+    /// </summary>
+    void Abort();
   }
 }
