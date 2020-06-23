@@ -41,6 +41,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [HttpPost]
     [Route("api/v1/export/veta")]
+    [Route("api/v2/export/veta")]
     public Task<ContractExecutionResult> GetVetaExport([FromBody] CompactionVetaExportRequest compactionVetaExportRequest)
     {
       Log.LogInformation($"{nameof(GetVetaExport)}: {Request.QueryString}");

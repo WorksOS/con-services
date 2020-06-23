@@ -66,14 +66,16 @@ namespace VSS.Productivity3D.Push.Controllers
           var trns = notification.UpdatedTrns ?? new List<string>();
           trns.Add(notification.AccountTrn);
           trns.Add(notification.ProjectTrn);
-          var tasks = new Task[trns.Count];
-          for (var i = 0; i < trns.Count; i++)
+          var tasks = new List<Task>(trns.Count);
+          foreach (var t in trns)
           {
-            var guid = TRNHelper.ExtractGuid(trns[i]);
+            if (string.IsNullOrEmpty(t))
+              continue;
+            var guid = TRNHelper.ExtractGuid(t);
             if (guid.HasValue)
-              tasks[i] = _notificationHubClient.Notify(new ProjectChangedNotification(guid.Value));
+              tasks.Add(_notificationHubClient.Notify(new ProjectChangedNotification(guid.Value)));
             else
-              _logger.LogWarning($"Failed to extra GUID from TRN: {trns[i]}");
+              _logger.LogWarning($"Failed to extra GUID from TRN: {t}");
           }
 
           await Task.WhenAll(tasks);

@@ -27,7 +27,6 @@ data:
   cws_profilesettings_public_v1: https://api.trimble.com/t/trimble.com/cws-profilesettings/1.0
   PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/ccss-worksos-preference/1.0
   TILE_BASE_URL: http://tile.prod.ccss.eks/internal/v1
-  VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/ccss-worksos-productivity/2.0/export/veta
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
