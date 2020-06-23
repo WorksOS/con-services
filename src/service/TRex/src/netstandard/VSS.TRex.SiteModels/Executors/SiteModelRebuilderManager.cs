@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.Models;
 
-namespace VSS.TRex.SiteModels
+namespace VSS.TRex.SiteModels.Executors
 {
   /// <summary>
   /// Manages the life cycle of activities in the project rebuilder across the set of projects being rebuilt
@@ -45,7 +47,7 @@ namespace VSS.TRex.SiteModels
          as IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>;
     }
 
-    public bool Rebuild(Guid projectUid, bool archiveTAGFiles)
+    public bool Rebuild(Guid projectUid, bool archiveTAGFiles, TransferProxyType proxyType)
     {
       _log.LogInformation($"Site model rebuilder executing rebuild for project {projectUid}, archiving tag files = {archiveTAGFiles}");
 
@@ -56,7 +58,9 @@ namespace VSS.TRex.SiteModels
         return false;
       }
 
-      var rebuilder = DIContext.Obtain<Func<Guid, bool, ISiteModelRebuilder>>()(projectUid, archiveTAGFiles);
+      //var rebuilder = DIContext.Obtain<Func<Guid, bool, ISiteModelRebuilder>>()(projectUid, archiveTAGFiles);
+      var rebuilder = new SiteModelRebuilder(projectUid, archiveTAGFiles, proxyType);
+
       // Inject caches
       rebuilder.MetadataCache = MetadataCache;
       rebuilder.FilesCache = FilesCache;

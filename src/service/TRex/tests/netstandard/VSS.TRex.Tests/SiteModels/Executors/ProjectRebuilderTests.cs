@@ -9,6 +9,7 @@ using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
+using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
@@ -28,7 +29,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
 {
-  public class SiteModelRebuilderTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+  public class SiteModelRebuilderTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>, IDisposable
   {
     private ISiteModelRebuilder CreateBuilder(Guid projectUid, bool archiveTAGFiles, TransferProxyType transferProxyType)
     {
@@ -61,6 +62,25 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
       var rebuilder = CreateBuilder(Guid.NewGuid(), false, TransferProxyType.TAGFiles);
 
       Assert.True(rebuilder.ValidateNoActiveRebuilderForProject(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public void SucceedWithPreexistingRebuildMetadataInCompleteState()
+    {
+      AddApplicationGridRouting();
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
+
+      var metadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
+        as IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>;
+
+      metadataCache.Put(new NonSpatialAffinityKey(siteModel.ID, SiteModelRebuilder.MetadataKeyName),
+                        new RebuildSiteModelMetaData{Phase = RebuildSiteModelPhase.Complete});
+
+      // Install an active builder into the manager to cause the failure.
+      var rebuilder = new SiteModelRebuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
+      rebuilder.ValidateNoActiveRebuilderForProject(siteModel.ID).Should().BeTrue();
     }
 
     [Fact]
@@ -130,6 +150,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
       result.NumberOfTAGFilesFromS3.Should().Be(1);
 
       result.LastProcessedTagFile.Should().Be(Path.GetFileName(tagFiles[0]));
+    }
+
+    public void Dispose()
+    {
+      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
   }
 }

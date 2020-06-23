@@ -46,7 +46,7 @@ namespace VSS.TRex.SiteModels.Executors
     /// <summary>
     /// The key name to be used for the metadata entries in the metadata cache (one per project)
     /// </summary>
-    private static readonly string _metadataKeyName = "metadata";
+    public static readonly string MetadataKeyName = "metadata";
 
     /// <summary>
     /// The storage proxy cache for the rebuilder to use for tracking metadata
@@ -104,7 +104,7 @@ namespace VSS.TRex.SiteModels.Executors
     {
       try
       {
-        return MetadataCache.Get(new NonSpatialAffinityKey(projectUid, _metadataKeyName));
+        return MetadataCache.Get(new NonSpatialAffinityKey(projectUid, MetadataKeyName));
       }
       catch (KeyNotFoundException)
       {
@@ -121,7 +121,7 @@ namespace VSS.TRex.SiteModels.Executors
       lock (_metadata)
       {
         _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
-        MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, _metadataKeyName), _metadata);
+        MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, MetadataKeyName), _metadata);
       }
     }
 

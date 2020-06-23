@@ -17,7 +17,7 @@ using Xunit;
 namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 {
   [UnitTestCoveredRequest(RequestType = typeof(RebuildSiteModelRequest))]
-  public class RebuildSiteModelRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+  public class RebuildSiteModelRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>, IDisposable
   {
     private void AddPrimaryApplicationGridRouting() => IgniteMock.Mutable.AddApplicationGridRouting<RebuildSiteModelRequestComputeFunc, RebuildSiteModelRequestArgument, RebuildSiteModelRequestResponse>();
 
@@ -65,9 +65,6 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       result.Should().NotBeNull();
       result.RebuildResult.Should().Be(RebuildSiteModelResult.UnableToLocateSiteModel);
-
-      // Clean up state...
-      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
 
     [Fact]
@@ -91,9 +88,6 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       result.Should().NotBeNull();
       result.RebuildResult.Should().Be(RebuildSiteModelResult.OK);
-
-      // Clean up state...
-      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
 
     [Fact]
@@ -105,37 +99,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
 
       var manager = DIContext.Obtain<ISiteModelRebuilderManager>();
-      var result = manager.Rebuild(siteModel.ID, false);
+      var result = manager.Rebuild(siteModel.ID, false, TransferProxyType.TAGFiles);
       result.Should().BeTrue();
 
       var state = manager.GetRebuildersState();
       state.Count.Should().Be(1);
-
-      // Clean up state...
-      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
-    }
-
-    [Fact]
-    public void SucceedWithPreexistingRebuildInCompleteState()
-    {
-      AddPrimaryApplicationGridRouting();
-
-      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
-
-      // Install an active builder into the manager to cause the failure.
-      var rebuilder = new SiteModelRebuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
-      rebuilder.Metadata.Phase = RebuildSiteModelPhase.Complete;
-      DIContext.Obtain<ISiteModelRebuilderManager>().AddRebuilder(rebuilder);
-
-      var manager = DIContext.Obtain<ISiteModelRebuilderManager>();
-      var result = manager.Rebuild(siteModel.ID, false);
-
-      var state = manager.GetRebuildersState();
-      state.Count.Should().Be(1);
-
-      // Clean up state...
-      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
 
     [Fact]
@@ -146,8 +114,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       // TODO...
       Assert.True(false);
+    }
 
-      // Clean up state...
+    public void Dispose()
+    {
       DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
     }
   }

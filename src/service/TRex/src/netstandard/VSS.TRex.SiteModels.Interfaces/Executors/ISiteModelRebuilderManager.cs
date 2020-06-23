@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.AWS.TransferProxy;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.SiteModels.Interfaces.Executors
@@ -12,7 +13,7 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
 
     void TAGFileProcessed(Guid projectUid, IProcessTAGFileResponseItem[] responseItems);
 
-    bool Rebuild(Guid projectUid, bool archiveTAGFiles);
+    bool Rebuild(Guid projectUid, bool archiveTAGFiles, TransferProxyType proxyType);
 
     bool AddRebuilder(ISiteModelRebuilder rebuilder);
 
