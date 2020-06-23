@@ -18,7 +18,6 @@ data:
   MYSQL_PORT: "3306"
   #Service references
   TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
-  VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-productivity/2.0/export/veta
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-preference/1.0
   #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-UnifiedFleet/1.0
