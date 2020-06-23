@@ -18,7 +18,7 @@ variables:
 jobs:
   - job: BuildTestAndDeploy
     displayName: "Build, test and Deploy"
-    timeoutInMinutes: 15
+    timeoutInMinutes: 20
 
     steps:
       - checkout: self
