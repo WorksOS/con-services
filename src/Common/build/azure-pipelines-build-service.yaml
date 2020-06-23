@@ -17,7 +17,7 @@ variables:
 
 jobs:
   - job: BuildTestCommon
-    displayName: "Build & Test Common.sln"
+    displayName: "Build & Test Common solution"
     timeoutInMinutes: 20
 
     steps:
@@ -34,6 +34,14 @@ jobs:
         displayName: "Run unit tests"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action unittest -collectCoverage false"
+          arguments: "-service $(serviceName) -action unittest -recordTestResults false -collectCoverage false"
 
-      # TODO Add remaining service solutions.
+  - job: Build3DPService
+    displayName: 'Build & Test 3DP service'
+    timeoutInMinutes: 20
+
+  - template: $(rootServiceFolder)/build/build-service.yaml
+    parameters:
+      servicePath: 'src/service/3DP/'
+      solution: 'VSS.Productivity3D.Service.sln'
+      testFolder: 'test'
