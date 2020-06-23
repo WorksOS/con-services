@@ -26,6 +26,7 @@ RUN dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
 COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.8.0.jar /trex/libs/
+COPY ./$SERVICE_PATH/build/control-scripts /trex/bin
 
 WORKDIR /trex/libs/
 RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar ; \

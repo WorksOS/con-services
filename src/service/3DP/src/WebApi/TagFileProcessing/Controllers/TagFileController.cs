@@ -191,15 +191,15 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       : await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid.Value);
 
     /// <summary>
-    /// Gets the WGS84 project boundary geofence for a given project Id.
+    /// Gets the WGS84 project boundary geofence for a given project.
     /// </summary>
     private async Task<WGS84Fence> GetProjectBoundary(Guid projectUid)
     {
       var projectData = await ((RaptorPrincipal)User).GetProject(projectUid);
       
-      return projectData.IanaTimeZone == null
+      return projectData.ProjectGeofenceWKT == null
         ? null
-        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.IanaTimeZone).ToArray());
+        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
   }
 }

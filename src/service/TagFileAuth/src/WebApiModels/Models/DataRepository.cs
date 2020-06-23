@@ -1,9 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -22,7 +25,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
+    protected ILogger _log;
+
     private readonly ICwsAccountClient _cwsAccountClient;
 
     // We need to use ProjectSvc IProjectProxy as that's where the project data is
@@ -33,12 +37,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceInternalProxy _deviceProxy;
 
-    private IHeaderDictionary _mergedCustomHeaders;
+    private readonly IHeaderDictionary _mergedCustomHeaders;
 
-    public DataRepository(ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+    public DataRepository(ILogger log,  ITPaaSApplicationAuthentication authorization, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       IHeaderDictionary requestCustomHeaders)
     {
-      _cwsAccountClient = cwsAccountClient;
+      _log = log;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
       _mergedCustomHeaders = requestCustomHeaders;
@@ -49,8 +53,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
     }
 
-    #region account
 
+    #region account
+    /// <summary>
+    /// We could use the ProjectSvc ICustomerProxy to then call IAccountClient. For now, just go straight to client.
+    /// </summary>
+    [Obsolete("Not used at present. As per SP, leave in case needed in future")]
     public async Task<int> GetDeviceLicenses(string customerUid)
     {
       if (string.IsNullOrEmpty(customerUid))
@@ -70,7 +78,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #endregion account
 
-
     #region project
     public async Task<ProjectData> GetProject(string projectUid)
     {
@@ -88,97 +95,37 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
     }
 
-    // manual import, no time, optional device
-    public async Task<ProjectDataResult> GetIntersectingProjectsForManual(ProjectData project, double latitude, double longitude,
-      DeviceData device = null)
-    {
-      var accountProjects = new ProjectDataResult();
-      if (project == null || string.IsNullOrEmpty(project.ProjectUID))
-        return accountProjects;
-
-      try
-      {
-        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _mergedCustomHeaders));
-        // should not be possible to get > 1 as call was limited by the projectUid       
-        if (accountProjects?.Code == 0 && accountProjects.ProjectDescriptors.Count() != 1)
-          return accountProjects;
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-
-      if (device == null || string.IsNullOrEmpty(device.DeviceUID))
-        return accountProjects;
-
-      // what are the marketing requirements here e.g. restrict to projects which the device is active in
-      // what projects does this device have visibility to?
-      try
-      {
-        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders));
-        if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
-        {
-          var result = new ProjectDataResult();
-          var gotIt = projectsAssociatedWithDevice.ProjectDescriptors.FirstOrDefault(p => p.ProjectUID == accountProjects.ProjectDescriptors[0].ProjectUID);
-          result.ProjectDescriptors.Add(gotIt);
-          return result;
-        }
-
-        return accountProjects;
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
-      }
-    }
-
-    ///
-    /// the difference to GetIntersectingProjectsForManual() is that device is required
-    ///
-    public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device,
-      double latitude, double longitude, out int errorCode)
+    // Need to obtain 1 polygon which this device (DeviceTRN) lat/long lies within
+    public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device, double latitude, double longitude, out int errorCode)
     {
       errorCode = 0;
-      var accountProjects = new ProjectDataResult();
+      var deviceProjects = new ProjectDataResult();
       if (device == null || string.IsNullOrEmpty(device.CustomerUID) || string.IsNullOrEmpty(device.DeviceUID))
-        return accountProjects;
+        return deviceProjects;
 
-      // what projects does this customer have which intersect the lat/long?
+      // returns whatever the cws rules mandate, and any conditions in projectSvc e.g. non-archived and 3dp-enabled type
       try
       {
-        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders: _mergedCustomHeaders).Result;
-        if (accountProjects?.Code != 0 || !accountProjects.ProjectDescriptors.Any())
+        deviceProjects = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders).Result;
+        _log.LogDebug($"{nameof(GetIntersectingProjectsForDevice)}: deviceProjects {JsonConvert.SerializeObject(deviceProjects)}");
+
+        if (deviceProjects?.Code != 0 || !deviceProjects.ProjectDescriptors.Any())
         {
+          errorCode = 48;
+          return deviceProjects;
+        }
+
+        var intersectingProjects = new ProjectDataResult();
+        foreach (var project in deviceProjects.ProjectDescriptors)
+        {
+          if (project.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles)
+              && !project.IsArchived  
+              && PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, latitude, longitude))
+            intersectingProjects.ProjectDescriptors.Add(project);
+        }
+        if (!intersectingProjects.ProjectDescriptors.Any())
           errorCode = 44;
-          return accountProjects;
-        }
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
-      }
-
-      // what are the marketing requirements here e.g. restrict to projects which the device is active in?
-      // what projects does this device have visibility to?
-      try
-      {
-        var intersectingProjectsForDevice = new ProjectDataResult();
-        var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders).Result;
-        if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
-        {
-          var intersection = projectsAssociatedWithDevice.ProjectDescriptors.Select(dp => dp.ProjectUID).Intersect(accountProjects.ProjectDescriptors.Select(ap => ap.ProjectUID));
-          intersectingProjectsForDevice.ProjectDescriptors = projectsAssociatedWithDevice.ProjectDescriptors.Where(p => intersection.Contains(p.ProjectUID)).ToList();
-        }
-
-        if (!intersectingProjectsForDevice.ProjectDescriptors.Any())
-          errorCode = 45;
-        return intersectingProjectsForDevice;
+        return intersectingProjects;
       }
       catch (Exception e)
       {
@@ -193,7 +140,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #region device
 
-    // Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
+    // Need to obtain cws: DeviceTRN
     public async Task<DeviceData> GetDevice(string serialNumber)
     {
       if (string.IsNullOrEmpty(serialNumber))

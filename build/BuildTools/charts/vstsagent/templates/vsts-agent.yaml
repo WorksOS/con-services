@@ -1,27 +1,30 @@
 apiVersion: apps/v1beta2
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    chart: {{ .Chart.Name }}
+    chart: {{ .Release.Name }}
     version: {{ .Chart.Version }}
 spec:
   replicas: {{ .Values.replicas }}
-  serviceName: {{ .Chart.Name }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}
+        app: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ .Chart.Name }}
+      serviceAccountName: {{ .Release.Name }}
       containers:
-      - name: {{ .Chart.Name }}
+      - name: {{ .Release.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{ if .Values.resources }}          
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+{{ end }}
         env:
          {{- with .Values }}
           - name: VSTS_ACCOUNT

@@ -38,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
         public void CommitCellPassToModel(int cellX, int cellY,
                                           double gridX, double gridY,
-                                          CellPass processedCellPass)
+                                          CellPass processedCellPass, bool lowestPassOnly = false)
         {
             // Arrange the sub grid that will house this cell pass.
             // This needs to happen if, and only if, we will actually add a cell
@@ -69,7 +69,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             SubGrid.GetSubGridCellIndex(cellX, cellY, out byte SubGridCellX, out byte SubGridCellY);
 
             // Now add the pass to the cell information
-            SubGrid.AddPass(SubGridCellX, SubGridCellY, processedCellPass);
+            SubGrid.AddPass(SubGridCellX, SubGridCellY, processedCellPass, lowestPassOnly);
 
             // Include the new point into the extents being maintained for
             // any proofing run being processed.

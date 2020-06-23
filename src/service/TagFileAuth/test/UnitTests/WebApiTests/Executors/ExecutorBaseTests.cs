@@ -25,7 +25,6 @@ namespace WebApiTests.Executors
     protected IServiceProvider ServiceProvider;
     protected Mock<IProjectInternalProxy> projectProxy;
     protected Mock<ITPaaSApplicationAuthentication> authorization;
-    protected Mock<ICwsAccountClient> cwsAccountClient;
     protected Mock<IDeviceInternalProxy> deviceProxy;
     protected IHeaderDictionary requestCustomHeaders;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
@@ -46,7 +45,6 @@ namespace WebApiTests.Executors
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       projectProxy = new Mock<IProjectInternalProxy>();
-      cwsAccountClient = new Mock<ICwsAccountClient>();
       deviceProxy = new Mock<IDeviceInternalProxy>();
       requestCustomHeaders = new HeaderDictionary();
       loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();

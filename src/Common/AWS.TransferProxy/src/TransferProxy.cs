@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
@@ -21,6 +22,7 @@ namespace VSS.AWS.TransferProxy
     private readonly string awsBucketName;
     private readonly TimeSpan awsLinkExpiry;
     private readonly ILogger logger;
+    private readonly string awsProfile;
 
     private const int MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL = 7;
 
@@ -32,6 +34,8 @@ namespace VSS.AWS.TransferProxy
         throw new ArgumentException($"Missing environment variable {storageKey}", nameof(storageKey));
       }
       awsBucketName = configStore.GetValueString(storageKey);
+      //AWS profile used for debugging - set value to "fsm-okta"
+      awsProfile = configStore.GetValueString("AWS_PROFILE", string.Empty);
 
       awsLinkExpiry = configStore.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY") ??
                       TimeSpan.FromDays(MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL);
@@ -46,7 +50,9 @@ namespace VSS.AWS.TransferProxy
 
     private IAmazonS3 GetS3Client()
     {
-      return new AmazonS3Client(RegionEndpoint.USWest2);
+      if (string.IsNullOrEmpty(awsProfile))
+        return new AmazonS3Client(RegionEndpoint.USWest2);
+      return new AmazonS3Client(new StoredProfileAWSCredentials(awsProfile), RegionEndpoint.USWest2);
     }
 
     public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)

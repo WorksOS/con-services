@@ -25,7 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
-        var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceIsUid.DeviceUid), customHeaders);
+        var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceIsUid.DeviceUid), true, customHeaders);
         if (projectsFromCws?.Projects == null || !projectsFromCws.Projects.Any())
         {
           var message = "Unable to locate projects for device in cws";
@@ -36,7 +36,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var projectDataListResult = new ProjectDataListResult();
         foreach (var projectCws in projectsFromCws.Projects)
         {
-          //TODO: CWS need to return the project boundary - only project id, name and account id currently returned CCSSSCON-408
           projectDataListResult.ProjectDescriptors.Add(AutoMapperUtility.Automapper.Map<ProjectData>(projectCws));
         }
 

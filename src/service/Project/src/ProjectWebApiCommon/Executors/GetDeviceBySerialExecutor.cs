@@ -40,6 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         // now get the customerId and 2xstatus
         // Note that this step may not be needed in future if/when WM can return these fields in cwsDeviceClient.GetDeviceBySerialNumber() CCSSSCON-28
+        // 2020_06_19 GetDeviceBySerialNumber still does not include customerId
         var deviceAccountListDataResult = await cwsDeviceClient.GetAccountsForDevice(new Guid(deviceData.DeviceUID), customHeaders);
         if (deviceAccountListDataResult?.Accounts == null || !deviceAccountListDataResult.Accounts.Any())
         {

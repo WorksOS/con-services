@@ -47,7 +47,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var referenceDesign = new DesignOffset(request.DesignUid, 0.0);
+      var referenceDesign = new DesignOffset(request.DesignUid, request.Tolerance);
       var designBoundaryRequest = new DesignBoundaryRequest();
       var designBoundaryResponse = await designBoundaryRequest.ExecuteAsync(new DesignBoundaryArgument
       {
@@ -61,7 +61,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         return await DesignBoundaryHelper.ConvertBoundary(designBoundaryResponse.Boundary, request.Tolerance, siteModel.CellSize, csib, request.FileName);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        "Failed to get requested Design Boundary data"));
+        $"Failed to get requested Design Boundary data. Project UID: {siteModel.ID}, Design UID: {request.DesignUid}"));
     }
 
     /// <summary>

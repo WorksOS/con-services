@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -18,7 +17,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     private ILogger<T> _logger;
     private IConfigurationStore _configStore;
     private ITPaaSApplicationAuthentication _authorization;
-    private ICwsAccountClient _cwsAccountClient;
     private IProjectInternalProxy _projectProxy;
     private IDeviceInternalProxy _deviceProxy;
 
@@ -26,7 +24,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     protected IConfigurationStore ConfigStore => _configStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
     protected IHeaderDictionary RequestCustomHeaders => Request.Headers.GetCustomHeaders();
     protected ITPaaSApplicationAuthentication Authorization => _authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
-    protected ICwsAccountClient CwsAccountClient => _cwsAccountClient ??= HttpContext.RequestServices.GetService<ICwsAccountClient>();
     protected IProjectInternalProxy ProjectProxy => _projectProxy ??= HttpContext.RequestServices.GetService<IProjectInternalProxy>();
     protected IDeviceInternalProxy DeviceProxy => _deviceProxy ??= HttpContext.RequestServices.GetService<IDeviceInternalProxy>();
 
