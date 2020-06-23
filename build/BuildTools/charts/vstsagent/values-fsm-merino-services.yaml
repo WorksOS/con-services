@@ -8,7 +8,7 @@ vstsToken: "h3jjfv3uviriasqttntt2vlqm7ui3qfy2ysm3enuwrgunvvfdckq"
 vstsAccount: "trmb-ccss"
 vstsPool: "fsm-merino-services"
 
-replicas: 1
+replicas: 8
 
 # securityContext: 
 #   privileged: true
@@ -31,7 +31,7 @@ nodeSelector:
 
 resources: 
   requests:
-    cpu: 500m
+    cpu: 300m
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -43,9 +43,9 @@ serviceAccount:
   name:
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
-  maxReplicas: 15
+  maxReplicas: 10
   memory:
     enabled: false
     target: 80
