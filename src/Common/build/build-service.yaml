@@ -9,21 +9,16 @@ parameters:
     type: string
     default: false
 
-jobs:
-  - job: BuildAndTest
-    displayName: "Build and Test solution"
-    timeoutInMinutes: 20
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet build"
+    inputs:
+      projects: "{{ parameters.servicepath }}/{{ parameters.solution }}"
+      arguments: "-nowarn:NU1701"
 
-    steps:
-      - task: DotNetCoreCLI@2
-        displayName: "dotnet build"
-        inputs:
-          projects: "{{ parameters.servicepath }}/{{ parameters.solution }}"
-          arguments: "-nowarn:NU1701"
-
-      - task: DotNetCoreCLI@2
-        displayName: "dotnet test"
-        inputs:
-          command: test
-          projects: "{{ parameters.servicepath }}/{{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
-          testRunTitle: "{{ parameters.solution }}"
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet test"
+    inputs:
+      command: test
+      projects: "{{ parameters.servicepath }}/{{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
+      testRunTitle: "{{ parameters.solution }}"

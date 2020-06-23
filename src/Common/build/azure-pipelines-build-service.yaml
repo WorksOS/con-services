@@ -37,11 +37,11 @@ jobs:
           arguments: "-service $(serviceName) -action unittest -recordTestResults false -collectCoverage false"
 
   - job: Build3DPService
-    displayName: 'Build & Test 3DP service'
+    displayName: 'Build & Test: 3DP service'
     timeoutInMinutes: 20
-
-  - template: build-service.yaml
-    parameters:
-      servicePath: 'src/service/3DP/'
-      solution: 'VSS.Productivity3D.Service.sln'
-      testFolder: 'test'
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(System.DefaultWorkingDirectory)/src/3DP/'
+        solution: '$(System.DefaultWorkingDirectory)/src/3DP/VSS.Productivity3D.Service.sln'
+        testFolder: 'test'
