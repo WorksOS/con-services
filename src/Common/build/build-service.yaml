@@ -13,6 +13,7 @@ steps:
   - task: DotNetCoreCLI@2
     displayName: "dotnet build"
     inputs:
+      command: 'build'
       projects: "${{ parameters.servicePath }}/${{ parameters.solution }}"
       arguments: "-nowarn:NU1701"
 
@@ -21,4 +22,4 @@ steps:
     inputs:
       command: test
       projects: "${{ parameters.servicePath }}/${{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
-      testRunTitle: "${{ parameters.solution }}"
+      publishTestResults: false
