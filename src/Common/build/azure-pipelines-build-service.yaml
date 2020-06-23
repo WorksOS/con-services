@@ -40,7 +40,7 @@ jobs:
     displayName: 'Build & Test 3DP service'
     timeoutInMinutes: 20
 
-  - template: $(rootServiceFolder)/build/build-service.yaml
+  - template: build-service.yaml
     parameters:
       servicePath: 'src/service/3DP/'
       solution: 'VSS.Productivity3D.Service.sln'
