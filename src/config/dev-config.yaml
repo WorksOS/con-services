@@ -40,8 +40,8 @@ data:
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
   ENVIRONMENT: DEV
   CORECLR_ENABLE_PROFILING: "0"
-  ENABLE_ENTITLEMENTS_CHECKING: "false"
-  ENTITLEMENTS_ALLOWED_EMAILS: "elspeth_jeet@trimble.com;elspeth_jeet+dev@trimble.com;karthikeyan_dakshanamurthy+dev@trimble.com;stephen_post@trimble.com;stephen_post+dev@trimble.com;david_glassenbury+dev@trimble.com"
+  ENABLE_ENTITLEMENTS_CHECKING: "true"
+  ENTITLEMENTS_ALLOWED_EMAILS: "elspeth_jeet@trimble.com;elspeth_jeet+dev@trimble.com;karthikeyan_dakshanamurthy+dev@trimble.com;stephen_post@trimble.com;stephen_post+dev@trimble.com;david_glassenbury+dev@trimble.com;josh_nimmo@trimble.com;josh_nimmo+dev@trimble.com;kirankumar_potnuru@trimble.com"
 #AWS configuration  
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-trex-designfiles
   AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-rpd-workos-exports

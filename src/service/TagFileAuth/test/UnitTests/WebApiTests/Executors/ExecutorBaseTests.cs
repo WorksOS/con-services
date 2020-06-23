@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
@@ -13,6 +12,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Serilog.Extensions;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
 
 namespace WebApiTests.Executors
@@ -26,6 +26,7 @@ namespace WebApiTests.Executors
     protected Mock<IProjectInternalProxy> projectProxy;
     protected Mock<ITPaaSApplicationAuthentication> authorization;
     protected Mock<IDeviceInternalProxy> deviceProxy;
+    protected Mock<ITRexCompactionDataProxy> tRexCompactionDataProxy;
     protected IHeaderDictionary requestCustomHeaders;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected ILoggerFactory loggerFactory;
@@ -46,6 +47,7 @@ namespace WebApiTests.Executors
 
       projectProxy = new Mock<IProjectInternalProxy>();
       deviceProxy = new Mock<IDeviceInternalProxy>();
+      tRexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
       requestCustomHeaders = new HeaderDictionary();
       loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
       authorization = new Mock<ITPaaSApplicationAuthentication>();

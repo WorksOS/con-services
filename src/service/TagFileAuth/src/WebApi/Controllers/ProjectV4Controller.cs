@@ -7,6 +7,7 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
+using VSS.TRex.Gateway.Common.Proxy;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -60,7 +61,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///         HttpStatusCode.OK   Response Code:
     ///           33 "Unable to locate device by the EC or RadioSerial"
     ///           44 "No projects found at the location provided"
-    ///           45 "Projects found at the location provided, however the device does not have access to it/those"
     ///           49 "More than 1 project meets the location requirements"
     ///
     ///           100 "Unable to locate device by serialNumber in cws"
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       Logger.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, RequestCustomHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
       Logger.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
@@ -124,25 +124,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///                    31 "Manual Import: The Projects account cannot have not have a free device entitlement."
     ///                    36 "ProjectUid is present, but invalid"
     ///                    37 "Auto Import: Either Radio Serial or ec520 Serial must be provided"
-    ///                    38 "Unable to find the Project requested"
+    ///                    38 "Manual Import: Unable to find the Project requested"
     ///         Errors: HttpStatusCode.InternalServerError (retryable?)
-    ///           28  "A problem occurred accessing database. Exception: {0}" 
     ///           17  "A problem occurred accessing a service. Service: {0} Exception: {1}"
     ///            
     ///         HttpStatusCode.OK   Response Code:
-    ///            1 "Manual Import: The Projects account cannot have not have a free device entitlement."
-    ///            41 "Manual Import: no intersecting projects found"
+    ///            41 "Manual Import: project does not intersect the location provided"
     ///            43 "Manual Import: cannot import to an archived project"
-    ///            44 "No projects found at the location provided"
-    ///            45 "Projects found at the location provided, however the device does not have access to it/those"
+    ///            44 "Auto Import: No projects found at the location provided"
     ///            47 "Auto Import: unable to identify the device by this serialNumber"
-    ///            49 "More than 1 project meets the location requirements"
+    ///            48 "Auto Import: No projects found for this device"
+    ///            49 "Auto Import: More than 1 project meets the location requirements"
+    ///            53 "Manual Import: cannot import to a project which doesn't accept tag files"
     /// 
     ///           100 "Unable to locate device by serialNumber in cws"
-    ///           101 "Unable to locate device in localDB"
     ///           102 "Unable to locate any account for the device in cws"
     ///           103 "There is >1 active account for the device in cws"
-    ///           104 "A problem occurred at the {0} endpoint. Exception: {1}"
+    ///           124 "A problem occurred at the {0} endpoint. Exception: {1}"
     ///     
     /// </returns>
     [Route("internal/v4/project/getUids")]
@@ -154,7 +152,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       Logger.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, RequestCustomHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;

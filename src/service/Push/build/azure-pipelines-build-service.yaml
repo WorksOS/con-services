@@ -7,7 +7,7 @@ trigger:
     include:
       - "src/service/Push/*"
 
-pool: k8s-fsm
+pool: fsm-merino-services
 
 variables:
   buildPlatform: "Any CPU"
@@ -18,7 +18,7 @@ variables:
 jobs:
   - job: BuildTestAndDeploy
     displayName: "Build, test and Deploy"
-    timeoutInMinutes: 15
+    timeoutInMinutes: 20
 
     steps:
       - checkout: self
