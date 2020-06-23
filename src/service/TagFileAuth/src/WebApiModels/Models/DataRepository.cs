@@ -7,13 +7,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
+using CoordinateSystemFileValidationRequest = VSS.MasterData.Models.Models.CoordinateSystemFileValidationRequest;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
@@ -36,14 +40,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceInternalProxy _deviceProxy;
 
+    // convert NE to LL using the projects CSIB via TRex
+    private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
+
     private IHeaderDictionary _mergedCustomHeaders;
 
-    public DataRepository(ILogger log, ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+    public DataRepository(ILogger log, ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy, ITRexCompactionDataProxy tRexCompactionDataProxy,
       IHeaderDictionary requestCustomHeaders)
     {
       _log = log;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
+      _tRexCompactionDataProxy = tRexCompactionDataProxy;
       _mergedCustomHeaders = requestCustomHeaders;
 
       foreach (var header in authorization.CustomHeaders())
@@ -219,5 +227,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #endregion device
 
+    #region TRex
+    public Task<CoordinateConversionResult> ConvertNEtoLL(CoordinateConversionRequest request)
+    {
+      return _tRexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", _mergedCustomHeaders);
+    }
+    #endregion TRex
   }
 }
