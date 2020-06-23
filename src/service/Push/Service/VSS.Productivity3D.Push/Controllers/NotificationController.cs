@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.Push.Controllers
         {
           // Iterate all 
           var trns = notification.UpdatedTrns ?? new List<string>();
-          trns.Add(notification.AccountTrn));
+          trns.Add(notification.AccountTrn);
           trns.Add(notification.ProjectTrn);
           var tasks = new List<Task>(trns.Count);
           foreach (var t in trns)
