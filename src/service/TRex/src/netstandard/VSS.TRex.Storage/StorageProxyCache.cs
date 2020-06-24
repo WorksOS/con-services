@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
+using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Transactions;
 using VSS.TRex.Storage.Interfaces;
 
@@ -81,5 +82,9 @@ namespace VSS.TRex.Storage
     public virtual Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> values) => _cache.PutAllAsync(values);
 
     public virtual ICacheLock Lock(TK key) => _cache.Lock(key);
+
+    public virtual IEnumerable<ICacheEntry<TK, TV>> GetAllValues() => _cache.Query(new ScanQuery<TK, TV>()).GetAll();
+
+    public virtual Task<IEnumerable<ICacheEntry<TK, TV>>> GetAllValuesAsync() => Task.Run(GetAllValues);
   }
 }

@@ -158,6 +158,7 @@ namespace VSS.TRex.Tests.SiteModels.Executors
     public void Dispose()
     {
       DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
+      IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
     }
   }
 }

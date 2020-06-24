@@ -2,17 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
+using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
 using Apache.Ignite.Core.Transactions;
-using FluentAssertions;
 using Moq;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Extensions;
@@ -343,6 +344,23 @@ namespace VSS.TRex.Tests.TestFixtures
         });
       });
 
+      mockCache
+          .Setup(x => x.Query(It.IsAny<ScanQuery<TK, TV>>()))
+          .Returns((ScanQuery<TK, TV> query) =>
+      {
+        // This mock treats the query as an unconstrained query and returns all elements
+        if (query == null)
+          return null;
+
+        lock (mockCacheDictionary)
+        {
+          var queryResult = new Mock<IQueryCursor<ICacheEntry<TK, TV>>>();
+          queryResult.Setup(x => x.GetAll()).Returns(() =>
+            mockCacheDictionary.Select(x => (ICacheEntry<TK, TV>)(new IgniteMockCacheEntry<TK, TV>(x.Key, x.Value))).ToList());
+          return queryResult.Object;
+        }
+      });
+      
       lock (CacheDictionary)
       {
         CacheDictionary.Add(cacheName, mockCache.Object);
@@ -394,6 +412,7 @@ namespace VSS.TRex.Tests.TestFixtures
       MockedCacheDictionaries = new Dictionary<string, IDictionary>();
 
       // Create the mocked cache for the existence maps cache and any other cache using this signature
+      // (such as the file key collections used by site model rebuilding
       AddMockedCacheToIgniteMock<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();
 
       // Create the mocked cache for the site model TAG file buffer queue cache and any other cache using this signature
@@ -414,7 +433,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the summary site model meta data
       AddMockedCacheToIgniteMock<Guid, ISiteModelMetadata>();
 
-      // Create the mocked cache for the rebuild site mode metadata store and any other cache using this signature
+      // Create the mocked cache for the rebuild site model metadata store and any other cache using this signature
       AddMockedCacheToIgniteMock<INonSpatialAffinityKey, IRebuildSiteModelMetaData>();
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Apache.Ignite.Core;
@@ -44,7 +45,6 @@ using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
-using VSS.TRex.SiteModels;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.GridFabric;
@@ -53,6 +53,7 @@ using VSS.AWS.TransferProxy;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
+using VSS.TRex.Storage;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -92,17 +93,17 @@ namespace VSS.TRex.Tests.TestFixtures
       };
     }
 
-    static private IStorageProxyCacheCommit RebuildSiteModelCacheFactory(RebuildSiteModelCacheType cacheType)
+    private static IStorageProxyCacheCommit RebuildSiteModelCacheFactory(RebuildSiteModelCacheType cacheType)
     {
       return cacheType switch
       {
         RebuildSiteModelCacheType.Metadata =>
-          new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
-            .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new NonSpatialAffinityKeyEqualityComparer()),
+          new StorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName())),
 
         RebuildSiteModelCacheType.KeyCollections =>
-          new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
-            .GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()), new NonSpatialAffinityKeyEqualityComparer()),
+          new StorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName())),
 
         _ => throw new TRexException($"Unknown rebuild site model cache type: {cacheType}")
       };
@@ -152,7 +153,7 @@ namespace VSS.TRex.Tests.TestFixtures
             _ => throw new TRexException("Unknown immutability type")
           };
         }))
-        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => RebuildSiteModelCacheFactory(cacheType)))
+        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>(RebuildSiteModelCacheFactory))
         .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
@@ -177,11 +178,9 @@ namespace VSS.TRex.Tests.TestFixtures
       IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
       IgniteMock.Immutable.ResetDynamicMockedIgniteContent();
 
-      // Recreate procy caches based on the newly created cache contexts
+      // Recreate proxy caches based on the newly created cache contexts
       DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
-
-
-
+      
       // Create a new site models instance so that it recreates storage contexts
       // Also remove the singleton proxy cache factory injected as a part of the DITagFileFixture. This fixture supplies a 
       // full ignite mock with standard storage proxy factory

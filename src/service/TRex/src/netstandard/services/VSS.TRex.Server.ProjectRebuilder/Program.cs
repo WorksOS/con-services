@@ -18,7 +18,6 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
-using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Heartbeats;
@@ -153,12 +152,15 @@ namespace VSS.TRex.Server.ProjectRebuilder
       }
     }
 
-    private static void DoServiceInitialisation()
+    private static async void DoServiceInitialisation()
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelRebuilderHeartbeatLogger());
+
+      // Tell the rebuilder manager to find any active rebuilders and start them off from where they left off
+      await DIContext.Obtain<ISiteModelRebuilderManager>().BeginOperations();
     }
 
     static async Task<int> Main()

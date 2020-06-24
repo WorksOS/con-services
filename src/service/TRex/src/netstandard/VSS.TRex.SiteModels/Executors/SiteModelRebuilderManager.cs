@@ -8,7 +8,6 @@ using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Interfaces;
@@ -73,6 +72,25 @@ namespace VSS.TRex.SiteModels.Executors
     }
 
     /// <summary>
+    /// Start a rebuild given the existing metadata of a previous rebuild
+    /// </summary>
+    public bool Rebuild(IRebuildSiteModelMetaData metadata)
+    {
+      var rebuilder = new SiteModelRebuilder(metadata);
+
+      // Inject caches
+      rebuilder.MetadataCache = MetadataCache;
+      rebuilder.FilesCache = FilesCache;
+
+      lock (Rebuilders)
+      {
+        Rebuilders.Add(metadata.ProjectUID, (rebuilder, rebuilder.ExecuteAsync()));
+      }
+
+      return true;
+    }
+
+    /// <summary>
     /// Accepts a builder instantiated out side the manager to be handed to the manager to look after.
     /// Note: The manager wil NOT manage life cycle initiation of the rebuilder passed to it and will
     ///       NOT create a Task to represent it's execution, nor will it inject the caches into the passed builder.
@@ -104,6 +122,22 @@ namespace VSS.TRex.SiteModels.Executors
       lock (Rebuilders)
       {
         Rebuilders.ForEach(x => x.Value.Item1.Abort());
+        Rebuilders.Clear();
+      }
+    }
+
+    /// <summary>
+    /// Aborts a specific rebuilder known by the manager
+    /// </summary>
+    public void Abort(Guid projectUid)
+    {
+      lock (Rebuilders)
+      {
+        if (Rebuilders.TryGetValue(projectUid, out var rebuilderState))
+        {
+          rebuilderState.Item1.Abort();
+          Rebuilders.Remove(projectUid);
+        }
       }
     }
 
@@ -147,6 +181,19 @@ namespace VSS.TRex.SiteModels.Executors
           _log.LogWarning($"Site model rebuilder manager found no active rebuilder for project {projectUid}");
         }
       }
+    }
+
+    /// <summary>
+    /// Instructs the manager to locate all active rebuilders and kick them off...
+    /// </summary>
+    public Task BeginOperations()
+    {
+      return Task.Run(async () => 
+      {
+        var values = await MetadataCache.GetAllValuesAsync();
+        values.Where(x => x.Value.Phase != RebuildSiteModelPhase.Complete)
+          .ForEach(x => Rebuild(x.Value));
+      });
     }
   }
 }
