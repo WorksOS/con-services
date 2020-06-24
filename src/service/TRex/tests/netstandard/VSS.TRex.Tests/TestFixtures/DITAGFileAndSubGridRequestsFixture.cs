@@ -42,7 +42,7 @@ using Consts = VSS.TRex.Common.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture
+  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
   {
     public DITAGFileAndSubGridRequestsFixture() : base()
     {

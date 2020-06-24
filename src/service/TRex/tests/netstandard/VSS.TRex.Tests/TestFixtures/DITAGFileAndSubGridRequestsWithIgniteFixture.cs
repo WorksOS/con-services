@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Apache.Ignite.Core;
@@ -48,7 +47,6 @@ using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.GridFabric;
-using VSS.TRex.GridFabric.Affinity;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Listeners;
@@ -324,7 +322,7 @@ namespace VSS.TRex.Tests.TestFixtures
     /// </summary>
     public static ISiteModel NewEmptyModel(bool addDefaultMachine = true)
     {
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(NewSiteModelGuid, true);
 
       // Switch to mutable storage representation to allow creation of content in the site model
       siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
@@ -380,8 +378,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var tempFileName = Path.GetTempFileName() + ".ttm";
       tin.SaveToFile(tempFileName, true);
 
-      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddSurveyedSurfaceToSiteModel
-        (ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), asAtDate, true);
+      return AddSurveyedSurfaceToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), asAtDate, true);
     }
 
     /// <summary>
@@ -419,8 +416,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var tempFileName = Path.GetTempFileName() + ".ttm";
       tin.SaveToFile(tempFileName, true);
 
-      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(
-        ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
+      return AddDesignToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
     }
 
     public new void Dispose()
