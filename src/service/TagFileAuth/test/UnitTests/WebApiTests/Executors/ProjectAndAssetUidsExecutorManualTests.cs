@@ -220,7 +220,7 @@ namespace WebApiTests.Executors
       var easting = 21.3;
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 0, 0, DateTime.UtcNow.AddDays(-3), northing, easting);
       // expected convertNEtoLL result
-      var points = new[] { new TwoDConversionCoordinate(insideLong, insideLat) }; // todoJeannie which way around
+      var points = new[] { new TwoDConversionCoordinate(insideLong, insideLat) };
       var coordinateConversionResult = new CoordinateConversionResult(points);
 
       var projectForProjectUid = projectOfInterest;

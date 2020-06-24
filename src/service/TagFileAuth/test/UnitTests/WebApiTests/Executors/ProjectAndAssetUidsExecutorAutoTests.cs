@@ -135,7 +135,7 @@ namespace WebApiTests.Executors
       var easting = 21.3;
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", "ec520Serial", 0.0, 0.0, DateTime.UtcNow.AddDays(-3), northing, easting);
       // expected convertNEtoLL result
-      var points = new [] {new TwoDConversionCoordinate(insideLong, insideLat)}; // todoJeannie which way around
+      var points = new [] {new TwoDConversionCoordinate(insideLong, insideLat)};
       var coordinateConversionResult = new CoordinateConversionResult(points);
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();

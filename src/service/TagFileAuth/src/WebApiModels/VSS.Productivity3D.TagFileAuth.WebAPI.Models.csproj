@@ -36,16 +36,8 @@
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="VSS.Productivity3D.Models">
-      <HintPath>..\..\..\..\Common\Productivity3DModels\src\bin\Debug\netcoreapp3.1\VSS.Productivity3D.Models.dll</HintPath>
-    </Reference>
-    <Reference Include="VSS.TRex.Gateway.Common.Abstractions">
-      <HintPath>..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\bin\Debug\netcoreapp3.1\VSS.TRex.Gateway.Common.Abstractions.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

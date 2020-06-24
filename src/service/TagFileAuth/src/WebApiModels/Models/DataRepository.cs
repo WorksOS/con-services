@@ -182,17 +182,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #region coordSystem
 
-    public async Task<CoordinateConversionResult> ConvertNEtoLL(string projectUID, double northing, double easting)
+    public async Task<CoordinateConversionResult> ConvertNEtoLL(string projectUid, double northing, double easting)
     {
-      var request = new CoordinateConversionRequest(new Guid(projectUID), TwoDCoordinateConversionType.NorthEastToLatLon, new[] {new TwoDConversionCoordinate(easting, northing)});
+      var request = new CoordinateConversionRequest(new Guid(projectUid), TwoDCoordinateConversionType.NorthEastToLatLon, new[] {new TwoDConversionCoordinate(easting, northing)});
 
       try
       {
         var result = await _tRexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", _mergedCustomHeaders);
         _log.LogDebug($"{nameof(ConvertNEtoLL)}: CoordinateConversionRequest {JsonConvert.SerializeObject(request)} CoordinateConversionResult {JsonConvert.SerializeObject(result)}");
-        if (result == null || result.ConversionCoordinates == null || result.ConversionCoordinates.Length != 1 ||
-            result.ConversionCoordinates[0].X < -180 || result.ConversionCoordinates[0].X > 180 ||
-            result.ConversionCoordinates[0].Y < -90 || result.ConversionCoordinates[0].Y > 90)
+        if (result?.ConversionCoordinates == null || result.ConversionCoordinates.Length != 1 
+                                                  || result.ConversionCoordinates[0].X < -180 || result.ConversionCoordinates[0].X > 180 
+                                                  || result.ConversionCoordinates[0].Y < -90 || result.ConversionCoordinates[0].Y > 90)
           return null;
 
         return result;
