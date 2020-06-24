@@ -33,7 +33,7 @@ namespace WebApiTests
       ValidateResult(result, expectedGetProjectAndAssetUidsResult);
     }
 
-    [Fact(Skip = "skip until MockProjectWebAPI deployed 2020_06_24")]
+    [Fact]
     public async Task NoProjectProvided_Auto_Happy_DeviceAndSingleProjectFound_UsingNE()
     {
       var cbRadioType = TagFileDeviceTypeEnum.SNM940;

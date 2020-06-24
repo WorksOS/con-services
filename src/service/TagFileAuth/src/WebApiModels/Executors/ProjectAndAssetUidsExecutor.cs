@@ -82,6 +82,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // no checking of device or project states or WM licensing at this stage
 
       var project = await dataRepository.GetProject(request.ProjectUid);
+      log.LogDebug($"{nameof(HandleManualImport)}: Loaded project? {(project == null ? "project not found" : JsonConvert.SerializeObject(project))}");
 
       if (project == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 38);

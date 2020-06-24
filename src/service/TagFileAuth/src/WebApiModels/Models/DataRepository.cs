@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    protected ILogger _log;
+    protected readonly ILogger _log;
 
     private readonly ICwsAccountClient _cwsAccountClient;
 
@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     // convert NE to LL using the projects CSIB via TRex
     private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
 
-    private IHeaderDictionary _mergedCustomHeaders;
+    private readonly IHeaderDictionary _mergedCustomHeaders;
 
 
     public DataRepository(ILogger log, ITPaaSApplicationAuthentication authorization, 
