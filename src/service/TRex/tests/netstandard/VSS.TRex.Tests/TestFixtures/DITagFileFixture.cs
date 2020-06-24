@@ -33,7 +33,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITagFileFixture : DILoggingFixture
+  public class DITagFileFixture : DILoggingFixture, IDisposable
   {
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 

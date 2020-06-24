@@ -31,5 +31,16 @@ namespace VSS.TRex.Storage.Interfaces
 
 
     ICacheLock Lock(TK key);
+
+
+    /// <summary>
+    /// Returns all values as a single collection. Not suitable for large caches
+    /// </summary>
+    IEnumerable<ICacheEntry<TK, TV>> GetAllValues();
+
+    /// <summary>
+    /// Returns all values as a single collection. Not suitable for large caches
+    /// </summary>
+    Task<IEnumerable<ICacheEntry<TK, TV>>> GetAllValuesAsync();
   }
 }

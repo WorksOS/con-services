@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 using Apache.Ignite.Core.Cache;
 using Moq;
 using VSS.TRex.Storage;
@@ -15,7 +14,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Expose pending transacted writes in test context to provide simplified access to content in unit tests
     /// </summary>
-    /// <returns></returns>
     public Dictionary<TK, TV> GetPendingTransactedWrites() => PendingTransactedWrites;
 
     /// <summary>
@@ -45,8 +43,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// Override the look-aside get semantics into the transaction writes so that gets don't read through into the
     /// null cache reference in the underlying base class.
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
     public override TV Get(TK key)
     {
       if (HasCache)
@@ -83,7 +79,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// Returns a mocked ICacheLock for the key
     /// </summary>
     /// <param name="key"></param>
-    /// <returns></returns>
     public override ICacheLock Lock(TK key) => new Mock<ICacheLock>().Object;
   }
 }

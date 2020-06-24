@@ -69,7 +69,7 @@ namespace VSS.TRex.SiteModels.Executors
 
     private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
 
-    private readonly IS3FileTransfer _s3FileTransfer;
+    private IS3FileTransfer _s3FileTransfer;
 
     public SiteModelRebuilder(Guid projectUid, bool archiveTagFiles, TransferProxyType originS3TransferProxy)
     {
@@ -83,8 +83,12 @@ namespace VSS.TRex.SiteModels.Executors
         Flags = flags,
         OriginS3TransferProxy = originS3TransferProxy
       };
+    }
 
-      _s3FileTransfer = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(_metadata.OriginS3TransferProxy);
+    public SiteModelRebuilder(IRebuildSiteModelMetaData metadata)
+    {
+      ProjectUid = metadata.ProjectUID;
+      _metadata = metadata;
     }
 
     /// <summary>
@@ -375,32 +379,30 @@ namespace VSS.TRex.SiteModels.Executors
 
       var currentPhase = RebuildSiteModelPhase.Unknown;
 
-      if (_metadata != null)
+      // Get metadata. If one exists and it is 'Complete', then reset it
+      var persistedMetadata = GetMetaData(ProjectUid);
+      if (persistedMetadata != null)
       {
-        // Initial execution with metadata provided - no need to read metadata from persistence
-        // Do need to save it into the cache...
-        UpdateMetaData();
-      }
-      else
-      {
-        // Get metadata. If one exists and it is 'Complete', then reset it
-        _metadata = GetMetaData(ProjectUid);
-
-        if (_metadata != null)
+        if (persistedMetadata.Phase == RebuildSiteModelPhase.Complete)
         {
-          if (_metadata.Phase == RebuildSiteModelPhase.Complete)
-          {
-            _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
-            // Reset the metadata to start the process
-            UpdatePhase(RebuildSiteModelPhase.Unknown);
-          }
-          else
-          {
-            _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
-            currentPhase = _metadata.Phase;
-          }
+          _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
+          // Reset the metadata to start the process
+          UpdatePhase(RebuildSiteModelPhase.Unknown);
         }
+        else
+        {
+          _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
+          currentPhase = persistedMetadata.Phase;
+        }
+
+        // Set the internal meta data to the state of the persisted metadata
+        _metadata = persistedMetadata;
       }
+
+      // Ensure persisted metadata state matches the internal metadata state
+      UpdateMetaData();
+
+      _s3FileTransfer = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(_metadata.OriginS3TransferProxy);
 
       // Move to the current Phase and start processing from that point
 

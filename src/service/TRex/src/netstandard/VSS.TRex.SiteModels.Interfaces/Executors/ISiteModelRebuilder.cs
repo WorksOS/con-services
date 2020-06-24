@@ -36,7 +36,7 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
     bool ValidateNoActiveRebuilderForProject(Guid projectUid);
 
     /// <summary>
-    /// Coordinate rebuilding of a project, returning a Tasl for the caller to manage.
+    /// Coordinate rebuilding of a project, returning a Task for the caller to manage.
     /// </summary>
     Task<IRebuildSiteModelMetaData> ExecuteAsync();
 

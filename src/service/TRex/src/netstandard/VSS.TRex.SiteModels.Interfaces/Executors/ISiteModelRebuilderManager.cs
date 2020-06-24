@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.TAGFiles.Models;
 
@@ -17,7 +18,9 @@ namespace VSS.TRex.SiteModels.Interfaces.Executors
 
     bool AddRebuilder(ISiteModelRebuilder rebuilder);
 
-    // All rebuilders present in the manager are aborted
     void AbortAll();
+    void Abort(Guid projectUid);
+
+    Task BeginOperations();
   }
 }
