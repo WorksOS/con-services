@@ -27,8 +27,6 @@ namespace TAGFiles.Tests
 {
   public class TagfileValidatorTests : IClassFixture<DILoggingFixture>
   {
-    private static Guid NewSiteModelGuidTfa = Guid.NewGuid();
-
     [Fact]
     public void Test_TFASpecific_DIMocking()
     {
@@ -42,7 +40,6 @@ namespace TAGFiles.Tests
       var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH");
       Assert.Equal(100, minTagFileLength);
     }
-
 
     [Fact]
     public async Task Test_InvalidTagFile_TooSmall()
@@ -269,16 +266,18 @@ namespace TAGFiles.Tests
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Build();
 
-      ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuidTfa);
+      var newSiteModelGuidTfa = Guid.NewGuid();
+
+      ISiteModel mockedSiteModel = new SiteModel(newSiteModelGuidTfa);
       mockedSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       var moqSiteModelFactory = new Mock<ISiteModelFactory>();
       moqSiteModelFactory.Setup(mk => mk.NewSiteModel(StorageMutability.Mutable)).Returns(mockedSiteModel);
 
-      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(newSiteModelGuidTfa)).Returns(mockedSiteModel);
 
       // Mock the new site model creation API to return just a new site model
-      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(newSiteModelGuidTfa, true)).Returns(mockedSiteModel);
 
       //Moq doesn't support extension methods in IConfiguration/Root.
       var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
