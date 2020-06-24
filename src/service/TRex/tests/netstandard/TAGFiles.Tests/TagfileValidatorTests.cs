@@ -123,7 +123,7 @@ namespace TAGFiles.Tests
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
       var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, "success");
+      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), null, (int)DeviceTypeEnum.MANUALDEVICE, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
