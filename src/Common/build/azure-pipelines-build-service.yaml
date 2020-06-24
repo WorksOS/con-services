@@ -72,7 +72,7 @@ jobs:
     steps:
     - template: build-service.yaml
       parameters:
-        servicePath: '$(rootServiceFolder)/Tile'
+        servicePath: '$(rootServiceFolder)/TileService'
         solution: 'VSS.Tile.Service.sln'
         testFolder: 'test'
 
