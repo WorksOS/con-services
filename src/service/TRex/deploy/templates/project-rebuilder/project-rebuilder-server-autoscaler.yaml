@@ -11,7 +11,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1beta1
     kind: Deployment
-    name: {{ template "trex.deployname" . }}-qmesh
+    name: {{ template "trex.deployname" . }}-project-rebuilder
   minReplicas: {{ .Values.projectRebuilderServer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.projectRebuilderServer.autoscaling.maxReplicas }}
   metrics:
