@@ -32,12 +32,12 @@ namespace VSS.Productivity3D.Project.Abstractions.Utilities
     {
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
-      var isDesignFileType = importedFileType == ImportedFileType.DesignSurface ||
+      var isImportedFileType = importedFileType == ImportedFileType.DesignSurface ||
                              importedFileType == ImportedFileType.SurveyedSurface ||
                              importedFileType == ImportedFileType.Alignment ||
+                             importedFileType == ImportedFileType.Linework ||
                              importedFileType == ImportedFileType.ReferenceSurface;
-      if (!useRaptorGatewayDesignImport &&
-          !(useTrexGatewayDesignImport && isDesignFileType))
+      if (!useRaptorGatewayDesignImport && !(useTrexGatewayDesignImport && isImportedFileType))
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 113);
       }
