@@ -182,40 +182,7 @@ namespace TAGFiles.Tests
       Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
-
-    [Fact]
-    public async Task Test_UsingNEE_ValidateOk()
-    {
-      var projectUid = Guid.NewGuid();
-      var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, "5850F00892", "1639J101YU", 0, 0, timeOfPosition, 5876814.5384829007, 7562822.7801738745);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, "success");
-      SetupDITfa(true, moqRequest, moqResult);
-
-      byte[] tagContent;
-      using (FileStream tagFileStream =
-        new FileStream(Path.Combine("TestData", "TAGFiles", "SeedPosition-usingNEE.tag"),
-          FileMode.Open, FileAccess.Read))
-      {
-        tagContent = new byte[tagFileStream.Length];
-        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
-      }
-
-      TagFileDetail td = new TagFileDetail()
-      {
-        assetId = null,
-        projectId = projectUid,
-        tagFileName = "Bug ccssscon-401 NEE SeedPosition.tag",
-        tagFileContent = tagContent,
-        tccOrgId = "",
-        IsJohnDoe = false
-      };
-
-      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
-      Assert.Equal("success", result.Message);
-    }
-
+    
     [Fact]
     public async Task Test_ValidateFailed_InvalidManualProjectType()
     {
