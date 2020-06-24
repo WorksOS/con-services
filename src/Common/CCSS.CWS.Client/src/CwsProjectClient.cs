@@ -57,6 +57,7 @@ namespace CCSS.CWS.Client
             ProjectTRN = project.ProjectTRN,
             ProjectName = project.ProjectName,
             ProjectType = project.ProjectType,
+            Status = project.Status,
             UserProjectRole = project.UserProjectRole,
             ProjectSettings = new ProjectSettingsModel {Boundary = project.Boundary, TimeZone = project.TimeZone}
           };

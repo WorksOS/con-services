@@ -94,6 +94,11 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("projectType")]
     public CwsProjectType ProjectType { get; set; }
 
+    /// <summary>
+    /// Project status: ACTIVE or ARCHIVED
+    /// </summary>
+    [JsonProperty("status")]
+    public string Status { get; set; }
 
     public List<string> GetIdentifiers() => new List<string> { ProjectTRN, ProjectId };
 
