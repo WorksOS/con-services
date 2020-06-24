@@ -179,7 +179,7 @@ namespace TAGFiles.Tests
       Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
-
+    
     [Fact]
     public async Task Test_ValidateFailed_InvalidManualProjectType()
     {

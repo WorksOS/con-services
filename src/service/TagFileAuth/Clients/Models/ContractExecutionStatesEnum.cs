@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Failed to get legacy asset id", 15);
       DynamicAddwithOffset("Failed to get project boundaries", 16);
       DynamicAddwithOffset("A problem occurred accessing a service. Service: {0} Exception: {1}", 17);
-      DynamicAddwithOffset("Must have projectId", 18);
+      DynamicAddwithOffset("Manual Import: Unable to determine lat/long from northing/easting position", 18);
       DynamicAddwithOffset("Failed to get project id", 19);
       DynamicAddwithOffset("Must contain one or more of assetId or tccOrgId", 20);
       DynamicAddwithOffset("Latitude should be between -90 degrees and 90 degrees", 21);

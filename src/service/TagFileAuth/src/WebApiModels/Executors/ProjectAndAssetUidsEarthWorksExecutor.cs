@@ -64,7 +64,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       DeviceData device)
     {
       var errorCode = 0;
-      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, out errorCode);
+      var NonEarthWorksRequest = new GetProjectAndAssetUidsRequest() {Longitude = request.Longitude, Latitude = request.Latitude};
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(NonEarthWorksRequest, device, out errorCode);
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
