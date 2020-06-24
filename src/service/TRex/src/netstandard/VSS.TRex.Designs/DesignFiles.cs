@@ -120,7 +120,7 @@ end;
         if (!File.Exists(design.FileName))
         {
           // TODO we need to take away this async code from the lock
-          loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).Result;
+          loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), FilePathHelper.GetTempFolderForProject(dataModelId), true).Result;
           if (loadResult != DesignLoadResult.Success)
           {
             Log.LogWarning($"Failed to load design {designUid} from storage for site model with ID {dataModelId}");
