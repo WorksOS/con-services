@@ -60,6 +60,12 @@ namespace VSS.TRex.Webtools.Controllers
         ? new FilterSet(new CombinedFilter(), new CombinedFilter())
         : new FilterSet(new CombinedFilter());
 
+      if (displayMode == DisplayMode.CutFill || displayMode == DisplayMode.VolumeCoverage)
+      {
+        filters.Filters[0].AttributeFilter.ElevationType = Common.Types.ElevationType.First;
+        filters.Filters[0].AttributeFilter.HasElevationTypeFilter = true;
+      }
+
       var response = await request.ExecuteAsync(new TileRenderRequestArgument(
         siteModelUid,
         displayMode,

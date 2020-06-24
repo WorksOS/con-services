@@ -18,7 +18,6 @@ data:
   MYSQL_PORT: "3306"
   #Service references
   TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
-  VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-productivity/2.0/export/veta
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-dev-preference/1.0
   #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-UnifiedFleet/1.0
@@ -40,7 +39,7 @@ data:
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
   ENVIRONMENT: DEV
   CORECLR_ENABLE_PROFILING: "0"
-  ENABLE_ENTITLEMENTS_CHECKING: "true"
+  ENABLE_ENTITLEMENTS_CHECKING: "false"
   ENTITLEMENTS_ALLOWED_EMAILS: "elspeth_jeet@trimble.com;elspeth_jeet+dev@trimble.com;karthikeyan_dakshanamurthy+dev@trimble.com;stephen_post@trimble.com;stephen_post+dev@trimble.com;david_glassenbury+dev@trimble.com;josh_nimmo@trimble.com;josh_nimmo+dev@trimble.com;kirankumar_potnuru@trimble.com"
 #AWS configuration  
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-trex-designfiles
@@ -83,7 +82,7 @@ data:
   TILE_CACHE_LIFE: 00:15:00
   CWS_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
-  ENTITLEMENT_CACHE_LIFE: 00:05:00
+  ENTITLEMENT_CACHE_LIFE: 00:00:10
   FILTER_CACHE_LIFE: 00:15:00
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00

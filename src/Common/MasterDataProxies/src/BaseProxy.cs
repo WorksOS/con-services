@@ -316,7 +316,13 @@ namespace VSS.MasterData.Proxies
               if (result != null)
               {
                 entry.SetOptions(opts);
-                return new CacheItem<T>(result, result.GetIdentifiers());
+                // We need to support clearing cache by the user - the model doesn't know about the user info
+                var identifiers = result.GetIdentifiers() ?? new List<string>();
+                if(!string.IsNullOrEmpty(uid)) 
+                  identifiers.Add(uid);
+                if(!string.IsNullOrEmpty(userId))
+                  identifiers.Add(userId);
+                return new CacheItem<T>(result, identifiers);
               }
 
               throw new ServiceException(HttpStatusCode.BadRequest,
@@ -328,7 +334,15 @@ namespace VSS.MasterData.Proxies
           log.LogDebug($"{nameof(WithMemoryCacheExecute)}: Item for key {cacheKey} is requested to be invalidated, getting from web api");
           result = await action.Invoke();
           if (result != null)
-            return _dataCache.Set(cacheKey, result, result.GetIdentifiers(), opts);
+          {
+            // We need to support clearing cache by the user - the model doesn't know about the user info
+            var identifiers = result.GetIdentifiers() ?? new List<string>();
+            if(!string.IsNullOrEmpty(uid))
+              identifiers.Add(uid);
+            if(!string.IsNullOrEmpty(userId))
+              identifiers.Add(userId);
+            return _dataCache.Set(cacheKey, result, identifiers, opts);
+          }
         }
       }
 
