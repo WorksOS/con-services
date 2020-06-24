@@ -101,7 +101,7 @@ namespace VSS.TRex.Tests.SiteModels.Executors
     [InlineData(RebuildSiteModelPhase.Scanning)]
     [InlineData(RebuildSiteModelPhase.Submitting)]
     [InlineData(RebuildSiteModelPhase.Unknown)]
-    public void BeginOperations_RestartInProgressProjects(RebuildSiteModelPhase phase)
+    public async void BeginOperations_RestartInProgressProjects(RebuildSiteModelPhase phase)
     {
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
@@ -118,7 +118,7 @@ namespace VSS.TRex.Tests.SiteModels.Executors
         });
 
       var manager = new SiteModelRebuilderManager();
-      manager.BeginOperations();
+      await manager.BeginOperations();
 
       manager.GetRebuildersState().Count.Should().Be(1);
     }
