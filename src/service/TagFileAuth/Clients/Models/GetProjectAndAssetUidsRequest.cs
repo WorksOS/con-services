@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
   /// <summary>
   /// TFA v4 endpoint to retrieve ProjectUid and/or DeviceUid for a tagfile
   /// </summary>
-  public class GetProjectAndAssetUidsRequest 
+  public class GetProjectAndAssetUidsRequest
   {
     /// <summary>
     /// if ProjectUid is supplied, this is a 'manual update'
@@ -55,12 +55,32 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     [JsonProperty(PropertyName = "timeOfPosition", Required = Required.Always)]
     public DateTime TimeOfPosition { get; set; }
 
-    private GetProjectAndAssetUidsRequest()
+    /// <summary>
+    /// Grid position NEE. 
+    /// </summary>
+    [JsonProperty(PropertyName = "northing", Required = Required.Default)]
+    public double? Northing { get; set; }
+
+    /// <summary>
+    /// Grid position NEE.  
+    /// </summary>    
+    [JsonProperty(PropertyName = "easting", Required = Required.Default)]
+    public double? Easting { get; set; }
+
+    [JsonIgnore]
+    public bool HasLatLong => Math.Abs(Latitude) > 0.0 && Math.Abs(Longitude) > 0.0;
+
+    [JsonIgnore]
+    public bool HasNE => Northing.HasValue && Easting.HasValue;
+
+
+    public GetProjectAndAssetUidsRequest()
     { }
 
     public GetProjectAndAssetUidsRequest
-    ( string projectUid, int deviceType, string radioSerial, string ec520Serial, 
-      double latitude, double longitude, DateTime timeOfPosition)
+    (string projectUid, int deviceType, string radioSerial, string ec520Serial,
+      double latitude, double longitude, DateTime timeOfPosition,
+      double? northing = null, double? easting = null)
     {
       ProjectUid = projectUid;
       DeviceType = deviceType;
@@ -69,6 +89,8 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       Latitude = latitude;
       Longitude = longitude;
       TimeOfPosition = timeOfPosition;
+      Northing = northing;
+      Easting = easting;
     }
 
     public void Validate()
@@ -85,13 +107,18 @@ namespace VSS.Productivity3D.TagFileAuth.Models
 
       if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(Ec520Serial))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 37));
-      
-      if (Latitude < -90 || Latitude > 90)
+
+      if (!HasLatLong && !HasNE)
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 54));
+
+      if (HasLatLong && (Latitude < -90 || Latitude > 90))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 21));
-      
-      if (Longitude < -180 || Longitude > 180)
+
+      if (HasLatLong && (Longitude < -180 || Longitude > 180))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 22));
-      
+
+      // NE can be negative and zero
+
       if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(2)))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 23));
     }
