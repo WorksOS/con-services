@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.SiteModels.Interfaces
+﻿namespace VSS.TRex.SiteModels.Interfaces.Executors
 {
   public enum RebuildSiteModelPhase : byte
   {
@@ -11,7 +11,7 @@
 
     /// <summary>
     /// Source location containing TAG files is being scanned for appropriate TAG files and other data
-    /// required to support the rebulding process
+    /// required to support the rebuilding process
     /// </summary>
     Scanning,
 

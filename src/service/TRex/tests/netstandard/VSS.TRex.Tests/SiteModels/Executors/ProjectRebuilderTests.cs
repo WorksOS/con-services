@@ -27,13 +27,13 @@ using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
-namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
+namespace VSS.TRex.Tests.SiteModels.Executors
 {
   public class SiteModelRebuilderTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>, IDisposable
   {
-    private ISiteModelRebuilder CreateBuilder(Guid projectUid, bool archiveTAGFiles, TransferProxyType transferProxyType)
+    private static ISiteModelRebuilder CreateBuilder(Guid projectUid, bool archiveTagFiles, TransferProxyType transferProxyType)
     {
-      return new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)
+      return new SiteModelRebuilder(projectUid, archiveTagFiles, transferProxyType)
       {
         MetadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
                   as IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>,
@@ -79,8 +79,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
                         new RebuildSiteModelMetaData{Phase = RebuildSiteModelPhase.Complete});
 
       // Install an active builder into the manager to cause the failure.
-      var rebuilder = new SiteModelRebuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
-      rebuilder.MetadataCache = metadataCache;
+      var rebuilder = new SiteModelRebuilder(siteModel.ID, false, TransferProxyType.TAGFiles)
+      {
+        MetadataCache = metadataCache
+      };
       rebuilder.ValidateNoActiveRebuilderForProject(siteModel.ID).Should().BeTrue();
     }
 
@@ -89,11 +91,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Executors
     {
       AddApplicationGridRouting();
 
-      // Create sitemodel, add project metadata for it, check validator hates it...
-      var sitemodel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      sitemodel.SaveMetadataToPersistentStore(sitemodel.PrimaryStorageProxy, true);
+      // Create site model, add project metadata for it, check validator hates it...
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
 
-      var rebuilder = CreateBuilder(sitemodel.ID, false, TransferProxyType.TAGFiles);
+      var rebuilder = CreateBuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
       var result = rebuilder.ExecuteAsync().WaitAndUnwrapException();
 
       result.Should().NotBeNull();
