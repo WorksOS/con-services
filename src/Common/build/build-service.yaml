@@ -17,10 +17,11 @@ steps:
       projects: "${{ parameters.servicePath }}/${{ parameters.solution }}"
       arguments: "-nowarn:NU1701"
 
-  # Not working: Reports "##[warning]Project file(s) matching the specified pattern were not found."
-  # - task: DotNetCoreCLI@2
-  #   displayName: "dotnet test"
-  #   inputs:
-  #     command: test
-  #     projects: "${{ parameters.servicePath }}/${{ parameters.testFolder }}/**/*.csproj !**/*IntegrationTests.csproj"
-  #     publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet test"
+    inputs:
+      command: test
+      projects: |
+       "${{ parameters.servicePath }}/${{ parameters.testFolder }}/**/*.csproj
+       !**/*IntegrationTests.csproj"
+      publishTestResults: false

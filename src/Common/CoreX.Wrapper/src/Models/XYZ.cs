@@ -1,9 +1,9 @@
-﻿namespace CoreX.Wrapper.Models
+﻿using CoreX.Wrapper.Types;
+
+namespace CoreX.Wrapper.Models
 {
   public struct XYZ
   {
-    private const double NULL_DOUBLE = 1E308;
-
     public double X, Y, Z;
 
     public XYZ(double x, double y, double z)
@@ -17,7 +17,7 @@
     {
       X = x;
       Y = y;
-      Z = NULL_DOUBLE;
+      Z = Consts.NULL_DOUBLE;
     }
   }
 }

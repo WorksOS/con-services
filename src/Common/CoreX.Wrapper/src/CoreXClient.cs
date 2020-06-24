@@ -29,7 +29,7 @@ namespace CoreX.Wrapper
     {
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
+      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CSharpFileListCallback.getCPtr(Utils.FileListCallBack), CSharpEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
 
       if (resultCode != (int)csmErrorCode.cecSuccess)
       {
@@ -70,7 +70,7 @@ namespace CoreX.Wrapper
 
       _csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(dcStr, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(_csmCsibBlobContainer));
+      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(dcStr, false, CSharpFileListCallback.getCPtr(Utils.FileListCallBack), CSharpEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(_csmCsibBlobContainer));
 
       if (resultCode != (int)csmErrorCode.cecSuccess)
       {
@@ -188,14 +188,15 @@ namespace CoreX.Wrapper
     /// </summary>
     private static void SetupTGL()
     {
-      const string trimbleRootDataFolder = "Data";
-      var geodataPath = Path.Combine(trimbleRootDataFolder, "GeoData");
-      const string databasePath = "TGL_CsdDatabase";
-      var xmlFilePath = Path.Combine(trimbleRootDataFolder, databasePath, "CoordSystemDatabase.xml");
+      const string ROOT_DATA_FOLDER = "Data";
+      const string DATABASE_PATH = "TGL_CsdDatabase";
+
+      var geodataPath = Path.Combine(ROOT_DATA_FOLDER, "GeoData");
+      var xmlFilePath = Path.Combine(ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
 
       if (!File.Exists(xmlFilePath))
       {
-        throw new Exception($"Failed to load TGL CSD database file '{xmlFilePath}'.");
+        throw new Exception($"Failed to find TGL CSD database file '{xmlFilePath}'.");
       }
 
       using var reader = new StreamReader(xmlFilePath);

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CoreX.Wrapper.Models;
+using CoreX.Wrapper.Types;
 
 namespace CoreX.Wrapper
 {

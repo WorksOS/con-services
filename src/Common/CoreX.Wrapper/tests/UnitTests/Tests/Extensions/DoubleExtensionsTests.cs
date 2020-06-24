@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace UnitTests.Extensions
+namespace CoreX.Wrapper.UnitTests.Tests.Extensions
 {
   public class DoubleExtensionsTests
   {

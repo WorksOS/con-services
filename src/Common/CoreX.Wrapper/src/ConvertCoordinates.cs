@@ -6,18 +6,6 @@ using CoreX.Wrapper.Types;
 
 namespace CoreX.Wrapper
 {
-  public enum InputAs
-  {
-    Radians,
-    Degrees
-  }
-
-  public enum ReturnAs
-  {
-    Radians,
-    Degrees
-  }
-
   /// <summary>
   /// Implements a set of capabilities for coordinate conversion between WGS and grid contexts, and
   /// conversion of coordinate system files into CSIB (Coordinate System Information Block) strings.
@@ -33,8 +21,6 @@ namespace CoreX.Wrapper
     {
       _coreXAgent = new CoreXClient();
     }
-
-    private readonly CoordinatesServiceClient _serviceClient;
 
     /// <inheritdoc />
     public XYZ NullWGSLLToXY(WGS84Point wgsPoint) => new XYZ(wgsPoint.Lon, wgsPoint.Lat);
@@ -270,12 +256,12 @@ namespace CoreX.Wrapper
     /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
     /// it into a coordinate system definition response object.
     /// </summary>
-    public Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent) => _serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent);
+    public Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent) => null;//_serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent);
 
     /// <summary>
     /// Takes the CSIB string and uses the Trimble Coordinates Service to convert
     /// it into a coordinate system definition response object.
     /// </summary>
-    public Task<CoordinateSystemResponse> CSIBContentToCSD(string csib) => _serviceClient.ImportCSDFromCSIBAsync(csib);
+    public Task<CoordinateSystemResponse> CSIBContentToCSD(string csib) => null;//_serviceClient.ImportCSDFromCSIBAsync(csib);
   }
 }
