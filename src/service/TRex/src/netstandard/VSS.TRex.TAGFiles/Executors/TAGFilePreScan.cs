@@ -6,8 +6,8 @@ using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Classes.States;
-using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Executors
 {

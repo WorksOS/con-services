@@ -3,10 +3,10 @@ using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Executors;
-using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
+using VSS.TRex.TAGFiles.Models;
 
 namespace TAGFiles.Tests
 {

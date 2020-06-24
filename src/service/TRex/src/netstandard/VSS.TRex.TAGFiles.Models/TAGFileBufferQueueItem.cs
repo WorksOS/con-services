@@ -10,7 +10,8 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary
   { 
-    public const byte VERSION_NUMBER = 1;
+    public const byte VERSION_NUMBER = 2;
+    private static byte[] VERSION_NUMBERS = { 1, 2 };
 
     /// <summary>
     /// The date at which the TAG file was inserted into the buffer queue. This field is indexed to permit
@@ -46,8 +47,12 @@ namespace VSS.TRex.TAGFiles.Models
     /// </summary>
     public bool IsJohnDoe;
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
+    /// <summary>
+    /// States if the TAG fie should be added to the TAG file archive during processing
+    /// </summary>
+    public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
 
+    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
 
     public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
 
@@ -61,11 +66,12 @@ namespace VSS.TRex.TAGFiles.Models
       writer.WriteGuid(ProjectID);
       writer.WriteGuid(AssetID);
       writer.WriteBoolean(IsJohnDoe);
+      writer.WriteInt((int)SubmissionFlags);
     }
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
       InsertUTC = DateTime.FromBinary(reader.ReadLong());
       FileName = reader.ReadString();
@@ -73,6 +79,15 @@ namespace VSS.TRex.TAGFiles.Models
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       AssetID = reader.ReadGuid() ?? Guid.Empty;
       IsJohnDoe = reader.ReadBoolean();
+
+      if (messageVersion >= 2)
+      {
+        SubmissionFlags = (TAGFileSubmissionFlags)reader.ReadInt();
+      }
+      else
+      {
+        SubmissionFlags = TAGFileSubmissionFlags.AddToArchive;
+      }
     }
   }
 }

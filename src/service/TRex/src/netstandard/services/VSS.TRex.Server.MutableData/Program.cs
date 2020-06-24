@@ -30,9 +30,11 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Servers.Compute;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -95,6 +97,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IDataCache>(factory => new InMemoryDataCache(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IMemoryCache>())))
         .Add(x => x.AddSingleton<IWebRequest>(factory => 
           new GracefulWebRequest(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IConfigurationStore>())))
+        .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
         .Complete();
     }
 

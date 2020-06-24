@@ -24,8 +24,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
     /// <summary>
     /// The Invoke method for the compute func - calls the TAG file processing executor to do the work
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public ProcessTAGFileResponse Invoke(ProcessTAGFileRequestArgument arg)
     {
       try
@@ -43,7 +41,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
           FileName = x.FileName,
           AssetUid = x.AssetId,
           Success = false,
-          Exception = e.Message
+          Exception = e.Message,
+          SubmissionFlags = x.SubmissionFlags
         }).ToList()};
       }
     }

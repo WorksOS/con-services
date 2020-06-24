@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Common
@@ -12,19 +13,23 @@ namespace VSS.TRex.Common
   /// <summary>
   /// Provides an interface to transferProxy for read or write.
   /// </summary>
-  public class S3FileTransfer
+  public class S3FileTransfer : IS3FileTransfer
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<S3FileTransfer>();
 
     const string S3DirectorySeparator = "/";
 
     private readonly TransferProxyType _type;
-    private readonly ITransferProxy _proxy;
+
+    /// <summary>
+    /// Represents the underlying AWS S3 transfer proxy if require 
+    /// </summary>
+    public ITransferProxy Proxy { get; }
 
     public S3FileTransfer(TransferProxyType type)
     {
       _type = type;
-      _proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(_type);
+      Proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(_type);
     }
     
     /// <summary>
@@ -37,7 +42,7 @@ namespace VSS.TRex.Common
 
       try
       {
-        fileStreamResult = await _proxy.Download(s3Path).ConfigureAwait(false);
+        fileStreamResult = await Proxy.Download(s3Path).ConfigureAwait(false);
       }
       catch (Exception e)
       {
@@ -80,7 +85,7 @@ namespace VSS.TRex.Common
       try
       {
         using var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
-        _proxy.Upload(fileStream, s3FullPath);
+        Proxy.Upload(fileStream, s3FullPath);
       }
       catch (Exception e)
       {
@@ -99,7 +104,7 @@ namespace VSS.TRex.Common
       try
       {
         using var fileStream = File.Open(localFullPath, FileMode.Open, FileAccess.Read);
-        _proxy.UploadToBucket(fileStream, s3FullPath, awsBucketName);
+        Proxy.UploadToBucket(fileStream, s3FullPath, awsBucketName);
       }
       catch (Exception e)
       {
@@ -125,7 +130,7 @@ namespace VSS.TRex.Common
     }
 
     /// <summary>
-    /// Writes a file to S3 and returns booean & out url path to S3 location
+    /// Writes a file to S3 and returns boolean & out url path to S3 location
     /// </summary>
     public bool WriteFile(string localFullPath, Guid siteModelUid, out string preSignedUrl)
     {
@@ -147,7 +152,7 @@ namespace VSS.TRex.Common
       try
       {
         var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
-        res = _proxy.RemoveFromBucket(s3FullPath);
+        res = Proxy.RemoveFromBucket(s3FullPath);
       }
       catch (Exception e)
       {
@@ -162,8 +167,24 @@ namespace VSS.TRex.Common
     /// </summary>
     public string GeneratePreSignedUrl(string path)
     {
-      return _proxy.GeneratePreSignedUrl(path);
+      return Proxy.GeneratePreSignedUrl(path);
     }
 
+    /// <summary>
+    /// Returns a (possible incomplete) collection from the bucket that match the given prefix.
+    /// The continuationToken is non-null/non-empty is there are more keys to query
+    /// </summary>
+    public Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken)
+    {
+      try
+      {
+        return Proxy.ListKeys(prefix, maxKeys, continuationToken);
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Exception listing keys fpr prefix {prefix}");
+        return Task.FromResult((new string[0], ""));
+      }
+    }
   }
 }

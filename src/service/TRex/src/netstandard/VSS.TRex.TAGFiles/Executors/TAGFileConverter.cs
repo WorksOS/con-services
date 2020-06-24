@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
@@ -17,7 +15,7 @@ using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Classes.States;
-using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Executors

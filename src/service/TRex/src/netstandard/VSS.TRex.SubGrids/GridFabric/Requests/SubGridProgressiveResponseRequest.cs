@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -31,6 +32,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// The compute projection representing the Ignite node identified by _nodeId
     /// </summary>
     private readonly ICompute _compute;
+
+    /// <summary>
+    /// Immutable grid reference only
+    /// </summary>
+    private IIgnite ignite;
+    private IIgnite Ignite => ignite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
     /// <summary>
     /// Default no-arg constructor - used by unit tests
@@ -68,11 +75,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// <param name="nodeId">The internal Ignite identifier of the node origination the request for the sub grids being returned</param>
     public SubGridProgressiveResponseRequest(Guid nodeId)
     {
-      // Immutable grid reference only
-      var ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
-
       // Determine the single node the request needs to be sent to
-      _compute = ignite
+      _compute = Ignite
         .GetCluster()
         .ForNodeIds(new List<Guid> {nodeId})
         .GetCompute()
