@@ -35,11 +35,12 @@ namespace CCSS.CWS.Client
     // NOTE: must have a uid or userId for cache key
     protected async Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
-      IHeaderDictionary customHeaders = null) where TRes : class, IMasterDataModel
+      IHeaderDictionary customHeaders = null,
+      string uniqueIdCacheKey = null) where TRes : class, IMasterDataModel
     {
       try
       {
-        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(), customHeaders, parameters);
+        var result = await GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(), customHeaders, parameters, uniqueIdCacheKey);
         return result;
       }
       catch (HttpRequestException e)
