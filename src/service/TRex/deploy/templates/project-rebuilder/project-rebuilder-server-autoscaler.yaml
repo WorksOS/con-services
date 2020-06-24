@@ -1,0 +1,35 @@
+{{- if .Values.qmeshServer.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "trex.deployname" . }}-project-rebuilder
+  labels:
+    app: {{ template "trex.deployname" . }}
+    component: {{ template "trex.deployname" . }}-project-rebuilder
+    chart: {{ template "trex.chart" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: {{ template "trex.deployname" . }}-project-rebuilder
+  minReplicas: {{ .Values.projectRebuilderServer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.projectRebuilderServer.autoscaling.maxReplicas }}
+  metrics:
+{{- if .Values.projectRebuilderServer.autoscaling.cpu.enabled }}
+{{- with .Values.projectRebuilderServer.autoscaling.cpu.target }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ . }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.projectRebuilderServer.autoscaling.memory.enabled }}
+{{- with .Values.projectRebuilderServer.autoscaling.memory.target }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}

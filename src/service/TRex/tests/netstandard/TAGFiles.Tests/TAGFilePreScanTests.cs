@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using FluentAssertions;
-using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Executors;
-using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;

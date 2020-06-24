@@ -41,6 +41,58 @@ namespace VSS.TRex.Rendering.Palettes
     }
 
     /// <summary>
+    /// Cutfill palette logic
+    /// </summary>
+    public Draw.Color ChooseCutFillColour(float value)
+    {
+      // Cutfill pallete is in descending order and typically will be 7 colours with a zero centre point value
+      // value either side of centre point is the torrence for a match in volume
+      var color = Draw.Color.Empty;
+
+      int ptr;
+      if (value < 0)
+        ptr = PaletteTransitions.Length - 1; // move up palette
+      else
+        ptr = 0; // move down palette
+
+      for (var i = PaletteTransitions.Length - 1; i >= 0; i--)
+      {
+
+        if (value == 0)
+        {
+          if (value == PaletteTransitions[ptr].Value)
+          {
+            color = PaletteTransitions[ptr].Color;
+            break;
+          }
+        }
+        else if (value > 0)
+        {
+          if (value >= PaletteTransitions[ptr].Value && PaletteTransitions[ptr].Value >= 0)
+          {
+            color = PaletteTransitions[ptr].Color;
+            break;
+          }
+        }
+        else
+        if (value <= PaletteTransitions[ptr].Value)
+        {
+          color = PaletteTransitions[ptr].Color;
+          break;
+        }
+
+        if (value < 0)
+          ptr--;
+        else
+          ptr++;
+
+      }
+
+      return color;
+    }
+
+
+    /// <summary>
     /// Logic to choose a colour from the set of transitions depending on the value. Slow but simple for the POC...
     /// </summary>
     /// <param name="value"></param>

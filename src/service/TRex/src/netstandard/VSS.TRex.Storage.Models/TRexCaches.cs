@@ -33,6 +33,10 @@ namespace VSS.TRex.Storage.Caches
 
         public const string kSegmentRetirementQueue = "SegmentRetirementQueue";
 
+        public const string kSiteModelRebuilderMetaDataCacheName = "SiteModelRebuilderMetaData";
+
+        public const string kSiteModelRebuilderFileKeyCollectionsCacheName = "SiteModelRebuilderFileKeyCollections";
+
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
@@ -41,7 +45,7 @@ namespace VSS.TRex.Storage.Caches
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
-        public static string SpatialSubGridSegmentCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridSegmentImmutable : kSpatialSubGridSegmentMutable;
+        public static string SpatialSubGridSegmentCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridSegmentMutable : kSpatialSubGridSegmentImmutable;
 
         /// <summary>
         /// Returns the name of the event grid cache to use to locate machine event and other non spatial information
@@ -51,37 +55,28 @@ namespace VSS.TRex.Storage.Caches
         /// <summary>
         /// Returns the name of the spatial grid cache to use to store immutable cell and cell pass information
         /// </summary>
-        /// <returns></returns>
         public static string ImmutableNonSpatialCacheName() => kNonSpatialImmutable;
 
         public static string SpatialCacheName(StorageMutability mutability, FileSystemStreamType streamType)
         {
-          switch (streamType)
+          return streamType switch
           {
-            case FileSystemStreamType.ProductionDataXML:
-              return SiteModelsCacheName(mutability);
-            case FileSystemStreamType.SubGridDirectory:
-              return SpatialSubGridDirectoryCacheName(mutability);
-            case FileSystemStreamType.SubGridSegment:
-              return SpatialSubGridSegmentCacheName(mutability);
-            case FileSystemStreamType.SubGridExistenceMap:
-              return ProductionDataExistenceMapCacheName(mutability);
-            default:
-              return string.Empty;
-          }
+            FileSystemStreamType.ProductionDataXML => SiteModelsCacheName(mutability),
+            FileSystemStreamType.SubGridDirectory => SpatialSubGridDirectoryCacheName(mutability),
+            FileSystemStreamType.SubGridSegment => SpatialSubGridSegmentCacheName(mutability),
+            FileSystemStreamType.SubGridExistenceMap => ProductionDataExistenceMapCacheName(mutability),
+            _ => string.Empty,
+          };
         }
 
         public static string NonSpatialCacheName(StorageMutability mutability, FileSystemStreamType streamType)
         {
-          switch (streamType)
+          return streamType switch
           {
-            case FileSystemStreamType.ProductionDataXML:
-              return SiteModelsCacheName(mutability);
-            case FileSystemStreamType.SiteModelMachineElevationChangeMap:
-              return SiteModelChangeMapsCacheName();
-            default:
-              return mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
-          }
+            FileSystemStreamType.ProductionDataXML => SiteModelsCacheName(mutability),
+            FileSystemStreamType.SiteModelMachineElevationChangeMap => SiteModelChangeMapsCacheName(),
+            _ => mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName(),
+          };
         }
 
         /// <summary>
@@ -130,7 +125,16 @@ namespace VSS.TRex.Storage.Caches
         /// <summary>
         /// Name of the cache holding queued & buffered TAG files awaiting processing
         /// </summary>
-        /// <returns></returns>
         public static string SiteModelChangeBufferQueueCacheName() => kSiteModelChangeBufferQueueName;
-  }
+
+        /// <summary>
+        /// Name of the cache holding meta data relate to site model rebulding operations
+        /// </summary>
+        public static string SiteModelRebuilderMetaDataCacheName() => kSiteModelRebuilderMetaDataCacheName;
+
+        /// <summary>
+        /// Name of the cache holding collections of tag file keys describing the set of TAG file to be processed when rebulding a project
+        /// </summary>
+        public static string SiteModelRebuilderFileKeyCollectionsCacheName() => kSiteModelRebuilderFileKeyCollectionsCacheName;
+    }
 }

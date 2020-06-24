@@ -65,7 +65,8 @@ namespace TAGFiles.Tests
         TagFileContent = TagFileContent(tagFileName),
         TAGFileName = tagFileName,
         TCCOrgID = "",
-        TreatAsJohnDoe = false
+        TreatAsJohnDoe = false,
+        SubmissionFlags = TAGFileSubmissionFlags.AddToArchive
       };
     }
 

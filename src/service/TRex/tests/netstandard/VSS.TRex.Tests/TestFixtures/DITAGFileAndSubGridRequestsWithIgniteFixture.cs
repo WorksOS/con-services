@@ -43,6 +43,16 @@ using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.SiteModels;
+using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.Storage.Caches;
+using VSS.TRex.GridFabric;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.AWS.TransferProxy;
+using VSS.TRex.SiteModels.Executors;
+using VSS.TRex.SiteModels.GridFabric.Listeners;
+using VSS.TRex.SiteModels.Interfaces.Listeners;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -79,6 +89,22 @@ namespace VSS.TRex.Tests.TestFixtures
         PipelineProcessorTaskStyle.ProgressiveVolumes => new VolumesComputationTask(),
 
         _ => null
+      };
+    }
+
+    static private IStorageProxyCacheCommit RebuildSiteModelCacheFactory(RebuildSiteModelCacheType cacheType)
+    {
+      return cacheType switch
+      {
+        RebuildSiteModelCacheType.Metadata =>
+          new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(TRexCaches.SiteModelRebuilderMetaDataCacheName()), new NonSpatialAffinityKeyEqualityComparer()),
+
+        RebuildSiteModelCacheType.KeyCollections =>
+          new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)?
+            .GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()), new NonSpatialAffinityKeyEqualityComparer()),
+
+        _ => throw new TRexException($"Unknown rebuild site model cache type: {cacheType}")
       };
     }
 
@@ -126,13 +152,22 @@ namespace VSS.TRex.Tests.TestFixtures
             _ => throw new TRexException("Unknown immutability type")
           };
         }))
+        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => RebuildSiteModelCacheFactory(cacheType)))
+        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
+        .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
+        .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
+
+        // Register the listener for site model rebuild TAG file processing notifications
+        .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener>(new RebuildSiteModelTAGNotifierListener()))
+
         .Complete();
 
       ResetDynamicMockedIgniteContent();
 
-      // Start the 'mocked' listener
+      // Start the 'mocked' listeners
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
       DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+      DIContext.Obtain<IRebuildSiteModelTAGNotifierListener>().StartListening();
     }
 
     public static void ResetDynamicMockedIgniteContent()

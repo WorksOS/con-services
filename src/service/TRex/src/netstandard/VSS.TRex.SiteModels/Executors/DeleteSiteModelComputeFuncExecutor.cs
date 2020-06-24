@@ -8,6 +8,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Requests;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -109,20 +110,19 @@ namespace VSS.TRex.SiteModels.Executors
     }
 
     /// <summary>
-    /// Executor that implements requesting and rendering grid information to create the grid rows
+    /// Executor that implements deletion of the project
     /// </summary>
-    /// <returns></returns>
     public async Task<bool> ExecuteAsync()
     {
       _log.LogInformation($"Performing Execute for DataModel:{_deleteSiteModelRequestArgument?.ProjectID}, with selectivity {_deleteSiteModelRequestArgument.Selectivity}");
 
       if (Response.Result != DeleteSiteModelResult.OK)
       {
-        _log.LogInformation($"Deleting site model {_siteModel.ID}: Initial execution response state not OK ({Response.Result}) - aborting request");
-        return false;
+        _log.LogInformation($"Deleting site model {_deleteSiteModelRequestArgument?.ProjectID}: Initial execution response state not OK ({Response.Result}) - aborting request");
+        return Response.Result == DeleteSiteModelResult.UnableToLocateSiteModel;
       }
 
-      _log.LogInformation($"Deleting site model {_siteModel.ID}: Initiating");
+      _log.LogInformation($"Deleting site model {_deleteSiteModelRequestArgument?.ProjectID}: Initiating");
 
       if (!_siteModel.IsMarkedForDeletion)
       {

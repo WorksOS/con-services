@@ -10,7 +10,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
   /// <summary>
   /// TFA v4 endpoint to retrieve ProjectUid and/or DeviceUid for a tagfile
   /// </summary>
-  public class GetProjectAndAssetUidsRequest 
+  public class GetProjectAndAssetUidsRequest
   {
     /// <summary>
     /// if ProjectUid is supplied, this is a 'manual update'
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     [JsonProperty(PropertyName = "easting", Required = Required.Default)]
     public double? Easting { get; set; }
 
-    [JsonIgnore] 
+    [JsonIgnore]
     public bool HasLatLong => Math.Abs(Latitude) > 0.0 && Math.Abs(Longitude) > 0.0;
 
     [JsonIgnore]
@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     { }
 
     public GetProjectAndAssetUidsRequest
-    ( string projectUid, int deviceType, string radioSerial, string ec520Serial, 
+    (string projectUid, int deviceType, string radioSerial, string ec520Serial,
       double latitude, double longitude, DateTime timeOfPosition,
       double? northing = null, double? easting = null)
     {

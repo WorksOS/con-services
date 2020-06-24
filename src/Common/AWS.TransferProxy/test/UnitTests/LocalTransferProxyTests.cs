@@ -57,5 +57,32 @@ namespace VSS.AWS.TransferProxy.UnitTests
       var text = Encoding.UTF8.GetString(resultMemoryStream.ToArray());
       Assert.Equal(originalFileContents, text);
     }
+
+    [Fact]
+    public async void TestListKeys()
+    {
+      const string originalFileContents = "test-data-please-ignore";
+      var s3Key1 = "/unittests/listkeys/Upload-test-s3Key" + DateTime.Now.Ticks + Guid.NewGuid();
+      var s3Key2 = "/unittests/listkeys/Upload-test-s3Key" + DateTime.Now.Ticks + Guid.NewGuid();
+      var result = TimeSpan.FromHours(1);
+
+      var mockStore = new Mock<IConfigurationStore>();
+
+      mockStore.Setup(x => x.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("vss-unittests-local");
+      mockStore.Setup(x => x.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY")).Returns(result);
+
+      var transferProxy = new LocalTransferProxy(mockStore.Object, new NullLogger<LocalTransferProxy>(), "AWS_TEMPORARY_BUCKET_NAME");
+
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(originalFileContents)))
+      {
+        transferProxy.Upload(ms, s3Key1);
+        transferProxy.Upload(ms, s3Key2);
+      }
+
+      var (resultKeys, nextContinuationToken) = await transferProxy.ListKeys("/unittests/listkeys", 1000, "");
+
+      Assert.True(resultKeys.Length == 2);
+      Assert.True(string.IsNullOrEmpty(nextContinuationToken));
+    }
   }
 }

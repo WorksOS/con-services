@@ -7,7 +7,7 @@ using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Classes.States;
-using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.Executors
     public double? SeedNorthing { get; set; }
     public double? SeedEasting { get; set; }
     public double? SeedElevation { get; set; }
-    
+
     public DateTime? SeedTimeUTC { get; set; }
 
     public int ProcessedEpochCount { get; set; }
@@ -42,7 +42,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
     public string DesignName { get; set; } = string.Empty;
 
-    public MachineControlPlatformType PlatformType {get; set;}
+    public MachineControlPlatformType PlatformType { get; set; }
 
 
     public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;

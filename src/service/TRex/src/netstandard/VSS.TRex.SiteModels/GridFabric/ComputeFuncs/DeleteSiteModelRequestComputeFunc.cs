@@ -10,8 +10,7 @@ using VSS.TRex.SiteModels.Interfaces;
 namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
 {
   /// <summary>
-  /// The grid compute function responsible for coordinating sub grids comprising a patch a server compute node in response to 
-  /// a client server instance requesting it.
+  /// The grid compute function responsible for coordinating deletion of a project from within the TRex persistent data stores
   /// </summary>
   public class DeleteSiteModelRequestComputeFunc : BaseComputeFunc, IComputeFunc<DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>
   {
@@ -26,7 +25,7 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
 
     public DeleteSiteModelRequestResponse Invoke(DeleteSiteModelRequestArgument arg)
     {
-      _log.LogInformation("In GridRequestComputeFunc.Invoke()");
+      _log.LogInformation($"In {nameof(DeleteSiteModelRequestComputeFunc)}.Invoke()");
 
       try
       {
@@ -43,7 +42,7 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
         }
         finally
         {
-          _log.LogInformation("Exiting GridRequestComputeFunc.Invoke()");
+          _log.LogInformation($"Exiting {nameof(DeleteSiteModelRequestComputeFunc)}.Invoke()");
         }
       }
       catch (Exception e)

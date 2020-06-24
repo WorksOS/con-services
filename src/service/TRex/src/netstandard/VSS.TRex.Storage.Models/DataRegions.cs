@@ -6,9 +6,12 @@
     public static class DataRegions
     {
         /// <summary>
-        /// Default size of pages in the persistent storage, 16 Kb at the current time
+        /// Default size of pages in the persistent storage, 4 Kb at the current time
+        /// Note: 4Kb is the default setting for the page size. Testing with larger page sizes (8Kb and 16Kb) has shown
+        /// potential for out of memory errors related to data regions when there are insufficient free pages to perform
+        /// check pointing operations [valid at the time Ignite 2.8.1 was the current version]
         /// </summary>
-        public const int DEFAULT_DATA_REGION_PAGE_SIZE = 16 * 1024;
+        public const int DEFAULT_DATA_REGION_PAGE_SIZE = 4 * 1024;
 
         /// <summary>
         /// Default size of pages in the persistent storage

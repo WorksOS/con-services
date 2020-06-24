@@ -12,6 +12,7 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -106,7 +107,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     FileName = x.FileName,
                                     TagFileContent = x.Content,
                                     IsJohnDoe = x.IsJohnDoe,
-                                    AssetId = x.AssetID
+                                    AssetId = x.AssetID,
+                                    SubmissionFlags = x.SubmissionFlags
                                 }).ToList();
                         }
                         catch (Exception e)
@@ -185,9 +187,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         /// <summary>
         /// Contains the business logic for managing the processing of a package of TAG files into TRex
-        /// The package of TAG files contains files for a single project [and currently a single machine]
+        /// The package of TAG files contains files for a single project
         /// </summary>
-        /// <param name="package"></param>
         private async Task ProcessTAGFileBucketFromGrouper2(IReadOnlyList<ITAGFileBufferQueueKey> package)
         {
             var projectId = package[0].ProjectUID;
@@ -223,7 +224,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         FileName = x.FileName,
                         TagFileContent = x.Content,
                         IsJohnDoe = x.IsJohnDoe,
-                        AssetId = x.AssetID
+                        AssetId = x.AssetID,
+                        SubmissionFlags = x.SubmissionFlags
                     })
                     .OrderBy(x => x.FileName, TagFileNameComparer)
                     .ToList();
@@ -251,7 +253,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     {
                         ProjectUID = projectId
                     };
-           
+
+                    // -> Perform any required notifications requested in the TAGFileSubmissionRequests
+                    var notifier = DIContext.Obtain<IRebuildSiteModelTAGNotifier>();
+                    if (response.Results.Any(x => x.SubmissionFlags.HasFlag(TAGFileSubmissionFlags.NotifyRebuilderOnProceesing)))
+                    {
+                       notifier.TAGFileProcessed(projectId, response.Results.ToArray());
+                    }
+
                     // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
                     foreach (var tagFileResponse in response.Results)
                     {

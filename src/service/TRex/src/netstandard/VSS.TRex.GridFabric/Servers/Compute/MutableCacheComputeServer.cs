@@ -62,21 +62,23 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       };
 
       // Configure the Ignite persistence layer to store our data
-      // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
       cfg.DataStorageConfiguration = new DataStorageConfiguration
       {
         WalMode = WalMode.Fsync,
         PageSize = DataRegions.DEFAULT_MUTABLE_DATA_REGION_PAGE_SIZE,
 
         StoragePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable", "Persistence"),
-        WalArchivePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable", "WalArchive"),
         WalPath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable", "WalStore"),
+        WalArchivePath = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Mutable", "WalArchive"),
+
+        WalSegmentSize = 512 * 1024 * 1024, // Set the WalSegmentSize to 512Mb to better support high write loads (can be set to max 2Gb)
+        MaxWalArchiveSize = (long)10 * 512 * 1024 * 1024, // Ensure there are 10 segments in the WAL archive at the defined segment size
 
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
           Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
-          InitialSize = 128 * 1024 * 1024,  // 128 MB
-          MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB
+          InitialSize = 128 * 1024 * 1024,  // 128 MB // TODO: This needs to be added to configuration
+          MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB // TODO: This needs to be added to configuration
 
           PersistenceEnabled = true
         },
@@ -87,8 +89,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
           new DataRegionConfiguration
           {
             Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-            InitialSize = 256 * 1024 * 1024,  // 128 MB to start
-            MaxSize = 256 * 1024 * 1024,  
+            InitialSize = 128 * 1024 * 1024,  // 128 MB to start // TODO: This needs to be added to configuration
+            MaxSize = 128 * 1024 * 1024, // TODO: This needs to be added to configuration
 
             PersistenceEnabled = true
            }
@@ -117,7 +119,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
 
       // Set an Ignite metrics heartbeat of 10 seconds
-      cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
+      cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10); // TODO: This needs to be added to configuration
 
       cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE);
 
@@ -126,7 +128,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.BinaryConfiguration = new BinaryConfiguration
       {
         Serializer = new BinarizableSerializer()
-      }; 
+      };
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out var isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
@@ -140,7 +142,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {
-        LocalPort = 48100,
+        LocalPort = 48100
       };
       return cfg;
     }
@@ -284,6 +286,32 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       });
     }
 
+    /// <summary>
+    /// Create the caches that 
+    /// </summary>
+    private void InstantiateRebuildSiteModelCacheReferences()
+    {
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelRebuilderMetaDataCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+        AffinityFunction = new MutableNonSpatialAffinityFunction(),
+        Backups = 0,
+        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
+      });
+
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+        AffinityFunction = new MutableNonSpatialAffinityFunction(),
+        Backups = 0,
+        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
+      });
+    }
+
     public void StartTRexGridCacheNode()
     {
       var cfg = new IgniteConfiguration();
@@ -313,6 +341,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       InstantiateSiteModelExistenceMapsCacheReference();
       InstantiateSiteModelsCacheReference();
+
+      InstantiateRebuildSiteModelCacheReferences();
 
       // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time
       var _ = DIContext.Obtain<ISiteModelMetadataManager>();

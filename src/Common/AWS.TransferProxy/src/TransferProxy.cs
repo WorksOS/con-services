@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
@@ -141,6 +143,31 @@ namespace VSS.AWS.TransferProxy
       {
         s3Client.DeleteObjectAsync(awsBucketName, s3Key);
         return true;
+      }
+    }
+
+    /// <summary>
+    /// Returns a list of keys from the S3 bucket, with a matching prefix and starting with a supplied marker key
+    /// </summary>
+    /// <param name="prefix">Only S3 keys with this prefix will be returned</param>
+    /// <param name="maxKeys">Maximum number of keys to return</param>
+    /// <param name="continuationToken">A token to supplh on subsequent calls to effect a scan over larger collections of object keys</param>
+    /// <returns>A tuple containing a lsit of responses and a continuation token. If there are more elements to return from the query the continuation token will be a non-null, non-empty string</returns>
+    public async Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = "")
+    {
+      using (var s3Client = GetS3Client())
+      {
+        var request = new ListObjectsV2Request()
+        {
+          BucketName = awsBucketName,
+          ContinuationToken = continuationToken,
+          Prefix = prefix,
+          MaxKeys = maxKeys
+        };
+
+        var s3Result = await s3Client.ListObjectsV2Async(request);
+
+        return (s3Result.S3Objects.Select(x => x.Key).ToArray(), s3Result.IsTruncated ? s3Result.NextContinuationToken : string.Empty);
       }
     }
   }

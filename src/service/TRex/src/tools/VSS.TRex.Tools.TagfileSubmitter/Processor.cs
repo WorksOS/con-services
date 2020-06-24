@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
+using VSS.TRex.TAGFiles.Models;
 
 /*
 Arguments for building project #5, Dimensions:
@@ -52,7 +53,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           AssetID = assetId,
           TagFileContent = bytes,
           TAGFileName = Path.GetFileName(fileName),
-          TreatAsJohnDoe = treatAsJohnDoe
+          TreatAsJohnDoe = treatAsJohnDoe,
+          SubmissionFlags = TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive
         };
       }
 
@@ -84,7 +86,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
               FileName = Path.GetFileName(fileName),
                             TagFileContent = bytes,
                             AssetId = machineId,
-                            IsJohnDoe = treatAsJohnDoe
+                            IsJohnDoe = treatAsJohnDoe,
+                            SubmissionFlags = TAGFileSubmissionFlags.AddToArchive
             }
           }
         };
@@ -112,7 +115,14 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           var bytes = new byte[fs.Length];
           fs.Read(bytes, 0, bytes.Length);
 
-          arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes, AssetId = machineId, IsJohnDoe = false });
+          arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem 
+          { 
+            FileName = Path.GetFileName(file), 
+            TagFileContent = bytes, 
+            AssetId = machineId, 
+            IsJohnDoe = false,
+            SubmissionFlags = TAGFileSubmissionFlags.AddToArchive
+          });
         }
       }
 

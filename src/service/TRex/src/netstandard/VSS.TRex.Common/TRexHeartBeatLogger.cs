@@ -15,7 +15,7 @@ namespace VSS.TRex.Common
   /// </summary>
   public class TRexHeartBeatLogger : ITRexHeartBeatLogger
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexHeartBeatLogger>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<TRexHeartBeatLogger>();
 
     private readonly List<IHeartBeatLogger> loggingContexts;
 
@@ -50,7 +50,7 @@ namespace VSS.TRex.Common
               }
               catch (Exception e)
               {
-                Log.LogError(e, $"Exception in {nameof(TRexHeartBeatLogger)}");
+                _log.LogError(e, $"Exception in {nameof(TRexHeartBeatLogger)}");
               }
             }
           }

@@ -14,7 +14,8 @@ $trexComponents = (
     "Gateway",
     "MutableGateway",
     "Webtools",
-    "Utils"
+    "Utils",
+	"ProjectRebuilder"
 )
 
 Foreach ($component in $trexComponents) {

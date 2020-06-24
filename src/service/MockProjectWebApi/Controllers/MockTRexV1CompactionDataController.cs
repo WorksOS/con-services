@@ -22,7 +22,7 @@ namespace MockProjectWebApi.Controllers
 
       if (coordinateConversionRequest.ProjectUid.HasValue && coordinateConversionRequest.ProjectUid.Value.ToString() == ConstantsUtil.DIMENSIONS_PROJECT_UID)
       {
-        var points = new[] {new TwoDConversionCoordinate(180, 15)};
+        var points = new[] { new TwoDConversionCoordinate(180, 15) };
         coordinateConversionResult = new CoordinateConversionResult(points);
       }
 
