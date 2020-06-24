@@ -46,7 +46,7 @@ namespace MockProjectWebApi.Controllers
         ProjectTRN = newProjectTrn,
         ProjectName = createProjectRequestModel.ProjectName,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        Status = ProjectStatus.ACTIVE.ToString(),
+        Status = ProjectStatus.Active,
         UserProjectRole = UserProjectRoleEnum.Admin,
         LastUpdate = DateTime.UtcNow,
         ProjectSettings = new ProjectSettingsModel()
@@ -150,7 +150,7 @@ namespace MockProjectWebApi.Controllers
             Boundary = projectDict.Value.ProjectSettings.Boundary,
             TimeZone = projectDict.Value.ProjectSettings.TimeZone,
             ProjectType = CwsProjectType.AcceptsTagFiles,
-            Status = ProjectStatus.ACTIVE.ToString()
+            Status = ProjectStatus.Active
           };
           projectSummaryListResponseModel.Projects.Add(projectSummaryResponseModel);
         }

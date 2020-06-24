@@ -58,7 +58,7 @@ namespace CCSS.CWS.Client.MockClients
         AccountTRN = customerTrn,
         ProjectTRN = projectTrn,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        Status = ProjectStatus.ACTIVE.ToString(),
+        Status = ProjectStatus.Active,
         UserProjectRole = UserProjectRoleEnum.Admin,
         LastUpdate = DateTime.UtcNow.AddDays(-1),
         ProjectSettings = new ProjectSettingsModel()
