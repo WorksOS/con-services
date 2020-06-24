@@ -10,12 +10,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   /// </summary>
   public interface IApiClient
   {
-    /// <summary>
-    /// Send an HTTP request to the requested URL
-    /// </summary>
-    /// <param name="jobRequest">Details of the job request</param>
-    /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
-    /// <returns>The result of the HTTP request as stream</returns>
-    Task<HttpContent> SendRequest(ScheduleJobRequest jobRequest, IHeaderDictionary customHeaders);
+    Task<HttpContent> SendRequestStream(ScheduleJobRequest jobRequest, IHeaderDictionary customHeaders);
+    Task<T> SendRequest<T>(ScheduleJobRequest jobRequest, IHeaderDictionary customHeaders);
   }
 }
