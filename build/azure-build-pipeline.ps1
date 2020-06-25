@@ -147,7 +147,7 @@ function Publish-Service {
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
     # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
-    Get-Content $servicePath/build/Dockerfile.runtime | docker build --tag $publishImage --no-cache --build-arg SERVICE_PATH=$servicePath - 
+    Get-Content $servicePath/build/Dockerfile.runtime | docker build --tag $publishImage --no-cache --build-arg FROM_IMAGE=$buildImage --build-arg SERVICE_PATH=$servicePath - 
 
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
