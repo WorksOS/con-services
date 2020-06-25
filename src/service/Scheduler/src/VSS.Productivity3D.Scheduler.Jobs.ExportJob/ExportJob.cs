@@ -125,10 +125,9 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
     public async Task<string> ExecuteExportProc(ScheduleJobRequest request, IHeaderDictionary customHeaders,
       PerformContext context)
     {
-      var data = await _apiClient.SendRequest(request, customHeaders);
+      var result = await _apiClient.SendRequest<CompactionExportResult>(request, customHeaders);
       try
       {
-        var result = JsonConvert.DeserializeObject<CompactionExportResult>(await data.ReadAsStringAsync());
         // Set the results so the results can access the final url easily
         if (context != null)
         {

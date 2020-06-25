@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.SendEmailJob
       {
         var detailsJson = JobStorage.Current.GetConnection().GetJobParameter(parentJob, ExportFailedState.EXPORT_DETAILS_KEY);
 
-        log.LogDebug($"GetExportJobStatus: detailsJson={detailsJson}");
+        log.LogDebug($"ExportEmailGenerator.ExecuteCallback: detailsJson={detailsJson}");
 
         if (!string.IsNullOrEmpty(detailsJson))
         {

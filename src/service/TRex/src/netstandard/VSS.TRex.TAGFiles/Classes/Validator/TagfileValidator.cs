@@ -139,7 +139,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         }
 
         // take what TFA gives us including an empty guid which is a JohnDoe
-        tagDetail.assetId = tfaResult.DeviceUid == string.Empty ? Guid.Empty : (Guid.Parse(tfaResult.DeviceUid));
+        tagDetail.assetId = string.IsNullOrEmpty(tfaResult.DeviceUid) ? Guid.Empty : (Guid.Parse(tfaResult.DeviceUid));
 
         // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense
         if (tagDetail.assetId == Guid.Empty)

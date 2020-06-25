@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using FluentAssertions;
-using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
@@ -20,10 +18,6 @@ namespace VSS.TRex.Tests.TAGFiles.GridFabric
 
     private void InjectTAGFileProcessorMock()
     {
-      DIBuilder
-        .Continue()
-        .Complete();
-
       IgniteMock.Mutable.AddApplicationGridRouting<IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>, ProcessTAGFileRequestArgument, ProcessTAGFileResponse>();
     }
 

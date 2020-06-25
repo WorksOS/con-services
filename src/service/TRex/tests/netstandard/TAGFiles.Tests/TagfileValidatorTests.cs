@@ -27,8 +27,6 @@ namespace TAGFiles.Tests
 {
   public class TagfileValidatorTests : IClassFixture<DILoggingFixture>
   {
-    private static Guid NewSiteModelGuidTfa = Guid.NewGuid();
-
     [Fact]
     public void Test_TFASpecific_DIMocking()
     {
@@ -42,7 +40,6 @@ namespace TAGFiles.Tests
       var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH");
       Assert.Equal(100, minTagFileLength);
     }
-
 
     [Fact]
     public async Task Test_InvalidTagFile_TooSmall()
@@ -123,7 +120,7 @@ namespace TAGFiles.Tests
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
       var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, "success");
+      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), null, (int)DeviceTypeEnum.MANUALDEVICE, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -182,7 +179,7 @@ namespace TAGFiles.Tests
       Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
-
+    
     [Fact]
     public async Task Test_ValidateFailed_InvalidManualProjectType()
     {
@@ -269,16 +266,18 @@ namespace TAGFiles.Tests
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Build();
 
-      ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuidTfa);
+      var newSiteModelGuidTfa = Guid.NewGuid();
+
+      ISiteModel mockedSiteModel = new SiteModel(newSiteModelGuidTfa);
       mockedSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       var moqSiteModelFactory = new Mock<ISiteModelFactory>();
       moqSiteModelFactory.Setup(mk => mk.NewSiteModel(StorageMutability.Mutable)).Returns(mockedSiteModel);
 
-      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(newSiteModelGuidTfa)).Returns(mockedSiteModel);
 
       // Mock the new site model creation API to return just a new site model
-      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(newSiteModelGuidTfa, true)).Returns(mockedSiteModel);
 
       //Moq doesn't support extension methods in IConfiguration/Root.
       var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();

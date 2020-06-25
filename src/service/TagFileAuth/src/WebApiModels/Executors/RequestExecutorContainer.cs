@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
@@ -28,6 +29,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     private IProjectInternalProxy projectProxy;
     private IDeviceInternalProxy deviceProxy;
+    private ITRexCompactionDataProxy tRexCompactionDataProxy;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -71,12 +73,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///   Builds this instance for specified executor type.
     /// </summary>
     public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
-      IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy, ITRexCompactionDataProxy tRexCompactionDataProxy,
       IHeaderDictionary requestCustomHeaders)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders };
-      dataRepository = new DataRepository(logger, authorization, projectProxy, deviceProxy, requestCustomHeaders);
+      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, projectProxy = projectProxy, deviceProxy = deviceProxy, tRexCompactionDataProxy = tRexCompactionDataProxy, requestCustomHeaders = requestCustomHeaders };
+      dataRepository = new DataRepository(logger, authorization, projectProxy, deviceProxy, tRexCompactionDataProxy, requestCustomHeaders);
       return executor;
     }
   }

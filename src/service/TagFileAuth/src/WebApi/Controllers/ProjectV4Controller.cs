@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       Logger.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, RequestCustomHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
       Logger.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
@@ -124,10 +124,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///                    36 "ProjectUid is present, but invalid"
     ///                    37 "Auto Import: Either Radio Serial or ec520 Serial must be provided"
     ///                    38 "Manual Import: Unable to find the Project requested"
-    ///         Errors: HttpStatusCode.InternalServerError (retryable?)
+    ///         Errors: HttpStatusCode.InternalServerError (retry-able?)
     ///           17  "A problem occurred accessing a service. Service: {0} Exception: {1}"
     ///            
     ///         HttpStatusCode.OK   Response Code:
+    ///            18 "Manual Import: Unable to determine lat/long from northing/easting position"
     ///            41 "Manual Import: project does not intersect the location provided"
     ///            43 "Manual Import: cannot import to an archived project"
     ///            44 "Auto Import: No projects found at the location provided"
@@ -139,7 +140,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///           100 "Unable to locate device by serialNumber in cws"
     ///           102 "Unable to locate any account for the device in cws"
     ///           103 "There is >1 active account for the device in cws"
-    ///           124 "A problem occurred at the {0} endpoint. Exception: {1}"
+    ///           124 "A problem occurred at the {0} endpoint. Exception: {1}" // this comes from ProjectSvc
     ///     
     /// </returns>
     [Route("internal/v4/project/getUids")]
@@ -151,7 +152,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       Logger.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, RequestCustomHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;

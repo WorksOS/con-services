@@ -1,4 +1,5 @@
-﻿using VSS.AWS.TransferProxy;
+﻿using System;
+using VSS.AWS.TransferProxy;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Requests;
@@ -23,6 +24,11 @@ namespace VSS.TRex.SiteModels.Interfaces
     long LastUpdateUtcTicks { get; set; }
 
     /// <summary>
+    /// Project being rebuilt
+    /// </summary>
+    public Guid ProjectUID { get; set; }
+
+    /// <summary>
     /// Defines how selective the site model delete operation should be.
     /// Selectivity allows certain portions of a site model to be deleted to help with operations
     /// like rebuilding projects on demand.
@@ -30,7 +36,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     public DeleteSiteModelSelectivity DeletionSelectivity { get; set; }
 
     /// <summary>
-    /// The result of the deletion stage of the project rebuidl
+    /// The result of the deletion stage of the project rebuild
     /// </summary>
     public DeleteSiteModelResult DeletionResult { get; set; }
 

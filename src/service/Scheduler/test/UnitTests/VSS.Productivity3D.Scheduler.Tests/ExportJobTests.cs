@@ -14,6 +14,7 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Scheduler.Jobs.ExportJob;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 using Logging = Microsoft.Extensions.Logging;
@@ -64,8 +65,8 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var context = GetMockHangfireContext(typeof(ExportJobTests), TestContext.TestName, message);
 
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest(scheduleRequest, customHeaders)).ReturnsAsync(new StreamContent(new MemoryStream()));
-
+      apiClient.Setup(a => a.SendRequest<CompactionExportResult>(scheduleRequest, customHeaders)).ReturnsAsync(new CompactionExportResult());
+      
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
 
@@ -93,7 +94,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
       var exception = new Exception(message);
       Mock<IApiClient> apiClient = new Mock<IApiClient>();
-      apiClient.Setup(a => a.SendRequest(It.IsAny<ScheduleJobRequest>(), customHeaders)).Throws(exception);
+      apiClient.Setup(a => a.SendRequest<CompactionExportResult>(It.IsAny<ScheduleJobRequest>(), customHeaders)).Throws(exception);
 
       Mock<ITransferProxy> transferProxy = new Mock<ITransferProxy>();
       transferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>())).Verifiable();
