@@ -31,6 +31,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       _configurationStore = configurationStore;
     }
 
+    /// <summary>
+    /// Send an HTTP request to the requested URL
     /// </summary>
     /// <param name="jobRequest">Details of the job request</param>
     /// <param name="customHeaders">Custom HTTP headers for the HTTP request</param>
@@ -74,7 +76,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           result = await request.ExecuteRequest<T>(jobRequest.Url, null, customHeaders, method, jobRequest.Timeout, 0);
         }
 
-        _log.LogDebug($"Result of send request: {result}");
+        _log.LogDebug($"Result of send request: {JsonConvert.SerializeObject(result)}");
       }
       catch (Exception ex)
       {
