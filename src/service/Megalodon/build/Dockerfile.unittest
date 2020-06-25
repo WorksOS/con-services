@@ -4,4 +4,4 @@ FROM ${FROM_IMAGE}
 ARG SERVICE_PATH
 WORKDIR /build
 
-RUN dotnet test $SERVICE_PATH/test/UnitTests/UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=UnitTestResults/ --logger xunit --results-directory ${SERVICE_PATH}/UnitTestResults -nowarn:NU1701
+RUN dotnet test $SERVICE_PATH/test/UnitTests/UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=../../UnitTestResults/ --logger xunit --results-directory ${SERVICE_PATH}/UnitTestResults
