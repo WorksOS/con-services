@@ -45,7 +45,6 @@ namespace CCSS.CWS.Client
         //If the project doesn't belong to the user and the user is not admin there will not be a boundary.
         //We can get the boundary (currently only 3dp projects) using metadata.
         ProjectDetailResponseModel details = null;
-        // We only need to collect Admin projects for now, no point hammering CWS for details we ignore
         if (project.Boundary == null)
         {
           details = await GetProject(new Guid(project.ProjectId), userUid, true, customHeaders);
