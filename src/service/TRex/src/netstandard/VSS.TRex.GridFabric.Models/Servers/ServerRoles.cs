@@ -75,6 +75,9 @@
     /// </summary>
     public const string QNANTIZED_MESH_NODE = "QuantizedMesh";
 
-
+    /// <summary>
+    /// A server responsible for rebulding projects in TRex. 
+    /// </summary>
+    public const string PROJECT_REBUILDER_ROLE = "ProjectRebuilder";
   }
 }

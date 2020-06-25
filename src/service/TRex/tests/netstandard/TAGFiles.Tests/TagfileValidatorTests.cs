@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
-using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -29,8 +27,6 @@ namespace TAGFiles.Tests
 {
   public class TagfileValidatorTests : IClassFixture<DILoggingFixture>
   {
-    private static Guid NewSiteModelGuidTfa = Guid.NewGuid();
-
     [Fact]
     public void Test_TFASpecific_DIMocking()
     {
@@ -44,7 +40,6 @@ namespace TAGFiles.Tests
       var minTagFileLength = config.GetValueInt("MIN_TAGFILE_LENGTH");
       Assert.Equal(100, minTagFileLength);
     }
-
 
     [Fact]
     public async Task Test_InvalidTagFile_TooSmall()
@@ -63,7 +58,7 @@ namespace TAGFiles.Tests
 
       // Validate tagfile 
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) TRexTagFileResultCode.TRexInvalidTagfile, "Failed to return correct error code");
+      Assert.True(result.Code == (int)TRexTagFileResultCode.TRexInvalidTagfile, "Failed to return correct error code");
       Assert.Equal("TRexInvalidTagfile", result.Message);
     }
 
@@ -84,7 +79,7 @@ namespace TAGFiles.Tests
 
       // Validate tagfile
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) TRexTagFileResultCode.TRexTagFileReaderError, "Failed to return correct error code");
+      Assert.True(result.Code == (int)TRexTagFileResultCode.TRexTagFileReaderError, "Failed to return correct error code");
       Assert.Equal("InvalidValueTypeID", result.Message);
     }
 
@@ -101,7 +96,7 @@ namespace TAGFiles.Tests
           FileMode.Open, FileAccess.Read))
       {
         tagContent = new byte[tagFileStream.Length];
-        tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
       TagFileDetail td = new TagFileDetail()
@@ -115,7 +110,7 @@ namespace TAGFiles.Tests
       };
 
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) TRexTagFileResultCode.Valid, "Failed to return a Valid request");
+      Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
 
@@ -124,8 +119,8 @@ namespace TAGFiles.Tests
     {
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int) DeviceTypeEnum.MANUALDEVICE, "success");
+      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
+      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), null, (int)DeviceTypeEnum.MANUALDEVICE, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -134,7 +129,7 @@ namespace TAGFiles.Tests
           FileMode.Open, FileAccess.Read))
       {
         tagContent = new byte[tagFileStream.Length];
-        tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
       TagFileDetail td = new TagFileDetail()
@@ -148,16 +143,49 @@ namespace TAGFiles.Tests
       };
 
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) TRexTagFileResultCode.Valid, "Failed to return a Valid request");
+      Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
 
+    [Fact]
+    public async Task Test_UsingNEE_ValidateOk()
+    {
+      var projectUid = Guid.NewGuid();
+      var timeOfPosition = DateTime.UtcNow;
+      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, "5850F00892", "1639J101YU", 0, 0, timeOfPosition, 5876814.5384829007, 7562822.7801738745);
+      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, "success");
+      SetupDITfa(true, moqRequest, moqResult);
+
+      byte[] tagContent;
+      using (FileStream tagFileStream =
+        new FileStream(Path.Combine("TestData", "TAGFiles", "SeedPosition-usingNEE.tag"),
+          FileMode.Open, FileAccess.Read))
+      {
+        tagContent = new byte[tagFileStream.Length];
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
+      }
+
+      TagFileDetail td = new TagFileDetail()
+      {
+        assetId = null,
+        projectId = projectUid,
+        tagFileName = "Bug ccssscon-401 NEE SeedPosition.tag",
+        tagFileContent = tagContent,
+        tccOrgId = "",
+        IsJohnDoe = false
+      };
+
+      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
+      Assert.Equal("success", result.Message);
+    }
+    
     [Fact]
     public async Task Test_ValidateFailed_InvalidManualProjectType()
     {
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, 0, 0, timeOfPosition);
+      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 0, 0, timeOfPosition);
       var moqResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, 3044, "Manual Import: cannot import to a Civil type project");
       SetupDITfa(true, moqRequest, moqResult);
 
@@ -167,7 +195,7 @@ namespace TAGFiles.Tests
           FileMode.Open, FileAccess.Read))
       {
         tagContent = new byte[tagFileStream.Length];
-        tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
       TagFileDetail td = new TagFileDetail()
@@ -196,7 +224,7 @@ namespace TAGFiles.Tests
           FileMode.Open, FileAccess.Read))
       {
         tagContent = new byte[tagFileStream.Length];
-        tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
       TagFileDetail td = new TagFileDetail()
@@ -238,16 +266,18 @@ namespace TAGFiles.Tests
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Build();
 
-      ISiteModel mockedSiteModel = new SiteModel(NewSiteModelGuidTfa);
+      var newSiteModelGuidTfa = Guid.NewGuid();
+
+      ISiteModel mockedSiteModel = new SiteModel(newSiteModelGuidTfa);
       mockedSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       var moqSiteModelFactory = new Mock<ISiteModelFactory>();
       moqSiteModelFactory.Setup(mk => mk.NewSiteModel(StorageMutability.Mutable)).Returns(mockedSiteModel);
 
-      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(newSiteModelGuidTfa)).Returns(mockedSiteModel);
 
       // Mock the new site model creation API to return just a new site model
-      moqSiteModels.Setup(mk => mk.GetSiteModel(NewSiteModelGuidTfa, true)).Returns(mockedSiteModel);
+      moqSiteModels.Setup(mk => mk.GetSiteModel(newSiteModelGuidTfa, true)).Returns(mockedSiteModel);
 
       //Moq doesn't support extension methods in IConfiguration/Root.
       var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();

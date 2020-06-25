@@ -2,13 +2,14 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Arguments
 {
   public class SubmitTAGFileRequestArgument : BaseRequestArgument
   {
-    private const byte VERSION_NUMBER = 2;
-    private static byte[] VERSION_NUMBERS = {1, 2};
+    private const byte VERSION_NUMBER = 3;
+    private static byte[] VERSION_NUMBERS = {1, 2, 3};
 
     /// <summary>
     /// Overridden ID of the project to process the TAG files into
@@ -43,6 +44,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     public string TCCOrgID { get; set; } = string.Empty;
 
     /// <summary>
+    /// States if the TAG fie should be added to the TAG file archive during processing
+    /// </summary>
+    public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
+
+    /// <summary>
     ///  Default no-arg constructor
     /// </summary>
     public SubmitTAGFileRequestArgument()
@@ -61,6 +67,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       writer.WriteString(TCCOrgID);
       writer.WriteByteArray(TagFileContent);
       writer.WriteBoolean(TreatAsJohnDoe);
+      writer.WriteInt((int)SubmissionFlags);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -78,6 +85,12 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       if (messageVersion >= 2)
       {
         TreatAsJohnDoe = reader.ReadBoolean();
+      }
+
+      SubmissionFlags = TAGFileSubmissionFlags.AddToArchive;
+      if (messageVersion >= 3)
+      {
+        SubmissionFlags = (TAGFileSubmissionFlags)reader.ReadInt();
       }
     }
   }

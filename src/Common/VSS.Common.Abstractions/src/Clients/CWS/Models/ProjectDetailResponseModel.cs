@@ -68,6 +68,12 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public CwsProjectType ProjectType { get; set; }
 
     /// <summary>
+    /// Project status: ACTIVE or ARCHIVED
+    /// </summary>
+    [JsonProperty("status")]
+    public ProjectStatus Status { get; set; }
+
+    /// <summary>
     /// Project name
     /// </summary>
     [JsonProperty("lastUpdate")]

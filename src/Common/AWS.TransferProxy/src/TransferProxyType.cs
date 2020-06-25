@@ -1,6 +1,6 @@
 ﻿namespace VSS.AWS.TransferProxy
 {
-  public enum TransferProxyType
+  public enum TransferProxyType : byte
   {
     Temporary,
     DesignImport,

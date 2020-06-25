@@ -18,7 +18,8 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var value = ValueStore[east_col, north_row];
 
-      return value == CellPassConsts.NullHeight ? Color.Empty : Palette.ChooseColour(value);
+      return value == CellPassConsts.NullHeight ? Color.Empty : Palette.ChooseCutFillColour(value);
     }
+
   }
 }

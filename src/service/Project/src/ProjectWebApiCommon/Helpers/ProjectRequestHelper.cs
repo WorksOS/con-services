@@ -95,15 +95,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var extractedCalibrationFileOk = false;
       var coordinateSystemFileName = string.Empty;
       DateTime? coordinateSystemLastActionedUtc = null;
-      if (project.ProjectSettings?.Config!= null && project.ProjectSettings.Config.Any())
-         extractedCalibrationFileOk = ExtractCalibrationFileDetails(project.ProjectSettings.Config, out coordinateSystemFileName, out coordinateSystemLastActionedUtc);
+      if (project.ProjectSettings?.Config != null && project.ProjectSettings.Config.Any())
+        extractedCalibrationFileOk = ExtractCalibrationFileDetails(project.ProjectSettings.Config, out coordinateSystemFileName, out coordinateSystemLastActionedUtc);
       if (project.ProjectSettings?.Boundary == null || project.ProjectSettings?.TimeZone == null)
         log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} contains no boundary or timezone");
       if (!extractedCalibrationFileOk)
         log.LogInformation($"{nameof(ConvertCwsToWorksOSProject)} contains no calibrationFile.");
 
       var projectDatabaseModel =
-        new ProjectDatabaseModel() 
+        new ProjectDatabaseModel()
         {
           ProjectUID = project.ProjectId,
           CustomerUID = project.AccountId,
@@ -115,7 +115,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           Boundary = project.ProjectSettings?.Boundary != null ? GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,
           CoordinateSystemFileName = coordinateSystemFileName,
           CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUtc,
-          IsArchived = false, 
+          IsArchived = project.Status == ProjectStatus.Archived,
           LastActionedUTC = project.LastUpdate ?? DateTime.UtcNow
         };
       return projectDatabaseModel;
@@ -172,7 +172,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation($"Project projectUid: {projectUid} retrieved");
       return true;
     }
-    
+
     /// <summary>
     /// Gets a Project, even if archived.
     ///    Return project even if null. This is called internally from TFA,
@@ -240,10 +240,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
 
       log.LogDebug($"{nameof(DoesProjectOverlap)}: No overlapping projects.");
-      return false; 
+      return false;
     }
 
-  
+
     #region coordSystem
 
     /// <summary>

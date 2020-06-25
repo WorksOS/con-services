@@ -16,6 +16,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Executors;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
@@ -71,7 +72,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <summary>
     /// this needs to be public, only for unit tests
     /// </summary>
-    public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessible(TagFileDetail tagDetail, TAGFilePreScan preScanState)
+    public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessable(TagFileDetail tagDetail, TAGFilePreScan preScanState)
     {
       /*
       Three different types of tagfile submission
@@ -87,7 +88,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       This is not a typical submission but is handy for testing and in a situation where a known third party source other than NG could determine the AssetId and Project. Typical NG users could not submit via this method thus avoiding our license check. 
       */
 
-      string EC520SerialID = GetEC520SerialID(preScanState.HardwareID);
+      var ec520SerialId = GetEC520SerialID(preScanState.HardwareID);
 
       // Type C. Do we have what we need already (Most likely test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
@@ -97,7 +98,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Business rule for device type conversion
       var radioType = preScanState.RadioType == "torch" ? DeviceTypeEnum.SNM940 : DeviceTypeEnum.MANUALDEVICE; // torch device set to type 6
 
-      if (preScanState.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty && EC520SerialID == string.Empty)
+      if (preScanState.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty && ec520SerialId == string.Empty)
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
         var message = "Must have either a valid TCCOrgID or RadioSerialNo or EC520SerialNo or ProjectUID";
@@ -105,29 +106,30 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
-      if (!preScanState.SeedLatitude.HasValue || !preScanState.SeedLongitude.HasValue || 
-          Math.Abs(preScanState.SeedLatitude.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE ||
-          Math.Abs(preScanState.SeedLongitude.Value - Consts.NullDouble) < Consts.TOLERANCE_DECIMAL_DEGREE
-          )
+      double seedLatitude = preScanState.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLatitude.Value)) : 0.0;
+      double seedLongitude = preScanState.SeedLongitude.HasValue ? MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLongitude.Value)) : 0.0;
+      double? seedNorthing = preScanState.SeedNorthing;
+      double? seedEasting = preScanState.SeedEasting;
+      if (Math.Abs(Math.Abs(seedLatitude)) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE && (seedNorthing == null || seedEasting == null))
       {
         // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
-        // a Consts.NulDouble means it has no SeekLocation (possibly lat/long is the GPS base station loc and need to, in future use NEE CCSSSCON-507
-        var message = $"Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude}";
+        var message = $"Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
         Log.LogWarning(message);
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
       }
-      var seedLatitude = MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0);
-      var seedLongitude = MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0);
+
+      Log.LogInformation($"#Progress# CheckFileIsProcessable. Location: Lat: {preScanState.SeedLatitude} Long: {preScanState.SeedLongitude} Northing: {preScanState.SeedNorthing} Easting: {preScanState.SeedEasting}");
 
       var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        (int)radioType, preScanState.RadioSerial, EC520SerialID, // obsolete tagDetail.tccOrgId,
+        (int)radioType, preScanState.RadioSerial, ec520SerialId, // obsolete tagDetail.tccOrgId,
         seedLatitude, seedLongitude,
-        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC);
+        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC,
+        preScanState.SeedNorthing, preScanState.SeedEasting);
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
-      Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
+      Log.LogInformation($"#Progress# CheckFileIsProcessable. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
       if (tfaResult?.Code == (int)TRexTagFileResultCode.Valid)
       {
         // if not overriding take TFA projectid
@@ -137,7 +139,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         }
 
         // take what TFA gives us including an empty guid which is a JohnDoe
-        tagDetail.assetId = tfaResult.DeviceUid == string.Empty ? Guid.Empty : (Guid.Parse(tfaResult.DeviceUid));
+        tagDetail.assetId = string.IsNullOrEmpty(tfaResult.DeviceUid) ? Guid.Empty : (Guid.Parse(tfaResult.DeviceUid));
 
         // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense
         if (tagDetail.assetId == Guid.Empty)
@@ -193,7 +195,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       // Contact TFA service to validate tag file details
-      var tfaResult = await CheckFileIsProcessible(tagDetail, tagFilePresScan).ConfigureAwait(false);
+      var tfaResult = await CheckFileIsProcessable(tagDetail, tagFilePresScan).ConfigureAwait(false);
       return new ContractExecutionResult((int)tfaResult.Code, tfaResult.Message);
     }
   }

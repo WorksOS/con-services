@@ -43,6 +43,7 @@ spec:
         # Custom Ignite pod name.
       - name: ignite-node
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.PSNode
+        imagePullPolicy: Always
         
         resources:
 {{ toYaml .Values.psnode.resources | indent 10 }}
@@ -88,6 +89,8 @@ spec:
           name: sql
         - containerPort: 8088 #JMX prometheus
           name: jmxprometheus
+        - containerPort: 11212
+          name: immutablecoms
 
         volumeMounts:
         # Mounting the persistant storage - currently this is in temp which will change when we sort config

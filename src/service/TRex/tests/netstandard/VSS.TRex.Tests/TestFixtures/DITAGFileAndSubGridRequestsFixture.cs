@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs.Interfaces;
@@ -39,12 +42,15 @@ using Consts = VSS.TRex.Common.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture
+  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
   {
     public DITAGFileAndSubGridRequestsFixture() : base()
     {
       SetupFixture();
     }
+
+    private Dictionary<TransferProxyType, IS3FileTransfer> S3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+
     public new void SetupFixture()
     {
       // Provide the surveyed surface request mock
@@ -100,8 +106,20 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         // Register the mapper between requests operating in a pipeline and the listeners responding to 
-        // partial responses of subgrids
+        // partial responses of sub grids
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
+        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>
+          (factory => proxyType =>
+        {
+          if (S3FileTransferProxies.TryGetValue(proxyType, out var proxy))
+            return proxy;
+
+          proxy = new S3FileTransfer(proxyType);
+          S3FileTransferProxies.Add(proxyType, proxy);
+          return proxy;
+        }))
 
         .Complete();
     }
@@ -121,10 +139,12 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var preTargetSiteModelId = targetSiteModel.ID;
 
       // Switch to mutable storage representation to allow creation of content in the site model
       targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+      targetSiteModel.ID.Should().Be(preTargetSiteModelId);
 
       var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
@@ -134,7 +154,7 @@ namespace VSS.TRex.Tests.TestFixtures
       foreach (var c in converters)
       {
         c.Machine.ID = targetMachine.ID;
-        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,  
+        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,
           c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
       }
 
@@ -155,6 +175,7 @@ namespace VSS.TRex.Tests.TestFixtures
       targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(targetSiteModel.ID, false);
 
       targetSiteModel.Should().NotBe(null);
+      targetSiteModel.ID.Should().Be(preTargetSiteModelId);
 
       // Modify the site model to switch from the mutable to immutable cell pass representation for read requests
       if (convertToImmutableRepresentation)

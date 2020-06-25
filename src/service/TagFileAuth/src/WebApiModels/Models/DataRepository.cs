@@ -9,12 +9,17 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
@@ -25,7 +30,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    protected ILogger _log;
+    protected readonly ILogger _log;
 
     private readonly ICwsAccountClient _cwsAccountClient;
 
@@ -37,14 +42,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceInternalProxy _deviceProxy;
 
+    // convert NE to LL using the projects CSIB via TRex
+    private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
+
     private readonly IHeaderDictionary _mergedCustomHeaders;
 
-    public DataRepository(ILogger log,  ITPaaSApplicationAuthentication authorization, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+
+    public DataRepository(ILogger log, ITPaaSApplicationAuthentication authorization, 
+      IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy, ITRexCompactionDataProxy tRexCompactionDataProxy,
       IHeaderDictionary requestCustomHeaders)
     {
       _log = log;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
+      _tRexCompactionDataProxy = tRexCompactionDataProxy;
       _mergedCustomHeaders = requestCustomHeaders;
 
       foreach (var header in authorization.CustomHeaders())
@@ -96,7 +107,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     // Need to obtain 1 polygon which this device (DeviceTRN) lat/long lies within
-    public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device, double latitude, double longitude, out int errorCode)
+    public ProjectDataResult GetIntersectingProjectsForDevice(GetProjectAndAssetUidsRequest request, DeviceData device, out int errorCode)
     {
       errorCode = 0;
       var deviceProjects = new ProjectDataResult();
@@ -119,9 +130,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         foreach (var project in deviceProjects.ProjectDescriptors)
         {
           if (project.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles)
-              && !project.IsArchived  
-              && PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, latitude, longitude))
-            intersectingProjects.ProjectDescriptors.Add(project);
+              && !project.IsArchived)
+          {
+            if (!request.HasLatLong && request.HasNE)
+            {
+              var convertedLL = this.ConvertNEtoLL(project.ProjectUID, request.Northing.Value, request.Easting.Value).Result;
+              if (convertedLL != null)
+              {
+                request.Longitude = convertedLL.ConversionCoordinates[0].X;
+                request.Latitude = convertedLL.ConversionCoordinates[0].Y;
+              }
+            }
+            if (request.HasLatLong && PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, request.Latitude, request.Longitude))
+              intersectingProjects.ProjectDescriptors.Add(project);
+          }
         }
         if (!intersectingProjects.ProjectDescriptors.Any())
           errorCode = 44;
@@ -136,7 +158,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     #endregion project
-
 
     #region device
 
@@ -159,5 +180,31 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #endregion device
 
+    #region coordSystem
+
+    public async Task<CoordinateConversionResult> ConvertNEtoLL(string projectUid, double northing, double easting)
+    {
+      var request = new CoordinateConversionRequest(new Guid(projectUid), TwoDCoordinateConversionType.NorthEastToLatLon, new[] {new TwoDConversionCoordinate(easting, northing)});
+
+      try
+      {
+        var result = await _tRexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", _mergedCustomHeaders);
+        _log.LogDebug($"{nameof(ConvertNEtoLL)}: CoordinateConversionRequest {JsonConvert.SerializeObject(request)} CoordinateConversionResult {JsonConvert.SerializeObject(result)}");
+        if (result?.ConversionCoordinates == null || result.ConversionCoordinates.Length != 1 
+                                                  || result.ConversionCoordinates[0].X < -180 || result.ConversionCoordinates[0].X > 180 
+                                                  || result.ConversionCoordinates[0].Y < -90 || result.ConversionCoordinates[0].Y > 90)
+          return null;
+
+        return result;
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "tRex", e.Message));
+      }
+    }
+
+    #endregion coordSystem
   }
 }

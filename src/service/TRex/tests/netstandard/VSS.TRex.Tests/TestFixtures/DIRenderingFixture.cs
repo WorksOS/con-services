@@ -9,7 +9,7 @@ using VSS.TRex.Rendering.Implementations.Core2;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DIRenderingFixture : DITAGFileAndSubGridRequestsWithIgniteFixture
+  public class DIRenderingFixture : DITAGFileAndSubGridRequestsWithIgniteFixture, IDisposable
   {
     public ConvolutionMaskSize smootherMaskSize = ConvolutionMaskSize.Mask3X3;
     public NullInfillMode smootherNullInfillMode = NullInfillMode.InfillNullValues;
@@ -38,6 +38,11 @@ namespace VSS.TRex.Tests.TestFixtures
       smoothingActive = config.GetValueBool("TILE_RENDERING_DATA_SMOOTHING_ACTIVE", Consts.TILE_RENDERING_DATA_SMOOTHING_ACTIVE);
       smootherMaskSize = (ConvolutionMaskSize)config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE", (int)Consts.TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE);
       smootherNullInfillMode = (NullInfillMode)config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int)Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
+    }
+
+    public new void Dispose()
+    {
+      base.Dispose();
     }
   }
 }

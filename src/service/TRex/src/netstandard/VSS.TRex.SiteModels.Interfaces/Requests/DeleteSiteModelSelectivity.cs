@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.SiteModels.GridFabric.Requests
+namespace VSS.TRex.SiteModels.Interfaces.Requests
 {
   [Flags]
   public enum DeleteSiteModelSelectivity

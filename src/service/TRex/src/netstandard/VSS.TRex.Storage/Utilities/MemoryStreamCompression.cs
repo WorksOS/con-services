@@ -21,7 +21,6 @@ namespace VSS.TRex.Storage.Utilities
                 return null;
             }
 
-            // Assume compression will at least halve the size of the data so set initial capacity to this value
             var compressStream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
 
             input.Position = 0;

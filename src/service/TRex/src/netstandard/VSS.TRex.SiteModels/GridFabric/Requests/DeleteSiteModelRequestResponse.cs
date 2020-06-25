@@ -22,24 +22,22 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt((int)Result);
+      writer.WriteByte((byte)Result);
       writer.WriteLong(NumRemovedElements);
     }
 
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Result = (DeleteSiteModelResult)reader.ReadInt();
+      Result = (DeleteSiteModelResult)reader.ReadByte();
       NumRemovedElements = reader.ReadLong();
     }
   }
