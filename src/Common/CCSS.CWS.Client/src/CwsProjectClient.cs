@@ -78,33 +78,44 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(GetProjectsForMyCustomer)}: customerUid {customerUid} userUid {userUid}");
 
+      const int PAGESIZE = 20; // This might become a query parameter, but for now make it constant
+
       var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
-      var queryParameters = WithLimits(FromRow, RowCount);
-      queryParameters.Add(new KeyValuePair<string, string>("includeSettings", "true"));
-      ProjectSummaryListResponseModel projectSummaryListResponseModel = null;
-      try
+      var projects = new List<ProjectSummaryResponseModel>();
+      ProjectSummaryListResponseModel projectSummaryListResponseModel;
+      var currentPage = 0;
+      do
       {
-        projectSummaryListResponseModel = await GetData<ProjectSummaryListResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, queryParameters, customHeaders);
-      }
-      catch (HttpRequestException e)
-      {
-        /*
-         todo what are possible exceptions?
-        // account doesn't exist
+        var queryParameters = WithLimits(currentPage * PAGESIZE, PAGESIZE);
+        queryParameters.Add(new KeyValuePair<string, string>("includeSettings", "true"));
+
+        var cacheKeyPaging = $"{currentPage}-{PAGESIZE}";
+        try
         {
-            "status": 403,
-            "code": 9054,
-            "message": "Forbidden",
-            "moreInfo": "Please provide this id to support, while contacting, TraceId 5ebda82aec2fae46fed484afed7959f2",
-            "timestamp": 1589487658105
-        }        
-        */
-        log.LogError(e, $"{nameof(GetProjectsForMyCustomer)}: failed to get list of projects. ");
-        throw;
-      }
+          projectSummaryListResponseModel = await GetData<ProjectSummaryListResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, queryParameters, customHeaders, cacheKeyPaging);
+          projects.AddRange(projectSummaryListResponseModel.Projects);
+          currentPage++;
+        }
+        catch (HttpRequestException e)
+        {
+          /*
+           todo what are possible exceptions?
+          // account doesn't exist
+          {
+              "status": 403,
+              "code": 9054,
+              "message": "Forbidden",
+              "moreInfo": "Please provide this id to support, while contacting, TraceId 5ebda82aec2fae46fed484afed7959f2",
+              "timestamp": 1589487658105
+          }        
+          */
+          log.LogError(e, $"{nameof(GetProjectsForMyCustomer)}: failed to get list of projects. ");
+          throw;
+        }
+      } while (projectSummaryListResponseModel?.HasMore ?? false);
 
       log.LogDebug($"{nameof(GetProjectsForMyCustomer)}: projectSummaryListResponseModel {JsonConvert.SerializeObject(projectSummaryListResponseModel)}");
-      return projectSummaryListResponseModel;
+      return new ProjectSummaryListResponseModel {Projects = projects, HasMore = false};
     }
 
     /// <summary>

@@ -272,7 +272,7 @@ namespace VSS.MasterData.Proxies
     ///   or
     ///   Incorrect expiration time parameter
     /// </exception>
-    protected async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey, IHeaderDictionary customHeaders, Func<Task<T>> action) where T : class, IMasterDataModel
+    protected async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey, IHeaderDictionary customHeaders, Func<Task<T>> action, string uniqueIdCacheKey = null) where T : class, IMasterDataModel
     {
       if (_dataCache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
@@ -302,6 +302,9 @@ namespace VSS.MasterData.Proxies
 
         var keyPrefix = typeof(T).Name;
         var cacheKey = string.IsNullOrEmpty(userId) ? $"{keyPrefix} {uid}" : $"{keyPrefix} {uid} {userId}";
+        // Allow for extra cache keys, eg page 1 or 2 would need a separate key 
+        if (!string.IsNullOrEmpty(uniqueIdCacheKey))
+          cacheKey = $"{cacheKey} {uniqueIdCacheKey}";
 
         T result = default;
 
