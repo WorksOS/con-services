@@ -54,13 +54,13 @@ jobs:
         inputs:
           testResultsFormat: XUnit
           testResultsFiles: "**/TestResults.xml"
-          searchFolder: "$(rootServiceFolder)/test/UnitTestResults/TestResults.xml"
+          searchFolder: "$(rootServiceFolder)/build/UnitTestResults/TestResults.xml"
 
       - task: PublishCodeCoverageResults@1
         displayName: "Publish Code Coverage"
         inputs:
           codeCoverageTool: Cobertura
-          summaryFileLocation: "$(rootServiceFolder)/test/UnitTestResults/Coverage.xml"
+          summaryFileLocation: "$(rootServiceFolder)/build/UnitTestResults/Coverage.xml"
           pathToSources: "$(rootServiceFolder)"
           failIfCoverageEmpty: true
 
