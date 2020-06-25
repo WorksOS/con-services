@@ -101,9 +101,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       {
         if (Request.Path.Value.Contains("export"))
         {
-          // Attempt to get the download link that should ve set in the job
+          // Attempt to get the download link that should have been set in the job
           key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3_KEY_STATE_KEY);
           downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DOWNLOAD_LINK_STATE_KEY);
+          log.LogInformation($"Getting export job {jobId} downloadLink={downloadLink}");
 
           if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(downloadLink))
           {

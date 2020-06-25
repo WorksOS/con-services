@@ -131,6 +131,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.ExportJob
         // Set the results so the results can access the final url easily
         if (context != null)
         {
+          _log.LogInformation($"Setting export job {context.BackgroundJob.Id} downloadLink={result.DownloadLink}");
           JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, S3_KEY_STATE_KEY, GetS3Key(context.BackgroundJob.Id, request.Filename));
           JobStorage.Current.GetConnection().SetJobParameter(context.BackgroundJob.Id, DOWNLOAD_LINK_STATE_KEY, result.DownloadLink);
         }
