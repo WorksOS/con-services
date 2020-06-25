@@ -2,6 +2,8 @@
 using System.Reflection;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -10,14 +12,13 @@ using VSS.TRex.TAGFiles.Classes.Validator;
 namespace VSS.TRex.TAGFiles.Classes
 {
   /// <summary>
-  /// Archiving will initially write tag files to a local folder before another process either internal or external will move the files to a S3 bucket on Amazon
-  /// Ideas. 
+  /// Static class for archiving processed tagfiles
   /// </summary>
-
   public static class TagFileRepository
   {
+    const string S3DirectorySeparator = "/";
 
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     private static readonly bool enableArchivingMetadata = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING_METADATA", Consts.ENABLE_TAGFILE_ARCHIVING_METADATA);
 
@@ -32,12 +33,37 @@ namespace VSS.TRex.TAGFiles.Classes
     }
 
     /// <summary>
-    /// Archives successfully processed tag files for reprocessing when required
+    /// Archives successfully processed tag files to S3
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
-    public static bool ArchiveTagfile(TagFileDetail tagDetail)
+    public static bool ArchiveTagfileS3(TagFileDetail tagDetail)
     {
+      try
+      {
+        var s3FullPath = $"{tagDetail.projectId}{S3DirectorySeparator}{tagDetail.assetId}{S3DirectorySeparator}{tagDetail.tagFileName}";
+        var proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(TransferProxyType.TAGFiles);
+        using var stream = new MemoryStream(tagDetail.tagFileContent);
+        proxy.Upload(stream, s3FullPath);
+        return true;
+      }
+
+      catch (System.Exception ex)
+      {
+        _log.LogError(ex, $"Exception occured archiving tagfilesaving {tagDetail.tagFileName}. Asset{tagDetail.assetId}, error:{ex.Message}");
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Archives successfully processed tag files to a local location
+    /// Note! S3 option perferred for WorksOS operation, however this function could be useful for a future selfcontained setup
+    /// </summary>
+    /// <param name="tagDetail"></param>
+    /// <returns></returns>
+    public static bool ArchiveTagfileLocal(TagFileDetail tagDetail)
+    {
+
       string thePath = MakePath(tagDetail);
       if (!Directory.Exists(thePath))
         Directory.CreateDirectory(thePath);
@@ -57,7 +83,7 @@ namespace VSS.TRex.TAGFiles.Classes
           file.Write(tagDetail.tagFileContent, 0, tagDetail.tagFileContent.Length);
         }
 
-        Log.LogDebug($"Tagfile archived to {ArchiveTAGFilePath}");
+        _log.LogDebug($"Tagfile archived to {ArchiveTAGFilePath}");
 
         /* This feature is not required in TRex. Plus not sure if under netcore the serializer is working probably so commented out for now
           leaving code here in case we change our minds in future
@@ -97,10 +123,11 @@ namespace VSS.TRex.TAGFiles.Classes
 
       catch (System.Exception e)
       {
-        Log.LogWarning($"Exception occured saving {fType}. error:{e.Message}");
+        _log.LogWarning($"Exception occured saving {fType}. error:{e.Message}");
         return false;
       }
     }
+
 
     public static bool MoveToUnableToProcess(TagFileDetail tagDetail)
     {
@@ -113,7 +140,7 @@ namespace VSS.TRex.TAGFiles.Classes
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
-    public static TagFileDetail GetTagFile(TagFileDetail tagDetail)
+    public static TagFileDetail GetTagFileLocal(TagFileDetail tagDetail)
     {
       // just requires the project id and tag file name to be set
       string ArchiveTAGFilePath = Path.Combine(MakePath(tagDetail), tagDetail.tagFileName);

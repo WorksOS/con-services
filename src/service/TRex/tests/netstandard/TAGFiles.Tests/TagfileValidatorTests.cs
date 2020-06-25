@@ -213,7 +213,7 @@ namespace TAGFiles.Tests
       Assert.Equal("Manual Import: cannot import to a Civil type project", result.Message);
     }
 
-    [Fact(Skip = "Requires live Ignite node")]
+    [Fact]
     public void Test_TagFileArchive()
     {
       SetupDITfa();
@@ -237,7 +237,7 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      Assert.True(TagFileRepository.ArchiveTagfile(td), "Failed to archive tagfile");
+      Assert.True(TagFileRepository.ArchiveTagfileS3(td), "Failed to archive tagfile");
     }
 
     private void SetupDITfa(bool enableTfaService = true, GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest = null, GetProjectAndAssetUidsResult getProjectAndAssetUidsResult = null)
