@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs.Interfaces;
@@ -39,12 +42,15 @@ using Consts = VSS.TRex.Common.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture
+  public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
   {
     public DITAGFileAndSubGridRequestsFixture() : base()
     {
       SetupFixture();
     }
+
+    private Dictionary<TransferProxyType, IS3FileTransfer> S3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+
     public new void SetupFixture()
     {
       // Provide the surveyed surface request mock
@@ -100,8 +106,20 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         // Register the mapper between requests operating in a pipeline and the listeners responding to 
-        // partial responses of subgrids
+        // partial responses of sub grids
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
+        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>
+          (factory => proxyType =>
+        {
+          if (S3FileTransferProxies.TryGetValue(proxyType, out var proxy))
+            return proxy;
+
+          proxy = new S3FileTransfer(proxyType);
+          S3FileTransferProxies.Add(proxyType, proxy);
+          return proxy;
+        }))
 
         .Complete();
     }

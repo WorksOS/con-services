@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
+using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Apache.Ignite.Core.Messaging;
@@ -24,8 +26,10 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 using VSS.TRex.TAGFiles.Models;
@@ -79,6 +83,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var messagingDictionary = new Dictionary<object, object>(); // topic => listener
 
       mockMessaging = new Mock<IMessaging>(MockBehavior.Strict);
+
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISerialisedByteArrayWrapper> listener, object topic) =>
@@ -102,6 +107,16 @@ namespace VSS.TRex.Tests.TestFixtures
         });
 
       mockMessaging
+        .Setup(x => x.LocalListen(It.IsAny<IMessageListener<IRebuildSiteModelTAGNotifierEvent>>(), It.IsAny<object>()))
+        .Callback((IMessageListener<IRebuildSiteModelTAGNotifierEvent> listener, object topic) =>
+        {
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
+        });
+
+      mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<IDesignChangedEvent>>(), It.IsAny<object>()))
         .Callback((IMessageListener<IDesignChangedEvent> listener, object topic) =>
         {
@@ -113,6 +128,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()));
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<IDesignChangedEvent>>(), It.IsAny<object>()));
+      mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<IRebuildSiteModelTAGNotifierEvent>>(), It.IsAny<object>()));
 
       mockMessaging
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))
@@ -126,6 +142,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           if (lstnr is SubGridListener listener)
             listener.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
+          else if (lstnr is RebuildSiteModelTAGNotifierListener listener2)
+            listener2.Invoke(Guid.Empty, message as RebuildSiteModelTAGNotifierEvent);
           else
             if (lstnr != null)
               throw new TRexException($"Type of listener ({lstnr}) not SubGridListener as expected.");
@@ -147,6 +165,8 @@ namespace VSS.TRex.Tests.TestFixtures
             listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
           else if (lstnr is DesignChangedEventListener listener3)
             listener3.Invoke(Guid.Empty, message as DesignChangedEvent);
+          else if (lstnr is RebuildSiteModelTAGNotifierListener listener4)
+            listener4.Invoke(Guid.Empty, message as RebuildSiteModelTAGNotifierEvent);
           else
             if (lstnr != null)
               throw new TRexException($"Type of listener ({lstnr}) not SubGridListener or SiteModelAttributesChangedEventListener or DesignChangedEvent as expected.");
@@ -324,6 +344,23 @@ namespace VSS.TRex.Tests.TestFixtures
         });
       });
 
+      mockCache
+          .Setup(x => x.Query(It.IsAny<ScanQuery<TK, TV>>()))
+          .Returns((ScanQuery<TK, TV> query) =>
+      {
+        // This mock treats the query as an unconstrained query and returns all elements
+        if (query == null)
+          return null;
+
+        lock (mockCacheDictionary)
+        {
+          var queryResult = new Mock<IQueryCursor<ICacheEntry<TK, TV>>>();
+          queryResult.Setup(x => x.GetAll()).Returns(() =>
+            mockCacheDictionary.Select(x => (ICacheEntry<TK, TV>)(new IgniteMockCacheEntry<TK, TV>(x.Key, x.Value))).ToList());
+          return queryResult.Object;
+        }
+      });
+      
       lock (CacheDictionary)
       {
         CacheDictionary.Add(cacheName, mockCache.Object);
@@ -331,7 +368,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       lock (MockedCacheDictionaries)
       {
-        MockedCacheDictionaries.Add(mockCacheDictionary);
+        MockedCacheDictionaries.Add(cacheName, mockCacheDictionary);
       }
 
       return mockCache.Object;
@@ -362,7 +399,7 @@ namespace VSS.TRex.Tests.TestFixtures
     /// A list of the dictionaries containing all mocked cache entries, useful for tests that want to look at
     /// the caches in terms of a collection
     /// </summary>
-    public List<IDictionary> MockedCacheDictionaries; 
+    public Dictionary<string, IDictionary> MockedCacheDictionaries;
 
     /// <summary>
     /// Removes and recreates any dynamic content contained in the Ignite mock. References to the mocked Ignite context are accessed via the TRex
@@ -372,9 +409,10 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       // Create the dictionary to contain all the mocked caches
       CacheDictionary = new Dictionary<string, object>();
-      MockedCacheDictionaries = new List<IDictionary>();
+      MockedCacheDictionaries = new Dictionary<string, IDictionary>();
 
       // Create the mocked cache for the existence maps cache and any other cache using this signature
+      // (such as the file key collections used by site model rebuilding
       AddMockedCacheToIgniteMock<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();
 
       // Create the mocked cache for the site model TAG file buffer queue cache and any other cache using this signature
@@ -394,6 +432,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the mocked cache for the summary site model meta data
       AddMockedCacheToIgniteMock<Guid, ISiteModelMetadata>();
+
+      // Create the mocked cache for the rebuild site model metadata store and any other cache using this signature
+      AddMockedCacheToIgniteMock<INonSpatialAffinityKey, IRebuildSiteModelMetaData>();
     }
 
     private void TestIBinarizableSerializationForItem(object item)

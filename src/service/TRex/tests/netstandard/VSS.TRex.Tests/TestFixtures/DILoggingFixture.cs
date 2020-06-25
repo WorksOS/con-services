@@ -92,6 +92,17 @@ namespace VSS.TRex.Tests.TestFixtures
 
           var tempPersistencePathForTests = Path.GetTempPath();
           config.Setup(c => c.GetValueString("PERSISTENT_CACHE_STORE_LOCATION", It.IsAny<string>())).Returns(tempPersistencePathForTests);
+          config.Setup(c => c.GetValueString("PERSISTENT_CACHE_STORE_LOCATION")).Returns(tempPersistencePathForTests);
+
+          config.Setup(c => c.GetValueBool("USE_LOCAL_S3_TRANSFER_PROXY_STORE", It.IsAny<bool>())).Returns(true);
+          config.Setup(c => c.GetValueBool("USE_LOCAL_S3_TRANSFER_PROXY_STORE")).Returns(true);
+
+          config.Setup(c => c.GetValueString("AWS_TAGFILE_BUCKET_NAME", It.IsAny<string>())).Returns("AWS_TAGFILE_BUCKET");
+          config.Setup(c => c.GetValueString("AWS_TAGFILE_BUCKET_NAME")).Returns("AWS_TAGFILE_BUCKET");
+
+          config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS")).Returns(1000);
+          config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", It.IsAny<int>())).Returns(1000);
+
           return config;
         }))
         .Build()

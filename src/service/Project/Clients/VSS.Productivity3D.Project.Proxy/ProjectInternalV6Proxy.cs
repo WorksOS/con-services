@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string CacheLifeKey => "PROJECT_INTERNAL_CACHE_LIFE";
 
-   public async Task<ProjectData> GetProject(string projectUid, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectData> GetProject(string projectUid, IHeaderDictionary customHeaders = null)
     {
       // ProjectSvc.ProjectController get this from localDB now.
       // response includes customerUid
@@ -53,11 +53,11 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
 
-   /// <summary>
-   /// ProjectInternalController gets a list of projects for customer and returns intersecting depending on current rules
-   /// </summary>
-   public async Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
-        double latitude, double longitude, string projectUid = null, IHeaderDictionary customHeaders = null)
+    /// <summary>
+    /// ProjectInternalController gets a list of projects for customer and returns intersecting depending on current rules
+    /// </summary>
+    public async Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
+         double latitude, double longitude, string projectUid = null, IHeaderDictionary customHeaders = null)
     {
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("customerUid", customerUid),

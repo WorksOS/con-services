@@ -26,12 +26,14 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Executors;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DITagFileFixture : DILoggingFixture
+  public class DITagFileFixture : DILoggingFixture, IDisposable
   {
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
@@ -105,6 +107,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>>>
           (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new SiteModelMachineAffinityKeyEqualityComparer())))
+
+
+        .Add(x => x.AddSingleton<ITAGFileBufferQueue, TAGFileBufferQueue>())
 
         .Build();
 

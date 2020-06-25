@@ -95,6 +95,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 43);
 
       // we need to retain ability to identify specific error codes 38, 43, 41, 53
+      if (!request.HasLatLong && request.HasNE)
+      {
+        var convertedLL = await dataRepository.ConvertNEtoLL(request.ProjectUid, request.Northing.Value, request.Easting.Value);
+        if (convertedLL == null)
+          return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 18);
+        request.Longitude = convertedLL.ConversionCoordinates[0].X;
+        request.Latitude = convertedLL.ConversionCoordinates[0].Y;
+      }
+
       var intersects = PolygonUtils.PointInPolygon(project.ProjectGeofenceWKT, request.Latitude, request.Longitude);
       log.LogDebug($"{nameof(HandleManualImport)}: la/long is with project?: {intersects}");
 
@@ -109,7 +118,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (device == null || device.Code != 0 || device.DeviceUID == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
-      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, out var errorCode);
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(request, device, out var errorCode);
+
       log.LogDebug($"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.ProjectDescriptors.Any())

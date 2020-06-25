@@ -7,6 +7,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Logging;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Requests;
 
 namespace VSS.TRex.Webtools.Controllers
 {

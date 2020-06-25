@@ -7,5 +7,5 @@ del "..\TRex\src\netstandard\services\VSS.TRex.Server.Reports\bin\Debug\netcorea
 del "..\TRex\src\netstandard\services\VSS.TRex.Server.QuantizedMesh\bin\Debug\netcoreapp3.1\logs\VSS.TRex.Server.QuantizedMesh.log"
 del "..\TRex\src\netstandard\services\VSS.TRex.Server.TileRendering\bin\Debug\netcoreapp3.1\logs\VSS.TRex.Server.TileRenderer.log"
 del "..\TRex\src\netstandard\services\VSS.TRex.Server.TINSurfaceExport\bin\Debug\netcoreapp3.1\logs\VSS.TRex.Server.ExportTinSurface.log"
-
+del "..\TRex\src\netstandard\services\VSS.TRex.Server.ProjectRebuilder\bin\Debug\netcoreapp3.1\logs\VSS.TRex.Server.ProjectRebuilder.log"
 

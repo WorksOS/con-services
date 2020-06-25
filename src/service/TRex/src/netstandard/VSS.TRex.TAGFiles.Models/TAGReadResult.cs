@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.TAGFiles.Types
+﻿namespace VSS.TRex.TAGFiles.Models
 {
     /// <summary>
     /// Denotes a set of error conditions that the ReadFile method in TagFile can return.

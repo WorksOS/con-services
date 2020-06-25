@@ -12,7 +12,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DIProfilingFixture : DITAGFileAndSubGridRequestsFixture
+  public class DIProfilingFixture : DITAGFileAndSubGridRequestsFixture, IDisposable
   {
     public DIProfilingFixture()
     {
@@ -30,6 +30,11 @@ namespace VSS.TRex.Tests.TestFixtures
             => new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, referenceDesignWrapper, cellLiftBuilder, volumeComputationType, overrides, liftParams)))
 
         .Complete();
+    }
+
+    public new void Dispose()
+    {
+      base.Dispose();
     }
   }
 }
