@@ -189,7 +189,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(DateTime.UtcNow, AutoVibrationState.Auto);
-      model.MachinesTargetValues[0].LayerOverrideEvents.PutValueAtDate(DateTime.UtcNow, new OverrideEvent<ushort>(DateTime.UtcNow, 1)); 
+      model.MachinesTargetValues[0].LayerOverrideEvents.PutValueAtDate(DateTime.UtcNow, new OverrideEvent<ushort>(DateTime.UtcNow, 1));
 
       SaveAndVerifyNotEmpty(model);
 
@@ -381,7 +381,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       (model?.ExistenceMap?.CountBits() ?? 0).Should().Be(0);
     }
 
-    [Theory(Skip="Flaky unit test,. Tobe investigated")]
+    [Theory] //(Skip="Flaky unit test,. Tobe investigated")]
     [InlineData(DeleteSiteModelSelectivity.All)]
     [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
     public void DeleteModel_WithTagFile(DeleteSiteModelSelectivity selectivity)
@@ -390,7 +390,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false);
       model.Should().NotBeNull();
 
       SaveAndVerifyNotEmpty(model);
@@ -405,7 +405,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false);
       model.Should().NotBeNull();
 
       SaveAndVerifyNotEmpty(model);
@@ -421,7 +421,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false);
       model.Should().NotBeNull();
 
       SaveAndVerifyNotEmpty(model);

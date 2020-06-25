@@ -139,10 +139,12 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var preTargetSiteModelId = targetSiteModel.ID;
 
       // Switch to mutable storage representation to allow creation of content in the site model
       targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+      targetSiteModel.ID.Should().Be(preTargetSiteModelId);
 
       var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
@@ -152,7 +154,7 @@ namespace VSS.TRex.Tests.TestFixtures
       foreach (var c in converters)
       {
         c.Machine.ID = targetMachine.ID;
-        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,  
+        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,
           c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
       }
 
@@ -173,6 +175,7 @@ namespace VSS.TRex.Tests.TestFixtures
       targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(targetSiteModel.ID, false);
 
       targetSiteModel.Should().NotBe(null);
+      targetSiteModel.ID.Should().Be(preTargetSiteModelId);
 
       // Modify the site model to switch from the mutable to immutable cell pass representation for read requests
       if (convertToImmutableRepresentation)

@@ -109,7 +109,7 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 
       // Construct a site model from a single TAG file
       var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag") };
-      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false);
 
       // Push the tag file into the S3 bucket 
 

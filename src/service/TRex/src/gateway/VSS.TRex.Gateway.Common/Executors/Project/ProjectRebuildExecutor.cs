@@ -67,9 +67,6 @@ namespace VSS.TRex.Gateway.Common.Executors.Project
     /// <summary>
     /// Processes the request asynchronously.
     /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
-    {
-      throw new NotImplementedException();
-    }
+    protected override Task<ContractExecutionResult> ProcessAsyncEx<T>(T item) => Task.Run(() => ProcessEx(item));
   }
 }
