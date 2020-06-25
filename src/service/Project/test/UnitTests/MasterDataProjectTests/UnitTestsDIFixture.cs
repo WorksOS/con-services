@@ -89,6 +89,7 @@ namespace VSS.MasterData.ProjectTests
             ProjectTRN = projectTrn,
             ProjectName = projectName,
             ProjectType = CwsProjectType.AcceptsTagFiles,
+            Status = ProjectStatus.Active,
             UserProjectRole = UserProjectRoleEnum.Admin,
             LastUpdate = lastUpdateUtc,
             ProjectSettings = new ProjectSettingsModel()
@@ -113,6 +114,7 @@ namespace VSS.MasterData.ProjectTests
         ProjectTRN = projectTrn,
         ProjectName = projectName,
         ProjectType = CwsProjectType.AcceptsTagFiles,
+        Status = ProjectStatus.Active,
         UserProjectRole = userProjectRole,
         LastUpdate = lastUpdateUtc,
         ProjectSettings = new ProjectSettingsModel()

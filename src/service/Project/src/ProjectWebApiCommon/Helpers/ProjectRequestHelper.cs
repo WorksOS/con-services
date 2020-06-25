@@ -115,7 +115,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           Boundary = project.ProjectSettings?.Boundary != null ? GeometryConversion.ProjectBoundaryToWKT(project.ProjectSettings.Boundary) : string.Empty,
           CoordinateSystemFileName = coordinateSystemFileName,
           CoordinateSystemLastActionedUTC = coordinateSystemLastActionedUtc,
-          IsArchived = false,
+          IsArchived = project.Status == ProjectStatus.Archived,
           LastActionedUTC = project.LastUpdate ?? DateTime.UtcNow
         };
       return projectDatabaseModel;
