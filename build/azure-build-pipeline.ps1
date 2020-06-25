@@ -75,7 +75,7 @@ function Run-Unit-Tests {
     }
 
     # Clean up from earlier runs
-    $localTestResultsFolder = "build/UnitTestResults"
+    $localTestResultsFolder = "UnitTestResults"
     Remove-Item -Path "$servicePath/$localTestResultsFolder" -Recurse -ErrorAction SilentlyContinue
 
     # Build and run containerized unit tests
