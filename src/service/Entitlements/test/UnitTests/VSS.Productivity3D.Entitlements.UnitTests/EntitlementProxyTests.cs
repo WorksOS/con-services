@@ -41,30 +41,33 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       }
 
       [Fact]
-      public void ShouldNotCallIfDisabled()
+      public void ShouldCallIfDisabled()
       {
-        // We don't want to enable entitlements
+        // We should still get an OK Result when entitlements are checking
+        // So we at least hit the entitlements service everytime
+        var response = new EntitlementResponseModel() {Feature = "test-feature", UserEmail = "test-email", OrganizationIdentifier = "test-org", IsEntitled = true};
+
         _mockConfiguration
           .Setup(m => m.GetValueBool(It.Is<string>(s => s == "ENABLE_ENTITLEMENTS_CHECKING"), It.IsAny<bool>()))
           .Returns(false);
 
-        _mockWebRequest = new Mock<IWebRequest>(MockBehavior.Strict); // use strict mocking, so if any web requests are made they will fail
+        _mockWebRequest.Setup(m => m.ExecuteRequest<EntitlementResponseModel>(It.IsAny<string>(),
+            It.IsAny<Stream>(),
+            It.IsAny<IHeaderDictionary>(),
+            It.Is<HttpMethod>(m => m == HttpMethod.Post),
+            It.IsAny<int?>(),
+            It.IsAny<int>(),
+            It.IsAny<bool>()))
+          .Returns(Task.FromResult(response));
+
         var proxy = new EntitlementProxy(_mockWebRequest.Object, _mockConfiguration.Object, _loggerFactory, _dataCache, _mockServiceResolution.Object);
-        var result = proxy.IsEntitled(new EntitlementRequestModel()
-        {
-          Feature = "test-feature",
-          OrganizationIdentifier = "test-org",
-          UserEmail = "test-email"
-        }).Result;
+        var result = proxy.IsEntitled(new EntitlementRequestModel() {Feature = "test-feature", OrganizationIdentifier = "test-org", UserEmail = "test-email"}).Result;
 
         result.Should().NotBeNull();
         result.IsEntitled.Should().BeTrue();
         result.UserEmail.Should().Be("test-email");
         result.Feature.Should().Be("test-feature");
         result.OrganizationIdentifier.Should().Be("test-org");
-
-        _mockConfiguration
-          .Verify(m => m.GetValueBool(It.Is<string>(s => s == "ENABLE_ENTITLEMENTS_CHECKING"), It.IsAny<bool>()), Times.Once);
       }
 
       [Fact]

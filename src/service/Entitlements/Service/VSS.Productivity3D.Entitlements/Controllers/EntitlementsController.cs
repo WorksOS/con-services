@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Productivity3D.Entitlements.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
 using VSS.Productivity3D.Entitlements.Authentication;
@@ -16,9 +17,10 @@ namespace VSS.Productivity3D.Entitlements.Controllers
 {
   public class EntitlementsController : Controller
   {
-    private const string ENTITLEMENTS_ACCEPT_EMAIL_KEY = "ENTITLEMENTS_ALLOWED_EMAILS";
     private readonly IConfigurationStore _configurationStore;
     private readonly ILogger<EntitlementsController> _logger;
+    private readonly bool _enableEntitlementCheck;
+
     private static List<string> AcceptedEmails;
 
     public EntitlementsController(IConfigurationStore configurationStore,ILogger<EntitlementsController> logger)
@@ -30,6 +32,8 @@ namespace VSS.Productivity3D.Entitlements.Controllers
         _logger.LogInformation($"Loading testing entitlement accepted emails");
         LoadTestingEmails();
       }
+
+      _enableEntitlementCheck = configurationStore.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false);
     }
 
     public EntitlementUserClaim User
@@ -79,8 +83,15 @@ namespace VSS.Productivity3D.Entitlements.Controllers
       if(string.Compare(request.Feature, "worksos", StringComparison.InvariantCultureIgnoreCase) != 0)
         return StatusCode((int) HttpStatusCode.Forbidden);
 
+
       var isEmailAccepted = AcceptedEmails.Contains(request.UserEmail.ToLower());
       _logger.LogInformation($"{request.UserEmail} {(isEmailAccepted ? "is an accepted email" : "is not in the allowed list")}");
+
+      if (!_enableEntitlementCheck)
+      {
+        _logger.LogInformation($"Entitlement checking is disabled, allowing the request.");
+        isEmailAccepted = true;
+      }
 
       var response = new EntitlementResponseModel
       {
@@ -101,7 +112,7 @@ namespace VSS.Productivity3D.Entitlements.Controllers
     /// </summary>
     private void LoadTestingEmails()
     {
-      var data = _configurationStore.GetValueString(ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty);
+      var data = _configurationStore.GetValueString(ConfigConstants.ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty);
       if (string.IsNullOrEmpty(data))
       {
         _logger.LogWarning($"No Allowed Emails for Entitlements loaded");

@@ -5,6 +5,7 @@
     Project,
     Customer,
     User,
-    File
+    File,
+    CacheUpdate
   }
 }
