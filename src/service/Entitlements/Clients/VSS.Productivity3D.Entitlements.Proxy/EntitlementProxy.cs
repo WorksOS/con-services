@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Entitlements.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
@@ -20,7 +21,6 @@ namespace VSS.Productivity3D.Entitlements.Proxy
 {
     public class EntitlementProxy : BaseServiceDiscoveryProxy, IEntitlementProxy
     {
-      private const string ENABLE_ENTITLEMENTS_CONFIG_KEY = "ENABLE_ENTITLEMENTS_CHECKING";
 
       public EntitlementProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
       {
@@ -48,20 +48,6 @@ namespace VSS.Productivity3D.Entitlements.Proxy
       {
         if(request == null)
           throw new ArgumentException("No request provided", nameof(request));
-
-        // In some cases we want to disable entitlements checking, e.g tests or staging 
-        // this key allows that at a global level to be disabled, but calling code still operates the same
-        if (!configurationStore.GetValueBool(ENABLE_ENTITLEMENTS_CONFIG_KEY, false))
-        {
-          log.LogInformation($"Entitlements checking is disabled for request {JsonConvert.SerializeObject(request)}");
-          return  new EntitlementResponseModel() 
-          {
-            IsEntitled = true, 
-            Feature = request.Feature, 
-            OrganizationIdentifier = request.OrganizationIdentifier, 
-            UserEmail = request.UserEmail
-          };
-        }
 
         try
         {
