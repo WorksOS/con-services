@@ -11,9 +11,6 @@ namespace VSS.Productivity3D.Scheduler.Abstractions
 {
   public interface ISchedulerProxy : ICacheProxy
   {
-    //[Obsolete("Use ScheduleBackgroundJob instead - generic solution")]
-    //Task<JobStatusResult> GetExportJobStatus(string jobId, HeaderDictionary customHeaders);
-
     [Obsolete("Use ScheduleBackgroundJob instead - generic solution")]
     Task<ScheduleJobResult> ScheduleExportJob(ScheduleJobRequest request, IHeaderDictionary customHeaders);
 
