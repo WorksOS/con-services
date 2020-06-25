@@ -1,8 +1,8 @@
-﻿using CoreX.Wrapper.Extensions;
+﻿using CoreX.Wrapper.Models;
 
-namespace CoreX.Wrapper.Models
+namespace CoreX.Wrapper.Extensions
 {
-  public static class CoordinateServiceRequestExtensions
+  public static class CoordinateConversionExtensions
   {
     /// <summary>
     /// Converts the multi dimensional array of doubles from the Coordinate service to an array of <see cref="NEE"/> objects.

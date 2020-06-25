@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using CoreX.Wrapper.Models;
+﻿using CoreX.Wrapper.Models;
 using CoreX.Wrapper.Types;
 
 namespace CoreX.Wrapper
@@ -75,17 +74,5 @@ namespace CoreX.Wrapper
     /// Takes the content of a DC file and returns a CSIB string.
     /// </summary>
     string GetCSIBFromDCFileContent(string fileContent);
-
-    /// <summary>
-    /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
-    /// it into a coordinate system definition response object.
-    /// </summary>
-    Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent);
-
-    /// <summary>
-    /// Takes the CSIB string and uses the Trimble Coordinates Service to convert
-    /// it into a coordinate system definition response object.
-    /// </summary>
-    Task<CoordinateSystemResponse> CSIBContentToCSD(string csib);
   }
 }

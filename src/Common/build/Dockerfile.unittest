@@ -4,4 +4,5 @@ FROM ${FROM_IMAGE}
 ARG SERVICE_PATH
 WORKDIR /build
 
+RUN cat ./$SERVICE_PATH/build/environment-vars.build >> /etc/environment
 RUN dotnet test $SERVICE_PATH/Common.sln --results-directory ${SERVICE_PATH}/UnitTestResults -nowarn:NU1701

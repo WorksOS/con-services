@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using CoreX.Wrapper.Extensions;
 using CoreX.Wrapper.Models;
 using CoreX.Wrapper.Types;
@@ -15,11 +14,11 @@ namespace CoreX.Wrapper
   /// </remarks>
   public class ConvertCoordinates : IConvertCoordinates
   {
-    private readonly CoreXClient _coreXAgent;
+    private readonly CoreX _coreX;
 
-    public ConvertCoordinates()
+    public ConvertCoordinates(CoreX coreX)
     {
-      _coreXAgent = new CoreXClient();
+      _coreX = coreX;
     }
 
     /// <inheritdoc />
@@ -37,7 +36,7 @@ namespace CoreX.Wrapper
         coordinates.Longitude = coordinates.Longitude.DegreesToRadians();
       }
 
-      return _coreXAgent
+      return _coreX
         .SetCsibFromBase64String(csib)
         .TransformLLHToNEE(coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
     }
@@ -55,7 +54,7 @@ namespace CoreX.Wrapper
         }
       }
 
-      return _coreXAgent
+      return _coreX
         .SetCsibFromBase64String(csib)
         .TransformLLHToNEE(coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
     }
@@ -69,7 +68,7 @@ namespace CoreX.Wrapper
         coordinates.Y = coordinates.Y.DegreesToRadians();
       }
 
-      var neeCoords = _coreXAgent
+      var neeCoords = _coreX
         .SetCsibFromBase64String(csib)
         .TransformLLHToNEE(coordinates.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
@@ -96,7 +95,7 @@ namespace CoreX.Wrapper
         }
       }
 
-      var neeCoords = _coreXAgent
+      var neeCoords = _coreX
         .SetCsibFromBase64String(csib)
         .TransformLLHToNEE(coordinates.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
@@ -120,7 +119,7 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ NEEToLLH(string csib, XYZ coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
-      var llhCoords = _coreXAgent
+      var llhCoords = _coreX
         .SetCsibFromBase64String(csib)
         .TransformNEEToLLH(coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -137,7 +136,7 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ[] NEEToLLH(string csib, XYZ[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
-      var llhCoords = _coreXAgent
+      var llhCoords = _coreX
         .SetCsibFromBase64String(csib)
         .TransformNEEToLLH(coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -162,7 +161,7 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public LLH NEEToLLH(string csib, NEE coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
-      var llhCoords = _coreXAgent
+      var llhCoords = _coreX
         .SetCsibFromBase64String(csib)
         .TransformNEEToLLH(coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -179,7 +178,7 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public LLH[] NEEToLLH(string csib, NEE[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
-      var llhCoords = _coreXAgent
+      var llhCoords = _coreX
                       .SetCsibFromBase64String(csib)
                       .TransformNEEToLLH(coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -204,7 +203,7 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point)
     {
-      var nee = _coreXAgent
+      var nee = _coreX
         .SetCsibFromBase64String(id)
         .TransformLLHToNEE(new LLH
         {
@@ -225,7 +224,7 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points)
     {
-      var neeCoords = _coreXAgent
+      var neeCoords = _coreX
                 .SetCsibFromBase64String(id)
                 .TransformLLHToNEE(wgs84Points.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
@@ -246,22 +245,10 @@ namespace CoreX.Wrapper
       return responseArray;
     }
 
-    /// <inheritdoc cref="CoreXClient.GetCSIBFromDCFile"/>
-    public string DCFileToCSIB(string filePath) => _coreXAgent.GetCSIBFromDCFile(filePath);
+    /// <inheritdoc cref="CoreX.GetCSIBFromDCFile"/>
+    public string DCFileToCSIB(string filePath) => _coreX.GetCSIBFromDCFile(filePath);
 
     /// <inheritdoc/>
-    public string GetCSIBFromDCFileContent(string fileContent) => _coreXAgent.GetCSIBFromDCFileContent(fileContent);
-
-    /// <summary>
-    /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
-    /// it into a coordinate system definition response object.
-    /// </summary>
-    public Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent) => null;//_serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent);
-
-    /// <summary>
-    /// Takes the CSIB string and uses the Trimble Coordinates Service to convert
-    /// it into a coordinate system definition response object.
-    /// </summary>
-    public Task<CoordinateSystemResponse> CSIBContentToCSD(string csib) => null;//_serviceClient.ImportCSDFromCSIBAsync(csib);
+    public string GetCSIBFromDCFileContent(string fileContent) => _coreX.GetCSIBFromDCFileContent(fileContent);
   }
 }

@@ -8,7 +8,7 @@ using Trimble.GeodeticXWrapper;
 
 namespace CoreX.Wrapper
 {
-  public class CoreXClient : IDisposable
+  public class CoreX : IDisposable
   {
     public string CSIB;
 
@@ -17,9 +17,38 @@ namespace CoreX.Wrapper
     private PointerPointer_IGeodeticXTransformer _transformer;
     private PointerPointer_IGeodeticXTransformer Transformer => GetGeodeticXTransformer();
 
-    public CoreXClient()
+    static CoreX()
     {
       SetupTGL();
+    }
+
+    /// <summary>
+    /// Setup the underlying CoreXDotNet singleton management classes.
+    /// </summary>
+    private static void SetupTGL()
+    {
+      const string ROOT_DATA_FOLDER = "Data";
+      const string DATABASE_PATH = "TGL_CsdDatabase";
+
+      var geodataPath = Path.Combine(ROOT_DATA_FOLDER, "GeoData");
+      var xmlFilePath = Path.Combine(ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
+
+      if (!File.Exists(xmlFilePath))
+      {
+        throw new Exception($"Failed to find TGL CSD database file '{xmlFilePath}'.");
+      }
+
+      using var reader = new StreamReader(xmlFilePath);
+      var xmlData = reader.ReadToEnd();
+      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmLoadCoordinateSystemDatabase(xmlData);
+
+      if (resultCode != (int)csmErrorCode.cecSuccess)
+      {
+        throw new Exception($"Error '{resultCode}' attempting to load coordinate system database '{xmlFilePath}'");
+      }
+
+      CsdManagementPINVOKE.csmSetGeodataPath(geodataPath);
+      GeodeticX.geoSetGeodataPath(geodataPath);
     }
 
     /// <summary>
@@ -29,7 +58,8 @@ namespace CoreX.Wrapper
     {
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CSharpFileListCallback.getCPtr(Utils.FileListCallBack), CSharpEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
+      // Slow, 2.5 seconds, need to speed up.
+      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
 
       if (resultCode != (int)csmErrorCode.cecSuccess)
       {
@@ -38,7 +68,7 @@ namespace CoreX.Wrapper
 
       var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);
 
-      return Convert.ToBase64String(Array.ConvertAll(bytes, sb => unchecked((byte)sb)));
+      return Convert.ToBase64String(Array.ConvertAll<sbyte, byte>(bytes, sb => unchecked((byte)sb)));
     }
 
     /// <summary>
@@ -60,7 +90,7 @@ namespace CoreX.Wrapper
     /// Sets the CoreX CSIB for a given DC file.
     /// </summary>
     /// <param name="filePath">Fully qualified path to the source .DC file.</param>
-    public CoreXClient SetCSIBFromDCFile(string filePath)
+    public CoreX SetCSIBFromDCFile(string filePath)
     {
       string dcStr;
       using (var streamReader = new StreamReader(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8))
@@ -70,7 +100,8 @@ namespace CoreX.Wrapper
 
       _csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(dcStr, false, CSharpFileListCallback.getCPtr(Utils.FileListCallBack), CSharpEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(_csmCsibBlobContainer));
+      // Slow, 2.5 seconds, need to speed up.
+      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(dcStr, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(_csmCsibBlobContainer));
 
       if (resultCode != (int)csmErrorCode.cecSuccess)
       {
@@ -78,7 +109,8 @@ namespace CoreX.Wrapper
       }
 
       var bytes = Utils.IntPtrToSByte(_csmCsibBlobContainer.pCSIBData, (int)_csmCsibBlobContainer.CSIBDataLength);
-      CSIB = Convert.ToBase64String(Array.ConvertAll(bytes, sb => unchecked((byte)sb)));
+
+      CSIB = Convert.ToBase64String(Array.ConvertAll<sbyte, byte>(bytes, sb => unchecked((byte)sb)));
 
       _geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
 
@@ -90,7 +122,7 @@ namespace CoreX.Wrapper
       return this;
     }
 
-    public CoreXClient SetCsibFromBase64String(string csibStr)
+    public CoreX SetCsibFromBase64String(string csibStr)
     {
       var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
       _geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
@@ -181,35 +213,6 @@ namespace CoreX.Wrapper
       }
 
       return neeCoordinates;
-    }
-
-    /// <summary>
-    /// Setup the underlying CoreXDotNet singleton management classes.
-    /// </summary>
-    private static void SetupTGL()
-    {
-      const string ROOT_DATA_FOLDER = "Data";
-      const string DATABASE_PATH = "TGL_CsdDatabase";
-
-      var geodataPath = Path.Combine(ROOT_DATA_FOLDER, "GeoData");
-      var xmlFilePath = Path.Combine(ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
-
-      if (!File.Exists(xmlFilePath))
-      {
-        throw new Exception($"Failed to find TGL CSD database file '{xmlFilePath}'.");
-      }
-
-      using var reader = new StreamReader(xmlFilePath);
-      var xmlData = reader.ReadToEnd();
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmLoadCoordinateSystemDatabase(xmlData);
-
-      if (resultCode != (int)csmErrorCode.cecSuccess)
-      {
-        throw new Exception($"Error '{resultCode}' attempting to load coordinate system database '{xmlFilePath}'");
-      }
-
-      CsdManagementPINVOKE.csmSetGeodataPath(geodataPath);
-      GeodeticX.geoSetGeodataPath(geodataPath);
     }
 
     /// <summary>

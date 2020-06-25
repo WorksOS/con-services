@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Wrapper.UnitTests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Models", "..\..\service\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj", "{0FF78B30-A245-4857-BE3E-B79235523ACD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{3298F7A5-AFCD-46DF-A6AD-4744EB3C4696}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{0FF78B30-A245-4857-BE3E-B79235523ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FF78B30-A245-4857-BE3E-B79235523ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FF78B30-A245-4857-BE3E-B79235523ACD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3298F7A5-AFCD-46DF-A6AD-4744EB3C4696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3298F7A5-AFCD-46DF-A6AD-4744EB3C4696}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3298F7A5-AFCD-46DF-A6AD-4744EB3C4696}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3298F7A5-AFCD-46DF-A6AD-4744EB3C4696}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,7 +41,6 @@ Global
 		{145A7DAA-3738-4306-8F13-F654EA9281FE} = {DDD86DDF-81D6-4C7D-B79A-FE48A863E018}
 		{F0C9A15D-07BA-4CD5-85F0-180B6C928DDF} = {C7A8B540-743C-4D37-A889-C31A6AFAB7F2}
 		{0FF78B30-A245-4857-BE3E-B79235523ACD} = {145A7DAA-3738-4306-8F13-F654EA9281FE}
-		{3298F7A5-AFCD-46DF-A6AD-4744EB3C4696} = {145A7DAA-3738-4306-8F13-F654EA9281FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0A762D1A-2563-486D-A03F-BC1E5074EC46}

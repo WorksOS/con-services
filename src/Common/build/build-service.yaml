@@ -21,7 +21,8 @@ steps:
     displayName: "dotnet test"
     inputs:
       command: test
+      # 'Different pattern' delimeter is a new line.
       projects: |
-       "${{ parameters.servicePath }}/${{ parameters.testFolder }}/**/*.csproj
-       !**/*IntegrationTests.csproj"
+       "${{ parameters.servicePath }}/${{ parameters.testFolder }}/**/*.csproj"
+       "!**/*IntegrationTests.csproj"
       publishTestResults: false

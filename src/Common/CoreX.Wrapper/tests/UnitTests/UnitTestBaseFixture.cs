@@ -1,23 +1,21 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using VSS.Serilog.Extensions;
 
 namespace CoreX.Wrapper.UnitTests
 {
   public class UnitTestBaseFixture : IDisposable
   {
-    public IServiceProvider serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
+
+    public IConvertCoordinates ConvertCoordinates => _serviceProvider.GetRequiredService<IConvertCoordinates>();
+    public CoreX CoreX => _serviceProvider.GetRequiredService<CoreX>();
 
     public UnitTestBaseFixture()
     {
-      serviceProvider = new ServiceCollection()
-                        .AddLogging()
-                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("CoreX.Wrapper.UnitTests.log")))
-                        .AddSingleton<ICoordinateServiceUtility, CoordinateServiceUtility>()
-                        .AddSingleton<IConvertCoordinates, ConvertCoordinates>()
-                        .BuildServiceProvider();
+      _serviceProvider = new ServiceCollection()
+        .AddSingleton<CoreX>()
+        .AddSingleton<IConvertCoordinates, ConvertCoordinates>()
+        .BuildServiceProvider();
     }
 
     public void Dispose()
