@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -82,7 +84,14 @@ namespace VSS.TRex.TAGFiles.Executors
             if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive))
             {
               _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
-              TagFileRepository.ArchiveTagfileS3(td);
+              if (!TagFileRepository.ArchiveTagfileS3(td))
+              {
+                _log.LogError($"SubmitTAGFileResponse. Failed to archive tag file. Returning TRexQueueSubmissionError error. ProjectUID:{td.projectId}, AssetUID:{td.assetId}, Tagfile:{tagFileName}");
+                response.Success = false;
+                response.Message = "SubmitTAGFileResponse. Failed to archive tag file {tagFileName} to S3";
+                response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
+                return response;
+              };
             }
 
             // switch from nullable to not nullable
