@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
@@ -216,10 +218,9 @@ namespace TAGFiles.Tests
       Assert.Equal("Manual Import: cannot import to a Civil type project", result.Message);
     }
 
-    [Fact(Skip = "Requires live Ignite node")]
+    [Fact]
     public void Test_TagFileArchive()
     {
-      SetupDITfa();
 
       byte[] tagContent;
       using (FileStream tagFileStream =
@@ -240,12 +241,24 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      Assert.True(TagFileRepository.ArchiveTagfile(td), "Failed to archive tagfile");
+      Assert.True(TagFileRepository.ArchiveTagfileS3(td), "Failed to archive tagfile");
+    }
+
+
+    private void SetupMockTransferProxy()
+    {
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
+
+      var mockTransferProxyFactory = new Mock<ITransferProxyFactory>();
+      mockTransferProxyFactory.Setup(x => x.NewProxy(It.IsAny<TransferProxyType>())).Returns(mockTransferProxy.Object);
+
     }
 
     private void SetupDITfa(bool enableTfaService = true, GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest = null, GetProjectAndAssetUidsResult getProjectAndAssetUidsResult = null)
     {
       // this setup includes the DITagFileFixture. Done here to try to avoid random test failures.
+
 
       var moqStorageProxy = new Mock<IStorageProxy>();
 

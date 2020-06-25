@@ -82,7 +82,7 @@ namespace VSS.TRex.TAGFiles.Executors
             if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive))
             {
               _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
-              TagFileRepository.ArchiveTagfile(td);
+              TagFileRepository.ArchiveTagfileS3(td);
             }
 
             // switch from nullable to not nullable

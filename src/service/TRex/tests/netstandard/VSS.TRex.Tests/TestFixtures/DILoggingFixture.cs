@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.DI;
@@ -20,6 +25,9 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DILoggingFixture : IDisposable
   {
+
+    private Dictionary<TransferProxyType, IS3FileTransfer> S3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+
     public void SetupFixture()
     {
       DIBuilder
@@ -111,6 +119,19 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ISubGridCellSegmentPassesDataWrapperFactory>(new SubGridCellSegmentPassesDataWrapperFactory()))
         .Add(x => x.AddSingleton<ISubGridCellLatestPassesDataWrapperFactory>(new SubGridCellLatestPassesDataWrapperFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
+
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
+        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>
+          (factory => proxyType =>
+          {
+            if (S3FileTransferProxies.TryGetValue(proxyType, out var proxy))
+              return proxy;
+
+            proxy = new S3FileTransfer(proxyType);
+            S3FileTransferProxies.Add(proxyType, proxy);
+            return proxy;
+          }))
+
         .Complete();
     }
 
