@@ -60,6 +60,7 @@ namespace VSS.Productivity3D.Entitlements
                     options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
                 });
             });
+            services.AddHostedService<InvalidateEntitlementsService>();
         }
 
         /// <inheritdoc />
