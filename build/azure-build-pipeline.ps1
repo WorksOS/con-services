@@ -197,8 +197,8 @@ function Push-Container-Image {
 function Login-Aws {
     Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
 
-    #aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
-    #if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
+    aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
+    if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 }
 
 function Update-Nuget-Sources {
