@@ -88,7 +88,7 @@ namespace VSS.TRex.TAGFiles.Executors
               {
                 _log.LogError($"SubmitTAGFileResponse. Failed to archive tag file. Returning TRexQueueSubmissionError error. ProjectUID:{td.projectId}, AssetUID:{td.assetId}, Tagfile:{tagFileName}");
                 response.Success = false;
-                response.Message = "SubmitTAGFileResponse. Failed to archive tag file {tagFileName} to S3";
+                response.Message = $"SubmitTAGFileResponse. Failed to archive tag file {tagFileName} to S3";
                 response.Code = (int)TRexTagFileResultCode.TRexQueueSubmissionError;
                 return response;
               };
