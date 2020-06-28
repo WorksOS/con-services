@@ -30,7 +30,7 @@ This structure is tended to provide the following capabilities:
 
 1.	Spatial index through which any designated on-the-ground grid cell may be
     located in no more than 6 steps (ie: O(6)). On-the-ground cells are thought
-    of as entities that live in a virtual integerised space where the extents
+    of as entities that live in a virtual integer coordinate space where the extents
     of the cell is represented by an integer quantity (either [X, Y] grid location
     or bit interleaved liner index etc). Index is capable of uniquely identifying,
     indexing, locating and storing approximately 1 sextillion cells in the grid
@@ -87,16 +87,16 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// Internal numeric identifier for the sub grid tree. All internal operations will refer to the sub grid
-        /// tree using this identifier. 
+        /// tree using this identifier.
         /// </summary>
         public Guid ID { get; set; }
 
         protected byte numLevels;
         /// <summary>
-        /// The number of levels defined in this sub grid tree. 
+        /// The number of levels defined in this sub grid tree.
         /// A 6 level tree typically defines leaf cells as relating to on-the-ground cell in the real world
         /// coordinate system (eg: cells tracking passes made by construction machines)
-        /// A 5 level tree typically defines leaf cells that represent some aspect of the sub grids in the 
+        /// A 5 level tree typically defines leaf cells that represent some aspect of the sub grids in the
         /// 6th layer of the tree containing on-the-ground leaf cells (eg: sub grid existence map)
         /// This property is assignable only at the time the sub grid tree is constructed.
         /// </summary>
@@ -132,14 +132,14 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The sub grid factory to create sub grids for the sub grid tree
         /// </summary>
-        private readonly ISubGridFactory SubGridFactory;
+        private readonly ISubGridFactory _subGridFactory;
 
         /// <summary>
         /// CreateNewSubGrid creates a new sub grid relevant to the requested level
         /// in the tree. This new sub grid is not added into the tree structure -
         /// it is unattached until explicitly inserted.
         /// </summary>
-        public virtual ISubGrid CreateNewSubGrid(byte level) => SubGridFactory.GetSubGrid(this, level);
+        public virtual ISubGrid CreateNewSubGrid(byte level) => _subGridFactory.GetSubGrid(this, level);
 
         protected int indexOriginOffset;
 
@@ -176,7 +176,7 @@ namespace VSS.TRex.SubGridTrees
             SetCellSize(cellSize);
             indexOriginOffset = 1 << (NumBitsInKeys - 1);
 
-            SubGridFactory = subGridFactory ?? throw new ArgumentException("A sub grid factory must be specified", nameof(subGridFactory));
+            _subGridFactory = subGridFactory ?? throw new ArgumentException("A sub grid factory must be specified", nameof(subGridFactory));
 
             // Construct the root node for the tree
             InitialiseRoot();
@@ -203,22 +203,16 @@ namespace VSS.TRex.SubGridTrees
         /// the X/Y index of the cell that the position lies in. If the position is
         /// outside of the extent covered by the grid the function returns false. 
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="CellSize"></param>
-        /// <param name="IndexOriginOffset"></param>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        public static void CalculateIndexOfCellContainingPosition(double X, double Y,
-                                                                  double CellSize,
-                                                                  int IndexOriginOffset,
-                                                                  out int CellX, out int CellY)
+        public static void CalculateIndexOfCellContainingPosition(double x, double y,
+                                                                  double cellSize,
+                                                                  int indexOriginOffset,
+                                                                  out int cellX, out int cellY)
         {
           // Calculate the cell index in a centered [0,0] origin basis
           // Convert the cell indexes into a bottom left [0,0] basis (ie: to grid cell
           // indexes in the top right quadrant).
-            CellX = (int)Math.Floor(X / CellSize) + IndexOriginOffset;
-            CellY = (int)Math.Floor(Y / CellSize) + IndexOriginOffset;
+            cellX = (int)Math.Floor(x / cellSize) + indexOriginOffset;
+            cellY = (int)Math.Floor(y / cellSize) + indexOriginOffset;
         }
 
         /// <summary>
@@ -226,23 +220,18 @@ namespace VSS.TRex.SubGridTrees
         /// the X/Y index of the cell that the position lies in. If the position is
         /// outside of the extent covered by the grid the function returns false.  
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
-        public bool CalculateIndexOfCellContainingPosition(double X, double Y,
-                                                           out int CellX, out int CellY)
+        public bool CalculateIndexOfCellContainingPosition(double x, double y,
+                                                           out int cellX, out int cellY)
         {
-            if (Math.Abs(X) > MaxOrdinate || Math.Abs(Y) > MaxOrdinate)
+            if (Math.Abs(x) > MaxOrdinate || Math.Abs(y) > MaxOrdinate)
             {
-                CellX = int.MaxValue;
-                CellY = int.MaxValue;
+                cellX = int.MaxValue;
+                cellY = int.MaxValue;
 
                 return false;
             }
 
-            CalculateIndexOfCellContainingPosition(X, Y, cellSize, indexOriginOffset, out CellX, out CellY);
+            CalculateIndexOfCellContainingPosition(x, y, cellSize, indexOriginOffset, out cellX, out cellY);
 
             return true;
         }
@@ -250,9 +239,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// CalculateRegionGridCoverage determines the extent of on-the-ground grid cells that correspond to the given world extent.
         /// </summary>
-        /// <param name="worldExtent"></param>
-        /// <param name="cellExtent"></param>
-        /// <returns></returns>
         public void CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent)
         {
             // First calculate the leaf data cell indexes for the given real world extent
@@ -263,11 +249,11 @@ namespace VSS.TRex.SubGridTrees
             CalculateIndexOfCellContainingPosition(
               Range.EnsureRange(worldExtent.MinX, -MaxOrdinate, MaxOrdinate),
               Range.EnsureRange(worldExtent.MinY, -MaxOrdinate, MaxOrdinate),
-              out int minX, out int minY);
+              out var minX, out var minY);
             CalculateIndexOfCellContainingPosition(
               Range.EnsureRange(worldExtent.MaxX, -MaxOrdinate, MaxOrdinate),
               Range.EnsureRange(worldExtent.MaxY, -MaxOrdinate, MaxOrdinate),
-              out int maxX, out int maxY);
+              out var maxX, out var maxY);
 
             cellExtent = new BoundingIntegerExtent2D((int) minX, (int) minY, (int) maxX, (int) maxY);
         }
@@ -275,7 +261,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Returns the maximum world extent that this grid is capable of covering.
         /// </summary>
-        /// <returns></returns>
         public BoundingWorldExtent3D FullGridExtent()
         {
             return new BoundingWorldExtent3D(-indexOriginOffset * cellSize,
@@ -287,10 +272,9 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// FullCellExtent returns the total extent of cells within this sub grid tree. 
         /// </summary>
-        /// <returns></returns>
         public BoundingIntegerExtent2D FullCellExtent()
         {
-            int numCellsAcrossGrid = 1 << (numLevels * SubGridTreeConsts.SubGridIndexBitsPerLevel);
+            var numCellsAcrossGrid = 1 << (numLevels * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
             return new BoundingIntegerExtent2D(0, 0, numCellsAcrossGrid, numCellsAcrossGrid);
         }
@@ -300,16 +284,12 @@ namespace VSS.TRex.SubGridTrees
         /// intersect the given real world extent. Each sub grid that exists in the
         /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
-        /// <param name="extent"></param>
-        /// <param name="leafFunctor"></param>
-        /// <param name="nodeFunctor"></param>
-        /// <returns></returns>
         public bool ScanSubGrids(BoundingWorldExtent3D extent,
                                  Func<ISubGrid, bool> leafFunctor = null,
                                  Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
         {
             // First calculate the leaf data cell indexes for the given real world extent
-            CalculateRegionGridCoverage(extent, out BoundingIntegerExtent2D cellExtent);
+            CalculateRegionGridCoverage(extent, out var cellExtent);
 
             // Given the on-the-ground cell extents we can now ask the sub grids to recursively scan themselves.
             return _root.ScanSubGrids(cellExtent, leafFunctor, nodeFunctor);
@@ -320,10 +300,6 @@ namespace VSS.TRex.SubGridTrees
         /// intersect the given cell address space extent. Each sub grid that exists in the
         /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
-        /// <param name="extent"></param>
-        /// <param name="leafFunctor"></param>
-        /// <param name="nodeFunctor"></param>
-        /// <returns></returns>
         public bool ScanSubGrids(BoundingIntegerExtent2D extent,
                                  Func<ISubGrid, bool> leafFunctor = null,
                                  Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
@@ -335,9 +311,6 @@ namespace VSS.TRex.SubGridTrees
         /// ScanAllSubGrids scans all sub grids. Each sub grid that exists in the
         /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
-        /// <param name="leafFunctor"></param>
-        /// <param name="nodeFunctor"></param>
-        /// <returns></returns>
         public bool ScanAllSubGrids(Func<ISubGrid, bool> leafFunctor = null,
                                     Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null)
         {
@@ -353,10 +326,6 @@ namespace VSS.TRex.SubGridTrees
         /// PathType is pctCreatePathToLeaf it returns the node sub grid instance that
         /// owns the leaf sub grid that contains the cell
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="pathType"></param>
-        /// <returns></returns>
         public virtual ISubGrid ConstructPathToCell(int cellX, int cellY,
                                                     SubGridPathConstructionType pathType)
         {
@@ -401,7 +370,7 @@ namespace VSS.TRex.SubGridTrees
 
                             // ... and add it into this sub grid as the sub grid cell coordinates
                             // returned by GetSubGridContainingCell ...
-                             subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridCellX, out byte subGridCellY);
+                             subGrid.GetSubGridCellIndex(cellX, cellY, out var subGridCellX, out var subGridCellY);
                              subGrid.SetSubGrid(subGridCellX, subGridCellY, newSubGrid);
 
                             // ... then carry on descending into it
@@ -422,7 +391,7 @@ namespace VSS.TRex.SubGridTrees
                     case SubGridPathConstructionType.CreateLeaf:
                         // Get the local sub grid index in this sub grid that the leaf sub grid that
                         // contains the cell resides at
-                        subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridCellX, out byte subGridCellY);
+                        subGrid.GetSubGridCellIndex(cellX, cellY, out var subGridCellX, out var subGridCellY);
 
                         // Check if the leaf sub grid already exists, if not then create it.
                         result = subGrid.GetSubGrid(subGridCellX, subGridCellY);
@@ -471,7 +440,7 @@ namespace VSS.TRex.SubGridTrees
         /// <returns>The number of leaf sub grids in the tree</returns>
         public int CountLeafSubGridsInMemory()
         {
-            int count = 0;
+            var count = 0;
 
             return ScanAllSubGrids(subGrid => { count++; return true; }) ? count : -1;
         }
@@ -481,10 +450,6 @@ namespace VSS.TRex.SubGridTrees
         /// given by Level that contains the on-the-ground cell identified by
         /// CellX and CellY
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="level"></param>
-        /// <returns></returns>
         public ISubGrid LocateSubGridContaining(int cellX, int cellY, byte level)
         {
             ISubGrid subGrid = _root;
@@ -501,9 +466,6 @@ namespace VSS.TRex.SubGridTrees
         /// LocateSubGridContaining attempts to locate a sub grid at the level in the tree,
         /// but defaults to looking at the bottom level CellX and CellY
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <returns></returns>
         public ISubGrid LocateSubGridContaining(int cellX, int cellY) => LocateSubGridContaining(cellX, cellY, numLevels);
 
         /// <summary>
@@ -512,10 +474,6 @@ namespace VSS.TRex.SubGridTrees
         /// Level to find the requested cell, then returns that sub grid.
         /// The returned node may be a leaf sub grid or a node sub grid
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="level"></param>
-        /// <returns></returns>
         public ISubGrid LocateClosestSubGridContaining(int cellX, int cellY, byte level)
         {
             // Walk down the tree looking for the sub grid that contains the cell
@@ -546,14 +504,10 @@ namespace VSS.TRex.SubGridTrees
         /// bottom left origin of the grid. The returned CX, CY values are translated
         /// to the centered origin of the real world coordinate system
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="cx"></param>
-        /// <param name="cy"></param>
-        public void GetCellCenterPosition(int X, int Y, out double cx, out double cy)
+        public void GetCellCenterPosition(int x, int y, out double cx, out double cy)
         {
-            cx = (X - indexOriginOffset) * cellSize + CellSizeOver2;
-            cy = (Y - indexOriginOffset) * cellSize + CellSizeOver2;  
+            cx = (x - indexOriginOffset) * cellSize + CellSizeOver2;
+            cy = (y - indexOriginOffset) * cellSize + CellSizeOver2;
         }
 
         /// <summary>
@@ -562,14 +516,11 @@ namespace VSS.TRex.SubGridTrees
         /// bottom left origin of the grid. The returned OX, OY values are translated
         /// to the centered origin of the real world coordinate system
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="ox"></param>
-        /// <param name="oy"></param>
-        public void GetCellOriginPosition(int X, int Y, out double ox, out double oy)
+        public void GetCellOriginPosition(int x, int y, out double ox, out double oy)
         {
-            ox = (X - indexOriginOffset) * cellSize;
-            oy = (Y - indexOriginOffset) * cellSize;
+          if (y <= 0) throw new ArgumentOutOfRangeException(nameof(y));
+          ox = (x - indexOriginOffset) * cellSize;
+            oy = (y - indexOriginOffset) * cellSize;
         }
 
         /// <summary>
@@ -578,15 +529,12 @@ namespace VSS.TRex.SubGridTrees
         /// The returned extents are translated to the centered origin of the real
         /// world coordinate system
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <returns></returns>
-        public BoundingWorldExtent3D GetCellExtents(int X, int Y)
+        public BoundingWorldExtent3D GetCellExtents(int x, int y)
         {
-            double OriginX = (X - indexOriginOffset) * cellSize;
-            double OriginY = (Y - indexOriginOffset) * cellSize;
+            var originX = (x - indexOriginOffset) * cellSize;
+            var originY = (y - indexOriginOffset) * cellSize;
 
-            return new BoundingWorldExtent3D(OriginX, OriginY, OriginX + cellSize, OriginY + cellSize);
+            return new BoundingWorldExtent3D(originX, originY, originX + cellSize, originY + cellSize);
         }
 
       /// <summary>
@@ -595,68 +543,56 @@ namespace VSS.TRex.SubGridTrees
       /// The returned extents are translated to the centered origin of the real
       /// world coordinate system
       /// </summary>
-      /// <param name="X"></param>
-      /// <param name="Y"></param>
-      /// <param name="extents"></param>
-      /// <returns></returns>
-      public void GetCellExtents(int X, int Y, ref BoundingWorldExtent3D extents)
+      public void GetCellExtents(int x, int y, ref BoundingWorldExtent3D extents)
       {
-        double OriginX = (X - indexOriginOffset) * cellSize;
-        double OriginY = (Y - indexOriginOffset) * cellSize;
+        var originX = (x - indexOriginOffset) * cellSize;
+        var originY = (y - indexOriginOffset) * cellSize;
 
-        extents.MinX = OriginX;
-        extents.MinY = OriginY;
-        extents.MaxX = OriginX + cellSize;
-        extents.MaxY = OriginY + cellSize;
+        extents.MinX = originX;
+        extents.MinY = originY;
+        extents.MaxX = originX + cellSize;
+        extents.MaxY = originY + cellSize;
       }
 
       /// <summary>
       /// CreateUnattachedLeaf Creates an instance of a sub grid leaf node and returns
       /// it to the caller. The newly created sub grid is _not_ attached to this grid.
       /// </summary>
-      /// <returns></returns>
       public ILeafSubGrid CreateUnattachedLeaf() => CreateNewSubGrid(numLevels) as ILeafSubGrid;
 
       /// <summary>
       /// The header string to be written into a serialized sub grid tree
       /// </summary>
-      /// <returns></returns>
       public virtual string SerialisedHeaderName() => string.Empty;
 
       /// <summary>
       /// The header version to be written into a serialized sub grid tree
       /// </summary>
-      /// <returns></returns>
       public virtual int SerialisedVersion() => 0;
 
       /// <summary>
       /// The internal logic to serialise out the content of the sub grid tree using the SubGridTreePersistor
       /// </summary>
-      /// <param name="reader"></param>
       private void SerialiseInReader(BinaryReader reader) => SubGridTreePersistor.Read(this, SerialisedHeaderName(), SerialisedVersion(), reader);
 
       /// <summary>
       /// The internal logic to serialise in the content of the sub grid tree using the SubGridTreePersistor
       /// </summary>
-      /// <param name="writer"></param>
       private void SerialiseOutWriter(BinaryWriter writer) => SubGridTreePersistor.Write(this, SerialisedHeaderName(), SerialisedVersion(), writer);
 
       /// <summary>
       /// Serializes the content of the sub grid tree to a byte array
       /// </summary>
-      /// <returns></returns>
       public byte[] ToBytes() => FromToBytes.ToBytes(SerialiseOutWriter);
 
       /// <summary>
       /// Deserializes the content of the sub grid tree from a byte array
       /// </summary>
-      /// <returns></returns>
       public void FromBytes(byte[] bytes) => FromToBytes.FromBytes(bytes, SerialiseInReader);
 
       /// <summary>
       /// Serializes the content of the sub grid tree to a memory stream
       /// </summary>
-      /// <returns></returns>
       public MemoryStream ToStream() => FromToBytes.ToStream(SerialiseOutWriter);
 
       public void ToStream(Stream stream) => FromToBytes.ToStream(stream, SerialiseOutWriter);
@@ -664,7 +600,6 @@ namespace VSS.TRex.SubGridTrees
       /// <summary>
       /// Deserializes the content of the sub grid tree from a memory stream
       /// </summary>
-      /// <returns></returns>
       public void FromStream(MemoryStream stream) => FromToBytes.FromStream(stream, SerialiseInReader);
     }
 }

@@ -50,7 +50,7 @@ namespace VSS.TRex.SubGridTrees
         protected int originY;
 
         /// <summary>
-        /// Grid cell Y Origin of the bottom left hand cell in this sub grid. 
+        /// Grid cell Y Origin of the bottom left hand cell in this sub grid.
         /// Origin is wrt to cells of the spatial dimension held by this sub grid
         /// </summary>
         public int OriginY { get => originY; set => originY = value; } // int.MinValue;
@@ -78,20 +78,16 @@ namespace VSS.TRex.SubGridTrees
         /// Basic constructor used to create base sub grid types that are not concerned with cell size
         /// or sub grid tree index origin offset aspects
         /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="parent"></param>
-        /// <param name="level"></param>
         public SubGrid(ISubGridTree owner, ISubGrid parent, byte level)
         {
-            this.Owner = owner;
-            this.parent = parent;
-            this.level = level;
+            Owner = owner;
+            Parent = parent;
+            Level = level;
         }
 
         /// <summary>
         /// The number of on-the-ground cells that the span of this sub grid covers along each axis
         /// </summary>
-        /// <returns></returns>
         public int AxialCellCoverageByThisSubGrid() => SubGridTreeConsts.SubGridTreeDimension << ((owner.NumLevels - level) * SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
         /// <summary>
@@ -103,22 +99,20 @@ namespace VSS.TRex.SubGridTrees
         /// Sets the origin position of this sub grid to the supplied X and Y values within the cells of the parent sub grid. 
         /// This action locks the location of this sub grid in space with respect to the origin position of the parent sub grid.
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        public void SetOriginPosition(int CellX, int CellY)
+        public void SetOriginPosition(int cellX, int cellY)
         {
             if (parent == null)
             { 
                throw new ArgumentException("Cannot set origin position without parent");
             }
 
-            if (CellX >= SubGridTreeConsts.SubGridTreeDimension || CellY >= SubGridTreeConsts.SubGridTreeDimension)
+            if (cellX >= SubGridTreeConsts.SubGridTreeDimension || cellY >= SubGridTreeConsts.SubGridTreeDimension)
             {
                 throw new ArgumentException("Cell X, Y location is not in the valid cell address range for the sub grid");
             }
 
-            originX = parent.OriginX + CellX * AxialCellCoverageByThisSubGrid();
-            originY = parent.OriginY + CellY * AxialCellCoverageByThisSubGrid();
+            originX = parent.OriginX + cellX * AxialCellCoverageByThisSubGrid();
+            originY = parent.OriginY + cellY * AxialCellCoverageByThisSubGrid();
         }
 
         /// <summary>
@@ -127,8 +121,6 @@ namespace VSS.TRex.SubGridTrees
         /// At the current time, it is only valid to do if the sub grid does not have a
         /// parent (in which case SetOriginPosition should be used);
         /// </summary>
-        /// <param name="originX"></param>
-        /// <param name="originY"></param>
         public void SetAbsoluteOriginPosition(int originX, int originY)
         {
             if (parent != null)
@@ -148,15 +140,11 @@ namespace VSS.TRex.SubGridTrees
         /// WARNING: This call assumes the cell index does lie within this sub grid
         /// and (currently) no range checking is performed to ensure this}
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <param name="SubGridX"></param>
-        /// <param name="SubGridY"></param>
-        public void GetSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY)
+        public void GetSubGridCellIndex(int cellX, int cellY, out byte subGridX, out byte subGridY)
         {
-            int SHRValue = (owner.NumLevels - level) * SubGridTreeConsts.SubGridIndexBitsPerLevel;
-            SubGridX = (byte)((CellX >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
-            SubGridY = (byte)((CellY >> SHRValue) & SubGridTreeConsts.SubGridLocalKeyMask);
+            var shrValue = (owner.NumLevels - level) * SubGridTreeConsts.SubGridIndexBitsPerLevel;
+            subGridX = (byte)((cellX >> shrValue) & SubGridTreeConsts.SubGridLocalKeyMask);
+            subGridY = (byte)((cellY >> shrValue) & SubGridTreeConsts.SubGridLocalKeyMask);
         }
 
         /// <summary>
@@ -166,14 +154,10 @@ namespace VSS.TRex.SubGridTrees
         /// WARNING: This call assumes the cell index does lie within this sub grid
         /// and (currently) no range checking is performed to ensure this}
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <param name="SubGridX"></param>
-        /// <param name="SubGridY"></param>
-        public void GetOTGLeafSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY)
+        public void GetOTGLeafSubGridCellIndex(int cellX, int cellY, out byte subGridX, out byte subGridY)
         {
-            SubGridX = (byte)(CellX & SubGridTreeConsts.SubGridLocalKeyMask);
-            SubGridY = (byte)(CellY & SubGridTreeConsts.SubGridLocalKeyMask);
+            subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
+            subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
         }
 
         /// <summary>
@@ -191,21 +175,14 @@ namespace VSS.TRex.SubGridTrees
         /// A virtual method representing an access mechanism to request a child sub grid at the X/Y location in this sub grid
         /// Note: By definition, leaf sub grids do not have child sub grids.
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <returns></returns>
-        public virtual ISubGrid GetSubGrid(int X, int Y) => null; // Base class does not have child sub grids
+        public virtual ISubGrid GetSubGrid(int x, int y) => null; // Base class does not have child sub grids
 
         /// <summary>
         /// A virtual method representing an access mechanism to request a child sub grid at the X/Y location in this sub grid
         /// Note: By definition, leaf sub grids do not have child sub grids.
         /// Note: The X, Y location is relative to the elements in the sub grid (ie: 0..dimension(x/x)-1)
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public virtual void SetSubGrid(int X, int Y, ISubGrid value)
+        public virtual void SetSubGrid(int x, int y, ISubGrid value)
         {
           // No location to set sub grid to in base class
         }
@@ -214,12 +191,10 @@ namespace VSS.TRex.SubGridTrees
         /// Calculates the location in the world coordinate/ system of the bottom left hand corner of the 
         /// bottom left hand on-the-ground corner of the bottom left hand on-the-ground cell in the grid
         /// </summary>
-        /// <param name="WorldOriginX"></param>
-        /// <param name="WorldOriginY"></param>
-        public virtual void CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY)
+        public virtual void CalculateWorldOrigin(out double worldOriginX, out double worldOriginY)
         {
-            WorldOriginX = (originX - owner.IndexOriginOffset) * owner.CellSize;
-            WorldOriginY = (originY - owner.IndexOriginOffset) * owner.CellSize;
+            worldOriginX = (originX - owner.IndexOriginOffset) * owner.CellSize;
+            worldOriginY = (originY - owner.IndexOriginOffset) * owner.CellSize;
         }
 
         /// <summary>
@@ -236,7 +211,6 @@ namespace VSS.TRex.SubGridTrees
         /// another location. This essentially just sets the dirty flag to false, but
         /// encapsulates the semantics that any changes have been dealt with/preserved
         /// externally to this sub grid
-        /// 
         /// </summary>
         public void AllChangesMigrated() => dirty = false;
 
@@ -244,7 +218,6 @@ namespace VSS.TRex.SubGridTrees
         /// IsEmpty determines if this sub grid contains any information. By default the base 
         /// implementation is never empty
         /// </summary>
-        /// <returns></returns>
         public virtual bool IsEmpty() => false;
 
         /// <summary>
@@ -256,8 +229,8 @@ namespace VSS.TRex.SubGridTrees
             if (parent == null)
                 return;
 
-            parent.GetSubGridCellIndex(originX, originY, out byte SubGridX, out byte SubGridY);
-            parent.SetSubGrid(SubGridX, SubGridY, null);
+            parent.GetSubGridCellIndex(originX, originY, out var subGridX, out var subGridY);
+            parent.SetSubGrid(subGridX, subGridY, null);
 
             parent = null;
         }
@@ -265,14 +238,11 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Determines if this sub grid contains the cell identified by an on-the-ground CellX and CellY location
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
-        public bool ContainsOTGCell(int CellX, int CellY)
+        public bool ContainsOTGCell(int cellX, int cellY)
         {
-           int AxialCoverage = AxialCellCoverageByThisSubGrid();
+           var axialCoverage = AxialCellCoverageByThisSubGrid();
 
-           return (CellX >= originX) && (CellX < originX + AxialCoverage) && (CellY >= originY) && (CellY < originY + AxialCoverage);
+           return (cellX >= originX) && (cellX < originX + axialCoverage) && (cellY >= originY) && (cellY < originY + axialCoverage);
         }
 
         /// <summary>
@@ -282,20 +252,16 @@ namespace VSS.TRex.SubGridTrees
         /// 0..SubGridTreeDimension-1 coordinate space of the sub grid.
         /// WARNING: This is a comparatively expensive operation and so should not be used with abandon!
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
-        public virtual bool CellHasValue(byte CellX, byte CellY) => false;
+        public virtual bool CellHasValue(byte cellX, byte cellY) => false;
 
         /// <summary>
         /// Counts the number of cells that are non null in the sub grid using the base CellHasValue() interface
         /// </summary>
-        /// <returns></returns>
         public virtual int CountNonNullCells()
         {
-            int result = 0;
+            var result = 0;
 
-            for (int I = 0; I < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; I++)
+            for (var I = 0; I < SubGridTreeConsts.SubGridTreeCellsPerSubGrid; I++)
             {
                 if (CellHasValue((byte)(I / SubGridTreeConsts.SubGridTreeDimension), (byte)(I % SubGridTreeConsts.SubGridTreeDimension)))
                 {
@@ -311,7 +277,6 @@ namespace VSS.TRex.SubGridTrees
         /// to do if the node does not have a parent (in which case it's level is
         /// implicitly knowable, and should have been explicitly set)
         /// </summary>
-        /// <param name="level"></param>
         public void SetAbsoluteLevel(byte level)
         {
             if (Parent != null)
@@ -319,7 +284,7 @@ namespace VSS.TRex.SubGridTrees
                 throw new TRexSubGridTreeException("Nodes referencing parent nodes may not have their level modified");
             }
 
-            this.level = level;
+            Level = level;
         }
 
         /// <summary>
