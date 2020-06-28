@@ -6,13 +6,13 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 {
   public interface INodeSubGrid : ISubGrid
   {
-    void DeleteSubGrid(int SubGridX, int SubGridY);
+    void DeleteSubGrid(int subGridX, int subGridY);
 
-    new ISubGrid GetSubGrid(int X, int Y);
+    new ISubGrid GetSubGrid(int x, int y);
 
-    new void SetSubGrid(int X, int Y, ISubGrid Value);
+    new void SetSubGrid(int x, int y, ISubGrid value);
 
-    ISubGrid GetSubGridContainingCell(int CellX, int CellY);
+    ISubGrid GetSubGridContainingCell(int cellX, int cellY);
 
     void ForEachSubGrid(Func<ISubGrid, SubGridProcessNodeSubGridResult> functor);
 
@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
       byte maxSubGridCellX,
       byte maxSubGridCellY);
 
-    bool ScanSubGrids(BoundingIntegerExtent2D Extent,
+    bool ScanSubGrids(BoundingIntegerExtent2D extent,
       Func<ISubGrid, bool> leafFunctor = null,
       Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null);
 
