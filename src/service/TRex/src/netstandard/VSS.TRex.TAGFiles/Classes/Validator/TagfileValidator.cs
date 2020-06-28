@@ -106,11 +106,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
-      double seedLatitude = preScanState.SeedLatitude.HasValue ? MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLatitude.Value)) : 0.0;
-      double seedLongitude = preScanState.SeedLongitude.HasValue ? MathUtilities.RadiansToDegrees(Math.Abs(preScanState.SeedLongitude.Value)) : 0.0;
-      double? seedNorthing = preScanState.SeedNorthing;
-      double? seedEasting = preScanState.SeedEasting;
-      if (Math.Abs(Math.Abs(seedLatitude)) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE && (seedNorthing == null || seedEasting == null))
+      var seedLatitude = MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0.0);
+      var seedLongitude = MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0.0);
+      var seedNorthing = preScanState.SeedNorthing;
+      var seedEasting = preScanState.SeedEasting;
+      if (Math.Abs(seedLatitude) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE && (seedNorthing == null || seedEasting == null))
       {
         // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
         var message = $"Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
@@ -118,14 +118,13 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
       }
 
-      Log.LogInformation($"#Progress# CheckFileIsProcessable. Location: Lat: {preScanState.SeedLatitude} Long: {preScanState.SeedLongitude} Northing: {preScanState.SeedNorthing} Easting: {preScanState.SeedEasting}");
-
       var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        (int)radioType, preScanState.RadioSerial, ec520SerialId, // obsolete tagDetail.tccOrgId,
+        (int)radioType, preScanState.RadioSerial, ec520SerialId, 
         seedLatitude, seedLongitude,
         preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC,
         preScanState.SeedNorthing, preScanState.SeedEasting);
+      Log.LogInformation($"#Progress# CheckFileIsProcessable. tfaRequest {JsonConvert.SerializeObject(tfaRequest)}");
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
