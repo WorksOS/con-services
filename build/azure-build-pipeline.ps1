@@ -206,7 +206,6 @@ function Login-Aws {
 
     $canUseGetLoginPassword = $versionMajorMinor -ge 1.18
 
-    exit
     if ($canUseGetLoginPassword) {
         # Azure pipelines use a recent version of AWS CLI that has replace get-login with get-login-password.
         aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
