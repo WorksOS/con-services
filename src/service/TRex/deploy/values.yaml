@@ -87,7 +87,7 @@ mutableData:
   resources: 
     requests:
       cpu: 900m
-      memory: 2048Mi
+      memory: 4Gi
   storage:
     size: 10Gi
     className: aws-efs
@@ -116,7 +116,7 @@ psnode:
   resources: 
     requests:
       cpu: 900m
-      memory: 7.0Gi
+      memory: 12.0Gi
   storage:
     size: 10Gi
     className: aws-efs
