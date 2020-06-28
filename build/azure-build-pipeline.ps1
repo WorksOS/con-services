@@ -29,6 +29,7 @@ $services = @{
     Mock      = 'service/MockProjectWebApi'
     Push      = 'service/Push'
     Megalodon = 'service/Megalodon'
+    TRex      = 'service/TRex'
 }
 
 $servicePath = ''
@@ -81,11 +82,11 @@ function Run-Unit-Tests {
     # Build and run containerized unit tests
     Write-Host "`nBuilding unit test container..." -ForegroundColor Green
 
+    $runUnitTestSucceeded = $false
+
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
     # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
-    $runUnitTestSucceeded = $false
-
     Get-Content $servicePath/build/Dockerfile.unittest | docker build --tag $container_name --no-cache --build-arg FROM_IMAGE=$buildImage --build-arg SERVICE_PATH=$servicePath - 
     if ($?) { $runUnitTestSucceeded = $true }
     
@@ -95,8 +96,6 @@ function Run-Unit-Tests {
     # Start the container image and terminate and detach immediately
     docker create --name $unique_container_name $container_name
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_CREATE_FAILED) }
-
-    if (-not $runUnitTestSucceeded) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
     if ($recordTestResults -eq $true) {
         docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/. $servicePath/$localTestResultsFolder
@@ -196,9 +195,25 @@ function Push-Container-Image {
 
 function Login-Aws {
     Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
+    Write-Host "Determining AWS CLI version..."
+    $awsVersionFull = (aws --version) -split ' '
+    $awsVersion = [decimal]($awsVersionFull[0].SubString(8, 4))
 
-    aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
-    if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
+    Write-Host "Version: $awsVersion"
+
+    $canUseGetLoginPassword = $awsVersion -ge 1.18
+
+    if ($canUseGetLoginPassword) {
+        # Azure pipelines use a recent version of AWS CLI that has replace get-login with get-login-password.
+        aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
+        if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
+    }
+    else {
+        # Retain backward compatibility for running locally on team development PCs with older AWS CLI installed.
+        Write-Host "Found older version of AWS CLI, failing back to 'get-login'`n"
+        Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile fsm-okta)
+        if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
+    }
 }
 
 function Update-Nuget-Sources {
@@ -217,8 +232,13 @@ function Update-Nuget-Sources {
     Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 function TrackTime($Time) {
-    if (!($Time)) { Return Get-Date } Else {
-        return ((Get-Date) - $Time)
+    if (!($Time)) { 
+        Return 
+    }
+    Else {
+        $executionTime = ((Get-Date) - $Time)
+        $executionMinutes = "{0:N2}" -f $executionTime.TotalMinutes
+        Write-Host "Script completed in ${executionMinutes} minutes."
     }
 }
 
@@ -227,9 +247,7 @@ function Exit-With-Code {
         [ReturnCode][Parameter(Mandatory = $true)]$code
     )
 
-    $executionTime = TrackTime $timeStart
-    $executionMinutes = "{0:N2}" -f $executionTime.TotalMinutes
-    Write-Host "Script completed in ${executionMinutes} minutes."
+    TrackTime $timeStart
 
     if ($code -eq [ReturnCode]::SUCCESS) {
         Write-Host "`nExiting: $code" -ForegroundColor Green

@@ -5,28 +5,29 @@ ARG SERVICE_PATH=src/service/TRex
 COPY . /build/
 WORKDIR /build
 
+RUN dotnet restore ./${SERVICE_PATH}/TRex.netstandard.sln -nowarn:NU1701
+
 #publish TRex servers
-RUN dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.QuantizedMesh/VSS.TRex.Server.QuantizedMesh.csproj --output /trex/QMesh ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Reports --output /trex/Reports ; \
-dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.ProjectRebuilder --output /trex/ProjectRebuilder ; \
-dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --output /trex/ConnectedSiteGateway ; \
-dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway ; \
-dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway ; \
-dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils ; \
-dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils
+#RUN dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --no-restore -nowarn:NU1701 --output /trex/Webtools ; \
+RUN dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --no-restore -nowarn:NU1701 --output /trex/ApplicationServer ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --no-restore -nowarn:NU1701 --output /trex/DesignElevation ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --no-restore -nowarn:NU1701 --output /trex/MutableData ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --no-restore -nowarn:NU1701 --output /trex/PSNode ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.QuantizedMesh/VSS.TRex.Server.QuantizedMesh.csproj --no-restore -nowarn:NU1701 --output /trex/QMesh ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --no-restore -nowarn:NU1701 --output /trex/TileRendering ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --no-restore -nowarn:NU1701 --output /trex/TINSurfaceExport ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.Reports --no-restore -nowarn:NU1701 --output /trex/Reports ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.ProjectRebuilder --no-restore -nowarn:NU1701 --output /trex/ProjectRebuilder ; \
+dotnet publish ./${SERVICE_PATH}/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --no-restore -nowarn:NU1701 --output /trex/ConnectedSiteGateway ; \
+dotnet publish ./${SERVICE_PATH}/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --no-restore -nowarn:NU1701 --output /trex/Gateway ; \
+dotnet publish ./${SERVICE_PATH}/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --no-restore -nowarn:NU1701 --output /trex/MutableGateway ; \
+dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --no-restore -nowarn:NU1701 --output /trex/Utils ; \
+dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --no-restore -nowarn:NU1701 --output /trex/Utils
 
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
-COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.8.0.jar /trex/libs/
-COPY ./$SERVICE_PATH/build/control-scripts /trex/bin
+COPY ./${SERVICE_PATH}/build/ignite-kubernetes-2.8.0.jar /trex/libs/
 
 WORKDIR /trex/libs/
 RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar ; \

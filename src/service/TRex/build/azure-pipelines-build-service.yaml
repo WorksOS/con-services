@@ -1,0 +1,65 @@
+trigger:
+  branches:
+    include:
+      - master
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
+  paths:
+    include:
+      - "src/service/TRex/*"
+
+pool: fsm-merino-services
+
+variables:
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  serviceName: TRex
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
+
+jobs:
+  - job: BuildTestAndDeploy
+    displayName: "Build, test and Deploy"
+    timeoutInMinutes: 60
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: Bash@3
+        displayName: "Update BUILD_BUILDNUMBER"
+        inputs:
+          targetType: 'inline'
+          script: 'echo "##vso[build.updatebuildnumber]$(Build.BuildId)"'
+
+      - task: Bash@3
+        displayName: "Dump variables"
+        inputs:
+          targetType: 'inline'
+          script: 'printenv | sort'
+
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action build"
+
+      - task: PowerShell@2
+        displayName: "Run unit tests"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action unittest -collectCoverage false" #disable coverage collection for the moment.
+
+      - task: PublishTestResults@2
+        displayName: "Publish Unit Test Results"
+        continueOnError: true
+        inputs:
+          testResultsFormat: XUnit
+          testResultsFiles: "**/TestResults.xml"
+          searchFolder: "$(rootServiceFolder)/UnitTestResults/TestResults.xml"
+
+      - task: PublishCodeCoverageResults@1
+        displayName: "Publish Code Coverage"
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml"
+          pathToSources: "$(rootServiceFolder)"
+          failIfCoverageEmpty: true
