@@ -39,8 +39,7 @@ namespace VSS.TRex.SubGridTrees.Core
     /// </summary>
     public NodeSubGrid()
     {
-      _sparseCellCount = 0;
-      _cells = null;
+      Initialise();
     }
 
     /// <summary>
@@ -50,6 +49,12 @@ namespace VSS.TRex.SubGridTrees.Core
       ISubGrid parent,
       byte level) : base(owner, parent, level)
     {
+      Initialise();
+    }
+
+    private void Initialise()
+    {
+      _sparseCells = new SubGridTreeSparseCellRecord[SubGridTreeNodeCellSparcityLimit];
       _sparseCellCount = 0;
       _cells = null;
     }
@@ -66,7 +71,7 @@ namespace VSS.TRex.SubGridTrees.Core
       });
 
       _cells = null;
-      _sparseCells = null;
+      _sparseCells = new SubGridTreeSparseCellRecord[SubGridTreeNodeCellSparcityLimit];
       _sparseCellCount = 0;
     }
 
@@ -94,13 +99,13 @@ namespace VSS.TRex.SubGridTrees.Core
       if (_cells != null)
         return _cells[x, y];
 
-      if (_sparseCells != null)
+      lock(_sparseCells)
       {
         for (var I = 0; I < _sparseCellCount; I++)
         {
           var sparseCell = _sparseCells[I];
 
-          if ((sparseCell.CellX == x) && (sparseCell.CellY == y))
+          if (sparseCell.CellX == x && sparseCell.CellY == y)
             return sparseCell.Cell;
         }
       }
@@ -206,7 +211,7 @@ namespace VSS.TRex.SubGridTrees.Core
         return;
       }
 
-      if (_sparseCells != null)
+      lock(_sparseCells)
       {
         for (var I = 0; I < _sparseCellCount; I++)
         {
@@ -288,52 +293,51 @@ namespace VSS.TRex.SubGridTrees.Core
         return;
       }
 
-      if (value != null)
+      lock (_sparseCells)
       {
-        if (_sparseCells == null)
+        if (value != null)
         {
-          _sparseCells = new SubGridTreeSparseCellRecord[SubGridTreeNodeCellSparcityLimit];
-          _sparseCellCount = 0;
-        }
 
-        // Add it to the sparse list
-        if (_sparseCellCount < SubGridTreeNodeCellSparcityLimit)
-        {
-          _sparseCells[_sparseCellCount++] = new SubGridTreeSparseCellRecord((byte) x, (byte) y, value);
+          // Add it to the sparse list
+          if (_sparseCellCount < SubGridTreeNodeCellSparcityLimit)
+          {
+            _sparseCells[_sparseCellCount++] = new SubGridTreeSparseCellRecord((byte) x, (byte) y, value);
+          }
+          else
+          {
+            // Create the full array of sub grid references now the number of sub grids is too large to 
+            // fit into the sparcity constraint
+            _cells = new ISubGrid[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+
+            for (var I = 0; I < _sparseCellCount; I++)
+            {
+              var sparseCell = _sparseCells[I];
+              _cells[sparseCell.CellX, sparseCell.CellY] = sparseCell.Cell;
+            }
+
+            _sparseCellCount = 0;
+            _sparseCells = null; // Release the sparse cells array
+
+            // Add the new sub grid into the Cells array
+            _cells[x, y] = value;
+          }
         }
         else
         {
-          // Create the full array of sub grid references now the number of sub grids is too large to 
-          // fit into the sparcity constraint
-          _cells = new ISubGrid[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
-
           for (var I = 0; I < _sparseCellCount; I++)
           {
-            var sparseCell = _sparseCells[I];
-            _cells[sparseCell.CellX, sparseCell.CellY] = sparseCell.Cell;
-          }
+            if (_sparseCells[I].CellX == x && _sparseCells[I].CellY == y)
+            {
+              if (I < _sparseCellCount - 1)
+                Array.Copy(_sparseCells, I + 1, _sparseCells, I, _sparseCellCount - I - 1);
 
-          _sparseCellCount = 0;
-          _sparseCells = null;
+              _sparseCellCount--;
 
-          // Add the new sub grid into the Cells array
-          _cells[x, y] = value;
-        }
-      }
-      else
-      {
-        for (var I = 0; I < _sparseCellCount; I++)
-        {
-          if (_sparseCells[I].CellX == x && _sparseCells[I].CellY == y)
-          {
-            if (I < _sparseCellCount - 1)
-              Array.Copy(_sparseCells, I + 1, _sparseCells, I, _sparseCellCount - I - 1);
+              // Clear the spare cell entry
+              _sparseCells[_sparseCellCount] = new SubGridTreeSparseCellRecord();
 
-            _sparseCellCount--;
-            if (_sparseCellCount == 0)
-              _sparseCells = null;
-
-            break;
+              break;
+            }
           }
         }
       }
