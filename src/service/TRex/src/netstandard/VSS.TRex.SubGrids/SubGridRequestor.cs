@@ -51,7 +51,6 @@ namespace VSS.TRex.SubGrids
     private ISurfaceElevationPatchArgument _surfaceElevationPatchArg;
 
     public SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
-    private AreaControlSet _areaControlSet;
 
     // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
     private SubGridTreeBitmapSubGridBits _processingMap;
@@ -68,9 +67,6 @@ namespace VSS.TRex.SubGrids
 
     private float[,] _designElevations;
     private float[,] _surfaceDesignMaskElevations;
-
-    // ReSharper disable once IdentifierTypo
-    public SubGridRequestor() { }
 
     /// <summary>
     /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
@@ -119,7 +115,6 @@ namespace VSS.TRex.SubGrids
                                        liftParams);
 
       _returnEarliestFilteredCellPass = _filter.AttributeFilter.ReturnEarliestFilteredCellPass;
-      _areaControlSet = areaControlSet;
       _processingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
       _surfaceElevationPatchArg = surfaceElevationPatchArgument;
@@ -139,7 +134,7 @@ namespace VSS.TRex.SubGrids
         else
           _elevationRangeDesign = new DesignWrapper(elevRangeDesignFilter, design);
       }
-      
+     
       if (_filter.SpatialFilter.IsDesignMask)
         _surfaceDesignMaskDesign = _siteModel.Designs.Locate(_filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
@@ -203,9 +198,11 @@ namespace VSS.TRex.SubGrids
     {
       // If we have DesignElevations at this point, then a Lift filter is in operation and
       // we need to use it to constrain the returned client grid to the extents of the design elevations
+      // ReSharper disable once CompareOfFloatsByEqualityOperator
       if (_designElevations != null)
         _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _designElevations[x, y] != Consts.NullHeight));
 
+      // ReSharper disable once CompareOfFloatsByEqualityOperator
       if (_surfaceDesignMaskElevations != null)
         _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _surfaceDesignMaskElevations[x, y] != Consts.NullHeight));
     }
@@ -213,7 +210,6 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// // Note: There is an assumption you have already checked on a existence map that there is a sub grid for this address
     /// </summary>
-    /// <returns></returns>
     private ServerRequestResult PerformDataExtraction()
     {
       // If there is a cache context for this sub grid, but the sub grid does not support assignation then complain
@@ -324,7 +320,8 @@ namespace VSS.TRex.SubGrids
           elevationRangeFilterLambda = ApplyElevationRangeFilter;
         }
 
-        _clientGrid.PerformHeightAnnotation(_processingMap, _filteredSurveyedSurfaces as IList, _returnEarliestFilteredCellPass, surfaceElevations,  elevationRangeFilterLambda);
+        if (!_clientGrid.PerformHeightAnnotation(_processingMap, _filteredSurveyedSurfaces as IList, _returnEarliestFilteredCellPass, surfaceElevations,  elevationRangeFilterLambda))
+          return ServerRequestResult.SubGridHeightAnnotationFailed;
 
         result = ServerRequestResult.NoError;
       }
@@ -391,8 +388,8 @@ namespace VSS.TRex.SubGrids
 
       if (_surveyedSurfaceDataRequested)
       {
-        // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis. TODO: Is this another repeat of the cell filter map construction logic? FIX
-        await PerformHeightAnnotation();
+        // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis. TODO: Is this another repeat of the cell filter map construction logic? FIX?
+        result.requestResult = await PerformHeightAnnotation();
       }
 
       // Reassign _clientGrid to result as its reference may have been changed as a result of caching.

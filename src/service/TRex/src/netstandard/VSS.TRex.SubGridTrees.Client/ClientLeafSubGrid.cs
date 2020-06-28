@@ -32,29 +32,17 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public GridDataType GridDataType => _gridDataType;
 
-    private double _cellSize;
-
     /// <summary>
     /// CellSize is a copy of the cell size from the parent sub grid. It is replicated here
     /// to remove SubGridTree binding in other processing contexts
     /// </summary>
-    public double CellSize
-    {
-      get => _cellSize;
-      set => _cellSize = value;
-    }
-
-    private int _indexOriginOffset;
+    public double CellSize { get; set; }
 
     /// <summary>
     /// IndexOriginOffset is a copy of the IndexOriginOffset from the parent sub grid. It is replicated here
     ///to remove SubGridTree binding in other processing contexts
     /// </summary>
-    public int IndexOriginOffset
-    {
-      get => _indexOriginOffset;
-      set => _indexOriginOffset = value;
-    }
+    public int IndexOriginOffset { get; set; }
 
     /// <summary>
     /// Is data extraction limited to the top identified layer of materials in each cell
@@ -130,13 +118,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// World extent of the client leaf sub grid map of cells
     /// </summary>
-    /// <returns></returns>
     public BoundingWorldExtent3D WorldExtents()
     {
-      var wOx = (originX - _indexOriginOffset) * _cellSize;
-      var wOy = (originY - _indexOriginOffset) * _cellSize;
+      var wOx = (originX - IndexOriginOffset) * CellSize;
+      var wOy = (originY - IndexOriginOffset) * CellSize;
 
-      return new BoundingWorldExtent3D(wOx, wOy, wOx + SubGridTreeConsts.SubGridTreeDimension * _cellSize, wOy + SubGridTreeConsts.SubGridTreeDimension * _cellSize);
+      return new BoundingWorldExtent3D(wOx, wOy, wOx + SubGridTreeConsts.SubGridTreeDimension * CellSize, wOy + SubGridTreeConsts.SubGridTreeDimension * CellSize);
     }
 
     /// <summary>
@@ -144,19 +131,14 @@ namespace VSS.TRex.SubGridTrees.Client
     /// constructor from the base with the cell size and index origin offset parameters from the sub grid tree
     /// this leaf is derived from.
     /// </summary>
-    /// <param name="owner"></param>
-    /// <param name="parent"></param>
-    /// <param name="level"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="indexOriginOffset"></param>
     protected ClientLeafSubGrid(ISubGridTree owner,
       ISubGrid parent,
       byte level,
       double cellSize,
       int indexOriginOffset) : base(owner, parent, level)
     {
-      _cellSize = cellSize;
-      _indexOriginOffset = indexOriginOffset;
+      CellSize = cellSize;
+      IndexOriginOffset = indexOriginOffset;
 
       _gridDataType = GridDataType.All; // Default to 'all', descendant specialized classes will set appropriately
 
@@ -197,8 +179,8 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void CalculateWorldOrigin(out double worldOriginX,
       out double worldOriginY)
     {
-      worldOriginX = (originX - _indexOriginOffset) * _cellSize;
-      worldOriginY = (originY - _indexOriginOffset) * _cellSize;
+      worldOriginX = (originX - IndexOriginOffset) * CellSize;
+      worldOriginY = (originY - IndexOriginOffset) * CellSize;
     }
 
     /// <summary>
@@ -206,7 +188,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
-    /// <param name="source"></param>
     public abstract void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source);
 
     /// <summary>
@@ -214,15 +195,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="map"></param>
     public abstract void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
     /// <summary>
     /// Assigns the state of one client leaf sub grid to this client leaf sub grid
     /// Note: The cell values are explicitly NOT copied in this operation
     /// </summary>
-    /// <param name="source"></param>
     public void Assign(IClientLeafSubGrid source)
     {
       level = source.Level;
@@ -232,8 +210,8 @@ namespace VSS.TRex.SubGridTrees.Client
       // Grid data type is never assigned from one client grid to another...
       //GridDataType = source.GridDataType;
 
-      _cellSize = source.CellSize;
-      _indexOriginOffset = source.IndexOriginOffset;
+      CellSize = source.CellSize;
+      IndexOriginOffset = source.IndexOriginOffset;
       ProdDataMap.Assign(source.ProdDataMap);
       FilterMap.Assign(source.FilterMap);
     }
@@ -241,20 +219,18 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Dumps the contents of this client leaf sub grid into the log in a human readable form
     /// </summary>
-    /// <param name="title"></param>
     public abstract void DumpToLog(string title);
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
-    /// <param name="writer"></param>
     public override void Write(BinaryWriter writer)
     {
       base.Write(writer);
 
       writer.Write((int) GridDataType);
-      writer.Write(_cellSize);
-      writer.Write(_indexOriginOffset);
+      writer.Write(CellSize);
+      writer.Write(IndexOriginOffset);
 
       ProdDataMap.Write(writer);
       FilterMap.Write(writer);
@@ -271,8 +247,8 @@ namespace VSS.TRex.SubGridTrees.Client
       if ((GridDataType) reader.ReadInt32() != GridDataType)
         throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
 
-      _cellSize = reader.ReadDouble();
-      _indexOriginOffset = reader.ReadInt32();
+      CellSize = reader.ReadDouble();
+      IndexOriginOffset = reader.ReadInt32();
 
       ProdDataMap.Read(reader);
       FilterMap.Read(reader);
@@ -281,8 +257,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Return an indicative size for memory consumption of this class to be used in cache tracking
     /// </summary>
-    /// <returns></returns>
-
     public virtual int IndicativeSizeInBytes()
     {
       var filterMapSize = FilterMap?.IndicativeSizeInBytes() ?? 0;

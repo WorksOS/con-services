@@ -15,12 +15,13 @@ using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
+// ReSharper disable IdentifierTypo
 
 namespace VSS.TRex.SubGridTrees.Client
 {
   public class ClientCellProfileLeafSubgrid : GenericClientLeafSubGrid<ClientCellProfileLeafSubgridRecord>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientCellProfileLeafSubgrid>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ClientCellProfileLeafSubgrid>();
 
     /// <summary>
     /// Initialise the null cell values for the client sub grid
@@ -63,7 +64,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientCellProfileLeafSubgrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+    public ClientCellProfileLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, uint indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
       Initialise();
     }
@@ -110,9 +111,10 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public override bool LeafContentEquals(IClientLeafSubGrid other)
     {
-      bool result = true;
+      var result = true;
 
-      IGenericClientLeafSubGrid<ClientCellProfileLeafSubgridRecord> _other = (IGenericClientLeafSubGrid<ClientCellProfileLeafSubgridRecord>)other;
+      // ReSharper disable once InconsistentNaming
+      var _other = (IGenericClientLeafSubGrid<ClientCellProfileLeafSubgridRecord>)other;
       ForEach((x, y) => result &= Cells[x, y].Equals(_other.Cells[x, y]));
 
       return result;
@@ -130,83 +132,78 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Assign filtered height value from a filtered pass to a cell
     /// </summary>
-    /// <param name="cellX"></param>
-    /// <param name="cellY"></param>
-    /// <param name="context"></param>
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      void CalculateCMVChange(IProfileCell profileCell)
+      void CalculateCmvChange(IProfileCell profileCell)
       {
         profileCell.CellCCV = CellPassConsts.NullCCV;
         profileCell.CellTargetCCV = CellPassConsts.NullCCV;
         profileCell.CellPreviousMeasuredCCV = CellPassConsts.NullCCV;
         profileCell.CellPreviousMeasuredTargetCCV = CellPassConsts.NullCCV;
 
-        bool DataStillRequiredForCCV = true;
+        var dataStillRequiredForCcv = true;
 
-        for (int i = profileCell.Layers.Count() - 1; i >= 0; i--)
+        for (var i = profileCell.Layers.Count() - 1; i >= 0; i--)
         {
           if (profileCell.Layers[i].FilteredPassCount > 0)
           {
             if ((profileCell.Layers[i].Status & LayerStatus.Superseded) != 0 && !context.LiftParams.IncludeSuperseded)
               continue;
 
-            if (DataStillRequiredForCCV && profileCell.CellCCV == CellPassConsts.NullCCV && profileCell.Layers[i].CCV != CellPassConsts.NullCCV)
+            if (dataStillRequiredForCcv && profileCell.CellCCV == CellPassConsts.NullCCV && profileCell.Layers[i].CCV != CellPassConsts.NullCCV)
             {
               profileCell.CellCCV = profileCell.Layers[i].CCV;
               profileCell.CellCCVElev = profileCell.Layers[i].CCV_Elev;
 
-              int PassSearchIdx = profileCell.Layers[i].CCV_CellPassIdx - 1;
-              while (PassSearchIdx >= 0)
+              var passSearchIdx = profileCell.Layers[i].CCV_CellPassIdx - 1;
+              while (passSearchIdx >= 0)
               {
-                if (context.LiftParams.CCVSummarizeTopLayerOnly && (PassSearchIdx < profileCell.Layers[i].StartCellPassIdx || PassSearchIdx > profileCell.Layers[i].EndCellPassIdx))
+                if (context.LiftParams.CCVSummarizeTopLayerOnly && (passSearchIdx < profileCell.Layers[i].StartCellPassIdx || passSearchIdx > profileCell.Layers[i].EndCellPassIdx))
                   break;
 
-                if (!profileCell.Layers.IsCellPassInSupersededLayer(PassSearchIdx) || context.LiftParams.IncludeSuperseded)
+                if (!profileCell.Layers.IsCellPassInSupersededLayer(passSearchIdx) || context.LiftParams.IncludeSuperseded)
                 {
-                  profileCell.CellPreviousMeasuredCCV = profileCell.Passes.FilteredPassData[PassSearchIdx].FilteredPass.CCV;
+                  profileCell.CellPreviousMeasuredCCV = profileCell.Passes.FilteredPassData[passSearchIdx].FilteredPass.CCV;
                   if (context.Overrides?.OverrideMachineCCV ?? false)
                     profileCell.CellPreviousMeasuredTargetCCV = context.Overrides.OverridingMachineCCV;
                   else
-                    profileCell.CellPreviousMeasuredTargetCCV = profileCell.Passes.FilteredPassData[PassSearchIdx].TargetValues.TargetCCV;
+                    profileCell.CellPreviousMeasuredTargetCCV = profileCell.Passes.FilteredPassData[passSearchIdx].TargetValues.TargetCCV;
                   break;
                 }
 
-                PassSearchIdx--;
+                passSearchIdx--;
               }
 
-              DataStillRequiredForCCV = false;
+              dataStillRequiredForCcv = false;
             }
 
 
-            if (!DataStillRequiredForCCV)
+            if (!dataStillRequiredForCcv)
               break;
 
             if (context.LiftParams.CCVSummarizeTopLayerOnly)
-              DataStillRequiredForCCV = false;
+              dataStillRequiredForCcv = false;
           }
         }
       }
 
       if (context.CellProfile == null)
       {
-        Log.LogError($"{nameof(AssignFilteredValue)}: Error=CellProfile not assigned.");
+        _log.LogError($"{nameof(AssignFilteredValue)}: Error=CellProfile not assigned.");
         return;
       }
 
-      IProfileCell cellProfileFromContext = context.CellProfile as IProfileCell;
-
-      if (cellProfileFromContext == null)
+      if (!(context.CellProfile is IProfileCell cellProfileFromContext))
       {
-        Log.LogError($"{nameof(AssignFilteredValue)}: Error=CellProfile does not implement {nameof(IProfileCell)}.");
+        _log.LogError($"{nameof(AssignFilteredValue)}: Error=CellProfile does not implement {nameof(IProfileCell)}.");
         return;
       }
 
-      FilteredPassData LastPass;
+      FilteredPassData lastPass;
       if (context.LowestPassIdx != Consts.NullLowestPassIdx)
-        LastPass = cellProfileFromContext.Passes.FilteredPassData[context.LowestPassIdx]; // take the pass from lowest pass due to mapping mode 
+        lastPass = cellProfileFromContext.Passes.FilteredPassData[context.LowestPassIdx]; // take the pass from lowest pass due to mapping mode 
       else
-        LastPass = cellProfileFromContext.Passes.FilteredPassData[cellProfileFromContext.Passes.PassCount - 1];
+        lastPass = cellProfileFromContext.Passes.FilteredPassData[cellProfileFromContext.Passes.PassCount - 1];
 
       Cells[cellX, cellY].CellXOffset = context.ProbePositions[cellX, cellY].XOffset;
       Cells[cellX, cellY].CellYOffset = context.ProbePositions[cellX, cellY].YOffset;
@@ -214,41 +211,41 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].LastPassTime = cellProfileFromContext.Passes.LastPassTime();
       Cells[cellX, cellY].PassCount = context.FilteredValue.PassCount;
       Cells[cellX, cellY].LastPassValidRadioLatency = cellProfileFromContext.Passes.LastPassValidRadioLatency();
-      Cells[cellX, cellY].EventDesignNameID = LastPass.EventValues.EventDesignNameID;
-      Cells[cellX, cellY].InternalSiteModelMachineIndex = LastPass.FilteredPass.InternalSiteModelMachineIndex;
-      Cells[cellX, cellY].MachineSpeed = LastPass.FilteredPass.MachineSpeed;
+      Cells[cellX, cellY].EventDesignNameID = lastPass.EventValues.EventDesignNameID;
+      Cells[cellX, cellY].InternalSiteModelMachineIndex = lastPass.FilteredPass.InternalSiteModelMachineIndex;
+      Cells[cellX, cellY].MachineSpeed = lastPass.FilteredPass.MachineSpeed;
       Cells[cellX, cellY].LastPassValidGPSMode = cellProfileFromContext.Passes.LastPassValidGPSMode();
-      Cells[cellX, cellY].GPSTolerance = LastPass.EventValues.GPSTolerance;
-      Cells[cellX, cellY].GPSAccuracy = LastPass.EventValues.GPSAccuracy;
-      Cells[cellX, cellY].TargetPassCount = LastPass.TargetValues.TargetPassCount;
+      Cells[cellX, cellY].GPSTolerance = lastPass.EventValues.GPSTolerance;
+      Cells[cellX, cellY].GPSAccuracy = lastPass.EventValues.GPSAccuracy;
+      Cells[cellX, cellY].TargetPassCount = lastPass.TargetValues.TargetPassCount;
       Cells[cellX, cellY].TotalWholePasses = cellProfileFromContext.TotalNumberOfWholePasses(true); // include superseded layers
       Cells[cellX, cellY].LayersCount = cellProfileFromContext.Layers.Count();
 
-      cellProfileFromContext.Passes.LastPassValidCCVDetails(out var _lastPassValidCCV, out var _targetCCV); // get details from last VALID pass
-      Cells[cellX, cellY].LastPassValidCCV = _lastPassValidCCV;
-      Cells[cellX, cellY].TargetCCV = _targetCCV;
+      cellProfileFromContext.Passes.LastPassValidCCVDetails(out var lastPassValidCcv, out var targetCcv); // get details from last VALID pass
+      Cells[cellX, cellY].LastPassValidCCV = lastPassValidCcv;
+      Cells[cellX, cellY].TargetCCV = targetCcv;
 
-      cellProfileFromContext.Passes.LastPassValidMDPDetails(out var _lastPassValidMDP, out var _targetMDP); // get details from last VALID pass
-      Cells[cellX, cellY].LastPassValidMDP = _lastPassValidMDP;
-      Cells[cellX, cellY].TargetMDP = _targetMDP;
+      cellProfileFromContext.Passes.LastPassValidMDPDetails(out var lastPassValidMdp, out var targetMdp); // get details from last VALID pass
+      Cells[cellX, cellY].LastPassValidMDP = lastPassValidMdp;
+      Cells[cellX, cellY].TargetMDP = targetMdp;
 
-      cellProfileFromContext.Passes.LastPassValidCCADetails(out var _lastPassValidCCA, out var _targetCCA); // get details from last VALID pass
-      Cells[cellX, cellY].LastPassValidCCA = _lastPassValidCCA;
-      Cells[cellX, cellY].TargetCCA = _targetCCA;
+      cellProfileFromContext.Passes.LastPassValidCCADetails(out var lastPassValidCca, out var targetCca); // get details from last VALID pass
+      Cells[cellX, cellY].LastPassValidCCA = lastPassValidCca;
+      Cells[cellX, cellY].TargetCCA = targetCca;
 
       Cells[cellX, cellY].LastPassValidRMV = cellProfileFromContext.Passes.LastPassValidRMV();
       Cells[cellX, cellY].LastPassValidFreq = cellProfileFromContext.Passes.LastPassValidFreq();
       Cells[cellX, cellY].LastPassValidAmp = cellProfileFromContext.Passes.LastPassValidAmp();
-      Cells[cellX, cellY].TargetThickness = LastPass.TargetValues.TargetLiftThickness;
-      Cells[cellX, cellY].EventMachineGear = LastPass.EventValues.EventMachineGear;
-      Cells[cellX, cellY].EventVibrationState = LastPass.EventValues.EventVibrationState;
-      Cells[cellX, cellY].LastPassValidTemperature = LastPass.FilteredPass.MaterialTemperature; // Bug32323 show only last pass temp.  Passes.LastPassValidTemperature;
-      Cells[cellX, cellY].Height = LastPass.FilteredPass.Height;
+      Cells[cellX, cellY].TargetThickness = lastPass.TargetValues.TargetLiftThickness;
+      Cells[cellX, cellY].EventMachineGear = lastPass.EventValues.EventMachineGear;
+      Cells[cellX, cellY].EventVibrationState = lastPass.EventValues.EventVibrationState;
+      Cells[cellX, cellY].LastPassValidTemperature = lastPass.FilteredPass.MaterialTemperature; // Bug32323 show only last pass temp.  Passes.LastPassValidTemperature;
+      Cells[cellX, cellY].Height = lastPass.FilteredPass.Height;
 
-      CalculateCMVChange(cellProfileFromContext);
+      CalculateCmvChange(cellProfileFromContext);
       Cells[cellX, cellY].CCVChange = 0;
-      short v2 = cellProfileFromContext.CellCCV;
-      short v1 = cellProfileFromContext.CellPreviousMeasuredCCV;
+      var v2 = cellProfileFromContext.CellCCV;
+      var v1 = cellProfileFromContext.CellPreviousMeasuredCCV;
 
       if (v2 == CellPassConsts.NullCCV)
         Cells[cellX, cellY].CCVChange = CellPassConsts.NullCCV; // will force no result to show
@@ -300,6 +297,7 @@ namespace VSS.TRex.SubGridTrees.Client
       // then there's no point in asking the Design Profiler service for an elevation
       processingMap.ForEachSetBit((x, y) =>
         {
+          // ReSharper disable once CompareOfFloatsByEqualityOperator
           if (Cells[x, y].Height == Consts.NullHeight)
             return;
 
@@ -319,10 +317,12 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     public override bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
-  IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilterLambda)
+                                                 IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilterLambda)
     {
       if (!(surfaceElevationsSource is ClientHeightAndTimeLeafSubGrid surfaceElevations))
       {
+        _log.LogError($"{nameof(ClientCellProfileLeafSubgrid)}.{nameof(PerformHeightAnnotation)} not supplied a ClientHeightAndTimeLeafSubGrid instance, but an instance of {surfaceElevationsSource?.GetType().FullName}");
+
         return false;
       }
 
@@ -334,6 +334,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         var surveyedSurfaceCellHeight = surfaceElevations.Cells[x, y];
 
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         if (surveyedSurfaceCellHeight == Consts.NullHeight)
         {
           return;
@@ -346,6 +347,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
         // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
         // the relative age of the measured surveyed surface elevation compared with a non-null production data height
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         if (!(prodHeight == Consts.NullHeight || (returnEarliestFilteredCellPass ? surveyedSurfaceCellTime < prodTime : surveyedSurfaceCellTime > prodTime)))
         {
           // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
