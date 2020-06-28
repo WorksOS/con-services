@@ -3,7 +3,10 @@ PARAM (
     [Parameter(Mandatory = $false)][string]$action,
     [Parameter(Mandatory = $false)][string]$awsRepositoryName = '940327799086.dkr.ecr.us-west-2.amazonaws.com',
     [Parameter(Mandatory = $false)][string]$branch,
-    [Parameter(Mandatory = $false)][string]$buildId
+    [Parameter(Mandatory = $false)][string]$buildId,
+    [Parameter(Mandatory = $false)][string]$systemAccessToken,
+    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
+    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$collectCoverage = "true"
 )
 
 enum ReturnCode {
@@ -18,14 +21,14 @@ enum ReturnCode {
     IMAGE_TAG_FAILED
     IMAGE_PUSH_FAILED
     AWS_ECR_LOGIN_FAILED
+    OPERATION_FAILED
 }
 
 $services = @{
-    Common     = 'common'
-    FileAccess = 'service/FileAccess'
-    Mock       = 'service/MockProjectWebApi'
-    Push       = 'service/Push'
-    Megalodon  = 'service/Megalodon'
+    Common    = 'Common'
+    Mock      = 'service/MockProjectWebApi'
+    Push      = 'service/Push'
+    Megalodon = 'service/Megalodon'
 }
 
 $servicePath = ''
@@ -57,7 +60,7 @@ function Build-Solution {
     Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
-function Unit-Test-Solution {
+function Run-Unit-Tests {
     $container_name = "$serviceName-unittest"
 
     # Ensure required image exists
@@ -72,7 +75,8 @@ function Unit-Test-Solution {
     }
 
     # Clean up from earlier runs
-    Remove-Item -Path UnitTestResults -Recurse -ErrorAction SilentlyContinue
+    $localTestResultsFolder = "UnitTestResults"
+    Remove-Item -Path "$servicePath/$localTestResultsFolder" -Recurse -ErrorAction SilentlyContinue
 
     # Build and run containerized unit tests
     Write-Host "`nBuilding unit test container..." -ForegroundColor Green
@@ -80,9 +84,11 @@ function Unit-Test-Solution {
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
     # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
-    Get-Content $servicePath/build/Dockerfile.unittest | docker build --tag $container_name --no-cache --build-arg SERVICE_PATH=$servicePath - 
-    if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
+    $runUnitTestSucceeded = $false
 
+    Get-Content $servicePath/build/Dockerfile.unittest | docker build --tag $container_name --no-cache --build-arg FROM_IMAGE=$buildImage --build-arg SERVICE_PATH=$servicePath - 
+    if ($?) { $runUnitTestSucceeded = $true }
+    
     Write-Host "`nCreating unit test container..." -ForegroundColor Green
     $unique_container_name = "$container_name`_$(Get-Random -Minimum 1000 -Maximum 9999)"
 
@@ -90,16 +96,28 @@ function Unit-Test-Solution {
     docker create --name $unique_container_name $container_name
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_CREATE_FAILED) }
 
-    Write-Host "Copying test results and coverage files..." -ForegroundColor Green
-    docker cp $unique_container_name`:/build/$servicePath/test/UnitTests/UnitTestResults/. $servicePath/test/UnitTestResults
+    if (-not $runUnitTestSucceeded) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
-    if (-not (Test-Path "$servicePath/test/UnitTestResults/TestResults.xml" -PathType Leaf)) {
-        Write-Host 'Unable to find TestResults file on local host.' -ForegroundColor Red
-        Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
+    if ($recordTestResults -eq $true) {
+        docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/. $servicePath/$localTestResultsFolder
+
+        $resultsFilePath = "$servicePath/$localTestResultsFolder/TestResults.xml"
+
+        if (-not (Test-Path $resultsFilePath -PathType Leaf)) {
+            Write-Host "Unable to find TestResults file '$resultsFilePath' on local host." -ForegroundColor Red
+            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
+        }
     }
-    if (-not (Test-Path "$servicePath/test/UnitTestResults/Coverage.xml" -PathType Leaf)) {
-        Write-Host 'Unable to find test coverage file on local host.' -ForegroundColor Red
-        Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_COVERAGE)
+
+    if ($collectCoverage -eq $true) {
+        docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/coverage.cobertura.xml $servicePath/$localTestResultsFolder
+
+        $coveragePath = "$servicePath/$localTestResultsFolder/coverage.cobertura.xml"
+
+        if (-not (Test-Path $coveragePath -PathType Leaf)) {
+            Write-Host "Unable to find test coverage file '$coveragePath' on local host." -ForegroundColor Red
+            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_COVERAGE)
+        }
     }
 
     Write-Host "`nRemoving test container..." -ForegroundColor Green
@@ -129,7 +147,7 @@ function Publish-Service {
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
     # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
-    Get-Content $servicePath/build/Dockerfile.runtime | docker build --tag $publishImage --no-cache --build-arg SERVICE_PATH=$servicePath - 
+    Get-Content $servicePath/build/Dockerfile.runtime | docker build --tag $publishImage --no-cache --build-arg FROM_IMAGE=$buildImage --build-arg SERVICE_PATH=$servicePath - 
 
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
@@ -183,6 +201,21 @@ function Login-Aws {
     if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
 }
 
+function Update-Nuget-Sources {
+    $sourceName = 'trmb-ccss'
+
+    if (-not $(nuget sources List | Select-String -Pattern 'trmb-ccss' -Quiet)) {
+        Write-Host "`nAdding source '$sourceName' to the NuGet configuration file..." -ForegroundColor Green
+        & '..\build\nuget\nuget.exe' sources add -Name "${sourceName}" -Source "https://pkgs.dev.azure.com/trmb-ccss/_packaging/trmb-ccss/nuget/v3/index.json" -ConfigFile "NuGet.Config"
+        if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
+    }
+
+    Write-Host "`nUpdating credentials for NuGet source '$sourceName'..." -ForegroundColor Green
+    & '..\build\nuget\nuget.exe' sources update -Name "${sourceName}" -Username "az" -Password "${systemAccessToken}" -ConfigFile "NuGet.Config"
+    if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
+
+    Exit-With-Code ([ReturnCode]::SUCCESS)
+}
 function TrackTime($Time) {
     if (!($Time)) { Return Get-Date } Else {
         return ((Get-Date) - $Time)
@@ -229,6 +262,8 @@ Write-Host "  buildId = $buildId"
 Write-Host "  service = $service"
 Write-Host "  servicePath = $servicePath"
 Write-Host "  serviceName = $serviceName"
+Write-Host "  recordTestResults = $recordTestResults"
+Write-Host "  collectCoverage = $collectCoverage"
 Write-Host "  awsRepositoryName = $awsRepositoryName"
 Write-Host "  Working Directory ="($pwd).path
 
@@ -241,7 +276,7 @@ switch ($action) {
         continue
     }
     'unittest' {
-        Unit-Test-Solution
+        Run-Unit-Tests
         continue
     }
     'publish' {
@@ -250,6 +285,10 @@ switch ($action) {
     }
     'pushImage' {
         Push-Container-Image
+        continue
+    }
+    'updateNugetSources' {
+        Update-Nuget-Sources
         continue
     }
     default {

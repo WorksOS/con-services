@@ -1,0 +1,137 @@
+trigger:
+  branches:
+    include:
+      - master
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
+  paths:
+    include:
+      - "src/Common/*"
+
+pool: fsm-merino-services
+
+variables:
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  serviceName: Common
+  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service"
+
+jobs:
+  - job: BuildTestCommon
+    displayName: "Build & Test Common solution"
+    timeoutInMinutes: 20
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action build"
+
+      - task: PowerShell@2
+        displayName: "Run unit tests"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action unittest -recordTestResults false -collectCoverage false"
+
+  - job: Build3DPService
+    displayName: 'Build 3DP service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/3DP'
+        solution: 'VSS.Productivity3D.Service.sln'
+        testFolder: 'test'
+
+  - job: BuildProjectService
+    displayName: 'Build Project service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Project'
+        solution: 'VSS.Visionlink.Project.sln'
+        testFolder: 'test'
+
+  - job: BuildTRexService
+    displayName: 'Build TRex'
+    timeoutInMinutes: 30
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/TRex'
+        solution: 'TRex.netstandard.sln'
+        testFolder: 'tests'
+
+  - job: BuildTileService
+    displayName: 'Build Tile service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/TileService'
+        solution: 'VSS.Tile.Service.sln'
+        testFolder: 'test'
+
+  - job: BuildTFAService
+    displayName: 'Build TFA service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/TagFileAuth'
+        solution: 'VSS.TagFileAuth.Service.sln'
+        testFolder: 'test'
+
+  - job: BuildSchedulerService
+    displayName: 'Build Scheduler service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Scheduler'
+        solution: 'VSS.Productivity3D.Scheduler.sln'
+        testFolder: 'test'
+
+  - job: BuildPushService
+    displayName: 'Build Push service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Push'
+        solution: 'VSS.Productivity3D.Push.sln'
+        testFolder: 'test'
+
+  - job: BuildFilterService
+    displayName: 'Build Filter service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Filter'
+        solution: 'VSS.Productivity3D.Filter.sln'
+        testFolder: 'test'
+
+  - job: Build3dAssetMgmtService
+    displayName: 'Build Asset Management service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/3dAssetMgmt'
+        solution: 'VSS.Productivity3D.3DAssetMgmt.sln'
+        testFolder: 'test'
+
+  - job: BuildEntitlementsService
+    displayName: 'Build Entitlements service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Entitlements'
+        solution: 'VSS.Productivity3D.Entitlements.sln'
+        testFolder: 'test'

@@ -1,0 +1,28 @@
+parameters:
+  - name: servicePath
+    type: string
+    default: false
+  - name: solution
+    type: string
+    default: false
+  - name: testFolder
+    type: string
+    default: false
+
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet build"
+    inputs:
+      command: 'build'
+      projects: "${{ parameters.servicePath }}/${{ parameters.solution }}"
+      arguments: "-nowarn:NU1701"
+
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet test"
+    inputs:
+      command: test
+      # 'Different pattern' delimeter is a new line.
+      projects: |
+       "${{ parameters.servicePath }}/${{ parameters.testFolder }}/**/*.csproj"
+       "!**/*IntegrationTests.csproj"
+      publishTestResults: false
