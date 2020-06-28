@@ -144,12 +144,18 @@ namespace VSS.Productivity3D.Push.Clients
         Connection = null;
       }
 
+      // If the service is being deployed, the kubernetes service may not have been created (as the previous release sometimes gets deleted).
+      // We want to wait for this to come back up.
+      // We must have a connection to the push service for any form of caching to be used correctly.
       var serviceResult = await serviceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
-      if (serviceResult.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(serviceResult.Endpoint))
+      while(serviceResult.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(serviceResult.Endpoint))
       {
-        Logger.LogWarning($"Cannot find the service `{ServiceNameConstants.PUSH_SERVICE}`.");
-        return;
+        Logger.LogWarning($"Cannot find the service `{ServiceNameConstants.PUSH_SERVICE}` - maybe it is starting up. Waiting...");
+        await Task.Delay(1000);
+        serviceResult = await serviceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
       }
+
+      Logger.LogInformation($"Found URL of `{serviceResult.Endpoint}` via Service Discovery Type `{serviceResult.Type}` for {ServiceNameConstants.PUSH_SERVICE}");
 
       endpoint = new Uri(new Uri(serviceResult.Endpoint), HubRoute);
 
