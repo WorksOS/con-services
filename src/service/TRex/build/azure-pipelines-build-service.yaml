@@ -12,8 +12,9 @@ pool: fsm-merino-services
 variables:
   buildPlatform: "Any CPU"
   buildConfiguration: "Release"
-  serviceName: productivity3d-trex
+  serviceName: TRex
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
+  ecrRepositoryName: 'rpd-ccss-productivity3d-trex-webapi'
 
 jobs:
   - job: BuildTestAndDeploy
@@ -66,7 +67,7 @@ jobs:
         displayName: "Push Docker Image"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId)"
+          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: Charts'
