@@ -1,0 +1,24 @@
+﻿using System.IO;
+using System.Text;
+
+namespace CoreX.Wrapper.UnitTests.Types
+{
+  public static class TestConsts
+  {
+    public static string DIMENSIONS_2012_DC_CSIB = "VE5MIENTSUIAAAAAAAAmQFNDUzkwMCBMb2NhbGl6YXRpb24AAFNDUzkwMCBSZWNvcmQAAFNDUzkwMCBSZWNvcmQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAABEYXR1bVRocmVlUGFyYW1ldGVycwAAAABEBABAplRYQZPeGxTEP1hBAAAAAAAAAIAAAAAAAAAAgAAAAAAAAACADlNDUzkwMCBSZWNvcmQAAPwzidi3OOQ/A9VI04kPAMCtCIFm/n6RQMxN+n31I6FAVC6H71oA8D8AAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABU0NTOTAwIFJlY29yZAAAJZmoeTC7kkDzZo8993ajQECCedBUzGU/2wH4yFX6IT/4iVvMj3UBP/+MJqUNAPA/AVNDUzkwMCBSZWNvcmQAAHxLxEIKf5FAZq5nO/IjoUCxjjO4UgNNQCU1m2Q3dRY/doMN9PUhhD4AABgtRFT7Ifm/GC1EVPshCUAYLURU+yH5PxgtRFT7IQlAAQEBAQEBA1MAQwBTADkAMAAwACAATABvAGMAYQBsAGkAegBhAHQAaQBvAG4AAABTAEMAUwA5ADAAMAAgAFIAZQBjAG8AcgBkAAAAUwBDAFMAOQAwADAAIABSAGUAYwBvAHIAZAAAAAAARABhAHQAdQBtAFQAaAByAGUAZQBQAGEAcgBhAG0AZQB0AGUAcgBzAAAAAABTAEMAUwA5ADAAMAAgAFIAZQBjAG8AcgBkAAAAAAAAAFMAQwBTADkAMAAwACAAUgBlAGMAbwByAGQAAABTAEMAUwA5ADAAMAAgAFIAZQBjAG8AcgBkAAAAAAAAAAAAAAAAAAA=";
+  }
+
+  public static class DCFile
+  {
+    public const string BOOTCAMP_2012 = "BootCamp 2012.dc";
+    public const string UTM_32_NN1954_08 = "UTM_32_NN1954-08.dc";
+
+    public static string GetFilePath(string filename) => Path.Combine("TestData", "CoordinateSystems", filename);
+
+    public static string GetDCFileContent(string filename)
+    {
+      using var streamReader = new StreamReader(new FileStream(GetFilePath(filename), FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8);
+      return streamReader.ReadToEnd();
+    }
+  }
+}

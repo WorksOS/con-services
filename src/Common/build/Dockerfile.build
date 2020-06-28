@@ -4,4 +4,6 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet build ./$SERVICE_PATH/Common.sln --runtime linux-x64
+RUN cat ./$SERVICE_PATH/build/environment-vars.build >> /etc/environment
+
+RUN dotnet build ./$SERVICE_PATH/Common.sln --runtime linux-x64 -nowarn:NU1701

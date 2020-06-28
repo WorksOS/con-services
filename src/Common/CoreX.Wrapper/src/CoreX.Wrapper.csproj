@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\service\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
+  </ItemGroup>
+
+  <!-- Statically link to TGL C# shims. -->
+  <ItemGroup>
+    <Reference Include="CsdManagementWrapper">
+      <HintPath>CoreXLibs\trimble.csdmanagementwrapper\3.0.2\lib\netstandard2.0\CsdManagementWrapper.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="GeodeticXWrapper">
+      <HintPath>CoreXLibs\trimble.geodeticxwrapper\3.0.2\lib\netstandard2.0\GeodeticXWrapper.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+  <!-- END -->
+
+  <!-- Copy static runtime (TGL) file dependencies. -->
+  <ItemGroup>    
+    <None Update="Data\TGL_CsdDatabase\CoordSystemDatabase.xml">
+      <Link>Data\TGL_CsdDatabase\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT' and ('$(Platform)' == 'x64' or '$(Platform)' == 'AnyCPU')">
+    <None Include="CoreXLibs\trimble.geodeticxwrapper\3.0.2\win-x64\*.*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CoreXLibs\trimble.csdmanagementwrapper\3.0.2\win-x64\*.*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OS)' == 'Unix' and ('$(Platform)' == 'x64' or '$(Platform)' == 'AnyCPU')">
+    <None Include="CoreXLibs\trimble.geodeticxwrapper\3.0.2\linux-x64\*.*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CoreXLibs\trimble.csdmanagementwrapper\3.0.2\linux-x64\*.*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <!-- END -->
+
+</Project>

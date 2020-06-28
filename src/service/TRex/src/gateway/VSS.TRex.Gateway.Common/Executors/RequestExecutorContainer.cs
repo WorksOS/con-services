@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
   /// <summary>
-  ///   Represents abstract container for all Request executors. Uses abstract factory pattern to seperate executor logic
+  ///   Represents abstract container for all Request executors. Uses abstract factory pattern to separate executor logic
   ///   from controller logic for testability and possible executor versioning.
   /// </summary>
   public abstract class RequestExecutorContainer
@@ -38,9 +37,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <returns></returns>
     protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
-    /// <summary>
-    /// 
-    /// </summary>
     protected virtual Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -48,9 +44,6 @@ namespace VSS.TRex.Gateway.Common.Executors
           "Missing asynchronous executor process method override"));
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public ContractExecutionResult Process<T>(T item)
     {
       if (item == null)
@@ -62,7 +55,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       return ProcessEx(item);
     }
 
-    public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
+    public Task<ContractExecutionResult> ProcessAsync<T>(T item)
     {
       if (item == null)
       {
@@ -70,7 +63,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
       }
 
-      return await ProcessAsyncEx(item);
+      return ProcessAsyncEx(item);
     }
 
     /// <summary>
@@ -87,7 +80,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected RequestExecutorContainer()
     {
       ContractExecutionStates = new ContractExecutionStatesEnum();
-      ProcessErrorCodes();
+      ProcessErrorCodes(); // Todo: ?? This is a virtual method call in a constructor
     }
 
     /// <summary>

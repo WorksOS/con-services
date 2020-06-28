@@ -84,11 +84,12 @@ namespace VSS.MasterData.Proxies
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
     protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IHeaderDictionary customHeaders,
-      IList<KeyValuePair<string, string>> queryParameters = null)
+      IList<KeyValuePair<string, string>> queryParameters = null, string uniqueIdCacheKey = null)
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
-        () => RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters));
+        () => RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters),
+        uniqueIdCacheKey);
     }
 
     /// <summary>

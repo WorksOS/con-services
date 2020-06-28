@@ -20,21 +20,21 @@ namespace VSS.TRex.SiteModels
   /// </summary>
   public class SiteModels : ISiteModels
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModels>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModels>();
 
     /// <summary>
     /// The cached set of site models that are currently 'open' in TRex
     /// </summary>
-    private readonly Dictionary<Guid, ISiteModel> CachedModels = new Dictionary<Guid, ISiteModel>();
+    private readonly Dictionary<Guid, ISiteModel> _cachedModels = new Dictionary<Guid, ISiteModel>();
 
-    private IStorageProxy _PrimaryMutableStorageProxy;
-    private IStorageProxy _PrimaryImmutableStorageProxy;
-    private IStorageProxyFactory _StorageProxyFactory;
+    private IStorageProxy _primaryMutableStorageProxy;
+    private IStorageProxy _primaryImmutableStorageProxy;
+    private IStorageProxyFactory _storageProxyFactory;
 
-    private IStorageProxyFactory StorageProxyFactory => _StorageProxyFactory ??= DIContext.Obtain<IStorageProxyFactory>();
+    private IStorageProxyFactory StorageProxyFactory => _storageProxyFactory ??= DIContext.Obtain<IStorageProxyFactory>();
 
-    public IStorageProxy PrimaryMutableStorageProxy => _PrimaryMutableStorageProxy ??= StorageProxyFactory.MutableGridStorage();
-    public IStorageProxy PrimaryImmutableStorageProxy => _PrimaryImmutableStorageProxy ??= StorageProxyFactory.ImmutableGridStorage();
+    public IStorageProxy PrimaryMutableStorageProxy => _primaryMutableStorageProxy ??= StorageProxyFactory.MutableGridStorage();
+    public IStorageProxy PrimaryImmutableStorageProxy => _primaryImmutableStorageProxy ??= StorageProxyFactory.ImmutableGridStorage();
 
     public IStorageProxy PrimaryStorageProxy(StorageMutability mutability)
     {
@@ -46,28 +46,25 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public SiteModels() { }
 
-    public ISiteModel GetSiteModel(Guid ID) => GetSiteModel(ID, false);
+    public ISiteModel GetSiteModel(Guid id) => GetSiteModel(id, false);
 
     /// <summary>
     /// Retrieves a site model from the persistent store ready for use. If the site model does not
     /// exist it will be created if CreateIfNotExist is true.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="createIfNotExist"></param>
-    /// <returns></returns>
     public ISiteModel GetSiteModel(Guid id, bool createIfNotExist)
     {
       ISiteModel result;
 
-      lock (CachedModels)
+      lock (_cachedModels)
       {
-        if (CachedModels.TryGetValue(id, out result))
+        if (_cachedModels.TryGetValue(id, out result))
         {
           if (result.IsMarkedForDeletion)
           {
             // Ignore this site model as it is in the process of being deleted, also
             // remove it from the cache...
-            CachedModels.Remove(id);
+            _cachedModels.Remove(id);
             return null;
           }
 
@@ -77,44 +74,44 @@ namespace VSS.TRex.SiteModels
 
       result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
 
-      Log.LogInformation($"Loading site model {id} from persistent store");
+      _log.LogInformation($"Loading site model {id} from persistent store");
 
       if (result.LoadFromPersistentStore() == FileSystemErrorStatus.OK)
       {
-        lock (CachedModels)
+        lock (_cachedModels)
         {
           if (result.IsMarkedForDeletion)
           {
             // Ignore this site model as it is in the process of being deleted, also
             // remove it from the cache...
-            CachedModels.Remove(id);
+            _cachedModels.Remove(id);
             return null;
           }
 
           // Check if another thread managed to get in before this thread. If so discard
           // the one just created in favor of the one in the dictionary
-          if (CachedModels.TryGetValue(id, out var result2))
+          if (_cachedModels.TryGetValue(id, out var result2))
             return result2;
 
-          CachedModels.Add(id, result);
+          _cachedModels.Add(id, result);
           return result;
         }
       }
 
-      Log.LogInformation($"Site model {id} is not present in the persistent store, createIfNotExist = {createIfNotExist}");
+      _log.LogInformation($"Site model {id} is not present in the persistent store, createIfNotExist = {createIfNotExist}");
 
       if (createIfNotExist)
       {
-        lock (CachedModels)
+        lock (_cachedModels)
         {
           // Check if another thread managed to get in before this thread. If so discard
           // the one just created in favor of the one in the dictionary
-          if (CachedModels.TryGetValue(id, out var result2))
+          if (_cachedModels.TryGetValue(id, out var result2))
             return result2;
 
-          Log.LogInformation($"Creating new site model {id} and adding to internal cache");
+          _log.LogInformation($"Creating new site model {id} and adding to internal cache");
 
-          CachedModels.Add(id, result);
+          _cachedModels.Add(id, result);
 
           // Establish the metadata entry for this new site model
           DIContext.Obtain<ISiteModelMetadataManager>().Add(id, result.MetaData);
@@ -133,7 +130,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public ISiteModel GetSiteModelRaw(Guid id)
     {
-      Log.LogInformation($"Loading site model {id} from persistent store as raw read");
+      _log.LogInformation($"Loading site model {id} from persistent store as raw read");
       
       var result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
 
@@ -150,11 +147,11 @@ namespace VSS.TRex.SiteModels
     {
       ISiteModel siteModel;
 
-      lock (CachedModels)
+      lock (_cachedModels)
       {
-        if (CachedModels.TryGetValue(id, out siteModel))
+        if (_cachedModels.TryGetValue(id, out siteModel))
         {
-          CachedModels.Remove(id);
+          _cachedModels.Remove(id);
         }
       }
 
@@ -165,10 +162,9 @@ namespace VSS.TRex.SiteModels
     /// Handles the situation when TAG file processing or some other activity has modified the attributes of a site model
     /// requiring the site model to be reloaded
     /// </summary>
-    /// <param name="message"></param>
     public void SiteModelAttributesHaveChanged(ISiteModelAttributesChangedEvent message)
     {
-      Log.LogInformation($"Entering attribute change notification processor for  project {message.SiteModelID}.");
+      _log.LogInformation($"Entering attribute change notification processor for  project {message.SiteModelID}.");
 
       // Site models have immutable characteristics in TRex. Multiple requests may reference the same site model
       // concurrently, with no interlocks enforcing access serialization. Any attempt to replace or modify an already loaded
@@ -197,18 +193,15 @@ namespace VSS.TRex.SiteModels
 
       // Construct a new site model that preserves elements not affected by the notification and replace the existing 
       // site model reference with it.
-      lock (CachedModels)
+      lock (_cachedModels)
       {
-        CachedModels.TryGetValue(message.SiteModelID, out siteModel);
+        _cachedModels.TryGetValue(message.SiteModelID, out siteModel);
 
-        if (siteModel != null)
+        if (siteModel != null && message.SiteModelMarkedForDeletion)
         {
-          if (message.SiteModelMarkedForDeletion)
-          {
-            // Remove the site model from the cache and exit.
-            CachedModels.Remove(message.SiteModelID);
-            return;
-          }
+          // Remove the site model from the cache and exit.
+          _cachedModels.Remove(message.SiteModelID);
+          return;
         }
 
         // Note: The spatial data grid is highly conserved and never killed in a site model change notification.
@@ -225,7 +218,7 @@ namespace VSS.TRex.SiteModels
             | (!message.AlignmentsModified ? SiteModelOriginConstructionFlags.PreserveAlignments : 0)
           ;
 
-        Log.LogInformation($"Processing attribute change notification for site model {message.SiteModelID}. Preserved elements are {originFlags}");
+        _log.LogInformation($"Processing attribute change notification for site model {message.SiteModelID}. Preserved elements are {originFlags}");
 
         if (siteModel != null)
         {
@@ -234,7 +227,7 @@ namespace VSS.TRex.SiteModels
           siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(siteModel, originFlags);
 
           // Replace the site model reference in the cache with the new site model
-          CachedModels[message.SiteModelID] = siteModel;
+          _cachedModels[message.SiteModelID] = siteModel;
         }
       }
 
@@ -244,7 +237,7 @@ namespace VSS.TRex.SiteModels
       if (message.ExistenceMapChangeMask != null)
       {
         // Create and deserialize the sub grid but mask from the message
-        ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
+        var mask = new SubGridTreeSubGridExistenceBitMask();
         mask.FromBytes(message.ExistenceMapChangeMask);
 
         if (siteModel != null)
@@ -255,7 +248,7 @@ namespace VSS.TRex.SiteModels
           {
             // Obtain the matching node sub grid in Grid
             var node = siteModel.Grid.LocateClosestSubGridContaining
-            (leaf.OriginX << SubGridTreeConsts.SubGridIndexBitsPerLevel,
+             (leaf.OriginX << SubGridTreeConsts.SubGridIndexBitsPerLevel,
               leaf.OriginY << SubGridTreeConsts.SubGridIndexBitsPerLevel,
               leaf.Level);
 
@@ -281,14 +274,13 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Returns a cloned list of references to the set of site models currently present in the site models cache
     /// </summary>
-    /// <returns></returns>
     public List<ISiteModel> GetSiteModels()
     {
       var models = new List<ISiteModel>();
 
-      lock (CachedModels)
+      lock (_cachedModels)
       {
-        models.AddRange(CachedModels.Values);
+        models.AddRange(_cachedModels.Values);
       }
 
       return models;

@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     }
 
     /// <summary>
-    /// Schedule an export
+    /// Schedule an export or background file import
     /// </summary>
     /// <param name="request">Http request details of how to get the export data</param>
     [Route("internal/v1/background")] // double up the url with the intention of splitting this later
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     }
 
     /// <summary>
-    /// Get the status of an export. When status is succeeded then also returns a file download link.
+    /// Get the status of an export or background file import. When status is succeeded then also returns a file download link.
     /// </summary>
     /// <param name="jobId">The job id</param>
     /// <returns>The AWS S3 key where the file has been saved and the current state of the job</returns>
@@ -80,9 +80,9 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     [Route("internal/v1/background/{jobId}")]  // double up the url with the intention of splitting this later
     [Route("internal/v1/export/{jobId}")]
     [HttpGet]
-    public JobStatusResult GetExportJobStatus(string jobId)
+    public JobStatusResult GetJobStatus(string jobId)
     {
-      log.LogInformation($"GetExportJobStatus: jobId={jobId}");
+      log.LogInformation($"GetJobStatus: jobId={jobId}");
 
       var jobData = JobStorage.Current.GetConnection()?.GetJobData(jobId);
       var status = jobData?.State;
@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
             $"Missing job details for {jobId}"));
       }
 
-      log.LogInformation($"GetExportJobStatus: {jobId} status={status}");
+      log.LogInformation($"GetJobStatus: {jobId} status={status}");
       string key = null;
       string downloadLink = null;
       FailureDetails details = null;
@@ -101,9 +101,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       {
         if (Request.Path.Value.Contains("export"))
         {
-          // Attempt to get the download link that should ve set in the job
+          // Attempt to get the download link that should have been set in the job
           key = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.S3_KEY_STATE_KEY);
           downloadLink = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportJob.DOWNLOAD_LINK_STATE_KEY);
+          log.LogInformation($"Getting export job {jobId} downloadLink={downloadLink}");
 
           if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(downloadLink))
           {
@@ -117,7 +118,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       else if (status.Equals(Hangfire.States.DeletedState.StateName, StringComparison.OrdinalIgnoreCase))
       {
         var detailsJson = JobStorage.Current.GetConnection().GetJobParameter(jobId, ExportFailedState.EXPORT_DETAILS_KEY);
-        log.LogDebug($"GetExportJobStatus: detailsJson={detailsJson}");
+        log.LogDebug($"GetJobStatus: detailsJson={detailsJson}");
         if (!string.IsNullOrEmpty(detailsJson))
         {
           details = JsonConvert.DeserializeObject<FailureDetails>(detailsJson);
@@ -134,7 +135,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       }
 
       var result = new JobStatusResult { Key = key, Status = status, DownloadLink = downloadLink, FailureDetails = details };
-      log.LogInformation($"GetExportJobStatus: result={JsonConvert.SerializeObject(result)}");
+      log.LogInformation($"GetJobStatus: result={JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -149,7 +150,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     [HttpGet]
     public FileStreamResult GetExportJobResult(string jobId)
     {
-      var status = GetExportJobStatus(jobId);
+      var status = GetJobStatus(jobId);
 
       if (string.IsNullOrEmpty(status.Key))
       {

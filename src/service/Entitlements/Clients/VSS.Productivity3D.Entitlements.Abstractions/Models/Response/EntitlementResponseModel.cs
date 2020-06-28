@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using VSS.Common.Abstractions.MasterData.Interfaces;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
 {
   public class EntitlementResponseModel : IMasterDataModel
   {
+    /// <summary>
+    /// All entitlements are tagged by this key in cache, and can be cleared and refreshed by invalidating the cache
+    /// </summary>
+    public const string EntitlementCacheTag = "ENTITLEMENT";
+
     /// <summary>
     /// An identifier to represent the Organization
     /// Example is a CustomerUID in WorksOS
@@ -32,7 +35,7 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     {
       return new List<string>
       {
-        OrganizationIdentifier, UserEmail
+        OrganizationIdentifier, UserEmail, EntitlementCacheTag
       };
     }
   }

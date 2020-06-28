@@ -22,5 +22,13 @@ namespace VSS.Productivity3D.Push.Clients.Notifications
     {
       cache.RemoveByTag(guid.ToString());
     }
+
+    // This must match the cache invalidation signature, of void method(object)
+    [Notification(NotificationUidType.CacheUpdate, CacheChangeNotification.CACHE_CHANGED_KEY)]
+    public void InvalidateCacheItem(object o)
+    {
+      if(o != null)
+        cache.RemoveByTag(o.ToString());
+    }
   }
 }
