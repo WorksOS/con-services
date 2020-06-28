@@ -12,7 +12,7 @@ pool: fsm-merino-services
 variables:
   buildPlatform: "Any CPU"
   buildConfiguration: "Release"
-  serviceName: TRex
+  serviceName: productivity3d-trex
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
 
 jobs:

@@ -211,13 +211,10 @@ function Login-Aws {
 
     $awsVersion = (aws --version).Split(' ')[0].Split('/')[1].Split(' ')
     $versionMajorMinor = [decimal]($awsVersion[0].SubString(0, $awsVersion.LastIndexOf('.')))
-
-    Write-Host "Version: $versionMajorMinor"
-
     $canUseGetLoginPassword = $versionMajorMinor -ge 1.18
 
     if ($canUseGetLoginPassword) {
-        # Azure pipelines use a recent version of AWS CLI that has replace get-login with get-login-password.
+        # Azure pipelines use a recent version of AWS CLI that has replaced get-login with get-login-password.
         aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
         if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
     }
@@ -229,21 +226,22 @@ function Login-Aws {
     }
 }
 
-function Update-Nuget-Sources {
-    $sourceName = 'trmb-ccss'
+# May be required when interacting with TGL or trmb-ccss Nuget servers.
+# function Update-Nuget-Sources {
+#     $sourceName = 'trmb-ccss'
 
-    if (-not $(nuget sources List | Select-String -Pattern 'trmb-ccss' -Quiet)) {
-        Write-Host "`nAdding source '$sourceName' to the NuGet configuration file..." -ForegroundColor Green
-        & '..\build\nuget\nuget.exe' sources add -Name "${sourceName}" -Source "https://pkgs.dev.azure.com/trmb-ccss/_packaging/trmb-ccss/nuget/v3/index.json" -ConfigFile "NuGet.Config"
-        if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
-    }
+#     if (-not $(nuget sources List | Select-String -Pattern 'trmb-ccss' -Quiet)) {
+#         Write-Host "`nAdding source '$sourceName' to the NuGet configuration file..." -ForegroundColor Green
+#         & '..\build\nuget\nuget.exe' sources add -Name "${sourceName}" -Source "https://pkgs.dev.azure.com/trmb-ccss/_packaging/trmb-ccss/nuget/v3/index.json" -ConfigFile "NuGet.Config"
+#         if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
+#     }
 
-    Write-Host "`nUpdating credentials for NuGet source '$sourceName'..." -ForegroundColor Green
-    & '..\build\nuget\nuget.exe' sources update -Name "${sourceName}" -Username "az" -Password "${systemAccessToken}" -ConfigFile "NuGet.Config"
-    if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
+#     Write-Host "`nUpdating credentials for NuGet source '$sourceName'..." -ForegroundColor Green
+#     & '..\build\nuget\nuget.exe' sources update -Name "${sourceName}" -Username "az" -Password "${systemAccessToken}" -ConfigFile "NuGet.Config"
+#     if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
 
-    Exit-With-Code ([ReturnCode]::SUCCESS)
-}
+#     Exit-With-Code ([ReturnCode]::SUCCESS)
+# }
 function TrackTime($Time) {
     if (!($Time)) { 
         Return 
