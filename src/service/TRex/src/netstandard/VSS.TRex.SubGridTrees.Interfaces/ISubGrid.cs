@@ -44,19 +44,19 @@ namespace VSS.TRex.SubGridTrees.Interfaces
 
     int AxialCellCoverageByThisSubGrid();
     int AxialCellCoverageByChildSubGrid();
-    bool ContainsOTGCell(int CellX, int CellY);
-    void SetOriginPosition(int CellX, int CellY);
-    void GetSubGridCellIndex(int CellX, int CellY, out byte SubGridX, out byte SubGridY);
+    bool ContainsOTGCell(int cellX, int cellY);
+    void SetOriginPosition(int cellX, int cellY);
+    void GetSubGridCellIndex(int cellX, int cellY, out byte subGridX, out byte subGridY);
     bool IsLeafSubGrid();
     string Moniker();
-    ISubGrid GetSubGrid(int X, int Y);
-    void SetSubGrid(int X, int Y, ISubGrid value);
-    void CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
+    ISubGrid GetSubGrid(int x, int y);
+    void SetSubGrid(int x, int y, ISubGrid value);
+    void CalculateWorldOrigin(out double worldOriginX, out double worldOriginY);
     void Clear();
     void AllChangesMigrated();
     bool IsEmpty();
     void RemoveFromParent();
-    bool CellHasValue(byte CellX, byte CellY);
+    bool CellHasValue(byte cellX, byte cellY);
     int CountNonNullCells();
     void SetAbsoluteOriginPosition(int originX, int originY);
     void SetAbsoluteLevel(byte level);
