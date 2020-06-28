@@ -196,13 +196,15 @@ function Push-Container-Image {
 function Login-Aws {
     Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
     Write-Host "Determining AWS CLI version..."
-    $awsVersionFull = (aws --version) -split ' '
-    $awsVersion = [decimal]($awsVersionFull[0].SubString(8, 4))
 
-    Write-Host "Version: $awsVersion"
+    $awsVersion = (aws --version).Split(' ')[0].Split('/')[1].Split(' ')
+    $versionMajorMinor = [decimal]($awsVersion[0].SubString(0, $awsVersion.LastIndexOf('.')))
 
-    $canUseGetLoginPassword = $awsVersion -ge 1.18
+    Write-Host "Version: $versionMajorMinor"
 
+    $canUseGetLoginPassword = $versionMajorMinor -ge 1.18
+
+    exit
     if ($canUseGetLoginPassword) {
         # Azure pipelines use a recent version of AWS CLI that has replace get-login with get-login-password.
         aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com

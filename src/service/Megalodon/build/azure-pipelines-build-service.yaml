@@ -24,17 +24,9 @@ jobs:
       - checkout: self
         fetchDepth: 1
 
-      - task: Bash@3
-        displayName: "Update BUILD_BUILDNUMBER"
-        inputs:
-          targetType: 'inline'
-          script: 'echo "##vso[build.updatebuildnumber]$(Build.BuildId)"'
-
-      - task: Bash@3
-        displayName: "Dump variables"
-        inputs:
-          targetType: 'inline'
-          script: 'printenv | sort'
+      - template: '$(System.DefaultWorkingDirectory)/build/templates/update-buildnumber.yaml'
+        parameters:
+          buildId: '$(Build.BuildId)'
 
       - task: PowerShell@2
         displayName: "Build"
