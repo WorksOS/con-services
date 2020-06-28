@@ -24,9 +24,9 @@ jobs:
       - checkout: self
         fetchDepth: 1
 
-      - template: 'build/templates/update-buildnumber.yaml'
+      - template: build/templates/update-buildnumber.yaml
         parameters:
-          buildId: '$(Build.BuildId)'
+          buildId: $(Build.BuildId)
 
       - task: PowerShell@2
         displayName: "Build"
