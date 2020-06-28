@@ -24,7 +24,7 @@ jobs:
       - checkout: self
         fetchDepth: 1
 
-      - template: build/templates/update-buildnumber.yaml
+      - template: "$(System.DefaultWorkingDirectory)/build/templates/update-buildnumber.yaml"
         parameters:
           buildId: $(Build.BuildId)
 
