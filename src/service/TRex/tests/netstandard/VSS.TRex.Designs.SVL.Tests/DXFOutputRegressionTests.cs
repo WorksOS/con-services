@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL.DXF;
@@ -45,10 +47,20 @@ namespace VSS.TRex.Designs.SVL.Tests
       calcResult.Should().Be(DesignProfilerRequestResult.OK);
       MS.Should().NotBeNull();
 
-     // File.WriteAllBytes(Path.GetTempFileName() + fileName + ".MasterAlignment.DXF", MS.ToArray());
+      // File.WriteAllBytes(Path.GetTempFileName() + fileName + ".MasterAlignment.DXF", MS.ToArray());
+
+      // The Writer writes lines with environment line endings. Done this way we read the file with environment line endings and have 
+      // more accurate equality checking vs ReadAllBytes.
+      var input = File.ReadAllLines(Path.Combine("TestData", "Common", compareFileName));
+      var sb = new StringBuilder();
+
+      foreach (var s in input)
+      {
+        sb.Append(s + Environment.NewLine);
+      }
 
       // Compare with known good file
-      var goodFile = File.ReadAllBytes(Path.Combine("TestData", "Common", compareFileName));
+      var goodFile = Encoding.UTF8.GetBytes(sb.ToString());
 
       MS.ToArray().Should().BeEquivalentTo(goodFile);
     }

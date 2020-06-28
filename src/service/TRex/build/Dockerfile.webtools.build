@@ -1,0 +1,7 @@
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build
+ARG SERVICE_PATH=src/service/TRex
+
+COPY . /build/
+WORKDIR /build
+
+RUN dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj -nowarn:NU1701 --output /trex/Webtools

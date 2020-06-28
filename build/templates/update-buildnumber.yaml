@@ -1,0 +1,15 @@
+parameters:
+  - name: buildId
+    type: string
+
+steps:
+    - task: Bash@3
+      displayName: "Update BUILD_BUILDNUMBER"
+      inputs:
+        targetType: 'inline'
+        script: 'echo "##vso[build.updatebuildnumber]${{ parameters.buildId }}"'
+    - task: Bash@3
+      displayName: "Dump variables"
+      inputs:
+        targetType: 'inline'
+        script: 'printenv | sort'

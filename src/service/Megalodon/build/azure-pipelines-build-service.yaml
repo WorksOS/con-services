@@ -14,6 +14,7 @@ variables:
   buildConfiguration: "Release"
   serviceName: Megalodon
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/Megalodon"
+  ecrRepositoryName: 'rpd-ccss-megalodon-webapi'
 
 jobs:
   - job: BuildTestAndDeploy
@@ -24,17 +25,9 @@ jobs:
       - checkout: self
         fetchDepth: 1
 
-      - task: Bash@3
-        displayName: "Update BUILD_BUILDNUMBER"
-        inputs:
-          targetType: 'inline'
-          script: 'echo "##vso[build.updatebuildnumber]$(Build.BuildId)"'
-
-      - task: Bash@3
-        displayName: "Dump variables"
-        inputs:
-          targetType: 'inline'
-          script: 'printenv | sort'
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/build/templates/update-buildnumber.yaml
+        parameters:
+          buildId: $(Build.BuildId)
 
       - task: PowerShell@2
         displayName: "Build"
@@ -54,7 +47,7 @@ jobs:
         inputs:
           testResultsFormat: XUnit
           testResultsFiles: "**/TestResults.xml"
-          searchFolder: "$(rootServiceFolder)/UnitTestResults/TestResults.xml"
+          searchFolder: "$(rootServiceFolder)/UnitTestResults"
 
       - task: PublishCodeCoverageResults@1
         displayName: "Publish Code Coverage"
@@ -74,7 +67,7 @@ jobs:
       #   displayName: "Push Docker Image"
       #   inputs:
       #     filePath: build/azure-build-pipeline.ps1
-      #     arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId)"
+      #     arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
 
       # - task: PublishBuildArtifacts@1
       #   displayName: 'Publish Artifact: Charts'

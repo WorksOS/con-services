@@ -2,6 +2,7 @@ ARG FROM_IMAGE
 FROM ${FROM_IMAGE}
 
 ARG SERVICE_PATH
-WORKDIR /build
+WORKDIR /build/${SERVICE_PATH}
 
-RUN dotnet test $SERVICE_PATH/test/UnitTests/VSS.Productivity3D.Push.UnitTests/VSS.Productivity3D.Push.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=../../../UnitTestResults/ --logger xunit --results-directory ${SERVICE_PATH}/UnitTestResults
+RUN find . -name "*Tests.csproj" -print0 | tar -cvf unittestprojects.tar --null -T -
+RUN tar -x -f unittestprojects.tar --to-command 'dotnet test $TAR_FILENAME /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="/build/${SERVICE_PATH}/UnitTestResults/" --logger xunit --results-directory UnitTestResults -nowarn:NU1701'
