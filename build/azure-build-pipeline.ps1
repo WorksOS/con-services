@@ -25,11 +25,12 @@ enum ReturnCode {
 }
 
 $services = @{
-    Common    = 'Common'
-    Mock      = 'service/MockProjectWebApi'
-    Push      = 'service/Push'
-    Megalodon = 'service/Megalodon'
-    TRex      = 'service/TRex'
+    Common       = 'Common'
+    Mock         = 'service/MockProjectWebApi'
+    Push         = 'service/Push'
+    Megalodon    = 'service/Megalodon'
+    TRex         = 'service/TRex'
+    TRexWebTools = 'service/TRex'
 }
 
 $servicePath = ''
@@ -39,9 +40,18 @@ function Build-Solution {
     Login-Aws
 
     $imageTag = "$serviceName-build"
+    $dockerFile = 'Dockerfile.build'
+    
+    switch ($serviceName) {
+        'trexwebtools' {
+            $dockerFile = 'Dockerfile.webtools.build'
+            continue
+        }
+        default { }
+    }
 
     Write-Host "`nBuilding container image '$imageTag'..." -ForegroundColor Green
-    docker build -f $servicePath/build/Dockerfile.build --tag $imageTag --no-cache --build-arg SERVICE_PATH=$servicePath .
+    docker build -f $servicePath/build/$dockerFile --tag $imageTag --no-cache --build-arg SERVICE_PATH=$servicePath .
 
     if (!$?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 

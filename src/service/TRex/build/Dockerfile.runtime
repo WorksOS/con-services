@@ -8,7 +8,7 @@ ARG SERVICE_PATH
 WORKDIR /build
 
 # Copy the publish files created during the build phase.
-#COPY --from=build_container /trex/Webtools /trex/Webtools
+COPY --from=build_container /trex/Webtools /trex/Webtools
 COPY --from=build_container /trex/ApplicationServer /trex/ApplicationServer
 COPY --from=build_container /trex/DesignElevation /trex/DesignElevation
 COPY --from=build_container /trex/MutableData /trex/MutableData

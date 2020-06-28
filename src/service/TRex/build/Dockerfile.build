@@ -1,15 +1,14 @@
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as test_build_container
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build
 ARG SERVICE_PATH=src/service/TRex
 
-# We are contructing the build container and performing the build
 COPY . /build/
 WORKDIR /build
 
 RUN dotnet restore ./${SERVICE_PATH}/TRex.netstandard.sln -nowarn:NU1701
 
 #publish TRex servers
-#RUN dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --no-restore -nowarn:NU1701 --output /trex/Webtools ; \
-RUN dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --no-restore -nowarn:NU1701 --output /trex/ApplicationServer ; \
+RUN dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --no-restore -nowarn:NU1701 --output /trex/Webtools ; \
+dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --no-restore -nowarn:NU1701 --output /trex/ApplicationServer ; \
 dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --no-restore -nowarn:NU1701 --output /trex/DesignElevation ; \
 dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --no-restore -nowarn:NU1701 --output /trex/MutableData ; \
 dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --no-restore -nowarn:NU1701 --output /trex/PSNode ; \

@@ -46,7 +46,7 @@ jobs:
         inputs:
           testResultsFormat: XUnit
           testResultsFiles: "**/TestResults.xml"
-          searchFolder: "$(rootServiceFolder)/UnitTestResults/TestResults.xml"
+          searchFolder: "$(rootServiceFolder)/UnitTestResults"
 
       - task: PublishCodeCoverageResults@1
         displayName: "Publish Code Coverage"
