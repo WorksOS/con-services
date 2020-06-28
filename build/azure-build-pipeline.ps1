@@ -3,6 +3,7 @@ PARAM (
     [Parameter(Mandatory = $false)][string]$action,
     [Parameter(Mandatory = $false)][string]$awsRepositoryName = '940327799086.dkr.ecr.us-west-2.amazonaws.com',
     [Parameter(Mandatory = $false)][string]$branch,
+    [Parameter(Mandatory = $false)][string]$ecrRepositoryName,
     [Parameter(Mandatory = $false)][string]$buildId,
     [Parameter(Mandatory = $false)][string]$systemAccessToken,
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
@@ -25,12 +26,12 @@ enum ReturnCode {
 }
 
 $services = @{
-    Common       = 'Common'
-    Mock         = 'service/MockProjectWebApi'
-    Push         = 'service/Push'
-    Megalodon    = 'service/Megalodon'
-    TRex         = 'service/TRex'
-    TRexWebTools = 'service/TRex'
+    Common        = 'Common'
+    Mock          = 'service/MockProjectWebApi'
+    Push          = 'service/Push'
+    Megalodon     = 'service/Megalodon'
+    TRex          = 'service/TRex'
+    TRexWebTools  = 'service/TRex' # placeholder
 }
 
 $servicePath = ''
@@ -185,11 +186,10 @@ function Push-Container-Image {
         }
     }
 
-    $ecr_prefix = 'rpd-ccss-'
     $branch = $branch -replace '.*/' # Remove everything up to and including the last forward slash.
 
     $versionNumber = $branch + "-" + $buildId
-    $ecrRepository = "${awsRepositoryName}/${ecr_prefix}${serviceName}-webapi:${versionNumber}"
+    $ecrRepository = "${awsRepositoryName}/${ecrRepositoryName}:${versionNumber}"
 
     Write-Host "`nPushing image '$ecrRepository'..." -ForegroundColor Green
     docker tag $publishImage $ecrRepository
@@ -291,6 +291,7 @@ Write-Host "  buildId = $buildId"
 Write-Host "  service = $service"
 Write-Host "  servicePath = $servicePath"
 Write-Host "  serviceName = $serviceName"
+Write-Host "  ecrRepositoryName = $ecrRepositoryName"
 Write-Host "  recordTestResults = $recordTestResults"
 Write-Host "  collectCoverage = $collectCoverage"
 Write-Host "  awsRepositoryName = $awsRepositoryName"

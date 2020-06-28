@@ -14,6 +14,7 @@ variables:
   buildConfiguration: "Release"
   serviceName: Megalodon
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/Megalodon"
+  ecrRepositoryName: 'rpd-ccss-megalodon-webapi'
 
 jobs:
   - job: BuildTestAndDeploy
@@ -66,7 +67,7 @@ jobs:
       #   displayName: "Push Docker Image"
       #   inputs:
       #     filePath: build/azure-build-pipeline.ps1
-      #     arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId)"
+      #     arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
 
       # - task: PublishBuildArtifacts@1
       #   displayName: 'Publish Artifact: Charts'
