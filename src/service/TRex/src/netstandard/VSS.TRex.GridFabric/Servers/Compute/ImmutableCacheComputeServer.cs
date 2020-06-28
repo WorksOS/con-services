@@ -34,7 +34,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     private static readonly ILogger Log = Logger.CreateLogger<ImmutableCacheComputeServer>();
     public const string IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB = "IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB";
     public const long DEFAULT_IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB = 128;
-    public const string IMMUTABLE_DATA_REGION_MAX_SIZE_MB = "IMMUTABLE_DATA_REGION_MAX_MB";
+    public const string IMMUTABLE_DATA_REGION_MAX_SIZE_MB = "IMMUTABLE_DATA_REGION_MAX_SIZE_MB";
     public const long DEFAULT_IMMUTABLE_DATA_REGION_MAX_SIZE_MB = 1000;
 
     /// <summary>
