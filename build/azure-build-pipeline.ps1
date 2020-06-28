@@ -197,6 +197,8 @@ function Login-Aws {
     Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
     Write-Host "Determining AWS CLI version..."
 
+    aws --version
+
     $awsVersion = (aws --version).Split(' ')[0].Split('/')[1].Split(' ')
     $versionMajorMinor = [decimal]($awsVersion[0].SubString(0, $awsVersion.LastIndexOf('.')))
 
