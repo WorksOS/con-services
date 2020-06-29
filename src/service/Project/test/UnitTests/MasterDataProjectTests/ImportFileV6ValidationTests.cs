@@ -258,37 +258,5 @@ namespace VSS.MasterData.ProjectTests
       Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(32)));
     }
 
-    [Theory]
-    [InlineData(ImportedFileType.Alignment, "true", "false")]
-    [InlineData(ImportedFileType.Alignment, "false", "true")]
-    [InlineData(ImportedFileType.DesignSurface, "true", "false")]
-    [InlineData(ImportedFileType.DesignSurface, "true", "true")]
-    [InlineData(ImportedFileType.DesignSurface, "false", "true")]
-    [InlineData(ImportedFileType.SurveyedSurface, "false", "true")]
-    [InlineData(ImportedFileType.ReferenceSurface, "true", "false")]
-    [InlineData(ImportedFileType.ReferenceSurface, "true", "true")]
-    [InlineData(ImportedFileType.ReferenceSurface, "false", "true")]
-    public void ValidateImportFile_EnvironmentVariables_HappyPath(ImportedFileType importedFileType, string raptorEnabled, string tRexEnabled)
-    {
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns(tRexEnabled);
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns(raptorEnabled);
-      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, mockConfigStore.Object, ServiceExceptionHandler);
-    }
-
-    [Theory]
-    [InlineData(ImportedFileType.Alignment, "false", "false")]
-    [InlineData(ImportedFileType.DesignSurface, "false", "false")]
-    [InlineData(ImportedFileType.ReferenceSurface, "false", "false")]
-    public void ValidateImportFile_EnvironmentVariables_UnHappyPath(ImportedFileType importedFileType, string raptorEnabled, string tRexEnabled)
-    {
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns(tRexEnabled);
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns(raptorEnabled);
-      var ex = Assert.Throws<ServiceException>(
-        () => ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, mockConfigStore.Object, ServiceExceptionHandler));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(113)));
-    }
-
   }
 }

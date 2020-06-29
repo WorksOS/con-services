@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,14 +8,10 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Productivity3D.Models;
-using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -30,91 +23,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// </summary>
   public static class ImportedFileRequestHelper
   {
-    #region productivity3D
-
-    /// <summary>
-    /// Notify raptor of new file
-    ///     if it already knows about it, it will just update and re-notify raptor and return success.
-    /// </summary>
-    /// <returns></returns>
-    public static async Task<AddFileResult> NotifyRaptorAddFile(long? projectId, Guid projectUid,
-      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId,
-      Guid importedFileUid, bool isCreate,
-      ILogger log, IHeaderDictionary headers, IServiceExceptionHandler serviceExceptionHandler,
-      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProjectRepository projectRepo)
-    {
-      AddFileResult notificationResult = null;
-      try
-      {
-        notificationResult = await productivity3dV2ProxyNotification
-          .AddFile(projectUid, importedFileType, importedFileUid,
-            JsonConvert.SerializeObject(fileDescriptor), importedFileId, dxfUnitsType, headers);
-
-
-      }
-      catch (Exception e)
-      {
-        log.LogError(e, $"FileImport AddFile in RaptorServices failed with exception. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. isCreate: {isCreate}");
-        if (isCreate)
-          await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid,
-              serviceExceptionHandler, projectRepo, true)
-            .ConfigureAwait(false);
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "productivity3dV2ProxyNotification.AddFile",
-          e.Message);
-      }
-
-      log.LogDebug(
-        $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
-
-      if (notificationResult != null && notificationResult.Code != 0)
-      {
-        log.LogError(
-          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"} isCreate: {isCreate}. ");
-        if (isCreate)
-          await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb(projectUid, importedFileUid,
-              serviceExceptionHandler, projectRepo, true)
-            .ConfigureAwait(false);
-
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67,
-          notificationResult.Code.ToString(), notificationResult.Message);
-      }
-
-      return notificationResult;
-    }
-
-    /// <summary>
-    /// Notify raptor of delete file
-    ///  if it doesn't know about it then it do nothing and return success
-    /// </summary>
-    /// <returns></returns>
-    public static async Task<ImportedFileInternalResult> NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType importedFileType,
-      Guid importedFileUid, FileDescriptor fileDescriptor, long importedFileId, long? legacyImportedFileId,
-      ILogger log, IHeaderDictionary headers, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification)
-    {
-      BaseMasterDataResult notificationResult = null;
-      try
-      {
-        notificationResult = await productivity3dV2ProxyNotification
-          .DeleteFile(projectUid, importedFileType, importedFileUid, JsonConvert.SerializeObject(fileDescriptor), importedFileId, legacyImportedFileId, headers)
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        log.LogError(e, $"NotifyRaptorDeleteFile DeleteFile in RaptorServices failed with exception. projectUid:{projectUid} FileDescriptor:{fileDescriptor}");
-        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "productivity3dV2ProxyNotification.DeleteFile", e.Message);
-      }
-
-      log.LogDebug(
-            $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
-      if (notificationResult != null && notificationResult.Code != 0)
-      {
-        log.LogError($"NotifyRaptorDeleteFile DeleteFile in RaptorServices failed. projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}");
-        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 108, notificationResult.Code.ToString(), notificationResult.Message);
-      }
-      return null;
-    }
-    #endregion productivity3D
-
     #region TRex
 
     /// <summary>
