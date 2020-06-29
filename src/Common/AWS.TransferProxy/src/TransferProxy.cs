@@ -189,8 +189,19 @@ namespace VSS.AWS.TransferProxy
           };
 
           ListObjectsV2Response response;
-          response = await s3Client.ListObjectsV2Async(request);
-          return response.S3Objects.Count > 0;
+          do
+          {
+            response = await s3Client.ListObjectsV2Async(request);
+
+            // Process the response.
+            foreach (S3Object entry in response.S3Objects)
+            {
+              if (entry.Key == s3Key)
+                return true;
+            }
+            request.ContinuationToken = response.NextContinuationToken;
+          } while (response.IsTruncated);
+          return false;
         }
         catch (AmazonS3Exception amazonS3Exception)
         {
