@@ -210,7 +210,6 @@ namespace VSS.AWS.TransferProxy
         catch (Exception e)
         {
           logger.LogInformation("FileExists. Exception: " + e.ToString());
-          Console.ReadKey();
         }
         return false;
       }
