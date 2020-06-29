@@ -170,5 +170,91 @@ namespace VSS.AWS.TransferProxy
         return (s3Result.S3Objects.Select(x => x.Key).ToArray(), s3Result.IsTruncated ? s3Result.NextContinuationToken : string.Empty);
       }
     }
+
+    /// <summary>
+    /// Check file exists in S3 bucket
+    /// </summary>
+    public async Task<bool> FileExists(string s3Key)
+    {
+      using (var s3Client = GetS3Client())
+      {
+
+        try
+        {
+          ListObjectsV2Request request = new ListObjectsV2Request
+          {
+            BucketName = awsBucketName,
+            MaxKeys = 1,
+            Prefix = s3Key
+          };
+
+          ListObjectsV2Response response;
+          response = await s3Client.ListObjectsV2Async(request);
+          return response.S3Objects.Count > 0;
+        }
+        catch (AmazonS3Exception amazonS3Exception)
+        {
+          logger.LogInformation("FileExists. S3 error occurred. Exception: " + amazonS3Exception.ToString());
+        }
+        catch (Exception e)
+        {
+          logger.LogInformation("FileExists. Exception: " + e.ToString());
+          Console.ReadKey();
+        }
+        return false;
+      }
+
+
+      /* Method2 hold for now
+      using (var s3Client = GetS3Client())
+      {
+        // some buckets have many thousands of objects so this is most effective way to determine if file exists 
+        try
+        {
+          s3Client.GetObjectMetadataAsync(awsBucketName, s3Key);
+          return true;
+        }
+
+        catch (Amazon.S3.AmazonS3Exception ex)
+        {
+          if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            return false;
+          //status wasn't not found, so throw the exception
+          throw;
+        }
+      }
+      */
+    }
+
+    /// <summary>
+    /// Place write delete object lock on file
+    /// </summary>
+    private bool LockFile(string s3Key)
+    {
+      using (var s3Client = GetS3Client())
+      {
+        try
+        {
+          var res = s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key,LegalHold = new ObjectLockLegalHold() { Status = "ON" } });
+          return res.Result.HttpStatusCode == System.Net.HttpStatusCode.OK;
+        }
+
+        catch (Amazon.S3.AmazonS3Exception ex)
+        {
+          if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            return false;
+          //status wasn't not found, so throw the exception
+          throw;
+        }
+      }
+    }
+
+    public bool UploadAndLock(Stream stream, string s3Key)
+    {
+      UploadToBucket(stream, s3Key, awsBucketName);
+      return LockFile(s3Key);
+    }
+
+
   }
 }

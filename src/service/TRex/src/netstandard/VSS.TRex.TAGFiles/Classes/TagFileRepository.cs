@@ -39,12 +39,19 @@ namespace VSS.TRex.TAGFiles.Classes
     /// <returns></returns>
     public static bool ArchiveTagfileS3(TagFileDetail tagDetail)
     {
+      if (tagDetail.assetId == null || tagDetail.projectId == null || tagDetail.tagFileName == string.Empty || tagDetail.tagFileContent == null)
+      {
+        _log.LogError($"ArchiveTagfileS3. Bad request {tagDetail.tagFileName}. Asset{tagDetail.assetId}, Project:{tagDetail.projectId}");
+        return false;
+      }
+
       try
       {
         var s3FullPath = $"{tagDetail.projectId}{S3DirectorySeparator}{tagDetail.assetId}{S3DirectorySeparator}{tagDetail.tagFileName}";
         var proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(TransferProxyType.TAGFiles);
         using var stream = new MemoryStream(tagDetail.tagFileContent);
-        proxy.Upload(stream, s3FullPath);
+        if (!proxy.FileExists(s3FullPath).Result) // write once policy
+          proxy.UploadAndLock(stream, s3FullPath);
         return true;
       }
 
@@ -63,6 +70,12 @@ namespace VSS.TRex.TAGFiles.Classes
     /// <returns></returns>
     public static bool ArchiveTagfileLocal(TagFileDetail tagDetail)
     {
+
+      if (tagDetail.assetId == null || tagDetail.projectId == null || tagDetail.tagFileName == string.Empty || tagDetail.tagFileContent == null)
+      {
+        _log.LogError($"ArchiveTagfileLocal. Bad request {tagDetail.tagFileName}. Asset{tagDetail.assetId}, Project:{tagDetail.projectId}");
+        return false;
+      }
 
       string thePath = MakePath(tagDetail);
       if (!Directory.Exists(thePath))
