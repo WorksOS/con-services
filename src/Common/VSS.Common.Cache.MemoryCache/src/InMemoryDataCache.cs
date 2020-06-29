@@ -28,6 +28,23 @@ namespace VSS.Common.Cache.MemoryCache
     }
 
     /// <summary>
+    /// Clear all keys and tags, and cached data
+    /// </summary>
+    public void Clear()
+    {
+      // Take a snapshot in time, any new models created will be fine
+      // We can't interrupt normal operation
+      var keys = CacheKeys;
+      logger.LogInformation($"Clearing {keys.Count} cache keys");
+      
+      foreach (var k in keys)
+      {
+        RemoveByKey(k);
+      }
+      logger.LogInformation("Cleared cache keys");
+    }
+
+    /// <summary>
     /// A list of keys cached currently
     /// Note: this is a snapshot in time
     /// </summary>
