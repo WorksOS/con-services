@@ -49,6 +49,20 @@ namespace VSS.Productivity3D.Entitlements.Proxy
         if(request == null)
           throw new ArgumentException("No request provided", nameof(request));
 
+        // In some cases we want to disable entitlements checking, e.g tests or staging 
+        // this key allows that at a global level to be disabled, but calling code still operates the same
+        if (!configurationStore.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false))
+        {
+          log.LogInformation($"Entitlements checking is disabled for request {JsonConvert.SerializeObject(request)}");
+          return  new EntitlementResponseModel() 
+          {
+            IsEntitled = true, 
+            Feature = request.Feature, 
+            OrganizationIdentifier = request.OrganizationIdentifier, 
+            UserEmail = request.UserEmail
+          };
+        }
+
         try
         {
           await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request)));

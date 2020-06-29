@@ -3,7 +3,6 @@ using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using VSS.Serilog.Extensions;
-using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
@@ -19,7 +18,7 @@ namespace VSS.TRex.Storage
 {
   public abstract class StorageProxy_IgniteBase
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_IgniteBase>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<StorageProxy_IgniteBase>();
 
     private IMutabilityConverter _mutabilityConverter;
     private IMutabilityConverter MutabilityConverter => _mutabilityConverter ??= DIContext.Obtain<IMutabilityConverter>();
@@ -38,13 +37,12 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Represents the collection of caches represented by this storage proxy
     /// </summary>
+    // ReSharper disable once IdentifierTypo
     protected IStorageProxyCacheCommit[] CommittableCaches = null;
 
     /// <summary>
     /// Determines the correct cache to read/write particular types of information from/to
     /// </summary>
-    /// <param name="streamType"></param>
-    /// <returns></returns>
     public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialCache(FileSystemStreamType streamType)
     {
       return streamType switch
@@ -58,8 +56,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Determines the correct cache to read/write particular types of information from/to
     /// </summary>
-    /// <param name="streamType"></param>
-    /// <returns></returns>
     public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache(FileSystemStreamType streamType)
     {
       return streamType switch
@@ -76,8 +72,6 @@ namespace VSS.TRex.Storage
     /// eg: THe site model elevation change maps used to request only that spatial information has changed since the
     /// last time a machine asked for that information from a project.
     /// </summary>
-    /// <param name="streamType"></param>
-    /// <returns></returns>
     public IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> ProjectMachineCache(FileSystemStreamType streamType)
     {
       return streamType switch
@@ -103,19 +97,11 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Computes the cache key name for a given data model and a given named stream within that datamodel
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
     protected static INonSpatialAffinityKey ComputeNamedStreamCacheKey(Guid dataModelId, string name) => new NonSpatialAffinityKey(dataModelId, name);
 
     /// <summary>
     /// Computes the cache key name for the given data model and a given spatial data stream within that datamodel
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="name"></param>
-    /// <param name="subGridX"></param>
-    /// <param name="subGridY"></param>
-    /// <returns></returns>
     protected static string ComputeNamedStreamCacheKey(long dataModelId, string name, uint subGridX, uint subGridY)
     {
       return $"{dataModelId}-{name}-{subGridX}-{subGridY}";
@@ -124,11 +110,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
     /// </summary>
-    /// <param name="mutableCache"></param>
-    /// <param name="immutableCache"></param>
-    /// <param name="cacheKey"></param>
-    /// <param name="streamType"></param>
-    /// <returns></returns>
     protected bool PerformNonSpatialImmutabilityConversion(IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> mutableCache,
       IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       INonSpatialAffinityKey cacheKey,
@@ -139,24 +120,14 @@ namespace VSS.TRex.Storage
         return false;
       }
 
-      using (var ms = new MemoryStream(mutableCache.Get(cacheKey).Bytes))
-      {
-        using (var mutableStream = MemoryStreamCompression.Decompress(ms))
-        {
-          return PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
-        }
-      }
+      using var ms = new MemoryStream(mutableCache.Get(cacheKey).Bytes);
+      using var mutableStream = MemoryStreamCompression.Decompress(ms);
+      return PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
     }
 
     /// <summary>
     /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
     /// </summary>
-    /// <param name="mutableStream"></param>
-    /// <param name="immutableCache"></param>
-    /// <param name="cacheKey"></param>
-    /// <param name="streamType"></param>
-    /// <param name="source"></param>
-    /// <returns></returns>
     protected bool PerformNonSpatialImmutabilityConversion(MemoryStream mutableStream,
       IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       INonSpatialAffinityKey cacheKey,
@@ -175,22 +146,20 @@ namespace VSS.TRex.Storage
         // Convert from the mutable to the immutable form and store it into the immutable cache
         if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out immutableStream) && immutableStream != null)
         {
-          using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
-          {
-            if (Log.IsTraceEnabled())
-              Log.LogInformation(
-                $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
+          using var compressedStream = MemoryStreamCompression.Compress(immutableStream);
+          if (_log.IsTraceEnabled())
+            _log.LogInformation(
+              $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
-            // Place the converted immutable item into the immutable cache
-            immutableCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
+          // Place the converted immutable item into the immutable cache
+          immutableCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
 
-            return true;
-          }
+          return true;
         }
         else
         {
           // There was no immutable version of the requested information. Allow this to bubble up the stack...
-          Log.LogError(
+          _log.LogError(
             $"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
 
           return false;
@@ -208,11 +177,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
     /// </summary>
-    /// <param name="mutableCache"></param>
-    /// <param name="immutableCache"></param>
-    /// <param name="cacheKey"></param>
-    /// <param name="streamType"></param>
-    /// <returns></returns>
     protected void PerformSpatialImmutabilityConversion(IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> mutableCache,
       IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
@@ -230,12 +194,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
     /// </summary>
-    /// <param name="mutableStream"></param>
-    /// <param name="immutableCache"></param>
-    /// <param name="cacheKey"></param>
-    /// <param name="streamType"></param>
-    /// <param name="source"></param>
-    /// <returns></returns>
     protected void PerformSpatialImmutabilityConversion(MemoryStream mutableStream,
       IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> immutableCache,
       ISubGridSpatialAffinityKey cacheKey,
@@ -255,20 +213,18 @@ namespace VSS.TRex.Storage
         if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, source, out immutableStream) &&
             immutableStream != null)
         {
-          using (var compressedStream = MemoryStreamCompression.Compress(immutableStream))
-          {
-            if (Log.IsTraceEnabled())
-              Log.LogInformation(
-                $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
+          using var compressedStream = MemoryStreamCompression.Compress(immutableStream);
+          if (_log.IsTraceEnabled())
+            _log.LogInformation(
+              $"Putting key:{cacheKey} in {immutableCache.Name}, size:{immutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * immutableStream.Length)) * 100}%");
 
-            // Place the converted immutable item into the immutable cache
-            immutableCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
-          }
+          // Place the converted immutable item into the immutable cache
+          immutableCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
         }
         else
         {
           // There was no immutable version of the requested information. Allow this to bubble up the stack...
-          Log.LogError(
+          _log.LogError(
             $"MutabilityConverter.ConvertToImmutable failed to convert mutable data for streamType={streamType}");
 
           immutableStream = null;
@@ -282,6 +238,5 @@ namespace VSS.TRex.Storage
         }
       }
     }
-
   }
 }

@@ -20,7 +20,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
-  public class ServerSubGridTree : SubGridTree, IServerSubGridTree 
+  public class ServerSubGridTree : SubGridTree, IServerSubGridTree
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ServerSubGridTree>();
 
@@ -239,12 +239,9 @@ namespace VSS.TRex.SubGridTrees.Server
     /// cleaving, saving updated elements, creating new elements and arranging for the retirement of
     /// elements that have been replaced in the persistent store as a result of this activity.
     /// </summary>
-    /// <param name="subGrid"></param>
-    /// <param name="storageProxy"></param>
-    /// <param name="invalidatedSpatialStreams"></param>
-    /// <returns></returns>
-    public bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, 
-                                IStorageProxy storageProxy, 
+    public bool SaveLeafSubGrid(IServerLeafSubGrid subGrid,
+                                IStorageProxy storageProxyForSubGrids,
+                                IStorageProxy storageProxyForSubGridSegments,
                                 List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams)
     {
       //Log.LogInformation($"Saving {subGrid.Moniker()} to persistent store");
@@ -260,7 +257,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         var cleaver = new SubGridSegmentCleaver();
 
-        cleaver.PerformSegmentCleaving(storageProxy, subGrid);
+        cleaver.PerformSegmentCleaving(storageProxyForSubGridSegments, subGrid);
 
         // Calculate the cell last pass information here, immediately before it is
         // committed to the persistent store. The reason for this is to remove this
@@ -268,7 +265,7 @@ namespace VSS.TRex.SubGridTrees.Server
         // (which is the only writer of this information in the Raptor system).
         // The computer is instructed to do a partial recompute, which will recompute
         // all segments from the first segment marked as dirty.
-        subGrid.ComputeLatestPassInformation(false, storageProxy);
+        subGrid.ComputeLatestPassInformation(false, storageProxyForSubGridSegments);
 
         if (_segmentCleavingOperationsToLog)
           Log.LogInformation($"SaveLeafSubGrid: {subGrid.Moniker()} ({subGrid.Cells.PassesData.Count} segments)");
@@ -289,7 +286,7 @@ namespace VSS.TRex.SubGridTrees.Server
             $"Note: Saving a sub grid, {subGrid.Moniker()}, (Segments = {subGrid.Cells.PassesData.Count}, Dirty = {subGrid.Dirty}) with no cached sub grid segments to the persistent store in SaveLeafSubGrid (possible reprocessing of TAG file with no cell pass changes). " +
             $"SubGrid.Directory.PersistedClovenSegments.Count={cleaver.PersistedClovenSegments?.Count}, ModifiedOriginalFiles.Count={ModifiedOriginalSegments.Count}, NewSegmentsFromCleaving.Count={NewSegmentsFromCleaving.Count}");
 
-        var Iterator = new SubGridSegmentIterator(subGrid, storageProxy)
+        var Iterator = new SubGridSegmentIterator(subGrid, storageProxyForSubGridSegments)
         {
           IterationDirection = IterationDirection.Forwards,
           ReturnDirtyOnly = true,
@@ -363,7 +360,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Update the version of the segment as it is about to be written
             segment.SegmentInfo.Touch();
 
-            segment.SaveToFile(storageProxy, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out FileSystemErrorStatus FSError);
+            segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out var FSError);
 
             if (FSError == FileSystemErrorStatus.OK)
             {
@@ -395,7 +392,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // Update the version of the segment as it is about to be written
             segment.SegmentInfo.Touch();
 
-            if (segment.SaveToFile(storageProxy, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out var FSError))
+            if (segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(OriginAddress, segment.SegmentInfo), out var FSError))
             {
               if (Log.IsTraceEnabled())
                 Log.LogTrace($"Saved modified grid segment file: {segment}");
@@ -433,7 +430,7 @@ namespace VSS.TRex.SubGridTrees.Server
         }
         */
 
-        if (subGrid.SaveDirectoryToFile(storageProxy, GetLeafSubGridFullFileName(OriginAddress)))
+        if (subGrid.SaveDirectoryToFile(storageProxyForSubGrids, GetLeafSubGridFullFileName(OriginAddress)))
         {
           if (Log.IsTraceEnabled())
             Log.LogTrace($"Saved grid directory file: {GetLeafSubGridFullFileName(OriginAddress)}");

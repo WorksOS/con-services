@@ -16,13 +16,13 @@ namespace VSS.TRex.Storage.Interfaces
 
     StorageMutability Mutability { get; set; }
 
-    FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelID,
+    FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelId,
       string streamName,
       FileSystemStreamType streamType,
-      MemoryStream mutablestream,
+      MemoryStream mutableStream,
       object source);
 
-    FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelID,
+    FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelId,
       string streamName,
       int subGridX, int subGridY,
       long segmentStartDateTicks, 
@@ -32,12 +32,12 @@ namespace VSS.TRex.Storage.Interfaces
       MemoryStream mutableStream,
       object source);
 
-    FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelID,
+    FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelId,
       string streamName,
       FileSystemStreamType streamType,
       out MemoryStream stream);
 
-    FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelID,
+    FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelId,
       string streamName,
       int subGridX, int subGridY,
       long segmentStartDateTicks, 
@@ -46,11 +46,11 @@ namespace VSS.TRex.Storage.Interfaces
       FileSystemStreamType streamType,
       out MemoryStream stream);
 
-    FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelID,
+    FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelId,
       FileSystemStreamType streamType,
       string streamName);
 
-    FileSystemErrorStatus RemoveSpatialStreamFromPersistentStore(Guid dataModelID,
+    FileSystemErrorStatus RemoveSpatialStreamFromPersistentStore(Guid dataModelId,
       string streamName,
       int subGridX, int subGridY,
       long segmentStartDateTicks,
@@ -75,12 +75,5 @@ namespace VSS.TRex.Storage.Interfaces
     void Clear();
 
     long PotentialCommitWrittenBytes();
-
-    /*
-        function CopyDataModel(const dataModelID : Int64; const DestinationFileName: String): TICFSErrorStatus;
-        function SwapDataModel(const dataModelID : Int64; const SourceFileName: String): TICFSErrorStatus;
-        function ChangeDataModelState(const dataModelID : Int64; const Operation: Integer): TICFSErrorStatus;
-        function ReportDataModelState(const dataModelID : Int64; var Status : TICFSClosingStatus): TICFSErrorStatus;
-    */
   }
 }
