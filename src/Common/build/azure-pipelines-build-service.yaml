@@ -36,6 +36,14 @@ jobs:
           filePath: build/azure-build-pipeline.ps1
           arguments: "-service $(serviceName) -action unittest -recordTestResults false -collectCoverage false"
 
+      - task: PublishTestResults@2
+        displayName: "Publish Unit Test Results"
+        continueOnError: true
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: "**/*.trx"
+          searchFolder: "$(rootServiceFolder)/UnitTestResults"
+
   - job: Build3DPService
     displayName: 'Build 3DP service'
     timeoutInMinutes: 20
