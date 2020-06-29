@@ -32,6 +32,10 @@ namespace VSS.TRex.GridFabric.Servers.Compute
   public class ImmutableCacheComputeServer : IgniteServer
   {
     private static readonly ILogger Log = Logger.CreateLogger<ImmutableCacheComputeServer>();
+    public const string IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB = "IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB";
+    public const long DEFAULT_IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB = 128;
+    public const string IMMUTABLE_DATA_REGION_MAX_SIZE_MB = "IMMUTABLE_DATA_REGION_MAX_SIZE_MB";
+    public const long DEFAULT_IMMUTABLE_DATA_REGION_MAX_SIZE_MB = 1000;
 
     /// <summary>
     /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
@@ -90,8 +94,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
           Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
-          InitialSize = 128 * 1024 * 1024,  // 128 MB // TODO: This needs to be added to configuration
-          MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB // TODO: This needs to be added to configuration
+          InitialSize = DIContext.Obtain<IConfigurationStore>().GetValueLong(
+              IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB, 
+              DEFAULT_IMMUTABLE_DATA_REGION_INITIAL_SIZE_MB) * 1024 * 1024,  
+          MaxSize = DIContext.Obtain<IConfigurationStore>().GetValueLong(
+              IMMUTABLE_DATA_REGION_MAX_SIZE_MB, 
+              DEFAULT_IMMUTABLE_DATA_REGION_MAX_SIZE_MB) * 1024 * 1024,  
 
           PersistenceEnabled = true
         }

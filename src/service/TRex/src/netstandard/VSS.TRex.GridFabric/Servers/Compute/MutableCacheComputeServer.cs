@@ -34,6 +34,16 @@ namespace VSS.TRex.GridFabric.Servers.Compute
   {
     private static readonly ILogger _log = Logger.CreateLogger<MutableCacheComputeServer>();
 
+    public const string MUTABLE_DATA_REGION_INITIAL_SIZE_MB = "MUTABLE_DATA_REGION_INITIAL_SIZE_MB";
+    public const long DEFAULT_MUTABLE_DATA_REGION_INITIAL_SIZE_MB = 128;
+    public const string MUTABLE_DATA_REGION_MAX_SIZE_MB = "MUTABLE_DATA_REGION_MAX_SIZE_MB";
+    public const long DEFAULT_MUTABLE_DATA_REGION_MAX_SIZE_MB = 1024;
+
+    public const string TAG_FILE_BUFFER_QUEUE_DATA_REGION_INITIAL_SIZE_MB = "TAG_FILE_BUFFER_QUEUE_DATA_REGION_INITIAL_SIZE_MB";
+    public const long DEFAULT_TAG_FILE_BUFFER_QUEUE_DATA_REGION_INITIAL_SIZE_MB = 128;
+    public const string TAG_FILE_BUFFER_QUEUE_DATA_REGION_MAX_SIZE_MB = "TAG_FILE_BUFFER_QUEUE_DATA_REGION_MAX_SIZE_MB";
+    public const long DEFAULT_TAG_FILE_BUFFER_QUEUE_DATA_REGION_MAX_SIZE_MB = 128;
+
     /// <summary>
     /// Constructor for the TRex cache compute server node. Responsible for starting all Ignite services and creating the grid
     /// and cache instance in preparation for client access by business logic running on the node.
@@ -77,8 +87,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         DefaultDataRegionConfiguration = new DataRegionConfiguration
         {
           Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
-          InitialSize = 128 * 1024 * 1024,  // 128 MB // TODO: This needs to be added to configuration
-          MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB // TODO: This needs to be added to configuration
+          InitialSize = DIContext.Obtain<IConfigurationStore>().GetValueLong(
+              MUTABLE_DATA_REGION_INITIAL_SIZE_MB, 
+              DEFAULT_MUTABLE_DATA_REGION_INITIAL_SIZE_MB) * 1024 * 1024, 
+          MaxSize = DIContext.Obtain<IConfigurationStore>().GetValueLong(
+              MUTABLE_DATA_REGION_MAX_SIZE_MB,
+              DEFAULT_MUTABLE_DATA_REGION_MAX_SIZE_MB) * 1024 * 1024,
 
           PersistenceEnabled = true
         },
@@ -89,8 +103,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
           new DataRegionConfiguration
           {
             Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-            InitialSize = 128 * 1024 * 1024,  // 128 MB to start // TODO: This needs to be added to configuration
-            MaxSize = 128 * 1024 * 1024, // TODO: This needs to be added to configuration
+            InitialSize = DIContext.Obtain<IConfigurationStore>().GetValueLong(
+              TAG_FILE_BUFFER_QUEUE_DATA_REGION_INITIAL_SIZE_MB, 
+              DEFAULT_TAG_FILE_BUFFER_QUEUE_DATA_REGION_INITIAL_SIZE_MB) * 1024 * 1024,  
+            MaxSize = DIContext.Obtain<IConfigurationStore>().GetValueLong(
+              TAG_FILE_BUFFER_QUEUE_DATA_REGION_MAX_SIZE_MB,
+              DEFAULT_TAG_FILE_BUFFER_QUEUE_DATA_REGION_MAX_SIZE_MB) * 1024 * 1024, 
 
             PersistenceEnabled = true
            }
