@@ -43,6 +43,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// The mutable grid storage proxy
     /// </summary>
     private readonly IStorageProxy _storageProxyMutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+    private readonly IStorageProxy _storageProxyMutableForSubGrids = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+    private readonly IStorageProxy _storageProxyMutableForSubGridSegments = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
     public bool AdviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES", Consts.ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES);
 
@@ -346,7 +348,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <param name="siteModelFromDatamodel">The site model to perform the change notifications for</param>
     private void PerformSiteModelChangeNotifications(ISiteModel siteModelFromDatamodel)
     {
-      if (!AdviseOtherServicesOfDataModelChanges) 
+      if (!AdviseOtherServicesOfDataModelChanges)
         return;
 
       // Notify the site model in all contents in the grid that it's attributes have changed
@@ -387,10 +389,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <param name="groupedAggregatedCellPasses">The set of all cell passes from all TAG files, grouped in to a single intermediary site model</param>
     /// <param name="numTagFilesRepresented">The number of TAG files represented in the data set being integrated</param>
     /// <param name="totalPassCountInAggregation">The sum total number of cell passes integrated in the live site model</param>
-    private bool IntegrateCellPassesIntoLiveSiteModel(ISiteModel siteModelFromDatamodel, 
+    private bool IntegrateCellPassesIntoLiveSiteModel(ISiteModel siteModelFromDatamodel,
       AggregatedDataIntegratorTask task,
       SubGridIntegrator subGridIntegrator,
-      IServerSubGridTree groupedAggregatedCellPasses,
+      ISubGridTree groupedAggregatedCellPasses,
       int numTagFilesRepresented,
       out long totalPassCountInAggregation)
     {
@@ -506,15 +508,20 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// Commits all data prepared via aggregation and integration of a set of processed TAG files to the site model
     /// persistent store via the transactional data proxy
     /// </summary>
-    private void CommitAllEventAndSpatialChangesToPersistentStore()
+    private void CommitPendingTransactedChangesToPersistentStore(Guid siteModelUid, IStorageProxy storageProxy) //ISiteModel siteModelFromDatamodel)
     {
       // All operations within the transaction to integrate the changes into the live model have completed successfully.
       // Now commit those changes as a block.
 
       var startTime = DateTime.UtcNow;
 
-      _log.LogInformation($"Starting storage proxy Commit(). Committing {_storageProxyMutable.PotentialCommitWrittenBytes()} bytes from transacted Byte[] elements");
-      _storageProxyMutable.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten);
+      _log.LogInformation($"Starting storage proxy Commit(). Committing {storageProxy.PotentialCommitWrittenBytes()} bytes from transacted Byte[] elements");
+
+      if (!storageProxy.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten))
+      {
+        _log.LogCritical($"Failed to commit site model existence map and related information for site model {siteModelUid} during aggregation epoch");
+      }
+
       _log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
     }
 
@@ -614,23 +621,33 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           return false;
         }
 
+        // Commit the modified events to the persistent store. This precedes the spatial data changes as the spatial data are dependent on the events
+        CommitPendingTransactedChangesToPersistentStore(siteModelFromDatamodel.ID, _storageProxyMutable);
+
         try
         {
-          var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, siteModelFromDatamodel, siteModelFromDatamodel.Grid, _storageProxyMutable);
+          var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, siteModelFromDatamodel, siteModelFromDatamodel.Grid, 
+                                                        _storageProxyMutableForSubGrids, _storageProxyMutableForSubGridSegments);
 
           if (!IntegrateCellPassesIntoLiveSiteModel(siteModelFromDatamodel, task, subGridIntegrator, groupedAggregatedCellPasses, numTagFilesRepresented, out totalPassCountInAggregation))
           {
             return false;
           }
 
-          // Commit all event and spatial data changes to the store. Note: The site model existence map is not persisted at this point
-          CommitAllEventAndSpatialChangesToPersistentStore();
+          // Commit spatial data changes to the store.
+          // This is done in two phases:
+          // 1. Sub grid segments. These are references by the sub grids themselves and must be committed to persistent
+          //    store prior to the sub grids so that concurrent query operations do not access inconsistent states of persisted data
+          // 2. Sub grids. These contain the segment directory and other information related to the sub grid as a whole
+          // Note: The site model existence map is not persisted at this point
+          CommitPendingTransactedChangesToPersistentStore(siteModelFromDatamodel.ID, _storageProxyMutableForSubGridSegments);
+          CommitPendingTransactedChangesToPersistentStore(siteModelFromDatamodel.ID, _storageProxyMutableForSubGrids);
 
           // Once all event and spatial data has been committed the independently write and commit the modified information 
           // for existence map etc contained in the site model. This permits new information to be added to the site model while 
           // queries are being executed against it. The new information will no be used until the update existence map is saved,
           // though previously existing sub grids may be visible to queries in an updated state for short periods until 
-          // Raptor style sub grid version management is implemented (currently not supported inTRex)
+          // Raptor style sub grid version management is implemented (currently not supported in TRex)
           CommitSiteModelExistenceMapToPersistentStore(siteModelFromDatamodel);
 
           UpdateSiteModelMetaData(siteModelFromDatamodel);
