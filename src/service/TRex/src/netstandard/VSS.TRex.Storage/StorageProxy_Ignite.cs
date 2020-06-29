@@ -70,12 +70,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports writing a named data stream to the persistent store via the grid cache.
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="streamName"></param>
-    /// <param name="streamType"></param>
-    /// <param name="mutableStream"></param>
-    /// <param name="source"></param>
-    /// <returns></returns>
     public FileSystemErrorStatus WriteStreamToPersistentStore(Guid dataModelId,
       string streamName,
       FileSystemStreamType streamType,
@@ -123,17 +117,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports writing a spatial data stream to the persistent store via the grid cache.
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="streamName"></param>
-    /// <param name="subGridX"></param>
-    /// <param name="subGridY"></param>
-    /// <param name="segmentEndDateTicks"></param>
-    /// <param name="version"></param>
-    /// <param name="streamType"></param>
-    /// <param name="mutableStream"></param>
-    /// <param name="source"></param>
-    /// <param name="segmentStartDateTicks"></param>
-    /// <returns></returns>
     public FileSystemErrorStatus WriteSpatialStreamToPersistentStore(Guid dataModelId,
       string streamName,
       int subGridX, int subGridY,
@@ -181,11 +164,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports reading a named stream from the persistent store via the grid cache
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="streamName"></param>
-    /// <param name="streamType"></param>
-    /// <param name="stream"></param>
-    /// <returns></returns>
     public FileSystemErrorStatus ReadStreamFromPersistentStore(Guid dataModelId, string streamName, FileSystemStreamType streamType, out MemoryStream stream)
     {
       stream = null;
@@ -221,16 +199,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports reading a stream of spatial data from the persistent store via the grid cache
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="streamName"></param>
-    /// <param name="subGridX"></param>
-    /// <param name="subGridY"></param>
-    /// <param name="segmentStartDateTicks"></param>
-    /// <param name="segmentEndDateTicks"></param>
-    /// <param name="version"></param>
-    /// <param name="streamType"></param>
-    /// <param name="stream"></param>
-    /// <returns></returns>
     public FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(Guid dataModelId,
       string streamName,
       int subGridX, int subGridY,
@@ -273,10 +241,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Supports removing a named stream from the persistent store via the grid cache
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="streamType"></param>
-    /// <param name="streamName"></param>
-    /// <returns></returns>
     public FileSystemErrorStatus RemoveStreamFromPersistentStore(Guid dataModelId,
       FileSystemStreamType streamType,
       string streamName)
@@ -312,15 +276,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Removes a spatial stream from the persistent store identified by its spatial descriptor attributes
     /// </summary>
-    /// <param name="dataModelId"></param>
-    /// <param name="streamName"></param>
-    /// <param name="subGridX"></param>
-    /// <param name="subGridY"></param>
-    /// <param name="segmentStartDateTicks"></param>
-    /// <param name="segmentEndDateTicks"></param>
-    /// <param name="version"></param>
-    /// <param name="streamType"></param>
-    /// <returns></returns>
     public FileSystemErrorStatus RemoveSpatialStreamFromPersistentStore(Guid dataModelId,
       string streamName,
       int subGridX, int subGridY,
