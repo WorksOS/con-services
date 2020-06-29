@@ -128,7 +128,7 @@ namespace VSS.TRex.Storage
     {
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelId, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks);
+        var cacheKey = new SubGridSpatialAffinityKey(version, dataModelId, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks);
 
         using (var compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
@@ -212,7 +212,7 @@ namespace VSS.TRex.Storage
 
       try
       {
-        ISubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(version, dataModelId, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks);
+        var cacheKey = new SubGridSpatialAffinityKey(version, dataModelId, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks);
 
         //Log.LogInformation($"Getting key:{streamName}");
 

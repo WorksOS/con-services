@@ -638,7 +638,7 @@ namespace VSS.TRex.SubGridTrees.Server
               (Owner.ID, fileName, OriginX, OriginY,
                segment.SegmentInfo.StartTime.Ticks,
                segment.SegmentInfo.EndTime.Ticks,
-               segment.SegmentInfo.Version, 
+               segment.SegmentInfo.Version,
                FileSystemStreamType.SubGridSegment, out var sms);
 
              var result = fsError == FileSystemErrorStatus.OK;

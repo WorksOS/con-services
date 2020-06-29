@@ -105,14 +105,13 @@ namespace VSS.TRex.Storage
           }
 
           // Note the delete request in pending deletes
-          var pendingTransactedAddFailed = false;
           lock (PendingTransactedDeletes)
           {
-            pendingTransactedAddFailed = !PendingTransactedDeletes.Add(key);
-          }
+            var pendingTransactedAddFailed = !PendingTransactedDeletes.Add(key);
 
-          if (pendingTransactedAddFailed && _reportPendingTransactedDeleteDuplicatesToLog)
-            _log.LogWarning($"Key {key} is already present in the set of transacted deletes for cache {Name} [Remove]");
+            if (pendingTransactedAddFailed && _reportPendingTransactedDeleteDuplicatesToLog)
+              _log.LogWarning($"Key {key} is already present in the set of transacted deletes for cache {Name} [Remove]");
+          }
 
           return true;
         }
