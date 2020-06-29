@@ -711,7 +711,21 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task ValidateProjectExecutor_MismatchedCustomerUid()
     {
-      var request = new ProjectValidateDto { AccountTrn = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_ACCOUNT)};
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, UpdateType = CwsUpdateType.DeleteDeviceFromAccount};
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: null);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(136, result.Code);
+      Assert.Equal("Unknown update type in project validation.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_UnknownUpdateType()
+    {
+      var request = new ProjectValidateDto { AccountTrn = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_ACCOUNT) };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,

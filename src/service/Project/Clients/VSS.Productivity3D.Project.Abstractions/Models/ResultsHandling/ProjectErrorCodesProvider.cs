@@ -133,6 +133,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing coordinate system file contents.", 133);
       this.DynamicAddwithOffset("Both coordinate system file name and contents must be provided.", 134);
       this.DynamicAddwithOffset("Mismatched customerUid.", 135);
+      this.DynamicAddwithOffset("Unknown update type in project validation.", 136);
     }
   }
 }
