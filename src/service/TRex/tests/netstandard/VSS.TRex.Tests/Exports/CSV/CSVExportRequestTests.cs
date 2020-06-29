@@ -127,7 +127,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       siteModel.ExistenceMap.ScanAllSubGrids(leaf =>
       {
         if (leaf is IServerLeafSubGrid serverLeaf)
-          (serverLeaf.Owner as ServerSubGridTree).SaveLeafSubGrid(serverLeaf, siteModel.PrimaryStorageProxy, invalidatedStreams);
+          (serverLeaf.Owner as ServerSubGridTree).SaveLeafSubGrid(serverLeaf, siteModel.PrimaryStorageProxy, siteModel.PrimaryStorageProxy, invalidatedStreams);
 
         return true;
       });

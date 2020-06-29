@@ -9,7 +9,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 {
     public static class SubGridUtilities
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger("SubGridUtilities");
+        private static readonly ILogger _log = Logging.Logger.CreateLogger("SubGridUtilities");
 
         /// <summary>
         /// GetOTGLeafSubGridCellIndex determines the local in-sub grid X/Y location of a
@@ -18,10 +18,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         /// WARNING: This call assumes the cell index does lie within this sub grid
         /// and (currently) no range checking is performed to ensure this}
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="subGridX"></param>
-        /// <param name="subGridY"></param>
         public static void GetOTGLeafSubGridCellIndex(int cellX, int cellY, out byte subGridX, out byte subGridY)
         {
             subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
@@ -32,15 +28,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
       /// Locates the sub grid in the sub grid tree that contains the cell identified by CellX and CellY in the global 
       /// sub grid tree cell address space. The tree level for the sub grid returned is specified in Level.
       /// </summary>
-      /// <param name="storageProxy"></param>
-      /// <param name="forSubGridTree"></param>
-      /// <param name="cellX"></param>
-      /// <param name="cellY"></param>
-      /// <param name="level"></param>
-      /// <param name="lookInCacheOnly"></param>
-      /// <param name="acceptSpeculativeReadFailure"></param>
-      /// <returns></returns>
-      public static ISubGrid LocateSubGridContaining(IStorageProxy storageProxy,
+      public static ISubGrid LocateSubGridContaining(IStorageProxy storageProxyForSubGrids,
                                  IServerSubGridTree forSubGridTree,
                                  //const GridDataCache : TICDataStoreCache;
                                  int cellX,
@@ -70,7 +58,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
                 if (subGrid == null) // Something bad happened
                 {
-                    Log.LogWarning($"Failed to locate sub grid at {cellX}:{cellY}, level {level}, data model ID:{forSubGridTree.ID}");
+                    _log.LogWarning($"Failed to locate sub grid at {cellX}:{cellY}, level {level}, data model ID:{forSubGridTree.ID}");
                     return null;
                 }
 
@@ -101,7 +89,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     }
                     else
                     {
-                        Log.LogError($"Failed to create leaf sub grid in LocateSubGridContaining for sub grid at {cellX}x{cellY}");
+                        _log.LogError($"Failed to create leaf sub grid in LocateSubGridContaining for sub grid at {cellX}x{cellY}");
                         return null;
                     }
                 }
@@ -111,7 +99,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
                 if (leafSubGrid == null)  // Something bad happened
                 {
-                    Log.LogError($"Sub grid request result for {cellX}:{cellY} is not a leaf sub grid, it is a {subGrid.GetType().Name}.");
+                    _log.LogError($"Sub grid request result for {cellX}:{cellY} is not a leaf sub grid, it is a {subGrid.GetType().Name}.");
                     return null;
                 }
 
@@ -152,7 +140,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     // This is a different approach to desktop systems where the individual node sub grids
                     // contain mini existence maps for the sub grids below them.
 
-                    if (forSubGridTree.LoadLeafSubGrid(storageProxy,
+                    if (forSubGridTree.LoadLeafSubGrid(storageProxyForSubGrids,
                                            new SubGridCellAddress(cellX, cellY),
                                            true, true,
                                            leafSubGrid))
@@ -174,16 +162,16 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                         if (acceptSpeculativeReadFailure)
                         {
                             // Return the otherwise empty sub grid back to the caller and integrate it into the cache 
-                            if (Log.IsTraceEnabled())
+                            if (_log.IsTraceEnabled())
                             {
-                              Log.LogTrace($"Speculative read failure accepted for sub grid {leafSubGrid.Moniker()}. Blank sub grid returned to caller.");
+                              _log.LogTrace($"Speculative read failure accepted for sub grid {leafSubGrid.Moniker()}. Blank sub grid returned to caller.");
                             }
 
                             result = leafSubGrid;
                         }
                         else
                         {
-                            Log.LogWarning($"Failed to read leaf sub grid {leafSubGrid.Moniker()} in model {forSubGridTree.ID}. Failed sub grid is NOT removed from the tree");
+                            _log.LogWarning($"Failed to read leaf sub grid {leafSubGrid.Moniker()} in model {forSubGridTree.ID}. Failed sub grid is NOT removed from the tree");
 
                             // Empty the sub grid leaf based data to encourage it to be read on a secondary attempt
                             leafSubGrid.DeAllocateLeafFullPassStacks();

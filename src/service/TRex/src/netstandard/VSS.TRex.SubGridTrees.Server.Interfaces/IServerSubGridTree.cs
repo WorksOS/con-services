@@ -10,19 +10,22 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
   {
     bool IsMutable { get; }
 
-    bool LoadLeafSubGridSegment(IStorageProxy StorageProxy,
+    bool LoadLeafSubGridSegment(IStorageProxy storageProxy,
       SubGridCellAddress cellAddress,
       bool loadLatestData,
       bool loadAllPasses,
-      IServerLeafSubGrid SubGrid,
-      ISubGridCellPassesDataSegment Segment);
+      IServerLeafSubGrid subGrid,
+      ISubGridCellPassesDataSegment segment);
 
     bool LoadLeafSubGrid(IStorageProxy storageProxy,
-      SubGridCellAddress CellAddress,
+      SubGridCellAddress cellAddress,
       bool loadAllPasses, bool loadLatestPasses,
-      IServerLeafSubGrid SubGrid);
+      IServerLeafSubGrid subGrid);
 
-    bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, IStorageProxy storageProxy, List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams);
+    bool SaveLeafSubGrid(IServerLeafSubGrid subGrid,
+      IStorageProxy storageProxyForSubGrids,
+      IStorageProxy storageProxyForSubGridSegments,
+      List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams);
 
     ServerSubGridTreeCachingStrategy CachingStrategy { get; set; }
   }
