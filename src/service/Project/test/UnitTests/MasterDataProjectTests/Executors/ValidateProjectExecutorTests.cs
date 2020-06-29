@@ -43,7 +43,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] {1,2,3,4,5,6,7,8}
       };
@@ -67,7 +67,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = null,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -90,7 +90,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = null,
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -113,7 +113,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = null
       };
@@ -136,7 +136,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = null,
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -163,7 +163,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = projectList.Projects[0].ProjectName,
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateNonOverlappingBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -187,7 +187,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = null,
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -214,7 +214,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateInvalidBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -242,7 +242,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = CreateSelfIntersectingBoundary(),
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -270,7 +270,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectName = "some project",
         ProjectType = CwsProjectType.AcceptsTagFiles,
         Boundary = projectList.Projects[0].ProjectSettings.Boundary,
-        UpdateType = ProjectUpdateType.Created,
+        UpdateType = CwsUpdateType.CreateProject,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -293,7 +293,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var request = new ProjectValidateDto
       {
-        AccountTrn = _customerTrn, ProjectTrn = null, ProjectName = "some new project name", UpdateType = ProjectUpdateType.Updated
+        AccountTrn = _customerTrn, ProjectTrn = null, ProjectName = "some new project name", UpdateType = CwsUpdateType.UpdateProject
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -314,7 +314,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var request = new ProjectValidateDto
       {
-        AccountTrn = _customerTrn, ProjectTrn = _projectTrn, ProjectName = "some new project name", UpdateType = ProjectUpdateType.Updated
+        AccountTrn = _customerTrn, ProjectTrn = _projectTrn, ProjectName = "some new project name", UpdateType = CwsUpdateType.UpdateProject
       };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
@@ -333,7 +333,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
-      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = TRNHelper.MakeTRN(Guid.NewGuid()), ProjectName = projectList.Projects[0].ProjectName, UpdateType = ProjectUpdateType.Updated };
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = TRNHelper.MakeTRN(Guid.NewGuid()), ProjectName = projectList.Projects[0].ProjectName, UpdateType = CwsUpdateType.UpdateProject };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
@@ -351,7 +351,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
-      var request = new ProjectValidateDto {AccountTrn = _customerTrn, ProjectTrn = _projectTrn, Boundary = CreateNonOverlappingBoundary(), UpdateType = ProjectUpdateType.Updated};
+      var request = new ProjectValidateDto {AccountTrn = _customerTrn, ProjectTrn = _projectTrn, Boundary = CreateNonOverlappingBoundary(), UpdateType = CwsUpdateType.BoundaryUpdate};
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
@@ -369,7 +369,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
-      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = TRNHelper.MakeTRN(Guid.NewGuid()), Boundary = projectList.Projects[0].ProjectSettings.Boundary, UpdateType = ProjectUpdateType.Updated };
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = TRNHelper.MakeTRN(Guid.NewGuid()), Boundary = projectList.Projects[0].ProjectSettings.Boundary, UpdateType = CwsUpdateType.BoundaryUpdate };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
@@ -398,7 +398,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.UpdateProjectType,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -426,7 +426,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = null,
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -454,7 +454,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = null
       };
@@ -481,7 +481,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
         ProjectType = CwsProjectType.AcceptsTagFiles,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.UpdateProjectType,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -512,7 +512,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -543,7 +543,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = null,
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -574,7 +574,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = null
       };
@@ -605,7 +605,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -635,7 +635,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -666,7 +666,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = _projectTrn,
-        UpdateType = ProjectUpdateType.Updated,
+        UpdateType = CwsUpdateType.CalibrationUpdate,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -683,7 +683,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task ValidateProjectExecutor_Delete_Valid()
     {
-      var request = new ProjectValidateDto {AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = ProjectUpdateType.Deleted};
+      var request = new ProjectValidateDto {AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject};
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
@@ -697,7 +697,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task ValidateProjectExecutor_Delete_MissingProject()
     {
-      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = null, UpdateType = ProjectUpdateType.Deleted };
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = null, UpdateType = CwsUpdateType.DeleteProject };
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
