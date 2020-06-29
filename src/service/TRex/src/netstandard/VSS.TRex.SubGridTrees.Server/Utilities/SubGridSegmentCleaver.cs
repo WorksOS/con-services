@@ -31,12 +31,9 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
     /// <summary>
     /// Cleaves all dirty segments requiring cleaving within the given sub grid
     /// </summary>
-    /// <param name="storageProxy"></param>
-    /// <param name="subGrid"></param>
-    /// <param name="subGridSegmentPassCountLimit"></param>
-    public void PerformSegmentCleaving(IStorageProxy storageProxy, IServerLeafSubGrid subGrid, int subGridSegmentPassCountLimit = 0)
+    public void PerformSegmentCleaving(IStorageProxy storageProxyForSubGridSegments, IServerLeafSubGrid subGrid, int subGridSegmentPassCountLimit = 0)
     {
-      var iterator = new SubGridSegmentIterator(subGrid, storageProxy)
+      var iterator = new SubGridSegmentIterator(subGrid, storageProxyForSubGridSegments)
       {
         IterationDirection = IterationDirection.Forwards,
         ReturnDirtyOnly = true,

@@ -15,11 +15,11 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// Client leaf sub grid that tracks height and time for each cell
   /// This class is derived from the height leaf sub grid and decorated with times to allow efficient copy
-  /// operations for serialisation and assignation to the height leaf sub grid where the times are removed.
+  /// operations for serialization and assignation to the height leaf sub grid where the times are removed.
   /// </summary>
  public class ClientHeightAndTimeLeafSubGrid : ClientHeightLeafSubGrid
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightAndTimeLeafSubGrid>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ClientHeightAndTimeLeafSubGrid>();
 
     /// <summary>
     /// Time values for the heights stored in the height and time structure. Times are expressed as the DateTime ticks format to promote efficient copying of arrays
@@ -36,9 +36,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     static ClientHeightAndTimeLeafSubGrid()
     {
-      long nullValue = 0; //DateTime.MinValue.Ticks;
+      const long NULL_VALUE = 0; //DateTime.MinValue.Ticks;
 
-      SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = nullValue);
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => nullTimes[x, y] = NULL_VALUE);
     }
 
     private void Initialise()
@@ -50,7 +50,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
     /// and using the default cell size and index origin offset
     /// </summary>
-    public ClientHeightAndTimeLeafSubGrid() : base()
+    public ClientHeightAndTimeLeafSubGrid()
     {
       Initialise();
     }
@@ -58,14 +58,11 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Assign filtered height value from a filtered pass to a cell
     /// </summary>
-    /// <param name="cellX"></param>
-    /// <param name="cellY"></param>
-    /// <param name="Context"></param>
-    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      base.AssignFilteredValue(cellX, cellY, Context);
+      base.AssignFilteredValue(cellX, cellY, context);
 
-      Times[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Time.Ticks;
+      Times[cellX, cellY] = context.FilteredValue.FilteredPassData.FilteredPass.Time.Ticks;
     }
 
     /// <summary>
@@ -81,18 +78,17 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
-    /// <param name="writer"></param>
     public override void Write(BinaryWriter writer)
     {
       base.Write(writer);
 
-      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
       try
       {
-        Buffer.BlockCopy(Times, 0, buffer, 0, bufferSize);
-        writer.Write(buffer, 0, bufferSize);
+        Buffer.BlockCopy(Times, 0, buffer, 0, BUFFER_SIZE);
+        writer.Write(buffer, 0, BUFFER_SIZE);
       }
       finally
       {
@@ -108,13 +104,13 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader);
 
-      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
       try
       {
-        reader.Read(buffer, 0, bufferSize);
-        Buffer.BlockCopy(buffer, 0, Times, 0, bufferSize);
+        reader.Read(buffer, 0, BUFFER_SIZE);
+        Buffer.BlockCopy(buffer, 0, Times, 0, BUFFER_SIZE);
       }
       finally
       {
@@ -127,7 +123,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// using the supplied map to control which cells from the caches sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
-    /// <param name="source"></param>
     public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source)
     {
       base.AssignFromCachedPreProcessedClientSubGrid(source);
@@ -142,13 +137,11 @@ namespace VSS.TRex.SubGridTrees.Client
     /// using the supplied map to control which cells from the cached sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="map"></param>
     public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
     {
       base.AssignFromCachedPreProcessedClientSubGrid(source, map);
 
-      // Copy all of the times as the nullity (or not) of the elevation is the determinator of a value being present
+      // Copy all of the times as the nullity (or not) of the elevation is the determiner of a value being present
       Array.Copy(((ClientHeightAndTimeLeafSubGrid)source).Times, Times, SubGridTreeConsts.CellsPerSubGrid);
 
       //SurveyedSurfaceMap.Assign(((ClientHeightLeafSubGrid)source).SurveyedSurfaceMap);
@@ -170,6 +163,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       processingMap.ForEachSetBit((x, y) =>
       {
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         if (Cells[x, y] != Consts.NullHeight &&
             !(returnEarliestFilteredCellPass ? surveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : surveyedSurfaces.HasSurfaceLaterThan(Times[x, y])))
           processingMap.ClearBit(x, y);
@@ -183,6 +177,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       if (!(surfaceElevationsSource is ClientHeightAndTimeLeafSubGrid surfaceElevations))
       {
+        _log.LogError($"{nameof(ClientHeightAndTimeLeafSubGrid)}.{nameof(PerformHeightAnnotation)} not supplied a ClientHeightAndTimeLeafSubGrid instance, but an instance of {surfaceElevationsSource?.GetType().FullName}");
         return false;
       }
 
@@ -194,6 +189,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         var surveyedSurfaceCellHeight = surfaceElevations.Cells[x, y];
 
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         if (surveyedSurfaceCellHeight == Consts.NullHeight)
         {
           return;
@@ -206,6 +202,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
         // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
         // the relative age of the measured surveyed surface elevation compared with a non-null production data height
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         if (!(prodHeight == Consts.NullHeight || (returnEarliestFilteredCellPass ? surveyedSurfaceCellTime < prodTime : surveyedSurfaceCellTime > prodTime)))
         {
           // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
@@ -216,7 +213,7 @@ namespace VSS.TRex.SubGridTrees.Client
         // Check if there is an elevation range filter in effect and whether the surveyed surface elevation data matches it
         if (elevationRangeFilterLambda != null)
         {
-          if (!(elevationRangeFilterLambda(x, y, surveyedSurfaceCellHeight)))
+          if (!elevationRangeFilterLambda(x, y, surveyedSurfaceCellHeight))
           {
             // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
             processingMap.ClearBit(x, y);

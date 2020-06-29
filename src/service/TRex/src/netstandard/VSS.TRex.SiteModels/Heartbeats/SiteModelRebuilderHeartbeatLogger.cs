@@ -20,6 +20,11 @@ namespace VSS.TRex.SiteModels.Heartbeats
     {
       var manager = DIContext.Obtain<ISiteModelRebuilderManager>();
 
+      if (manager == null)
+      {
+        return "No site model rebuilder manager available";
+      }
+
       var sb = new StringBuilder();
       sb.Append("Number of projects being rebuilt: ").Append(manager.RebuildCount());
 

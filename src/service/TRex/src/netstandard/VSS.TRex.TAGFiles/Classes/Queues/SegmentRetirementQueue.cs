@@ -62,8 +62,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// <summary>
     /// Finds all the items in the retirement queue ready for removal and returns them
     /// </summary>
-    /// <param name="earlierThan"></param>
-    /// <returns></returns>
     public void Remove(DateTime earlierThan)
     {
       // Do it the simple scan query way

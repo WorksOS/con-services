@@ -17,7 +17,7 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache, IDisposable
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
 
     private const int MAX_NUM_ELEMENTS = 1000000000;
 
@@ -84,9 +84,6 @@ namespace VSS.TRex.Caching
     /// an MRU list and are moved to the top of the MRU list of their distance from the top of the list at the time they
     /// are touched is outside the MRU dead band (expressed as a fraction of the overall maximum number of elements in the cache.
     /// </summary>
-    /// <param name="maxNumElements"></param>
-    /// <param name="maxSizeInBytes"></param>
-    /// <param name="mruDeadBandFraction"></param>
     public TRexSpatialMemoryCache(int maxNumElements, long maxSizeInBytes, double mruDeadBandFraction)
     {
       if (maxNumElements < 1 || maxNumElements > MAX_NUM_ELEMENTS)
@@ -114,10 +111,6 @@ namespace VSS.TRex.Caching
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="contextFingerPrint"></param>
-    /// <param name="cacheDuration"></param>
-    /// <returns></returns>
     public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint, TimeSpan cacheDuration)
     {
       lock (_contexts)
@@ -155,9 +148,6 @@ namespace VSS.TRex.Caching
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="contextFingerPrint"></param>
-    /// <returns></returns>
     public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint)
     {
       return LocateOrCreateContext(projectUid, contextFingerPrint, TRexSpatialMemoryCacheContext.NullCacheTimeSpan);
@@ -168,8 +158,6 @@ namespace VSS.TRex.Caching
     /// memory cache instance prior to use. This operation is thread safe - all operations are concurrency locked within the
     /// confines of the context.
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="element"></param>
     public bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
       if (context.MarkedForRemoval)
@@ -181,7 +169,7 @@ namespace VSS.TRex.Caching
       {
         // Perform some house keeping to keep the cache size in bounds
         ItemAddedToContext(element.IndicativeSizeInBytes());
-        while (CurrentSizeInBytes > MaxSizeInBytes && !MRUList.IsEmpty())
+        while (_currentSizeInBytes > MaxSizeInBytes && !MRUList.IsEmpty())
         {
           MRUList.EvictOneLRUItemWithLock();
         }
@@ -195,8 +183,6 @@ namespace VSS.TRex.Caching
     /// memory cache instance prior to use. This operation is thread safe - all operations are concurrency locked within the
     /// confines of the context.
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="element"></param>
     public void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
         context.Remove(element);        
@@ -232,7 +218,6 @@ namespace VSS.TRex.Caching
     /// <param name="context">The request, filter and other data specific context for spatial data</param>
     /// <param name="originX">The origin (bottom left) cell of the spatial data sub grid</param>
     /// <param name="originY">The origin (bottom left) cell of the spatial data sub grid</param>
-    /// <returns></returns>
     public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, int originX, int originY)
     {
       return context.Get(originX, originY);
@@ -242,8 +227,6 @@ namespace VSS.TRex.Caching
     /// Invalidates sub grids held within all cache contexts for a project that are sensitive to
     /// ingest of production data (eg: from TAG files)
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="mask"></param>
     public void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask)
     {
       List<ITRexSpatialMemoryCacheContext> projectContexts;
@@ -295,14 +278,12 @@ namespace VSS.TRex.Caching
         }
       }
 
-      Log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts?.Count} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
+      _log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts.Count} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
     }
 
     /// <summary>
     /// Removes all contexts in the cache that are marked for removal more than 'age' ago
     /// </summary>
-    /// <param name="ageSeconds"></param>
-    /// <returns></returns>
     public void RemoveContextsMarkedForRemoval(int ageSeconds)
     {
       var numRemoved = 0;
@@ -317,7 +298,7 @@ namespace VSS.TRex.Caching
         {
           if (context.TokenCount != 0)
           {
-            Log.LogError($"Context in project {context.ProjectUID} with fingerprint {context.FingerPrint} has tokens in it {context.TokenCount} and is set for removal. Resetting context state to normal.");
+            _log.LogError($"Context in project {context.ProjectUID} with fingerprint {context.FingerPrint} has tokens in it {context.TokenCount} and is set for removal. Resetting context state to normal.");
             context.Reanimate();
 
             continue;
@@ -335,7 +316,7 @@ namespace VSS.TRex.Caching
         }
       }
 
-      Log.LogInformation($"{numRemoved} contexts removed in {DateTime.UtcNow - startTime}");
+      _log.LogInformation($"{numRemoved} contexts removed in {DateTime.UtcNow - startTime}");
     }
 
     public void Dispose()
@@ -344,7 +325,7 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Invalidate subgrids associated with the design changed.
+    /// Invalidate sub grids associated with the design changed.
     /// </summary>
     public void InvalidateDueToDesignChange(Guid projectUid, Guid designUid)
     {
@@ -379,7 +360,7 @@ namespace VSS.TRex.Caching
           }
         }
       }
-      Log.LogInformation($"Invalidating subgrids due to design change for Project:{projectUid},  Design{designUid}, #ContextsInvalidated:{numInvalidatedContexts}");
+      _log.LogInformation($"Invalidating sub grids due to design change for Project:{projectUid},  Design{designUid}, #ContextsInvalidated:{numInvalidatedContexts}");
     }
 
   }

@@ -87,7 +87,7 @@ mutableData:
   resources: 
     requests:
       cpu: 900m
-      memory: 7Gi
+      memory: 4Gi
   storage:
     size: 10Gi
     className: aws-efs

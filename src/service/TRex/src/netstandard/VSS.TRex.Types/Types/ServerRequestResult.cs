@@ -50,6 +50,7 @@
         DataModelHasInvalidZeroCellSize = 0x0000002A,
         ProfileGenerationFailure = 0x0000002B,
         DataModelDoesNotHaveValidPlanExtentsNoData = 0x0000002C,
-        FailedToComputeDesignElevationPatch = 0x0000002D
+        FailedToComputeDesignElevationPatch = 0x0000002D,
+        SubGridHeightAnnotationFailed = 0x0000002E
     }
 }

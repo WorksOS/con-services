@@ -92,7 +92,7 @@ namespace VSS.TRex.Webtools.Controllers
       //var nonNulls = Response.ProfileCells.Where(x => !x.IsNull()).ToArray();
       return new JsonResult(response.ProfileCells.Select(x => new
       {
-        station = x.Station,
+        station = x.Station + x.InterceptLength / 2.0,// Shift the station position to the center of the intercept line across the cell.
         cellLowestElev = x.CellLowestElev,
         cellHighestElev = x.CellHighestElev,
         cellLastElev = x.CellLastElev,

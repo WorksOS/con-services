@@ -116,8 +116,8 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public override bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
-      var commitOk = _useAsyncTasksForStorageProxyIgniteTransactionalCommits 
-        ? CommitAsync(out numDeleted, out numUpdated, out numBytesWritten) 
+      var commitOk = _useAsyncTasksForStorageProxyIgniteTransactionalCommits
+        ? CommitAsync(out numDeleted, out numUpdated, out numBytesWritten)
         : CommitSync(out numDeleted, out numUpdated, out numBytesWritten);
 
       return commitOk && (ImmutableProxy?.Commit() ?? true);
