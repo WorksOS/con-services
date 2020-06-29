@@ -41,15 +41,15 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 
         void AllocateSegment(ISubGridCellPassesDataSegmentInfo segmentInfo);
 
-        void AllocateFullPassStacks(ISubGridCellPassesDataSegmentInfo SegmentInfo);
-        void AllocateLatestPassGrid(ISubGridCellPassesDataSegmentInfo SegmentInfo);
+        void AllocateFullPassStacks(ISubGridCellPassesDataSegmentInfo segmentInfo);
+        void AllocateLatestPassGrid(ISubGridCellPassesDataSegmentInfo segmentInfo);
         void AllocateLeafFullPassStacks();
         void AllocateLeafLatestPassGrid();
 
         void DeAllocateLeafFullPassStacks();
         void DeAllocateLeafLatestPassGrid();
 
-        bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, ISubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses);
+        bool LoadSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegment segment, bool loadLatestData, bool loadAllPasses);
 
         bool RemoveSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegmentInfo segment);
         bool RemoveDirectoryFromStorage(IStorageProxy storageProxy, string fileName);
@@ -60,7 +60,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool HasLatestData();
         bool HasSubGridDirectoryDetails { get; }
 
-        void AddPass(int cellX, int cellY, CellPass Pass, bool lowestPassOnly = false);
+        void AddPass(int cellX, int cellY, CellPass pass, bool lowestPassOnly = false);
 
         void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy);
 
@@ -68,7 +68,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool SaveDirectoryToStream(Stream stream);
         bool LoadDirectoryFromFile(IStorageProxy storage, string fileName);
 
-        bool SaveDirectoryToFile(IStorageProxy storage, string FileName);
+        bool SaveDirectoryToFile(IStorageProxy storage, string fileName);
 
         //bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, IStorageProxy storageProxy);
 

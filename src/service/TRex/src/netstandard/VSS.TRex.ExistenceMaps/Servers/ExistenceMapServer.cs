@@ -7,7 +7,6 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.ExistenceMaps.Servers
@@ -62,8 +61,6 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// <summary>
         /// Get a specific existence map given its key
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public ISerialisedByteArrayWrapper GetExistenceMap(INonSpatialAffinityKey key)
         {
             try
@@ -80,8 +77,6 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// <summary>
         /// Set or update a given existence map given its key.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="map"></param>
         public void SetExistenceMap(INonSpatialAffinityKey key, ISerialisedByteArrayWrapper map)
         {
             _designTopologyExistenceMapsCache.Put(key, map);

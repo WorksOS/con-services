@@ -25,7 +25,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
   /// </summary>
   public class MutableClientServer : IgniteServer, IMutableClientServer
   {
-    private static readonly ILogger Log = Logger.CreateLogger<MutableClientServer>();
+    private static readonly ILogger _log = Logger.CreateLogger<MutableClientServer>();
 
     /// <summary>
     /// Constructor that creates a new server instance with a single role
@@ -44,9 +44,9 @@ namespace VSS.TRex.GridFabric.Servers.Client
       if (mutableTRexGrid == null)
       {
         // Attempt to attach to an already existing Ignite instance
-        Log.LogInformation("Getting mutable grid");
+        _log.LogInformation("Getting mutable grid");
         mutableTRexGrid = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
-        Log.LogInformation($"Got {mutableTRexGrid?.Name}");
+        _log.LogInformation($"Got {mutableTRexGrid?.Name}");
 
         // If there was no connection obtained, attempt to create a new instance
         if (mutableTRexGrid == null)
@@ -55,7 +55,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
           TRexNodeID = Guid.NewGuid().ToString();
 
-          Log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
+          _log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
           var cfg = new IgniteConfiguration()
           {
@@ -112,11 +112,11 @@ namespace VSS.TRex.GridFabric.Servers.Client
           }
           catch (Exception e)
           {
-            Log.LogError(e, $"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with Exception:");
+            _log.LogError(e, $"Creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID} failed with Exception:");
           }
           finally
           {
-            Log.LogInformation($"Completed creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID}");
+            _log.LogInformation($"Completed creation of new Ignite node with Role = {roleNames} & TRexNodeId = {TRexNodeID}");
           }
         }
       }
