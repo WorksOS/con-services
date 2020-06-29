@@ -184,7 +184,7 @@ namespace VSS.AWS.TransferProxy
           ListObjectsV2Request request = new ListObjectsV2Request
           {
             BucketName = awsBucketName,
-            MaxKeys = 1,
+            MaxKeys = 10,
             Prefix = s3Key
           };
 
