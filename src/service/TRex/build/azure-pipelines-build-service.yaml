@@ -45,8 +45,8 @@ jobs:
         displayName: "Publish Unit Test Results"
         continueOnError: true
         inputs:
-          testResultsFormat: XUnit
-          testResultsFiles: "**/TestResults.xml"
+          testResultsFormat: 'VSTest'
+          testResultsFiles: "**/*.trx"
           searchFolder: "$(rootServiceFolder)/UnitTestResults"
 
       # - task: PublishCodeCoverageResults@1

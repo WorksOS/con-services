@@ -111,10 +111,8 @@ function Run-Unit-Tests {
     if ($recordTestResults -eq $true) {
         docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/. $servicePath/$localTestResultsFolder
 
-        $resultsFilePath = "$servicePath/$localTestResultsFolder/TestResults.xml"
-
-        if (-not (Test-Path $resultsFilePath -PathType Leaf)) {
-            Write-Host "Unable to find TestResults file '$resultsFilePath' on local host." -ForegroundColor Red
+        if (-not (Test-Path -Path $servicePath/$localTestResultsFolder/* -Include *.trx)) {
+            Write-Host "Unable to find any .trx results files on local host." -ForegroundColor Red
             Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
         }
     }
