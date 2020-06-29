@@ -233,7 +233,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SiteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX, cellY));
 
       // Save the leaf information just created
-      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
       siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
 
@@ -293,7 +293,7 @@ namespace VSS.TRex.Tests.TestFixtures
       totalCells.Should().Be(expectedCellCount);
 
       // Save the leaf information just created
-      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
       siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
     }
@@ -336,7 +336,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
 
       // Save the leaf information just created
-      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
       siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
     }

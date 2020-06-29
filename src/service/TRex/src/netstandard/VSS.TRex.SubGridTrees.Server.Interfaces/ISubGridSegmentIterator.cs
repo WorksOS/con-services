@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool ReturnCachedItemsOnly { get; set; }
         bool ReturnDirtyOnly { get; set; }
 
-        IStorageProxy StorageProxy { get; }
+        IStorageProxy StorageProxyForSubGridSegments { get; }
 
         IServerLeafSubGrid SubGrid { get; set; }
 
@@ -30,6 +30,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void SegmentListExtended();
         void SetIteratorElevationRange(double minElevation, double maxElevation);
         void SetTimeRange(DateTime startTime, DateTime endTime);
-        void SetMachineRestriction(BitArray machineIDSet);
+        void SetMachineRestriction(BitArray machineIdSet);
     }
 }

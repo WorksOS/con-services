@@ -39,7 +39,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     private readonly IServerSubGridTree _target;
 
-    private readonly IStorageProxy _storageProxy;
+    private readonly IStorageProxy _storageProxySubGrids;
+    private readonly IStorageProxy _storageProxySubGridSegments;
 
     public readonly List<ISubGridSpatialAffinityKey> InvalidatedSpatialStreams = new List<ISubGridSpatialAffinityKey>(100);
 
@@ -52,25 +53,28 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     */
 
     /// <summary>
-    /// Constructor the initializes state ready for integration
+    /// Constructor the initializes state ready for integration. Not that two storage proxies are provided - one to store sub grid dictionary/headers, and one to store segments
+    /// so that they can be committed to the persistent store safely (ie: segments first, then headers).
     /// </summary>
     /// <param name="source">The sub grid tree from which information is being integrated</param>
     /// <param name="siteModel">The site model representing the target sub grid tree</param>
     /// <param name="target">The sub grid tree into which the data from the source sub grid tree is integrated</param>
-    /// <param name="storageProxy">The storage proxy providing storage semantics for persisting integration results</param>
-    public SubGridIntegrator(IServerSubGridTree source, ISiteModel siteModel, IServerSubGridTree target, IStorageProxy storageProxy)
+    /// <param name="storageProxySubGrids">The storage proxy providing storage semantics for persisting integration results relating to sub grids (specifically the header/dictionary representation)</param>
+    /// <param name="storageProxySubGridSegments">The storage proxy providing storage semantics for persisting integration results relating to sub grid segments</param>
+    public SubGridIntegrator(IServerSubGridTree source, ISiteModel siteModel, IServerSubGridTree target, 
+      IStorageProxy storageProxySubGrids, IStorageProxy storageProxySubGridSegments)
     {
       _source = source;
       _siteModel = siteModel;
       _target = target;
-      _storageProxy = storageProxy;
+      _storageProxySubGrids = storageProxySubGrids;
+      _storageProxySubGridSegments = storageProxySubGridSegments;
     }
 
     private void IntegrateIntoIntermediaryGrid(IServerLeafSubGrid sourceSubGrid, ISubGridSegmentIterator segmentIterator)
     {
-      var targetSubGrid = _target.ConstructPathToCell(sourceSubGrid.OriginX,
-        sourceSubGrid.OriginY,
-        SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
+      var targetSubGrid = _target.ConstructPathToCell(sourceSubGrid.OriginX, sourceSubGrid.OriginY,
+                                                      SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
       targetSubGrid.AllocateLeafFullPassStacks();
 
       // If the node is brand new (ie: it does not have any cell passes committed to it yet)
@@ -117,7 +121,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       // Failure to save a piece of data aborts the entire integration
       var result = false;
-      if (_target.SaveLeafSubGrid(targetSubGrid, segmentIterator.StorageProxy, InvalidatedSpatialStreams))
+      if (_target.SaveLeafSubGrid(targetSubGrid, _storageProxySubGrids, _storageProxySubGridSegments, InvalidatedSpatialStreams))
       {
         // Successfully saving the sub grid directory information is the point at which this sub grid may be recognized to exist
         // in the site model. Note this by including it within the SiteModel existence map
@@ -193,9 +197,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Iterate over the sub grids in source and merge the cell passes from source
       // into the sub grids in this sub grid tree;
 
-      var iterator = new SubGridTreeIterator(_storageProxy, false) {Grid = _source};
+      var iterator = new SubGridTreeIterator(_storageProxySubGrids, false) {Grid = _source};
 
-      var segmentIterator = new SubGridSegmentIterator(null, _storageProxy) {IterationDirection = IterationDirection.Forwards};
+      var segmentIterator = new SubGridSegmentIterator(null, _storageProxySubGridSegments) {IterationDirection = IterationDirection.Forwards};
 
       while (iterator.MoveToNextSubGrid())
       {
@@ -232,7 +236,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       {
         try
         {
-          IntegrateSubGrid(sourceSubGrid, integrationModeLocal, subGridChangeNotifierLocal, new SubGridSegmentIterator(null, _storageProxy));
+          IntegrateSubGrid(sourceSubGrid, integrationModeLocal, subGridChangeNotifierLocal, new SubGridSegmentIterator(null, _storageProxySubGridSegments));
         }
         catch (Exception e)
         {
@@ -244,7 +248,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Iterate over the sub grids in source and merge the cell passes from source
       // into the sub grids in this sub grid tree;
 
-      var iterator = new SubGridTreeIterator(_storageProxy, false) {Grid = _source};
+      var iterator = new SubGridTreeIterator(_storageProxySubGrids, false) {Grid = _source};
 
       var tasks = new List<Task>();
       while (iterator.MoveToNextSubGrid())
@@ -272,7 +276,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     public IServerLeafSubGrid LocateOrCreateSubGrid(IServerSubGridTree grid, int cellX, int cellY)
     {
       var result = SubGridUtilities.LocateSubGridContaining(
-        _storageProxy,
+        _storageProxySubGrids,
         grid,
         // DataStoreInstance.GridDataCache,
         cellX, cellY,

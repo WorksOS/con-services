@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // the sub grid tree which marks the progress of the iteration
         public IIteratorStateIndex IterationState { get; } = new IteratorStateIndex();
 
-        public IStorageProxy StorageProxy { get; set; }
+        public IStorageProxy StorageProxyForSubGridSegments { get; set; }
 
         public bool RetrieveLatestData { get; set; } = false;
         public bool RetrieveAllPasses { get; set; } = true;
@@ -75,7 +75,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                         (RetrieveAllPasses && !result.HasAllPasses || RetrieveLatestData && !result.HasLatestData))
                     {
                         if (((IServerSubGridTree) IterationState.SubGrid.Owner).LoadLeafSubGridSegment
-                            (StorageProxy,
+                            (StorageProxyForSubGridSegments,
                              new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
                              RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
                              IterationState.SubGrid,
@@ -167,12 +167,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
           set => _numberOfSegmentsScanned = value;
         }
 
-        public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxy)
+        public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxyForSubGridSegments)
         {
             MarkReturnedSegmentsAsTouched = true;
             SubGrid = subGrid;
             Directory = subGrid?.Directory;
-            StorageProxy = storageProxy;
+            StorageProxyForSubGridSegments = storageProxyForSubGridSegments;
         }
 
         public SubGridSegmentIterator(IServerLeafSubGrid subGrid, ISubGridDirectory directory, IStorageProxy storageProxy) : this(subGrid, storageProxy)
