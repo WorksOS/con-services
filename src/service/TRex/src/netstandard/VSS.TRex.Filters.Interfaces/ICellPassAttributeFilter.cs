@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using VSS.TRex.Cells;
 using VSS.TRex.Filters.Models;
+// ReSharper disable UnusedMemberInSuper.Global
 
 namespace VSS.TRex.Filters.Interfaces
 {
@@ -17,15 +18,6 @@ namespace VSS.TRex.Filters.Interfaces
     void ClearFilter();
     void ClearVibeState();
 
-    /* Possibly obsolete behaviour 
-    /// <summary>
-    /// Compare one filter with another for the purpose of ordering them in caching lists
-    /// </summary>
-    /// <param name="AFilter"></param>
-    /// <returns></returns>
-    int CompareTo(ICellPassAttributeFilter AFilter);
-    */
-
     void ClearDesigns();
     void ClearElevationRange();
     void ClearElevationType();
@@ -36,7 +28,7 @@ namespace VSS.TRex.Filters.Interfaces
     void ClearGuidanceMode();
     void ClearLayerID();
     void ClearLayerState();
-    void Assign(ICellPassAttributeFilter Source);
+    void Assign(ICellPassAttributeFilter source);
     void ClearCompactionMachineOnlyRestriction();
     void ClearMachineDirection();
     void ClearMachines();
@@ -45,12 +37,12 @@ namespace VSS.TRex.Filters.Interfaces
     void ClearPositioningTech();
     void ClearSurveyedSurfaceExclusionList();
     void ClearTime();
-    bool FilterPass(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
-    bool FilterPass(ref FilteredPassData PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
-    bool FilterPassUsingTemperatureRange(ref CellPass PassValue);
-    bool FilterPassUsingTimeOnly(ref CellPass PassValue);
-    bool FilterPass_MachineEvents(ref FilteredPassData PassValue);
-    bool FilterPass_NoMachineEvents(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
+    bool FilterPass(ref CellPass passValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
+    bool FilterPass(ref FilteredPassData passValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
+    bool FilterPassUsingTemperatureRange(ref CellPass passValue);
+    bool FilterPassUsingTimeOnly(ref CellPass passValue);
+    bool FilterPass_MachineEvents(ref FilteredPassData passValue);
+    bool FilterPass_NoMachineEvents(ref CellPass passValue, ICellPassAttributeFilterProcessingAnnex filterAnnex);
 
     /// <summary>
     /// Converts an array of GUIDs representing machine identifiers into a BitArray encoding a bit set of
@@ -59,7 +51,7 @@ namespace VSS.TRex.Filters.Interfaces
     BitArray GetMachineIDsSet();
 
     bool FilterMultiplePasses(CellPass[] passValues,
-      int PassValueCount,
+      int passValueCount,
       FilteredMultiplePassInfo filteredPassInfo,
       ICellPassAttributeFilterProcessingAnnex filterAnnex);
 
@@ -79,14 +71,6 @@ namespace VSS.TRex.Filters.Interfaces
     /// PassValues where PassValues contains the entire list of passes for
     /// a cell in the database.
     /// </summary>
-    /// <param name="filteredPassValues"></param>
-    /// <param name="passValueCount"></param>
-    /// <param name="wantEarliestPass"></param>
-    /// <param name="filteredPassInfo"></param>
-    /// <param name="profileCell"></param>
-    /// <param name="performAttributeSubFilter"></param>
-    /// <param name="filterAnnex"></param>
-    /// <returns></returns>
     bool FilterSinglePass(FilteredPassData[] filteredPassValues,
       int passValueCount,
       bool wantEarliestPass,
@@ -100,7 +84,6 @@ namespace VSS.TRex.Filters.Interfaces
     /// Creates a fingerprint of the attribute filter based on the content of the filter that
     /// has a differentiated bearing on the use of cached general sub grid results
     /// </summary>
-    /// <returns></returns>
     string SpatialCacheFingerprint();
   }
 }

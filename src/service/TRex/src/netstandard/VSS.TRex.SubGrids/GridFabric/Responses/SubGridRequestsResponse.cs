@@ -90,7 +90,7 @@ namespace VSS.TRex.SubGrids.Responses
     {
       // No explicit 'accumulation' logic for response codes apart from prioritizing failure over success results
       ResponseCode = ResponseCode == SubGridRequestsResponseResult.Unknown ? other.ResponseCode :
-        ResponseCode == SubGridRequestsResponseResult.OK & other.ResponseCode != SubGridRequestsResponseResult.OK ? other.ResponseCode : ResponseCode;
+        ResponseCode == SubGridRequestsResponseResult.OK && other.ResponseCode != SubGridRequestsResponseResult.OK ? other.ResponseCode : ResponseCode;
 
       ClusterNode = other.ClusterNode; // No explicit 'aggregation' logic for response codes
 

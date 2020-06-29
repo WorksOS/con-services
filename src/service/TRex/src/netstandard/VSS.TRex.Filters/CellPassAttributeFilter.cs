@@ -11,7 +11,6 @@ using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Machines;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
@@ -55,7 +54,7 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class CellPassAttributeFilter : CellPassAttributeFilterModel, ICellPassAttributeFilter
   {
-    private ISiteModel siteModel;
+    private ISiteModel _siteModel;
 
     /// <summary>
     /// Owner is the SiteModel instance to which this filter relates and is used in cases where machine related
@@ -63,8 +62,8 @@ namespace VSS.TRex.Filters
     /// </summary>
     public object /*ISiteModel*/ SiteModel
     {
-      get => siteModel; 
-      set => siteModel = (ISiteModel) value; 
+      get => _siteModel;
+      set => _siteModel = (ISiteModel) value;
     }
 
     /// <summary>
@@ -183,17 +182,11 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Compares left and right boolean expressions and returns a -1, 0, -1 relative comparison indicator
     /// </summary>
-    /// <param name="Left"></param>
-    /// <param name="Right"></param>
-    /// <returns></returns>
     private static int FlagCheck(bool Left, bool Right) => Left ? Right ? 0 : -1 : Right ? 1 : 0;
 
     /// <summary>
     /// Compare two lists of machine IDs for ordering
     /// </summary>
-    /// <param name="list1"></param>
-    /// <param name="list2"></param>
-    /// <returns></returns>
     public static int MachineIDListsComparison_Obsolete(short[] list1, short[] list2)
     {
       if (list1 == null || list2 == null)
@@ -223,8 +216,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Compare one filter with another for the purpose of ordering them in caching lists
     /// </summary>
-    /// <param name="AFilter"></param>
-    /// <returns></returns>
     public int CompareTo_Obsolete(ICellPassAttributeFilter AFilter)
     {
       // Time
@@ -535,88 +526,89 @@ namespace VSS.TRex.Filters
       LayerState = LayerState.Invalid;
     }
 
-    public void Assign(ICellPassAttributeFilter Source)
+    public void Assign(ICellPassAttributeFilter source)
     {
-      SiteModel = Source.SiteModel;
+      SiteModel = source.SiteModel;
 
       // Time based filtering members
-      StartTime = Source.StartTime;
-      EndTime = Source.EndTime;
+      StartTime = source.StartTime;
+      EndTime = source.EndTime;
 
       // Machine based filtering members
-      var machinesCount = Source.MachinesList?.Length ?? 0;
+      var machinesCount = source.MachinesList?.Length ?? 0;
       MachinesList = new Guid[machinesCount];
       if (machinesCount > 0)
-        Array.Copy(Source.MachinesList, MachinesList, machinesCount);
+        // ReSharper disable once AssignNullToNotNullAttribute
+        Array.Copy(source.MachinesList, MachinesList, machinesCount);
 
       MachineIDSet = null;
 
       // Design based filtering member
-      DesignNameID = Source.DesignNameID;
+      DesignNameID = source.DesignNameID;
 
       // Auto Vibe state filtering member
-      VibeState = Source.VibeState;
+      VibeState = source.VibeState;
 
       // how to build layers
-      LayerState = Source.LayerState;
+      LayerState = source.LayerState;
 
-      MachineDirection = Source.MachineDirection;
+      MachineDirection = source.MachineDirection;
 
-      PassTypeSet = Source.PassTypeSet;
-      ElevationMappingMode = Source.ElevationMappingMode;
+      PassTypeSet = source.PassTypeSet;
+      ElevationMappingMode = source.ElevationMappingMode;
 
-      PositioningTech = Source.PositioningTech;
-      GPSTolerance = Source.GPSTolerance;
-      GPSAccuracy = Source.GPSAccuracy;
-      GPSAccuracyIsInclusive = Source.GPSAccuracyIsInclusive;
-      GPSToleranceIsGreaterThan = Source.GPSToleranceIsGreaterThan;
+      PositioningTech = source.PositioningTech;
+      GPSTolerance = source.GPSTolerance;
+      GPSAccuracy = source.GPSAccuracy;
+      GPSAccuracyIsInclusive = source.GPSAccuracyIsInclusive;
+      GPSToleranceIsGreaterThan = source.GPSToleranceIsGreaterThan;
 
-      ElevationType = Source.ElevationType;
+      ElevationType = source.ElevationType;
 
-      GCSGuidanceMode = Source.GCSGuidanceMode;
+      GCSGuidanceMode = source.GCSGuidanceMode;
 
       // FReturnEarliestFilteredCellPass details how we choose a cell pass from a set of filtered
       // cell passes within a cell. If set, then the first cell pass is chosen. If not set, then
       // the latest cell pass is chosen
-      ReturnEarliestFilteredCellPass = Source.ReturnEarliestFilteredCellPass;
+      ReturnEarliestFilteredCellPass = source.ReturnEarliestFilteredCellPass;
 
-      ElevationRangeLevel = Source.ElevationRangeLevel;
-      ElevationRangeOffset = Source.ElevationRangeOffset;
-      ElevationRangeThickness = Source.ElevationRangeThickness;
-      ElevationRangeDesign.DesignID = Source.ElevationRangeDesign.DesignID;
-      ElevationRangeDesign.Offset = Source.ElevationRangeDesign.Offset;
+      ElevationRangeLevel = source.ElevationRangeLevel;
+      ElevationRangeOffset = source.ElevationRangeOffset;
+      ElevationRangeThickness = source.ElevationRangeThickness;
+      ElevationRangeDesign.DesignID = source.ElevationRangeDesign.DesignID;
+      ElevationRangeDesign.Offset = source.ElevationRangeDesign.Offset;
 
-      LayerID = Source.LayerID;
+      LayerID = source.LayerID;
 
-      MaterialTemperatureMin = Source.MaterialTemperatureMin;
-      MaterialTemperatureMax = Source.MaterialTemperatureMax;
-      FilterTemperatureByLastPass = Source.FilterTemperatureByLastPass;
-      PassCountRangeMin = Source.PassCountRangeMin;
-      PassCountRangeMax = Source.PassCountRangeMax;
+      MaterialTemperatureMin = source.MaterialTemperatureMin;
+      MaterialTemperatureMax = source.MaterialTemperatureMax;
+      FilterTemperatureByLastPass = source.FilterTemperatureByLastPass;
+      PassCountRangeMin = source.PassCountRangeMin;
+      PassCountRangeMax = source.PassCountRangeMax;
 
-      var SurveyedSurfaceExclusionCount = Source.SurveyedSurfaceExclusionList?.Length ?? 0;
-      SurveyedSurfaceExclusionList = new Guid[SurveyedSurfaceExclusionCount];
-      if (Source.SurveyedSurfaceExclusionList != null)
-        Array.Copy(Source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionCount);
+      var surveyedSurfaceExclusionCount = source.SurveyedSurfaceExclusionList?.Length ?? 0;
+      SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceExclusionCount];
+      if (source.SurveyedSurfaceExclusionList != null)
+        Array.Copy(source.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList, surveyedSurfaceExclusionCount);
 
-      HasTimeFilter = Source.HasTimeFilter;
-      HasMachineFilter = Source.HasMachineFilter;
-      HasMachineDirectionFilter = Source.HasMachineDirectionFilter;
-      HasDesignFilter = Source.HasDesignFilter;
-      HasVibeStateFilter = Source.HasVibeStateFilter;
-      HasLayerStateFilter = Source.HasLayerStateFilter;
-      HasElevationMappingModeFilter = Source.HasElevationMappingModeFilter;
-      HasElevationTypeFilter = Source.HasElevationTypeFilter;
-      HasGCSGuidanceModeFilter = Source.HasGCSGuidanceModeFilter;
-      HasGPSAccuracyFilter = Source.HasGPSAccuracyFilter;
-      HasGPSToleranceFilter = Source.HasGPSToleranceFilter;
-      HasPositioningTechFilter = Source.HasPositioningTechFilter;
-      HasLayerIDFilter = Source.HasLayerIDFilter;
-      HasElevationRangeFilter = Source.HasElevationRangeFilter;
-      HasPassTypeFilter = Source.HasPassTypeFilter;
-      HasCompactionMachinesOnlyFilter = Source.HasCompactionMachinesOnlyFilter;
-      HasTemperatureRangeFilter = Source.HasTemperatureRangeFilter;
-      HasPassCountRangeFilter = Source.HasPassCountRangeFilter;
+      HasTimeFilter = source.HasTimeFilter;
+      HasMachineFilter = source.HasMachineFilter;
+      HasMachineDirectionFilter = source.HasMachineDirectionFilter;
+      HasDesignFilter = source.HasDesignFilter;
+      HasVibeStateFilter = source.HasVibeStateFilter;
+      HasLayerStateFilter = source.HasLayerStateFilter;
+      HasElevationMappingModeFilter = source.HasElevationMappingModeFilter;
+      HasElevationTypeFilter = source.HasElevationTypeFilter;
+      HasGCSGuidanceModeFilter = source.HasGCSGuidanceModeFilter;
+      HasGPSAccuracyFilter = source.HasGPSAccuracyFilter;
+      HasGPSToleranceFilter = source.HasGPSToleranceFilter;
+      HasPositioningTechFilter = source.HasPositioningTechFilter;
+      HasLayerIDFilter = source.HasLayerIDFilter;
+      HasElevationRangeFilter = source.HasElevationRangeFilter;
+      HasPassTypeFilter = source.HasPassTypeFilter;
+      HasCompactionMachinesOnlyFilter = source.HasCompactionMachinesOnlyFilter;
+      HasTemperatureRangeFilter = source.HasTemperatureRangeFilter;
+      HasPassCountRangeFilter = source.HasPassCountRangeFilter;
 
       Prepare();
     }
@@ -670,11 +662,11 @@ namespace VSS.TRex.Filters
       EndTime = Consts.MAX_DATETIME_AS_UTC;
     }
 
-    private static readonly GPSAccuracyAndTolerance NullGPSAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
+    private static readonly GPSAccuracyAndTolerance _nullGpsAccuracyAndToleranceValue = GPSAccuracyAndTolerance.Null();
 
     // Returns true if the specified pass meets the set filter (if any)
     // FilterPass determines if a single pass conforms to the current filtering configuration
-    public bool FilterPass(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
+    public bool FilterPass(ref CellPass passValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyFilterSelections)
       {
@@ -684,13 +676,13 @@ namespace VSS.TRex.Filters
 
       if (HasTimeFilter)
       {
-        if (!FilterPassUsingTimeOnly(ref PassValue))
+        if (!FilterPassUsingTimeOnly(ref passValue))
           return false;
       }
 
       if (HasElevationRangeFilter)
       {
-        if (!filterAnnex.FilterPassUsingElevationRange(ref PassValue))
+        if (!filterAnnex.FilterPassUsingElevationRange(ref passValue))
           return false;
       }
 
@@ -699,15 +691,15 @@ namespace VSS.TRex.Filters
         // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
-        if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])
+        if (passValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[passValue.InternalSiteModelMachineIndex])
           return false;
       }
 
       if (HasCompactionMachinesOnlyFilter)
       {
-        IMachine Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
+        var machine = _siteModel.Machines[passValue.InternalSiteModelMachineIndex];
 
-        if (Machine != null && !Machine.MachineIsCompactorType())
+        if (machine != null && !machine.MachineIsCompactorType())
           return false;
       }
 
@@ -715,79 +707,79 @@ namespace VSS.TRex.Filters
       {
         // Extract the list of events for the machine referred to in the cell pass. Use this
         // reference for all filter criteria that depend on machine events
-        var machineTargetValues = siteModel.MachinesTargetValues[PassValue.InternalSiteModelMachineIndex];
+        var machineTargetValues = _siteModel.MachinesTargetValues[passValue.InternalSiteModelMachineIndex];
 
         if (HasDesignFilter)
         {
-          int DesignNameIDValue = machineTargetValues.MachineDesignNameIDStateEvents.GetValueAtDate(PassValue.Time, out _, Consts.kNoDesignNameID);
+          var designNameIdValue = machineTargetValues.MachineDesignNameIDStateEvents.GetValueAtDate(passValue.Time, out _, Consts.kNoDesignNameID);
 
-          if (DesignNameIDValue != Consts.kAllDesignsNameID && DesignNameID != DesignNameIDValue)
+          if (designNameIdValue != Consts.kAllDesignsNameID && DesignNameID != designNameIdValue)
             return false;
         }
 
         if (HasVibeStateFilter)
         {
-          VibrationState VibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(PassValue.Time, out _, VibrationState.Invalid);
+          var vibeStateValue = machineTargetValues.VibrationStateEvents.GetValueAtDate(passValue.Time, out _, VibrationState.Invalid);
 
-          if (VibeState != VibeStateValue)
+          if (VibeState != vibeStateValue)
             return false;
         }
 
         if (HasGCSGuidanceModeFilter)
         {
-          AutomaticsType GCSGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(PassValue.Time, out _, AutomaticsType.Unknown);
+          var gcsGuidanceModeValue = machineTargetValues.MachineAutomaticsStateEvents.GetValueAtDate(passValue.Time, out _, AutomaticsType.Unknown);
 
-          if (GCSGuidanceMode != GCSGuidanceModeValue)
+          if (GCSGuidanceMode != gcsGuidanceModeValue)
             return false;
         }
 
         if (HasMachineDirectionFilter)
         {
-          MachineGear MachineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(PassValue.Time, out _, MachineGear.Null);
+          var machineGearValue = machineTargetValues.MachineGearStateEvents.GetValueAtDate(passValue.Time, out _, MachineGear.Null);
 
-          if ((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(MachineGearValue)) ||
-              (MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(MachineGearValue)))
+          if ((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(machineGearValue)) ||
+              (MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(machineGearValue)))
             return false;
         }
 
         if (HasElevationMappingModeFilter)
         {
-          ElevationMappingMode ElevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(PassValue.Time, out _, ElevationMappingMode.LatestElevation);
+          var elevationMappingModeValue = machineTargetValues.ElevationMappingModeStateEvents.GetValueAtDate(passValue.Time, out _, ElevationMappingMode.LatestElevation);
 
-          if (ElevationMappingMode != ElevationMappingModeValue)
+          if (ElevationMappingMode != elevationMappingModeValue)
             return false;
         }
 
         if (HasGPSAccuracyFilter || HasGPSToleranceFilter)
         {
-          var GPSAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(PassValue.Time, out _, NullGPSAccuracyAndToleranceValue);
+          var gpsAccuracyAndToleranceValue = machineTargetValues.GPSAccuracyAndToleranceStateEvents.GetValueAtDate(passValue.Time, out _, _nullGpsAccuracyAndToleranceValue);
 
-          if (HasGPSAccuracyFilter && GPSAccuracy != GPSAccuracyAndToleranceValue.GPSAccuracy && !GPSAccuracyIsInclusive)
+          if (HasGPSAccuracyFilter && GPSAccuracy != gpsAccuracyAndToleranceValue.GPSAccuracy && !GPSAccuracyIsInclusive)
             return false;
 
-          if (HasGPSAccuracyFilter && GPSAccuracyIsInclusive && GPSAccuracy < GPSAccuracyAndToleranceValue.GPSAccuracy)
+          if (HasGPSAccuracyFilter && GPSAccuracyIsInclusive && GPSAccuracy < gpsAccuracyAndToleranceValue.GPSAccuracy)
             return false;
 
           if (HasGPSToleranceFilter &&
-              !(GPSAccuracyAndToleranceValue.GPSTolerance != CellPassConsts.NullGPSTolerance &&
-                ((!GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance < GPSTolerance) ||
-                 (GPSToleranceIsGreaterThan && GPSAccuracyAndToleranceValue.GPSTolerance >= GPSTolerance))))
+              !(gpsAccuracyAndToleranceValue.GPSTolerance != CellPassConsts.NullGPSTolerance &&
+                ((!GPSToleranceIsGreaterThan && gpsAccuracyAndToleranceValue.GPSTolerance < GPSTolerance) ||
+                 (GPSToleranceIsGreaterThan && gpsAccuracyAndToleranceValue.GPSTolerance >= GPSTolerance))))
             return false;
         }
 
         if (HasPositioningTechFilter)
         {
-          PositioningTech PositioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(PassValue.Time, out _, PositioningTech.Unknown);
+          var positioningTechStateValue = machineTargetValues.PositioningTechStateEvents.GetValueAtDate(passValue.Time, out _, PositioningTech.Unknown);
 
-          if (PositioningTech != PositioningTechStateValue)
+          if (PositioningTech != positioningTechStateValue)
             return false;
         }
 
         // Filter on LayerID
         if (HasLayerIDFilter)
         {
-          ushort LayerIDStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(PassValue.Time, out _, ushort.MaxValue);
-          if (LayerID != LayerIDStateValue)
+          var layerIdStateValue = machineTargetValues.LayerIDStateEvents.GetValueAtDate(passValue.Time, out _, ushort.MaxValue);
+          if (LayerID != layerIdStateValue)
             return false;
         }
       }
@@ -795,33 +787,33 @@ namespace VSS.TRex.Filters
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.PassType))
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, passValue.PassType))
           return false;
       }
 
       // TemperatureRange
-      if (HasTemperatureRangeFilter & !FilterTemperatureByLastPass)
+      if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass)
       {
-        if (!FilterPassUsingTemperatureRange(ref PassValue))
+        if (!FilterPassUsingTemperatureRange(ref passValue))
           return false;
       }
 
       return true;
     }
 
-    public bool FilterPass(ref FilteredPassData PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
+    public bool FilterPass(ref FilteredPassData passValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyFilterSelections)
         return true;
 
       if (HasTimeFilter)
       {
-        if (!FilterPassUsingTimeOnly(ref PassValue.FilteredPass))
+        if (!FilterPassUsingTimeOnly(ref passValue.FilteredPass))
           return false;
       }
 
       if (HasElevationRangeFilter)
-        if (!filterAnnex.FilterPassUsingElevationRange(ref PassValue.FilteredPass))
+        if (!filterAnnex.FilterPassUsingElevationRange(ref passValue.FilteredPass))
           return false;
 
       if (HasMachineFilter)
@@ -829,118 +821,118 @@ namespace VSS.TRex.Filters
         // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
-        if (PassValue.FilteredPass.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.FilteredPass.InternalSiteModelMachineIndex])
+        if (passValue.FilteredPass.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[passValue.FilteredPass.InternalSiteModelMachineIndex])
           return false;
       }
 
       if (HasCompactionMachinesOnlyFilter)
       {
-        IMachine Machine = siteModel.Machines[PassValue.FilteredPass.InternalSiteModelMachineIndex];
-        if (Machine != null && !Machine.MachineIsCompactorType())
+        var machine = _siteModel.Machines[passValue.FilteredPass.InternalSiteModelMachineIndex];
+        if (machine != null && !machine.MachineIsCompactorType())
           return false;
       }
 
       if (HasDesignFilter)
-        if (DesignNameID != Consts.kAllDesignsNameID && DesignNameID != PassValue.EventValues.EventDesignNameID)
+        if (DesignNameID != Consts.kAllDesignsNameID && DesignNameID != passValue.EventValues.EventDesignNameID)
           return false;
 
       if (HasVibeStateFilter)
       {
-        if (VibeState != PassValue.EventValues.EventVibrationState)
+        if (VibeState != passValue.EventValues.EventVibrationState)
           return false;
       }
 
       if (HasMachineDirectionFilter)
       {
-        if ((MachineDirection == MachineDirection.Forward && !Machines.Machine.MachineGearIsForwardGear(PassValue.EventValues.EventMachineGear)) ||
-            (MachineDirection == MachineDirection.Reverse && !Machines.Machine.MachineGearIsReverseGear(PassValue.EventValues.EventMachineGear)))
+        if ((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(passValue.EventValues.EventMachineGear)) ||
+            (MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(passValue.EventValues.EventMachineGear)))
           return false;
       }
 
       if (HasElevationMappingModeFilter)
       {
-        if (ElevationMappingMode != PassValue.EventValues.EventElevationMappingMode)
+        if (ElevationMappingMode != passValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
       if (HasGCSGuidanceModeFilter)
       {
-        if (GCSGuidanceMode != PassValue.EventValues.EventMachineAutomatics)
+        if (GCSGuidanceMode != passValue.EventValues.EventMachineAutomatics)
           return false;
       }
 
       if (HasGPSAccuracyFilter)
       {
-        if (GPSAccuracy != PassValue.EventValues.GPSAccuracy && !GPSAccuracyIsInclusive)
+        if (GPSAccuracy != passValue.EventValues.GPSAccuracy && !GPSAccuracyIsInclusive)
           return false;
 
-        if (GPSAccuracyIsInclusive && GPSAccuracy < PassValue.EventValues.GPSAccuracy)
+        if (GPSAccuracyIsInclusive && GPSAccuracy < passValue.EventValues.GPSAccuracy)
           return false;
       }
 
       if (HasGPSToleranceFilter)
       {
-        if (!((PassValue.EventValues.GPSTolerance != CellPassConsts.NullGPSTolerance) &&
-              ((GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance >= GPSTolerance) ||
-               (!GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance < GPSTolerance))))
+        if (!((passValue.EventValues.GPSTolerance != CellPassConsts.NullGPSTolerance) &&
+              ((GPSToleranceIsGreaterThan && passValue.EventValues.GPSTolerance >= GPSTolerance) ||
+               (!GPSToleranceIsGreaterThan && passValue.EventValues.GPSTolerance < GPSTolerance))))
           return false;
       }
 
       if (HasPositioningTechFilter)
       {
-        if (PositioningTech != PassValue.EventValues.PositioningTechnology)
+        if (PositioningTech != passValue.EventValues.PositioningTechnology)
           return false;
       }
 
       // Filter on LayerID
       if (HasLayerIDFilter)
       {
-        if (LayerID != PassValue.EventValues.LayerID)
+        if (LayerID != passValue.EventValues.LayerID)
           return false;
       }
 
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, passValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
       // TemperatureRange
-      if (HasTemperatureRangeFilter & !FilterTemperatureByLastPass)
+      if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass)
       {
-        if (!FilterPassUsingTemperatureRange(ref PassValue.FilteredPass))
+        if (!FilterPassUsingTemperatureRange(ref passValue.FilteredPass))
           return false;
       }
 
       return true;
     }
 
-    public bool FilterPassUsingTemperatureRange(ref CellPass PassValue)
+    public bool FilterPassUsingTemperatureRange(ref CellPass passValue)
     {
       Debug.Assert(HasTemperatureRangeFilter, "Temperature range filter being used without the temperature range data being initialized");
-      return (PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
-             Range.InRange(PassValue.MaterialTemperature, MaterialTemperatureMin, MaterialTemperatureMax);
+      return (passValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue) &&
+             Range.InRange(passValue.MaterialTemperature, MaterialTemperatureMin, MaterialTemperatureMax);
     }
 
-    public bool FilterPassUsingTimeOnly(ref CellPass PassValue)
+    public bool FilterPassUsingTimeOnly(ref CellPass passValue)
     {
       if (StartTime == Consts.MIN_DATETIME_AS_UTC)
       {
         // It's an End/As At time filter
-        if (PassValue.Time > EndTime)
+        if (passValue.Time > EndTime)
           return false;
       }
 
       // In that case it's a time range filter
-      if (PassValue.Time < StartTime || PassValue.Time > EndTime)
+      if (passValue.Time < StartTime || passValue.Time > EndTime)
         return false;
 
       // The pass made it past the filtering criteria, accept it
       return true;
     }
 
-    public bool FilterPass_MachineEvents(ref FilteredPassData PassValue)
+    public bool FilterPass_MachineEvents(ref FilteredPassData passValue)
     {
       if (!AnyMachineEventFilterSelections)
       {
@@ -950,88 +942,88 @@ namespace VSS.TRex.Filters
 
       if (HasDesignFilter)
       {
-        if (DesignNameID != Consts.kAllDesignsNameID && DesignNameID != PassValue.EventValues.EventDesignNameID)
+        if (DesignNameID != Consts.kAllDesignsNameID && DesignNameID != passValue.EventValues.EventDesignNameID)
           return false;
       }
 
       if (HasVibeStateFilter)
       {
-        if (VibeState != PassValue.EventValues.EventVibrationState)
+        if (VibeState != passValue.EventValues.EventVibrationState)
           return false;
       }
 
       if (HasMachineDirectionFilter)
       {
-        if (((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(PassValue.EventValues.EventMachineGear))) ||
-            ((MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(PassValue.EventValues.EventMachineGear))))
+        if (((MachineDirection == MachineDirection.Forward && !Machine.MachineGearIsForwardGear(passValue.EventValues.EventMachineGear))) ||
+            ((MachineDirection == MachineDirection.Reverse && !Machine.MachineGearIsReverseGear(passValue.EventValues.EventMachineGear))))
           return false;
       }
 
       if (HasElevationMappingModeFilter)
       {
-        if (ElevationMappingMode != PassValue.EventValues.EventElevationMappingMode)
+        if (ElevationMappingMode != passValue.EventValues.EventElevationMappingMode)
           return false;
       }
 
       if (HasGCSGuidanceModeFilter)
       {
-        if (GCSGuidanceMode != PassValue.EventValues.EventMachineAutomatics)
+        if (GCSGuidanceMode != passValue.EventValues.EventMachineAutomatics)
           return false;
       }
 
       if (HasGPSAccuracyFilter)
       {
-        if (GPSAccuracy != PassValue.EventValues.GPSAccuracy && !GPSAccuracyIsInclusive)
+        if (GPSAccuracy != passValue.EventValues.GPSAccuracy && !GPSAccuracyIsInclusive)
           return false;
 
-        if (GPSAccuracyIsInclusive && GPSAccuracy < PassValue.EventValues.GPSAccuracy)
+        if (GPSAccuracyIsInclusive && GPSAccuracy < passValue.EventValues.GPSAccuracy)
           return false;
       }
 
       if (HasGPSToleranceFilter)
       {
-        if (!(PassValue.EventValues.GPSTolerance != CellPassConsts.NullGPSTolerance &&
-              ((GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance >= GPSTolerance) ||
-               (!GPSToleranceIsGreaterThan && PassValue.EventValues.GPSTolerance < GPSTolerance))))
+        if (!(passValue.EventValues.GPSTolerance != CellPassConsts.NullGPSTolerance &&
+              ((GPSToleranceIsGreaterThan && passValue.EventValues.GPSTolerance >= GPSTolerance) ||
+               (!GPSToleranceIsGreaterThan && passValue.EventValues.GPSTolerance < GPSTolerance))))
           return false;
       }
 
       if (HasPositioningTechFilter)
       {
-        if (PositioningTech != PassValue.EventValues.PositioningTechnology)
+        if (PositioningTech != passValue.EventValues.PositioningTechnology)
           return false;
       }
 
       if (HasLayerIDFilter)
       {
-        if (LayerID != PassValue.EventValues.LayerID)
+        if (LayerID != passValue.EventValues.LayerID)
           return false;
       }
 
       // Filter on PassType
       if (HasPassTypeFilter)
       {
-        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, PassValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
+        if (!PassTypeHelper.PassTypeSetContains(PassTypeSet, passValue.FilteredPass.PassType)) // maybe if noting set you may want ptFront as a default pass
           return false;
       }
 
       return true;
     }
 
-    public bool FilterPass_NoMachineEvents(ref CellPass PassValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
+    public bool FilterPass_NoMachineEvents(ref CellPass passValue, ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
       if (!AnyNonMachineEventFilterSelections)
         return true;
 
       if (HasTimeFilter)
       {
-        if (!FilterPassUsingTimeOnly(ref PassValue))
+        if (!FilterPassUsingTimeOnly(ref passValue))
           return false;
       }
 
       if (HasElevationRangeFilter)
       {
-        if (!filterAnnex.FilterPassUsingElevationRange(ref PassValue))
+        if (!filterAnnex.FilterPassUsingElevationRange(ref passValue))
           return false;
       }
 
@@ -1040,22 +1032,22 @@ namespace VSS.TRex.Filters
         // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
-        if (PassValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[PassValue.InternalSiteModelMachineIndex])
+        if (passValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[passValue.InternalSiteModelMachineIndex])
           return false;
       }
 
       if (HasCompactionMachinesOnlyFilter)
       {
-        IMachine Machine = siteModel.Machines[PassValue.InternalSiteModelMachineIndex];
+        var machine = _siteModel.Machines[passValue.InternalSiteModelMachineIndex];
 
-        if (Machine != null && !Machine.MachineIsCompactorType())
+        if (machine != null && !machine.MachineIsCompactorType())
           return false;
       }
 
       if (HasTemperatureRangeFilter && !FilterTemperatureByLastPass) // Note temperature filter has two behaviors depending on display or grid type etc
       {
         // filtering on every cell here
-        if (!FilterPassUsingTemperatureRange(ref PassValue))
+        if (!FilterPassUsingTemperatureRange(ref passValue))
           return false;
       }
 
@@ -1073,64 +1065,64 @@ namespace VSS.TRex.Filters
                                  bool performAttributeSubFilter,
                                  ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
-      bool Accept;
-      bool Result = false;
+      bool accept;
+      var result = false;
 
       if (passValueCount == 0)
         return false;
 
-      bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
-      int AcceptedIndex = -1;
+      var checkAttributes = performAttributeSubFilter && AnyFilterSelections;
+      var acceptedIndex = -1;
 
       if (wantEarliestPass)
       {
-        for (int I = 0; I < passValueCount; I++)
+        for (var I = 0; I < passValueCount; I++)
         {
-          if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
+          if (checkAttributes && !FilterPass(ref passValues[I], filterAnnex))
             return false;
 
-          Accept = profileCell == null
+          accept = profileCell == null
             ? PassIsAcceptable(ref passValues[I])
             : PassIsAcceptable(ref passValues[I]) && !((IProfileCell)profileCell).IsInSupersededLayer(passValues[I]);
 
-          if (Accept)
+          if (accept)
           {
-            AcceptedIndex = I;
-            Result = true;
+            acceptedIndex = I;
+            result = true;
             break;
           }
         }
       }
       else
       {
-        for (int I = passValueCount - 1; I >= 0; I--)
+        for (var I = passValueCount - 1; I >= 0; I--)
         {
-          if (CheckAttributes && !FilterPass(ref passValues[I], filterAnnex))
+          if (checkAttributes && !FilterPass(ref passValues[I], filterAnnex))
             return false;
 
-          Accept = profileCell == null
+          accept = profileCell == null
             ? PassIsAcceptable(ref passValues[I])
             : PassIsAcceptable(ref passValues[I]) && !((IProfileCell)profileCell).IsInSupersededLayer(passValues[I]);
 
-          if (Accept)
+          if (accept)
           {
-            AcceptedIndex = I;
-            Result = true;
+            acceptedIndex = I;
+            result = true;
             break;
           }
         }
       }
 
-      if (Result)
+      if (result)
       {
-        filteredPassInfo.FilteredPassData.FilteredPass = passValues[AcceptedIndex];
+        filteredPassInfo.FilteredPassData.FilteredPass = passValues[acceptedIndex];
         filteredPassInfo.FilteredPassData.TargetValues.TargetCCV = 1;
         filteredPassInfo.FilteredPassData.TargetValues.TargetMDP = 1;
         filteredPassInfo.FilteredPassData.TargetValues.TargetPassCount = 1;
         filteredPassInfo.PassCount = passValueCount;
       }
 
-      return Result;
+      return result;
     }
 
     /// <summary>
@@ -1138,14 +1130,6 @@ namespace VSS.TRex.Filters
     /// PassValues where PassValues contains the entire list of passes for
     /// a cell in the database.
     /// </summary>
-    /// <param name="filteredPassValues"></param>
-    /// <param name="passValueCount"></param>
-    /// <param name="wantEarliestPass"></param>
-    /// <param name="filteredPassInfo"></param>
-    /// <param name="profileCell"></param>
-    /// <param name="performAttributeSubFilter"></param>
-    /// <param name="filterAnnex"></param>
-    /// <returns></returns>
     public bool FilterSinglePass(FilteredPassData[] filteredPassValues,
                                  int passValueCount,
                                  bool wantEarliestPass,
@@ -1154,72 +1138,71 @@ namespace VSS.TRex.Filters
                                  bool performAttributeSubFilter,
                                  ICellPassAttributeFilterProcessingAnnex filterAnnex)
     {
-      bool Accept;
-      bool Result = false;
+      bool accept;
+      var result = false;
 
       if (passValueCount == 0)
       {
         return false;
       }
 
-      bool CheckAttributes = performAttributeSubFilter && AnyFilterSelections;
-      int AcceptedIndex = -1;
+      var checkAttributes = performAttributeSubFilter && AnyFilterSelections;
+      var acceptedIndex = -1;
 
       if (wantEarliestPass)
       {
-        for (int I = 0; I < passValueCount; I++)
+        for (var I = 0; I < passValueCount; I++)
         {
-          if (CheckAttributes && !FilterPass(ref filteredPassValues[I], filterAnnex))
+          if (checkAttributes && !FilterPass(ref filteredPassValues[I], filterAnnex))
           {
             return false;
           }
 
-          Accept = profileCell == null
+          accept = profileCell == null
             ? PassIsAcceptable(ref filteredPassValues[I].FilteredPass)
             : PassIsAcceptable(ref filteredPassValues[I].FilteredPass) && !((IProfileCell)profileCell).IsInSupersededLayer(filteredPassValues[I].FilteredPass);
 
-          if (Accept)
+          if (accept)
           {
-            AcceptedIndex = I;
-            Result = true;
+            acceptedIndex = I;
+            result = true;
             break;
           }
         }
       }
       else
       {
-        for (int I = passValueCount - 1; I >= 0; I--)
+        for (var I = passValueCount - 1; I >= 0; I--)
         {
-          if (CheckAttributes && !FilterPass(ref filteredPassValues[I], filterAnnex))
+          if (checkAttributes && !FilterPass(ref filteredPassValues[I], filterAnnex))
           {
             return false;
           }
 
-          Accept = profileCell == null
+          accept = profileCell == null
             ? PassIsAcceptable(ref filteredPassValues[I].FilteredPass)
             : PassIsAcceptable(ref filteredPassValues[I].FilteredPass) && !((IProfileCell)profileCell).IsInSupersededLayer(filteredPassValues[I].FilteredPass);
 
-          if (Accept)
+          if (accept)
           {
-            AcceptedIndex = I;
-            Result = true;
+            acceptedIndex = I;
+            result = true;
             break;
           }
         }
       }
 
-      if (Result)
+      if (result)
       {
-        filteredPassInfo.FilteredPassData = filteredPassValues[AcceptedIndex];
+        filteredPassInfo.FilteredPassData = filteredPassValues[acceptedIndex];
         filteredPassInfo.PassCount = passValueCount;
       }
-      return Result;
+      return result;
     }
 
     /// <summary>
     /// Constructs a fingerprint based on the features of a filter that can influence the outcome of analyzed sub grids stored in a cache
     /// </summary>
-    /// <returns></returns>
     public string SpatialCacheFingerprint()
     {
       var sb = new StringBuilder();
@@ -1237,9 +1220,9 @@ namespace VSS.TRex.Filters
       {
         sb.Append("MF:");
 
-        var machineIDBitArray = GetMachineIDsSet();
-        for (int i = 0; i <  MachineIDSet.Length; i++)
-          if (machineIDBitArray[i])
+        var machineIdBitArray = GetMachineIDsSet();
+        for (var i = 0; i <  MachineIDSet.Length; i++)
+          if (machineIdBitArray[i])
             sb.Append($"-{i}");
       }
 
@@ -1284,9 +1267,10 @@ namespace VSS.TRex.Filters
         sb.Append($"PT:{PositioningTech}");
 
       // Elevation Range
-      if (HasElevationRangeFilter)
+      if (HasElevationRangeFilter && ElevationRangeDesign != null)
       {
-        if ((ElevationRangeDesign?.DesignID ?? Guid.Empty) != Guid.Empty)
+        // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+        if (ElevationRangeDesign.DesignID != Guid.Empty)
           sb.Append($"ER:{ElevationRangeDesign.DesignID}-{ElevationRangeDesign.Offset}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
         else
           sb.Append($"ER:{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
@@ -1312,6 +1296,7 @@ namespace VSS.TRex.Filters
       if (HasPassCountRangeFilter)
         sb.Append($"PC:{PassCountRangeMin}-{PassCountRangeMax}");
 
+      // ReSharper disable once StringLiteralTypo
       if (ReturnEarliestFilteredCellPass)
         sb.Append("REFCP:1");
 
@@ -1324,8 +1309,8 @@ namespace VSS.TRex.Filters
     /// </summary>
     private short[] GetMachineIDs()
     {
-      return (siteModel?.Machines?.Count ?? 0) > 0
-        ? MachinesList.Where(x => siteModel.Machines.Locate(x) != null).Select(x => siteModel.Machines.Locate(x).InternalSiteModelMachineIndex).ToArray()
+      return (_siteModel?.Machines?.Count ?? 0) > 0
+        ? MachinesList.Where(x => _siteModel.Machines.Locate(x) != null).Select(x => _siteModel.Machines.Locate(x).InternalSiteModelMachineIndex).ToArray()
         : new short[0];
     }
 
@@ -1341,8 +1326,8 @@ namespace VSS.TRex.Filters
       var machineIDs = GetMachineIDs();
       MachineIDSet = machineIDs.Length > 0 ? new BitArray(machineIDs.Max() + 1) : new BitArray(0);
 
-      foreach (var internalID in machineIDs)
-        MachineIDSet[internalID] = true;
+      foreach (var internalId in machineIDs)
+        MachineIDSet[internalId] = true;
 
       return MachineIDSet;
     }
@@ -1360,11 +1345,6 @@ namespace VSS.TRex.Filters
     /// in passValues where passValues contains the entire
     /// list of passes for a cell in the database.
     /// </summary>
-    /// <param name="passValues"></param>
-    /// <param name="passValueCount"></param>
-    /// <param name="filteredPassInfo"></param>
-    /// <param name="filterAnnex"></param>
-    /// <returns></returns>
     public bool FilterMultiplePasses(CellPass[] passValues,
       int passValueCount,
       FilteredMultiplePassInfo filteredPassInfo,
@@ -1379,26 +1359,26 @@ namespace VSS.TRex.Filters
         // Simply doing CellPasses = Passes just copies a reference to the
         // array of passes.
 
-        for (int I = 0; I < passValueCount; I++)
+        for (var I = 0; I < passValueCount; I++)
           filteredPassInfo.AddPass(passValues[I]);
 
         return true;
       }
 
-      bool Result = false;
+      var result = false;
 
-      for (int i = 0; i < passValueCount; i++)
+      for (var i = 0; i < passValueCount; i++)
       {
-        CellPass PassValue = passValues[i];
+        var passValue = passValues[i];
 
-        if (FilterPass(ref PassValue, filterAnnex))
+        if (FilterPass(ref passValue, filterAnnex))
         {
-          filteredPassInfo.AddPass(PassValue);
-          Result = true;
+          filteredPassInfo.AddPass(passValue);
+          result = true;
         }
       }
 
-      return Result;
+      return result;
     }
 
     public bool ExcludeSurveyedSurfaces()
@@ -1410,7 +1390,7 @@ namespace VSS.TRex.Filters
 
     public string ActiveFiltersText() => "Not implemented";
 
-    private bool PassIsAcceptable(ref CellPass PassValue)
+    private bool PassIsAcceptable(ref CellPass passValue)
     {
       // Certain types of grid attribute data requests may need us to select
       // a pass that is not the latest pass in the pass list. Such an instance is
@@ -1427,21 +1407,21 @@ namespace VSS.TRex.Filters
       switch (RequestedGridDataType)
       {
         case GridDataType.CCV:
-          return PassValue.CCV != CellPassConsts.NullCCV;
+          return passValue.CCV != CellPassConsts.NullCCV;
         case GridDataType.MDP:
-          return PassValue.MDP != CellPassConsts.NullMDP;
+          return passValue.MDP != CellPassConsts.NullMDP;
         case GridDataType.RMV:
-          return PassValue.RMV != CellPassConsts.NullRMV;
+          return passValue.RMV != CellPassConsts.NullRMV;
         case GridDataType.Frequency:
-          return PassValue.Frequency != CellPassConsts.NullFrequency;
+          return passValue.Frequency != CellPassConsts.NullFrequency;
         case GridDataType.Amplitude:
-          return PassValue.Amplitude != CellPassConsts.NullAmplitude;
+          return passValue.Amplitude != CellPassConsts.NullAmplitude;
         case GridDataType.Temperature:
-          return PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
+          return passValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
         case GridDataType.TemperatureDetail:
-          return PassValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
+          return passValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
         case GridDataType.GPSMode:
-          return PassValue.gpsMode != CellPassConsts.NullGPSMode;
+          return passValue.gpsMode != CellPassConsts.NullGPSMode;
         default:
           return true;
       }
