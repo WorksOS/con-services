@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\service\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\Models\CoreX.Models.csproj" />
   </ItemGroup>
 
   <!-- Statically link to TGL C# shims. -->

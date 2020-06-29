@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using CoreX.Wrapper.Models;
+using CoreX.Models;
 using CoreX.Wrapper.Types;
 using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
