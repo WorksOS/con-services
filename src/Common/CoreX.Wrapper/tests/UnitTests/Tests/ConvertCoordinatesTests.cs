@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using CoreX.Wrapper.Models;
+using CoreX.Models;
 using CoreX.Wrapper.Types;
 using CoreX.Wrapper.UnitTests.Types;
 using FluentAssertions;

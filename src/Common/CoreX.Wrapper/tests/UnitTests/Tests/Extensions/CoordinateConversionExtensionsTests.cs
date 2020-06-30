@@ -1,6 +1,6 @@
 ﻿using System.Linq;
+using CoreX.Models;
 using CoreX.Wrapper.Extensions;
-using CoreX.Wrapper.Models;
 using Xunit;
 
 namespace CoreX.Wrapper.UnitTests.Tests.Extensions

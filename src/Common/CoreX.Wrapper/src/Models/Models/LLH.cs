@@ -1,4 +1,4 @@
-﻿namespace CoreX.Wrapper.Models
+﻿namespace CoreX.Models
 {
   public struct LLH
   {

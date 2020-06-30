@@ -109,9 +109,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.Geometry", "CCSS.Geome
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.Geometry.UnitTests", "CCSS.Geometry\test\UnitTests\CCSS.Geometry.UnitTests\CCSS.Geometry.UnitTests.csproj", "{FB27FD11-126F-409A-821B-91B161DE2208}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Wrapper", "CoreX.Wrapper\src\CoreX.Wrapper.csproj", "{B49D2AD8-6C5A-42B8-9D16-9067A27B5BF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Wrapper", "CoreX.Wrapper\src\CoreX\CoreX.Wrapper.csproj", "{B49D2AD8-6C5A-42B8-9D16-9067A27B5BF6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Wrapper.UnitTests", "CoreX.Wrapper\tests\UnitTests\CoreX.Wrapper.UnitTests.csproj", "{40970FB9-059D-4DF2-A77A-A110DCFBC3B5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Models", "CoreX.Wrapper\src\Models\CoreX.Models.csproj", "{06B5A14A-687F-4412-9CCC-B8A661083B5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -287,6 +289,10 @@ Global
 		{40970FB9-059D-4DF2-A77A-A110DCFBC3B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40970FB9-059D-4DF2-A77A-A110DCFBC3B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40970FB9-059D-4DF2-A77A-A110DCFBC3B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06B5A14A-687F-4412-9CCC-B8A661083B5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06B5A14A-687F-4412-9CCC-B8A661083B5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06B5A14A-687F-4412-9CCC-B8A661083B5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06B5A14A-687F-4412-9CCC-B8A661083B5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -338,6 +344,7 @@ Global
 		{FB27FD11-126F-409A-821B-91B161DE2208} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
 		{B49D2AD8-6C5A-42B8-9D16-9067A27B5BF6} = {097EC302-9BE1-4619-B57E-42CEA8085EF8}
 		{40970FB9-059D-4DF2-A77A-A110DCFBC3B5} = {8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}
+		{06B5A14A-687F-4412-9CCC-B8A661083B5F} = {097EC302-9BE1-4619-B57E-42CEA8085EF8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61051E1C-44A2-4BB0-966A-5921ABAD87E8}
