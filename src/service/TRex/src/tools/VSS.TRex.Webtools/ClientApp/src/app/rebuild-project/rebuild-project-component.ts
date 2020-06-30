@@ -57,11 +57,11 @@ export class RebuildProjectComponent {
                 this.rebuildConfirmationMessage = `Must confirm intent to rebuild project ${this.rebuildingProjectUid}`;
             } else {
                 this.rebuildProjectService.rebuildProject(this.rebuildingProjectUid).subscribe(response => {
-                    this.rebuildConfirmationMessage = `Rebuilding response for project ${that.rebuildingProjectUid}: Result = ${that.rebuildResultStatusAsString(response.rebuildResult)}.`;
-                    this.confirmRebuildProject = false;
-                    this.rebuildingProjectUid = "";
-                    this.candidateRebuildProjectUid = "";
-                    this.getAllProjectMetadata();
+                    that.rebuildConfirmationMessage = `Rebuilding response for project ${that.rebuildingProjectUid}: Result = ${that.rebuildResultStatusAsString(response.rebuildResult)}.`;
+                    that.confirmRebuildProject = false;
+                    that.rebuildingProjectUid = "";
+                    that.candidateRebuildProjectUid = "";
+                    that.getAllProjectMetadata();
                 });
             }
         }

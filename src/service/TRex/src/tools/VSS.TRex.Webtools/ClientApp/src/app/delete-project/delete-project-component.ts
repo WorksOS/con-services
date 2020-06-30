@@ -57,11 +57,11 @@ export class DeleteProjectComponent {
                 this.deleteConfirmationMessage = `Must confirm intent to delete project ${this.deletionProjectUid}`;
             } else {
                 this.deleteProjectService.deleteProject(this.deletionProjectUid).subscribe(response => {
-                    this.deleteConfirmationMessage = `Deletion response for project ${that.deletionProjectUid}: Result = ${that.deleteResultStatusAsString(response.result)} with ${response.numRemovedElements} removed elements.`;
-                    this.confirmDeleteProject = false;
-                    this.deletionProjectUid = "";
-                    this.candidateDeleteProjectUid = "";
-                    this.getAllProjectMetadata();
+                    that.deleteConfirmationMessage = `Deletion response for project ${that.deletionProjectUid}: Result = ${that.deleteResultStatusAsString(response.result)} with ${response.numRemovedElements} removed elements.`;
+                    that.confirmDeleteProject = false;
+                    that.deletionProjectUid = "";
+                    that.candidateDeleteProjectUid = "";
+                    that.getAllProjectMetadata();
                 });
             }
         }
