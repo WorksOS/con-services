@@ -17,4 +17,4 @@ steps:
       displayName: "Push Docker Image ${{ s }}"
       inputs:
         filePath: build/azure-build-pipeline.ps1
-        arguments: "-service ${{ parameters.serviceName }} -action pushImage -branch ${{ SourceBranchName }} -imageSuffix \"${{ parameters.buildId }}.${{ s }}\" -ecrRepositoryName ${{ parameters.ecrRepositoryName }}"
+        arguments: "-service ${{ parameters.serviceName }} -action pushImage -branch ${{ parameters.sourceBranchName }} -imageSuffix \"${{ parameters.buildId }}.${{ s }}\" -ecrRepositoryName ${{ parameters.ecrRepositoryName }}"
