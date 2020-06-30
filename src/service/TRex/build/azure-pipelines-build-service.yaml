@@ -14,7 +14,7 @@ variables:
   buildConfiguration: "Release"
   serviceName: TRex
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
-  ecrRepositoryName: 'rpd-ccss-productivity3d-trex-webapi'
+  ecrRepositoryName: 'rpd-ccss-trex'
 
 jobs:
   - job: BuildTestAndDeploy
