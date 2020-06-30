@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
     /// <summary>
     /// The request update type this payload represents.
     /// </summary>
-    public ProjectUpdateType UpdateType { get; set; }
+    public CwsUpdateType UpdateType { get; set; }
 
     /// <summary>
     /// Represents the project name requested for the project.

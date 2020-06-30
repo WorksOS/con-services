@@ -1,4 +1,4 @@
-﻿using CoreX.Wrapper.Models;
+﻿using CoreX.Models;
 
 namespace CoreX.Wrapper.Extensions
 {

@@ -166,5 +166,16 @@ namespace VSS.AWS.TransferProxy
 
       return Task.FromResult((files.ToArray(), ""));
     }
+
+    public async Task<bool> FileExists(string s3Key)
+    {
+      return File.Exists(s3Key);
+    }
+
+    public bool UploadAndLock(Stream stream, string s3Key)
+    {
+      Upload(stream, s3Key);
+      return true; // no locking for local use
+    }
   }
 }

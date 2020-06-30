@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,7 @@ namespace VSS.Productivity3D.Push.Clients
     protected HubConnection Connection;
 
     private readonly IServiceResolution serviceDiscovery;
+    private CancellationTokenSource _cancellationTokenSource;
 
     private Uri endpoint;
 
@@ -65,9 +67,17 @@ namespace VSS.Productivity3D.Push.Clients
     /// </summary>
     public abstract void SetupCallbacks();
 
+    /// <summary>
+    /// Called when the connection is successfully created
+    /// </summary>
+    protected virtual void OnConnection()
+    {
+    }
+
     /// <inheritdoc />
     public Task Disconnect()
     {
+      _cancellationTokenSource?.Cancel();
       Connected = false;
       return Connection != null 
         ? Connection.DisposeAsync() 
@@ -77,70 +87,79 @@ namespace VSS.Productivity3D.Push.Clients
     /// <inheritdoc />
     public async Task Connect()
     {
+      _cancellationTokenSource?.Cancel();
+      _cancellationTokenSource = new CancellationTokenSource();
       if (string.IsNullOrWhiteSpace(HubRoute))
       {
         throw new ArgumentException("No URL Key provided to Push Client - not starting", nameof(HubRoute));
       }
 
-      await Task.Factory.StartNew(TryConnect);
+      // We must start the connection in a background task, and not just await the 'TryConnect' Method
+      // If we just awaited here, then a failure to connect would prevent this from continuing
+      await Task.Factory.StartNew(() => TryConnect(_cancellationTokenSource.Token), TaskCreationOptions.LongRunning);
     }
 
     /// <summary>
     /// Actually does the connection, and keeps retrying until it connects
     /// </summary>
-    private async Task TryConnect()
+    private async Task TryConnect(CancellationToken token)
     {
       if (Connected || IsConnecting)
         return;
 
       IsConnecting = true;
-      while (true)
+      while (!token.IsCancellationRequested)
       {
         try
         {
           // If the URL of the endpoint changes, we need to be able to connect to the new URL
           // SignalR doesn't give us a way to set a new url without recreating the Connection Object
-          await SetupConnection();
+          await SetupConnection(token);
           if (Connection == null)
           {
             Connected = false;
-            await Task.Delay(RECONNECT_DELAY_MS); 
+            await Task.Delay(RECONNECT_DELAY_MS, token);
           }
           else
           {
-            await Connection.StartAsync();
+            await Connection.StartAsync(token);
             Connected = true;
             Logger.LogInformation($"Connected to `{endpoint.AbsolutePath}`");
+            OnConnection();
           }
 
           break;
+        }
+        catch (TaskCanceledException)
+        {
+          Connected = false;
+          Logger.LogInformation("Connection has been cancelled. Service shutting down.");
         }
         catch (HttpRequestException e)
         {
           Connected = false;
           // This is a known error, if there is an connection closed (due to pod restarting, or network issue)
           Logger.LogError(e, "Failed to connect due to exception - Is the Server online?");
-          await Task.Delay(RECONNECT_DELAY_MS);
+          await Task.Delay(RECONNECT_DELAY_MS, token);
         }
         catch (Exception e)
         {
           Connected = false;
           // We need to catch all exceptions, if we don't the reconnection thread will be stopped.
           Logger.LogError(e, "Failed to connect due to exception - Unknown exception occured.");
-          await Task.Delay(RECONNECT_DELAY_MS);
+          await Task.Delay(RECONNECT_DELAY_MS, token);
         }
-        
       }
     }
 
     /// <summary>
     /// Setup a connection to Push Service, using service resolution
     /// </summary>
-    private async Task SetupConnection()
+    private async Task SetupConnection(CancellationToken token)
     {
       if (Connection != null)
       {
-        await Disconnect();
+        await Connection.DisposeAsync();
         Connection = null;
       }
 
@@ -150,8 +169,11 @@ namespace VSS.Productivity3D.Push.Clients
       var serviceResult = await serviceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
       while(serviceResult.Type == ServiceResultType.Unknown || string.IsNullOrEmpty(serviceResult.Endpoint))
       {
+        if (token.IsCancellationRequested)
+          return;
+
         Logger.LogWarning($"Cannot find the service `{ServiceNameConstants.PUSH_SERVICE}` - maybe it is starting up. Waiting...");
-        await Task.Delay(1000);
+        await Task.Delay(1000, token);
         serviceResult = await serviceDiscovery.ResolveService(ServiceNameConstants.PUSH_SERVICE);
       }
 
@@ -178,7 +200,7 @@ namespace VSS.Productivity3D.Push.Clients
         Logger.LogError(e, $"Lost Connection to `{endpoint.AbsolutePath}`");
         Connected = false;
 
-        await Task.Factory.StartNew(TryConnect).ConfigureAwait(false);
+        await Task.Run(() => TryConnect(token), token);
       };
 
       // We must call setup callbacks after we setup the connection

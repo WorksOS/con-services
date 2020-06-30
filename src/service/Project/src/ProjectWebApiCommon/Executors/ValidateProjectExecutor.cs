@@ -32,7 +32,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       var userUid = new Guid(userId);
-      if (data.UpdateType == ProjectUpdateType.Created)
+      if (data.UpdateType == ProjectUpdateType.None)
+      {
+        log.LogWarning($"Unknown CWS update type in project validation");
+        return new ContractExecutionResult(136, "Unknown update type in project validation.");
+      }
+      else if (data.UpdateType == ProjectUpdateType.Created)
       {
         //Validate required fields are present
         if (!data.ProjectType.HasValue)

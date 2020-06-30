@@ -9,6 +9,11 @@ namespace VSS.Common.Abstractions.Cache.Interfaces
   public interface IDataCache
   {
     /// <summary>
+    /// Clear the cache, including all tags
+    /// </summary>
+    void Clear();
+
+    /// <summary>
     /// List of all keys stored in the cache
     /// </summary>
     List<string> CacheKeys { get; }

@@ -213,7 +213,7 @@ namespace TAGFiles.Tests
       Assert.Equal("Manual Import: cannot import to a Civil type project", result.Message);
     }
 
-    [Fact(Skip = "Requires live Ignite node")]
+    [Fact]
     public void Test_TagFileArchive()
     {
       SetupDITfa();
@@ -237,7 +237,35 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      Assert.True(TagFileRepository.ArchiveTagfile(td), "Failed to archive tagfile");
+      Assert.True(TagFileRepository.ArchiveTagfileS3(td), "Failed to archive tagfile");
+    }
+
+
+    [Fact]
+    public void Test_TagFileArchive_Failed()
+    {
+      SetupDITfa();
+
+      byte[] tagContent;
+      using (FileStream tagFileStream =
+        new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"),
+          FileMode.Open, FileAccess.Read))
+      {
+        tagContent = new byte[tagFileStream.Length];
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
+      }
+
+      TagFileDetail td = new TagFileDetail()
+      {
+        assetId = Guid.Parse("{00000000-0000-0000-0000-000000000001}"),
+        projectId = Guid.Parse("{00000000-0000-0000-0000-000000000001}"),
+        tagFileName = "Test.tag",
+        tagFileContent = null,
+        tccOrgId = "",
+        IsJohnDoe = false
+      };
+
+      Assert.False(TagFileRepository.ArchiveTagfileS3(td), "Failed to validate null data archive");
     }
 
     private void SetupDITfa(bool enableTfaService = true, GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest = null, GetProjectAndAssetUidsResult getProjectAndAssetUidsResult = null)
