@@ -87,7 +87,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var result = await request.ExecuteAsync(arg);
 
       result.Should().NotBeNull();
-      result.RebuildResult.Should().Be(RebuildSiteModelResult.OK);
+      result.RebuildResult.Should().Be(RebuildSiteModelResult.Pending);
     }
 
     [Fact]
