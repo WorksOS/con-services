@@ -25,9 +25,9 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SiteModelChangeMaps;
 
 namespace VSS.TRex.Server.ProjectRebuilder
 {
@@ -116,7 +116,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Common.SubGridsPipelinedResponseBase),
         */
-        typeof(VSS.TRex.Logging.Logger)
+        typeof(VSS.TRex.Logging.Logger),
         /*
         typeof(VSS.TRex.DI.DIContext),
         typeof(VSS.TRex.Storage.StorageProxy),
@@ -141,8 +141,8 @@ namespace VSS.TRex.Server.ProjectRebuilder
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.Volumes.CutFillVolume),
         typeof(VSS.TRex.CellDatum.GridFabric.Responses.CellDatumResponse_ApplicationService),
-        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
         */
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
       };
 
       foreach (var asmType in AssemblyDependencies)
