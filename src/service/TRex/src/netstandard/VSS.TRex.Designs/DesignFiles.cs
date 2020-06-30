@@ -5,6 +5,7 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs
@@ -37,6 +38,7 @@ end;
 
   public class DesignFiles : IDesignFiles
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignFiles>();
     private readonly Dictionary<Guid, IDesignBase> _designs = new Dictionary<Guid, IDesignBase>();
 
     /// <summary>
@@ -69,6 +71,7 @@ end;
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
         if (siteModel == null)
         {
+          Log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");
           loadResult = DesignLoadResult.SiteModelNotFound;
           return null;
         }
@@ -93,6 +96,7 @@ end;
 
           if (descriptor == null)
           {
+            Log.LogWarning($"Failed to locate design {designUid} for site model with ID {dataModelId}");
             loadResult = DesignLoadResult.DesignDoesNotExist;
             return null;
           }
@@ -119,6 +123,7 @@ end;
           loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).Result;
           if (loadResult != DesignLoadResult.Success)
           {
+            Log.LogWarning($"Failed to load design {designUid} from storage for site model with ID {dataModelId}");
             _designs.Remove(designUid);
             return null;
           }
@@ -127,6 +132,7 @@ end;
         loadResult = design.LoadFromFile(design.FileName);
         if (loadResult != DesignLoadResult.Success)
         {
+          Log.LogWarning($"Failed to load design {designUid} from file {design.FileName} for site model with ID {dataModelId}");
           _designs.Remove(designUid);
           return null;
         }
