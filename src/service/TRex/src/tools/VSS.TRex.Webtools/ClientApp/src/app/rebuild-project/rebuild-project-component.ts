@@ -56,7 +56,7 @@ export class RebuildProjectComponent {
                 this.rebuildConfirmationMessage = `Must confirm intent to rebuild project ${this.rebuildingProjectUid}`;
             } else {
                 this.rebuildProjectService.rebuildProject(this.rebuildingProjectUid).subscribe(response => {
-                    this.rebuildConfirmationMessage = `Rebuilding response for project ${this.rebuildingProjectUid}: Result = ${this.rebuildResultStatusAsString(response.result)}.`;
+                    this.rebuildConfirmationMessage = `Rebuilding response for project ${this.rebuildingProjectUid}: Result = ${this.rebuildResultStatusAsString(response.rebuildResult)}.`;
                     this.confirmRebuildProject = false;
                     this.rebuildingProjectUid = "";
                     this.candidateRebuildProjectUid = "";
