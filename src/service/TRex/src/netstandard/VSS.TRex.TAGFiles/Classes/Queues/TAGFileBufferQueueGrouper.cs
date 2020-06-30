@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Serilog.Extensions;
+using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
@@ -24,7 +27,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// full buckets list.
         /// </summary>
         private static readonly int _maxNumberOfTagFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
-
         /// <summary>
         /// GroupMap is a dictionary (keyed on project UID) of
         /// TAG files to be processed for that projectUID/assetUID combination 
