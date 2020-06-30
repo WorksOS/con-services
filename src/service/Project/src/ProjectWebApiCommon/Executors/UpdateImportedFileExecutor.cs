@@ -50,10 +50,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           tRexImportFileProxy);
       }
 
-      if (importedFile.ImportedFileType == ImportedFileType.Linework || importedFile.ImportedFileType == ImportedFileType.GeoTiff)
+      if (importedFile.ImportedFileType == ImportedFileType.Linework || 
+          importedFile.ImportedFileType == ImportedFileType.GeoTiff ||
+          importedFile.ImportedFileType == ImportedFileType.Alignment)
       {
-        //Generate raster tiles
         string dxfFileName = null;
+        if (importedFile.ImportedFileType == ImportedFileType.Linework)
+          dxfFileName = importedFile.DataOceanFileName;
+        else if (importedFile.ImportedFileType == ImportedFileType.Alignment)
+        {
+          //Create DXF file for alignment center line
+          dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
+            customerUid, importedFile.ProjectUid, importedFile.ImportedFileUid, productivity3dV2ProxyCompaction, customHeaders, log,
+            serviceExceptionHandler, authn, dataOceanClient, configStore, importedFile.DataOceanFileName, importedFile.DataOceanRootFolder);
+        }
+        //Generate raster tiles
         if (importedFile.ImportedFileType == ImportedFileType.Linework)
         {
           var projectTask = await ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);

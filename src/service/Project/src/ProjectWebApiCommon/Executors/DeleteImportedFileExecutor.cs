@@ -36,7 +36,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       var deleteImportedFile = CastRequestObjectTo<DeleteImportedFile>(item, errorCode: 68);
 
-      await CheckIfUsedInFilter(deleteImportedFile).ConfigureAwait(false);
+      await CheckIfUsedInFilter(deleteImportedFile);
 
       await CheckIfHasReferenceSurfacesAsync(deleteImportedFile);
 
@@ -55,7 +55,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             log, customHeaders, serviceExceptionHandler,
             tRexImportFileProxy);
       }
-      if (deleteImportedFile.ImportedFileType == ImportedFileType.Linework || deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff)
+      if (deleteImportedFile.ImportedFileType == ImportedFileType.Linework || 
+          deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff || 
+          deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
       {
         var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(deleteImportedFile.FileDescriptor.FileName,
           deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff,
@@ -67,10 +69,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         var tasks = new List<Task>();
         //delete generated DXF tiles
-        string dxfFileName = DataOceanFileUtil.GeneratedFileName(dataOceanFileName, deleteImportedFile.ImportedFileType);
+        var dxfFileName = DataOceanFileUtil.GeneratedFileName(dataOceanFileName, deleteImportedFile.ImportedFileType);
         var dataOceanPath = DataOceanFileUtil.DataOceanPath(deleteImportedFile.DataOceanRootFolder, customerUid, deleteImportedFile.ProjectUid.ToString());
         var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{dxfFileName}";
         tasks.Add(pegasusClient.DeleteTiles(fullFileName, DataOceanHelper.CustomHeaders(authn)));
+
+        if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+        {
+          //Do we care if deleting generated DXF file fails?
+          tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
+            dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
+            deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, log, dataOceanClient, authn, configStore));
+        }
 
         await Task.WhenAll(tasks);
       }
