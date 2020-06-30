@@ -49,6 +49,7 @@ export class DeleteProjectComponent {
     }
 
     public deleteProject(): void {
+        var that = this;
         if (this.deletionProjectUid === "" || this.deletionProjectUid === undefined) {
             this.deleteConfirmationMessage = "No project selected for deletion";
         } else {
@@ -56,7 +57,7 @@ export class DeleteProjectComponent {
                 this.deleteConfirmationMessage = `Must confirm intent to delete project ${this.deletionProjectUid}`;
             } else {
                 this.deleteProjectService.deleteProject(this.deletionProjectUid).subscribe(response => {
-                    this.deleteConfirmationMessage = `Deletion response for project ${this.deletionProjectUid}: Result = ${this.deleteResultStatusAsString(response.result)} with ${response.numRemovedElements} removed elements.`;
+                    this.deleteConfirmationMessage = `Deletion response for project ${that.deletionProjectUid}: Result = ${that.deleteResultStatusAsString(response.result)} with ${response.numRemovedElements} removed elements.`;
                     this.confirmDeleteProject = false;
                     this.deletionProjectUid = "";
                     this.candidateDeleteProjectUid = "";

@@ -49,6 +49,7 @@ export class RebuildProjectComponent {
     }
 
     public rebuildProject(): void {
+        var that = this;
         if (this.rebuildingProjectUid === "" || this.rebuildingProjectUid === undefined) {
             this.rebuildConfirmationMessage = "No project selected for rebuilding";
         } else {
@@ -56,7 +57,7 @@ export class RebuildProjectComponent {
                 this.rebuildConfirmationMessage = `Must confirm intent to rebuild project ${this.rebuildingProjectUid}`;
             } else {
                 this.rebuildProjectService.rebuildProject(this.rebuildingProjectUid).subscribe(response => {
-                    this.rebuildConfirmationMessage = `Rebuilding response for project ${this.rebuildingProjectUid}: Result = ${this.rebuildResultStatusAsString(response.rebuildResult)}.`;
+                    this.rebuildConfirmationMessage = `Rebuilding response for project ${that.rebuildingProjectUid}: Result = ${that.rebuildResultStatusAsString(response.rebuildResult)}.`;
                     this.confirmRebuildProject = false;
                     this.rebuildingProjectUid = "";
                     this.candidateRebuildProjectUid = "";
