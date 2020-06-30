@@ -29,7 +29,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           runParams = new TileGenerationRequest();
           jobUid = GeoTiffTileGenerationJob.VSSJOB_UID;
           break;
-        case ImportedFileType.Alignment:
         case ImportedFileType.Linework:
           runParams = new DxfTileGenerationRequest
           {

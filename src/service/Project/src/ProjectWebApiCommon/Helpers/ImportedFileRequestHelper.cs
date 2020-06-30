@@ -142,45 +142,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     #endregion TRex
 
-    #region tiles
-    /// <summary>
-    /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
-    /// </summary>
-    /// <returns>The generated file name</returns>
-    public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IProductivity3dV2ProxyCompaction productivity3DV2ProxyCompaction,
-      IHeaderDictionary headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn,
-      IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
-    {
-      var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);
-      // TODO - As we do not receive .DXF file contents and insted we get the collection of arrays of vertices 
-      // describing a poly line representation of the alignment center line then we need to revist the code bellow.
-      /*
-      //Get generated DXF file from Raptor
-      var dxfContents = await productivity3DV2ProxyCompaction.GetLineworkFromAlignment(projectUid, alignmentUid, headers);
-      //GracefulWebRequest should throw an exception if the web api call fails but just in case...
-      if (dxfContents != null && dxfContents.Length > 0)
-      {
-        //Unzip it and save to DataOcean 
-        using (var archive = new ZipArchive(dxfContents))
-        {
-          if (archive.Entries.Count == 1)
-          {
-            using (var stream = archive.Entries[0].Open() as DeflateStream)
-            using (var ms = new MemoryStream())
-            {
-              // Unzip the file, copy to memory 
-              stream.CopyTo(ms);
-              ms.Seek(0, SeekOrigin.Begin);
-              await DataOceanHelper.WriteFileToDataOcean(
-                ms, rootFolder, customerUid, projectUid.ToString(), generatedName, log, serviceExceptionHandler, dataOceanClient, authn, alignmentUid, configStore);
-            }
-          }
-        }
-      }*/
-
-      return generatedName;
-    }
-
-    #endregion
   }
 }
