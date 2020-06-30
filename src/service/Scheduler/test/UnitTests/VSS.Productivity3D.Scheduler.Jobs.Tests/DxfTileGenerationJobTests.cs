@@ -9,6 +9,7 @@ using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
@@ -121,7 +122,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       var mockProvider = new Mock<IServiceProvider>();
       var mockConfig = new Mock<IConfigurationStore>();
       var mockPushProxy = new Mock<IServiceResolution>();
-      var mockNotification = new Mock<NotificationHubClient>(mockProvider.Object, mockConfig.Object, mockPushProxy.Object, loggerFactory);
+      var mockDataCache = new Mock<IDataCache>();
+      var mockNotification = new Mock<NotificationHubClient>(mockProvider.Object, mockConfig.Object, mockPushProxy.Object, mockDataCache.Object, loggerFactory);
 
       return new DxfTileGenerationJob(configStore.Object, mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, loggerFactory);
     }
