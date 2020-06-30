@@ -1,0 +1,20 @@
+parameters:
+  - name: serviceName
+    type: string
+  - name: sourceBranchName
+    type: string
+  - name: buildId
+    type: string
+  - name: ecrRepositoryName
+    type: string
+  - name: trexServices
+    type: object
+    default: []
+
+steps:
+  - ${{ each s in parameters.trexServices }}:
+    - task: PowerShell@2
+      displayName: "Push Docker Image ${{ s }}"
+      inputs:
+        filePath: build/azure-build-pipeline.ps1
+        arguments: "-service ${{ parameters.serviceName }} -action pushImage -branch ${{ SourceBranchName }} -imageSuffix \"${{ parameters.buildId }}.${{ s }}\" -ecrRepositoryName ${{ parameters.ecrRepositoryName }}"

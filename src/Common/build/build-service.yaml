@@ -1,13 +1,10 @@
 parameters:
   - name: servicePath
     type: string
-    default: false
   - name: solution
     type: string
-    default: false
   - name: testFolder
     type: string
-    default: false
 
 steps:
   - task: DotNetCoreCLI@2

@@ -4,7 +4,7 @@ PARAM (
     [Parameter(Mandatory = $false)][string]$awsRepositoryName = '940327799086.dkr.ecr.us-west-2.amazonaws.com',
     [Parameter(Mandatory = $false)][string]$branch,
     [Parameter(Mandatory = $false)][string]$ecrRepositoryName,
-    [Parameter(Mandatory = $false)][string]$buildId,
+    [Parameter(Mandatory = $false)][string]$imageSuffix,
     [Parameter(Mandatory = $false)][string]$systemAccessToken,
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$collectCoverage = "true"
@@ -186,8 +186,9 @@ function Push-Container-Image {
 
     $branch = $branch -replace '.*/' # Remove everything up to and including the last forward slash.
 
-    $versionNumber = $branch + "-" + $buildId
-    $ecrRepository = "${awsRepositoryName}/${ecrRepositoryName}:${versionNumber}"
+    # Create the full ECR image URI, e.g. 123456789012.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex:merge-5776.ProjectRebuilder
+    $tagSuffix = $branch + "-" + $imageSuffix
+    $ecrRepository = "${awsRepositoryName}/${ecrRepositoryName}:${tagSuffix}"
 
     Write-Host "`nPushing image '$ecrRepository'..." -ForegroundColor Green
     docker tag $publishImage $ecrRepository
