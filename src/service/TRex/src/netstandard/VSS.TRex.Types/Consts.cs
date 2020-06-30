@@ -119,7 +119,7 @@ namespace VSS.TRex.Common
     /// Maximum number of TAG files to processing through the aggregation/integration pipeline
     /// as a single work unit
     /// </summary>
-    public const int MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH = 20;  // override with: MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH
+    public const int MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH = 100;  // override with: MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH
 
     /// <summary>
     /// Maximum number of TAG files the TAG file grouper will assemble into a single package of TAG files for swather processing
