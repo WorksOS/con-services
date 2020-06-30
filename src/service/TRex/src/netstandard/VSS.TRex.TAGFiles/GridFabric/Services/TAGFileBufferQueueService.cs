@@ -11,7 +11,6 @@ using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Services;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 using System;
@@ -93,28 +92,27 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             // Instantiate the queryHandle and start the continuous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
             // var = IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>>
-            using (var queryHandle = queueCache.QueryContinuous
+            using var queryHandle = queueCache.QueryContinuous
             (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler)) {Local = true},
-              initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> {Local = true}))
+              initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> {Local = true});
+
+            _log.LogInformation(
+              "Performing initial continuous query cursor scan of items to process in TAGFileBufferQueue");
+
+            // Perform the initial query to grab all existing elements and add them to the grouper
+            foreach (var item in queryHandle.GetInitialQueryCursor())
             {
-              _log.LogInformation(
-                "Performing initial continuous query cursor scan of items to process in TAGFileBufferQueue");
-
-              // Perform the initial query to grab all existing elements and add them to the grouper
-              foreach (var item in queryHandle.GetInitialQueryCursor())
-              {
-                handler.Add(item.Key);
-              }
-
-              // Cycle looking for new work to do as TAG files arrive until aborted...
-              _log.LogInformation("Entering steady state continuous query scan of items to process in TAGFileBufferQueue");
-
-              do
-              {
-                _waitHandle.WaitOne(_serviceCheckIntervalMs);
-                //Log.LogInformation("Continuous query scan of items to process in TAGFileBufferQueue still active");
-              } while (!_aborted);
+              handler.Add(item.Key);
             }
+
+            // Cycle looking for new work to do as TAG files arrive until aborted...
+            _log.LogInformation("Entering steady state continuous query scan of items to process in TAGFileBufferQueue");
+
+            do
+            {
+              _waitHandle.WaitOne(_serviceCheckIntervalMs);
+              //Log.LogInformation("Continuous query scan of items to process in TAGFileBufferQueue still active");
+            } while (!_aborted);
           }
           catch (Exception e)
           {

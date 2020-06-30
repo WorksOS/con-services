@@ -11,12 +11,12 @@ using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
-    /// <summary>
-    /// The grouper accepts individual keys representing TAG files in the TAG file buffer queue and groups it with
-    /// TAG files to be processed with the same project and asset. To reduce storage, only the key values are grouped,
-    /// the values may be requested from the cache at the time the TAG file is processed.
-    /// </summary>
-    public class TAGFileBufferQueueGrouper
+  /// <summary>
+  /// The grouper accepts individual keys representing TAG files in the TAG file buffer queue and groups it with
+  /// TAG files to be processed with the same project and asset. To reduce storage, only the key values are grouped,
+  /// the values may be requested from the cache at the time the TAG file is processed.
+  /// </summary>
+  public class TAGFileBufferQueueGrouper
     {
         private static readonly ILogger _log = Logging.Logger.CreateLogger<TAGFileBufferQueueGrouper>();
 
@@ -27,7 +27,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// full buckets list.
         /// </summary>
         private static readonly int _maxNumberOfTagFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
-
         /// <summary>
         /// GroupMap is a dictionary (keyed on project UID) of
         /// TAG files to be processed for that projectUID/assetUID combination 
@@ -53,7 +52,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// Adds another TAG file buffer queue key into the tracked groups for processing
         /// </summary>
-        /// <param name="key"></param>
         public void Add(ITAGFileBufferQueueKey key)
         {
             lock (_lockObj)
@@ -85,9 +83,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// Selects a project from the project/asset group maps that is not contained in the avoidProjects
         /// list, and which has non-zero number TAG file groups.
         /// </summary>
-        /// <param name="avoidProjects"></param>
-        /// <param name="selectedProject"></param>
-        /// <returns></returns>
         private bool SelectProject(List<Guid> avoidProjects, out Guid selectedProject)
         {
             // Preferentially selected a project from the full buckets list
@@ -136,7 +131,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// of the caller to ensure the TAG files are processed and removed from the overall TAGFileBufferQueue,
         /// and any appropriate failure mode handling while processing the bucket of TAG files returned.
         /// </summary>
-        /// <returns></returns>
         public IEnumerable<ITAGFileBufferQueueKey> Extract(List<Guid> avoidProjects, out Guid projectId)
         {
             lock (_lockObj)
@@ -193,8 +187,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// Performs an interlock removal of the project from the project to avoid list
         /// </summary>
-        /// <param name="avoidProjects"></param>
-        /// <param name="projectId"></param>
         public void RemoveProjectFromAvoidList(List<Guid> avoidProjects, Guid projectId)
         {
             lock (_lockObj)

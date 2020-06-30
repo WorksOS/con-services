@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
@@ -17,12 +15,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   /// </summary>
   public class SegmentRetirementQueueManager : IDisposable
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SegmentRetirementQueueManager>();
 
     /// <summary>
     /// Local Ignite resource reference
     /// </summary>
-    private readonly IIgnite ignite;
+    private readonly IIgnite _ignite;
 
     /// <summary>
     /// No-arg constructor. Instantiates the continuous query and performs initial scan of elements that the remote filter 
@@ -30,22 +28,22 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public SegmentRetirementQueueManager(bool runLocally)
     {
-      Log.LogInformation("Establishing segment retirement queue cache context");
+      _log.LogInformation("Establishing segment retirement queue cache context");
 
       // Get the ignite grid and cache references
 
-      ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
-      var queueCache = ignite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.SegmentRetirementQueueCacheName());
+      _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
+      var queueCache = _ignite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.SegmentRetirementQueueCacheName());
 
       // Todo: Create a thread to periodically (needed if we don't go down the service route
       // ....
 
-      Log.LogInformation("Completed segment retirement queue manager initialization");
+      _log.LogInformation("Completed segment retirement queue manager initialization");
     }
 
     public void Dispose()
     {
-      ignite?.Dispose();
+      _ignite?.Dispose();
     }
   }
 }
