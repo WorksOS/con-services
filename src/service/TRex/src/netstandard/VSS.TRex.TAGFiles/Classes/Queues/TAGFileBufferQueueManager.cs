@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
@@ -19,18 +18,18 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueueManager : IDisposable
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueManager>();
+        private static readonly ILogger _log = Logging.Logger.CreateLogger<TAGFileBufferQueueManager>();
 
         /// <summary>
         /// The query handle created by the continuous query. Used to get the initial scan query handle and
         /// to dispose the continuous query when no longer needed.
         /// </summary>
-        private IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> queryHandle;
+        private readonly IContinuousQueryHandle<ICacheEntry<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>> _queryHandle;
 
         /// <summary>
         /// Local Ignite resource reference
         /// </summary>
-        private readonly IIgnite ignite;
+        private readonly IIgnite _ignite;
 
         /// <summary>
         /// No-arg constructor. Instantiates the continuous query and performs initial scan of elements that the remote filter 
@@ -38,47 +37,47 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueManager(bool runLocally)
         {
-            Log.LogInformation("Establishing Ignite and TAG file buffer queue cache contexts");
+            _log.LogInformation("Establishing Ignite and TAG file buffer queue cache contexts");
 
             // Get the ignite grid and cache references
-            ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
-            var queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
+            var queueCache = _ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
             var handler = new TAGFileBufferQueueItemHandler();
-            var TAGFileFilter = new RemoteTAGFileFilter(handler);
+            var tagFileFilter = new RemoteTAGFileFilter(handler);
 
-            Log.LogInformation("Creating continuous query");
+            _log.LogInformation("Creating continuous query");
 
             // Construct the continuous query machinery
             // Set the initial query to return all elements in the cache
             // Instantiate the queryHandle and start the continuous query on the remote nodes
             // Note: Only cache items held on this local node will be handled here
-            queryHandle = queueCache.QueryContinuous
+            _queryHandle = queueCache.QueryContinuous
                 (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler))
                     {
                         Local = runLocally,
-                        Filter = TAGFileFilter
+                        Filter = tagFileFilter
                     },
                     initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>
                     {
                         Local = runLocally,
-                        Filter = TAGFileFilter
+                        Filter = tagFileFilter
                     });
 
             // Perform the initial query to grab all existing elements and add them to the grouper
             // All processing should happen on the remote node in the implementation of the TAGFileFilter remote filter
-            foreach (var item in queryHandle.GetInitialQueryCursor())
+            foreach (var item in _queryHandle.GetInitialQueryCursor())
             {
-                Log.LogError(
+                _log.LogError(
                     $"A cache entry ({item.Key}) from the TAG file buffer queue was passed back to the local scan query rather than intercepted by the remote filter");
             }
 
-            Log.LogInformation("Completed TAG file buffer queue manager initialization");
+            _log.LogInformation("Completed TAG file buffer queue manager initialization");
         }
 
         public void Dispose()
         {
-            queryHandle?.Dispose();
-            ignite?.Dispose();
+            _queryHandle?.Dispose();
+            _ignite?.Dispose();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CoreX.Wrapper.Models.CoordinateSystems
+﻿namespace CoreX.Models.CoordinateSystems
 {
   public class CoordindateSystemLLH
   {

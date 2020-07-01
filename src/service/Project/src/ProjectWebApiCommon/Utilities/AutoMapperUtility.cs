@@ -152,7 +152,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => TRNHelper.ExtractGuid(src.AccountTrn)))
             .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ProjectTrn) ? null : TRNHelper.ExtractGuid(src.ProjectTrn)))
             .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
-            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => src.UpdateType))
+            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ResolveUpdateType(src.UpdateType)))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => GeometryConversion.ProjectBoundaryToWKT(src.Boundary)))
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
@@ -207,6 +207,32 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       );
 
       _automapper = _automapperConfiguration.CreateMapper();
+    }
+
+    private static ProjectUpdateType ResolveUpdateType(CwsUpdateType updateType)
+    {
+      switch (updateType)
+      {
+        case CwsUpdateType.CreateProject:
+          return ProjectUpdateType.Created;
+        case CwsUpdateType.UpdateProject:
+          return ProjectUpdateType.Updated;
+        case CwsUpdateType.DeleteProject:
+          return ProjectUpdateType.Deleted;
+        case CwsUpdateType.CalibrationUpdate:
+          return ProjectUpdateType.Updated;
+        case CwsUpdateType.BoundaryUpdate:
+          return ProjectUpdateType.Updated;
+        case CwsUpdateType.UpdateProjectStatus:
+          //At the moment can only go from Active to Archived
+          return ProjectUpdateType.Deleted;
+        case CwsUpdateType.ArchiveProject:
+          return ProjectUpdateType.Deleted;
+        case CwsUpdateType.UpdateProjectType:
+          return ProjectUpdateType.Updated;
+        default:
+          return ProjectUpdateType.None;
+      }
     }
   }
 }

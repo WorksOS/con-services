@@ -5,6 +5,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
@@ -98,6 +100,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IWebRequest>(factory => 
           new GracefulWebRequest(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IConfigurationStore>())))
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
         .Complete();
     }
 

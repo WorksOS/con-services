@@ -319,6 +319,37 @@ namespace VSS.Common.Cache.MemoryCache.UnitTests
     }
 
     [Fact]
+    public void Test_CanClear()
+    {
+      const int KeyCount = 10;
+      const int TagCount = 3;
+
+      var cache = ServiceProvider.GetService<IDataCache>();
+      // Seed some data
+      var keys = new List<string>();
+      for (var i = 0; i < KeyCount; i++)
+      {
+        var key = $"Test_CanClear-{Guid.NewGuid()}";
+        var data = RandomString(64);
+        var tag = $"Tag-Test_CanClear-{i % TagCount}";
+        cache.Set(key, data, new List<string> { tag });
+        keys.Add(key);
+      }
+      
+      Assert.True(cache.CacheKeys.Count == KeyCount);
+      Assert.True(cache.CacheTags.Count == TagCount);
+      
+      cache.Clear();
+
+      Assert.True(cache.CacheKeys.Count == 0);
+      Assert.True(cache.CacheTags.Count == 0);
+      foreach (var key in keys)
+      {
+        Assert.Null(cache.Get<string>(key));
+      }
+    }
+
+    [Fact]
     public void Test_MultipleThreads()
     {
       var cache = ServiceProvider.GetService<IDataCache>() as InMemoryDataCache;

@@ -5,7 +5,6 @@ using System;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 
@@ -17,14 +16,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// </summary>
     public class TAGFileBufferQueue : ITAGFileBufferQueue
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueue>();
+        private static readonly ILogger _log = Logging.Logger.CreateLogger<TAGFileBufferQueue>();
 
         /// <summary>
         /// The Ignite cache reference that holds the TAG files. This cache is keyed on the TAG file name and uses the
         /// ProjectUID field in the queue item to control affinity placement of the TAG files themselves
         /// The key is a string that 
         /// </summary>
-        private ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> QueueCache;
+        private ICache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> _queueCache;
 
         /// <summary>
         /// Creates or obtains a reference to an already created TAG file buffer queue
@@ -33,11 +32,11 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
 
-            QueueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+            _queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
-            if (QueueCache == null)
+            if (_queueCache == null)
             {
-                Log.LogInformation($"Failed to get Ignite cache {TRexCaches.TAGFileBufferQueueCacheName()}");
+                _log.LogInformation($"Failed to get Ignite cache {TRexCaches.TAGFileBufferQueueCacheName()}");
                 throw new ArgumentException("Ignite cache not available");
             }
         }
@@ -58,7 +57,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <returns>If an element with this key already exists in the cache this method will false, true otherwise</returns>
         public bool Add(ITAGFileBufferQueueKey key, TAGFileBufferQueueItem value)
         {
-            return QueueCache.PutIfAbsent(key, value);
+            return _queueCache.PutIfAbsent(key, value);
         }
     }
 }

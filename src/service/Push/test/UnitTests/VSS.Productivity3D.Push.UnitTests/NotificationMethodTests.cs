@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Productivity.Push.Models.Attributes;
@@ -39,6 +40,8 @@ namespace VSS.Productivity3D.Push.UnitTests
                        .AddSingleton(loggerFactory)
                        .AddSingleton(new Mock<IConfigurationStore>().Object)
                        .AddSingleton(new Mock<IServiceResolution>().Object)
+                       .AddSingleton(new Mock<IDataCache>().Object)
+                       
                        .AddTransient<INotificationHubClient, NotificationHubClient>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();

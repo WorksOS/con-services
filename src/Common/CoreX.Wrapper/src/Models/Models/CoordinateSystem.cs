@@ -1,4 +1,4 @@
-﻿using CoreX.Wrapper.Models.CoordinateSystems;
+﻿using CoreX.Models.CoordinateSystems;
 
 namespace CoreX.Wrapper.Models
 {

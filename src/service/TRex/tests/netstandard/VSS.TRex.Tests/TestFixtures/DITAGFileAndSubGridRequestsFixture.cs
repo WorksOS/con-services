@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using VSS.AWS.TransferProxy;
-using VSS.AWS.TransferProxy.Interfaces;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs.Interfaces;
@@ -48,8 +45,6 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       SetupFixture();
     }
-
-    private Dictionary<TransferProxyType, IS3FileTransfer> S3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
 
     public new void SetupFixture()
     {
@@ -108,18 +103,6 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register the mapper between requests operating in a pipeline and the listeners responding to 
         // partial responses of sub grids
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
-
-        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
-        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>
-          (factory => proxyType =>
-        {
-          if (S3FileTransferProxies.TryGetValue(proxyType, out var proxy))
-            return proxy;
-
-          proxy = new S3FileTransfer(proxyType);
-          S3FileTransferProxies.Add(proxyType, proxy);
-          return proxy;
-        }))
 
         .Complete();
     }
@@ -233,7 +216,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SiteModelExtent.Include(siteModel.Grid.GetCellExtents(cellX, cellY));
 
       // Save the leaf information just created
-      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
       siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
 
@@ -293,7 +276,7 @@ namespace VSS.TRex.Tests.TestFixtures
       totalCells.Should().Be(expectedCellCount);
 
       // Save the leaf information just created
-      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
       siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
     }
@@ -336,7 +319,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SiteModelExtent.Set(siteModelExtent.MinX, siteModelExtent.MinY, siteModelExtent.MaxX, siteModelExtent.MaxY);
 
       // Save the leaf information just created
-      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
+      siteModel.Grid.SaveLeafSubGrid(leaf, siteModel.PrimaryStorageProxy, siteModel.PrimaryStorageProxy, new List<ISubGridSpatialAffinityKey>());
 
       siteModel.SaveToPersistentStoreForTAGFileIngest(siteModel.PrimaryStorageProxy);
     }

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.GridFabric.Requests
@@ -58,7 +57,7 @@ namespace VSS.TRex.GridFabric.Requests
       };
 
       // Send the result to the affinity bound node compute pool
-      return Compute?.AffinityCallAsync(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable), key, func);
+      return Compute != null ? Compute.AffinityCallAsync(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable), key, func) : Task.FromResult<TResponse>(null);
     }
 
     public override TResponse Execute(TArgument arg) => throw new TRexException("Affinity based result execution requires an affinity key");

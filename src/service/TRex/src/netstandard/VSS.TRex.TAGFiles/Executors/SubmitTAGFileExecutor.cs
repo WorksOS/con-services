@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -82,7 +85,11 @@ namespace VSS.TRex.TAGFiles.Executors
             if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive))
             {
               _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
-              TagFileRepository.ArchiveTagfile(td);
+              if (!TagFileRepository.ArchiveTagfileS3(td))
+              {
+                _log.LogError($"SubmitTAGFileResponse. Failed to archive tag file. Returning TRexQueueSubmissionError error. ProjectUID:{td.projectId}, AssetUID:{td.assetId}, Tagfile:{tagFileName}");
+                throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"SubmitTAGFileResponse. Failed to archive tag file {tagFileName} to S3"));
+              };
             }
 
             // switch from nullable to not nullable
@@ -106,11 +113,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
             if (_queue == null)
             {
-              response.Success = false;
-              response.Message = "SubmitTAGFileResponse. Processing queue not available";
-              response.Code = (int)TRexTagFileResultCode.TRexTagFileSubmissionQueueNotAvailable;
-
-              return response;
+              throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "SubmitTAGFileResponse. Processing queue not available"));
             }
 
             if (_queue.Add(tagKey, tagItem)) // Add tag file to queue
@@ -138,8 +141,8 @@ namespace VSS.TRex.TAGFiles.Executors
         }
         catch (Exception e) // catch all exceptions here
         {
-          response.Message = e.Message;
           _log.LogError(e, $"#Exception# SubmitTAGFileResponse. Exception occured processing {tagFileName} Exception:");
+          throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"SubmitTAGFileResponse. Exception {e.Message}"));
         }
       }
       finally

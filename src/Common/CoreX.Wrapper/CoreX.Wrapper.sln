@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Wrapper", "src\CoreX.Wrapper.csproj", "{D2BBC3ED-7D90-480F-ABA5-79DD9F75D0CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Wrapper", "src\CoreX\CoreX.Wrapper.csproj", "{D2BBC3ED-7D90-480F-ABA5-79DD9F75D0CD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{DDD86DDF-81D6-4C7D-B79A-FE48A863E018}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Wrapper.UnitTests", "tests\UnitTests\CoreX.Wrapper.UnitTests.csproj", "{F0C9A15D-07BA-4CD5-85F0-180B6C928DDF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Models", "..\..\service\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj", "{0FF78B30-A245-4857-BE3E-B79235523ACD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreX.Models", "src\Models\CoreX.Models.csproj", "{6F245779-2BBA-4220-92C1-5F05485B2507}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{0FF78B30-A245-4857-BE3E-B79235523ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FF78B30-A245-4857-BE3E-B79235523ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FF78B30-A245-4857-BE3E-B79235523ACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F245779-2BBA-4220-92C1-5F05485B2507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F245779-2BBA-4220-92C1-5F05485B2507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F245779-2BBA-4220-92C1-5F05485B2507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F245779-2BBA-4220-92C1-5F05485B2507}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

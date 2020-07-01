@@ -14,7 +14,7 @@ variables:
   buildConfiguration: "Release"
   serviceName: TRex
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
-  ecrRepositoryName: 'rpd-ccss-productivity3d-trex-webapi'
+  ecrRepositoryName: 'rpd-ccss-trex'
 
 jobs:
   - job: BuildTestAndDeploy
@@ -45,8 +45,8 @@ jobs:
         displayName: "Publish Unit Test Results"
         continueOnError: true
         inputs:
-          testResultsFormat: XUnit
-          testResultsFiles: "**/TestResults.xml"
+          testResultsFormat: 'VSTest'
+          testResultsFiles: "**/*.trx"
           searchFolder: "$(rootServiceFolder)/UnitTestResults"
 
       # - task: PublishCodeCoverageResults@1

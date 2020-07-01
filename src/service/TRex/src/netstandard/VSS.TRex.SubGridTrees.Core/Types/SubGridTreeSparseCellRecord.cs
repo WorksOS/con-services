@@ -4,11 +4,11 @@ namespace VSS.TRex.SubGridTrees.Types
 {
   /// <summary>
   /// Contains the location of, and reference to, a child cell within this sub grid.
-  /// These items form a sparse list of child sub grids that is more space efficient than 
-  /// maintaining a full 32x32 array of references where the vast majority are null 
+  /// These items form a sparse list of child sub grids that is more space efficient than
+  /// maintaining a full 32x32 array of references where the vast majority are null
   /// (no data in child sub grid)
   /// </summary>
-  public struct SubGridTreeSparseCellRecord
+  public readonly struct SubGridTreeSparseCellRecord
   {
     /// <summary>
     /// X ordinate of the in sub grid address of the cell

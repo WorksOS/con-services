@@ -1,4 +1,4 @@
-﻿using CoreX.Wrapper.Models;
+﻿using CoreX.Models;
 using CoreX.Wrapper.Types;
 
 namespace CoreX.Wrapper

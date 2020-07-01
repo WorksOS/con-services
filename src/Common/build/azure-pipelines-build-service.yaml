@@ -96,6 +96,16 @@ jobs:
         solution: 'VSS.Productivity3D.Scheduler.sln'
         testFolder: 'test'
 
+  - job: BuildPreferencesService
+    displayName: 'Build Preferences service'
+    timeoutInMinutes: 20
+    steps:
+    - template: build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Preferences'
+        solution: 'CCSS.Productivity3D.Preferences.sln'
+        testFolder: 'test'
+
   - job: BuildPushService
     displayName: 'Build Push service'
     timeoutInMinutes: 20

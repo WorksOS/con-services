@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Productivity.Push.Models.Attributes;
@@ -27,12 +28,15 @@ namespace VSS.Productivity3D.Push.Clients.Notifications
     private readonly object methodInfoLock = new object();
 
     private readonly IServiceProvider serviceProvider;
+    private readonly IDataCache _dataCache;
 
     public NotificationHubClient(IServiceProvider serviceProvider, IConfigurationStore configuration,
       IServiceResolution resolution,
+      IDataCache dataCache,
       ILoggerFactory loggerFactory) : base(configuration, resolution, loggerFactory)
     {
       this.serviceProvider = serviceProvider;
+      _dataCache = dataCache;
     }
 
     /// <inheritdoc />
@@ -45,6 +49,17 @@ namespace VSS.Productivity3D.Push.Clients.Notifications
     public override void SetupCallbacks()
     {
       Connection.On<Notification>(nameof(INotificationHub.Notify), ProcessNotification); 
+    }
+
+    /// <inheritdoc />
+    /// <summary>
+    /// We want to clear the cache on a new connection - we may have missed some events
+    /// And can't be sure
+    /// </summary>
+    protected override void OnConnection()
+    {
+      base.OnConnection();
+      _dataCache.Clear();
     }
 
     /// <inheritdoc />

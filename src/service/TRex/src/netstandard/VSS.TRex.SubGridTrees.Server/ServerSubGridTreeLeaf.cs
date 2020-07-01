@@ -523,7 +523,7 @@ namespace VSS.TRex.SubGridTrees.Server
             segment.LatestPasses.PassDataExistenceMap.ForEachSetBit((x, y) => globalLatestCellsCast[x, y] = latestPassesCast[x, y]);
         }
 
-        public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxy)
+        public void ComputeLatestPassInformation(bool fullRecompute, IStorageProxy storageProxyForSubGridSegments)
         {
             //Log.LogInformation($"ComputeLatestPassInformation: Segment dir for {Moniker()}:");
             //Directory.DumpSegmentDirectoryToLog();
@@ -533,7 +533,7 @@ namespace VSS.TRex.SubGridTrees.Server
               throw new TRexSubGridTreeException($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
             }
 
-            var iterator = new SubGridSegmentIterator(this, _directory, storageProxy)
+            var iterator = new SubGridSegmentIterator(this, _directory, storageProxyForSubGridSegments)
             {
                 IterationDirection = IterationDirection.Forwards,
                 ReturnDirtyOnly = !fullRecompute
@@ -583,7 +583,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
                 if (seedSegmentInfo.Segment != null)
                 {
-                    if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(storageProxy, new SubGridCellAddress(OriginX, OriginY), true, false,
+                    if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(storageProxyForSubGridSegments, new SubGridCellAddress(OriginX, OriginY), true, false,
                                                                           this, seedSegmentInfo.Segment))
                     {
                         lastSegment = seedSegmentInfo.Segment;
