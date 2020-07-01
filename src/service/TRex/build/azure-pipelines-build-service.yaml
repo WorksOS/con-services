@@ -57,12 +57,6 @@ jobs:
       #     pathToSources: "$(rootServiceFolder)"
       #     failIfCoverageEmpty: true
 
-      - task: PowerShell@2
-        displayName: "Publish Service"
-        inputs:
-          filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action publish"
-
       # We need to push individual images for each TRex service, that's done using this template.
       - template: templates/push-service-image.yaml
         parameters:
