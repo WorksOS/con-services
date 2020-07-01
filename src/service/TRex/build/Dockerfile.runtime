@@ -1,12 +1,6 @@
 ARG FROM_IMAGE
 FROM ${FROM_IMAGE} as build_container
 
-ARG SERVICE_PATH=src/service/TRex
-ARG PROJECT_FILE
-ARG SOURCE_PATH
-
-RUN dotnet publish ./${SERVICE_PATH}/${PROJECT_FILE} --no-restore -nowarn:NU1701 --output ${SOURCE_PATH}
-
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as runtime_build_container
 
 # Not optional, must be passed in from the Azure build configuration. Repeat for each service.
