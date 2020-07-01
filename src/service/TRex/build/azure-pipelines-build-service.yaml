@@ -59,6 +59,7 @@ jobs:
 
       # We need to push individual images for each TRex service, that's done using this template.
       - template: templates/push-service-image.yaml
+        displayName: "ublishing Service: ApplicationServer"
         parameters:
           serviceName: $(serviceName)
           sourceBranchName: $(Build.SourceBranchName)

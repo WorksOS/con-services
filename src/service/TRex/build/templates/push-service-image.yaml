@@ -16,7 +16,7 @@ parameters:
 steps:
   - ${{ each s in parameters.trexServices }}:
     - task: PowerShell@2
-      displayName: "Publish Service ${{ s }}"
+      displayName: "Publish Service"
       inputs:
         filePath: build/azure-build-pipeline.ps1
         arguments: "-service $(serviceName)
@@ -26,7 +26,7 @@ steps:
                     -destArtifactPath /trex/${{ s }}"
 
     - task: PowerShell@2
-      displayName: "Push Docker Image ${{ s }}"
+      displayName: "Push Docker Image"
       inputs:
         filePath: build/azure-build-pipeline.ps1
         arguments: "-service ${{ parameters.serviceName }} 
