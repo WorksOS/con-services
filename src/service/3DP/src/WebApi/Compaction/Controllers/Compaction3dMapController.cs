@@ -276,7 +276,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var projectTask = ((RaptorPrincipal) User).GetProject(projectUid);
       var projectSettings = GetProjectSettingsTargets(projectUid);
-      var userPreferences = prefProxy.GetUserPreferences(CustomHeaders);
+      var userPreferences = prefProxy.GetUserPreferences(GetUserId(), CustomHeaders);
       var filter = GetCompactionFilter(projectUid, filterUid);
       var designTask = GetAndValidateDesignDescriptor(projectUid, designUid);
       if (userPreferences == null)

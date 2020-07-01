@@ -705,7 +705,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var displayOffset = offset;
       var unitsString = string.Empty;
-      var userPreferences = await prefProxy.GetUserPreferences(Request.Headers.GetCustomHeaders());
+      var userPreferences = await prefProxy.GetUserPreferences(UserId, Request.Headers.GetCustomHeaders());
       switch (userPreferences.Units.UnitsType())
       {
         case UnitsTypeEnum.Metric:

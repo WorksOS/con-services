@@ -102,6 +102,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         ApiService.Device => Constants.ServiceNameConstants.DEVICE_SERVICE,
         ApiService.TRexMutableGateway => Constants.ServiceNameConstants.TREX_SERVICE_MUTABLE,
         ApiService.Entitlements => Constants.ServiceNameConstants.ENTITLEMENTS_SERVICE,
+        ApiService.Preferences => Constants.ServiceNameConstants.PREFERENCES_SERVICE,
         _ => throw new ArgumentOutOfRangeException(nameof(service), service, null)
       };
     }
