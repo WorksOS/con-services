@@ -28,6 +28,7 @@ using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SiteModelChangeMaps;
+using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Server.ProjectRebuilder
 {
