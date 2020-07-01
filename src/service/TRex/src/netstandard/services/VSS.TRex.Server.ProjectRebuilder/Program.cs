@@ -107,14 +107,34 @@ namespace VSS.TRex.Server.ProjectRebuilder
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
 
       // Wait until caches are available
-      while (CacheFactory(RebuildSiteModelCacheType.Metadata) == null)
+      while (true)
       {
+        try
+        {
+          if (CacheFactory(RebuildSiteModelCacheType.Metadata) != null)
+            break;
+        }
+        catch (ArgumentException)
+        {
+          // Failure to find the cache will throw an argument exception, so tolerate that failure, not others
+        }
+
         log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderMetaDataCacheName()} to become available");
         await Task.Delay(1000);
       }
 
-      while (CacheFactory(RebuildSiteModelCacheType.KeyCollections) == null)
+      while (true)
       {
+        try
+        {
+          if (CacheFactory(RebuildSiteModelCacheType.KeyCollections) != null)
+            break;
+        }
+        catch (ArgumentException)
+        {
+          // Failure to find the cache will throw an argument exception, so tolerate that failure, not others
+        }
+
         log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()} to become available");
         await Task.Delay(1000);
       }
