@@ -10,16 +10,14 @@ import { ISiteModelMetadata } from '../project/project-model';
 })
 export class DeleteProjectComponent {
 
-    public projectUid: string;
-
-    public candidateProjectUid: string;
+    public deletionProjectUid: string;
+    public candidateDeleteProjectUid: string;
 
     public projectMetadata: ISiteModelMetadata;
 
     public allProjectsMetadata: ISiteModelMetadata[] = [];
 
-    public confirmationMessage: string = "";
-
+    public deleteConfirmationMessage: string = "";
     public confirmDeleteProject: boolean = false;
 
     constructor(
@@ -34,35 +32,36 @@ export class DeleteProjectComponent {
 
     private getIndexOfSelectedProjectMetadata(): number {
         for (var i = 0; i < this.allProjectsMetadata.length; i++) {
-            if (this.allProjectsMetadata[i].id === this.projectUid)
+            if (this.allProjectsMetadata[i].id === this.deletionProjectUid)
                 return i;
         }
         return -1;
     }
 
-    public selectProject(): void {
-        this.projectUid = this.candidateProjectUid;
+    public selectProjectForDeletion(): void {
+        this.deletionProjectUid = this.candidateDeleteProjectUid;
 
-        if (this.projectUid === "" || this.projectUid === undefined) {
-            this.confirmationMessage = "No project selected for deletion";
+        if (this.deletionProjectUid === "" || this.deletionProjectUid === undefined) {
+            this.deleteConfirmationMessage = "No project selected for deletion";
         } else {
-            this.confirmationMessage = `Project ${this.projectUid} selected for deletion`;
+            this.deleteConfirmationMessage = `Project ${this.deletionProjectUid} selected for deletion`;
         }
     }
 
     public deleteProject(): void {
-        if (this.projectUid === "" || this.projectUid === undefined) {
-            this.confirmationMessage = "No project selected for deletion";
+        var that = this;
+        if (this.deletionProjectUid === "" || this.deletionProjectUid === undefined) {
+            this.deleteConfirmationMessage = "No project selected for deletion";
         } else {
             if (this.confirmDeleteProject === false) {
-                this.confirmationMessage = `Must confirm intent to delete project ${this.projectUid}`;
+                this.deleteConfirmationMessage = `Must confirm intent to delete project ${this.deletionProjectUid}`;
             } else {
-                this.deleteProjectService.deleteProject(this.projectUid).subscribe(response => {
-                    this.confirmationMessage = `Deletion response for project ${this.projectUid}: Result = ${this.deleteResultStatusAsString(response.result)} with ${response.numRemovedElements} removed elements.`;
-                    this.confirmDeleteProject = false;
-                    this.projectUid = "";
-                    this.candidateProjectUid = "";
-                    this.getAllProjectMetadata();
+                this.deleteProjectService.deleteProject(this.deletionProjectUid).subscribe(response => {
+                    that.deleteConfirmationMessage = `Deletion response for project ${that.deletionProjectUid}: Result = ${that.deleteResultStatusAsString(response.result)} with ${response.numRemovedElements} removed elements.`;
+                    that.confirmDeleteProject = false;
+                    that.deletionProjectUid = "";
+                    that.candidateDeleteProjectUid = "";
+                    that.getAllProjectMetadata();
                 });
             }
         }
@@ -75,12 +74,12 @@ export class DeleteProjectComponent {
                 metadata.forEach(data => result.push(data));
                 this.allProjectsMetadata = result;
                 this.projectMetadata = this.allProjectsMetadata[this.getIndexOfSelectedProjectMetadata()];
-                this.candidateProjectUid = "";
+                this.candidateDeleteProjectUid = "";
             });
     }
 
-    public projectMetadataChanged(event: any): void {
-        this.candidateProjectUid = this.projectMetadata.id;
+    public projectMetadataChangedForDeletion(event: any): void {
+        this.candidateDeleteProjectUid = this.projectMetadata.id;
     }
 
     public updateAllProjectsMetadata(): void {

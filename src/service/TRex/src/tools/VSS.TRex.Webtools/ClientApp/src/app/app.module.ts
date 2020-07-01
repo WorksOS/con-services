@@ -16,6 +16,7 @@ import { SandboxComponent } from './sandbox/sandbox-component';
 import { ProjectComponent } from './project/project-component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { DeleteProjectComponent } from './delete-project/delete-project-component';
+import { RebuildProjectComponent } from './rebuild-project/rebuild-project-component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DeleteProjectComponent } from './delete-project/delete-project-componen
     SandboxComponent,
     ProjectComponent,
     FetchDataComponent,
-    DeleteProjectComponent
+    DeleteProjectComponent,
+    RebuildProjectComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -44,6 +46,7 @@ import { DeleteProjectComponent } from './delete-project/delete-project-componen
       { path: 'sandbox', component: SandboxComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'delete-project', component: DeleteProjectComponent },
+      { path: 'rebuild-project', component: RebuildProjectComponent }
     ])
   ],
   providers: [
