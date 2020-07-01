@@ -6,6 +6,7 @@ PARAM (
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$collectCoverage = "true",
     # Image publish parameters
+    [Parameter(Mandatory = $false)][string]$publishProjectFile = '',
     [Parameter(Mandatory = $false)][string]$sourceArtifactPath = '',
     [Parameter(Mandatory = $false)][string]$destArtifactPath = '',
     # Image Push parameters
@@ -168,12 +169,15 @@ function Publish-Service {
     if ($sourceArtifactPath) { $sourceArtifactPathArg = '=' + $sourceArtifactPath }
     $destArtifactPathArg = ''
     if ($destArtifactPath) { $destArtifactPathArg = '=' + $destArtifactPath }
+    $publishProjectFileArg = ''
+    if ($publishProjectFile) { $publishProjectFileArg = '=' + $publishProjectFile }
 
     Get-Content $servicePath/build/Dockerfile.runtime | docker build `
     --tag $publishImage `
     --no-cache `
     --build-arg FROM_IMAGE=$buildImage `
     --build-arg SERVICE_PATH=$servicePath `
+    --build-arg PROJECT_FILE$publishProjectFileArg `
     --build-arg SOURCE_PATH$sourceArtifactPathArg `
     --build-arg DEST_PATH$destArtifactPathArg -
 

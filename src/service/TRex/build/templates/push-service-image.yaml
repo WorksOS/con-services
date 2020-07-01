@@ -10,17 +10,27 @@ parameters:
   - name: trexServices
     type: object
     default: []
+  - name: publishProjectFile
+    type: string
 
 steps:
   - ${{ each s in parameters.trexServices }}:
     - task: PowerShell@2
-        displayName: "Publish Service"
-        inputs:
-          filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action publish -sourceArtifactPath /trex/ApplicationServer -destArtifactPath /trex/ApplicationServer"
+      displayName: "Publish Service ${{ s }}"
+      inputs:
+        filePath: build/azure-build-pipeline.ps1
+        arguments: "-service $(serviceName)
+                    -action publish
+                    -publishProjectFile ${{ parameters.publishProjectFile }}
+                    -sourceArtifactPath /trex/${{ s }}
+                    -destArtifactPath /trex/${{ s }}"
 
     - task: PowerShell@2
       displayName: "Push Docker Image ${{ s }}"
       inputs:
         filePath: build/azure-build-pipeline.ps1
-        arguments: "-service ${{ parameters.serviceName }} -action pushImage -branch ${{ parameters.sourceBranchName }} -imageSuffix \"${{ parameters.buildId }}.${{ s }}\" -ecrRepositoryName ${{ parameters.ecrRepositoryName }}"
+        arguments: "-service ${{ parameters.serviceName }} 
+                    -action pushImage
+                    -branch ${{ parameters.sourceBranchName }}
+                    -imageSuffix \"${{ parameters.buildId }}.${{ s }}\"
+                    -ecrRepositoryName ${{ parameters.ecrRepositoryName }}"

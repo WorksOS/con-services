@@ -35,19 +35,19 @@ jobs:
           filePath: build/azure-build-pipeline.ps1
           arguments: "-service $(serviceName) -action build"
 
-      - task: PowerShell@2
-        displayName: "Run unit tests"
-        inputs:
-          filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action unittest -collectCoverage false" #disable coverage collection for the moment.
+      # - task: PowerShell@2
+      #   displayName: "Run unit tests"
+      #   inputs:
+      #     filePath: build/azure-build-pipeline.ps1
+      #     arguments: "-service $(serviceName) -action unittest -collectCoverage false" #disable coverage collection for the moment.
 
-      - task: PublishTestResults@2
-        displayName: "Publish Unit Test Results"
-        continueOnError: true
-        inputs:
-          testResultsFormat: 'VSTest'
-          testResultsFiles: "**/*.trx"
-          searchFolder: "$(rootServiceFolder)/UnitTestResults"
+      # - task: PublishTestResults@2
+      #   displayName: "Publish Unit Test Results"
+      #   continueOnError: true
+      #   inputs:
+      #     testResultsFormat: 'VSTest'
+      #     testResultsFiles: "**/*.trx"
+      #     searchFolder: "$(rootServiceFolder)/UnitTestResults"
 
       # - task: PublishCodeCoverageResults@1
       #   displayName: "Publish Code Coverage"
@@ -64,7 +64,8 @@ jobs:
           sourceBranchName: $(Build.SourceBranchName)
           buildId: $(Build.BuildId)
           ecrRepositoryName: $(ecrRepositoryName)
-          trexServices: ['ProjectRebuilder', 'Utils', 'Webtools', 'MutableGateway', 'Gateway', 'Reports', 'TINSurfaceExport', 'TileRendering', 'QMesh', 'PSNode', 'MutableData', 'DesignElevation', 'ConnectedSiteGateway', 'ApplicationServer']
+          trexServices: ['ApplicationServer']
+          publishProjectFile: src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: Charts'
