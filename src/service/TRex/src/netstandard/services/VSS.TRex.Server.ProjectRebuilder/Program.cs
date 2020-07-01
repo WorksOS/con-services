@@ -104,6 +104,9 @@ namespace VSS.TRex.Server.ProjectRebuilder
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelRebuilderHeartbeatLogger());
 
+      // Wait until the grid is active
+      DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.ImmutableGridName());
+
       // Tell the rebuilder manager to find any active rebuilders and start them off from where they left off
       await DIContext.Obtain<ISiteModelRebuilderManager>().BeginOperations();
     }
