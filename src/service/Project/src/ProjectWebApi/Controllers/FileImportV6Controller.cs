@@ -117,7 +117,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(
         file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, UserEmailAddress, surveyedUtc, null, null);
 
-      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, ConfigStore, ServiceExceptionHandler);
       Logger.LogInformation(
         $"{nameof(SyncUpload)}: file: {file.flowFilename} path {file.path} projectUid {projectUid} ImportedFileType: {importedFileType} " +
         $"DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
@@ -244,8 +243,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 122);
       }
 
-      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, ConfigStore, ServiceExceptionHandler);
-
       ImportedFileDescriptorSingleResult importedFileResult = null;
       var transferProxy = transferProxyFactory.NewProxy(TransferProxyType.Temporary);
       Logger.LogInformation(
@@ -315,8 +312,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, UserEmailAddress, surveyedUtc, null, null);
 
-      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, ConfigStore, ServiceExceptionHandler);
-
       Logger.LogInformation(
         $"{nameof(UpsertImportedFileV6)}: file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
@@ -352,7 +347,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       FileImportDataValidator.ValidateUpsertImportedFileRequest(projectUid, importedFileType, dxfUnitsType, fileCreatedUtc,
         fileUpdatedUtc, UserEmailAddress, surveyedUtc, filename, null, null);
-      ImportedFileUtils.ValidateEnvironmentVariables(importedFileType, ConfigStore, ServiceExceptionHandler);
       Logger.LogInformation(
         $"{nameof(CreateImportedFileDirectV6)}: ProjectUID: `{projectUid}`, Filename: `{filename}` ImportedFileType: `{importedFileType}`, DxfUnitsType: `{dxfUnitsType}`, SurveyedUTC: `{(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}`");
 
@@ -402,8 +396,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
         return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "shouldn't get here"); // to keep compiler happy
       }
-
-      ImportedFileUtils.ValidateEnvironmentVariables(existing.ImportedFileType, ConfigStore, ServiceExceptionHandler);
 
       var deleteImportedFile = new DeleteImportedFile(
         projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor),
@@ -494,21 +486,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         //FileDescriptor not used for reference surface but validation requires values
         fileDescriptor = FileDescriptor.CreateFileDescriptor("Not applicable", "Not applicable", filename);
       }
-      else if (importedFileType == ImportedFileType.GeoTiff)
-      {
-        //save copy to DataOcean      
-        await DataOceanHelper.WriteFileToDataOcean(
-          fileStream, DataOceanRootFolderId, CustomerUid, projectUid.ToString(), dataOceanFileName,
-          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
-
-        fileDescriptor = FileDescriptor.CreateFileDescriptor(
-          FileSpaceId,
-          $"/{CustomerUid}/{projectUid}",
-          filename);
-      }
       else
       {
-        if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileType))
+        if (IsDesignFileType(importedFileType))
         {
           fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
             fileStream, projectUid.ToString(), filename,
@@ -516,19 +496,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             Logger, ServiceExceptionHandler, persistantTransferProxyFactory.NewProxy(TransferProxyType.DesignImport));
         }
 
-        if (UseRaptorGatewayDesignImport)
-        {
-          //This is needed for ATs.
-          fileDescriptor = FileDescriptor.CreateFileDescriptor(
-            FileSpaceId,
-            $"/{CustomerUid}/{projectUid}",
-            filename);
+        //This is needed for ATs.
+        fileDescriptor = FileDescriptor.CreateFileDescriptor(
+          FileSpaceId,
+          $"/{CustomerUid}/{projectUid}",
+          filename);
 
+        if (importedFileType == ImportedFileType.Linework || importedFileType == ImportedFileType.GeoTiff)
+        {
           //save copy to DataOcean      
           await DataOceanHelper.WriteFileToDataOcean(
               fileStream, DataOceanRootFolderId, CustomerUid, projectUid.ToString(), dataOceanFileName,
-              Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore)
-            .ConfigureAwait(false);
+              Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
         }
       }
 
@@ -646,8 +625,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(CreateReferenceSurface)}: projectUid {projectUid} filename: {filename} parentUid: {parentUid} offset: {offset}");
 
       await ValidateProjectId(projectUid.ToString());
-
-      ImportedFileUtils.ValidateEnvironmentVariables(ImportedFileType.ReferenceSurface, ConfigStore, ServiceExceptionHandler);
 
       //Check parent design does exist
       var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid.ToString(), Logger, UserId, ProjectRepo);
@@ -830,10 +807,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task DoActivationAndNotification(string projectUid, Dictionary<Guid, bool> filesToUpdate)
     {
       var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
-      var notificationTask = NotificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
-      var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
-
-      await Task.WhenAll(notificationTask, raptorTask);
+      await NotificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
     }
 
     #endregion fileActivation
