@@ -8,7 +8,7 @@ metadata:
     app: {{ template "trex.deployname" . }}
     component: {{ template "trex.deployname" . }}-project-rebuilder
     chart: {{ template "trex.chart" . }}
-    immutable-cluster: "true"
+    mutable-cluster: "true"
     jmx-prometheus: "true"
 spec:
   # A number of Ignite pods to be started by Kubernetes initially.
@@ -21,7 +21,7 @@ spec:
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
         component: {{ template "trex.deployname" . }}-project-rebuilder
-        immutable-cluster: "true"
+        mutable-cluster: "true"
         jmx-prometheus: "true"
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
