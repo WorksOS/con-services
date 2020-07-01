@@ -10,8 +10,8 @@ parameters:
   - name: trexServices
     type: object
     default: []
-  - name: publishProjectFile
-    type: string
+  # - name: publishProjectFile
+  #   type: string
 
 steps:
   - ${{ each s in parameters.trexServices }}:
