@@ -175,7 +175,7 @@ namespace VSS.TRex.Tests.SiteModels
     /// CSIB related tests have subtlely different semantics so are kept long hand...
     /// </summary>
     [Fact]
-    public void Test_SiteModel__UnloadCSIB()
+    public void Test_SiteModel_UnloadCSIB()
     {
       var siteModel = new SiteModel(Guid.NewGuid(), false);
       siteModel.CSIBLoaded.Should().Be(false);
@@ -185,6 +185,21 @@ namespace VSS.TRex.Tests.SiteModels
 
       siteModel.UnloadCSIB();
       siteModel.CSIBLoaded.Should().Be(false);
+    }
+
+    [Fact]
+    public void Test_SiteModel_SetCSIB()
+    {
+      var siteModel = new SiteModel(Guid.NewGuid(), false);
+      siteModel.CSIBLoaded.Should().Be(false);
+
+      siteModel.SetCSIB("A dummy coordinate system");
+
+      // Setting a CSIB does not load it
+      siteModel.CSIBLoaded.Should().Be(false);
+
+      var _ = siteModel.CSIB();
+      siteModel.CSIBLoaded.Should().Be(true);
     }
 
     [Fact]
