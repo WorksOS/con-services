@@ -60,20 +60,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       if (importedFile.ImportedFileType == ImportedFileType.Linework || 
-          importedFile.ImportedFileType == ImportedFileType.GeoTiff || 
-          importedFile.ImportedFileType == ImportedFileType.Alignment)
+          importedFile.ImportedFileType == ImportedFileType.GeoTiff)
       {
         var project = ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);
         string dxfFileName = null;
         if (importedFile.ImportedFileType == ImportedFileType.Linework)
           dxfFileName = importedFile.DataOceanFileName;
-        else if (importedFile.ImportedFileType == ImportedFileType.Alignment)
-        {
-          //Create DXF file for alignment center line
-          dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, importedFile.ProjectUid, createImportedFileEvent.ImportedFileUID, productivity3dV2ProxyCompaction, customHeaders, log,
-            serviceExceptionHandler, authn, dataOceanClient, configStore, importedFile.DataOceanFileName, importedFile.DataOceanRootFolder);
-        }
 
         var existing = projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
         await Task.WhenAll(project, existing);

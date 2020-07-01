@@ -56,8 +56,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             tRexImportFileProxy);
       }
       if (deleteImportedFile.ImportedFileType == ImportedFileType.Linework || 
-          deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff || 
-          deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
+          deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff)
       {
         var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(deleteImportedFile.FileDescriptor.FileName,
           deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff,
@@ -73,14 +72,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var dataOceanPath = DataOceanFileUtil.DataOceanPath(deleteImportedFile.DataOceanRootFolder, customerUid, deleteImportedFile.ProjectUid.ToString());
         var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{dxfFileName}";
         tasks.Add(pegasusClient.DeleteTiles(fullFileName, DataOceanHelper.CustomHeaders(authn)));
-
-        if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
-        {
-          //Do we care if deleting generated DXF file fails?
-          tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
-            dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
-            deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, log, dataOceanClient, authn, configStore));
-        }
 
         await Task.WhenAll(tasks);
       }
