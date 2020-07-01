@@ -103,7 +103,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
             {
               new ExecutorConfiguration
               {
-                Name = BaseIgniteClass.TRexProgressiveQueryCustomThreadPoolName,
+                Name = BaseIgniteClass.TREX_PROGRESSIVE_QUERY_CUSTOM_THREAD_POOL_NAME,
                 Size = DIContext.Obtain<IConfigurationStore>().GetValueInt(PROGRESSIVE_REQUEST_CUSTOM_POOL_SIZE, DEFAULT_PROGRESSIVE_REQUEST_CUSTOM_POOL_SIZE)
               }
             }
