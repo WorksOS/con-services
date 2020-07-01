@@ -177,7 +177,7 @@ function Publish-Service {
     --no-cache `
     --build-arg FROM_IMAGE=$buildImage `
     --build-arg SERVICE_PATH=$servicePath `
-    --build-arg PROJECT_FILE$publishProjectFileArg `
+   # --build-arg PROJECT_FILE$publishProjectFileArg `
     --build-arg SOURCE_PATH$sourceArtifactPathArg `
     --build-arg DEST_PATH$destArtifactPathArg -
 

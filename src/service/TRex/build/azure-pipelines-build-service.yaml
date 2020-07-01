@@ -59,14 +59,12 @@ jobs:
 
       # We need to push individual images for each TRex service, that's done using this template.
       - template: templates/push-service-image.yaml
-        displayName: "ublishing Service: ApplicationServer"
         parameters:
           serviceName: $(serviceName)
           sourceBranchName: $(Build.SourceBranchName)
           buildId: $(Build.BuildId)
           ecrRepositoryName: $(ecrRepositoryName)
-          trexServices: ['ApplicationServer']
-          publishProjectFile: src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj
+          trexServices: ['ProjectRebuilder', 'Utils', 'Webtools', 'MutableGateway', 'Gateway', 'Reports', 'TINSurfaceExport', 'TileRendering', 'QMesh', 'PSNode', 'MutableData', 'DesignElevation', 'ConnectedSiteGateway', 'ApplicationServer']
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: Charts'
