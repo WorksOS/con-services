@@ -27,7 +27,6 @@ using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SiteModelChangeMaps;
 using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Server.ProjectRebuilder
@@ -55,7 +54,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => CacheFactory(cacheType)))
+        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>(CacheFactory))
 
         .Build()
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
@@ -67,9 +66,9 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger, TRexHeartBeatLogger>())
         .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
-        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
+        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(_ => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
-        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>(factory => proxyType => new S3FileTransfer(proxyType)))
+        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>(_ => proxyType => new S3FileTransfer(proxyType)))
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener, RebuildSiteModelTAGNotifierListener>())
 
         .Complete();
@@ -97,7 +96,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       }
     }
 
-    private static async void DoServiceInitialisation()
+    private static async void DoServiceInitialisation(ILogger log)
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
@@ -106,6 +105,19 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
       // Wait until the grid is active
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
+
+      // Wait until caches are available
+      while (CacheFactory(RebuildSiteModelCacheType.Metadata) == null)
+      {
+        log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderMetaDataCacheName()} to become available");
+        await Task.Delay(1000);
+      }
+
+      while (CacheFactory(RebuildSiteModelCacheType.KeyCollections) == null)
+      {
+        log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()} to become available");
+        await Task.Delay(1000);
+      }
 
       // Tell the rebuilder manager to find any active rebuilders and start them off from where they left off
       await DIContext.Obtain<ISiteModelRebuilderManager>().BeginOperations();
@@ -118,10 +130,10 @@ namespace VSS.TRex.Server.ProjectRebuilder
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 
-        var Log = Logging.Logger.CreateLogger<Program>();
+        var log = Logging.Logger.CreateLogger<Program>();
 
-        Log.LogInformation("Creating service");
-        Log.LogDebug("Creating service");
+        log.LogInformation("Creating service");
+        log.LogDebug("Creating service");
 
         var server = new MutableClientServer(new[] { ServerRoles.PROJECT_REBUILDER_ROLE });
 
@@ -133,7 +145,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
           cancelTokenSource.Cancel();
         };
 
-        DoServiceInitialisation();
+        DoServiceInitialisation(log);
 
         await Task.Delay(-1, cancelTokenSource.Token);
         return 0;
