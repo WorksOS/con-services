@@ -30,8 +30,6 @@ namespace VSS.TRex.Designs.GridFabric.Requests
     /// Executes the generic request by instantiating the required ComputeFunc and sending it to 
     /// the compute projection on the grid as defined by the GridName and Role parameters in this request
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public override TResponse Execute(TArgument arg)
     {
       // Construct the function to be used
@@ -46,8 +44,6 @@ namespace VSS.TRex.Designs.GridFabric.Requests
     /// Executes the generic request by instantiating the required ComputeFunc and sending it to 
     /// the compute projection on the grid as defined by the GridName and Role parameters in this request
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public override Task<TResponse> ExecuteAsync(TArgument arg)
     {
       // Construct the function to be used
