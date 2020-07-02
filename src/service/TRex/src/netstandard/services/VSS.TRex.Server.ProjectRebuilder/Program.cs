@@ -96,7 +96,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       }
     }
 
-    private static async void DoServiceInitialisation(ILogger log)
+    private static async void DoServiceInitialisation(ILogger log, CancellationTokenSource cancelTokenSource)
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
@@ -107,7 +107,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
 
       // Wait until caches are available
-      while (true)
+      while (!cancelTokenSource.IsCancellationRequested)
       {
         try
         {
@@ -120,10 +120,10 @@ namespace VSS.TRex.Server.ProjectRebuilder
         }
 
         log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderMetaDataCacheName()} to become available");
-        await Task.Delay(1000);
+        await Task.Delay(1000, cancelTokenSource.Token);
       }
 
-      while (true)
+      while (!cancelTokenSource.IsCancellationRequested)
       {
         try
         {
@@ -136,7 +136,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         }
 
         log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()} to become available");
-        await Task.Delay(1000);
+        await Task.Delay(1000, cancelTokenSource.Token);
       }
 
       // Tell the rebuilder manager to find any active rebuilders and start them off from where they left off
@@ -165,7 +165,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
           cancelTokenSource.Cancel();
         };
 
-        DoServiceInitialisation(log);
+        DoServiceInitialisation(log, cancelTokenSource);
 
         await Task.Delay(-1, cancelTokenSource.Token);
         return 0;
