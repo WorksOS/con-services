@@ -81,7 +81,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Deletes all information related to the project held in TRex. This operation is irreversible
     /// </summary>
-    /// <param name="siteModelId">Grid to return status for</param>
+    /// <param name="siteModelId">Site model to delete</param>
     /// <returns></returns>
     [HttpDelete("{siteModelID}")]
     public async Task<JsonResult> DeleteProject(string siteModelID)
@@ -97,6 +97,27 @@ namespace VSS.TRex.Webtools.Controllers
       });
 
       return new JsonResult(response);
+    }
+
+    /// <summary>
+    /// Rebuilds a selected project
+    /// </summary>
+    /// <param name="siteModelId">Site model to rebuild</param>
+    [HttpPost("{siteModelID}/rebuild")]
+    public async Task<JsonResult> RebuildSiteModel(string siteModelId)
+    {
+      Guid.TryParse(siteModelId, out var siteModelUid);
+
+      var rebuilder = new RebuildSiteModelRequest();
+      var response = await rebuilder.ExecuteAsync(new RebuildSiteModelRequestArgument
+      {
+        ExternalDescriptor = Guid.NewGuid(),
+        ProjectID = siteModelUid,
+        DeletionSelectivity = DeleteSiteModelSelectivity.TagFileDerivedData
+      });
+
+      var result = new JsonResult(response);
+      return result;
     }
 
     /// <summary>

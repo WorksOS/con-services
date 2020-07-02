@@ -76,230 +76,6 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task CreateImportedFile_RaptorHappyPath()
-    {
-      // FlowFile uploads the file from client (possibly as a background task via scheduler)
-      // Controller uploads file to TCC and/or S3
-      //    V2 Note: BCC file has already put the file on TCC.
-      //          the controller a) copies within TCC to client project (raptor)
-      //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new HeaderDictionary();
-      var importedFileUid = Guid.NewGuid();
-      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoad.ttm";
-      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
-      var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
-      var fileUpdatedUtc = fileCreatedUtc;
-
-      var newImportedFile = new ImportedFile
-      {
-        ProjectUid = _projectUid.ToString(),
-        ImportedFileUid = importedFileUid.ToString(),
-        ImportedFileId = 999,
-        LegacyImportedFileId = 200000,
-        ImportedFileType = ImportedFileType.DesignSurface,
-        Name = fileDescriptor.FileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
-      };
-
-      _ = new CreateImportedFileEvent
-      {
-        CustomerUID = _customerUid,
-        ProjectUID = _projectUid,
-        ImportedFileUID = importedFileUid,
-        ImportedFileType = ImportedFileType.DesignSurface,
-        DxfUnitsType = DxfUnitsType.Meters,
-        Name = fileDescriptor.FileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
-        FileCreatedUtc = fileCreatedUtc,
-        FileUpdatedUtc = fileUpdatedUtc,
-        ImportedBy = string.Empty,
-        SurveyedUTC = null,
-        ParentUID = null,
-        Offset = 0,
-        ActionUTC = DateTime.UtcNow
-      };
-
-      var createImportedFile = new CreateImportedFile(
-        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
-
-      var importedFilesList = new List<ImportedFile> { newImportedFile };
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("false");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("true");
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
-      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
-        It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(raptorAddFileResult);
-      var projectRepo = new Mock<IProjectRepository>();
-      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
-      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1); // for updating zoom levels
-      projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
-      projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
-      projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync((ProjectSettings)null);
-
-      var project = CreateProjectDetailModel(_customerTrn, _projectTrn);
-      var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
-      var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
-
-      var dataOceanClient = new Mock<IDataOceanClient>();
-      var authn = new Mock<ITPaaSApplicationAuthentication>();
-
-      var executor = RequestExecutorContainerFactory
-        .Build<CreateImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
-          customHeaders,
-          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
-          productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object,
-          cwsProjectClient: cwsProjectClient.Object);
-      var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.NotNull(result);
-      Assert.Equal(0, result.Code);
-      Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
-      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
-    }
-
-    [Fact]
-    public async Task UpdateImportedFile_RaptorHappyPath()
-    {
-      // FlowFile uploads the file from client (possibly as a background task via scheduler)
-      // Controller uploads file to TCC and/or S3
-      //    V2 Note: BCC file has already put the file on TCC.
-      //          the controller a) copies within TCC to client project (raptor)
-      //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new HeaderDictionary();
-      var importedFileUid = Guid.NewGuid();
-      var importedFileId = 9999;
-      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoad.ttm";
-      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
-
-      var existingImportedFile = new ImportedFile
-      {
-        ProjectUid = _projectUid.ToString(),
-        ImportedFileUid = importedFileUid.ToString(),
-        LegacyImportedFileId = 200000,
-        ImportedFileType = ImportedFileType.DesignSurface,
-        Name = fileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor)
-      };
-      var importedFilesList = new List<ImportedFile> { existingImportedFile };
-      var updateImportedFile = new UpdateImportedFile(
-       _projectUid, _shortRaptorProjectId, ImportedFileType.DesignSurface,
-       null, DxfUnitsType.Meters,
-       DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44),
-       fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
-      );
-
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("false");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("true");
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
-      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
-        It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(raptorAddFileResult);
-      var projectRepo = new Mock<IProjectRepository>();
-      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
-      projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
-      projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
-      var fileRepo = new Mock<IFileRepository>();
-      var dataOceanClient = new Mock<IDataOceanClient>();
-      var authn = new Mock<ITPaaSApplicationAuthentication>();
-
-      var executor = RequestExecutorContainerFactory
-        .Build<UpdateImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
-          customHeaders,
-          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
-      var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.Equal(0, result.Code);
-      Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
-      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
-    }
-
-    [Fact]
-    public async Task DeleteImportedFile_RaptorHappyPath()
-    {
-      var customHeaders = new HeaderDictionary();
-      var importedFileUid = Guid.NewGuid();
-      var importedFileId = 9999;
-      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoad.ttm";
-      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
-
-      var existingImportedFile = new ImportedFile
-      {
-        ProjectUid = _projectUid.ToString(),
-        ImportedFileUid = importedFileUid.ToString(),
-        LegacyImportedFileId = 200000,
-        ImportedFileType = ImportedFileType.DesignSurface,
-        Name = fileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
-        ParentUid = null,
-        Offset = 0
-      };
-
-      var deleteImportedFile = new DeleteImportedFile(
-       _projectUid, ImportedFileType.DesignSurface, fileDescriptor,
-       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
-      );
-
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("false");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("true");
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      var raptorDeleteFileResult = new BaseMasterDataResult { Code = 0 };
-      productivity3dV2ProxyNotification.Setup(p => p.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
-        It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<HeaderDictionary>()))
-       .ReturnsAsync(raptorDeleteFileResult);
-
-      var filterServiceProxy = new Mock<IFilterServiceProxy>();
-      filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
-       .ReturnsAsync(new List<FilterDescriptor>());
-
-      var projectRepo = new Mock<IProjectRepository>();
-      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
-
-      var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
-
-      var authn = new Mock<ITPaaSApplicationAuthentication>();
-      authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
-
-      var pegasusClient = new Mock<IPegasusClient>();
-
-      var executor = RequestExecutorContainerFactory
-        .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
-          customHeaders,
-          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, filterServiceProxy: filterServiceProxy.Object,
-          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
-      await executor.ProcessAsync(deleteImportedFile);
-    }
-
-    [Fact]
     public async Task CreateImportedFile_HappyPath_GeoTiff()
     {
       // FlowFile uploads the file from client (possibly as a background task via scheduler)
@@ -433,9 +209,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
@@ -448,7 +221,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+        .Build<CreateImportedFileExecutor>(logger, null, serviceExceptionHandler,
           _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
@@ -484,10 +257,6 @@ namespace VSS.MasterData.ProjectTests.Executors
        DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
-
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
@@ -499,7 +268,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
       var executor = RequestExecutorContainerFactory
-        .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+        .Build<UpdateImportedFileExecutor>(logger, null, serviceExceptionHandler,
           _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
@@ -541,11 +310,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
-
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
-
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
@@ -570,7 +334,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
+          logger, null, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -631,9 +395,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
@@ -646,7 +407,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+        .Build<CreateImportedFileExecutor>(logger, null, serviceExceptionHandler,
           _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
@@ -711,9 +472,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
@@ -727,7 +485,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
       var executor = RequestExecutorContainerFactory
-        .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+        .Build<CreateImportedFileExecutor>(logger, null, serviceExceptionHandler,
           _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>
@@ -764,10 +522,6 @@ namespace VSS.MasterData.ProjectTests.Executors
        DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset, "some file"
       );
 
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
-
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
@@ -779,7 +533,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
       var executor = RequestExecutorContainerFactory
-        .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+        .Build<UpdateImportedFileExecutor>(logger, null, serviceExceptionHandler,
           _customerUid.ToString(), _userUid.ToString(), _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
@@ -824,11 +578,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
-
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
-
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
@@ -853,7 +602,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
+          logger, null, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -907,10 +656,6 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var referenceList = new List<ImportedFile> { referenceImportedFile };
 
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
-
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
@@ -936,7 +681,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
+          logger, null, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
           customHeaders,
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);

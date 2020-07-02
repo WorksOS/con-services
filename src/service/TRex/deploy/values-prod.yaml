@@ -1,6 +1,6 @@
 psnode:
   replicaCount: 4
-  javaHeapMaxSizeMb: 10240
+  javaHeapMaxSizeMb: 1024
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:

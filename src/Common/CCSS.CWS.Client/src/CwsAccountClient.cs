@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -31,11 +32,23 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IHeaderDictionary customHeaders = null)
     {
+      const int PAGESIZE = 20;
       log.LogDebug($"{nameof(GetMyAccounts)}: userUid {userUid}");
-
-      var accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, null, customHeaders);
+      var accounts = new List<AccountResponseModel>();
+      AccountListResponseModel accountListResponseModel;
+      var currentPage = 0;
+      
+      do
+      {
+        var queryParameters = WithLimits(currentPage * PAGESIZE, PAGESIZE);
+        var cacheKeyPaging = $"{currentPage}-{PAGESIZE}";
+        accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, queryParameters, customHeaders, cacheKeyPaging);
+        accounts.AddRange(accountListResponseModel.Accounts);
+        currentPage++;
+      } while (accountListResponseModel?.HasMore ?? false);
+      
       log.LogDebug($"{nameof(GetMyAccounts)}: accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
-      return accountListResponseModel;
+      return new AccountListResponseModel() {Accounts = accounts, HasMore = false};
     }
 
     /// <summary>

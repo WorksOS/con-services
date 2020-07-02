@@ -1,0 +1,17 @@
+<h1>Rebuild Project</h1>
+<h2>Use with extreme caution</h2>
+<h2>Rebuild project will remove all information in a project produced from TAG file ingest then resubmit all TAG files in the TAG file archive for the selected project. </h2>
+<p>
+    Candidate Rebuild Project UID: <input [(ngModel)]="candidateRebuildProjectUid" size="37" type="text" value="" />
+    <button (click)="selectProjectForRebuilding()">Select</button>
+    Available Projects({{allProjectsMetadata.length}}):
+    <select id="projectMetadataRebulding" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChangedForRebuilding($event)">
+        <option *ngFor="let projectMetadata of allProjectsMetadata" [ngValue]="projectMetadata">
+            {{ projectMetadata.id }}
+        </option>
+    </select>
+    <button (click)="updateAllProjectsMetadata()">Update Metadata</button>
+</p>
+<br /><label><input type="checkbox" [(ngModel)]="confirmRebuildProject">Confirm rebuild project:</label>
+<p>{{rebuildConfirmationMessage}}</p>
+<button (click)="rebuildProject()">Rebuild Project</button>

@@ -559,3 +559,4 @@ src/service/TRex/src/tools/VSS.TRex.Webtools/ignite/README.txt
 **/src.xml
 **/[Cc]overage*.xml
 **/[Tt]est[Rr]esults.xml
+**/*.trx

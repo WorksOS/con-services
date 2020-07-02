@@ -30,8 +30,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     protected string FileSpaceId;
     protected string DataOceanRootFolderId;
-    protected bool UseTrexGatewayDesignImport;
-    protected bool UseRaptorGatewayDesignImport;
 
     /// <summary>
     /// The request factory
@@ -53,12 +51,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ConfigStore = config;
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
       DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
-      UseTrexGatewayDesignImport = false;
-      UseRaptorGatewayDesignImport = true;
-      bool.TryParse(ConfigStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),
-        out UseTrexGatewayDesignImport);
-      bool.TryParse(ConfigStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
-        out UseRaptorGatewayDesignImport);
     }
 
     /// <summary>
@@ -76,22 +68,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       Logger.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
-    }
-
-    /// <summary>
-    /// Notify raptor of an updated import file (used for activations, not file import).
-    /// </summary>
-    protected async Task NotifyRaptorUpdateFile(Guid projectUid, IEnumerable<Guid> updatedFileUids)
-    {
-      var notificationResult = await Productivity3dV2ProxyNotification.UpdateFiles(projectUid, updatedFileUids, Request.Headers.GetCustomHeaders());
-
-      Logger.LogDebug(
-        $"FileImport UpdateFiles in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
-
-      if (notificationResult != null && notificationResult.Code != 0)
-      {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 108, notificationResult.Code.ToString(), notificationResult.Message);
-      }
     }
 
     /// <summary>

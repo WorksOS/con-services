@@ -51,5 +51,6 @@ data:
   TPAAS_APP_TOKENKEYS: QUtWeWlOTk9Kb1Z3MGVkalJOVkh2aHZLNXpzYTpPMnRfYVhTdjZ0THZvZWVLd3JKcVBmY29JSndh
   TPAAS_OAUTH_URL: http://localhost:5001/api/oauth2
   trex_service_mutable: http://localhost:5001
+  USE_LOCAL_S3_TRANSFER_PROXY_STORE: "true"
   WEBAPI_DEBUG_URI: http://localhost:5000/
   WEBAPI_URI: http://localhost:3001/

@@ -15,7 +15,7 @@ namespace VSS.TRex.GridFabric.Grids
     /// <summary>
     /// An array of ignite reference whose size matches the enumeration of ignite grids
     /// </summary>
-    private IIgnite[] igniteGrids;
+    private IIgnite[] _igniteGrids;
 
     public TRexGridFactory()
     {
@@ -26,25 +26,19 @@ namespace VSS.TRex.GridFabric.Grids
     /// Creates an appropriate new Ignite grid reference depending on the TRex Grid passed in.
     /// If the grid reference has previously been requested it returned from a cached reference.
     /// </summary>
-    /// <param name="mutability"></param>
-    /// <param name="cfg"></param>
-    /// <returns></returns>
     public IIgnite Grid(StorageMutability mutability, IgniteConfiguration cfg = null)
     {
-      return igniteGrids[(int) mutability] ??= IgniteGridFactory(TRexGrids.GridName(mutability), cfg);
+      return _igniteGrids[(int) mutability] ??= IgniteGridFactory(TRexGrids.GridName(mutability), cfg);
     }
 
     private void CreateCache()
     {
-      igniteGrids = new IIgnite[Enum.GetValues(typeof(StorageMutability)).Cast<int>().Max() + 1];
+      _igniteGrids = new IIgnite[Enum.GetValues(typeof(StorageMutability)).Cast<int>().Max() + 1];
     }
 
     /// <summary>
     /// Creates an appropriate new Ignite grid reference depending on the TRex Grid passed in
     /// </summary>
-    /// <param name="gridName"></param>
-    /// <param name="cfg"></param>
-    /// <returns></returns>
     public IIgnite Grid(string gridName, IgniteConfiguration cfg = null)
     {
       if (true == gridName?.Equals(TRexGrids.MutableGridName()))
@@ -60,9 +54,6 @@ namespace VSS.TRex.GridFabric.Grids
     /// The default factory for obtaining or creating ignite nodes. This method is injected into the
     /// DI context as the Func(string, IIgnite) factory delegate obtained from the DIContext in Grid()
     /// </summary>
-    /// <param name="gridName"></param>
-    /// <param name="cfg"></param>
-    /// <returns></returns>
     public static IIgnite IgniteGridFactory(string gridName, IgniteConfiguration cfg = null)
     {
       return DIContext.Obtain<Func<string, IgniteConfiguration, IIgnite>>()(gridName, cfg);
@@ -71,7 +62,6 @@ namespace VSS.TRex.GridFabric.Grids
     /// <summary>
     /// If the calling context is directly using an IServiceCollection then obtain the DIBuilder based on it before adding...
     /// </summary>
-    /// <param name="services"></param>
     public static void AddGridFactoriesToDI(IServiceCollection services)
     {
       DIBuilder.Continue(services).Add(x => AddDIEntries());
@@ -87,10 +77,10 @@ namespace VSS.TRex.GridFabric.Grids
 
     private void StopGrid(StorageMutability mutability)
     {
-      if (igniteGrids[(int)mutability] != null)
+      if (_igniteGrids[(int)mutability] != null)
       {
-        Ignition.Stop(igniteGrids[(int)mutability].Name, false);
-        igniteGrids[(int)mutability] = null;
+        Ignition.Stop(_igniteGrids[(int)mutability].Name, false);
+        _igniteGrids[(int)mutability] = null;
       }
     }
 

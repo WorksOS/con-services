@@ -32,6 +32,8 @@
     <None Remove="ClientApp\src\app\delete-project\delete-project-component.ts" />
     <None Remove="ClientApp\src\app\delete-project\delete-project-model.ts" />
     <None Remove="ClientApp\src\app\delete-project\delete-project-service.ts" />
+    <None Remove="ClientApp\src\app\delete-project\rebuild-project-model.ts" />
+    <None Remove="ClientApp\src\app\delete-project\rebuild-project-service.ts" />
     <None Remove="ClientApp\src\app\fetch-data\fetch-data-model.ts" />
     <None Remove="ClientApp\src\app\fetch-data\fetch-data.component.ts" />
     <None Remove="ClientApp\src\app\fetch-data\fetch-data.service.ts" />
@@ -47,6 +49,7 @@
     <None Remove="ClientApp\src\app\project\project-service.ts" />
     <None Remove="ClientApp\src\app\project\project-tiledata-model.ts" />
     <None Remove="ClientApp\src\app\project\project-volume-model.ts" />
+    <None Remove="ClientApp\src\app\rebuild-project\rebuild-project-component.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-component.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-model.ts" />
     <None Remove="ClientApp\src\app\sandbox\sandbox-service.ts" />
@@ -75,7 +78,10 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\delete-project\delete-project-component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\rebuild-project\rebuild-project-component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\rebuild-project\rebuild-project-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\delete-project\delete-project-service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\rebuild-project\rebuild-project-service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\delete-project\delete-project-model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\fetch-data\fetch-data-model.ts" />
