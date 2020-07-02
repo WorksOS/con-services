@@ -34,6 +34,8 @@ namespace VSS.TRex.Storage
 
     protected IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> siteModelMachineCache;
 
+    protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> designTopologyExistenceMapsCache;
+
     /// <summary>
     /// Represents the collection of caches represented by this storage proxy
     /// </summary>
@@ -49,6 +51,7 @@ namespace VSS.TRex.Storage
       {
         FileSystemStreamType.ProductionDataXML => siteModelCache,
         FileSystemStreamType.SubGridExistenceMap => spatialDataExistenceMapCache,
+        FileSystemStreamType.DesignTopologyExistenceMap => designTopologyExistenceMapsCache,
         _ => generalNonSpatialCache
       };
     }
