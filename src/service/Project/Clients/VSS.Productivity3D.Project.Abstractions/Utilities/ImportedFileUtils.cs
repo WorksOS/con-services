@@ -27,20 +27,5 @@ namespace VSS.Productivity3D.Project.Abstractions.Utilities
         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
       return isMatch;
     }
-
-    public static void ValidateEnvironmentVariables(ImportedFileType importedFileType, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler)
-    {
-      bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
-      bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
-      var isImportedFileType = importedFileType == ImportedFileType.DesignSurface ||
-                             importedFileType == ImportedFileType.SurveyedSurface ||
-                             importedFileType == ImportedFileType.Alignment ||
-                             importedFileType == ImportedFileType.Linework ||
-                             importedFileType == ImportedFileType.ReferenceSurface;
-      if (!useRaptorGatewayDesignImport && !(useTrexGatewayDesignImport && isImportedFileType))
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 113);
-      }
-    }
   }
 }

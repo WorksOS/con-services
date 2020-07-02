@@ -72,14 +72,14 @@ namespace VSS.TRex.Gateway.Common.Helpers
           Log.LogInformation($"{nameof(ConvertBoundary)}: Winding Clockwise.");
           // Reverse ordering...
           for (var i = fence.Points.Count - 1; i >= 0; i--)
-            neeCoords[arrayCount - i - 1] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0); // Note: This is a 2D conversion, elevation is set to 0
+            neeCoords[arrayCount - i - 1] = new XYZ(fence.Points[i].Y, fence.Points[i].X, 0.0); // Note: This is a 2D conversion, elevation is set to 0
         }
         else
         {
           Log.LogInformation($"{nameof(ConvertBoundary)}: Winding AntiClockwise.");
 
           for (var i = 0; i < fence.Points.Count; i++)
-            neeCoords[i] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0);
+            neeCoords[i] = new XYZ(fence.Points[i].Y, fence.Points[i].X, 0.0);
         }
 
         var llhCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, neeCoords.ToCoreX_XYZ());

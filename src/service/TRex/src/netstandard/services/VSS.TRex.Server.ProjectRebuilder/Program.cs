@@ -25,9 +25,9 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Server.ProjectRebuilder
 {
@@ -54,6 +54,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>(CacheFactory))
 
         .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => CacheFactory(cacheType)))
 
@@ -62,41 +63,16 @@ namespace VSS.TRex.Server.ProjectRebuilder
         //        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         //        .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
-        //        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
-        //        .Build()
-        //        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
-        //        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
-        //        .Build()
-        //        .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
-        //        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
-        //        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-        //        .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
-        //        .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
-        //        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
-        //        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-        //        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
-        //        .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Build()
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger, TRexHeartBeatLogger>())
-        //
-        //        // Register the listener for site model attribute change notifications
-        //        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
-        //
-        //        // Register the factory for the CellProfileAnalyzer for detailed call pass/lift cell profiles
-        //        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<ProfileCell>>>(
-        //          factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams)
-        //            => new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams)))
-        //
-        //        // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
-        //        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
-        //          factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder) => null))
-        //
-        //        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
-
         .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
-
-        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
+        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(_ => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
-        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>(factory => proxyType => new S3FileTransfer(proxyType)))
+        .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>(_ => proxyType => new S3FileTransfer(proxyType)))
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener, RebuildSiteModelTAGNotifierListener>())
 
         .Complete();
@@ -108,41 +84,13 @@ namespace VSS.TRex.Server.ProjectRebuilder
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
       {
-        /* Copied from application service
-         * 
-        typeof(VSS.TRex.Analytics.MDPStatistics.MDPStatisticsAggregator),
-        typeof(VSS.TRex.Geometry.BoundingIntegerExtent2D),
-        typeof(VSS.TRex.Exports.Patches.PatchResult),
-        typeof(VSS.TRex.GridFabric.BaseIgniteClass),
-        typeof(VSS.TRex.Common.SubGridsPipelinedResponseBase),
-        */
-        typeof(VSS.TRex.Logging.Logger)
-        /*
         typeof(VSS.TRex.DI.DIContext),
-        typeof(VSS.TRex.Storage.StorageProxy),
-        typeof(VSS.TRex.SiteModels.SiteModel),
-        typeof(VSS.TRex.Cells.CellEvents),
-        typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(VSS.TRex.CoordinateSystems.Models.LLH),
-        typeof(VSS.TRex.Designs.DesignBase),
-        typeof(VSS.TRex.Designs.TTM.HashOrdinate),
-        typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
-        typeof(VSS.TRex.Events.CellPassFastEventLookerUpper),
-        typeof(VSS.TRex.ExistenceMaps.ExistenceMaps),
-        typeof(VSS.TRex.Filters.CellPassAttributeFilter),
+        typeof(VSS.TRex.Logging.Logger),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
-        typeof(VSS.TRex.Machines.Machine),
-        typeof(VSS.TRex.Pipelines.PipelineProcessor<SubGridsRequestArgument>),
-        typeof(VSS.TRex.Profiling.CellLiftBuilder),
-        typeof(VSS.TRex.SubGrids.CutFillUtilities),
-        typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
-        typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
-        typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
-        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Volumes.CutFillVolume),
-        typeof(VSS.TRex.CellDatum.GridFabric.Responses.CellDatumResponse_ApplicationService),
-        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
-        */
+        typeof(VSS.TRex.SiteModels.SiteModel),
+        typeof(VSS.TRex.Storage.StorageProxy),
+        typeof(VSS.TRex.TAGFiles.GridFabric.NodeFilters.TAGProcessorRoleBasedNodeFilter),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
       };
 
       foreach (var asmType in AssemblyDependencies)
@@ -152,12 +100,48 @@ namespace VSS.TRex.Server.ProjectRebuilder
       }
     }
 
-    private static async void DoServiceInitialisation()
+    private static async void DoServiceInitialisation(ILogger log)
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelRebuilderHeartbeatLogger());
+
+      // Wait until the grid is active
+      DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
+
+      // Wait until caches are available
+      while (true)
+      {
+        try
+        {
+          if (CacheFactory(RebuildSiteModelCacheType.Metadata) != null)
+            break;
+        }
+        catch (ArgumentException)
+        {
+          // Failure to find the cache will throw an argument exception, so tolerate that failure, not others
+        }
+
+        log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderMetaDataCacheName()} to become available");
+        await Task.Delay(1000);
+      }
+
+      while (true)
+      {
+        try
+        {
+          if (CacheFactory(RebuildSiteModelCacheType.KeyCollections) != null)
+            break;
+        }
+        catch (ArgumentException)
+        {
+          // Failure to find the cache will throw an argument exception, so tolerate that failure, not others
+        }
+
+        log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()} to become available");
+        await Task.Delay(1000);
+      }
 
       // Tell the rebuilder manager to find any active rebuilders and start them off from where they left off
       await DIContext.Obtain<ISiteModelRebuilderManager>().BeginOperations();
@@ -170,10 +154,10 @@ namespace VSS.TRex.Server.ProjectRebuilder
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 
-        var Log = Logging.Logger.CreateLogger<Program>();
+        var log = Logging.Logger.CreateLogger<Program>();
 
-        Log.LogInformation("Creating service");
-        Log.LogDebug("Creating service");
+        log.LogInformation("Creating service");
+        log.LogDebug("Creating service");
 
         var server = new MutableClientServer(new[] { ServerRoles.PROJECT_REBUILDER_ROLE });
 
@@ -185,7 +169,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
           cancelTokenSource.Cancel();
         };
 
-        DoServiceInitialisation();
+        DoServiceInitialisation(log);
 
         await Task.Delay(-1, cancelTokenSource.Token);
         return 0;

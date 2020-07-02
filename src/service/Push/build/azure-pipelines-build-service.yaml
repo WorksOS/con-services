@@ -67,7 +67,7 @@ jobs:
         displayName: "Push Docker Image"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
+          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -imageSuffix $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: Charts'

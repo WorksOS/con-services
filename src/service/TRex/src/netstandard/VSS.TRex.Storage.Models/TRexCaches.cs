@@ -1,7 +1,7 @@
-﻿using VSS.TRex.Storage.Models;
-using VSS.TRex.Types;
+﻿using VSS.TRex.Types;
+// ReSharper disable InconsistentNaming
 
-namespace VSS.TRex.Storage.Caches
+namespace VSS.TRex.Storage.Models
 {
     /// <summary>
     /// Spatial grid cache provides logic to determine which of the spatial data grid caches an application should read data from
@@ -128,12 +128,12 @@ namespace VSS.TRex.Storage.Caches
         public static string SiteModelChangeBufferQueueCacheName() => kSiteModelChangeBufferQueueName;
 
         /// <summary>
-        /// Name of the cache holding meta data relate to site model rebulding operations
+        /// Name of the cache holding meta data relate to site model rebuilding operations
         /// </summary>
         public static string SiteModelRebuilderMetaDataCacheName() => kSiteModelRebuilderMetaDataCacheName;
 
         /// <summary>
-        /// Name of the cache holding collections of tag file keys describing the set of TAG file to be processed when rebulding a project
+        /// Name of the cache holding collections of tag file keys describing the set of TAG file to be processed when rebuilding a project
         /// </summary>
         public static string SiteModelRebuilderFileKeyCollectionsCacheName() => kSiteModelRebuilderFileKeyCollectionsCacheName;
     }

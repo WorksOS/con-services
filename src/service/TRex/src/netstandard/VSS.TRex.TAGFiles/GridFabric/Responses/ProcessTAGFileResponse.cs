@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
@@ -8,7 +9,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
   {
     private const byte VERSION_NUMBER = 1;
 
-    public List<ProcessTAGFileResponseItem> Results { get; set; } = new List<ProcessTAGFileResponseItem>();
+    public List<IProcessTAGFileResponseItem> Results { get; set; } = new List<IProcessTAGFileResponseItem>();
 
     /// <summary>
     /// Default no-arg constructor
@@ -30,7 +31,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       var numResults = reader.ReadInt();
-      Results = new List<ProcessTAGFileResponseItem>(numResults);
+      Results = new List<IProcessTAGFileResponseItem>(numResults);
 
       for (var i = 0; i < numResults; i++)
       {

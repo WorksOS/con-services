@@ -15,11 +15,11 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
   /// </summary>
   public class SubGridSegmentCleaver
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridSegmentCleaver>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridSegmentCleaver>();
 
-    private static readonly int SubGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
+    private static readonly int _subGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
 
-    private static readonly bool SegmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
+    private static readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
     
     // PersistedClovenSegments contains a list of all the segments that exists in the
     // persistent data store that have been cloven since the last time this leaf
@@ -58,8 +58,8 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
           {
             iterator.SegmentListExtended();
 
-            if (SegmentCleavingOperationsToLog)
-              Log.LogInformation(
+            if (_segmentCleavingOperationsToLog)
+              _log.LogInformation(
                 $"Info: Performed cleave on segment ({cleavedTimeRangeStart}-{cleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(origin)}. TotalPassCount = {totalPassCount} MaximumPassCount = {maximumPassCount}");
           }
           else
@@ -68,15 +68,15 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             // cleaved at some point in the future when it is modified again via tag file processing etc)
             // it will be noted in the log.
 
-            Log.LogWarning(
+            _log.LogWarning(
               $"Cleave on segment ({cleavedTimeRangeStart}-{cleavedTimeRangeEnd}) of sub grid {ServerSubGridTree.GetLeafSubGridFullFileName(origin)} failed. TotalPassCount = {totalPassCount} MaximumPassCount = {maximumPassCount}");
           }
 
-          if (SegmentCleavingOperationsToLog)
+          if (_segmentCleavingOperationsToLog)
           {
             if (segment.RequiresCleaving(out totalPassCount, out maximumPassCount))
-              Log.LogWarning(
-                $"Cleave on segment ({cleavedTimeRangeStart}-{cleavedTimeRangeEnd}) of sub grid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {totalPassCount}/{subGridSegmentPassCountLimit}, per cell = {maximumPassCount}/{SubGridMaxSegmentCellPassesLimit})");
+              _log.LogWarning(
+                $"Cleave on segment ({cleavedTimeRangeStart}-{cleavedTimeRangeEnd}) of sub grid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {totalPassCount}/{subGridSegmentPassCountLimit}, per cell = {maximumPassCount}/{_subGridMaxSegmentCellPassesLimit})");
           }
         }
       } while (iterator.MoveToNextSubGridSegment());

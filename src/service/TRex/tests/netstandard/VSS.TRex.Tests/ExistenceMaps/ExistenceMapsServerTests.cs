@@ -5,7 +5,7 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.ExistenceMaps.Servers;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.ExistenceMaps
     public void SetExistenceMap()
     {
       var server = new ExistenceMapServer();
-      Guid projectUid = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
       server.SetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Set"), new SerialisedByteArrayWrapper(new byte[1000]));
     }
 
@@ -55,7 +55,7 @@ namespace VSS.TRex.Tests.ExistenceMaps
     public void GetExistenceMap()
     {
       var server = new ExistenceMapServer();
-      Guid projectUid = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
       var setMap = Enumerable.Range(0, 1000).Select(x => (byte) x).ToArray();
 
       server.SetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Get"), new SerialisedByteArrayWrapper(setMap));

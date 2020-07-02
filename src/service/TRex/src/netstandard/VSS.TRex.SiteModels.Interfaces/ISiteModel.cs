@@ -133,7 +133,7 @@ IGenericSubGridTree_Long VersionMap { get; }
     bool CSIBLoaded { get; }
     void UnloadCSIB();
 
-    void Include(ISiteModel Source);
+    void Include(ISiteModel source);
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
     bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = false);
@@ -147,7 +147,8 @@ IGenericSubGridTree_Long VersionMap { get; }
     /// data model expanded to include the bounding extents of the surveyed surfaces associated with the 
     /// datamodel, excepting those identified in the SurveyedSurfaceExclusionList
     /// </summary>
-    BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList);
+    /// <returns></returns>
+    BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] surveyedSurfaceExclusionList);
 
     /// <summary>
     /// GetDateRange returns the chronological extents of production data in the site model.
@@ -170,6 +171,6 @@ IGenericSubGridTree_Long VersionMap { get; }
 
     ISiteModelMetadata MetaData { get; }
 
-    byte GetCCAMinimumPassesValue(Guid machineUID, DateTime startDate, DateTime endDate, int layerID);
+    byte GetCCAMinimumPassesValue(Guid machineUid, DateTime startDate, DateTime endDate, int layerId);
   }
 }

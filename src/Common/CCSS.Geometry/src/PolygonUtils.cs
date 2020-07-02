@@ -7,8 +7,7 @@ namespace CCSS.Geometry
 {
   public static class PolygonUtils
   {
-
-    const double EPSILON = 0.00000001;  // for comparing floating points numbers for equality
+    private const double EPSILON = 0.00000001;  // for comparing floating points numbers for equality
 
     /// <summary>
     /// Determines if the point is inside the polygon.
@@ -191,8 +190,7 @@ namespace CCSS.Geometry
     private static List<IntPoint> ClipperPolygon(List<Point> points)
     {
       const float SCALE = 100000;
-      var clipperPolygon = points.Select(p => new IntPoint { X = (long)(p.X * SCALE), Y = (long)(p.Y * SCALE) }).ToList();
-      return clipperPolygon;
+      return points.Select(p => new IntPoint { X = (long)(p.X * SCALE), Y = (long)(p.Y * SCALE) }).ToList();
     }
 
     /// <summary>

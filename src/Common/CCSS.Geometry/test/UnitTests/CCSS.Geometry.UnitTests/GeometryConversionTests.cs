@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CCSS.Geometry;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using Xunit;
 

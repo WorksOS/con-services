@@ -1,17 +1,17 @@
 <h1>Delete Project</h1>
 <h2>Use with extreme caution</h2>
-<h2>TRex will remove all information it owns related to a project in an irreversible, scorched earth, manner. </h2>
+<h2>Delete project will remove all information it owns related to a project in an irreversible, scorched earth, manner. </h2>
 <p>
-    Candidate Project UID: <input [(ngModel)]="candidateProjectUid" size="37" type="text" value="" />
-    <button (click)="selectProject()">Select</button>
+    Candidate Delete Project UID: <input [(ngModel)]="candidateDeleteProjectUid" size="37" type="text" value="" />
+    <button (click)="selectProjectForDeletion()">Select</button>
     Available Projects({{allProjectsMetadata.length}}):
-    <select id="projectMetadata" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChanged($event)">
+    <select id="projectMetadataDeletion" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChangedForDeletion($event)">
         <option *ngFor="let projectMetadata of allProjectsMetadata" [ngValue]="projectMetadata">
             {{ projectMetadata.id }}
         </option>
     </select>
     <button (click)="updateAllProjectsMetadata()">Update Metadata</button>
 </p>
-<br/><label><input type="checkbox" [(ngModel)]="confirmDeleteProject">Confirm delete project:</label>
-<p>{{confirmationMessage}}</p>
+<br /><label><input type="checkbox" [(ngModel)]="confirmDeleteProject">Confirm delete project:</label>
+<p>{{deleteConfirmationMessage}}</p>
 <button (click)="deleteProject()">Delete Project</button>

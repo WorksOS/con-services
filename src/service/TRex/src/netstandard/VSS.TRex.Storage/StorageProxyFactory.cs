@@ -14,7 +14,6 @@ namespace VSS.TRex.Storage
     /// Creates the storage proxy to be used. 
     /// This factory method provides access to the mutable grid storage
     /// </summary>
-    /// <returns></returns>
     public IStorageProxy MutableGridStorage()
     {
       var injectedProxyFactory = DIContext.Obtain<Func<StorageMutability, IStorageProxy>>();
@@ -31,7 +30,6 @@ namespace VSS.TRex.Storage
     /// Creates the storage proxy to be used. 
     /// This factory method provides access to the immutable grid storage
     /// </summary>
-    /// <returns></returns>
     public IStorageProxy ImmutableGridStorage()
     {
       var injectedProxyFactory = DIContext.Obtain<Func<StorageMutability, IStorageProxy>>();
@@ -42,7 +40,6 @@ namespace VSS.TRex.Storage
     /// Creates the storage proxy to be used. 
     /// This factory method provides access to the immutable grid storage
     /// </summary>
-    /// <returns></returns>
     public IStorageProxy Storage(StorageMutability mutability) => mutability == StorageMutability.Immutable ? ImmutableGridStorage() : MutableGridStorage();
   }
 }

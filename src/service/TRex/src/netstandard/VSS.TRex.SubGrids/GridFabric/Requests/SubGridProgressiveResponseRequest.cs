@@ -80,7 +80,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         .GetCluster()
         .ForNodeIds(new List<Guid> {nodeId})
         .GetCompute()
-        .WithExecutor(BaseIgniteClass.TRexProgressiveQueryCustomThreadPoolName);
+        .WithExecutor(BaseIgniteClass.TREX_PROGRESSIVE_QUERY_CUSTOM_THREAD_POOL_NAME);
 
       if (_compute == null)
       {
