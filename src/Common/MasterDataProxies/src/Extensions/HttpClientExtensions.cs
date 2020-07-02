@@ -20,6 +20,20 @@ namespace VSS.MasterData.Proxies
     public static Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, string uri, Stream requestStream, HttpMethod method,
       IHeaderDictionary customHeaders, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
     {
+      var httpRequestMessage = CreateHttpRequestMessage(uri, requestStream, method, customHeaders, log);
+      return SendAsync(httpClient, httpRequestMessage, timeout, preAction, log);
+    }
+
+    public static Task<HttpResponseMessage> DeleteAsync
+      (this HttpClient httpClient, string uri, Stream requestStream, IHeaderDictionary customHeaders, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
+    {
+      var httpRequestMessage = CreateHttpRequestMessage(uri, requestStream, HttpMethod.Delete, customHeaders, log);
+      return SendAsync(httpClient, httpRequestMessage, timeout, preAction, log);
+    }
+
+    private static HttpRequestMessage CreateHttpRequestMessage(string uri, Stream requestStream, HttpMethod method,
+      IHeaderDictionary customHeaders, ILogger log)
+    {
       //Default to JSON content type
       HttpContent content = null;
       if (requestStream != null)
@@ -39,19 +53,10 @@ namespace VSS.MasterData.Proxies
         content.Headers.ContentType = contentType;
       }
 
-      //Default to POST, nothing else is supported so far apart from PUT and GET
-      var httpRequestMessage = new HttpRequestMessage(method, uri)
+      return new HttpRequestMessage(method, uri)
       {
         Content = content
       };
-
-      return SendAsync(httpClient, httpRequestMessage, timeout, preAction, log);
-    }
-
-    public static Task<HttpResponseMessage> DeleteAsync
-      (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
-    {
-      return SendAsync(httpClient, new HttpRequestMessage(HttpMethod.Delete, uri), timeout, preAction, log);
     }
 
     private static Task<HttpResponseMessage> SendAsync(this HttpClient httpClient, HttpRequestMessage httpRequestMessage,

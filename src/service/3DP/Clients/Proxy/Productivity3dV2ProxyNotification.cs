@@ -41,6 +41,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Notifies TRex/Raptor that a file has been added to a project
     /// </summary>
+    [Obsolete("No longer supporting Raptor. Notify TRex directly.")]
     public async Task<AddFileResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, DxfUnitsType dxfUnitsType, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(AddFile)} projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} dxfUnitsType: {dxfUnitsType}");
@@ -57,6 +58,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Notifies TRex/Raptor that a file has been deleted from a project
     /// </summary>
+    [Obsolete("No longer supporting Raptor. Notify TRex directly.")]
     public async Task<BaseMasterDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, long? legacyFileId, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(DeleteFile)} projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId} legacyFileId: {legacyFileId}");
@@ -74,6 +76,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     ///  Notifies TRex/Raptor that files have been updated in a project
     /// </summary>
     /// <returns></returns>
+    [Obsolete("No longer supporting Raptor. Notify TRex directly.")]
     public async Task<BaseMasterDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IHeaderDictionary customHeaders = null)
     {
       var fileUidsList = fileUids.ToList();

@@ -83,8 +83,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation(
         $"{nameof(UpsertImportedFileV5TBC)}: projectId {projectId} projectUid {projectUid} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
 
-      ImportedFileUtils.ValidateEnvironmentVariables(importedFileTbc.ImportedFileTypeId, ConfigStore, ServiceExceptionHandler);
-
       // this also validates that this customer has access to the projectUid
       var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
 
@@ -98,7 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       try
       {
         // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
-        if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileTbc.ImportedFileTypeId))
+        if (IsDesignFileType(importedFileTbc.ImportedFileTypeId))
         {
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 

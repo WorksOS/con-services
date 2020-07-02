@@ -15,25 +15,25 @@ namespace VSS.TRex.GridFabric
 {
   public class BaseIgniteClass : IBinarizable, IFromToBinary
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<BaseIgniteClass>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<BaseIgniteClass>();
 
     /// <summary>
     /// The name of the custom thread pool that progressive queries should be run within to avoid deadlock with
     /// the primary public thread pool
     /// </summary>
-    public const string TRexProgressiveQueryCustomThreadPoolName = "TRexProgressiveQueryResponsePool";
+    public const string TREX_PROGRESSIVE_QUERY_CUSTOM_THREAD_POOL_NAME = "TRexProgressiveQueryResponsePool";
 
     private IIgnite _ignite;
     /// <summary>
     /// Ignite instance.
     /// Note: This was previous an [InstanceResource] but this does not work well with more than one Grid active in the process
     /// </summary>
-    protected IIgnite Ignite { get => _ignite; private set => _ignite = value; }
+    protected IIgnite Ignite { get => _ignite; }
 
     /// <summary>
     /// The cluster group of nodes in the grid that are available for responding to design/profile requests
     /// </summary>
-    private IClusterGroup _Group;
+    private IClusterGroup _group;
 
     private ICompute _compute;
     /// <summary>
@@ -83,8 +83,8 @@ namespace VSS.TRex.GridFabric
     /// </summary>
     public void AcquireIgniteTopologyProjections()
     {
-      if (Log.IsTraceEnabled())
-        Log.LogTrace($"Acquiring TRex topology projections for grid {_gridName}");
+      if (_log.IsTraceEnabled())
+        _log.LogTrace($"Acquiring TRex topology projections for grid {_gridName}");
 
       if (string.IsNullOrEmpty(_gridName))
         throw new TRexException("GridName name not defined when acquiring topology projection");
@@ -106,22 +106,22 @@ namespace VSS.TRex.GridFabric
 
       try
       {
-        _Group = _ignite?.GetCluster()?.ForAttribute(_roleAttribute, "True");
+        _group = _ignite?.GetCluster()?.ForAttribute(_roleAttribute, "True");
       }
       catch (IgniteException e)
       {
         throw new TRexException($"Failed to find Node on Grid {_gridName} with Role {_roleAttribute} due to Ignite Exception", e);
       }
 
-      if (_Group == null)
+      if (_group == null)
         throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {_role} on grid {_gridName}");
 
-      if ((_Group.GetNodes()?.Count ?? 0) == 0)
+      if ((_group.GetNodes()?.Count ?? 0) == 0)
         throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
 
       try
       {
-        _compute = _Group.GetCompute();
+        _compute = _group.GetCompute();
       }
       catch (IgniteException e)
       {
@@ -131,8 +131,8 @@ namespace VSS.TRex.GridFabric
       if (_compute == null)
         throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {_gridName}");
 
-      if (Log.IsTraceEnabled())
-        Log.LogTrace($"Completed acquisition of TRex topology projections for grid {_gridName}");
+      if (_log.IsTraceEnabled())
+        _log.LogTrace($"Completed acquisition of TRex topology projections for grid {_gridName}");
     }
 
     public virtual void ToBinary(IBinaryRawWriter writer)

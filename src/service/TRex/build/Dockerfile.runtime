@@ -3,27 +3,16 @@ FROM ${FROM_IMAGE} as build_container
 
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as runtime_build_container
 
-ARG SERVICE_PATH
+# Not optional, must be passed in from the Azure build configuration. Repeat for each service.
+ARG SOURCE_PATH
+ARG DEST_PATH
 
 WORKDIR /build
 
-# Copy the publish files created during the build phase.
-COPY --from=build_container /trex/Webtools /trex/Webtools
-COPY --from=build_container /trex/ApplicationServer /trex/ApplicationServer
-COPY --from=build_container /trex/DesignElevation /trex/DesignElevation
-COPY --from=build_container /trex/MutableData /trex/MutableData
-COPY --from=build_container /trex/PSNode /trex/PSNode
-COPY --from=build_container /trex/QMesh /trex/QMesh
-COPY --from=build_container /trex/TileRendering /trex/TileRendering
-COPY --from=build_container /trex/TINSurfaceExport /trex/TINSurfaceExport
-COPY --from=build_container /trex/Reports /trex/Reports
-COPY --from=build_container /trex/ProjectRebuilder /trex/ProjectRebuilder
-COPY --from=build_container /trex/ConnectedSiteGateway /trex/ConnectedSiteGateway
-COPY --from=build_container /trex/Gateway /trex/Gateway
-COPY --from=build_container /trex/MutableGateway /trex/MutableGateway
-COPY --from=build_container /trex/Utils /trex/Utils
+# Copy the publish files for an individual service, e.g. COPY --from=build_container /trex/PSNode /trex/PSNode
+COPY --from=build_container ${SOURCE_PATH} ${DEST_PATH}
 
-#Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
+# Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 COPY --from=build_container /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
 COPY --from=build_container build/service/TRex/build/ignite-kubernetes-2.8.0.jar /trex/libs/
 COPY --from=build_container build/service/TRex/build/control-scripts /trex/bin
@@ -33,14 +22,5 @@ RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/
     wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar ; \
     wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar ; \
     wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
-
-# wget http://repo1.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
-# wget http://repo1.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
-# wget http://repo1.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
-# wget http://repo1.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
-# wget https://repo1.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
-
-# RUN rm spring*4.3.18*
-#TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile
 
 WORKDIR /trex
