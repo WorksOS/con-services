@@ -296,7 +296,7 @@ namespace TAGFiles.Tests
 
       var newSiteModelGuidTfa = Guid.NewGuid();
 
-      ISiteModel mockedSiteModel = new SiteModel(newSiteModelGuidTfa);
+      ISiteModel mockedSiteModel = new SiteModel(newSiteModelGuidTfa, StorageMutability.Immutable);
       mockedSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       var moqSiteModelFactory = new Mock<ISiteModelFactory>();

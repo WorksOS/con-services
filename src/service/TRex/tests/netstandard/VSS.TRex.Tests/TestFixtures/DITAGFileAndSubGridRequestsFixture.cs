@@ -125,7 +125,6 @@ namespace VSS.TRex.Tests.TestFixtures
       var preTargetSiteModelId = targetSiteModel.ID;
 
       // Switch to mutable storage representation to allow creation of content in the site model
-      targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
 

@@ -5,6 +5,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -75,7 +76,7 @@ namespace VSS.TRex.Tests.Caching
     [Fact]
     public void Test_GetCacheFingerPrint_ExcludesSurveyedSurfaces_HasMachineFilter()
     {
-      var siteModel = new SiteModel();
+      var siteModel = new SiteModel(StorageMutability.Immutable);
       var filter = CombinedFilter.MakeFilterWith(x =>
       {
         x.AttributeFilter.SiteModel = siteModel;
@@ -202,7 +203,7 @@ namespace VSS.TRex.Tests.Caching
       Guid Machine1Guid = Guid.NewGuid();
       Guid Machine2Guid = Guid.NewGuid();
 
-      var siteModel = new SiteModel();
+      var siteModel = new SiteModel(StorageMutability.Immutable);
       siteModel.Machines.Add(new Machine
       {
         ID = Machine1Guid,

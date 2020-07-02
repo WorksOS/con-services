@@ -325,7 +325,6 @@ namespace VSS.TRex.Tests.TestFixtures
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(NewSiteModelGuid, true);
 
       // Switch to mutable storage representation to allow creation of content in the site model
-      siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       if (addDefaultMachine)

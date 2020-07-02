@@ -6,6 +6,7 @@ using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -44,7 +45,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
         var factory = new ProfilerBuilderFactory<ProfileCell>();
 
         Assert.True(factory.NewCellProfileAnalyzer(ProfileStyle.CellPasses, 
-                                                   new SiteModel(Guid.NewGuid()), 
+                                                   new SiteModel(Guid.NewGuid(), StorageMutability.Immutable), 
                                                    null, 
                                                    new FilterSet(new CombinedFilter()), 
                                                    null, null, 
@@ -57,7 +58,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
         var factory = new ProfilerBuilderFactory<ProfileCell>();
 
         Action act = () => factory.NewCellProfileAnalyzer((ProfileStyle) 100,
-            new SiteModel(Guid.NewGuid()),
+            new SiteModel(Guid.NewGuid(), StorageMutability.Immutable),
             null,
             new FilterSet(new CombinedFilter()),
             null, null,  
@@ -72,7 +73,7 @@ namespace VSS.TRex.Tests.Profiling.Factories
         var factory = new ProfilerBuilderFactory<SummaryVolumeProfileCell>();
 
         Assert.True(factory.NewCellProfileAnalyzer(ProfileStyle.SummaryVolume,
-                      new SiteModel(Guid.NewGuid()),
+                      new SiteModel(Guid.NewGuid(), StorageMutability.Immutable),
                       null,
                       new FilterSet(new CombinedFilter()),
                       null, null, 

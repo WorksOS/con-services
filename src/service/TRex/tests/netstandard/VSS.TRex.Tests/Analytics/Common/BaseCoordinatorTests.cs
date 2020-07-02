@@ -12,7 +12,7 @@ namespace VSS.TRex.Tests.Analytics.Common
 
     public BaseCoordinatorTests()
     {
-      _siteModel = new SiteModel(Guid.NewGuid());
+      _siteModel = new SiteModel(Guid.NewGuid(), StorageMutability.Immutable);
       _siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
     }
   }

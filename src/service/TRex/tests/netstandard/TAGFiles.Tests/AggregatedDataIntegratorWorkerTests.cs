@@ -23,11 +23,9 @@ namespace TAGFiles.Tests
     private ISiteModel BuildModel()
     {
       // Create the site model and machine etc to aggregate the processed TAG file into
-      //  DIContext.Obtain<ISiteModelFactory>().NewSiteModel(DITagFileFixture.NewSiteModelGuid);
       var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       // Switch to mutable storage representation to allow creation of content in the site model
-      targetSiteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       return targetSiteModel;
