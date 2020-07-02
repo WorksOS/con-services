@@ -7,6 +7,6 @@ namespace VSS.TRex.SiteModels.Interfaces
   {
     ISiteModel NewSiteModel(StorageMutability requiredStorageRepresentation);
     ISiteModel NewSiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags);
-    ISiteModel NewSiteModel_NonTransient(Guid id);
+    ISiteModel NewSiteModel_NonTransient(Guid id, StorageMutability requiredStorageRepresentation);
   }
 }

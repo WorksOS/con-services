@@ -102,7 +102,7 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
         // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs

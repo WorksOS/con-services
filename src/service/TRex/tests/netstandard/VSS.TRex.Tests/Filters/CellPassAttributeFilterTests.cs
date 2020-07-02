@@ -6,6 +6,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters;
 using VSS.TRex.Machines;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -611,7 +612,7 @@ namespace VSS.TRex.Tests.Filters
         {
           var machineID1 = Guid.NewGuid();
           var machineID2 = Guid.NewGuid();
-          var siteModel = new TRex.SiteModels.SiteModel();
+          var siteModel = new TRex.SiteModels.SiteModel(StorageMutability.Immutable);
           siteModel.Machines.Add(new Machine
           {
             ID = machineID1,

@@ -184,7 +184,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // full ignite mock with standard storage proxy factory
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => null))
         .Complete();
     }
@@ -325,7 +325,6 @@ namespace VSS.TRex.Tests.TestFixtures
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(NewSiteModelGuid, true);
 
       // Switch to mutable storage representation to allow creation of content in the site model
-      siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       if (addDefaultMachine)

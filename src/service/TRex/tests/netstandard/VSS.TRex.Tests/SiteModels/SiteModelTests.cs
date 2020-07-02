@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Creation_Default()
     {
-      var siteModel = new SiteModel();
+      var siteModel = new SiteModel(TRex.Storage.Models.StorageMutability.Immutable);
       siteModel.GridLoaded.Should().Be(false);
 
       siteModel.CreationDate.Should().BeAfter(DateTime.UtcNow.AddSeconds(-1));
@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_GuidOnly_Transient()
     {
       var guid = Guid.NewGuid();
-      var siteModel = new SiteModel(guid);
+      var siteModel = new SiteModel(guid, TRex.Storage.Models.StorageMutability.Immutable);
 
       siteModel.ID.Should().Be(guid);
       siteModel.IsTransient.Should().Be(true);
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_GuidOnly_NonTransient()
     {
       var guid = Guid.NewGuid();
-      var siteModel = new SiteModel(guid, false);
+      var siteModel = new SiteModel(guid, TRex.Storage.Models.StorageMutability.Immutable, false);
 
       siteModel.ID.Should().Be(guid);
       siteModel.IsTransient.Should().Be(false);
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_GuidAndCellSize()
     {
       var guid = Guid.NewGuid();
-      var siteModel = new SiteModel(guid, 1.23);
+      var siteModel = new SiteModel(guid, TRex.Storage.Models.StorageMutability.Immutable, 1.23);
 
       siteModel.ID.Should().Be(guid);
       siteModel.CellSize.Should().Be(1.23);
@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithTransientOriginModel()
     {
       var guid = Guid.NewGuid();
-      var originSiteModel = new SiteModel(guid);
+      var originSiteModel = new SiteModel(guid, TRex.Storage.Models.StorageMutability.Immutable);
 
       Action act = () =>
       {
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_NothingPreserved()
     {
       var guid = Guid.NewGuid();
-      var originSiteModel = new SiteModel(guid, false);
+      var originSiteModel = new SiteModel(guid, TRex.Storage.Models.StorageMutability.Immutable, false);
       var originModelModifiedDate = originSiteModel.LastModifiedDate;
       var originModelCreationDate = originSiteModel.CreationDate;
 
@@ -96,7 +96,7 @@ namespace VSS.TRex.Tests.SiteModels
       SiteModelOriginConstructionFlags preservationFlags,
       bool finalState)
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var originSiteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       loadedFunc.Invoke(originSiteModel).Should().BeFalse();
 
       var original = loadAction.Invoke(originSiteModel);
@@ -131,7 +131,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveGrid()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var originSiteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       var _ = originSiteModel.Grid; // force it to be loaded.
       originSiteModel.GridLoaded.Should().Be(true);
 
@@ -145,7 +145,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveGrid()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var originSiteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       var _ = originSiteModel.Grid; // force it to be loaded.
       originSiteModel.GridLoaded.Should().Be(true);
 
@@ -160,7 +160,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveCSIB()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var originSiteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       originSiteModel.CSIBLoaded.Should().Be(false);
 
       var original = originSiteModel.CSIB();
@@ -177,7 +177,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_UnloadCSIB()
     {
-      var siteModel = new SiteModel(Guid.NewGuid(), false);
+      var siteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       siteModel.CSIBLoaded.Should().Be(false);
 
       var _ = siteModel.CSIB();
@@ -205,7 +205,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveCSIB()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var originSiteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       originSiteModel.CSIBLoaded.Should().Be(false);
 
       var original = originSiteModel.CSIB();
@@ -267,7 +267,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_PreserveMultiple()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var originSiteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       var _1 = originSiteModel.Alignments;
       var _2 = originSiteModel.Designs;
       var _3 = originSiteModel.SiteModelDesigns;
@@ -318,7 +318,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_Creation_WithNonTransientOriginModel_DoNotPreserveMultiple()
     {
-      var originSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var originSiteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       var _1 = originSiteModel.Alignments;
       var _2 = originSiteModel.Designs;
       var _3 = originSiteModel.SiteModelDesigns;
@@ -361,14 +361,14 @@ namespace VSS.TRex.Tests.SiteModels
       const int expectedSiteModelSerializedStreamSize = 90;
 
       var guid = Guid.NewGuid();
-      var siteModel = new SiteModel(guid, 1.23);
+      var siteModel = new SiteModel(guid, TRex.Storage.Models.StorageMutability.Immutable, 1.23);
 
       var stream = siteModel.ToStream();
       stream.Length.Should().Be(expectedSiteModelSerializedStreamSize);
 
       stream.Position = 0;
 
-      var siteModel2 = new SiteModel();
+      var siteModel2 = new SiteModel(TRex.Storage.Models.StorageMutability.Immutable);
       siteModel2.FromStream(stream);
 
       siteModel2.ID.Should().Be(siteModel.ID);
