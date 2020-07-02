@@ -2,10 +2,11 @@
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using System.Linq;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class AccountListResponseModel : IMasterDataModel
+  public class AccountListResponseModel : IMasterDataModel, ISupportsPaging<AccountResponseModel>
   {
     public AccountListResponseModel()
     {
@@ -23,6 +24,16 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("hasMore")]
     public bool HasMore { get; set; }
+
+    /// <summary>
+    /// Used for paging 
+    /// </summary>
+    [JsonIgnore]
+    public List<AccountResponseModel> Models 
+    {
+      get { return Accounts; }
+      set { Accounts = value; }
+    }
 
     public List<string> GetIdentifiers() => Accounts?
                                               .SelectMany(a => a.GetIdentifiers())

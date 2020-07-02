@@ -32,23 +32,12 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IHeaderDictionary customHeaders = null)
     {
-      const int PAGESIZE = 20;
       log.LogDebug($"{nameof(GetMyAccounts)}: userUid {userUid}");
-      var accounts = new List<AccountResponseModel>();
-      AccountListResponseModel accountListResponseModel;
-      var currentPage = 0;
-      
-      do
-      {
-        var queryParameters = WithLimits(currentPage * PAGESIZE, PAGESIZE);
-        var cacheKeyPaging = $"{currentPage}-{PAGESIZE}";
-        accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, queryParameters, customHeaders, cacheKeyPaging);
-        accounts.AddRange(accountListResponseModel.Accounts);
-        currentPage++;
-      } while (accountListResponseModel?.HasMore ?? false);
-      
+
+      var accountListResponseModel = await GetAllPagedData<AccountListResponseModel, AccountResponseModel>("/users/me/accounts", null, userUid, null, customHeaders);
+
       log.LogDebug($"{nameof(GetMyAccounts)}: accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
-      return new AccountListResponseModel() {Accounts = accounts, HasMore = false};
+      return accountListResponseModel;
     }
 
     /// <summary>

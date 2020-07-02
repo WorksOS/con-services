@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
@@ -23,6 +24,8 @@ namespace CCSS.CWS.Client
     public override ApiService InternalServiceType => ApiService.None;
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
+
+    protected const int DefaultPageSize = 20;
 
     protected int FromRow = 0;
     protected int RowCount = 200;
@@ -52,6 +55,38 @@ namespace CCSS.CWS.Client
 
         throw;
       }
+    }
+
+    /// <summary>
+    /// Gets data from CWS that supports paging via the HasMore property
+    /// This method gets ALL data in one go.
+    /// </summary>
+    /// <typeparam name="TListModel">The List Result Model representing the API Result (including the HasMore Property, and List of Models)</typeparam>
+    /// <typeparam name="TModel">The Actual model the list represents</typeparam>
+    protected async Task<TListModel> GetAllPagedData<TListModel, TModel>(string route, Guid? uid, Guid? userId,
+      IList<KeyValuePair<string, string>> parameters = null,
+      IHeaderDictionary customHeaders = null) 
+      where TModel : IMasterDataModel
+      where TListModel : class, IMasterDataModel, ISupportsPaging<TModel>, new()
+    {
+      var results = new List<TModel>();
+      TListModel apiResult;
+      var currentPage = 0;
+      do
+      {
+        var queryParameters = WithLimits(currentPage * DefaultPageSize, DefaultPageSize);
+        if(parameters != null)
+          queryParameters.AddRange(parameters);
+        var cacheKeyPaging = $"{currentPage}-{DefaultPageSize}";
+        apiResult = await GetMasterDataItemServiceDiscovery<TListModel>(route, uid?.ToString(), userId?.ToString(), customHeaders, queryParameters, cacheKeyPaging);
+        if (apiResult != null)
+          results.AddRange(apiResult.Models);
+
+        currentPage++;
+
+      } while (apiResult?.HasMore ?? false);
+
+      return new TListModel {Models = results};
     }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
@@ -205,7 +240,11 @@ namespace CCSS.CWS.Client
 
     protected List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
     {
-      return new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("from", fromRow.ToString()), new KeyValuePair<string, string>("limit", rowCount.ToString()) };
+      return new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("from", fromRow.ToString()), 
+        new KeyValuePair<string, string>("limit", rowCount.ToString())
+      };
     }
   }
 }
