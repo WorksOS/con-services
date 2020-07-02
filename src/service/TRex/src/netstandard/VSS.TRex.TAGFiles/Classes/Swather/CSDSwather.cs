@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Types.CellPasses;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -10,6 +10,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.TAGFiles.Classes.Swather
 {
@@ -141,7 +142,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
 
               // MachineSpeed is meters per second - we need to convert this to
               // centimeters per seconds for the cell pass
-              if (machineSpd != Consts.NullDouble &&  machineSpd < 65535.0 / 100.0) // Machine too fast (its > 2358 km/hr)
+              if (machineSpd != Consts.NullDouble && machineSpd < 65535.0 / 100.0) // Machine too fast (its > 2358 km/hr)
                 processedCellPass.MachineSpeed = (ushort)Math.Round(machineSpd * 100);
 
               processedCellPass.gpsMode = Processor.GPSModes.GetValueAtDateTime(_TheTime, CellPassConsts.NullGPSMode);

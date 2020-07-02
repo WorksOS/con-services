@@ -18,7 +18,6 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Responses
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -29,7 +28,6 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);

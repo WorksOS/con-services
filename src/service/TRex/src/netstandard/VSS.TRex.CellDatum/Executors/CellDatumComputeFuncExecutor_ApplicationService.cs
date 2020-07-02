@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.CellDatum.GridFabric.Responses;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -19,7 +20,7 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Constructor
     /// </summary>
-    public CellDatumComputeFuncExecutor_ApplicationService() {}
+    public CellDatumComputeFuncExecutor_ApplicationService() { }
 
     /// <summary>
     /// Executor that implements requesting and rendering sub grid information to create the cell datum
@@ -30,7 +31,7 @@ namespace VSS.TRex.CellDatum.Executors
 
       var result = new CellDatumResponse_ApplicationService
       { ReturnCode = CellDatumReturnCode.UnexpectedError, DisplayMode = arg.Mode, Northing = arg.Point.Y, Easting = arg.Point.X };
-   
+
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)
       {
@@ -41,7 +42,7 @@ namespace VSS.TRex.CellDatum.Executors
       if (!arg.CoordsAreGrid)
       {
         //WGS84 coords need to be converted to NEE
-        arg.Point = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point);
+        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
         result.Northing = arg.Point.Y;
         result.Easting = arg.Point.X;
       }

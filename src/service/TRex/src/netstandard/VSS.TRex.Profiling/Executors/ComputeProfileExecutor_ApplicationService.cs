@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
@@ -18,7 +19,7 @@ namespace VSS.TRex.Profiling.Executors
   /// </summary>
   public class ComputeProfileExecutor_ApplicationService<T> where T: class, IProfileCellBase, new()
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
 
     public ComputeProfileExecutor_ApplicationService()
     { }
@@ -28,14 +29,14 @@ namespace VSS.TRex.Profiling.Executors
     /// </summary>
     public async Task<ProfileRequestResponse<T>> ExecuteAsync(ProfileRequestArgument_ApplicationService arg)
     {
-      Log.LogInformation("Start execution");
+      _log.LogInformation("Start execution");
 
       try
       {
         if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
         {
           // Prepare the filters for use in profiling operations. Failure to prepare any filter results in this request terminating
-          if (!(arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x.Result == RequestErrorStatus.OK)))
+          if (!arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK))
           {
             return new ProfileRequestResponse<T>{ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
           }
@@ -58,7 +59,7 @@ namespace VSS.TRex.Profiling.Executors
         // Perform coordinate conversion on the argument before broadcasting it:
         if (arg.PositionsAreGrid)
         {
-          arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().NullWGSLLToXY(new[] { arg.StartPoint, arg.EndPoint });
+          arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().NullWGSLLToXY(new[] { arg.StartPoint, arg.EndPoint }.ToCoreX_WGS84Point()).ToTRex_XYZ();
         }
         else
         {
@@ -66,7 +67,7 @@ namespace VSS.TRex.Profiling.Executors
 
           if (siteModel != null)
           {
-            arg2.NEECoords = await DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] {arg.StartPoint, arg.EndPoint});
+            arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] {arg.StartPoint, arg.EndPoint}.ToCoreX_WGS84Point()).ToTRex_XYZ();
           }
         }
 
@@ -99,7 +100,7 @@ namespace VSS.TRex.Profiling.Executors
       }
       finally
       {
-        Log.LogInformation("End execution");
+        _log.LogInformation("End execution");
       }
     }
   }

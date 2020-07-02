@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
 {
@@ -23,10 +22,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Constructor that creates a rectangular fence given the min/max x/y points
     /// </summary>
-    /// <param name="MinX"></param>
-    /// <param name="MinY"></param>
-    /// <param name="MaxX"></param>
-    /// <param name="MaxY"></param>
     public Fence(double MinX, double MinY, double MaxX, double MaxY) : this()
     {
       SetExtents(MinX, MinY, MaxX, MaxY);
@@ -35,17 +30,13 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Constructor that creates a rectangular fence from a world coordinate bounding extent
     /// </summary>
-    /// <param name="extent"></param>
     public Fence(BoundingWorldExtent3D extent) : this(extent.MinX, extent.MinY, extent.MaxX, extent.MaxY)
-    {
-    }
+    { }
 
     /// <summary>
     /// Default indexer for the list of fence points
     /// </summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public FencePoint this[int index] => Points[index];     
+    public FencePoint this[int index] => Points[index];
 
     /// <summary>
     /// The list of the points taking part in the fence
@@ -55,7 +46,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if any of the vertices in the Fence are null
     /// </summary>
-    /// <returns></returns>
     public bool IsNull()
     {
       if (Points.Count == 0)
@@ -170,7 +160,7 @@ namespace VSS.TRex.Geometry
         }
         pt1 = pt2;
       }
-      return result;     
+      return result;
     }
 
     /// <summary>

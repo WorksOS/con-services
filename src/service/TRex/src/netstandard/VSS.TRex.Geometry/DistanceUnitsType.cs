@@ -1,7 +1,6 @@
 ﻿namespace VSS.TRex.Geometry
 {
   public enum DistanceUnitsType
-
   {
     Feet,
     Meters,

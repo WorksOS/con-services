@@ -2,9 +2,9 @@
 using System.IO;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Types.CellPasses;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.SubGridTrees.Client.Types
 {

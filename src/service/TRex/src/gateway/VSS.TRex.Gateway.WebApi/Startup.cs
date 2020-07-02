@@ -26,6 +26,8 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.AWS.TransferProxy;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -45,7 +47,7 @@ namespace VSS.TRex.Gateway.WebApi
     {
       DIBuilder.New(services)
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
         .Add(IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)

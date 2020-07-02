@@ -58,7 +58,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>((cacheType) => CacheFactory(cacheType)))
 
         //        .Build()
-        //        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        //        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
         //        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         //        .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)

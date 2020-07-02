@@ -42,25 +42,17 @@
     /// <summary>
     /// Determines if this triangle includes the given point
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
     public bool IncludesPoint(double x, double y) => XYZ.PointInTriangle(V1, V2, V3, x, y);
 
     /// <summary>
     /// Determine the elevation on the triangle at the location given by x and y. If the location is not
     /// within the triangle this will return Consts.NullDouble
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <returns></returns>
     public double InterpolateHeight(double x, double y) => XYZ.GetTriangleHeight(V1, V2, V3, x, y);
 
     /// <summary>
     /// Updates the vertices of the triangle with the given three vertex parameters
     /// </summary>
-    /// <param name="V1"></param>
-    /// <param name="V2"></param>
-    /// <param name="V3"></param>
     public void SetVertices(XYZ V1, XYZ V2, XYZ V3)
     {
       this.V1 = V1;

@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.TRex.Common;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.WebApi.ActionServices
 {
@@ -38,10 +37,10 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
 
       if (NEECoords.Count > 0)
       {
-        var (errorCode, LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray());
-     
+        var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray().ToCoreX_XYZ());
+
         // if the count returned is different to that sent, then we can't match with the machines list
-        if (errorCode == RequestErrorStatus.OK && NEECoords.Count == LLHCoords.Length)
+        if (NEECoords.Count == LLHCoords.Length)
         {
           var coordPointer = 0;
           foreach (var machine in machines)
@@ -57,7 +56,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
         }
         else
         {
-          var message = $"{nameof(CoordinateServiceUtility)} Failed to convert Coordinates. ErrorCode: {errorCode} CSIB: {CSIB} Coords: {(LLHCoords == null ? "null LLH returned" : JsonConvert.SerializeObject(LLHCoords))}, NEECoords: {JsonConvert.SerializeObject(NEECoords)}";
+          var message = $"{nameof(CoordinateServiceUtility)} Failed to convert Coordinates. CSIB: {CSIB} Coords: {(LLHCoords == null ? "null LLH returned" : JsonConvert.SerializeObject(LLHCoords))}, NEECoords: {JsonConvert.SerializeObject(NEECoords)}";
           Log.LogError(message);
           return ContractExecutionStatesEnum.InternalProcessingError;
         }

@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Drawing;
+using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
-using VSS.TRex.CoordinateSystems;
+using VSS.TRex.Common.Models;
+using VSS.TRex.Common.RequestStatistics;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -11,19 +18,12 @@ using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;
-using VSS.TRex.Common.RequestStatistics;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities;
-using System.Drawing;
-using System.Threading.Tasks;
-using VSS.Serilog.Extensions;
-using VSS.TRex.Common.Models;
-using VSS.TRex.Designs.Models;
-using VSS.TRex.Rendering.Palettes.Interfaces;
-using VSS.TRex.SubGrids.GridFabric.Arguments;
 
 namespace VSS.TRex.Rendering.Executors
 {
@@ -32,7 +32,7 @@ namespace VSS.TRex.Rendering.Executors
   /// </summary>
   public class RenderOverlayTile
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<RenderOverlayTile>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<RenderOverlayTile>();
 
     /// <summary>
     /// Details the error status of the bmp result returned by the renderer
@@ -86,7 +86,7 @@ namespace VSS.TRex.Rendering.Executors
       ushort nPixelsX,
       ushort nPixelsY,
       IFilterSet filters,
-      DesignOffset cutFillDesign, 
+      DesignOffset cutFillDesign,
       IPlanViewPalette aColorPalettes,
       Color representColor,
       string requestingTRexNodeId,
@@ -102,7 +102,7 @@ namespace VSS.TRex.Rendering.Executors
       NPixelsX = nPixelsX;
       NPixelsY = nPixelsY;
       Filters = filters;
-      CutFillDesign = cutFillDesign; 
+      CutFillDesign = cutFillDesign;
       ColorPalettes = aColorPalettes;
       RepresentColor = representColor;
       RequestingTRexNodeID = requestingTRexNodeId;
@@ -268,7 +268,7 @@ namespace VSS.TRex.Rendering.Executors
     {
       using (var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/))
       {
-        using (var mapView = new MapSurface {SquareAspect = false, Rotation = -TileRotation + Math.PI / 2} )
+        using (var mapView = new MapSurface { SquareAspect = false, Rotation = -TileRotation + Math.PI / 2 })
         {
           RepresentationalDisplay.MapView = mapView;
 
@@ -310,7 +310,7 @@ namespace VSS.TRex.Rendering.Executors
     {
       // WorkingColorPalette  : TICDisplayPaletteBase;
 
-      Log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
+      _log.LogInformation($"Performing Execute for DataModel:{DataModelID}, Mode={Mode}");
 
       ApplicationServiceRequestStatistics.Instance.NumMapTileRequests.Increment();
 
@@ -335,16 +335,16 @@ namespace VSS.TRex.Rendering.Executors
 
       var RequestDescriptor = Guid.NewGuid();
 
-      if (Log.IsDebugEnabled())
+      if (_log.IsDebugEnabled())
       {
         if (CoordsAreGrid)
         {
-          Log.LogDebug($"RenderPlanViewTiles Execute: Performing render for request={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, CutFillDesign=''{CutFillDesign}'' " +
+          _log.LogDebug($"RenderPlanViewTiles Execute: Performing render for request={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, CutFillDesign=''{CutFillDesign}'' " +
                        $"Bound[BL/TR:X/Y]=({BLPoint.X} {BLPoint.Y}, {TRPoint.X} {TRPoint.Y}), Width={NPixelsX}, Height={NPixelsY}");
         }
         else
         {
-          Log.LogDebug($"RenderPlanViewTiles Execute: Performing render for request={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, CutFillDesign=''{CutFillDesign}'' " +
+          _log.LogDebug($"RenderPlanViewTiles Execute: Performing render for request={RequestDescriptor} Args: Project={DataModelID}, Mode={Mode}, CutFillDesign=''{CutFillDesign}'' " +
                        $"Bound[BL/TR:Lon/Lat]=({BLPoint.X} {BLPoint.Y}, {TRPoint.X} {TRPoint.Y}), Width={NPixelsX}, Height={NPixelsY}");
         }
 
@@ -353,7 +353,7 @@ namespace VSS.TRex.Rendering.Executors
         {
           for (var i = 0; i < Filters.Filters.Length; i++)
           {
-            Log.LogDebug($"Filter({i}): {Filters.Filters[i]}");
+            _log.LogDebug($"Filter({i}): {Filters.Filters[i]}");
           }
         }
       }
@@ -364,11 +364,11 @@ namespace VSS.TRex.Rendering.Executors
       var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
       if (SiteModel == null)
       {
-        Log.LogWarning($"Failed to locate site model {DataModelID}");
+        _log.LogWarning($"Failed to locate site model {DataModelID}");
         return null;
       }
 
-      Log.LogInformation($"Got Site model {DataModelID}, production data extents are {SiteModel.SiteModelExtent}");
+      _log.LogInformation($"Got Site model {DataModelID}, production data extents are {SiteModel.SiteModelExtent}");
 
       LLHCoords = new[]
       {
@@ -377,25 +377,18 @@ namespace VSS.TRex.Rendering.Executors
         new XYZ(BLPoint.X, TRPoint.Y),
         new XYZ(TRPoint.X, BLPoint.Y)
       };
-      Log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
+      _log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
 
       if (CoordsAreGrid)
         NEECoords = LLHCoords;
       else
       {
-        var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
-
-        if (conversionResult.ErrorCode != RequestErrorStatus.OK)
-        {
-          Log.LogInformation("Tile render failure, could not convert bounding area from WGS to grid coordinates");
-          ResultStatus = RequestErrorStatus.FailedToConvertClientWGSCoords;
-
-          return null;
-        }
-
-        NEECoords = conversionResult.NEECoordinates;
+        NEECoords = DIContext
+          .Obtain<IConvertCoordinates>()
+          .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians)
+          .ToTRex_XYZ();
       }
-      Log.LogInformation($"After conversion NEECoords are {string.Concat(NEECoords)}");
+      _log.LogInformation($"After conversion NEECoords are {string.Concat(NEECoords)}");
 
       WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
       WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
@@ -408,10 +401,10 @@ namespace VSS.TRex.Rendering.Executors
       foreach (var xyz in NEECoords)
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
 
-      Log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}] " +
+      _log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}] " +
         $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
         $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
-        $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}" );
+        $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}");
 
       // Construct the renderer, configure it, and set it on its way
       //  WorkingColorPalette = Nil;
@@ -423,13 +416,13 @@ namespace VSS.TRex.Rendering.Executors
           // Intersect the site model extents with the extents requested by the caller
           var adjustedSiteModelExtents = SiteModel.GetAdjustedDataModelSpatialExtents(null);
 
-          Log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{adjustedSiteModelExtents}");
+          _log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{adjustedSiteModelExtents}");
 
           RotatedTileBoundingExtents.Intersect(adjustedSiteModelExtents);
           if (!RotatedTileBoundingExtents.IsValidPlanExtent)
           {
             ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
-            Log.LogInformation($"Site model extents {adjustedSiteModelExtents}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
+            _log.LogInformation($"Site model extents {adjustedSiteModelExtents}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
 
             using var mapView = new MapSurface();
 
@@ -483,7 +476,7 @@ namespace VSS.TRex.Rendering.Executors
           // Prepare the processor
           if (!await processor.BuildAsync())
           {
-            Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+            _log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
             ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
             return null;
           }
@@ -524,7 +517,7 @@ namespace VSS.TRex.Rendering.Executors
         }
         catch (Exception e)
         {
-          Log.LogError(e, "Exception occurred");
+          _log.LogError(e, "Exception occurred");
           ResultStatus = RequestErrorStatus.Exception;
         }
       }

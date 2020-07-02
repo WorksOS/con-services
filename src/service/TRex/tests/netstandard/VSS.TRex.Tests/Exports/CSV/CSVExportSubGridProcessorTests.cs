@@ -1,26 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Tests.TestFixtures;
-using Xunit;
-using FluentAssertions;
-using VSS.TRex.Exports.CSV.GridFabric;
-using VSS.TRex.Exports.CSV.Executors.Tasks;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.DI;
-using VSS.TRex.Types;
-using VSS.TRex.SubGrids.Interfaces;
-using VSS.TRex.Filters;
-using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees.Client.Types;
-using GPSAccuracy = VSS.TRex.Types.GPSAccuracy;
 using VSS.TRex.Common.Models;
+using VSS.TRex.DI;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
+using VSS.TRex.Exports.CSV.GridFabric;
+using VSS.TRex.Filters;
+using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
+using Xunit;
+using GPSAccuracy = VSS.TRex.Types.GPSAccuracy;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
@@ -79,7 +79,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DILoggingFixture.SetMaxExportRowsConfig(100);
 
       var requestedSubGrids = GetSubGrids(CoordType.Northeast, OutputTypes.VedaFinalPass, false,
-        out var requestArgument, out _); 
+        out var requestArgument, out _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
       var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public async Task PassCountAllPassesNotDBase()
+    public void PassCountAllPassesNotDBase()
     {
       DILoggingFixture.SetMaxExportRowsConfig(1000);
 
@@ -115,7 +115,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         out var requestArgument, out _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       rows.Count.Should().Be(384);
       rows[0].Should().Be(@"2019/Jan/23 00:22:09.993,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,0,1,?,?,?,?,?,?,?,?,?,?,?");
     }
@@ -126,7 +126,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [InlineData(384)]
     [InlineData(385)]
     [InlineData(400)]
-    public async Task RowCountLimit_AllPasses(int maxExportRows)
+    public void RowCountLimit_AllPasses(int maxExportRows)
     {
       DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
 
@@ -135,7 +135,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileAllPassesLeafSubgrid);
       if (maxExportRows <= 384) // 384 is the number of rows we could potentially get from this set
         rows.Count.Should().Be(maxExportRows);
       else
@@ -144,11 +144,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
     [Theory]
     [InlineData(10)]
-//    [InlineData(5050)]
-//    [InlineData(5051)]
+    //    [InlineData(5050)]
+    //    [InlineData(5051)]
     [InlineData(5052)]
     [InlineData(400000)]
-    public async Task RowCountLimit_AllPassesMultiSubGrids(int maxExportRows)
+    public void RowCountLimit_AllPassesMultiSubGrids(int maxExportRows)
     {
       DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
 
@@ -159,7 +159,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var rows = new List<string>();
       foreach (var subGrid in requestedSubGrids)
-        rows.AddRange(await subGridProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid));
+        rows.AddRange(subGridProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid));
 
       if (maxExportRows <= 5051) // 5051 is the number of rows we could potentially get from this set
         rows.Count.Should().Be(maxExportRows);
@@ -196,7 +196,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       SetupSiteAndRequestArgument(CoordType.Northeast, OutputTypes.VedaFinalPass, false, "ElevationMappingMode-KettlewellDrive",
         out var requestArgument);
-      requestArgument.MappedMachines = new List<CSVExportMappedMachine>() {new CSVExportMappedMachine() {InternalSiteModelMachineIndex = 2, Name = "The machine Name"}};
+      requestArgument.MappedMachines = new List<CSVExportMappedMachine>() { new CSVExportMappedMachine() { InternalSiteModelMachineIndex = 2, Name = "The machine Name" } };
 
       var clientGrid = SetupProfileSampleCell();
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
@@ -206,9 +206,8 @@ namespace VSS.TRex.Tests.Exports.CSV
       rows[0].Should().Be(@"2019-Mar-14 23:45:00.000,0.170m,0.170m,6509.000m,1,34,Full Site (Kettlewell Drive 171219) Earthworks,""The machine Name"",1,188.0km/h,Float,Coarse (0.300m),5,3,2,90.1,85.0,13.0,11.0,11.1,96.0Hz,45.60mm,45.000m,Forward_2,On,104.0°C");
     }
 
-
     [Fact]
-    public async Task CellPasses_IncludesHalfPasses()
+    public void CellPasses_IncludesHalfPasses()
     {
       DILoggingFixture.SetMaxExportRowsConfig(10);
 
@@ -219,7 +218,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var clientGrid = SetupProfileAllPassesSampleCell();
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
-      var rows = await subGridProcessor.ProcessSubGrid(clientGrid);
+      var rows = subGridProcessor.ProcessSubGrid(clientGrid);
       rows.Count.Should().Be(3);
       rows[0].Should().Be(@"2019/Apr/15 00:00:00.000,0.170m,0.170m,555.000m,1,0,?,""The machine Name"",23.9km/h,Old Position,Fine (0.000m),5,3,5,77.7,0.8,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
       rows[1].Should().Be(@"2019/May/16 00:00:00.000,0.170m,0.170m,20.000m,1,0,?,""Unknown"",1.6km/h,Old Position,Fine (0.000m),2,1,1,4.4,6.6,0.0,0.0,0.0,0.0Hz,0.00mm,0.000m,Neutral,Off,0.0°C");
@@ -370,7 +369,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       return siteModel;
     }
 
-    private List<IClientLeafSubGrid> GetSubGrids(CoordType coordType, OutputTypes outputType, bool isRawDataAsDBaseRequired, 
+    private List<IClientLeafSubGrid> GetSubGrids(CoordType coordType, OutputTypes outputType, bool isRawDataAsDBaseRequired,
       out CSVExportRequestArgument requestArgument, out ISiteModel siteModel, string tagFileDirectory = "ElevationMappingMode-KettlewellDrive")
     {
       siteModel = SetupSiteAndRequestArgument(coordType, outputType, isRawDataAsDBaseRequired, tagFileDirectory, out requestArgument);

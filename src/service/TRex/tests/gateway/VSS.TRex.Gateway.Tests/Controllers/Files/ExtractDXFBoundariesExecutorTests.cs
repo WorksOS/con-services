@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,14 +11,11 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Files;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Files.DXF;
 using VSS.TRex.Gateway.Common.Executors.Files;
 using VSS.TRex.Gateway.Common.ResultHandling;
-using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
-using VSS.TRex.Types;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
@@ -29,7 +27,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     {
       // Mock the coordinate conversion service
       var mockCoordinateService = new Mock<IConvertCoordinates>();
-      mockCoordinateService.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns((string csib, XYZ[] coordinates) => Task.FromResult((RequestErrorStatus.OK, coordinates)));
+      mockCoordinateService.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>())).Returns((string csib, CoreX.Models.XYZ[] coordinates) => coordinates);
 
       DIBuilder.Continue().Add(x => x.AddSingleton(mockCoordinateService.Object)).Complete();
     }
@@ -44,7 +42,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     private async void TestAFile(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount, string expectedName, DXFLineWorkBoundaryType expectedType, bool allowUnclosedBoundaries)
     {
       var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary,
-        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))), 
+        Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))),
         units, 10, allowUnclosedBoundaries);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
@@ -98,7 +96,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     {
       const int LIMIT = 5;
 
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, 
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary,
         Convert.ToBase64String(File.ReadAllBytes(Path.Combine("TestData", fileName))), units, LIMIT, false);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();

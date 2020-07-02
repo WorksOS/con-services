@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -10,10 +11,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -52,25 +51,21 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       // Note: This is a 2D conversion only, elevation is set to 0
       var coordinates = request.ConversionCoordinates.Select(cc => new XYZ(cc.X, cc.Y, 0.0)).ToArray();
 
-      (RequestErrorStatus errorStatus, XYZ[] resultCoordinates) conversionResult;
+      XYZ[] resultCoordinates;
 
       switch (request.ConversionType)
       {
         case TwoDCoordinateConversionType.NorthEastToLatLon:
-          conversionResult = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates);
+          resultCoordinates = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ()).ToTRex_XYZ();
           break;
         case TwoDCoordinateConversionType.LatLonToNorthEast:
-          conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(csib, coordinates);
+          resultCoordinates = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(csib, coordinates.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
           break;
         default:
           throw new ArgumentException($"Unknown TwoDCoordinateConversionType {Convert.ToInt16(request.ConversionType)}");
       }
 
-      if (conversionResult.errorStatus == RequestErrorStatus.OK)
-        return CreateConversionResult(conversionResult.resultCoordinates);
-
-      throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-        $"Coordinate conversion failed. Error status: {conversionResult.errorStatus}"));
+      return CreateConversionResult(resultCoordinates);
     }
 
     /// <summary>

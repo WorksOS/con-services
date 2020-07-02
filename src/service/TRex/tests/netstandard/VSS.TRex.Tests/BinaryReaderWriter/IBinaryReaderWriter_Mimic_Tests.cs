@@ -8,8 +8,8 @@ using FluentAssertions.Common;
 using FluentAssertions.Equivalency;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Records;
-using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 

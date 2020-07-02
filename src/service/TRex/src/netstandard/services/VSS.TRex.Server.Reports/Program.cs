@@ -72,7 +72,7 @@ namespace VSS.TRex.Server.Reports
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -126,7 +126,7 @@ namespace VSS.TRex.Server.Reports
         typeof(SiteModel),
         typeof(Cells.CellEvents),
         typeof(Compression.AttributeValueModifiers),
-        typeof(CoordinateSystems.Models.LLH),
+        typeof(CoreX.Models.LLH),
         typeof(DesignBase),
         typeof(Designs.TTM.HashOrdinate),
         typeof(Designs.TTM.Optimised.HeaderConsts),

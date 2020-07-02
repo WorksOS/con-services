@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Productivity3D.Models.Designs;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors.Design
 {
@@ -42,9 +41,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
     /// converts all coordinates with a call to the coordinate conversion service and inserts the
     /// modified coordinates into the result.
     /// </summary>
-    /// <param name="csib"></param>
-    /// <param name="geometryResponse"></param>
-    private async void ConvertNEEToLLHCoords(string csib, AlignmentDesignGeometryResponse geometryResponse)
+    private void ConvertNEEToLLHCoords(string csib, AlignmentDesignGeometryResponse geometryResponse)
     {
       var coords = new List<XYZ>();
       if ((geometryResponse.Vertices?.Length ?? 0) > 0)
@@ -54,13 +51,9 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       if ((geometryResponse.Labels?.Length ?? 0) > 0)
         coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.X, x.Y, 0.0)).ToList());
 
-      var (errorCode, convertedCoords) = await _convertCoordinates.NEEToLLH(csib, coords.ToArray());
-
-      if (errorCode != RequestErrorStatus.OK)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Failed to convert grid coordinates to WGS84 coordinates."));
-      }
+      var convertedCoords = _convertCoordinates
+        .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ())
+        .ToTRex_XYZ();
 
       // Copy the converted coordinates to the geometry response ready for inclusion in the request result
       var index = 0;
@@ -72,7 +65,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
           for (var j = 0; j < geometryResponse.Vertices[i].Length; j++)
           {
             geometryResponse.Vertices[i][j][0] = convertedCoords[index].X;
-            geometryResponse.Vertices[i][j][1] = convertedCoords[index].Y; 
+            geometryResponse.Vertices[i][j][1] = convertedCoords[index].Y;
             index++;
           }
         }
@@ -110,15 +103,15 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
     }
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as VSS.TRex.Gateway.Common.Requests.AlignmentDesignGeometryRequest;
+      var request = item as Requests.AlignmentDesignGeometryRequest;
 
       if (request == null)
       {
-        ThrowRequestTypeCastException<VSS.TRex.Gateway.Common.Requests.AlignmentDesignGeometryRequest>();
+        ThrowRequestTypeCastException<Requests.AlignmentDesignGeometryRequest>();
       }
 
       var siteModel = GetSiteModel(request.ProjectUid);
-      var geometryRequest = new VSS.TRex.Designs.GridFabric.Requests.AlignmentDesignGeometryRequest();
+      var geometryRequest = new Designs.GridFabric.Requests.AlignmentDesignGeometryRequest();
       var geometryResponse = await geometryRequest.ExecuteAsync(new AlignmentDesignGeometryArgument
       {
         ProjectID = siteModel.ID,
@@ -131,20 +124,18 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         ConvertNEEToLLHCoords(siteModel.CSIB(), geometryResponse);
 
         // Populate the converted coordinates into the result. Note: At this point, X = Longitude and Y = Latitude
-        var result = new AlignmentGeometryResult
+        return new AlignmentGeometryResult
         (ContractExecutionStatesEnum.ExecutedSuccessfully,
           request.DesignUid,
           geometryResponse.Vertices.Select(x =>
-            x.Select(v => new[] {v[1], v[0], v[2]}).ToArray()).ToArray(),
+            x.Select(v => new[] { v[1], v[0], v[2] }).ToArray()).ToArray(),
           geometryResponse.Arcs.Select(x =>
             new AlignmentGeometryResultArc
             (x.Y1, x.X1, x.Z1,
               x.Y2, x.X2, x.Z2,
               x.YC, x.XC, x.ZC, x.CW)).ToArray(),
-          geometryResponse.Labels.Select(x => 
+          geometryResponse.Labels.Select(x =>
             new AlignmentGeometryResultLabel(x.Station, x.Y, x.X, x.Rotation)).ToArray());
-
-        return result;
       }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

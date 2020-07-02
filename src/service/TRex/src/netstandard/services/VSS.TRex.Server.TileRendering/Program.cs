@@ -93,7 +93,7 @@ namespace VSS.TRex.Server.TileRendering
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -158,7 +158,7 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.Storage.StorageProxy),
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
-        typeof(VSS.TRex.CoordinateSystems.Models.LLH),
+        typeof(CoreX.Models.LLH),
         typeof(VSS.TRex.ExistenceMaps.ExistenceMaps),
         typeof(VSS.TRex.Filters.CellPassAttributeFilter),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),

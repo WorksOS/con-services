@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace VSS.TRex.Common.Utilities.Interfaces
+namespace VSS.TRex.Common.Interfaces
 {
   public interface IBinaryReaderWriterBuffered
   {

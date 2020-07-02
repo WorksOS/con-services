@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using VSS.TRex.Common;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.Geometry
 {
@@ -29,8 +28,7 @@ namespace VSS.TRex.Geometry
     /// Default no-arg constructor
     /// </summary>
     public BoundingWorldExtent3D()
-    {
-    }
+    { }
 
     public BoundingWorldExtent3D(BoundingWorldExtent3D source)
     {
@@ -40,7 +38,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Assign another instance to this instance
     /// </summary>
-    /// <param name="source"></param>
     public void Assign(BoundingWorldExtent3D source)
     {
       MinX = source.MinX;
@@ -54,7 +51,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Provide human readable version of instance state
     /// </summary>
-    /// <returns></returns>
     public override string ToString() => $"MinX: {MinX}, MaxX:{MaxX}, MinY:{MinY}, MaxY:{MaxY}, MinZ: {MinZ}, MaxZ:{MaxZ}";
 
     /// <summary>
@@ -88,10 +84,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Constructor taking min/max X & Y values but allowing Z values to default to null
     /// </summary>
-    /// <param name="minX"></param>
-    /// <param name="minY"></param>
-    /// <param name="maxX"></param>
-    /// <param name="maxY"></param>
     public BoundingWorldExtent3D(double minX, double minY, double maxX, double maxY) : this(minX, minY, maxX, maxY, Consts.NullDouble, Consts.NullDouble)
     {
     }
@@ -99,12 +91,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Full 3d constructor taking min/max X, Y and Z values
     /// </summary>
-    /// <param name="minX"></param>
-    /// <param name="minY"></param>
-    /// <param name="maxX"></param>
-    /// <param name="maxY"></param>
-    /// <param name="minZ"></param>
-    /// <param name="maxZ"></param>
     public BoundingWorldExtent3D(double minX, double minY, double maxX, double maxY, double minZ, double maxZ)
     {
       MinX = minX;
@@ -118,7 +104,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Creates a new bounding extent, sets its parameters to be inverted and returns the result
     /// </summary>
-    /// <returns></returns>
     public static BoundingWorldExtent3D Inverted()
     {
       BoundingWorldExtent3D result = new BoundingWorldExtent3D();
@@ -130,16 +115,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Creates a new bounding extent, sets its parameters to be null and returns the result
     /// </summary>
-    /// <returns></returns>
-    public static BoundingWorldExtent3D Null()
-    {
-      return new BoundingWorldExtent3D(Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble);
-    }
+    public static BoundingWorldExtent3D Null() => new BoundingWorldExtent3D(Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble, Consts.NullDouble);
 
     /// <summary>
     /// Creates a new bounding extent, sets its parameters to be the largest extent possible and returns the result
     /// </summary>
-    /// <returns></returns>
     public static BoundingWorldExtent3D Full()
     {
       var result = new BoundingWorldExtent3D();
@@ -150,8 +130,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Expand the plan X/Y extent of the bounding box by the quantities in dx & dy. Expansion is isotropic on both axes.
     /// </summary>
-    /// <param name="dx"></param>
-    /// <param name="dy"></param>
     public void Expand(double dx, double dy)
     {
       if (IsValidPlanExtent)
@@ -164,7 +142,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Expand the Z extent of the bounding box by the supplied delta. Expansion is isotropic on the Z axis.
     /// </summary>
-    /// <param name="dz"></param>
     public void Expand(double dz)
     {
       if (MinZ < MaxZ)
@@ -177,10 +154,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Extract the X/Y min/max plan extents from the instance into separate variables
     /// </summary>
-    /// <param name="AMinX"></param>
-    /// <param name="AMinY"></param>
-    /// <param name="AMaxX"></param>
-    /// <param name="AMaxY"></param>
     public void Extract2DExtents(out double AMinX, out double AMinY, out double AMaxX, out double AMaxY)
     {
       AMinX = MinX;
@@ -192,12 +165,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Extract min/max values for X, Y and Z axes into individual parameters
     /// </summary>
-    /// <param name="AMinX"></param>
-    /// <param name="AMinY"></param>
-    /// <param name="AMaxX"></param>
-    /// <param name="AMaxY"></param>
-    /// <param name="AMinZ"></param>
-    /// <param name="AMaxZ"></param>
     public void Extract3DExtents(out double AMinX, out double AMinY, out double AMaxX, out double AMaxY, out double AMinZ, out double AMaxZ)
     {
       AMinX = MinX;
@@ -211,9 +178,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Modifies the extents of the bounding box to include the supplied X, Y and Z coordinate
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Z"></param>
     public void Include(double X, double Y, double Z)
     {
       Include(X, Y);
@@ -229,8 +193,6 @@ namespace VSS.TRex.Geometry
     /// Include the extents of another BoundingWorldExtent instance into this one. If the Z ordinate is not valid, or not required, set 
     /// TwoDOnlyValid to true to cause the Z ordinate to be ignored in the calculation
     /// </summary>
-    /// <param name="Extent"></param>
-    /// <param name="TwoDOnlyValid"></param>
     public void Include(BoundingWorldExtent3D Extent, bool TwoDOnlyValid = false)
     {
       if (!IsValidPlanExtent)
@@ -278,7 +240,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Modifies the extents of the bounding box to include the supplied Z ordinate
     /// </summary>
-    /// <param name="Z"></param>
     public void Include(double Z)
     {
       if (Z != Consts.NullDouble)
@@ -291,16 +252,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if the supplied x, y coordinate is within the bounding box
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <returns></returns>
     public bool Includes(double x, double y) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
 
     /// <summary>
     /// Include the supplied x, y coordinate into the bounding box by increasing its size if necessary
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
     public void Include(double X, double Y)
     {
       if (X != Consts.NullDouble)
@@ -319,18 +275,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Compute the 3D bounding box that result from intersecting this bounding box with the one provided in Extent.
     /// </summary>
-    /// <param name="Extent"></param>
-    /// <returns></returns>
     public void Intersect(BoundingWorldExtent3D Extent) => Intersect(Extent.MinX, Extent.MinY, Extent.MaxX, Extent.MaxY);
 
     /// <summary>
     /// Compute the 3D bounding box that result from intersecting this bounding box with the one described by the min/max X, Y and Z coordinates.
     /// </summary>
-    /// <param name="AMinX"></param>
-    /// <param name="AMinY"></param>
-    /// <param name="AMaxX"></param>
-    /// <param name="AMaxY"></param>
-    /// <returns></returns>
     public void Intersect(double AMinX, double AMinY, double AMaxX, double AMaxY)
     {
       if (AMinX > MinX)
@@ -369,8 +318,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if this bounding box is equal to another
     /// </summary>
-    /// <param name="Extent"></param>
-    /// <returns></returns>
     public bool Equals(BoundingWorldExtent3D Extent) => MinX == Extent.MinX && MinY == Extent.MinY && MinZ == Extent.MinZ &&
                                                         MaxX == Extent.MaxX && MaxY == Extent.MaxY && MaxZ == Extent.MaxZ;
 
@@ -394,7 +341,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Move (offset) the elevation (Z) range by the supplied z delta
     /// </summary>
-    /// <param name="dz"></param>
     public void Offset(double dz)
     {
       MinZ += dz;
@@ -404,8 +350,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Move (offset) the plan coordinate (X & Y) range by the supplied x and y delta
     /// </summary>
-    /// <param name="dx"></param>
-    /// <param name="dy"></param>
     public void Offset(double dx, double dy)
     {
       MinX += dx;
@@ -443,7 +387,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Shrink the elevation range in the extent by the supplied delta. THe change is applied isotropically.
     /// </summary>
-    /// <param name="dz"></param>
     public void Shrink(double dz)
     {
       MinZ += dz;
@@ -461,7 +404,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Scale the plan size of the boundary by factor with respect to the center of the bounding rectangle
     /// </summary>
-    /// <param name="factor"></param>
     public void ScalePlan(double factor)
     {
       double cx = CenterX;
@@ -493,7 +435,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Writes a binary representation of the state of the bounding extent using the supplied writer
     /// </summary>
-    /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
       writer.Write(MinX);
@@ -507,7 +448,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Reads a binary representation of the state of the bounding extent using the supplied reader
     /// </summary>
-    /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       MinX = reader.ReadDouble();
@@ -521,10 +461,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Sets the plan min/max X/Y bounds for this bounding rectangle
     /// </summary>
-    /// <param name="minX"></param>
-    /// <param name="minY"></param>
-    /// <param name="maxX"></param>
-    /// <param name="maxY"></param>
     public void Set(double minX, double minY, double maxX, double maxY)
     {
       MinX = minX;

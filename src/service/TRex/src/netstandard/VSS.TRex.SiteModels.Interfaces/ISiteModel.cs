@@ -147,26 +147,22 @@ IGenericSubGridTree_Long VersionMap { get; }
     /// data model expanded to include the bounding extents of the surveyed surfaces associated with the 
     /// datamodel, excepting those identified in the SurveyedSurfaceExclusionList
     /// </summary>
-    /// <returns></returns>
     BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList);
 
     /// <summary>
     /// GetDateRange returns the chronological extents of production data in the site model.
     /// if no production data exists, then min = MaxValue and max and MinValue
     /// </summary>
-    /// <returns></returns>
     (DateTime startUtc, DateTime endUtc) GetDateRange();
 
     /// <summary>
     /// GetAssetOnDesignPeriods returns the chronological slices where each machine was on a design.    /// </summary>
-    /// <returns></returns>
     List<AssetOnDesignPeriod> GetAssetOnDesignPeriods();
 
 
     /// <summary>
     /// GetAssetOnDesignLayerPeriods returns the designs and layers used by specific machines.
     /// </summary>
-    /// <returns></returns>
     List<AssetOnDesignLayerPeriod> GetAssetOnDesignLayerPeriods();
 
     IMachinesProductionEventLists MachinesTargetValues { get; }

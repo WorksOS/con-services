@@ -2,19 +2,19 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
+using VSS.TRex.Common.RequestStatistics;
+using VSS.TRex.Designs;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Responses;
-using VSS.TRex.Common;
-using VSS.TRex.Common.Models;
-using VSS.TRex.Designs;
-using VSS.TRex.Designs.Models;
-using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.Volumes.Executors
 {
@@ -171,7 +171,7 @@ namespace VSS.TRex.Volumes.Executors
           ApplicationServiceRequestStatistics.Instance.NumProgressiveVolumeRequests.Increment();
 
           // Prepare filter for use in the request
-          var resultStatus = await FilterUtilities.PrepareFiltersForUse(new[] { Filter, AdditionalSpatialFilter }, SiteModelID);
+          var resultStatus = FilterUtilities.PrepareFiltersForUse(new[] { Filter, AdditionalSpatialFilter }, SiteModelID);
           if (resultStatus != RequestErrorStatus.OK)
             return volumesResult;
 
@@ -213,7 +213,7 @@ namespace VSS.TRex.Volumes.Executors
               .Range(VolumeType == VolumeComputationType.Between2Filters ? 1 : 0, numProgressions)
               .Select(x => StartDate + x * Interval)
               .Select(d => new ProgressiveVolumeAggregationState(_siteModel.CellSize)
-            {
+              {
                 Date = d,
                 CutTolerance = CutTolerance,
                 FillTolerance = FillTolerance
@@ -297,7 +297,7 @@ namespace VSS.TRex.Volumes.Executors
                 FillArea = aggregator.FillArea,
                 BoundingExtentGrid = aggregator.BoundingExtents,
                 BoundingExtentLLH = resultBoundingExtents
-               }
+              }
             }).ToArray();
           }
         }

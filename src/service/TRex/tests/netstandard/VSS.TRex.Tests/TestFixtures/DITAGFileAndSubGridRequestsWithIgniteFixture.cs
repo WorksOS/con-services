@@ -2,56 +2,57 @@
 using System.IO;
 using System.Linq;
 using Apache.Ignite.Core;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.AWS.TransferProxy;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
+using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
-using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.QuantizedMesh.Executors.Tasks;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Reports.Gridded.Executors.Tasks;
+using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.SiteModels.Interfaces.Listeners;
+using VSS.TRex.Storage;
+using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
-using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
-using VSS.TRex.QuantizedMesh.Executors.Tasks;
-using VSS.TRex.SubGrids.GridFabric.Arguments;
-using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Designs.GridFabric.Events;
-using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.SiteModels.Interfaces.Executors;
-using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Caches;
-using VSS.TRex.GridFabric;
-using VSS.AWS.TransferProxy;
-using VSS.TRex.SiteModels.Executors;
-using VSS.TRex.SiteModels.GridFabric.Listeners;
-using VSS.TRex.SiteModels.Interfaces.Listeners;
-using VSS.TRex.Storage;
+using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -141,7 +142,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
         .Add(x => x.AddSingleton<Func<StorageMutability, IgniteMock>>(mutability =>
         {
           return mutability switch
@@ -178,7 +179,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Recreate proxy caches based on the newly created cache contexts
       DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
-      
+
       // Create a new site models instance so that it recreates storage contexts
       // Also remove the singleton proxy cache factory injected as a part of the DITagFileFixture. This fixture supplies a 
       // full ignite mock with standard storage proxy factory
@@ -192,11 +193,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Adds a design identified by a filename and location to the site model
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="filePath"></param>
-    /// <param name="fileName"></param>
-    /// <param name="constructIndexFilesOnLoad"></param>
-    /// <returns></returns>
     public static Guid AddDesignToSiteModel(ref ISiteModel siteModel, string filePath, string fileName,
       bool constructIndexFilesOnLoad)
     {
@@ -255,7 +251,8 @@ namespace VSS.TRex.Tests.TestFixtures
       var designUid = Guid.NewGuid();
 
       // Create the design surface in the site model
-      /*var alignmentDesign = */ DIContext.Obtain<IDesignManager>().Add(siteModel.ID, new DesignDescriptor(designUid, filePath, fileName), masterAlignment.BoundingBox());
+      /*var alignmentDesign = */
+      DIContext.Obtain<IDesignManager>().Add(siteModel.ID, new DesignDescriptor(designUid, filePath, fileName), masterAlignment.BoundingBox());
 
       // get the newly updated site model with the design reference included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
@@ -393,9 +390,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Constructs a flat design surface comprising two triangles covering the events of a provided site model.
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="elevation"></param>
-    /// <returns></returns>
     public static Guid ConstructFlatTTMDesignEncompassingSiteModel(ref ISiteModel siteModel, float elevation)
     {
       // Make a mutable TIN containing two as below and register it to the site model

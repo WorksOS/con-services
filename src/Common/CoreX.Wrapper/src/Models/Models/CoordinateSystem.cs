@@ -1,6 +1,7 @@
 ﻿using CoreX.Models.CoordinateSystems;
+using CoreX.Wrapper.Models;
 
-namespace CoreX.Wrapper.Models
+namespace CoreX.Models
 {
   public class CoordinateSystem
   {

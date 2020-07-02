@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using FluentAssertions;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.Tests.BinaryReaderWriter
 {

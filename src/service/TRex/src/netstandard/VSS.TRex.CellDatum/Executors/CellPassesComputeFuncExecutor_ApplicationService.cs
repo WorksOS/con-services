@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.CellDatum.GridFabric.Responses;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -19,11 +20,11 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Constructor
     /// </summary>
-    public CellPassesComputeFuncExecutor_ApplicationService() {}
+    public CellPassesComputeFuncExecutor_ApplicationService() { }
 
     public async Task<CellPassesResponse> ExecuteAsync(CellPassesRequestArgument_ApplicationService arg)
     {
-      var result = new CellPassesResponse() {ReturnCode = CellPassesReturnCode.Error};
+      var result = new CellPassesResponse() { ReturnCode = CellPassesReturnCode.Error };
 
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)
@@ -35,7 +36,7 @@ namespace VSS.TRex.CellDatum.Executors
       if (!arg.CoordsAreGrid)
       {
         //WGS84 coords need to be converted to NEE
-        arg.Point = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point);
+        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
         result.Northing = arg.Point.Y;
         result.Easting = arg.Point.X;
       }
@@ -43,9 +44,9 @@ namespace VSS.TRex.CellDatum.Executors
       var existenceMap = siteModel.ExistenceMap;
 
       // Determine the on-the-ground cell 
-      siteModel.Grid.CalculateIndexOfCellContainingPosition(arg.Point.X, 
-        arg.Point.Y, 
-        out var otgCellX, 
+      siteModel.Grid.CalculateIndexOfCellContainingPosition(arg.Point.X,
+        arg.Point.Y,
+        out var otgCellX,
         out var otgCellY);
 
       if (!existenceMap[otgCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, otgCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel])
@@ -64,6 +65,5 @@ namespace VSS.TRex.CellDatum.Executors
 
       return result;
     }
-
   }
 }

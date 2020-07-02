@@ -2,11 +2,10 @@
 using System.IO;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.Designs.TTM.Optimised;
 using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Machines
