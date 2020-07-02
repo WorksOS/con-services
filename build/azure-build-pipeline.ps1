@@ -1,13 +1,21 @@
 PARAM (
-    [Parameter(Mandatory = $false)][string]$service,
-    [Parameter(Mandatory = $false)][string]$action,
+    # General
+    [Parameter(Mandatory = $true)][string]$service,
+    [Parameter(Mandatory = $true)][string]$action,
+    # Unit testing
+    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
+    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$collectCoverage = "true",
+    # Image publish parameters
+    [Parameter(Mandatory = $false)][string]$publishProjectFile = '',
+    [Parameter(Mandatory = $false)][string]$sourceArtifactPath = '',
+    [Parameter(Mandatory = $false)][string]$destArtifactPath = '',
+    # Image Push parameters
     [Parameter(Mandatory = $false)][string]$awsRepositoryName = '940327799086.dkr.ecr.us-west-2.amazonaws.com',
     [Parameter(Mandatory = $false)][string]$branch,
     [Parameter(Mandatory = $false)][string]$ecrRepositoryName,
-    [Parameter(Mandatory = $false)][string]$buildId,
-    [Parameter(Mandatory = $false)][string]$systemAccessToken,
-    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
-    [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$collectCoverage = "true"
+    [Parameter(Mandatory = $false)][string]$imageSuffix
+    # Update NuGet sources
+    #[Parameter(Mandatory = $false)][string]$systemAccessToken, 
 )
 
 enum ReturnCode {
@@ -93,13 +101,13 @@ function Run-Unit-Tests {
     # Build and run containerized unit tests
     Write-Host "`nBuilding unit test container..." -ForegroundColor Green
 
-    $runUnitTestSucceeded = $false
-
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
     # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
-    Get-Content $servicePath/build/Dockerfile.unittest | docker build --tag $container_name --no-cache --build-arg FROM_IMAGE=$buildImage --build-arg SERVICE_PATH=$servicePath - 
-    if ($?) { $runUnitTestSucceeded = $true }
+    Get-Content $servicePath/build/Dockerfile.unittest | docker build --tag $container_name `
+        --no-cache `
+        --build-arg FROM_IMAGE=$buildImage `
+        --build-arg SERVICE_PATH=$servicePath - 
     
     Write-Host "`nCreating unit test container..." -ForegroundColor Green
     $unique_container_name = "$container_name`_$(Get-Random -Minimum 1000 -Maximum 9999)"
@@ -155,7 +163,22 @@ function Publish-Service {
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
     # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
-    Get-Content $servicePath/build/Dockerfile.runtime | docker build --tag $publishImage --no-cache --build-arg FROM_IMAGE=$buildImage --build-arg SERVICE_PATH=$servicePath - 
+
+    # Artifact paths are optional where we let the Dockerfile define the default values.
+    $sourceArtifactPathArg = '';
+    if ($sourceArtifactPath) { $sourceArtifactPathArg = '=' + $sourceArtifactPath }
+    $destArtifactPathArg = ''
+    if ($destArtifactPath) { $destArtifactPathArg = '=' + $destArtifactPath }
+    $publishProjectFileArg = ''
+    if ($publishProjectFile) { $publishProjectFileArg = '=' + $publishProjectFile }
+
+    Get-Content $servicePath/build/Dockerfile.runtime | docker build `
+    --tag $publishImage `
+    --no-cache `
+    --build-arg FROM_IMAGE=$buildImage `
+    --build-arg SERVICE_PATH=$servicePath `
+    --build-arg SOURCE_PATH$sourceArtifactPathArg `
+    --build-arg DEST_PATH$destArtifactPathArg -
 
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
@@ -186,8 +209,9 @@ function Push-Container-Image {
 
     $branch = $branch -replace '.*/' # Remove everything up to and including the last forward slash.
 
-    $versionNumber = $branch + "-" + $buildId
-    $ecrRepository = "${awsRepositoryName}/${ecrRepositoryName}:${versionNumber}"
+    # Create the full ECR image URI, e.g. 123456789012.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex:merge-5776.ProjectRebuilder
+    $tagSuffix = $branch + "-" + $imageSuffix
+    $ecrRepository = "${awsRepositoryName}/${ecrRepositoryName}:${tagSuffix}"
 
     Write-Host "`nPushing image '$ecrRepository'..." -ForegroundColor Green
     docker tag $publishImage $ecrRepository
@@ -283,16 +307,18 @@ $servicePath = $services[$service -replace '-']
 $serviceName = $service.ToLower()
 
 Write-Host 'Script Variables:' -ForegroundColor Green
-Write-Host "  action = $action"
-Write-Host "  branch = $branch"
-Write-Host "  buildId = $buildId"
-Write-Host "  service = $service"
-Write-Host "  servicePath = $servicePath"
-Write-Host "  serviceName = $serviceName"
-Write-Host "  ecrRepositoryName = $ecrRepositoryName"
+Write-Host "  service = '$service'"
+Write-Host "  action = '$action'"
+Write-Host "  branch = '$branch'"
+Write-Host "  buildId = '$buildId'"
+Write-Host "  servicePath = '$servicePath'"
+Write-Host "  serviceName = '$serviceName'"
 Write-Host "  recordTestResults = $recordTestResults"
 Write-Host "  collectCoverage = $collectCoverage"
-Write-Host "  awsRepositoryName = $awsRepositoryName"
+Write-Host "  sourceArtifactPath = '$sourceArtifactPath'"
+Write-Host "  destArtifactPath = '$destArtifactPath'"
+Write-Host "  ecrRepositoryName = '$ecrRepositoryName'"
+Write-Host "  awsRepositoryName = '$awsRepositoryName'"
 Write-Host "  Working Directory ="($pwd).path
 
 $timeStart = Get-Date
