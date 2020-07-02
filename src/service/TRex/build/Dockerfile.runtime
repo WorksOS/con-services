@@ -1,16 +1,15 @@
 ARG FROM_IMAGE
 FROM ${FROM_IMAGE} as build_container
 
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-runtime as runtime_build_container
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-runtime
 
 # Not optional, must be passed in from the Azure build configuration. Repeat for each service.
 ARG SOURCE_PATH
-ARG DEST_PATH
 
 WORKDIR /build
 
-# Copy the publish files for an individual service, e.g. COPY --from=build_container /trex/PSNode /trex/PSNode
-COPY --from=build_container ${SOURCE_PATH} ${DEST_PATH}
+# Copy the publish files for an individual service, e.g. COPY --from=build_container /trex/PSNode /trex/
+COPY --from=build_container ${SOURCE_PATH} /trex/
 
 # Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 COPY --from=build_container /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
@@ -18,9 +17,16 @@ COPY --from=build_container build/service/TRex/build/ignite-kubernetes-2.8.0.jar
 COPY --from=build_container build/service/TRex/build/control-scripts /trex/bin
 
 WORKDIR /trex/libs/
+
 RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar ; \
     wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar ; \
     wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar ; \
     wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
 
+ENV TPAAS_AUTH_URL=https://identity-stg.trimble.com/i/oauth2 \
+    TPAAS_APP_TOKEN=MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh \
+    COORDINATE_SERVICE_URL=https://api-stg.trimble.com/t/trimble.com/coordinates/1.0
+
+# Make sure this is done in the final container
 WORKDIR /trex
+RUN touch prometheusConfig.yaml
