@@ -42,9 +42,17 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
+    /// The primary grid this sitemodels instance is targeting based on the desired mutability
+    /// </summary>
+    public StorageMutability PrimaryMutability { get; }
+
+    /// <summary>
     /// Default no-arg constructor. Made private to enforce provision of storage proxy
     /// </summary>
-    public SiteModels() { }
+    public SiteModels(StorageMutability primaryMutability)
+    {
+      PrimaryMutability = primaryMutability;
+    }
 
     public ISiteModel GetSiteModel(Guid id) => GetSiteModel(id, false);
 
@@ -73,7 +81,7 @@ namespace VSS.TRex.SiteModels
       }
 
       // Note: If this context is clients to both grids, then prioritise accessing the site model on the mutable context.
-      result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id, _primaryMutableStorageProxy != null ? StorageMutability.Mutable : StorageMutability.Immutable);
+      result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id, PrimaryMutability);
 
       _log.LogInformation($"Loading site model {id} from persistent store");
 
@@ -134,7 +142,7 @@ namespace VSS.TRex.SiteModels
       _log.LogInformation($"Loading site model {id} from persistent store as raw read");
 
       // Note: If this context is clients to both grids, then prioritise accessing the site model on the mutable context.
-      var result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id, _primaryMutableStorageProxy != null ? StorageMutability.Mutable : StorageMutability.Immutable);
+      var result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id, PrimaryMutability);
 
       return result.LoadFromPersistentStore() == FileSystemErrorStatus.OK ? result : null;
     }
