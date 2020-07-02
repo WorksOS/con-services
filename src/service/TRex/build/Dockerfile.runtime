@@ -1,7 +1,7 @@
 ARG FROM_IMAGE
 FROM ${FROM_IMAGE} as build_container
 
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as runtime_build_container
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-runtime as runtime_build_container
 
 # Not optional, must be passed in from the Azure build configuration. Repeat for each service.
 ARG SOURCE_PATH
