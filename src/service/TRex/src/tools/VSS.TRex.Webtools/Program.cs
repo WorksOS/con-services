@@ -7,11 +7,29 @@ using VSS.Serilog.Extensions;
 namespace VSS.TRex.Webtools
 {
   public class Program
+  {
+    // This static array ensures that all required assemblies are included into the artifacts by the linker
+    private static void EnsureAssemblyDependenciesAreLoaded()
     {
+      // This static array ensures that all required assemblies are included into the artifacts by the linker
+      Type[] AssemblyDependencies =
+      {
+        typeof(VSS.TRex.TAGFiles.GridFabric.NodeFilters.TAGProcessorRoleBasedNodeFilter),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
+      };
+
+      foreach (var asmType in AssemblyDependencies)
+      {
+        if (asmType.FullName == "DummyTypeName")
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
+      }
+    }
+
     public static void Main(string[] args)
     {
       try
       {
+        EnsureAssemblyDependenciesAreLoaded();
         BuildWebHost(args).Run();
       }
       catch (Exception e)
