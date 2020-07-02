@@ -228,7 +228,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
     private async Task<UserPreferenceData> GetUserPreferences()
     {
-      var userPreferences = await prefProxy.GetUserPreferences(CustomHeaders);
+      var userPreferences = await prefProxy.GetUserPreferences(GetUserId(), CustomHeaders);
       if (userPreferences == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

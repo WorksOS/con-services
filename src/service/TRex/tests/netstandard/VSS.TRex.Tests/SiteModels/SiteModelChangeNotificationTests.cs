@@ -142,15 +142,16 @@ namespace VSS.TRex.Tests.SiteModels
       // Create the new site model
       var guid = Guid.NewGuid();
       var siteModel = siteModels.GetSiteModel(guid, true);
+      siteModel.MarkForDeletion();
 
-      // Note the sitemodel a marked for deletion
-      var _evt = new SiteModelAttributesChangedEvent
+      // Note the site model is marked for deletion
+      var evt = new SiteModelAttributesChangedEvent
       {
         SiteModelID = guid,
         SiteModelMarkedForDeletion = true
       };
 
-      siteModels.SiteModelAttributesHaveChanged(_evt);
+      siteModels.SiteModelAttributesHaveChanged(evt);
       siteModel = siteModels.GetSiteModel(guid, false);
 
       // Check the site model cannot be retrieved when marked for deletion

@@ -16,6 +16,7 @@
     TagFileAuth,
     Device,
     TRexMutableGateway,
-    Entitlements
+    Entitlements,
+    Preferences
   }
 }

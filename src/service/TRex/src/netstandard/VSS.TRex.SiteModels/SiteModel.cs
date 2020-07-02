@@ -218,6 +218,33 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
+    /// Sets or updates the coordinate system present in the site model.
+    /// </summary>
+    public bool SetCSIB(string csib)
+    {
+      // Add the coordinate system to the cache
+      var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+
+      using (var csibStream = new MemoryStream(Encoding.ASCII.GetBytes(csib)))
+      {
+        var status = storageProxy.WriteStreamToPersistentStore(ID, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
+          FileSystemStreamType.CoordinateSystemCSIB, csibStream, csib);
+
+        if (status != FileSystemErrorStatus.OK)
+          return false;
+      }
+
+      if (!storageProxy.Commit())
+        return false;
+
+      // Notify the  grid listeners that attributes of this site model have changed.
+      var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+      sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, ID, CsibChanged: true);
+
+      return true;
+    }
+
+    /// <summary>
     /// Gets the loaded state of the CSIB. This permits testing if a CSIB is loaded without forcing
     /// the CSIB to be loaded via the CSIB property
     /// </summary>

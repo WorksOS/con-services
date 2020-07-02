@@ -80,14 +80,15 @@ namespace VSS.MasterData.Proxies
     #region Protected Methods
 
     /// <summary>
-    /// Execute a Post to an endpoint, and cache the result
+    /// Execute a Get to an endpoint, and cache the result
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
     protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IHeaderDictionary customHeaders,
-      IList<KeyValuePair<string, string>> queryParameters = null, string uniqueIdCacheKey = null)
+      IList<KeyValuePair<string, string>> queryParameters = null, string uniqueIdCacheKey = null, TimeSpan? cacheLife = null)
       where T : class, IMasterDataModel
     {
-      return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
+      var cacheLifeKey = (object)cacheLife ?? (object)CacheLifeKey;
+      return WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
         () => RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters),
         uniqueIdCacheKey);
     }
