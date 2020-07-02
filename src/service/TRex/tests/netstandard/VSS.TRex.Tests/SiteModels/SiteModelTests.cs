@@ -190,7 +190,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Test_SiteModel_SetCSIB()
     {
-      var siteModel = new SiteModel(Guid.NewGuid(), false);
+      var siteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       siteModel.CSIBLoaded.Should().Be(false);
 
       siteModel.SetCSIB("A dummy coordinate system");
