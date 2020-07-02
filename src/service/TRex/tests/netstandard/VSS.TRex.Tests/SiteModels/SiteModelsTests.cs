@@ -10,7 +10,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void Creation()
     {
-      var sm = new TRex.SiteModels.SiteModels();
+      var sm = new TRex.SiteModels.SiteModels(TRex.Storage.Models.StorageMutability.Immutable);
 
       sm.Should().NotBeNull();
     }
@@ -18,7 +18,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetSiteModels()
     {
-      var sm = new TRex.SiteModels.SiteModels();
+      var sm = new TRex.SiteModels.SiteModels(TRex.Storage.Models.StorageMutability.Immutable);
 
       sm.GetSiteModels().Should().NotBeNull();
       sm.GetSiteModels().Count.Should().Be(0);
@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetSiteModel_WithMarkedForDeletion_Suppression()
     {
-      var sm = new TRex.SiteModels.SiteModels();
+      var sm = new TRex.SiteModels.SiteModels(TRex.Storage.Models.StorageMutability.Immutable);
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);
@@ -45,7 +45,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetSiteModel_WithMarkedForDeletion_FlagRemoval()
     {
-      var sm = new TRex.SiteModels.SiteModels();
+      var sm = new TRex.SiteModels.SiteModels(TRex.Storage.Models.StorageMutability.Immutable);
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);
@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetSiteModelRaw_WithoutMarkedForDeletion()
     {
-      var sm = new TRex.SiteModels.SiteModels();
+      var sm = new TRex.SiteModels.SiteModels(TRex.Storage.Models.StorageMutability.Immutable);
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.SiteModels
     [Fact]
     public void GetSiteModelRaw_WithMarkedForDeletion()
     {
-      var sm = new TRex.SiteModels.SiteModels();
+      var sm = new TRex.SiteModels.SiteModels(TRex.Storage.Models.StorageMutability.Immutable);
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);

@@ -260,7 +260,7 @@ namespace VSS.TRex.Tests
         .Add(x => x.AddSingleton<ISiteModels>(moqSiteModels.Object))
         .Complete();
 
-      var siteModel = new SiteModel(Guid.Empty, true);
+      var siteModel = new SiteModel(Guid.Empty, StorageMutability.Immutable, true);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       DateTime ReferenceTime = DateTime.UtcNow;

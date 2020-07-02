@@ -15,6 +15,7 @@
     public const string TREX_SERVICE_IMMUTABLE = "trex-service-immutable";
     public const string TREX_SERVICE_MUTABLE = "trex-service-mutable";
     public const string TREX_SERVICE_CONNECTEDSITE = "trex-service-connectedsite";
+    public const string PREFERENCES_SERVICE = "preferences-service";
 
     public const string REDIS_CACHE = "redis-cache-service";
     public const string INFLUX_DB = "influx-db-service";

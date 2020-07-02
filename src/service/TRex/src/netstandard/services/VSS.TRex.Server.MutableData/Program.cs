@@ -71,7 +71,7 @@ namespace VSS.TRex.Server.MutableData
         .Build()
         .Add(x => x.AddServiceDiscovery())
         .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>())
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)

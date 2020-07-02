@@ -9,8 +9,6 @@ using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SubGridTrees.Core.Utilities;
-using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Tests.TestFixtures;
@@ -25,7 +23,6 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
       ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
       // Switch to mutable storage representation to allow creation of content in the site model
-      siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());

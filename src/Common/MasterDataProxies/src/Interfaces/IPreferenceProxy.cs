@@ -7,7 +7,7 @@ namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface IPreferenceProxy 
   {
-    Task<UserPreferenceData> GetUserPreferences(IHeaderDictionary customHeaders = null);
+    Task<UserPreferenceData> GetUserPreferences(string userUid, IHeaderDictionary customHeaders = null);
 
     Task<UserPreferenceData> GetShortCachedUserPreferences(string userId, TimeSpan invalidation,
       IHeaderDictionary customHeaders = null);

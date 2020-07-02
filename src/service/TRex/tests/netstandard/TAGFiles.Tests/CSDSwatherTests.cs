@@ -26,7 +26,7 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_CSDSwather_Creation()
     {
-      var siteModel = new SiteModel();
+      var siteModel = new SiteModel(StorageMutability.Immutable);
       var machine = new Machine();
       machine.MachineType = MachineType.CutterSuctionDredge;
       var grid = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
@@ -70,7 +70,7 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_CSDSwather_PerformSwathing()
     {
-      var siteModel = new SiteModel();
+      var siteModel = new SiteModel(StorageMutability.Immutable);
       var machine = new VSS.TRex.Machines.Machine();
       machine.MachineType = MachineType.CutterSuctionDredge;
       var grid = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
@@ -135,7 +135,7 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_CSDSwather_SwathExtentTooLarge()
     {
-      var siteModel = new SiteModel();
+      var siteModel = new SiteModel(StorageMutability.Immutable);
       var machine = new Machine();
       var grid = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
       var SiteModelGridAggregator = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);

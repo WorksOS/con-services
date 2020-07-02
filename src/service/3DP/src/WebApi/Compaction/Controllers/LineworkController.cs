@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
       var projectId = GetLegacyProjectId(projectUid);
       var designDescriptor = GetAndValidateDesignDescriptor(projectUid, alignmentUid, OperationType.GeneratingDxf);
-      var userPreferences = prefProxy.GetUserPreferences(CustomHeaders);
+      var userPreferences = prefProxy.GetUserPreferences(GetUserId(), CustomHeaders);
 
       await Task.WhenAll(projectId, designDescriptor, userPreferences);
 

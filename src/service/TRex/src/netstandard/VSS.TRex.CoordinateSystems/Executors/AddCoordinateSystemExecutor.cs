@@ -1,12 +1,7 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SiteModels.Interfaces.Events;
-using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.CoordinateSystems.Executors
 {
@@ -29,24 +24,8 @@ namespace VSS.TRex.CoordinateSystems.Executors
 
       try
       {
-        // Add the coordinate system to the cache
-        var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
-
-        using (MemoryStream csibStream = new MemoryStream(Encoding.ASCII.GetBytes(CSIB)))
-        {
-          var status = storageProxy.WriteStreamToPersistentStore(projectID, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
-            FileSystemStreamType.CoordinateSystemCSIB, csibStream, CSIB);
-
-          if (status != FileSystemErrorStatus.OK)
-            return false;
-        }
-
-        if (!storageProxy.Commit())
-          return false;
-
-        // Notify the  grid listeners that attributes of this site model have changed.
-        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, projectID, CsibChanged: true);
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectID, true);
+        siteModel.SetCSIB(csib);
       }
       catch (Exception e)
       {

@@ -18,7 +18,7 @@ namespace TAGFiles.Tests
         {
             var integrator = new AggregatedDataIntegrator();
 
-            SiteModel siteModel = new SiteModel(/*"TestName", "TestDesc", */Guid.NewGuid(), 1.0);
+            SiteModel siteModel = new SiteModel(/*"TestName", "TestDesc", */Guid.NewGuid(), StorageMutability.Immutable, 1.0);
             IMachinesList machines = new MachinesList();
             machines.Add(new Machine("TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false));
             ServerSubGridTree tree = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);

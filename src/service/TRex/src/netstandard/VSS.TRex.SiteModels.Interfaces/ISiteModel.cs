@@ -132,6 +132,7 @@ IGenericSubGridTree_Long VersionMap { get; }
     string CSIB();
     bool CSIBLoaded { get; }
     void UnloadCSIB();
+    bool SetCSIB(string csib);
 
     void Include(ISiteModel source);
     void Write(BinaryWriter writer);

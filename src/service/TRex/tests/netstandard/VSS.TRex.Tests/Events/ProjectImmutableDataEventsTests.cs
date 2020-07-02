@@ -25,11 +25,11 @@ namespace VSS.TRex.Tests.Events
     [Fact]
     public void Test_ProjectImmutableSiteModelTest()
     {
-      var sourceSiteModel = new SiteModel(Guid.NewGuid(), false);
+      var sourceSiteModel = new SiteModel(Guid.NewGuid(), StorageMutability.Immutable, false);
       var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(sourceSiteModel.PrimaryStorageProxy);
       Assert.True(result, "unable to save SiteModel to Persistent store");
 
-      var targetSiteModel = new SiteModel(sourceSiteModel.ID, false);
+      var targetSiteModel = new SiteModel(sourceSiteModel.ID, StorageMutability.Immutable, false);
       var fileStatus = targetSiteModel.LoadFromPersistentStore();
       Assert.True(FileSystemErrorStatus.OK == fileStatus, "unable to load SiteModel from Persistent store");
     }
@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.Events
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_AllTypesNoDuplicates()
     {
-      var siteModel = new SiteModel(Guid.Empty, false);
+      var siteModel = new SiteModel(Guid.Empty, StorageMutability.Immutable, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       DateTime referenceDate = DateTime.UtcNow;
@@ -58,7 +58,7 @@ namespace VSS.TRex.Tests.Events
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_NoDuplicates()
     {
-      var siteModel = new SiteModel(Guid.Empty, false);
+      var siteModel = new SiteModel(Guid.Empty, StorageMutability.Immutable, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       DateTime referenceDate = DateTime.UtcNow;
@@ -89,7 +89,7 @@ namespace VSS.TRex.Tests.Events
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_Duplicates()
     {
-      var siteModel = new SiteModel(Guid.Empty, false);
+      var siteModel = new SiteModel(Guid.Empty, StorageMutability.Immutable, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       DateTime referenceDate = DateTime.UtcNow;
@@ -122,7 +122,7 @@ namespace VSS.TRex.Tests.Events
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_MachineDesignNameIDStateEvents_SaveAndLoad()
     {
-      var siteModel = new SiteModel(Guid.Empty, false);
+      var siteModel = new SiteModel(Guid.Empty, StorageMutability.Immutable, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       DateTime referenceDate = DateTime.UtcNow;
@@ -149,7 +149,7 @@ namespace VSS.TRex.Tests.Events
 
     public void Test_Events_Serialization<T>(Func<ProductionEventLists, IProductionEvents<T>> eventList, T evt1, T evt2)
     {
-      var siteModel = new SiteModel(Guid.Empty, false);
+      var siteModel = new SiteModel(Guid.Empty, StorageMutability.Immutable, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       var referenceDate = DateTime.UtcNow;
@@ -303,7 +303,7 @@ namespace VSS.TRex.Tests.Events
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_OverrideEvents()
     {
-      var siteModel = new SiteModel(Guid.Empty, false);
+      var siteModel = new SiteModel(Guid.Empty, StorageMutability.Immutable, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       var referenceDate = DateTime.UtcNow;
