@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -38,7 +39,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public Task<ContractExecutionResult> PostSummaryVolumes([FromBody] SummaryVolumesDataRequest summaryVolumesRequest)
     {
-      Log.LogInformation($"{nameof(PostSummaryVolumes)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostSummaryVolumes)}: {JsonConvert.SerializeObject(summaryVolumesRequest)}");
 
       summaryVolumesRequest.Validate();
       if (summaryVolumesRequest.ProjectUid == null || summaryVolumesRequest.ProjectUid == Guid.Empty)
@@ -66,8 +67,9 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public Task<ContractExecutionResult> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
     { 
-      Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {Request.QueryString}");
-      
+      Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {JsonConvert.SerializeObject(summaryVolumesProfileRequest)}");
+
+
       summaryVolumesProfileRequest.Validate();
       if (summaryVolumesProfileRequest.ProjectUid == null || summaryVolumesProfileRequest.ProjectUid == Guid.Empty)
       {
