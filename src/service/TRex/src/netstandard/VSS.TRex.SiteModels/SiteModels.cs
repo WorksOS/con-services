@@ -72,7 +72,8 @@ namespace VSS.TRex.SiteModels
         }
       }
 
-      result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
+      // Note: If this context is clients to both grids, then prioritise accessing the site model on the mutable context.
+      result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id, _primaryMutableStorageProxy != null ? StorageMutability.Mutable : StorageMutability.Immutable);
 
       _log.LogInformation($"Loading site model {id} from persistent store");
 
@@ -131,8 +132,9 @@ namespace VSS.TRex.SiteModels
     public ISiteModel GetSiteModelRaw(Guid id)
     {
       _log.LogInformation($"Loading site model {id} from persistent store as raw read");
-      
-      var result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id);
+
+      // Note: If this context is clients to both grids, then prioritise accessing the site model on the mutable context.
+      var result = DIContext.Obtain<ISiteModelFactory>().NewSiteModel_NonTransient(id, _primaryMutableStorageProxy != null ? StorageMutability.Mutable : StorageMutability.Immutable);
 
       return result.LoadFromPersistentStore() == FileSystemErrorStatus.OK ? result : null;
     }

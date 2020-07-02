@@ -409,10 +409,11 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public bool IgnoreInvalidPositions { get; set; } = true;
 
-    public SiteModel()
+    public SiteModel(StorageMutability storageRepresentationToSupply)
     {
       CreationDate = DateTime.UtcNow;
       LastModifiedDate = CreationDate;
+      StorageRepresentationToSupply = storageRepresentationToSupply;
 
       PrimaryStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(StorageRepresentationToSupply);
     }
@@ -422,7 +423,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     /// <param name="originModel"></param>
     /// <param name="originFlags"></param>
-    public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this()
+    public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this(originModel.StorageRepresentationToSupply)
     {
       if (originModel.IsTransient)
         throw new TRexSiteModelException(
@@ -499,7 +500,7 @@ versionMap = originModel.VersionMapLoaded && (originFlags & SiteModelOriginConst
       LoadFromPersistentStore();
     }
 
-    public SiteModel(Guid id, bool isTransient = true) : this()
+    public SiteModel(Guid id, StorageMutability storageRepresentationToSupply, bool isTransient = true) : this(storageRepresentationToSupply)
     {
       ID = id;
       IsTransient = isTransient;
@@ -512,7 +513,7 @@ versionMap = null;
 */
     }
 
-    public SiteModel(Guid id, double cellSize) : this(id)
+    public SiteModel(Guid id, StorageMutability storageRepresentationToSupply, double cellSize) : this(id, storageRepresentationToSupply)
     {
       CellSize = cellSize;
       Grid.CellSize = cellSize;
