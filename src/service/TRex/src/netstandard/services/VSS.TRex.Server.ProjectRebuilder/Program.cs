@@ -61,7 +61,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger, TRexHeartBeatLogger>())

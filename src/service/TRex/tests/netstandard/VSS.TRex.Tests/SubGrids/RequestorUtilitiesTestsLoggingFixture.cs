@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.SubGrids
 
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
-        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(TRex.Storage.Models.StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
 
         .Add(x => x.AddSingleton<ISubGridRetrieverFactory>(new SubGridRetrieverFactory()))

@@ -52,7 +52,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
          .Build()
-         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Mutable)))
 
          .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
          .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))

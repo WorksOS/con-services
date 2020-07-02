@@ -12,7 +12,7 @@ namespace VSS.TRex.Webtools
 
     public static ISiteModels SwitchableSiteModelsContext()
     {
-      return SwitchableSiteModelsContexts[(int) switchableMutability] ??= new SiteModels.SiteModels();
+      return SwitchableSiteModelsContexts[(int) switchableMutability] ??= new SiteModels.SiteModels(switchableMutability);
     }
   }
 }

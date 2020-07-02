@@ -184,7 +184,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // full ignite mock with standard storage proxy factory
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => null))
         .Complete();
     }
