@@ -310,6 +310,32 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       });
     }
 
+    /// <summary>
+    /// Configure the parameters of the existence map cache
+    /// </summary>
+    private CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
+    {
+      return new CacheConfiguration
+      {
+        Name = TRexCaches.DesignTopologyExistenceMapsCacheName(),
+
+        // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
+        KeepBinaryInStore = true,
+
+        // Replicate the maps across nodes
+        CacheMode = CacheMode.Replicated,
+
+        Backups = 0,  // No backups need as it is a replicated cache
+
+        DataRegionName = DataRegions.SPATIAL_EXISTENCEMAP_DATA_REGION
+      };
+    }
+    
+    private void InstantiateDesignTopologyExistenceMapsCache()
+    {
+      immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
+    }
+
     public void StartTRexGridCacheNode()
     {
       Log.LogInformation("Creating new Ignite node");
@@ -345,6 +371,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       InstantiateSiteModelChangeBufferQueueCacheReference();
       InstantiateSiteModelMachinesChangeMapsCacheReference();
+
+      InstantiateDesignTopologyExistenceMapsCache();
     }
   }
 }
