@@ -79,5 +79,11 @@
     /// A server responsible for rebulding projects in TRex. 
     /// </summary>
     public const string PROJECT_REBUILDER_ROLE = "ProjectRebuilder";
+
+    /// <summary>
+    /// A server responsible for coordinating actions that mutate state within the mutable grid with
+    /// the intention that those changes are projected to the immutable grid
+    /// </summary>
+    public const string DATA_MUTATION_ROLE = "DataMutator";
   }
 }

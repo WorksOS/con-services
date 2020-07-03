@@ -23,6 +23,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
             base.ConfigureTRexGrid(cfg);
 
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.TAG_PROCESSING_NODE}", "True");
+            cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.DATA_MUTATION_ROLE}", "True");
         }
 
         /// <summary>
