@@ -44,16 +44,18 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ProjectID);
-      DesignDescriptor.ToBinary(writer);
-      Extents.ToBinary(writer);
-      
-      var bytes = ExistenceMap?.ToBytes();
-      var haveBytes = bytes?.Length > 0;
+      writer.WriteBoolean(DesignDescriptor != null);
+      DesignDescriptor?.ToBinary(writer);
 
-      writer.WriteBoolean(haveBytes);
+      writer.WriteBoolean(Extents != null);
+      Extents?.ToBinary(writer);
 
-      if (haveBytes)
-        writer.WriteByteArray(bytes);
+      writer.WriteBoolean(ExistenceMap != null);
+
+      if (ExistenceMap != null)
+      {
+        writer.WriteByteArray(ExistenceMap.ToBytes());
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -63,15 +65,16 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      DesignDescriptor.FromBinary(reader);
 
-      (Extents = new BoundingWorldExtent3D()).FromBinary(reader);
+      if (reader.ReadBoolean())
+        DesignDescriptor.FromBinary(reader);
 
-      var bytes = reader.ReadBoolean() ? reader.ReadByteArray() : null;
-    
-      if (bytes != null)
+      if (reader.ReadBoolean())
+        (Extents = new BoundingWorldExtent3D()).FromBinary(reader);
+
+      if (reader.ReadBoolean())
       {
-        (ExistenceMap = new SubGridTreeSubGridExistenceBitMask()).FromBytes(bytes);
+        (ExistenceMap = new SubGridTreeSubGridExistenceBitMask()).FromBytes(reader.ReadByteArray());
       }
     }
   }

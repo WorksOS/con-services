@@ -353,7 +353,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
     private void InstantiateDesignTopologyExistenceMapsCache()
     {
-      immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
     }
 
     public void StartTRexGridCacheNode()
