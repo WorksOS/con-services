@@ -18,7 +18,7 @@ namespace VSS.TRex.CoordinateSystems.Executors
     /// non spatial cache for the project
     /// Additionally, it notifies listeners of the coordinate system change.
     /// </summary>
-    public bool Execute(Guid projectID, string CSIB)
+    public bool Execute(Guid projectID, string csib)
     {
       // todo: Enrich return value to encode or provide additional information relating to failures
 
