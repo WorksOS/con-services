@@ -26,6 +26,9 @@ namespace VSS.TRex.ExistenceMaps.Servers
     {
       try
       {
+        if (key == null)
+          throw new ArgumentNullException(nameof(key));
+
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(key.ProjectUID);
 
         if (siteModel == null)
@@ -55,15 +58,6 @@ namespace VSS.TRex.ExistenceMaps.Servers
         // If the key is not present, return a null/empty array
         return null;
       }
-    }
-
-    /// <summary>
-    /// Set or update a given existence map given its key.
-    /// </summary>
-    public void SetExistenceMap(INonSpatialAffinityKey key, ISerialisedByteArrayWrapper map)
-    {
-      throw new NotImplementedException();
-      // _designTopologyExistenceMapsCache.Put(key, map);
     }
   }
 }

@@ -10,10 +10,5 @@ namespace VSS.TRex.ExistenceMaps.Interfaces
     /// Get a specific existence map given its key
     /// </summary>
     ISubGridTreeBitMask GetExistenceMap(INonSpatialAffinityKey key);
-
-    /// <summary>
-    /// Set or update a given existence map given its key.
-    /// </summary>
-    void SetExistenceMap(INonSpatialAffinityKey key, ISerialisedByteArrayWrapper map);
   }
 }

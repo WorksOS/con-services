@@ -67,7 +67,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
 
       if (reader.ReadBoolean())
-        DesignDescriptor.FromBinary(reader);
+        (DesignDescriptor = new DesignDescriptor()).FromBinary(reader);
 
       if (reader.ReadBoolean())
         (Extents = new BoundingWorldExtent3D()).FromBinary(reader);

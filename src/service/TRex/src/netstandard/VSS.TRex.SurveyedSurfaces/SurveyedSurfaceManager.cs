@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -134,6 +135,18 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public bool Remove(Guid siteModelUid, IStorageProxy storageProxy)
     {
+      // First remove all the existence maps associated with the surveyed surfaces
+      foreach(var surveyedSurface in Load(siteModelUid))
+      {
+        FileSystemErrorStatus fsresult;
+        var filename = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID);
+        if ((fsresult = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
+        {
+          _log.LogWarning($"Unable to remove existance map for design {surveyedSurface.ID}, filename = {filename}, with result: {fsresult}");
+        }
+      }
+
+      // Then remove the surveyd surface list stream itself
       var result = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.Designs, SURVEYED_SURFACE_STREAM_NAME);
 
       if (result != FileSystemErrorStatus.OK)

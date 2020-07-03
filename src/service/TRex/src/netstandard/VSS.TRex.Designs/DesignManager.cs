@@ -14,6 +14,7 @@ using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.ExistenceMaps.GridFabric.Requests;
+using VSS.TRex.Common.Extensions;
 
 namespace VSS.TRex.Designs
 {
@@ -152,6 +153,19 @@ namespace VSS.TRex.Designs
     /// </summary>
     public bool Remove(Guid siteModelId, IStorageProxy storageProxy)
     {
+      // First remove all the existence maps associated with the designs
+      var designs = Load(siteModelId);
+      designs.ForEach(x =>
+      {
+        FileSystemErrorStatus result;
+        var filename = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, x.ID);
+        if ((result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
+        {
+          _log.LogWarning($"Unable to remove existance map for design {x.ID}, filename = {filename}, with result: {result}");
+        }
+      });
+
+      // Then remove the designs list stream itself
       var result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.Designs, DESIGNS_STREAM_NAME);
 
       if (result != FileSystemErrorStatus.OK)
