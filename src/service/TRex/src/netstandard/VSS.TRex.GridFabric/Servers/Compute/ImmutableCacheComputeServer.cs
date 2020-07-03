@@ -327,7 +327,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
         Backups = 0,  // No backups need as it is a replicated cache
 
-        DataRegionName = DataRegions.SPATIAL_EXISTENCEMAP_DATA_REGION
+        DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION
       };
     }
     
