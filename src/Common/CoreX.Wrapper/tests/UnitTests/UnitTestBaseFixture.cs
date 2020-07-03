@@ -1,4 +1,5 @@
 ﻿using System;
+using CoreX.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreX.Wrapper.UnitTests
