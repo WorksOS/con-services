@@ -3,6 +3,11 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using System;
+using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.Servers
 {
@@ -12,30 +17,38 @@ namespace VSS.TRex.ExistenceMaps.Servers
   /// </summary>
   public class ExistenceMapServer : IExistenceMapServer
   {
-    /// <summary>
-    /// A cache that holds the existence maps derived from design files (eg: TTM files)
-    /// Each existence map is stored in it's serialized byte stream from. It does not define the grid per se, but does
-    /// define a cache that is used within the grid to stored existence maps
-    /// </summary>
-    //   private readonly ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> _designTopologyExistenceMapsCache;
-
-    /// <summary>
-    /// Default no-arg constructor that creates the Ignite cache within the server
-    /// </summary>
-    public ExistenceMapServer()
-    {
-      //var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
-    }
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ExistenceMapServer>();
 
     /// <summary>
     /// Get a specific existence map given its key
     /// </summary>
-    public ISerialisedByteArrayWrapper GetExistenceMap(INonSpatialAffinityKey key)
+    public ISubGridTreeBitMask GetExistenceMap(INonSpatialAffinityKey key)
     {
       try
       {
-        throw new NotImplementedException();
-        //        return _designTopologyExistenceMapsCache.Get(key);
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(key.ProjectUID);
+
+        if (siteModel == null)
+          return null;
+
+        var readResult = siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(siteModel.ID, key.KeyName, Types.FileSystemStreamType.DesignTopologyExistenceMap, out var ms);
+        if (readResult != Types.FileSystemErrorStatus.OK)
+        {
+          _log.LogError($"Failed to read existence map in project {key.ProjectUID} for key {key.KeyName}");
+          return null;
+        }
+
+        if (ms != null)
+        {
+          using (ms)
+          {
+            var map = new SubGridTreeSubGridExistenceBitMask();// SubGridTreeBitMask();
+            map.FromStream(ms);
+            return map;
+          }
+        }
+
+        return null;
       }
       catch (KeyNotFoundException)
       {
