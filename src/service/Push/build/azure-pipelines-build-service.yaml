@@ -60,7 +60,7 @@ jobs:
           codeCoverageTool: Cobertura
           summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml'
           pathToSources: '$(rootServiceFolder)'
-          failIfCoverageEmpty: true
+          failIfCoverageEmpty: $(collectCoverage)
 
       - task: PowerShell@2
         displayName: 'Publish Service'
