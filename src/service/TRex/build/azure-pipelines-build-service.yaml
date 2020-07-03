@@ -23,7 +23,7 @@ variables:
 
 jobs:
   - job: buildtrex
-    displayName: "Build, test and Deploy"
+    displayName: "Build, test and Deploy: TRex"
     timeoutInMinutes: 40
 
     steps:
@@ -94,7 +94,7 @@ jobs:
         condition: succeededOrFailed()
 
   - job: webtools
-    displayName: "Build, test and Deploy"
+    displayName: "Build, test and Deploy: Webtools"
     timeoutInMinutes: 20
 
     steps:

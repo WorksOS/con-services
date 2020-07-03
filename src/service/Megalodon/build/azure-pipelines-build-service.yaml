@@ -13,7 +13,6 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   serviceName: Megalodon
-  collectCoverage: ${{ if eq(variables['Build.SourceBranchName'], 'master') }}
   rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service/Megalodon'
   ecrRepositoryName: 'rpd-ccss-megalodon-webapi'
   # Only generate code coverage for master branch.
