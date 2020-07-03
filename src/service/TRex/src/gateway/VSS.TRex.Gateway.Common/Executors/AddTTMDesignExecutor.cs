@@ -13,12 +13,11 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
-using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.Types;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -29,9 +28,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// TagFileExecutor
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="exceptionHandler"></param>
     public AddTTMDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
@@ -47,9 +43,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Process add design request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<DesignRequest>(item);
@@ -102,10 +95,15 @@ namespace VSS.TRex.Gateway.Common.Executors
         if (request.FileType == ImportedFileType.SurveyedSurface)
         {
           // Create the new SurveyedSurface in our site model
-          var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
-            request.SurveyedUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC, // validation will have ensured this exists
-            extents, ttm.SubGridOverlayIndex());
+          var tRexRequest = new AddSurveyedSurfaceRequest();
+          var surveyedSurfaceUid = await tRexRequest.ExecuteAsync(new AddSurveyedSurfaceArgument
+          {
+            ProjectID = request.ProjectUid,
+            DesignDescriptor = new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
+            AsAtDate = request.SurveyedUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC, // validation will have ensured this exists
+            Extents = extents,
+            ExistenceMap = ttm.SubGridOverlayIndex()
+          });
         }
 
         //  TTM.LoadFromFile() will have created these 3 files. We need to store them on S3 to reload cache when required
@@ -125,7 +123,7 @@ namespace VSS.TRex.Gateway.Common.Executors
             RequestErrorStatus.DesignImportUnableToCreateDesign, e.Message);
       }
 
-      return new ContractExecutionResult(); 
+      return new ContractExecutionResult();
     }
 
     /// <summary>

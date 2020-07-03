@@ -1,12 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Designs.Models;
-using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.ExtensionMethods;
-using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
 {
