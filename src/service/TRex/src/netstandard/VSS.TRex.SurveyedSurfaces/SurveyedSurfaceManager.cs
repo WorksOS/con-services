@@ -3,11 +3,13 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.GridFabric.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -80,13 +82,26 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Add a new surveyed surface to a site model
     /// </summary>
-    public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
+    public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents,
+      ISubGridTreeBitMask existenceMap)
     {
       if (asAtDate.Kind != DateTimeKind.Utc)
         throw new ArgumentException("AsAtDate must be a UTC date time");
 
       var ss = Load(siteModelUid);
       var newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
+
+      // Store the existance map into the cache
+      using var stream = existenceMap.ToStream();
+      var fileName = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, designDescriptor.DesignID);
+      if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, fileName,
+                                                          FileSystemStreamType.DesignTopologyExistenceMap, stream, existenceMap) != FileSystemErrorStatus.OK)
+      {
+        _log.LogError("Failed to write existence map to persistent store for key {fileName}");
+        return null;
+      }
+
+      // Store performs Commit() operation
       Store(siteModelUid, ss);
 
       return newSurveyedSurface;

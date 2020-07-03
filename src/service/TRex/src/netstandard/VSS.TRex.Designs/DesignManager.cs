@@ -12,6 +12,8 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.ExistenceMaps.GridFabric.Requests;
 
 namespace VSS.TRex.Designs
 {
@@ -30,7 +32,7 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Default no-arg constructor that sets the grid and cache name to default values
     /// </summary>
-    public DesignManager(StorageMutability mutability) 
+    public DesignManager(StorageMutability mutability)
     {
        _writeStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryMutableStorageProxy;
        _readStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
@@ -83,8 +85,10 @@ namespace VSS.TRex.Designs
       try
       {
         using var stream = designs.ToStream();
-        _writeStorageProxy.WriteStreamToPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs);
-        _writeStorageProxy.Commit();
+        if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs) == FileSystemErrorStatus.OK)
+        {
+          _writeStorageProxy.Commit();
+        }
 
         // Notify the mutable and immutable grid listeners that attributes of this site model have changed
         var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
@@ -99,10 +103,23 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Add a new design to a site model
     /// </summary>
-    public IDesign Add(Guid siteModelId, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
+    public IDesign Add(Guid siteModelId, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, ISubGridTreeBitMask existenceMap)
     {
+      // Add the desin to the designs list
       var designs = Load(siteModelId);
       var result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
+
+      // Store the existance map into the cache
+      using var stream = existenceMap.ToStream();
+      var fileName = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designDescriptor.DesignID);
+      if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelId, fileName,
+                                                          FileSystemStreamType.DesignTopologyExistenceMap, stream, existenceMap) != FileSystemErrorStatus.OK)
+      {
+        _log.LogError("Failed to write existence map to persistent store for key {fileName}");
+        return null;
+      }
+
+      // Store performs Commit() operation
       Store(siteModelId, designs);
 
       return result;
