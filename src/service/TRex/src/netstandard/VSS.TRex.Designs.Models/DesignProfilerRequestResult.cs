@@ -29,6 +29,9 @@
         InvalidResponseCode,
         DesignDoesNotExist,
         FailedToCalculateBoundary,
-        FailedToCalculateAlignmentStationRange
+        FailedToCalculateAlignmentStationRange,
+        FailedToAddDesign,
+        FailedToAddSurveyedSurface,
+        FailedToAddAlignment
   }
 }

@@ -71,7 +71,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     
       if (bytes != null)
       {
-        (ExistenceMap = new SubGridTreeBitMask()).FromBytes(bytes);
+        (ExistenceMap = new SubGridTreeSubGridExistenceBitMask()).FromBytes(bytes);
       }
     }
   }
