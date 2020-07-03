@@ -91,7 +91,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE),
 
-            PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled,
+            PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.CurrentAppDomain,
 
             BinaryConfiguration = new BinaryConfiguration
             {
