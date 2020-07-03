@@ -44,7 +44,7 @@ jobs:
         displayName: "Run unit tests"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action unittest -collectCoverage ${{ collectCoverage }}"
+          arguments: "-service $(serviceName) -action unittest -collectCoverage $(collectCoverage)"
 
       - task: PublishTestResults@2
         displayName: "Publish Unit Test Results"
