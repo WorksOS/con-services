@@ -58,7 +58,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       ss.AddSurveyedSurfaceDetails(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full());
 
       ss.Count.Should().Be(1);
-      ss[0].Should().BeEquivalentTo(new SurveyedSurface(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full()));
+      ss[0].Should().BeEquivalentTo(new TRex.SurveyedSurfaces.SurveyedSurface(surveyedSurfaceUid, new DesignDescriptor(designUid, "Folder", "FileName"), date, BoundingWorldExtent3D.Full()));
     }
 
     [Fact]
