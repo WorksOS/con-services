@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -69,12 +70,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
             case ExportTypes.VedaExport:             
             default://to satisfy the compiler
-              // can't change ExportReport as it's used by ProcessWithRaptor().
-              var requestHelper = item as ExportRequestHelper;
-
               var compactionVetaExportRequest =
                 new CompactionVetaExportRequest(request.ProjectUid.Value, request.Filter, request.Filename, request.CoordType, 
-                  request.OutputType, request.UserPrefs, requestHelper.GetMachineNameList(), overrides, liftSettings);
+                  request.OutputType, request.UserPrefs, request.MachineList.Select(m => m.MachineName).ToArray(), overrides, liftSettings);
 
               log.LogInformation($"Calling TRex SendVetaExportRequest for projectUid: {request.ProjectUid}");
               return await trexCompactionDataProxy.SendDataPostRequest<CompactionExportResult, CompactionVetaExportRequest>(compactionVetaExportRequest, "/export/veta", customHeaders);

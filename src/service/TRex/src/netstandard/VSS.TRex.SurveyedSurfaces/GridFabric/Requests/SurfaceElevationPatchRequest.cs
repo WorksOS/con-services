@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System.Threading.Tasks;
+using Apache.Ignite.Core.Compute;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
@@ -93,6 +94,11 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
       }
 
       return clientResult;
+    }
+
+    public override Task<IClientLeafSubGrid> ExecuteAsync(ISurfaceElevationPatchArgument arg)
+    {
+      return Task.Run(() => Execute(arg));
     }
   }
 }

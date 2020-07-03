@@ -1,8 +1,10 @@
-﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
+﻿using System;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
 {
+  [Obsolete("Will possibly get moved to TagFileGateway")]
   public struct TagFileProcessResultHelper
   {
     public int Code { get; }
@@ -206,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
             continuable: false);
         }
 
-        case TRexTagFileResultCode.TfaException:
+        case TRexTagFileResultCode.TRexTfaException:
         {
           return (code: 21, message: "TFA service error. Can not request Project or Asset from TFA.",
             type: temporary, continuable: false);
@@ -220,22 +222,22 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
         case TRexTagFileResultCode.TFABadRequestInvalidLongitude:
         case TRexTagFileResultCode.TFABadRequestInvalidDeviceType:
         case TRexTagFileResultCode.TFABadRequestInvalidProjectUid:
-        case TRexTagFileResultCode.TFAManualInternalErrorUnhandledPath:
+        //case TRexTagFileResultCode.TFAManualInternalErrorUnhandledPath:
         {
           return (code: 22, message: "Internal Error. Failed validation.", type: string.Empty, continuable: null);
         }
 
-        case TRexTagFileResultCode.TFAInternalDatabaseException:
-        {
-          return (code: 23, message: "TFA service database error. Can not request Project or Asset from TFA.",
-            type: temporary, continuable: true);
-        }
+        //case TRexTagFileResultCode.TFAInternalDatabaseException:
+        //{
+        //  return (code: 23, message: "TFA service database error. Can not request Project or Asset from TFA.",
+        //    type: temporary, continuable: true);
+        //}
 
-        case TRexTagFileResultCode.TFABadRequestMissingRadioSerialAndTccOrgId:
-        {
-          return (code: 24, message: "Bad Request. Request requires either RadioSerial or TccOrgId.",
-            type: permanent, continuable: true);
-        }
+        //case TRexTagFileResultCode.TFABadRequestMissingRadioSerialAndTccOrgId:
+        //{
+        //  return (code: 24, message: "Bad Request. Request requires either RadioSerial or TccOrgId.",
+        //    type: permanent, continuable: true);
+        //}
 
         // the following errors require the user to make some VL change, so no point in re-trying.
         // These are expanded from the raptor errors 6,8 and 9
@@ -245,21 +247,21 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
             type: temporary, continuable: false);
         }
 
-        case TRexTagFileResultCode.TFAManualAssetFoundButNoSubsOrProjectFound:
-        {
-          return (code: 26,
-            message:
-            "TFA Processing Error: Manual Import: got Asset. Unable to locate any valid Project, or Asset subscriptions.",
-            type: temporary, continuable: false);
-        }
+        //case TRexTagFileResultCode.TFAManualAssetFoundButNoSubsOrProjectFound:
+        //{
+        //  return (code: 26,
+        //    message:
+        //    "TFA Processing Error: Manual Import: got Asset. Unable to locate any valid Project, or Asset subscriptions.",
+        //    type: temporary, continuable: false);
+        //}
 
-        case TRexTagFileResultCode.TFAManualNoAssetFoundAndNoProjectSubs:
-        {
-          return (code: 27,
-            message:
-            "TFA Processing Error: Manual Import: no Asset provided or identifyable. Unable to locate any valid Project subscriptions.",
-            type: temporary, continuable: false);
-        }
+        //case TRexTagFileResultCode.TFAManualNoAssetFoundAndNoProjectSubs:
+        //{
+        //  return (code: 27,
+        //    message:
+        //    "TFA Processing Error: Manual Import: no Asset provided or identifyable. Unable to locate any valid Project subscriptions.",
+        //    type: temporary, continuable: false);
+        //}
 
         case TRexTagFileResultCode.TFAManualNoIntersectingProjectsFound:
         {
@@ -267,43 +269,43 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
             type: temporary, continuable: false);
         }
 
-        case TRexTagFileResultCode.TFAManualProjectDoesNotIntersectTimeAndLocation:
-        {
-          return (code: 29,
-            message: "TFA Processing Error: Manual Import: Project does not intersect location and time provided.",
-            type: temporary, continuable: false);
-        }
+        //case TRexTagFileResultCode.TFAManualProjectDoesNotIntersectTimeAndLocation:
+        //{
+        //  return (code: 29,
+        //    message: "TFA Processing Error: Manual Import: Project does not intersect location and time provided.",
+        //    type: temporary, continuable: false);
+        //}
         case TRexTagFileResultCode.TFAManualProjectIsArchived:
         {
           return (code: 30, message: "TFA Processing Error: Manual Import: cannot import to an archived Project.",
             type: temporary, continuable: false);
         }
-        case TRexTagFileResultCode.TFAManualProjectIsCivilType:
-        {
-          return (code: 31,
-            message: "TFA Processing Error: Manual Import: cannot import to a Civil type Project.", type: temporary,
-            continuable: false);
-        }
-        case TRexTagFileResultCode.TFAManualLandfillHasNoSubsAtThisTime:
-        {
-          return (code: 32,
-            message:
-            "TFA Processing Error: Manual Import: landfill Project does not have a valid subscription at that time.",
-            type: temporary, continuable: false);
-        }
-        case TRexTagFileResultCode.TFAAutoNoAssetOrTccOrgIdFound:
-        {
-          return (code: 33,
-            message: "TFA Processing Error: Auto Import: no Asset or TccOrgId is identifiable from the request.",
-            type: temporary, continuable: false);
-        }
-        case TRexTagFileResultCode.TFAAutoAssetOrTccOrgIdFoundButNoProject:
-        {
-          return (code: 34,
-            message:
-            "TFA Processing Error: Auto Import: for this RadioSerial/TccOrgId, no Project meets the time/location/subscription requirements.",
-            type: temporary, continuable: false);
-        }
+        //case TRexTagFileResultCode.TFAManualProjectIsCivilType:
+        //{
+        //  return (code: 31,
+        //    message: "TFA Processing Error: Manual Import: cannot import to a Civil type Project.", type: temporary,
+        //    continuable: false);
+        //}
+        //case TRexTagFileResultCode.TFAManualLandfillHasNoSubsAtThisTime:
+        //{
+        //  return (code: 32,
+        //    message:
+        //    "TFA Processing Error: Manual Import: landfill Project does not have a valid subscription at that time.",
+        //    type: temporary, continuable: false);
+        //}
+        //case TRexTagFileResultCode.TFAAutoNoAssetOrTccOrgIdFound:
+        //{
+        //  return (code: 33,
+        //    message: "TFA Processing Error: Auto Import: no Asset or TccOrgId is identifiable from the request.",
+        //    type: temporary, continuable: false);
+        //}
+        //case TRexTagFileResultCode.TFAAutoAssetOrTccOrgIdFoundButNoProject:
+        //{
+        //  return (code: 34,
+        //    message:
+        //    "TFA Processing Error: Auto Import: for this RadioSerial/TccOrgId, no Project meets the time/location/subscription requirements.",
+        //    type: temporary, continuable: false);
+        //}
         case TRexTagFileResultCode.TFAAutoMultipleProjectsMatchCriteria:
         {
           return (code: 35,
@@ -311,18 +313,18 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
             "TFA Processing Error: Auto Import: more than 1 Project meets the time/location/subscription requirements.",
             type: temporary, continuable: false);
         }
-        case TRexTagFileResultCode.TFAManualValidProjectsFoundButNotRequestedOne:
-        {
-          return (code: 36,
-            message: "TFA Processing Error: Manual Import: intersecting Projects found, but not the one requested.",
-            type: temporary, continuable: false);
-        }
-        case TRexTagFileResultCode.TFATagFileInvalidLatLong:
-        {
-          return (code: 37,
-            message: "Trex Processing Error: Unable to determine a tag file seed position.",
-            type: temporary, continuable: false);
-        }
+        //case TRexTagFileResultCode.TFAManualValidProjectsFoundButNotRequestedOne:
+        //{
+        //  return (code: 36,
+        //    message: "TFA Processing Error: Manual Import: intersecting Projects found, but not the one requested.",
+        //    type: temporary, continuable: false);
+        //}
+        //case TRexTagFileResultCode.TFATagFileInvalidLatLong:
+        //{
+        //  return (code: 37,
+        //    message: "Trex Processing Error: Unable to determine a tag file seed position.",
+        //    type: temporary, continuable: false);
+        //}
           
         default:
         {
