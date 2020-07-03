@@ -120,15 +120,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///                    22 "Longitude should be between -180 degrees and 180 degrees"
     ///                    23 "TimeOfPosition must have occurred between 50 years ago and the next 2 days"
     ///                    30 "DeviceType is invalid"
-    ///                    31 "Manual Import: The Projects account cannot have not have a free device entitlement."
     ///                    36 "ProjectUid is present, but invalid"
     ///                    37 "Auto Import: Either Radio Serial or ec520 Serial must be provided"
-    ///                    38 "Manual Import: Unable to find the Project requested"
     ///         Errors: HttpStatusCode.InternalServerError (retry-able?)
     ///           17  "A problem occurred accessing a service. Service: {0} Exception: {1}"
     ///            
     ///         HttpStatusCode.OK   Response Code:
     ///            18 "Manual Import: Unable to determine lat/long from northing/easting position"
+    ///            38 "Manual Import: Unable to find the Project requested"
     ///            41 "Manual Import: project does not intersect the location provided"
     ///            43 "Manual Import: cannot import to an archived project"
     ///            44 "Auto Import: No projects found at the location provided"
