@@ -70,7 +70,7 @@ namespace WebApiTests.Executors
         authorization.Object, projectProxy.Object, deviceProxy.Object, tRexCompactionDataProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
-      ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
+      ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3047);
     }
 
     [TestMethod]
@@ -86,7 +86,7 @@ namespace WebApiTests.Executors
         authorization.Object, projectProxy.Object, deviceProxy.Object, tRexCompactionDataProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
-      ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
+      ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3047);
     }
 
     [TestMethod]
