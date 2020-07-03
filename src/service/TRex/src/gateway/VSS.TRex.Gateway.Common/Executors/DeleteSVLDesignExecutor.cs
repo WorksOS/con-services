@@ -7,9 +7,9 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Alignments.GridFabric.Arguments;
+using VSS.TRex.Alignments.GridFabric.Requests;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -19,9 +19,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// TagFileExecutor
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="exceptionHandler"></param>
     public DeleteSVLDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
@@ -37,10 +34,15 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Process delete design request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Processes the request asynchronously.
+    /// </summary>
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<DesignRequest>(item);
 
@@ -48,9 +50,17 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         log.LogInformation($"#In# DeleteSVLDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        if (!DIContext.Obtain<IAlignmentManager>().Remove(request.ProjectUid, request.DesignUid))
+        // Remove the alignment
+        var tRexRequest = new RemoveAlignmentRequest();
+        var removeResponse = await tRexRequest.ExecuteAsync(new RemoveAlignmentArgument
         {
-          log.LogError($"#Out# DeleteSVLDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+          ProjectID = request.ProjectUid,
+          AlignmentID = request.DesignUid
+        });
+
+        if (removeResponse.RequestResult != Designs.Models.DesignProfilerRequestResult.OK)
+        {
+          log.LogError($"#Out# DeleteSVLDesignExecutor. Deletion failed, of alignment:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
           throw CreateServiceException<DeleteSVLDesignExecutor>
           (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
             RequestErrorStatus.DesignImportUnableToDeleteDesign);
@@ -63,12 +73,14 @@ namespace VSS.TRex.Gateway.Common.Executors
           {
             File.Delete(localPathAndFileName);
           }
-          catch (Exception)
+          catch (Exception e)
           {
-            // ignored
+            log.LogError(e, $"Failed to delete file {localPathAndFileName} for design {request.DesignUid} in project {request.ProjectUid}");
           }
         }
         log.LogInformation($"#Out# DeleteSVLDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
+
+        return new ContractExecutionResult();
       }
       catch (Exception e)
       {
@@ -77,16 +89,6 @@ namespace VSS.TRex.Gateway.Common.Executors
         (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
           RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
-
-      return new ContractExecutionResult(); 
-    }
-
-    /// <summary>
-    /// Processes the request asynchronously.
-    /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
-    {
-      throw new NotImplementedException();
     }
   }
 }

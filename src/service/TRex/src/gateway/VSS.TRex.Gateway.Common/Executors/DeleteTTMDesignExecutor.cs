@@ -40,6 +40,14 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// </summary>
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Processes the request asynchronously.
+    /// </summary>
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    {
       var request = CastRequestObjectTo<DesignRequest>(item);
 
       try
@@ -51,11 +59,11 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           // Remove the designSurface
           var tRexRequest = new RemoveTTMDesignRequest();
-          var removeResponse = tRexRequest.ExecuteAsync(new RemoveTTMDesignArgument
+          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveTTMDesignArgument
           {
             ProjectID = request.ProjectUid,
             DesignID = request.DesignUid
-          }).Result;
+          });
 
           removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
         }
@@ -64,11 +72,11 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           // Remove the new surveyedSurface
           var tRexRequest = new RemoveSurveyedSurfaceRequest();
-          var removeResponse = tRexRequest.ExecuteAsync(new RemoveSurveyedSurfaceArgument
+          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveSurveyedSurfaceArgument
           {
             ProjectID = request.ProjectUid,
             DesignID = request.DesignUid
-          }).Result;
+          });
 
           removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
         }
@@ -112,14 +120,6 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       return new ContractExecutionResult();
-    }
-
-    /// <summary>
-    /// Processes the request asynchronously.
-    /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
-    {
-      throw new NotImplementedException();
     }
   }
 }
