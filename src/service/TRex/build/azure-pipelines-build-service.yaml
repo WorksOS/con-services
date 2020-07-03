@@ -14,12 +14,17 @@ variables:
   buildConfiguration: "Release"
   serviceName: TRex
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
-  ecrRepositoryName: 'rpd-ccss-trex'
+  ecrRepositoryName: "rpd-ccss-trex"
+  # Only generate code coverage for master branch.
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    collectCoverage: true
+  ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+    collectCoverage: false
 
 jobs:
-  - job: BuildTestAndDeploy
+  - job: buildtrex
     displayName: "Build, test and Deploy"
-    timeoutInMinutes: 60
+    timeoutInMinutes: 40
 
     steps:
       - checkout: self
@@ -39,22 +44,22 @@ jobs:
         displayName: "Run unit tests"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action unittest -collectCoverage false" #disable coverage collection for the moment.
+          arguments: "-service $(serviceName) -action unittest -collectCoverage ${{ collectCoverage }}"
 
       - task: PublishTestResults@2
         displayName: "Publish Unit Test Results"
         continueOnError: true
         inputs:
-          testResultsFormat: 'VSTest'
+          testResultsFormat: "VSTest"
           testResultsFiles: "**/*.trx"
           searchFolder: "$(rootServiceFolder)/UnitTestResults"
 
       # - task: PublishCodeCoverageResults@1
-      #   displayName: "Publish Code Coverage"
+      #   displayName: 'Publish Code Coverage'
       #   inputs:
       #     codeCoverageTool: Cobertura
-      #     summaryFileLocation: "$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml"
-      #     pathToSources: "$(rootServiceFolder)"
+      #     summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml'
+      #     pathToSources: '$(rootServiceFolder)'
       #     failIfCoverageEmpty: true
 
       # We need to push individual images for each TRex service, that's done using this template.
@@ -64,11 +69,60 @@ jobs:
           sourceBranchName: $(Build.SourceBranchName)
           buildId: $(Build.BuildId)
           ecrRepositoryName: $(ecrRepositoryName)
-          trexServices: ['ProjectRebuilder', 'Utils', 'Webtools', 'MutableGateway', 'Gateway', 'Reports', 'TINSurfaceExport', 'TileRendering', 'QMesh', 'PSNode', 'MutableData', 'DesignElevation', 'ConnectedSiteGateway', 'ApplicationServer']
+          trexServices:
+            [
+              "ProjectRebuilder",
+              "Utils",
+              "MutableGateway",
+              "Gateway",
+              "Reports",
+              "TINSurfaceExport",
+              "TileRendering",
+              "QMesh",
+              "PSNode",
+              "MutableData",
+              "DesignElevation",
+              "ConnectedSiteGateway",
+              "ApplicationServer",
+            ]
 
       - task: PublishBuildArtifacts@1
-        displayName: 'Publish Artifact: Charts'
+        displayName: "Publish Artifact: Charts"
         inputs:
           PathtoPublish: $(rootServiceFolder)/deploy
           ArtifactName: Charts
         condition: succeededOrFailed()
+
+  - job: webtools
+    displayName: "Build, test and Deploy"
+    timeoutInMinutes: 20
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/build/templates/update-buildnumber.yaml
+        parameters:
+          buildId: $(Build.BuildId)
+
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action build -dockerfile Dockerfile.webtools.build"
+
+      # We need to push individual images for each TRex service, that's done using this template.
+      - template: templates/push-service-image.yaml
+        parameters:
+          serviceName: $(serviceName)
+          sourceBranchName: $(Build.SourceBranchName)
+          buildId: $(Build.BuildId)
+          ecrRepositoryName: $(ecrRepositoryName)
+          trexServices: ["Webtools"]
+
+      # - task: PublishBuildArtifacts@1
+      #   displayName: "Publish Artifact: Charts"
+      #   inputs:
+      #     PathtoPublish: $(rootServiceFolder)/deploy
+      #     ArtifactName: Charts
+      #   condition: succeededOrFailed()

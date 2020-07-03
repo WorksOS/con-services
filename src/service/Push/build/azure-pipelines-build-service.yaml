@@ -5,20 +5,25 @@ trigger:
       # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
   paths:
     include:
-      - "src/service/Push/*"
+      - 'src/service/Push/*'
 
 pool: fsm-merino-services
 
 variables:
-  buildPlatform: "Any CPU"
-  buildConfiguration: "Release"
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
   serviceName: Push
-  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/Push"
+  rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service/Push'
   ecrRepositoryName: 'rpd-ccss-push-webapi'
+  # Only generate code coverage for master branch.
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    collectCoverage: true
+  ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+    collectCoverage: false
 
 jobs:
   - job: BuildTestAndDeploy
-    displayName: "Build, test and Deploy"
+    displayName: 'Build, test and Deploy'
     timeoutInMinutes: 20
 
     steps:
@@ -30,44 +35,44 @@ jobs:
           buildId: $(Build.BuildId)
 
       - task: PowerShell@2
-        displayName: "Build"
+        displayName: 'Build'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action build"
+          arguments: '-service $(serviceName) -action build'
 
       - task: PowerShell@2
-        displayName: "Run unit tests"
+        displayName: 'Run unit tests'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action unittest"
+          arguments: '-service $(serviceName) -action unittest -collectCoverage ${{ collectCoverage }}'
 
       - task: PublishTestResults@2
-        displayName: "Publish Unit Test Results"
+        displayName: 'Publish Unit Test Results'
         continueOnError: true
         inputs:
           testResultsFormat: 'VSTest'
-          testResultsFiles: "**/*.trx"
-          searchFolder: "$(rootServiceFolder)/UnitTestResults"
+          testResultsFiles: '**/*.trx'
+          searchFolder: '$(rootServiceFolder)/UnitTestResults'
 
       - task: PublishCodeCoverageResults@1
-        displayName: "Publish Code Coverage"
+        displayName: 'Publish Code Coverage'
         inputs:
           codeCoverageTool: Cobertura
-          summaryFileLocation: "$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml"
-          pathToSources: "$(rootServiceFolder)"
+          summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml'
+          pathToSources: '$(rootServiceFolder)'
           failIfCoverageEmpty: true
 
       - task: PowerShell@2
-        displayName: "Publish Service"
+        displayName: 'Publish Service'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action publish"
+          arguments: '-service $(serviceName) -action publish'
 
       - task: PowerShell@2
-        displayName: "Push Docker Image"
+        displayName: 'Push Docker Image'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -imageSuffix $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
+          arguments: '-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -imageSuffix $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: Charts'
