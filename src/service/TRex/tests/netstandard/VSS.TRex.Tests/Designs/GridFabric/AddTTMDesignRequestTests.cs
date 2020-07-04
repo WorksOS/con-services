@@ -43,9 +43,9 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       var response = await request.ExecuteAsync(new AddTTMDesignArgument
       {
         ProjectID = siteModel.ID,
-        DesignDescriptor = new TRex.Designs.Models.DesignDescriptor(designID, "folder", "filename"),
+        DesignDescriptor = new DesignDescriptor(designID, "folder", "filename"),
         Extents = new TRex.Geometry.BoundingWorldExtent3D(0, 0, 1, 1),
-        ExistenceMap = new VSS.TRex.SubGridTrees.SubGridTreeSubGridExistenceBitMask()
+        ExistenceMap = new TRex.SubGridTrees.SubGridTreeSubGridExistenceBitMask()
       });
 
       response.Should().NotBeNull();
