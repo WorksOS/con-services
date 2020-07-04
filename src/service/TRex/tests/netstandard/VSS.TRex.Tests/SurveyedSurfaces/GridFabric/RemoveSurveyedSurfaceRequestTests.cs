@@ -1,17 +1,17 @@
 ﻿using FluentAssertions;
-using VSS.TRex.Designs.GridFabric.Requests;
 using Xunit;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 
-namespace VSS.TRex.Tests.Designs.GridFabric
+namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
 {
-  [UnitTestCoveredRequest(RequestType = typeof(RemoveTTMDesignRequest))]
+  [UnitTestCoveredRequest(RequestType = typeof(RemoveSurveyedSurfaceRequest))]
   public class RemoveSurveyedSurfaceRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
     public void Creation()
     {
-      var req = new RemoveTTMDesignRequest();
+      var req = new RemoveSurveyedSurfaceRequest();
       req.Should().NotBeNull();
     }
   }

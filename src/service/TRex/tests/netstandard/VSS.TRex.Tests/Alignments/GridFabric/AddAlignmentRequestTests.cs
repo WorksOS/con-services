@@ -6,7 +6,7 @@ using Xunit;
 namespace VSS.TRex.Tests.Alignments.GridFabric
 {
   [UnitTestCoveredRequest(RequestType = typeof(AddAlignmentRequest))]
-  public class AddSurveyedSurfaceRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
+  public class AddAlignmentRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
     public void Creation()
