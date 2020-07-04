@@ -8,7 +8,7 @@ using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class ProjectSummaryListResponseModel : IMasterDataModel
+  public class ProjectSummaryListResponseModel : IMasterDataModel, ISupportsPaging<ProjectSummaryResponseModel>
   {
     public ProjectSummaryListResponseModel()
     {
@@ -26,6 +26,16 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("hasMore")]
     public bool HasMore { get; set; }
+
+    /// <summary>
+    /// Used for paging
+    /// </summary>
+    [JsonIgnore]
+    public List<ProjectSummaryResponseModel> Models
+    {
+      get { return Projects; }
+      set { Projects = value; }
+    }
 
     public List<string> GetIdentifiers() => Projects?
                                               .SelectMany(d => d.GetIdentifiers())
