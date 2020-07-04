@@ -1,4 +1,5 @@
 ﻿using System;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -23,9 +24,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         public const string ServiceName = "TAGFileBufferQueueService";
 
         /// <summary>
-        /// Services interface for the cluster group projection
+        /// Ignite reference this service is deployed into
         /// </summary>
-        private readonly IServices services;
+        private readonly IIgnite _ignite;
 
         /// <summary>
         /// The proxy to the deployed service
@@ -37,10 +38,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public TAGFileBufferQueueServiceProxy()
         {
-            var _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
-
-            // Get an instance of IServices for the cluster group.
-            services = _ignite.GetServices();
+            _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
         }
 
         /// <summary>
@@ -48,6 +46,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public void Deploy()
         {
+            var services = _ignite.GetServices();
+
             // Attempt to cancel any previously deployed service
             try
             {

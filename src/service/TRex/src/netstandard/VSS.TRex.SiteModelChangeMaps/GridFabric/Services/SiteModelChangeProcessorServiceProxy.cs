@@ -1,4 +1,5 @@
 ﻿using System;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -22,9 +23,9 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     public const string ServiceName = "SiteModelChangeProcessorService";
 
     /// <summary>
-    /// Services interface for the cluster group projection
+    /// Ignite reference this service is deployed into
     /// </summary>
-    private readonly IServices _services;
+    private readonly IIgnite _ignite;
 
     /// <summary>
     /// The proxy to the deployed service
@@ -36,10 +37,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// </summary>
     public SiteModelChangeProcessorServiceProxy()
     {
-      var ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
-
-      // Get an instance of IServices for the cluster group.
-      _services = ignite.GetServices();
+      _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
     }
 
     /// <summary>
@@ -47,11 +45,13 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// </summary>
     public void Deploy()
     {
+      var services = _ignite.GetServices();
+
       // Attempt to cancel any previously deployed service
       try
       {
         Log.LogInformation($"Cancelling deployed service {ServiceName}");
-        _services.Cancel(ServiceName);
+        services.Cancel(ServiceName);
       }
       catch (Exception e)
       {
@@ -63,7 +63,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       {
         Log.LogInformation("Deploying new service");
 
-        _services.Deploy(new ServiceConfiguration
+        services.Deploy(new ServiceConfiguration
         {
           Name = ServiceName,
           Service = new SiteModelChangeProcessorService(),
@@ -81,7 +81,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       try
       {
         Log.LogInformation($"Obtaining service proxy for {ServiceName}");
-        _proxy = _services.GetServiceProxy<ISiteModelChangeProcessorService>(ServiceName);
+        _proxy = services.GetServiceProxy<ISiteModelChangeProcessorService>(ServiceName);
       }
       catch (Exception e)
       {
