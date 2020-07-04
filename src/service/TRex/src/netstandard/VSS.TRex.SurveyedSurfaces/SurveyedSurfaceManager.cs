@@ -89,6 +89,12 @@ namespace VSS.TRex.SurveyedSurfaces
       if (asAtDate.Kind != DateTimeKind.Utc)
         throw new ArgumentException("AsAtDate must be a UTC date time");
 
+      if (extents == null)
+        throw new ArgumentNullException(nameof(extents));
+
+      if (existenceMap == null)
+        throw new ArgumentNullException(nameof(existenceMap));
+
       var ss = Load(siteModelUid);
       var newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
 
