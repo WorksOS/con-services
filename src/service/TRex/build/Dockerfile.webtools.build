@@ -4,4 +4,6 @@ ARG SERVICE_PATH=src/service/TRex
 COPY . /build/
 WORKDIR /build
 
+RUN npm i npm@latest -g
+
 RUN dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj -nowarn:NU1701 --output /trex/Webtools
