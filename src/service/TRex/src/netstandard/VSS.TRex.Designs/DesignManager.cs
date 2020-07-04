@@ -106,6 +106,12 @@ namespace VSS.TRex.Designs
     /// </summary>
     public IDesign Add(Guid siteModelId, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents, ISubGridTreeBitMask existenceMap)
     {
+      if (extents == null)
+        throw new ArgumentNullException(nameof(extents));
+
+      if (existenceMap == null)
+        throw new ArgumentNullException(nameof(existenceMap));
+
       // Add the desin to the designs list
       var designs = Load(siteModelId);
       var result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);

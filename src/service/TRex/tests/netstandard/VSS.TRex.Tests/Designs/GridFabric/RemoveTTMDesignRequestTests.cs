@@ -8,6 +8,7 @@ using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
+using System;
 
 namespace VSS.TRex.Tests.Designs.GridFabric
 {
@@ -25,6 +26,22 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     {
       var req = new RemoveTTMDesignRequest();
       req.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async void RemoveDesign_FailWithNoProject()
+    {
+      AddApplicationRouting();
+
+      var request = new RemoveTTMDesignRequest();
+      var response = await request.ExecuteAsync(new RemoveTTMDesignArgument
+      {
+        ProjectID = Guid.NewGuid(),
+        DesignID = Guid.NewGuid()
+      });
+
+      response.Should().NotBeNull();
+      response.RequestResult.Should().Be(DesignProfilerRequestResult.NoSelectedSiteModel);
     }
 
     [Fact]

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -22,6 +23,25 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     {
       var req = new AddTTMDesignRequest();
       req.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async void AddDesign_FailWithNoProject()
+    {
+      AddApplicationRouting();
+
+      var request = new AddTTMDesignRequest();
+      var response = await request.ExecuteAsync(new AddTTMDesignArgument
+      {
+        ProjectID = Guid.NewGuid(),
+        DesignDescriptor = new DesignDescriptor(Guid.NewGuid(), "folder", "filename"),
+        Extents = new TRex.Geometry.BoundingWorldExtent3D(0, 0, 1, 1),
+        ExistenceMap = new TRex.SubGridTrees.SubGridTreeSubGridExistenceBitMask()
+      });
+
+      response.Should().NotBeNull();
+      response.DesignUid.Should().Be(Guid.Empty);
+      response.RequestResult.Should().Be(DesignProfilerRequestResult.FailedToAddDesign);
     }
 
     [Fact]
