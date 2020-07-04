@@ -1,7 +1,7 @@
 ﻿using CoreX.Models;
-using CoreX.Wrapper.Types;
+using CoreX.Types;
 
-namespace CoreX.Wrapper
+namespace CoreX.Interfaces
 {
   public interface IConvertCoordinates
   {

@@ -88,7 +88,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .AddLogging()
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
       .Build()
-      .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+      .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
       .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
       .Add(TRexGridFactory.AddGridFactoriesToDI)
       .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
@@ -138,7 +138,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(VSS.TRex.CoordinateSystems.Models.LLH),
+        typeof(CoreX.Models.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),

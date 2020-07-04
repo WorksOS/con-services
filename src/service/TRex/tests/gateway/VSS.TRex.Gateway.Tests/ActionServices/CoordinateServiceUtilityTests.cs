@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.Tests.ActionServices
             InnerHandler = new HttpClientHandler()
           }))
         .Add(x => x.AddTransient(context => new TPaaSAuthenticatedRequestHandler {TPaaSClient = context.GetService<ITPaaSClient>()}))
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
 */
         .Complete();
     }

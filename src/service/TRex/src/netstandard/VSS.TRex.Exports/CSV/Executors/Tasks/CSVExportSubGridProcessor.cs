@@ -4,15 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
-using VSS.TRex.Types.CellPasses;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Geometry;
@@ -22,19 +20,20 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Exports.CSV.Executors.Tasks
 {
   public class CSVExportSubGridProcessor
   {
-    private static ILogger log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
+    private static ILogger _log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
 
     private IConvertCoordinates _convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
 
     private readonly int _maxExportRows;
     private int _totalRowCountSoFar;
 
-    public bool RecordCountLimitReached() { return _totalRowCountSoFar >= _maxExportRows;}
+    public bool RecordCountLimitReached() { return _totalRowCountSoFar >= _maxExportRows; }
 
     private readonly CSVExportRequestArgument _requestArgument;
     private readonly CSVExportFormatter _csvExportFormatter;
@@ -91,9 +90,9 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       _csvExportFormatter = new CSVExportFormatter(requestArgument.UserPreferences, requestArgument.OutputType, requestArgument.RawDataAsDBase);
       _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
       _cellPassTimeString = _coordString = _heightString = _lastDesignNameString = _lastMachineNameString =
-        _machineSpeedString = _gpsAccuracyToleranceString = _targetPassCountString = _lastPassValidCcvString = 
-        _lastTargetCcvString = _lastPassValidMdpString = _lastTargetMdpString = _lastValidRmvString = 
-        _lastValidFreqString = _lastValidAmpString = _lastTargetThicknessString = _lastEventMachineGearString = 
+        _machineSpeedString = _gpsAccuracyToleranceString = _targetPassCountString = _lastPassValidCcvString =
+        _lastTargetCcvString = _lastPassValidMdpString = _lastTargetMdpString = _lastValidRmvString =
+        _lastValidFreqString = _lastValidAmpString = _lastTargetThicknessString = _lastEventMachineGearString =
         _lastEventVibrationStateString = _lastPassValidTemperatureString = _csvExportFormatter.NullString;
     }
 
@@ -105,7 +104,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       int runningIndexLLHCoords = 0;
       if (_requestArgument.CoordType == CoordType.LatLon)
-        _llhCoords = await SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid);
+        _llhCoords = SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid);
 
       lastPassSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -128,7 +127,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       return rows;
     }
 
-    public async Task<List<string>> ProcessSubGrid(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
+    public List<string> ProcessSubGrid(ClientCellProfileAllPassesLeafSubgrid allPassesSubGrid)
     {
       var rows = new List<string>();
       if (RecordCountLimitReached())
@@ -137,7 +136,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       var runningIndexLLHCoords = 0;
       var halfPassCount = 0;
       if (_requestArgument.CoordType == CoordType.LatLon)
-        _llhCoords = await SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid);
+        _llhCoords = SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid);
 
       allPassesSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
@@ -333,7 +332,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
     //  which is sent to Coordinate service
     //  to resolve into a list of LHH (in same order)
     // Note: only adds entry where cellPassCount exists, so may not be 1024 entries
-    private async Task<XYZ[]> SetupLLPositions(string csibName, IClientLeafSubGrid subGrid)
+    private XYZ[] SetupLLPositions(string csibName, IClientLeafSubGrid subGrid)
     {
       var indexIntoNEECoords = 0;
       var NEECoords = new XYZ[1024];
@@ -350,22 +349,15 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         NEECoords[indexIntoNEECoords] = new XYZ(easting, northing, cell.Height);
         indexIntoNEECoords++;
       });
-      var result = await _convertCoordinates.NEEToLLH(csibName, NEECoords);
-      if (result.ErrorCode != RequestErrorStatus.OK)
-      {
-        log.LogError($"#Out# CSVExportExecutor. Unable to convert NEE to LLH : Project: {_siteModel.ID}");
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-         new ContractExecutionResult((int) RequestErrorStatus.ExportCoordConversionError, "Missing ProjectUID.")); 
 
-      }
-      return result.LLHCoordinates;
+      return _convertCoordinates.NEEToLLH(csibName, NEECoords.ToCoreX_XYZ()).ToTRex_XYZ();
     }
 
     private string FormatCoordinate(double northing, double easting, int runningIndexLLHCoords)
     {
       return _requestArgument.CoordType == CoordType.Northeast
        ? $"{_csvExportFormatter.FormatCellPos(northing)},{_csvExportFormatter.FormatCellPos(easting)}"
-       : $"{_csvExportFormatter.RadiansToLatLongString(_llhCoords[runningIndexLLHCoords - 1].Y, 8)}{_csvExportFormatter.RadiansToLatLongString(_llhCoords[runningIndexLLHCoords - 1].X, 8)}";
+       : _csvExportFormatter.RadiansToLatLongString(_llhCoords[runningIndexLLHCoords - 1].Y, 8) + _csvExportFormatter.RadiansToLatLongString(_llhCoords[runningIndexLLHCoords - 1].X, 8);
     }
 
     private string FormatDesignNameID(int designNameId)
@@ -385,7 +377,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
 
       if (machineId > -1 && _requestArgument.MappedMachines != null && _requestArgument.MappedMachines.Count > 0)
       {
-         machine = _requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
+        machine = _requestArgument.MappedMachines.FirstOrDefault(m => m.InternalSiteModelMachineIndex == machineId);
       }
 
       return machine != null ? $"\"{machine.Name}\"" : "\"Unknown\"";

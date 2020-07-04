@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
-using VSS.TRex.Geometry;
-using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
@@ -179,10 +179,6 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Calculates an elevation sub grid for a designated sub grid on this design
     /// </summary>
-    /// <param name="siteModelId"></param>
-    /// <param name="offset"></param>
-    /// <param name="originCellAddress"></param>
-    /// <param name="cellSize"></param>
     public async Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(
       Guid siteModelId,
       double offset, 
@@ -212,9 +208,6 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
-    /// <param name="siteModelId"></param>
-    /// <param name="originCellAddress"></param>
-    /// <param name="cellSize"></param>
     public async Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMask(
       Guid siteModelId,
       SubGridCellAddress originCellAddress,

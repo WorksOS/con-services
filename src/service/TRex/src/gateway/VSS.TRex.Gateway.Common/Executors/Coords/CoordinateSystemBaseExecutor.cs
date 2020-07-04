@@ -1,14 +1,12 @@
-﻿using System.Text;
+﻿using CoreX.Models;
+using CoreX.Wrapper.Models;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.TRex.CoordinateSystems;
-using VSS.TRex.CoordinateSystems.Models;
 using VSS.TRex.Gateway.Common.Utilities;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
@@ -53,7 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       var lonAxis = coordSystem.ZoneInfo.IsWestGrid ? WEST_STR : EAST_STR;
 
       return new CoordinateSystemSettings()
-      { 
+      {
         // Coordinate System...
         CSName = coordSystem.SystemName,
         CSFileName = csFileName,

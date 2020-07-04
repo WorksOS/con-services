@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.GridFabric.Arguments;
@@ -24,6 +23,7 @@ using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 using Xunit;
 
 namespace VSS.TRex.Tests.Profiling
@@ -104,7 +104,7 @@ namespace VSS.TRex.Tests.Profiling
           CCV = (short)(123 + x),
           MachineSpeed = (ushort)(456 + x),
           MDP = (short)(321 + x),
-          MaterialTemperature = (ushort)(652 + x),          
+          MaterialTemperature = (ushort)(652 + x),
           PassType = PassType.Front
         }).ToArray();
 
@@ -142,7 +142,7 @@ namespace VSS.TRex.Tests.Profiling
 
       var arg = new ProfileRequestArgument_ApplicationService
       {
-        ProjectID = sm.ID,        
+        ProjectID = sm.ID,
         ProfileTypeRequired = GridDataType.Height,
         ProfileStyle = ProfileStyle.CellPasses,
         PositionsAreGrid = true,
@@ -239,7 +239,7 @@ namespace VSS.TRex.Tests.Profiling
         Filters = new FilterSet(
           new CombinedFilter
           {
-            AttributeFilter = new CellPassAttributeFilter {ReturnEarliestFilteredCellPass = true}
+            AttributeFilter = new CellPassAttributeFilter { ReturnEarliestFilteredCellPass = true }
           },
           new CombinedFilter()),
         ReferenceDesign = new DesignOffset(design, 0),

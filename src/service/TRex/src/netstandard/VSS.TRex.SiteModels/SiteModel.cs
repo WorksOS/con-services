@@ -8,8 +8,8 @@ using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -61,7 +61,7 @@ namespace VSS.TRex.SiteModels
   // </remarks>
   public class SiteModel : ISiteModel, IBinaryReaderWriter
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModel>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModel>();
 
     public const string SiteModelXMLFileName = "ProductionDataModel.XML";
     public const string SubGridExistenceMapFileName = "SubGridExistenceMap";
@@ -622,7 +622,7 @@ versionMap = null;
       CellSize = reader.ReadDouble();
       if (CellSize < 0.001)
       {
-        Log.LogError(
+        _log.LogError(
           $"SiteModelGridCellSize is suspicious: {CellSize} for datamodel {ID}, setting to default: {SubGridTreeConsts.DefaultCellSize}");
         CellSize = SubGridTreeConsts.DefaultCellSize;
       }
@@ -659,7 +659,7 @@ versionMap = null;
         }
       }
 
-      Log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
+      _log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
       return false;
     }
 
@@ -675,7 +675,7 @@ versionMap = null;
         return true;
       }
 
-      Log.LogError($"Failed to remove site model metadata for site model {ID} from persistent store");
+      _log.LogError($"Failed to remove site model metadata for site model {ID} from persistent store");
       return false;
     }
 
@@ -697,7 +697,7 @@ versionMap = null;
 
         if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
         {
-          Log.LogError($"Failed to save existence map for site model {ID} to persistent store");
+          _log.LogError($"Failed to save existence map for site model {ID} to persistent store");
           result = false;
         }
 
@@ -716,7 +716,7 @@ Result = false;
       }
 
       if (!result)
-        Log.LogError($"Failed to save site model for project {ID} to persistent store");
+        _log.LogError($"Failed to save site model for project {ID} to persistent store");
 
       return result;
     }
@@ -740,10 +740,10 @@ Result = false;
           }
 
           if (Result == FileSystemErrorStatus.OK)
-            Log.LogInformation(
+            _log.LogInformation(
               $"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {CellSize}");
           else
-            Log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
+            _log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
         }
       }
 
@@ -778,7 +778,7 @@ Result = false;
 
        if (result != FileSystemErrorStatus.OK)
        {
-         Log.LogInformation($"Failed to remove existence map from storage for project {ID} with error {result}");
+         _log.LogInformation($"Failed to remove existence map from storage for project {ID} with error {result}");
        }
 
        return result == FileSystemErrorStatus.OK;
@@ -816,7 +816,7 @@ Result = false;
         }
         else
         {
-          Log.LogInformation(
+          _log.LogInformation(
             $"Attempt to read existence map for site model {ID} failed [with result {readResult}] as the map does not exist, creating new existence map");
         }
 
@@ -963,7 +963,7 @@ Result = false;
           events.GetStateAtIndex(i, out var dateTime, out var machineDesignId);
           if (machineDesignId < 0)
           {
-            Log.LogError(
+            _log.LogError(
               $"{nameof(GetAssetOnDesignPeriods)}: Invalid machineDesignId in DesignNameChange event. machineID: {machine.ID} eventDate: {dateTime} ");
             continue;
           }
@@ -1079,7 +1079,7 @@ Result = false;
 
       if (machine == null)
       {
-        Log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine found. Machine UID: {machineUID}");
+        _log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine found. Machine UID: {machineUID}");
         return ccaMinimumPassesValue;
       }
 
@@ -1087,7 +1087,7 @@ Result = false;
 
       if (targetvalues == null)
       {
-        Log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine Targets found");
+        _log.LogWarning($"{nameof(GetCCAMinimumPassesValue)}. No Machine Targets found");
         return ccaMinimumPassesValue;
       }
 

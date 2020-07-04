@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using VSS.TRex.Common;
 
 /*
   Triangle and vector calculations
@@ -60,15 +59,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Display human readable version of the XYZ fields
     /// </summary>
-    /// <returns></returns>
     public override string ToString() => Z == Consts.NullDouble ? $"X:{X:F6}, Y:{Y:F6}, Z:Null" : $"X:{X:F6}, Y:{Y:F6}, Z:{Z:F6}";
 
     /// <summary>
     /// XYZ constructor taking X,Y and Z dimensions
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="z"></param>
     public XYZ(double x, double y, double z)
     {
       X = x;
@@ -79,8 +74,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// XYZ constructor taking X & Y dimensions, while defaulting the Z dimension to null
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
     public XYZ(double x, double y)
     {
       X = x;
@@ -91,9 +84,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Extract the three components of the XYZ structure into three reference parameters
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="z"></param>
     public void Explode(out double x, out double y, out double z)
     {
       x = X;
@@ -104,156 +94,103 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Create an XYZ instance initialized to NullDoubles for X, Y, and Z
     /// </summary>
-    /// <returns></returns>
     public static XYZ Null => new XYZ(Consts.NullDouble, Consts.NullDouble, Consts.NullDouble);
 
     /// <summary>
     /// Move side to the next side on a triangle (labeled 1, 2, & 3)
     /// </summary>
-    /// <param name="side"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int NextSide(int side) => (side + 1) % 3;
 
     /// <summary>
     /// Move side to the previous side on a triangle (labeled 1, 2, & 3)
     /// </summary>
-    /// <param name="side"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int PrevSide(int side) => (side + 2) % 3;
 
     /// <summary>
     /// Compare two XYZ points for equality
     /// </summary>
-    /// <param name="V1"></param>
-    /// <param name="V2"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(XYZ V1, XYZ V2) => V1.Equals(V2);
 
     /// <summary>
     /// Compare two XYZ points for inequality
     /// </summary>
-    /// <param name="V1"></param>
-    /// <param name="V2"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator !=(XYZ V1, XYZ V2) => !V1.Equals(V2);
 
     /// <summary>
     /// Subtract two XYZ points
     /// </summary>
-    /// <param name="V1"></param>
-    /// <param name="V0"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static XYZ operator -(XYZ V1, XYZ V0) => new XYZ(V1.X - V0.X, V1.Y - V0.Y, V1.Z - V0.Z);
 
     /// <summary>
     /// Add two XYZ points
     /// </summary>
-    /// <param name="V1"></param>
-    /// <param name="V0"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static XYZ operator +(XYZ V1, XYZ V0) => new XYZ(V1.X + V0.X, V1.Y + V0.Y, V1.Z + V0.Z);
 
     /// <summary>
     /// Multiply an XYZ point by a factor. All dimensions are scaled.
     /// </summary>
-    /// <param name="V"></param>
-    /// <param name="factor"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static XYZ operator *(XYZ V, double factor) => new XYZ(V.X * factor, V.Y * factor, V.Z * factor);
 
     /// <summary>
     /// Determine if one XYZ equals another
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     public bool Equals(XYZ other) => X == other.X && Y == other.Y && Z == other.Z;
 
     /// <summary>
     /// Calculate 2D length between two XYZ points
     /// </summary>
-    /// <param name="p1"></param>
-    /// <param name="p2"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Get2DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
 
     /// <summary>
     /// Calculate 3D length between two XYZ points
     /// </summary>
-    /// <param name="p1"></param>
-    /// <param name="p2"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Get3DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2) + Math.Pow(p2.Z - p1.Z, 2));
 
     /// <summary>
     /// Calculate dot product of two vectors from Origin to Pt1 and Origin to Pt2
     /// </summary>
-    /// <param name="Origin"></param>
-    /// <param name="Pt1"></param>
-    /// <param name="Pt2"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double DotProduct(XYZ Origin, XYZ Pt1, XYZ Pt2) => (Pt1.X - Origin.X) * (Pt2.X - Origin.X) + (Pt1.Y - Origin.Y) * (Pt2.Y - Origin.Y);
 
     /// <summary>
     /// Calculate perpendicular dot product of two vectors from Origin to Pt1 and Origin to Pt2
     /// </summary>
-    /// <param name="Origin"></param>
-    /// <param name="Pt1"></param>
-    /// <param name="Pt2"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double PerpDotProduct(XYZ Origin, XYZ Pt1, XYZ Pt2) => (Pt1.Y - Origin.Y) * (Pt2.X - Origin.X) - (Pt1.X - Origin.X) * (Pt2.Y - Origin.Y);
 
     /// <summary>
     /// Determine if the XYZ Pt is on the right hand side of the vector line defined by Line1 and LiIne2
     /// </summary>
-    /// <param name="Line1"></param>
-    /// <param name="Line2"></param>
-    /// <param name="Pt"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PointOnRight(XYZ Line1, XYZ Line2, XYZ Pt) => PerpDotProduct(Line1, Line2, Pt) > 0;
 
     /// <summary>
     /// Determine if the XYZ Pt is on the right hand side of, or directly on top of, the vector line defined by Line1 and LiIne2
     /// </summary>
-    /// <param name="Line1"></param>
-    /// <param name="Line2"></param>
-    /// <param name="Pt"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PointOnOrOnRight(XYZ Line1, XYZ Line2, XYZ Pt) => PerpDotProduct(Line1, Line2, Pt) >= 0;
 
     /// <summary>
     /// Calculate the perpendicular distance between XYZ point P2 and the line given by the XYZ points Line1 and Line2
     /// </summary>
-    /// <param name="Line1"></param>
-    /// <param name="Line2"></param>
-    /// <param name="Pt"></param>
-    /// <returns></returns>
     public static double GetPointOffset(XYZ Line1, XYZ Line2, XYZ Pt)
     {
       double Len = Get3DLength(Line1, Line2);
       return Len == 0 ? Get3DLength(Line1, Pt) : PerpDotProduct(Line1, Line2, Pt) / Len;
     }
 
-
     /// <summary>
     /// Calculate dot product of two vectors from Org to PtA and Org to PtB
     /// </summary>
-    /// <param name="Org"></param>
-    /// <param name="PtA"></param>
-    /// <param name="PtB"></param>
-    /// <returns></returns>
     public static XYZ CrossProduct(XYZ Org, XYZ PtA, XYZ PtB)
     {
       XYZ A = PtA - Org;
@@ -265,31 +202,18 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Compute the vector length defined as length from origin (0, 0, 0) and XYZ point V
     /// </summary>
-    /// <param name="V"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double VectorLength(XYZ V) => Math.Sqrt(V.X * V.X + V.Y * V.Y + V.Z * V.Z);
 
     /// <summary>
     /// Calculate the are of a triangle defined by three XYZ points
     /// </summary>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="P3"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double GetTriArea(XYZ P1, XYZ P2, XYZ P3) => VectorLength(CrossProduct(P1, P2, P3)) / 2;
-
 
     /// <summary>
     /// Internal function to calculate an intersection on the X axis
     /// </summary>
-    /// <param name="_X1"></param>
-    /// <param name="_Y1"></param>
-    /// <param name="_X2"></param>
-    /// <param name="_Y2"></param>
-    /// <param name="_X"></param>
-    /// <returns></returns>
     private static double GetInt(double _X1, double _Y1, double _X2, double _Y2, double _X)
     {
       const double MIN_EPSILON = -0.000000001; // Allow a nanometer tolerance on triangle edges...
@@ -306,12 +230,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Internal function to determine if there is an intersection on the Y axis
     /// </summary>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Z"></param>
-    /// <returns></returns>
     private static bool GetYInt(XYZ P1, XYZ P2, double X, out double Y, out double Z)
     {
       const double MIN_EPSILON = -0.000000001; // Allow a nanometer tolerance on triangle edges...
@@ -344,12 +262,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Calculate the height on a triangle given by three XYZ points at the location given by X & Y
     /// </summary>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="P3"></param>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <returns></returns>
     public static double GetTriangleHeight(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
     {
       bool GetInt1 = GetYInt(P1, P2, X, out double Y1, out double Z1);
@@ -381,12 +293,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Calculate the height on a triangle given by three XYZ points at the location given by X & Y
     /// </summary>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="P3"></param>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <returns></returns>
     public static double GetTriangleHeightEx(ref XYZ P1, ref XYZ P2, ref XYZ P3, double X, double Y)
     {
       const double MIN_EPSILON = -0.000000001; // Allow a nanometer tolerance on triangle edges...
@@ -512,12 +418,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if the given point (X, Y) is inside the triangle defined by three XYZ points
     /// </summary>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="P3"></param>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <returns></returns>
     public static bool PointInTriangle(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
     {
       XYZ TestPos = new XYZ(X, Y, 0);
@@ -530,12 +430,6 @@ namespace VSS.TRex.Geometry
     /// Determine if the given point (X, Y) is inside the triangle defined by three XYZ points. This method will return
     /// true if the point is coincident with any of the three side on the triangle
     /// </summary>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="P3"></param>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <returns></returns>
     public static bool PointInTriangleInclusive(XYZ P1, XYZ P2, XYZ P3, double X, double Y)
     {
       XYZ TestPos = new XYZ(X, Y, 0);
@@ -553,17 +447,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Calculate the scaled unit vector from the vector given by (0, 0, 0) -> XYZ point V
     /// </summary>
-    /// <param name="V"></param>
-    /// <returns></returns>
     public static XYZ UnitVector(XYZ V) => V * (1 / VectorLength(V));
 
     /// <summary>
     /// Returns the triangle centroid
     /// </summary>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="P3"></param>
-    /// <returns></returns>
     public static XYZ GetTriCentroid(XYZ P1, XYZ P2, XYZ P3)
     {
       return new XYZ((P1.X + P2.X + P3.X) / 3,

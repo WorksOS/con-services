@@ -7,13 +7,10 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using CoreX.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Tpaas.Client.Constants;
-using VSS.TRex.Common;
-using VSS.TRex.CoordinateSystems.Models;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.CoordinateSystems
 {
@@ -24,8 +21,8 @@ namespace VSS.TRex.CoordinateSystems
   {
     public const string COORDINATE_SERVICE_URL_ENV_KEY = "COORDINATE_SERVICE_URL";
 
-    private static readonly ILogger log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
-    private readonly CoordinateServiceHttpClient serviceHttpClient;
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
+    private readonly CoordinateServiceHttpClient _serviceHttpClient;
 
     // Bug 81615 - We are adding a cache to Coordinate system calls until CoreX is done, as we are hitting rate limits when generating tiles
     // When CoreX is implemented, this cache will not be needed (nor will this class)
@@ -39,167 +36,7 @@ namespace VSS.TRex.CoordinateSystems
         throw new NullReferenceException($"'{nameof(httpClient)}' cannot be null.");
       }
 
-      serviceHttpClient = new CoordinateServiceHttpClient(httpClient);
-    }
-
-    /// <summary>
-    /// Converts a single LLH coordinate to a NEE coordinate via an asynchronous service call.
-    /// </summary>
-    public async Task<NEE> GetNEEFromLLHAsync(string id, LLH coordinates)
-    {
-      try
-      {
-        var uniqueIdentifier = $"{nameof(GetNEEFromLLHAsync)}-{id}-{coordinates.Latitude}-{coordinates.Longitude}-{coordinates.Height}";
-        var cacheKey = GenerateKey(uniqueIdentifier);
-        if (_cache.TryGetValue<NEE>(cacheKey, out var cachedItem))
-          return cachedItem;
-
-        var route = "/coordinates/nee/Orientated/fromLLH" +
-                    $"?Type=ReferenceGlobal&Latitude={coordinates.Latitude}&Longitude={coordinates.Longitude}&Height={coordinates.Height}" +
-                    $"&fromCoordinateSystemId={id}";
-
-        var response = await serviceHttpClient.SendRequest(route, HttpMethod.Get);
-
-        if (response.IsSuccessStatusCode)
-        {
-          var neeStr = await response.Content.ReadAsStringAsync();
-
-          var result = JsonConvert.DeserializeObject<NEE>(neeStr);
-          _cache.Set(cacheKey, result, _cacheTimeout);
-          return result;
-        }
-      }
-      catch (Exception exception)
-      {
-        log.LogError(exception, $"Failed to get NEE for lat={coordinates.Latitude}, lon={coordinates.Longitude}, height={coordinates.Height}");
-      }
-
-      return new NEE {East = Consts.NullDouble, North = Consts.NullDouble, Elevation = Consts.NullDouble};
-    }
-
-    /// <summary>
-    /// Converts a multi dim array of doubles to <see cref="NEE"/> coordinates via an asynchronous service call.
-    /// </summary>
-    public async Task<(RequestErrorStatus ErrorCode, NEE[] NEECoordinates)> GetNEEFromLLHAsync(string id, double[,] coordinates)
-    {
-      try
-      {
-        var route = $"/coordinates/nee/Orientated/fromLLH?fromCoordinateSystemId={id}&fromType=ReferenceGlobal";
-
-        var requestObj = JsonConvert.SerializeObject(coordinates);
-
-        var uniqueId = $"{nameof(GetNEEFromLLHAsync)}-{id}-{requestObj}";
-        var cacheKey = GenerateKey(uniqueId);
-        if (_cache.TryGetValue<(RequestErrorStatus, NEE[])>(cacheKey, out var cachedItem))
-          return cachedItem;
-
-        var response = await serviceHttpClient.SendRequest(route, HttpMethod.Post, MediaTypes.JSON, requestObj);
-
-        if (response.IsSuccessStatusCode)
-        {
-          var neeStr = await response.Content.ReadAsStringAsync();
-          var resultArray = JsonConvert.DeserializeObject<double[,]>(neeStr);
-          var result = (RequestErrorStatus.OK, resultArray.ToNEEArray());
-
-          _cache.Set(cacheKey, result, _cacheTimeout);
-
-          return result;
-        }
-      }
-      catch (Exception exception)
-      {
-        log.LogError(exception, "Failed to get NEE for lat array");
-      }
-
-      return (RequestErrorStatus.Exception, null);
-    }
-
-    /// <summary>
-    /// Converts a single NEE coordinate to a LLH coordinate via an asynchronous service call.
-    /// </summary>
-    public async Task<LLH> GetLLHFromNEEAsync(string id, NEE coordinates)
-    {
-      try
-      {
-        var route = "/coordinates/llh/ReferenceGlobal/fromNEE" +
-                    $"?from.type=Orientated&from.northing={coordinates.North}&from.easting={coordinates.East}&from.elevation={coordinates.Elevation}" +
-                    $"&fromCoordinateSystemId={id}";
-
-        var uniqueIdentifier = $"{nameof(GetLLHFromNEEAsync)}-{id}-{coordinates.North}-{coordinates.East}-{coordinates.Elevation}";
-        var cacheKey = GenerateKey(uniqueIdentifier);
-        if (_cache.TryGetValue<LLH>(cacheKey, out var cachedItem))
-          return cachedItem;
-
-        var response = await serviceHttpClient.SendRequest(route, HttpMethod.Get);
-
-        if (response.IsSuccessStatusCode)
-        {
-          var llhStr = await response.Content.ReadAsStringAsync();
-
-          var result = JsonConvert.DeserializeObject<LLH>(llhStr);
-          _cache.Set(cacheKey, result, _cacheTimeout);
-          return result;
-        }
-      }
-      catch (Exception exception)
-      {
-        log.LogError(exception, $"Failed to get LLH for east={coordinates.East}, north={coordinates.North}, elevation={coordinates.Elevation}");
-      }
-
-      return new LLH {Latitude = Consts.NullDouble, Longitude = Consts.NullDouble, Height = Consts.NullDouble};
-    }
-
-    /// <summary>
-    /// Converts an array of NEE coordinates to a list of LLH coordinates via an asynchronous service call.
-    /// </summary>
-    public async Task<(RequestErrorStatus ErrorCode, LLH[] LLHCoordinates)> GetLLHFromNEEAsync(string id, double[,] coordinates)
-    {
-      try
-      {
-        var route = $"/coordinates/llh/ReferenceGlobal/fromNEE?fromCoordinateSystemId={id}&fromType=Orientated";
-
-        var requestObj = JsonConvert.SerializeObject(coordinates);
-
-        var uniqueIdentifier = $"{nameof(GetLLHFromNEEAsync)}-{id}-{requestObj}";
-        var cacheKey = GenerateKey(uniqueIdentifier);
-        if (_cache.TryGetValue<(RequestErrorStatus ErrorCode, LLH[] LLHCoordinates)>(cacheKey, out var cachedItem))
-          return cachedItem;
-
-        var response = await serviceHttpClient.SendRequest(route, HttpMethod.Post, MediaTypes.JSON, requestObj);
-
-        if (response.IsSuccessStatusCode)
-        {
-          var llhStr = await response.Content.ReadAsStringAsync();
-          var resultArray = JsonConvert.DeserializeObject<double[,]>(llhStr);
-
-          var result = (RequestErrorStatus.OK, resultArray.ToLLHArray());
-          _cache.Set(cacheKey, result, _cacheTimeout);
-          return result;
-        }
-      }
-      catch (Exception exception)
-      {
-        log.LogError(exception, "Failed to get coordinates");
-      }
-
-      return (RequestErrorStatus.Exception, null);
-    }
-
-    /// <summary>
-    /// Imported a DC file (presented as a filePath reference in a file system) and extracts a CSIB from it.
-    /// </summary>
-    public async Task<string> ImportFromDCAsync(string filePath)
-    {
-      try
-      {
-        return await ImportFromDCContentAsync(filePath, File.ReadAllBytes(filePath));
-      }
-      catch (Exception exception)
-      {
-        log.LogError(exception, $"Failed to import coordinate system from DC {filePath}");
-      }
-
-      return null;
+      _serviceHttpClient = new CoordinateServiceHttpClient(httpClient);
     }
 
     /// <summary>
@@ -213,12 +50,12 @@ namespace VSS.TRex.CoordinateSystems
         var cacheKey = GenerateKey(uniqueIdentifier);
         if (_cache.TryGetValue<CoordinateSystemResponse>(cacheKey, out var cachedItem))
           return cachedItem;
-        
+
         using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
           content.Add(new StreamContent(new MemoryStream(fileContent)), "file", Path.GetFileName(filePath));
 
-          var response = await serviceHttpClient.SendRequest("/coordinatesystems/imports/dc/file", content);
+          var response = await _serviceHttpClient.SendRequest("/coordinatesystems/imports/dc/file", content);
           if (!response.IsSuccessStatusCode)
           {
             throw new Exception(response.ToString());
@@ -234,7 +71,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError(exception, $"Failed to import coordinate system definition from DC '{filePath}'");
+        _log.LogError(exception, $"Failed to import coordinate system definition from DC '{filePath}'");
       }
 
       return new CoordinateSystemResponse();
@@ -264,7 +101,7 @@ namespace VSS.TRex.CoordinateSystems
 
         using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
-          var response = await serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get);
+          var response = await _serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get);
           if (!response.IsSuccessStatusCode)
           {
             throw new Exception(response.ToString());
@@ -278,7 +115,7 @@ namespace VSS.TRex.CoordinateSystems
       }
       catch (Exception exception)
       {
-        log.LogError(exception, "Failed to import coordinate system definition from CSIB");
+        _log.LogError(exception, "Failed to import coordinate system definition from CSIB");
       }
 
       return new CoordinateSystemResponse();
@@ -304,6 +141,5 @@ namespace VSS.TRex.CoordinateSystems
     {
       return GenerateHash(Encoding.UTF8.GetBytes(data));
     }
-
   }
 }

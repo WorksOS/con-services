@@ -22,6 +22,7 @@ using VSS.TRex.QuantizedMesh.GridFabric;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGrids.Responses;
+using CoreX.Interfaces;
 
 namespace VSS.TRex.QuantizedMesh.Tests
 {
@@ -193,13 +194,13 @@ namespace VSS.TRex.QuantizedMesh.Tests
         llhCoords[i].Y = Math.Round(1219.93 + i, DECIMALS);
       }
 
-      var expectedCoordinateConversionResult = (RequestErrorStatus.OK, neeCoords);
-      var expectedCoordinateConversionResult2 = (RequestErrorStatus.OK, llhCoords);
+      var expectedCoordinateConversionResult = neeCoords.ToCoreX_XYZ();
+      var expectedCoordinateConversionResult2 = llhCoords.ToCoreX_XYZ();
 
       // LL to NEE
       var convertCoordinatesMock = new Mock<IConvertCoordinates>();
-      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<XYZ[]>(), true)).ReturnsAsync(expectedCoordinateConversionResult);
-      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).ReturnsAsync(expectedCoordinateConversionResult2);
+      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), CoreX.Types.InputAs.Radians)).Returns(expectedCoordinateConversionResult);
+      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), CoreX.Types.ReturnAs.Radians)).Returns(expectedCoordinateConversionResult2);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
       filter = new FilterSet(new CombinedFilter());

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Client.Types
 {

@@ -1,7 +1,8 @@
 ﻿using System.Linq;
+using CoreX.Interfaces;
 using CoreX.Models;
+using CoreX.Types;
 using CoreX.Wrapper.Extensions;
-using CoreX.Wrapper.Types;
 
 namespace CoreX.Wrapper
 {
@@ -20,6 +21,9 @@ namespace CoreX.Wrapper
     {
       _coreX = coreX;
     }
+
+    public ConvertCoordinates()
+    { }
 
     /// <inheritdoc />
     public XYZ NullWGSLLToXY(WGS84Point wgsPoint) => new XYZ(wgsPoint.Lon, wgsPoint.Lat);

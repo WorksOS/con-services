@@ -191,7 +191,6 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
-    /// <returns></returns>
     public async Task<bool> BuildAsync()
     {
       // Ensure the task is initialised with the request descriptor
@@ -285,7 +284,7 @@ namespace VSS.TRex.Pipelines
 
           if (filter.AttributeFilter.AnyFilterSelections)
           {
-            Response.ResultStatus = await FilterUtilities.PrepareFilterForUse(filter, DataModelID);
+            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
             if (Response.ResultStatus != RequestErrorStatus.OK)
             {
               Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");

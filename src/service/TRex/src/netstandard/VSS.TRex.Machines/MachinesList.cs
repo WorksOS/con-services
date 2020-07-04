@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Common.Extensions;
 
 namespace VSS.TRex.Machines
 {
@@ -39,20 +37,12 @@ namespace VSS.TRex.Machines
     /// <summary>
     /// Determine the next unique JohnDoe machine ID to use for a new John Doe machine
     /// </summary>
-    /// <returns></returns>
     private Guid UniqueJohnDoeID() => Guid.NewGuid();
 
     /// <summary>
     /// Creates a new machine and adds it to the internal list with a new internal machine index
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="machineHardwareID"></param>
-    /// <param name="machineType"></param>
-    /// <param name="deviceType"></param>
-    /// <param name="isJohnDoeMachine"></param>
-    /// <param name="machineID"></param>
-    /// <returns></returns>
-    public IMachine CreateNew(string name, 
+    public IMachine CreateNew(string name,
       string machineHardwareID,
       MachineType machineType,
       DeviceTypeEnum deviceType,
@@ -71,7 +61,7 @@ namespace VSS.TRex.Machines
       // Determine the internal ID for the new machine.
       // Note: This assumes machines are never removed from a project
 
-      var internalMachineID = (short) Count;
+      var internalMachineID = (short)Count;
 
       var Result = new Machine(name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine);
 
@@ -84,7 +74,6 @@ namespace VSS.TRex.Machines
     /// <summary>
     /// Overrides the base List T Add() method to add the item to the local machine ID map dictionary as well as add it to the list
     /// </summary>
-    /// <param name="machine"></param>
     public new void Add(IMachine machine)
     {
       if (machine == null)
@@ -99,18 +88,12 @@ namespace VSS.TRex.Machines
     /// Finds the machine in the list whose name matches the given name
     /// It returns NIL if there is no matching machine
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="isJohnDoeMachine"></param>
-    /// <returns></returns>
     public IMachine Locate(string name, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && name.Equals(x.Name));
 
     /// <summary>
     /// Locate finds the machine in the list whose name matches the given ID
     /// It returns NIL if there is no matching machine
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="isJohnDoeMachine"></param>
-    /// <returns></returns>
     public IMachine Locate(Guid id, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && id == x.ID);
 
     /// <summary>
@@ -118,18 +101,12 @@ namespace VSS.TRex.Machines
     /// If a machine matching the given ID is located it is returned, else if the machine is expected to be a John Doe a
     /// machine is attempted to be located using a specific John Doe machine name approach
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="name"></param>
-    /// <param name="isJohnDoeMachine"></param>
-    /// <returns></returns>
     public IMachine Locate(Guid id, string name, bool isJohnDoeMachine) => Locate(id, isJohnDoeMachine) ?? (isJohnDoeMachine ? Locate(name, true) : null);
 
     /// <summary>
     /// Locate finds a machine given the ID of a machine in the list.
     /// It returns NIL if there is no matching machine
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
     public IMachine Locate(Guid id) => MachineIDMap.TryGetValue(id, out var result) ? result : null;
 
     // LocateByMachineHardwareID locates the (first) machine in the machines
@@ -139,7 +116,6 @@ namespace VSS.TRex.Machines
     /// <summary>
     /// Serialize the list of machine using the given writer
     /// </summary>
-    /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -152,7 +128,6 @@ namespace VSS.TRex.Machines
     /// <summary>
     /// Deserializes the list of machines using the given reader
     /// </summary>
-    /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
@@ -184,7 +159,7 @@ namespace VSS.TRex.Machines
     /// </summary>
     public void RemoveFromPersistentStore(IStorageProxy storageProxy)
     {
-        RemoveFromPersistentStore(DataModelID, storageProxy);
+      RemoveFromPersistentStore(DataModelID, storageProxy);
     }
 
     /// <summary>

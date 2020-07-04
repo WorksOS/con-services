@@ -32,9 +32,6 @@
     <ProjectReference Include="..\..\VSS.TRex.Compression\VSS.TRex.Compression.csproj">
       <Private>true</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj">
-      <Private>true</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj">
       <Private>true</Private>
     </ProjectReference>

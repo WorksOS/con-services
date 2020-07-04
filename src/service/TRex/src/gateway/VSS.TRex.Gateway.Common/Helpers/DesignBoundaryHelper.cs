@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.Types;
 using FenceGeometry = VSS.Productivity3D.Models.Models.MapHandling.Geometry;
 
 namespace VSS.TRex.Gateway.Common.Helpers
@@ -22,7 +18,6 @@ namespace VSS.TRex.Gateway.Common.Helpers
     /// <summary>
     /// Converts DesignBoundaryResponse into DesignBoundaryResult data.
     /// </summary>
-    /// <returns></returns>
     public static async Task<DesignBoundaryResult> ConvertBoundary(List<Fence> boundary, double tolerance, double cellSize, string csib, string fileName)
     {
       const int VERTICES_LIMIT = 10000;
@@ -87,26 +82,15 @@ namespace VSS.TRex.Gateway.Common.Helpers
             neeCoords[i] = new XYZ(fence.Points[i].Y, fence.Points[i].X, 0.0);
         }
 
-        var coordConversionResult = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, neeCoords);
+        var llhCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, neeCoords.ToCoreX_XYZ());
+        var fencePoints = new List<double[]>();
 
-        if (coordConversionResult.ErrorCode == RequestErrorStatus.OK)
-        {
-          var llhCoords = coordConversionResult.LLHCoordinates;
+        for (var fencePointIdx = 0; fencePointIdx < llhCoords.Length; fencePointIdx++)
+          AddPoint(llhCoords[fencePointIdx].X, llhCoords[fencePointIdx].Y, fencePoints);
 
-          var fencePoints = new List<double[]>();
+        geo.Coordinates.Add(fencePoints);
 
-          for (var fencePointIdx = 0; fencePointIdx < llhCoords.Length; fencePointIdx++)
-            AddPoint(llhCoords[fencePointIdx].X, llhCoords[fencePointIdx].Y, fencePoints);
-
-          geo.Coordinates.Add(fencePoints);
-
-          geoJson.Features.Add(feature);
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            $"Failed to convert design boundary data due to coordinate conversion failure. Error status: {coordConversionResult.ErrorCode}"));
-        }
+        geoJson.Features.Add(feature);
       }
 
       Log.LogInformation($"Boundary conversion completed with number of vertices: {vertsCount}");
@@ -119,7 +103,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
       const int DECIMALS = 6;
 
       var point = new[]
-      { 
+      {
         Math.Round(x, DECIMALS),
         Math.Round(y, DECIMALS)
       };
