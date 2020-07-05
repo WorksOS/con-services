@@ -6,4 +6,4 @@ ARG COLLECT_COVERAGE=true
 
 WORKDIR /build/${SERVICE_PATH}
 
-RUN find . -name "*Tests.csproj" | xargs -I@ -t dotnet test /p:CollectCoverage=${COLLECT_COVERAGE} /p:CoverletOutputFormat=cobertura /p:CoverletOutput="/build/${SERVICE_PATH}/UnitTestResults/" --logger trx --results-directory UnitTestResults -nowarn:NU1701 @
+RUN find . -name "*Tests.csproj" | xargs -I@ -t dotnet test /p:CollectCoverage=${COLLECT_COVERAGE} /p:CoverletOutputFormat=cobertura /p:CoverletOutput="/build/${SERVICE_PATH}/UnitTestResults/" --logger trx --results-directory UnitTestResults -nowarn:NU1701 @; exit 0
