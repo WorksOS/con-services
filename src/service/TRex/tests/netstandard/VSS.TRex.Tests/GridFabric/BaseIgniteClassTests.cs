@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
@@ -89,6 +91,7 @@ namespace VSS.TRex.Tests.GridFabric
       // Nobble the IClusterNodes.Count() setup to mimic an empty cluster group
 
       igniteMock.mockClusterNodes.Setup(x => x.Count).Returns(0);
+      igniteMock.mockCluster.Setup(x => x.GetNodes()).Returns((List<IClusterNode>)null);
 
       DIBuilder.Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
