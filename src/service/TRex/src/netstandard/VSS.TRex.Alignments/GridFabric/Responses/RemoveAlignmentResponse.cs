@@ -9,7 +9,7 @@ namespace VSS.TRex.Alignments.GridFabric.Responses
   {
     private const byte VERSION_NUMBER = 1;
 
-    public Guid DesignUid { get; set; }
+    public Guid AlignmentUid { get; set; }
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
@@ -17,7 +17,7 @@ namespace VSS.TRex.Alignments.GridFabric.Responses
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteGuid(DesignUid);
+      writer.WriteGuid(AlignmentUid);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -31,7 +31,7 @@ namespace VSS.TRex.Alignments.GridFabric.Responses
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      DesignUid = reader.ReadGuid() ?? Guid.Empty;
+      AlignmentUid = reader.ReadGuid() ?? Guid.Empty;
     }
   }
 }
