@@ -149,7 +149,19 @@ namespace VSS.TRex.Designs
     {
       var designs = Load(siteModelId);
       var result = designs.RemoveDesign(designId);
-      Store(siteModelId, designs);
+
+      if (result)
+      {
+        var removeMapResult = _writeStorageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.DesignTopologyExistenceMap,
+          BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designId));
+        
+        if (removeMapResult != FileSystemErrorStatus.OK)
+        {
+          _log.LogInformation($"Removing existence map for design {designId} in project {siteModelId} failed with error {removeMapResult}");
+        }
+
+        Store(siteModelId, designs);
+      }
 
       return result;
     }

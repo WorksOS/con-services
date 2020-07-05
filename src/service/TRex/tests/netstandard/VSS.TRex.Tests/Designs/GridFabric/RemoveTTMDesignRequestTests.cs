@@ -9,6 +9,9 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using System;
+using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric.Affinity;
+using VSS.TRex.ExistenceMaps.GridFabric.Requests;
 
 namespace VSS.TRex.Tests.Designs.GridFabric
 {
@@ -29,7 +32,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public async void RemoveDesign_FailWithNoProject()
+    public async void Remove_FailWithNoProject()
     {
       AddApplicationRouting();
 
@@ -45,14 +48,34 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public async void RemoveDesign()
+    public async void Remove_FailWithNoDesign()
+    {
+      AddApplicationRouting();
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+
+      var request = new RemoveTTMDesignRequest();
+      var response = await request.ExecuteAsync(new RemoveTTMDesignArgument
+      {
+        ProjectID = siteModel.ID,
+        DesignID = Guid.NewGuid()
+      });
+
+      response.Should().NotBeNull();
+      response.RequestResult.Should().Be(DesignProfilerRequestResult.DesignDoesNotExist);
+    }
+
+    [Fact]
+    public async void Remove()
     {
       AddApplicationRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       // Add te design to be removed
-      var designID = System.Guid.NewGuid();
+      var designID = Guid.NewGuid();
+      var existenceMap = new TRex.SubGridTrees.SubGridTreeSubGridExistenceBitMask();
+      existenceMap[0, 0] = true;
 
       var addRequest = new AddTTMDesignRequest();
       var addResponse = await addRequest.ExecuteAsync(new AddTTMDesignArgument
@@ -60,7 +83,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
         ProjectID = siteModel.ID,
         DesignDescriptor = new DesignDescriptor(designID, "folder", "filename"),
         Extents = new TRex.Geometry.BoundingWorldExtent3D(0, 0, 1, 1),
-        ExistenceMap = new TRex.SubGridTrees.SubGridTreeSubGridExistenceBitMask()
+        ExistenceMap = existenceMap
       });
 
       addResponse.Should().NotBeNull();
@@ -85,6 +108,10 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       // Re-request the sitemodel to reflect the change
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID, false);
       siteModel.Designs.Count.Should().Be(0);
+
+      var readExistenceMap = DIContext.Obtain<IExistenceMapServer>().GetExistenceMap(new NonSpatialAffinityKey(siteModel.ID,
+  BaseExistenceMapRequest.CacheKeyString(TRex.ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designID)));
+      readExistenceMap.Should().BeNull();
     }
   }
 }

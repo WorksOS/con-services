@@ -131,7 +131,19 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       var ss = Load(siteModelUid);
       var result = ss.RemoveSurveyedSurface(surveySurfaceUid);
-      Store(siteModelUid, ss);
+
+      if (result)
+      {
+        var removeMapResult = _writeStorageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.DesignTopologyExistenceMap,
+          BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveySurfaceUid));
+
+        if (removeMapResult != FileSystemErrorStatus.OK)
+        {
+          _log.LogInformation($"Removing surveyed surface existence map for surveyed surface {surveySurfaceUid} project {siteModelUid} failed with error {removeMapResult}");
+        }
+
+        Store(siteModelUid, ss);
+      }
 
       return result;
     }
@@ -148,7 +160,7 @@ namespace VSS.TRex.SurveyedSurfaces
         var filename = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID);
         if ((fsresult = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
         {
-          _log.LogWarning($"Unable to remove existance map for design {surveyedSurface.ID}, filename = {filename}, with result: {fsresult}");
+          _log.LogWarning($"Unable to remove existance map for surveyed surface {surveyedSurface.ID}, filename = {filename}, in project {siteModelUid} with result: {fsresult}");
         }
       }
 

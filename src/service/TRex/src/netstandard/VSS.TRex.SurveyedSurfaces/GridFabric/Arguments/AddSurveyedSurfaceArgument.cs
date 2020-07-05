@@ -73,10 +73,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
 
-      AsAtDate = DateTime.SpecifyKind(new DateTime(reader.ReadLong()), DateTimeKind.Utc);
-
       if (reader.ReadBoolean())
         (DesignDescriptor = new DesignDescriptor()).FromBinary(reader);
+
+      AsAtDate = DateTime.SpecifyKind(new DateTime(reader.ReadLong()), DateTimeKind.Utc);
 
       if (reader.ReadBoolean())
         (Extents = new BoundingWorldExtent3D()).FromBinary(reader);
