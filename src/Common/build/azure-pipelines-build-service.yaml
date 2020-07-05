@@ -34,7 +34,7 @@ jobs:
           command: 'test'
           projects: 'src/Common/Common.sln'
           arguments: '--no-restore -nowarn:NU1701 -nowarn:CS1591'
-          publishTestResults: false
+          publishTestResults: true
 
   - job: Build3DPService
     displayName: 'Build 3DP service'

@@ -15,11 +15,7 @@ variables:
   serviceName: Megalodon
   rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service/Megalodon'
   ecrRepositoryName: 'rpd-ccss-megalodon-webapi'
-  # Only generate code coverage for master branch.
-  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-    collectCoverage: true
-  ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
-    collectCoverage: false
+  isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 jobs:
   - job: BuildTestAndDeploy
@@ -44,23 +40,25 @@ jobs:
         displayName: 'Run unit tests'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action unittest -collectCoverage $(collectCoverage)'
+          arguments: '-service $(serviceName) -action unittest -collectCoverage $(isMasterBranch)'
 
       - task: PublishTestResults@2
         displayName: 'Publish Unit Test Results'
-        continueOnError: true
         inputs:
           testResultsFormat: 'VSTest'
           testResultsFiles: '**/*.trx'
           searchFolder: '$(rootServiceFolder)/UnitTestResults'
+          failTaskOnFailedTests: true
 
       - task: PublishCodeCoverageResults@1
+        # Only run for /master branch
+        condition: and(succeeded(), eq(variables['isMasterBranch'], true))
         displayName: 'Publish Code Coverage'
         inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml'
           pathToSources: '$(rootServiceFolder)'
-          failIfCoverageEmpty: $(collectCoverage)
+          failIfCoverageEmpty: true
 
       # - task: PowerShell@2
       #   displayName: 'Publish Service'
