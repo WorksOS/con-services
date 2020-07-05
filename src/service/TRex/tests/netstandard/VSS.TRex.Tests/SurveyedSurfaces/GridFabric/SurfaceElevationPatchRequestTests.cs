@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Caching;
 using VSS.TRex.Common;
@@ -77,6 +78,27 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
 
       var req = new SurfaceElevationPatchRequest();      
       var result = req.Execute(new SurfaceElevationPatchArgument(siteModel.ID, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset,
+        siteModel.CellSize, patchType, SubGridTreeBitmapSubGridBits.FullMask, siteModel.SurveyedSurfaces));
+
+      ValidateSurveyedSurfaceSuGridResult(siteModel, expectedGridType, patchType, result);
+    }
+
+    [Theory()]
+    [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
+    [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
+    [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
+    public async Task Execute_SingleSurveyedSurfaceAsync(SurveyedSurfacePatchType patchType, GridDataType expectedGridType)
+    {
+      AddApplicationGridRouting();
+
+      var asAtDate = DateTime.UtcNow;
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+
+      // Construct a surveyed surface from the design
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleSurveyedSurfaceAboutOrigin(ref siteModel, 1.0f, asAtDate);
+
+      var req = new SurfaceElevationPatchRequest();
+      var result = await req.ExecuteAsync(new SurfaceElevationPatchArgument(siteModel.ID, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset,
         siteModel.CellSize, patchType, SubGridTreeBitmapSubGridBits.FullMask, siteModel.SurveyedSurfaces));
 
       ValidateSurveyedSurfaceSuGridResult(siteModel, expectedGridType, patchType, result);

@@ -1,9 +1,9 @@
 ﻿using System;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.SubGridTrees
 {
@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public bool ProdDataRequested
     {
-      get => BitFlagHelper.IsBitOn(DataRequestFlags, 0); 
+      get => BitFlagHelper.IsBitOn(DataRequestFlags, 0);
       set => BitFlagHelper.SetBit(ref DataRequestFlags, 0, value);
     }
 
@@ -41,13 +41,13 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public bool SurveyedSurfaceDataRequested
     {
-      get => BitFlagHelper.IsBitOn(DataRequestFlags, 1); 
-      set => BitFlagHelper.SetBit(ref DataRequestFlags, 1, value); 
+      get => BitFlagHelper.IsBitOn(DataRequestFlags, 1);
+      set => BitFlagHelper.SetBit(ref DataRequestFlags, 1, value);
     }
 
     private static readonly int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
-    
-    public SubGridCellAddress(int AX, int AY) 
+
+    public SubGridCellAddress(int AX, int AY)
     {
       X = AX;
       Y = AY;

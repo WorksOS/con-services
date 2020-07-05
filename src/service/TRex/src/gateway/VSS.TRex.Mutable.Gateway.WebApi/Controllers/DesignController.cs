@@ -45,8 +45,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     ///    Path:     projectUid
     ///    Filename: bowlfill 1290 6-5-18.ttm 
     /// </summary>
-    /// <param name="designRequest"></param>
-    /// <returns></returns>
     [HttpPost]
     public Task<ContractExecutionResult> CreateDesign([FromBody] DesignRequest designRequest)
     {
@@ -78,8 +76,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// <summary>
     /// Update a design
     /// </summary>
-    /// <param name="designRequest"></param>
-    /// <returns></returns>
     [HttpPut]
     public Task<ContractExecutionResult> UpdateDesign([FromBody] DesignRequest designRequest)
     {
@@ -113,10 +109,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     ///    Files are left on S3 (as per Dmitry)
     ///    Local copies in temp are removed
     /// </summary>
-    /// <param name="designRequest"></param>
-    /// <returns></returns>
     [HttpDelete]
-    public ContractExecutionResult DeleteDesign([FromBody] DesignRequest designRequest)
+    public Task<ContractExecutionResult> DeleteDesign([FromBody] DesignRequest designRequest)
     {
       Log.LogInformation($"{nameof(DeleteDesign)}: {JsonConvert.SerializeObject(designRequest)}");
       designRequest.Validate();
@@ -124,24 +118,25 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
      
       if (!DesignExists(designRequest.ProjectUid, designRequest.FileType, designRequest.DesignUid))
       {
-        return new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot delete.");
+        return Task.FromResult(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Design doesn't exist. Cannot delete."));
       }
 
       if (designRequest.FileType == ImportedFileType.DesignSurface || designRequest.FileType == ImportedFileType.SurveyedSurface)
       {
-        return WithServiceExceptionTryExecute(() =>
+        return WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainer
             .Build<DeleteTTMDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designRequest));
+            .ProcessAsync(designRequest));
       }
 
       if (designRequest.FileType == ImportedFileType.Alignment)
       {
-        return WithServiceExceptionTryExecute(() =>
+        return WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainer
             .Build<DeleteSVLDesignExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-            .Process(designRequest));
+            .ProcessAsync(designRequest));
       }
+
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
     }
 

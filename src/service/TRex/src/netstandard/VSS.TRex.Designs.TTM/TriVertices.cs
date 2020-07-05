@@ -16,10 +16,6 @@ namespace VSS.TRex.Designs.TTM
     /// <summary>
     /// Computes the hash index for the given vertex location
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Z"></param>
-    /// <returns></returns>
     private int GetHashIndex(double X, double Y, double Z)
     {
       double HashValue = HashOrdinate == HashOrdinate.hoX ? X : Y;
@@ -32,11 +28,6 @@ namespace VSS.TRex.Designs.TTM
     /// <summary>
     /// Locate a vertex based on a position using the vertex hash map
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Z"></param>
-    /// <param name="HashIndex"></param>
-    /// <returns></returns>
     private TriVertex SearchForPoint(double X, double Y, double Z, out int HashIndex)
     {
       HashIndex = GetHashIndex(X, Y, Z);

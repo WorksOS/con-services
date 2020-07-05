@@ -36,7 +36,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       if (request == null)
         ThrowRequestTypeCastException<CSFileValidationRequest>();
 
-      var csd = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
+      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem != null && csd.CoordinateSystem.ZoneInfo != null && csd.CoordinateSystem.DatumInfo != null)
         return ConvertResult(request.CSFileName, csd.CoordinateSystem);

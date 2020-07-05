@@ -14,16 +14,6 @@
     /// <summary>
     ///  Initializes the plane equation given X, Y, Z coordinates of three points of a triangle
     /// </summary>
-    /// <param name="px"></param>
-    /// <param name="py"></param>
-    /// <param name="pz"></param>
-    /// <param name="qx"></param>
-    /// <param name="qy"></param>
-    /// <param name="qz"></param>
-    /// <param name="rx"></param>
-    /// <param name="ry"></param>
-    /// <param name="rz"></param>
-    /// <returns></returns>
     public bool Init(double px, double py, double pz, double qx, double qy, double qz, double rx, double ry, double rz)
     {
       // find the plane z=ax+by+c passing through three points p,q,r

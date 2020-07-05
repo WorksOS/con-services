@@ -7,14 +7,12 @@ using VSS.TRex.Volumes.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.GridFabric.Requests
 {
-    /// <summary>
-    /// A request that may be issued to compute a volume
-    /// </summary>
-    public class SimpleVolumesRequest_ApplicationService : GenericASNodeRequest<SimpleVolumesRequestArgument, SimpleVolumesRequestComputeFunc_ApplicationService, SimpleVolumesResponse> 
-    {
-      public SimpleVolumesRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
-      {
-
-      }
+  /// <summary>
+  /// A request that may be issued to compute a volume
+  /// </summary>
+  public class SimpleVolumesRequest_ApplicationService : GenericASNodeRequest<SimpleVolumesRequestArgument, SimpleVolumesRequestComputeFunc_ApplicationService, SimpleVolumesResponse>
+  {
+    public SimpleVolumesRequest_ApplicationService() : base(TRexGrids.ImmutableGridName(), ServerRoles.ASNODE)
+    { }
   }
 }

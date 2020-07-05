@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Common.Utilities.Interfaces;
+﻿using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {

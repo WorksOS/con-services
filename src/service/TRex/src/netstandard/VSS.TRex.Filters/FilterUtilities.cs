@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Types;
+using CoreX.Wrapper;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities;
-using VSS.TRex.Designs.GridFabric.Arguments;
-using VSS.TRex.Designs.GridFabric.Requests;
-using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Filters
 {
   public static class FilterUtilities
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(FilterUtilities));
+    private static readonly ILogger _log = Logging.Logger.CreateLogger(nameof(FilterUtilities));
 
     /*
     private IExistenceMaps existenceMaps = null;
@@ -27,10 +30,7 @@ namespace VSS.TRex.Filters
     /// Prepare a filter for use by performing any necessary coordinate conversions and requesting any
     /// supplemental information such as alignment design boundary calculations.
     /// </summary>
-    /// <param name="filter"></param>
-    /// <param name="dataModelId"></param>
-    /// <returns></returns>
-    public static async Task<RequestErrorStatus> PrepareFilterForUse(ICombinedFilter filter, Guid dataModelId)
+    public static RequestErrorStatus PrepareFilterForUse(ICombinedFilter filter, Guid dataModelId)
     {
       // Fence DesignBoundary = null;
       var result = RequestErrorStatus.OK;
@@ -59,17 +59,20 @@ namespace VSS.TRex.Filters
               LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].Y));
             }
 
-            var (errorCode, NEECoords) =
-              SiteModel == null
-                ? (RequestErrorStatus.FailedToConvertClientWGSCoords, null)
-                : await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
+            XYZ[] NEECoords;
 
-            if (errorCode != RequestErrorStatus.OK)
+            try
             {
-              Log.LogInformation("Filter preparation failure, could not convert coordinates from WGS to grid coordinates");
-
+              NEECoords = DIContext
+              .Obtain<IConvertCoordinates>()
+              .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), InputAs.Radians)
+              .ToTRex_XYZ();
+            }
+            catch
+            {
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
+
 
             for (var fencePointIdx = 0; fencePointIdx < filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
             {
@@ -84,17 +87,19 @@ namespace VSS.TRex.Filters
           if (filter.SpatialFilter.IsPositional)
           {
             // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
-            LLHCoords = new[] {new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY))};
+            LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY)) };
 
-            var (errorCode, NEECoords) = 
-              SiteModel == null 
-                ? (RequestErrorStatus.FailedToConvertClientWGSCoords, null) 
-                : await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
-            
-            if (errorCode != RequestErrorStatus.OK)
+            XYZ[] NEECoords;
+
+            try
             {
-              Log.LogInformation("Filter mutation failure, could not convert coordinates from WGS to grid coordinates");
-
+              NEECoords = DIContext
+                .Obtain<IConvertCoordinates>()
+                .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), InputAs.Radians)
+                .ToTRex_XYZ();
+            }
+            catch
+            {
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
 
@@ -125,7 +130,7 @@ namespace VSS.TRex.Filters
 
           if (BoundaryResult.RequestResult != DesignProfilerRequestResult.OK)
           {
-            Log.LogError($"{nameof(PrepareFilterForUse)}: Failed to get boundary for alignment design ID:{filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
+            _log.LogError($"{nameof(PrepareFilterForUse)}: Failed to get boundary for alignment design ID:{filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
 
             return RequestErrorStatus.NoResultReturned;
           }
@@ -156,10 +161,7 @@ namespace VSS.TRex.Filters
     /// Prepare a set of filter for use by performing any necessary coordinate conversions and requesting any
     /// supplemental information such as alignment design boundary calculations.
     /// </summary>
-    /// <param name="filters"></param>
-    /// <param name="dataModelId"></param>
-    /// <returns></returns>
-    public static async Task<RequestErrorStatus> PrepareFiltersForUse(ICombinedFilter[] filters, Guid dataModelId)
+    public static RequestErrorStatus PrepareFiltersForUse(ICombinedFilter[] filters, Guid dataModelId)
     {
       var status = RequestErrorStatus.Unknown;
 
@@ -167,7 +169,7 @@ namespace VSS.TRex.Filters
       {
         if (filter != null)
         {
-          status = await PrepareFilterForUse(filter, dataModelId);
+          status = PrepareFilterForUse(filter, dataModelId);
 
           if (status != RequestErrorStatus.OK)
             break;

@@ -329,6 +329,33 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       });
     }
 
+    /// <summary>
+    /// Configure the parameters of the existence map cache
+    /// </summary>
+    private CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
+    {
+      return new CacheConfiguration
+      {
+        Name = TRexCaches.DesignTopologyExistenceMapsCacheName(),
+
+        // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
+        KeepBinaryInStore = true,
+
+        // Replicate the maps across nodes
+        CacheMode = CacheMode.Partitioned,
+        AffinityFunction = new MutableNonSpatialAffinityFunction(),
+
+        Backups = 0,  // No backups need as it is a replicated cache
+
+        DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
+      };
+    }
+
+    private void InstantiateDesignTopologyExistenceMapsCache()
+    {
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
+    }
+
     public void StartTRexGridCacheNode()
     {
       var cfg = new IgniteConfiguration();
@@ -360,6 +387,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       InstantiateSiteModelsCacheReference();
 
       InstantiateRebuildSiteModelCacheReferences();
+
+      InstantiateDesignTopologyExistenceMapsCache();
 
       // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time
       var _ = DIContext.Obtain<ISiteModelMetadataManager>();

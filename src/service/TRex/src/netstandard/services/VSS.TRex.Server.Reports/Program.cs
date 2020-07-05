@@ -72,7 +72,7 @@ namespace VSS.TRex.Server.Reports
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -82,7 +82,7 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
@@ -126,7 +126,7 @@ namespace VSS.TRex.Server.Reports
         typeof(SiteModel),
         typeof(Cells.CellEvents),
         typeof(Compression.AttributeValueModifiers),
-        typeof(CoordinateSystems.Models.LLH),
+        typeof(CoreX.Models.LLH),
         typeof(DesignBase),
         typeof(Designs.TTM.HashOrdinate),
         typeof(Designs.TTM.Optimised.HeaderConsts),
@@ -142,7 +142,7 @@ namespace VSS.TRex.Server.Reports
         typeof(ClientCMVLeafSubGrid),
         typeof(SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(SubGridTrees.Server.MutabilityConverter),
-        typeof(SurveyedSurface),
+        typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
       };
 

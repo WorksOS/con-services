@@ -13,14 +13,14 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     [Fact]
     public void Creation()
     {
-      var ss = new SurveyedSurface();
+      var ss = new TRex.SurveyedSurfaces.SurveyedSurface();
       ss.Should().NotBeNull();
 
       var ssID = Guid.NewGuid();
       var ddID = Guid.NewGuid();
       var date = DateTime.UtcNow;
 
-      var ss2 = new SurveyedSurface(
+      var ss2 = new TRex.SurveyedSurfaces.SurveyedSurface(
         ssID,
         new DesignDescriptor(ddID, "Folder", "FileName"),
         date,
@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var ddID = Guid.NewGuid();
       var date = DateTime.UtcNow;
 
-      var ss = new SurveyedSurface(
+      var ss = new TRex.SurveyedSurfaces.SurveyedSurface(
         ssID,
         new DesignDescriptor(ddID, "Folder", "FileName"),
         date,
@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
     [Fact]
     public void Test_ToString()
     {
-      var ss = new SurveyedSurface();
+      var ss = new TRex.SurveyedSurfaces.SurveyedSurface();
       ss.ToString().Should().ContainAll(new[] {"ID:", "DesignID:"});
     }
 
@@ -65,7 +65,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var ddID = Guid.NewGuid();
       var date = DateTime.UtcNow;
 
-      var ss = new SurveyedSurface(
+      var ss = new TRex.SurveyedSurfaces.SurveyedSurface(
         ssID,
         new DesignDescriptor(ddID, "Folder", "FileName"),
         date,

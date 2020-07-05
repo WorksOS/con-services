@@ -56,6 +56,8 @@ namespace VSS.TRex.Storage
       
       siteModelMachineCache = machineCacheFactory(ignite, Mutability, FileSystemStreamType.SiteModelMachineElevationChangeMap);
 
+      designTopologyExistenceMapsCache = nonSpatialCacheFactory(ignite, Mutability, FileSystemStreamType.DesignTopologyExistenceMap);
+
       CommittableCaches = new IStorageProxyCacheCommit[]
       {
         spatialSubGridDirectoryCache,
@@ -63,7 +65,8 @@ namespace VSS.TRex.Storage
         generalNonSpatialCache,
         spatialDataExistenceMapCache,
         siteModelCache,
-        siteModelMachineCache
+        siteModelMachineCache,
+        designTopologyExistenceMapsCache
       }.Where(x => x!= null).ToArray();
     }
 

@@ -4,12 +4,14 @@ using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Common;
-using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
+using VSS.Serilog.Extensions;
+using VSS.TRex.Common.Extensions;
+using System.Linq;
 
 namespace VSS.TRex.GridFabric
 {
@@ -117,7 +119,27 @@ namespace VSS.TRex.GridFabric
         throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {_role} on grid {_gridName}");
 
       if ((_group.GetNodes()?.Count ?? 0) == 0)
+      {
+        var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
+        // Log the known state of the cluter
+        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster: {numClusterNodes}");
+
+        if (numClusterNodes > 0)
+        {
+          _ignite?.GetCluster()?.GetNodes().ForEach(x =>
+          {
+            _log.LogInformation($"Node ID {x.Id}, ConsistentID: {x.ConsistentId}, Version:{x.Version}, IsClient?:{x.IsClient}, IsDaemon?:{x.IsDaemon}, IsLocal?:{x.IsLocal}, Order:{x.Order}, Addresses#: {x.Addresses.Count}, HostNames:{(x.HostNames.Count > 0 ? x.HostNames.Aggregate((s, o) => s + o) : "No Host Names")}");
+
+            var roleAttributes = x.Attributes.Where(x => x.Key.StartsWith("Role-"));
+            if (roleAttributes.Count() > 0)
+              _log.LogInformation($"Roles: {roleAttributes.Select(x => $" K:V={x.Key}:{x.Value}").Aggregate((s, o) => s + o)}");
+            else
+              _log.LogError("No role attributes present");
+          });
+        }
+
         throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
+      }
 
       try
       {

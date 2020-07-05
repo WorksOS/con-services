@@ -1,10 +1,9 @@
 ﻿using Apache.Ignite.Core.Binary;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.Types;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Profiling.Models;
-
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Profiling.GridFabric.Arguments
 {
@@ -38,7 +37,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
@@ -65,7 +63,6 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);

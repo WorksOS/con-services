@@ -13,17 +13,10 @@ namespace VSS.TRex.ExistenceMaps
   /// </summary>
   public class ExistenceMaps : IExistenceMaps
   {
-    private readonly SetExistenceMapRequest setRequest = new SetExistenceMapRequest();
     private readonly GetSingleExistenceMapRequest getSingleRequest = new GetSingleExistenceMapRequest();
     private readonly GetCombinedExistenceMapRequest getCombinedRequest = new GetCombinedExistenceMapRequest();
 
-    public void SetExistenceMap(INonSpatialAffinityKey key, ISubGridTreeBitMask mask) => setRequest.Execute(key, mask);
-    public void SetExistenceMap(Guid siteModelID, long descriptor, Guid ID, ISubGridTreeBitMask mask) => setRequest.Execute(siteModelID, descriptor, ID, mask);
-
-    public ISubGridTreeBitMask GetSingleExistenceMap(INonSpatialAffinityKey key) => getSingleRequest.Execute(key);
     public ISubGridTreeBitMask GetSingleExistenceMap(Guid siteModelID, long descriptor, Guid ID) => getSingleRequest.Execute(siteModelID, descriptor, ID);
-
-    public ISubGridTreeBitMask GetCombinedExistenceMap(INonSpatialAffinityKey[] keys) => getCombinedRequest.Execute(keys);
     public ISubGridTreeBitMask GetCombinedExistenceMap(Guid siteModelID, Tuple<long, Guid>[] keys) => getCombinedRequest.Execute(siteModelID, keys);
 
     /// <summary>

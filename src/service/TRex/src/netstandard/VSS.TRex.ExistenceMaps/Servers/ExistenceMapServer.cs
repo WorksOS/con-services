@@ -1,85 +1,63 @@
-﻿using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Configuration;
-using System.Collections.Generic;
-using VSS.TRex.DI;
-using VSS.TRex.Common.Exceptions;
+﻿using System.Collections.Generic;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.GridFabric;
-using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.Storage.Models;
+using System;
+using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
+using Microsoft.Extensions.Logging;
+using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.Servers
 {
   /// <summary>
-    /// A server representing access operations for existence maps derived from topological surfaces such as TTM designs
-    /// and surveyed surfaces
+  /// A server representing access operations for existence maps derived from topological surfaces such as TTM designs
+  /// and surveyed surfaces
+  /// </summary>
+  public class ExistenceMapServer : IExistenceMapServer
+  {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ExistenceMapServer>();
+
+    /// <summary>
+    /// Get a specific existence map given its key
     /// </summary>
-    public class ExistenceMapServer : IExistenceMapServer
+    public ISubGridTreeBitMask GetExistenceMap(INonSpatialAffinityKey key)
     {
-        /// <summary>
-        /// A cache that holds the existence maps derived from design files (eg: TTM files)
-        /// Each existence map is stored in it's serialized byte stream from. It does not define the grid per se, but does
-        /// define a cache that is used within the grid to stored existence maps
-        /// </summary>
-        private readonly ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> _designTopologyExistenceMapsCache;
+      try
+      {
+        if (key == null)
+          throw new ArgumentNullException(nameof(key));
 
-        /// <summary>
-        /// Default no-arg constructor that creates the Ignite cache within the server
-        /// </summary>
-        public ExistenceMapServer()
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(key.ProjectUID);
+
+        if (siteModel == null)
+          return null;
+
+        var readResult = siteModel.PrimaryStorageProxy.ReadStreamFromPersistentStore(siteModel.ID, key.KeyName, Types.FileSystemStreamType.DesignTopologyExistenceMap, out var ms);
+        if (readResult != Types.FileSystemErrorStatus.OK)
         {
-            var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
-            
-            _designTopologyExistenceMapsCache = ignite?.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
-
-            if (_designTopologyExistenceMapsCache == null)
-                throw new TRexException($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}, ignite reference is {ignite}");
+          _log.LogError($"Failed to read existence map in project {key.ProjectUID} for key {key.KeyName}");
+          return null;
         }
 
-        /// <summary>
-        /// Configure the parameters of the existence map cache
-        /// </summary>
-        private CacheConfiguration ConfigureDesignTopologyExistenceMapsCache()
+        if (ms != null)
         {
-            return new CacheConfiguration
-            {
-                Name = TRexCaches.DesignTopologyExistenceMapsCacheName(),
-
-                // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
-                KeepBinaryInStore = true,
-
-                // Replicate the maps across nodes
-                CacheMode = CacheMode.Replicated,
-
-                Backups = 0,  // No backups need as it is a replicated cache
-
-                DataRegionName = DataRegions.SPATIAL_EXISTENCEMAP_DATA_REGION
-            };
+          using (ms)
+          {
+            var map = new SubGridTreeSubGridExistenceBitMask();// SubGridTreeBitMask();
+            map.FromStream(ms);
+            return map;
+          }
         }
 
-        /// <summary>
-        /// Get a specific existence map given its key
-        /// </summary>
-        public ISerialisedByteArrayWrapper GetExistenceMap(INonSpatialAffinityKey key)
-        {
-            try
-            {
-                return _designTopologyExistenceMapsCache.Get(key);
-            }
-            catch (KeyNotFoundException)
-            {
-                // If the key is not present, return a null/empty array
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Set or update a given existence map given its key.
-        /// </summary>
-        public void SetExistenceMap(INonSpatialAffinityKey key, ISerialisedByteArrayWrapper map)
-        {
-            _designTopologyExistenceMapsCache.Put(key, map);
-        }
+        return null;
+      }
+      catch (KeyNotFoundException)
+      {
+        // If the key is not present, return a null/empty array
+        return null;
+      }
     }
+  }
 }

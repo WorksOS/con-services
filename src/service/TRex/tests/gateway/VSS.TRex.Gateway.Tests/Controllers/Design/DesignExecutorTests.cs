@@ -133,7 +133,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       var designDescriptor = new TRex.Designs.Models.DesignDescriptor(designUid, "", fileName);
       var extents = new BoundingWorldExtent3D(1, 2, 50, 100);
       var surveyedUtc = DateTime.UtcNow.AddDays(-2);
-      var design = new SurveyedSurface(designUid, designDescriptor, surveyedUtc, extents);
+      var design = new TRex.SurveyedSurfaces.SurveyedSurface(designUid, designDescriptor, surveyedUtc, extents);
 
       var result = AutoMapperUtility.Automapper.Map<DesignFileDescriptor>(design);
 

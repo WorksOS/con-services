@@ -8,9 +8,11 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Common;
-using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.DI;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.Types;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -21,9 +23,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// TagFileExecutor
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="exceptionHandler"></param>
     public DeleteTTMDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
@@ -39,10 +38,15 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Process delete design request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Processes the request asynchronously.
+    /// </summary>
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<DesignRequest>(item);
 
@@ -50,15 +54,33 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         log.LogInformation($"#In# DeleteTTMDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        bool removedOk;
+        bool removedOk = false;
         if (request.FileType == ImportedFileType.DesignSurface)
         {
-          removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
+          // Remove the designSurface
+          var tRexRequest = new RemoveTTMDesignRequest();
+          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveTTMDesignArgument
+          {
+            ProjectID = request.ProjectUid,
+            DesignID = request.DesignUid
+          });
+
+          removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
         }
-        else
+
+        if (request.FileType == ImportedFileType.SurveyedSurface)
         {
-          removedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
+          // Remove the new surveyedSurface
+          var tRexRequest = new RemoveSurveyedSurfaceRequest();
+          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveSurveyedSurfaceArgument
+          {
+            ProjectID = request.ProjectUid,
+            DesignID = request.DesignUid
+          });
+
+          removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
         }
+
         if (!removedOk)
         {
           log.LogError($"#Out# DeleteTTMDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
@@ -73,13 +95,17 @@ namespace VSS.TRex.Gateway.Common.Executors
           try
           {
             File.Delete(localPathAndFileName);
-            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
-            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
-            File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+
+            if (File.Exists(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION))
+              File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+            if (File.Exists(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION))
+              File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+            if (File.Exists(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION))
+              File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
           }
-          catch (Exception)
+          catch (Exception e)
           {
-            // ignored
+            log.LogError(e, $"Failed to delete files related to design/surveyed surface {request.DesignUid} in project {request.ProjectUid}");
           }
         }
         log.LogInformation($"#Out# DeleteTTMDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
@@ -93,15 +119,7 @@ namespace VSS.TRex.Gateway.Common.Executors
             RequestErrorStatus.DesignImportUnableToDeleteDesign, e.Message);
       }
 
-      return new ContractExecutionResult(); 
-    }
-
-    /// <summary>
-    /// Processes the request asynchronously.
-    /// </summary>
-    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
-    {
-      throw new NotImplementedException();
+      return new ContractExecutionResult();
     }
   }
 }

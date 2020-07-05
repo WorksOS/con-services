@@ -11,16 +11,18 @@ using VSS.Productivity3D.Models.Models.Designs;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -61,12 +63,28 @@ namespace VSS.TRex.Gateway.Common.Executors
         bool removedOk = false;
         if (request.FileType == ImportedFileType.DesignSurface)
         {
-          removedOk = DIContext.Obtain<IDesignManager>().Remove(request.ProjectUid, request.DesignUid);
+          // Remove the designSurface
+          var tRexRequest = new RemoveTTMDesignRequest();
+          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveTTMDesignArgument
+          {
+            ProjectID = request.ProjectUid,
+            DesignID = request.DesignUid
+          });
+
+          removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
         }
 
         if (request.FileType == ImportedFileType.SurveyedSurface)
         {
-          removedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
+          // Remove the new surveyedSurface
+          var tRexRequest = new RemoveSurveyedSurfaceRequest();
+          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveSurveyedSurfaceArgument
+          {
+            ProjectID = request.ProjectUid,
+            DesignID = request.DesignUid
+          });
+
+          removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
         }
 
         if (removedOk)
@@ -109,24 +127,31 @@ namespace VSS.TRex.Gateway.Common.Executors
         ttm.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
-        var existanceMaps = DIContext.Obtain<IExistenceMaps>();
         if (request.FileType == ImportedFileType.DesignSurface)
         {
-          // Create the new designSurface in our site model
-          var designSurface = DIContext.Obtain<IDesignManager>().Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
-            extents);
-          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
+          // Create the new designSurface in our site 
+          var tRexRequest = new AddTTMDesignRequest();
+          var designSurfaceUid = await tRexRequest.ExecuteAsync(new AddTTMDesignArgument
+          {
+            ProjectID = request.ProjectUid,
+            DesignDescriptor = new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
+            Extents = extents,
+            ExistenceMap = ttm.SubGridOverlayIndex()
+          });
         }
 
         if (request.FileType == ImportedFileType.SurveyedSurface)
         {
           // Create the new SurveyedSurface in our site model
-          var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
-            request.SurveyedUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC, // validation will have ensured this exists
-            extents);
-          existanceMaps.SetExistenceMap(request.DesignUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());
+          var tRexRequest = new AddSurveyedSurfaceRequest();
+          var surveyedSurfaceUid = await tRexRequest.ExecuteAsync(new AddSurveyedSurfaceArgument
+          {
+            ProjectID = request.ProjectUid,
+            DesignDescriptor = new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
+            AsAtDate = request.SurveyedUtc ?? TRex.Common.Consts.MIN_DATETIME_AS_UTC, // validation will have ensured this exists
+            Extents = extents,
+            ExistenceMap = ttm.SubGridOverlayIndex()
+          });
         }
 
         //  TTM.LoadFromFile() will have created these 2 files. We need to store them on S3 to reload cache when required

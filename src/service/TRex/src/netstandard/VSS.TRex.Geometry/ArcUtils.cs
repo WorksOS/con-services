@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Geometry
 {

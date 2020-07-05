@@ -109,6 +109,9 @@ namespace VSS.TRex.Alignments
     /// <param name="extents"></param>
     public IAlignment Add(Guid siteModelUid, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
+      if (extents == null)
+        throw new ArgumentNullException(nameof(extents));
+
       var alignments = Load(siteModelUid);
       var newAlignment = alignments.AddAlignmentDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(siteModelUid, alignments);

@@ -39,7 +39,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.SurveyedUtc,
           opt => opt.Ignore());
 
-      CreateMap<SurveyedSurface, DesignFileDescriptor>()
+      CreateMap<SurveyedSurfaces.SurveyedSurface, DesignFileDescriptor>()
         .ForMember(x => x.FileType,
           opt => opt.MapFrom(src => ImportedFileType.SurveyedSurface))
         .ForMember(x => x.Name,

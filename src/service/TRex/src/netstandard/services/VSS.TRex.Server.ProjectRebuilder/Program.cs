@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -18,6 +20,7 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
+using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Heartbeats;
@@ -27,7 +30,6 @@ using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.SiteModels;
 
 namespace VSS.TRex.Server.ProjectRebuilder
 {
@@ -57,11 +59,12 @@ namespace VSS.TRex.Server.ProjectRebuilder
         .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>(CacheFactory))
 
         .Build()
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build()
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger, TRexHeartBeatLogger>())
@@ -96,7 +99,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       }
     }
 
-    private static async void DoServiceInitialisation(ILogger log)
+    private static async void DoServiceInitialisation(ILogger log, CancellationTokenSource cancelTokenSource)
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
@@ -107,7 +110,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
 
       // Wait until caches are available
-      while (true)
+      while (!cancelTokenSource.IsCancellationRequested)
       {
         try
         {
@@ -120,10 +123,10 @@ namespace VSS.TRex.Server.ProjectRebuilder
         }
 
         log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderMetaDataCacheName()} to become available");
-        await Task.Delay(1000);
+        await Task.Delay(1000, cancelTokenSource.Token);
       }
 
-      while (true)
+      while (!cancelTokenSource.IsCancellationRequested)
       {
         try
         {
@@ -136,7 +139,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         }
 
         log.LogInformation($"Waiting for cache {TRexCaches.SiteModelRebuilderFileKeyCollectionsCacheName()} to become available");
-        await Task.Delay(1000);
+        await Task.Delay(1000, cancelTokenSource.Token);
       }
 
       // Tell the rebuilder manager to find any active rebuilders and start them off from where they left off
@@ -165,7 +168,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
           cancelTokenSource.Cancel();
         };
 
-        DoServiceInitialisation(log);
+        DoServiceInitialisation(log, cancelTokenSource);
 
         await Task.Delay(-1, cancelTokenSource.Token);
         return 0;

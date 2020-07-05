@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
-using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
+using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.HeartbeatLoggers;
@@ -12,6 +12,7 @@ using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -50,7 +51,6 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.Designs.GridFabric.Events;
 
 namespace VSS.TRex.Server.PSNode
 {
@@ -82,7 +82,7 @@ namespace VSS.TRex.Server.PSNode
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -94,7 +94,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
-        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory<ProfileCell>>(new ProfilerBuilderFactory<ProfileCell>()))
         .Add(x => x.AddSingleton<IProfilerBuilderFactory<SummaryVolumeProfileCell>>(new ProfilerBuilderFactory<SummaryVolumeProfileCell>()))
@@ -170,7 +170,7 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(VSS.TRex.CoordinateSystems.Models.LLH),
+        typeof(CoreX.Models.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),

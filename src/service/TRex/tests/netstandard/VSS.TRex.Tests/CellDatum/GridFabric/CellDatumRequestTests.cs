@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -9,10 +10,8 @@ using VSS.TRex.CellDatum.GridFabric.ComputeFuncs;
 using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.CellDatum.GridFabric.Responses;
 using VSS.TRex.Cells;
-using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
@@ -27,6 +26,7 @@ using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 using Xunit;
 using Consts = VSS.TRex.Common.Consts;
 
@@ -205,7 +205,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     [InlineData(DisplayMode.TemperatureDetail)]
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.MachineSpeed)]
-    [InlineData(DisplayMode.CutFill)] 
+    [InlineData(DisplayMode.CutFill)]
     public async Task Test_CellDatumRequest_ClusterCompute_Execute_SingleCellSiteModelMinimalValues(DisplayMode mode)
     {
       AddApplicationGridRouting();
@@ -360,7 +360,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       siteModel.CSIB().Should().Be(DIMENSIONS_2012_DC_CSIB);
 
       var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters());
-      arg.Point = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point);
+      arg.Point = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point.ToCoreX_XYZ()).ToTRex_XYZ();
       arg.CoordsAreGrid = false;
 
       var request = new CellDatumRequest_ApplicationService();

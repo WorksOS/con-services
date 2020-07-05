@@ -13,16 +13,14 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   /// </summary>
   public class CSVExportTask : PipelinedSubGridTask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CSVExportTask>();
-    
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CSVExportTask>();
+
     public CSVExportSubGridProcessor SubGridExportProcessor { get; set; }
     public List<string> DataRows { get; } = new List<string>();
 
     /// <summary>
     /// Accept a sub grid response from the processing engine and incorporate into the result for the request.
     /// </summary>
-    /// <param name="response"></param>
-    /// <returns></returns>
     public override bool TransferResponse(object response)
     {
       bool result = false;
@@ -31,7 +29,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       {
         if (!(response is IClientLeafSubGrid[] subGridResponses) || subGridResponses.Length == 0)
         {
-          Log.LogWarning("No sub grid responses returned");
+          _log.LogWarning("No sub grid responses returned");
         }
         else
         {
@@ -44,12 +42,12 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
               if (subGrid is ClientCellProfileLeafSubgrid grid)
                 rows = SubGridExportProcessor.ProcessSubGrid(grid).WaitAndUnwrapException();
               else
-                rows = SubGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid).WaitAndUnwrapException();
+                rows = SubGridExportProcessor.ProcessSubGrid(subGrid as ClientCellProfileAllPassesLeafSubgrid);
               DataRows.AddRange(rows);
 
               if (SubGridExportProcessor.RecordCountLimitReached())
               {
-                Log.LogWarning("CSVExportTask: exceeded row limit");
+                _log.LogWarning("CSVExportTask: exceeded row limit");
                 result = false;
                 break;
               }

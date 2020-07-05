@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 
@@ -104,7 +104,7 @@ namespace VSS.TRex.Alignments
     /// </summary>
     public bool Equals(IAlignment other)
     {
-      return other != null && 
+      return other != null &&
              ID == other.ID &&
              DesignDescriptor.Equals(other.DesignDescriptor) &&
              Extents.Equals(other.Extents);

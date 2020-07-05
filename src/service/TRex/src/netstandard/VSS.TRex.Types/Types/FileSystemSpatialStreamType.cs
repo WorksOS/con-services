@@ -24,6 +24,11 @@
         /// A map of the sub grids that have changed within a site model since the machine last
         /// queried elevation data from the map
         /// </summary>
-        SiteModelMachineElevationChangeMap
+        SiteModelMachineElevationChangeMap,
+
+        /// <summary>
+        /// An existence map for a design within a project
+        /// </summary>
+        DesignTopologyExistenceMap
     }
 }

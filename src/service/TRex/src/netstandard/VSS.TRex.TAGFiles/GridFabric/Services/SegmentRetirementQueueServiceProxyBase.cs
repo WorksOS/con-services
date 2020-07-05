@@ -1,4 +1,5 @@
 ﻿using System;
+using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -23,9 +24,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         private const string ServiceName = "SegmentRetirementQueueService";
 
         /// <summary>
-        /// Services interface for the cluster group projection
+        /// Ignite reference this service is deployed into
         /// </summary>
-        private readonly IServices services;
+        private readonly IIgnite _ignite;
 
         // <summary>
         // The proxy to the deployed service
@@ -41,10 +42,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         {
             NodeFilter = nodeFilter;
 
-            var ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
-
-            // Get an instance of IServices for the cluster group.
-            services = ignite.GetServices();
+            _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
         }
 
         /// <summary>
@@ -52,6 +50,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public void Deploy()
         {
+            var services = _ignite.GetServices();
+
             // Attempt to cancel any previously deployed service
             try
             {

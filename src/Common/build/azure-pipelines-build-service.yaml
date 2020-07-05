@@ -5,42 +5,44 @@ trigger:
       # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
   paths:
     include:
-      - "src/Common/*"
+      - 'src/Common/*'
 
 pool: fsm-merino-services
 
 variables:
-  buildPlatform: "Any CPU"
-  buildConfiguration: "Release"
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
   serviceName: Common
-  rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service"
+  rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service'
 
 jobs:
   - job: BuildTestCommon
-    displayName: "Build & Test Common solution"
+    displayName: 'Build & Test Common solution'
     timeoutInMinutes: 20
-
     steps:
       - checkout: self
         fetchDepth: 1
-
-      - task: PowerShell@2
-        displayName: "Build"
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet build'
         inputs:
-          filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action build"
-
-      - task: PowerShell@2
-        displayName: "Run unit tests"
+          command: 'build'
+          projects: 'src/Common/Common.sln'
+          arguments: '-nowarn:NU1701 -nowarn:CS1591'
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet test'
         inputs:
-          filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action unittest -recordTestResults false -collectCoverage false"
+          command: 'test'
+          projects: 'src/Common/Common.sln'
+          arguments: '--no-restore -nowarn:NU1701 -nowarn:CS1591'
+          publishTestResults: true
 
   - job: Build3DPService
     displayName: 'Build 3DP service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/3DP'
         solution: 'VSS.Productivity3D.Service.sln'
@@ -50,7 +52,9 @@ jobs:
     displayName: 'Build Project service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/Project'
         solution: 'VSS.Visionlink.Project.sln'
@@ -60,17 +64,39 @@ jobs:
     displayName: 'Build TRex'
     timeoutInMinutes: 30
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - task: PowerShell@2
+      displayName: 'Remove WebTools project'
+      inputs:
+        targetType: 'inline'
+        script: 'dotnet sln $(rootServiceFolder)/TRex/TRex.netstandard.sln remove $(rootServiceFolder)/TRex/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj'
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/TRex'
         solution: 'TRex.netstandard.sln'
         testFolder: 'tests'
 
+  - job: BuildWebTools
+    displayName: 'Build TRex WebTools'
+    timeoutInMinutes: 30
+    steps:
+    - checkout: self
+      fetchDepth: 1
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: '$(rootServiceFolder)/TRex/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj'
+        arguments: '-nowarn:NU1701 -nowarn:CS1591'
+
   - job: BuildTileService
     displayName: 'Build Tile service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/TileService'
         solution: 'VSS.Tile.Service.sln'
@@ -80,7 +106,9 @@ jobs:
     displayName: 'Build TFA service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/TagFileAuth'
         solution: 'VSS.TagFileAuth.Service.sln'
@@ -90,7 +118,9 @@ jobs:
     displayName: 'Build Scheduler service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/Scheduler'
         solution: 'VSS.Productivity3D.Scheduler.sln'
@@ -100,7 +130,9 @@ jobs:
     displayName: 'Build Preferences service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/Preferences'
         solution: 'CCSS.Productivity3D.Preferences.sln'
@@ -110,7 +142,9 @@ jobs:
     displayName: 'Build Push service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/Push'
         solution: 'VSS.Productivity3D.Push.sln'
@@ -120,7 +154,9 @@ jobs:
     displayName: 'Build Filter service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/Filter'
         solution: 'VSS.Productivity3D.Filter.sln'
@@ -130,7 +166,9 @@ jobs:
     displayName: 'Build Asset Management service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/3dAssetMgmt'
         solution: 'VSS.Productivity3D.3DAssetMgmt.sln'
@@ -140,7 +178,9 @@ jobs:
     displayName: 'Build Entitlements service'
     timeoutInMinutes: 20
     steps:
-    - template: build-service.yaml
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
       parameters:
         servicePath: '$(rootServiceFolder)/Entitlements'
         solution: 'VSS.Productivity3D.Entitlements.sln'

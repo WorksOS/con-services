@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL.Utilities;
-using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL
 {
@@ -115,7 +115,7 @@ namespace VSS.TRex.Designs.SVL
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkSmoothedPolyLineElement:
-          ExportNFFSmoothedPolyLineEntityToGeometry((NFFLineworkSmoothedPolyLineEntity) nffEntity);
+          ExportNFFSmoothedPolyLineEntityToGeometry((NFFLineworkSmoothedPolyLineEntity)nffEntity);
           break;
 
         case NFFLineWorkElementType.kNFFLineWorkArcElement:

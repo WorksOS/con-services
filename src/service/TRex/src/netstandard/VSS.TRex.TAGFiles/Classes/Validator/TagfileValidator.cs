@@ -48,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
       catch (Exception e)
       {
-        return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, (int)TRexTagFileResultCode.TfaException, e.Message);
+        return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, (int)TRexTagFileResultCode.TRexTfaException, e.Message);
       }
 
       return tfaResult;
@@ -98,12 +98,12 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Business rule for device type conversion
       var radioType = preScanState.RadioType == "torch" ? DeviceTypeEnum.SNM940 : DeviceTypeEnum.MANUALDEVICE; // torch device set to type 6
 
-      if (preScanState.RadioSerial == string.Empty && Guid.Parse(tagDetail.tccOrgId) == Guid.Empty && tagDetail.projectId == Guid.Empty && ec520SerialId == string.Empty)
+      if (preScanState.RadioSerial == string.Empty && tagDetail.projectId == Guid.Empty && ec520SerialId == string.Empty)
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
-        var message = "Must have either a valid TCCOrgID or RadioSerialNo or EC520SerialNo or ProjectUID";
+        var message = "#Progress# CheckFileIsProcessable. Must have either a valid RadioSerialNum or EC520SerialNum or ProjectUID";
         Log.LogWarning(message);
-        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
+        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), (int) TRexTagFileResultCode.TRexMissingProjectIDRadioSerialAndEcmSerial, message);
       }
 
       var seedLatitude = MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0.0);
@@ -113,9 +113,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       if (Math.Abs(seedLatitude) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE && (seedNorthing == null || seedEasting == null))
       {
         // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
-        var message = $"Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
+        var message = $"#Progress# CheckFileIsProcessable. Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
         Log.LogWarning(message);
-        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3051, message);
+        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), (int) TRexTagFileResultCode.TRexInvalidLatLong, message);
       }
 
       var tfaRequest = new GetProjectAndAssetUidsRequest(

@@ -21,7 +21,7 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_TAGProcessor_Creation()
         {
-            var SiteModel = new SiteModel();
+            var SiteModel = new SiteModel(StorageMutability.Immutable);
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
@@ -34,7 +34,7 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_TAGProcessor_ProcessEpochContext_WithValidPosition()
         {
-            var SiteModel = new SiteModel();
+            var SiteModel = new SiteModel(StorageMutability.Immutable);
              SiteModel.IgnoreInvalidPositions = false;
 
             var Machine = new Machine();
@@ -71,7 +71,7 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_TAGProcessor_ProcessEpochContext_WithoutValidPosition()
         {
-            var SiteModel = new SiteModel();
+            var SiteModel = new SiteModel(StorageMutability.Immutable);
             SiteModel.IgnoreInvalidPositions = true;
         
             var Machine = new Machine();
@@ -97,7 +97,7 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_TAGProcessor_DoPostProcessFileAction()
         {
-            var SiteModel = new SiteModel();
+            var SiteModel = new SiteModel(StorageMutability.Immutable);
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
@@ -133,7 +133,7 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_TAGProcessor_DoEpochPreProcessAction()
         {
-            var SiteModel = new SiteModel();
+            var SiteModel = new SiteModel(StorageMutability.Immutable);
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
             var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);

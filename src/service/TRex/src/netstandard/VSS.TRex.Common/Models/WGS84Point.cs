@@ -28,7 +28,6 @@ namespace VSS.TRex.Common.Models
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteDouble(Lat);
@@ -39,7 +38,6 @@ namespace VSS.TRex.Common.Models
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       Lat = reader.ReadDouble();

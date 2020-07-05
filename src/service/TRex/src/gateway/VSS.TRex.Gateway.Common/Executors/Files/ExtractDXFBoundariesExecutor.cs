@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -52,10 +53,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
       if (boundaries == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Internal request successful, but returned boundaries are null"));
 
-      return await ConvertResult(boundaries, request.CSIBFileData);
+      return ConvertResult(boundaries, request.CSIBFileData);
     }
 
-    protected async Task<DXFBoundaryResult> ConvertResult(PolyLineBoundaries boundaries, string coordinateSystemFileData)
+    protected DXFBoundaryResult ConvertResult(PolyLineBoundaries boundaries, string coordinateSystemFileData)
     {
       DXFBoundaryResult ConstructResponse()
       {
@@ -71,18 +72,13 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
         return ConstructResponse();
       }
 
-      var csib = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSIB("nofile", Convert.FromBase64String(coordinateSystemFileData));
+      var csib = DIContext.Obtain<IConvertCoordinates>().GetCSIBFromDCFileContent(coordinateSystemFileData);
 
       // Convert grid coordinates into WGS: assemble and convert. Note: 2D conversion only, elevation is set to 0
       var coordinates = boundaries.Boundaries.SelectMany(x => x.Boundary.Points).Select(pt => new XYZ(pt.X, pt.Y,0.0)).ToArray();
 
       // Perform conversion
-      var conversionResult = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates);
-
-      if (conversionResult.ErrorCode != RequestErrorStatus.OK)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to convert grid coordinates of boundaries to WGS"));
-      }
+      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ());
 
       // Recopy converted coordinates into boundaries
       var indexer = 0;
@@ -91,7 +87,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
         var boundary = boundaries.Boundaries[i].Boundary;
         for (var j = 0; j < boundary.NumVertices; j++)
         {
-          boundary.Points[j] = new FencePoint(conversionResult.LLHCoordinates[indexer].X, conversionResult.LLHCoordinates[indexer].Y, 0.0);
+          boundary.Points[j] = new FencePoint(LLHCoords[indexer].X, LLHCoords[indexer].Y, 0.0);
           indexer++;
         }
       }

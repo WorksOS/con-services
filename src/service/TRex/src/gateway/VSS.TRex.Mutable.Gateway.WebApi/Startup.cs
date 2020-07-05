@@ -48,11 +48,11 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     {
       DIBuilder.New(services)
          .Build()
-         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+         .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
          .Build()
-         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Mutable)))
 
          .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
          .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))

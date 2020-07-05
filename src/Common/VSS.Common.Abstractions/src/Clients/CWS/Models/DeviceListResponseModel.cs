@@ -2,10 +2,11 @@
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using System.Linq;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class DeviceListResponseModel : IMasterDataModel
+  public class DeviceListResponseModel : IMasterDataModel, ISupportsPaging<DeviceFromListResponseModel>
   {
     public DeviceListResponseModel()
     {
@@ -23,6 +24,16 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("hasMore")]
     public bool HasMore { get; set; }
+
+    /// <summary>
+    /// For PAging
+    /// </summary>
+    [JsonIgnore]
+    public List<DeviceFromListResponseModel> Models
+    {
+      get { return Devices;}
+      set { Devices = value; }
+    }
 
     public List<string> GetIdentifiers() => Devices?
                                               .SelectMany(d => d.GetIdentifiers())

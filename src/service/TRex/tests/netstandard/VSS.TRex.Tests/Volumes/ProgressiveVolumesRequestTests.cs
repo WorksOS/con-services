@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -120,7 +121,7 @@ namespace VSS.TRex.Tests.Volumes
       // This is a no data test, so the response will be null
       CheckResponseContainsNullValues(response);
     }
-    
+
     [Fact]
     public async Task ClusterCompute_DefaultFilterToFilter_Execute_NoData()
     {
@@ -161,19 +162,19 @@ namespace VSS.TRex.Tests.Volumes
     private void CheckDefaultFilterToFilterSingleTAGFileResponse(ProgressiveVolumesResponse response)
     {
       //Was, response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
-     // const double EPSILON = 0.000001;
+      // const double EPSILON = 0.000001;
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       response.Volumes.Should().NotBeNull();
 
       // todo: Complete this
-/*      response.BoundingExtentGrid.MinX.Should().BeApproximately(537669.2, EPSILON);
-      response.BoundingExtentGrid.MinY.Should().BeApproximately(5427391.44, EPSILON);
-      response.BoundingExtentGrid.MaxX.Should().BeApproximately(537676.34, EPSILON);
-      response.BoundingExtentGrid.MaxY.Should().BeApproximately(5427514.52, EPSILON);
-      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
-      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);*/
+      /*      response.BoundingExtentGrid.MinX.Should().BeApproximately(537669.2, EPSILON);
+            response.BoundingExtentGrid.MinY.Should().BeApproximately(5427391.44, EPSILON);
+            response.BoundingExtentGrid.MaxX.Should().BeApproximately(537676.34, EPSILON);
+            response.BoundingExtentGrid.MaxY.Should().BeApproximately(5427514.52, EPSILON);
+            response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+            response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);*/
     }
 
     [Fact]
@@ -200,15 +201,15 @@ namespace VSS.TRex.Tests.Volumes
 
     private void AddSimpleNEEToLLHConversionMock()
     {
+      var result = new CoreX.Models.XYZ[2]
+      {
+        new CoreX.Models.XYZ(0, 0, 1),
+        new CoreX.Models.XYZ(1, 1, 0)
+      };
+
       var csMock = new Mock<IConvertCoordinates>();
-      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>()))
-        .Returns(() => {
-          return Task.FromResult((RequestErrorStatus.OK, new XYZ[2]
-          {
-            new XYZ(0, 0, 1),
-            new XYZ(1, 1, 0)
-          }));
-        });
+      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>()))
+        .Returns(result);
 
       DIBuilder.Continue()
         .Add(x => x.AddSingleton(csMock.Object))
@@ -241,7 +242,7 @@ namespace VSS.TRex.Tests.Volumes
 
     private void CheckDefaultSingleCellAtOriginResponse(ProgressiveVolumesResponse response)
     {
-     // const double EPSILON = 0.000001;
+      // const double EPSILON = 0.000001;
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -263,7 +264,7 @@ namespace VSS.TRex.Tests.Volumes
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, numCellPasses).Select(x =>
-        new CellPass {InternalSiteModelMachineIndex = bulldozerMachineIndex, Time = baseTime + x * timeIncrement, Height = baseHeight + x * heightIncrement, PassType = PassType.Front}).ToList();
+        new CellPass { InternalSiteModelMachineIndex = bulldozerMachineIndex, Time = baseTime + x * timeIncrement, Height = baseHeight + x * heightIncrement, PassType = PassType.Front }).ToList();
 
       // Ensure the machine the cell passes are being added to has start and stop evens bracketing the cell passes
       siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime, ProductionEventType.StartEvent);
@@ -341,7 +342,7 @@ namespace VSS.TRex.Tests.Volumes
       for (var i = 0; i < response.Volumes.Length; i++)
       {
         response.Volumes[i].Date.Should().Be(baseTime + (i + 1) * timeIncrement);
-        response.Volumes[i].Volume.TotalCoverageArea.Should().Be( SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
+        response.Volumes[i].Volume.TotalCoverageArea.Should().Be(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
         response.Volumes[i].Volume.Fill.Should().Be(cellPassHeightIncrement * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
         response.Volumes[i].Volume.Cut.Should().Be(0);
 
@@ -400,7 +401,7 @@ namespace VSS.TRex.Tests.Volumes
         response.Volumes[i].Date.Should().Be(baseTime + (i + 1) * timeIncrement);
         response.Volumes[i].Volume.TotalCoverageArea.Should().Be(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
         response.Volumes[i].Volume.Fill.Should().Be(0);
-        response.Volumes[i].Volume.Cut.Should().Be(- (cellPassHeightIncrement * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize));
+        response.Volumes[i].Volume.Cut.Should().Be(-(cellPassHeightIncrement * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize));
 
         response.Volumes[i].Volume.FillArea.Should().Be(0);
         response.Volumes[i].Volume.CutArea.Should().Be(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);

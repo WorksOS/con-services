@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using FluentAssertions;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.ExistenceMaps.GridFabric.Requests;
 using VSS.TRex.ExistenceMaps.Servers;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.ExistenceMaps
 {
-  public class ExistenceMapsServerTests_MissingIgnite
+  public class ExistenceMapsServerTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
     public void Creation()
     {
-      Action act = () =>
-      {
-        var _ = new ExistenceMapServer();
-      };
-
-      act.Should().Throw<TRexException>($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}, ignite reference is null");
+      var server = new ExistenceMapServer();
+      server.Should().NotBeNull();
     }
-  }
 
-  public class ExistenceMapsServerTests_WithMockedIgnite : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
-  { 
     [Fact]
     public void GetExistenceMap_NullKey()
     {
@@ -44,25 +39,24 @@ namespace VSS.TRex.Tests.ExistenceMaps
     }
 
     [Fact]
-    public void SetExistenceMap()
-    {
-      var server = new ExistenceMapServer();
-      var projectUid = Guid.NewGuid();
-      server.SetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Set"), new SerialisedByteArrayWrapper(new byte[1000]));
-    }
-
-    [Fact]
     public void GetExistenceMap()
     {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var DesignUid = Guid.NewGuid();
+      var filename = BaseExistenceMapRequest.CacheKeyString(TRex.ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, DesignUid);
+      var setMap = new SubGridTreeSubGridExistenceBitMask();
+
+      siteModel.PrimaryStorageProxy.WriteStreamToPersistentStore
+        (siteModel.ID,
+        filename,
+        FileSystemStreamType.DesignTopologyExistenceMap,
+        setMap.ToStream(), null)
+      .Should().Be(FileSystemErrorStatus.OK);
+
       var server = new ExistenceMapServer();
-      var projectUid = Guid.NewGuid();
-      var setMap = Enumerable.Range(0, 1000).Select(x => (byte) x).ToArray();
+      var getMap = server.GetExistenceMap(new NonSpatialAffinityKey(siteModel.ID, filename));
 
-      server.SetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Get"), new SerialisedByteArrayWrapper(setMap));
-
-      var getMap = server.GetExistenceMap(new NonSpatialAffinityKey(projectUid, "UnitTestExistenceMap_Get"));
-
-      setMap.SequenceEqual(getMap.Bytes).Should().BeTrue();
+      setMap.ToBytes().SequenceEqual(getMap.ToBytes()).Should().BeTrue();
     }
   }
 }

@@ -3,6 +3,7 @@ using FluentAssertions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -15,7 +16,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Serialization_NewModel()
     {
       var guid = Guid.NewGuid();
-      var siteModel = new SiteModel(guid, 1.23);
+      var siteModel = new SiteModel(guid, StorageMutability.Immutable, 1.23);
 
       siteModel.SiteModelExtent.SetMaximalCoverage();
       var metaData = siteModel.MetaData;
@@ -34,7 +35,7 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_Serialization_NewModelWithSingleElements()
     {
       var guid = Guid.NewGuid();
-      var siteModel = new SiteModel(guid, 1.23);
+      var siteModel = new SiteModel(guid, StorageMutability.Immutable, 1.23);
 
       siteModel.SiteModelExtent.SetMaximalCoverage();
       siteModel.Machines.CreateNew("Test Machine", "HardwareID", MachineType.AsphaltCompactor, 0, false, Guid.NewGuid());

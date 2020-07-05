@@ -4,11 +4,12 @@ ARG SERVICE_PATH=src/service/TRex
 COPY . /build/
 WORKDIR /build
 
+# WebTools is built separately, take it out here to reduce build time considerably.
+RUN dotnet sln ./${SERVICE_PATH}/TRex.netstandard.sln remove ./${SERVICE_PATH}/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj
 RUN dotnet restore ./${SERVICE_PATH}/TRex.netstandard.sln -nowarn:NU1701
 
-#publish TRex servers
-RUN dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --no-restore -nowarn:NU1701 --output /trex/Webtools ; \
-dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --no-restore -nowarn:NU1701 --output /trex/ApplicationServer ; \
+# Publish TRex runtime services.
+RUN dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --no-restore -nowarn:NU1701 --output /trex/ApplicationServer ; \
 dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --no-restore -nowarn:NU1701 --output /trex/DesignElevation ; \
 dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --no-restore -nowarn:NU1701 --output /trex/MutableData ; \
 dotnet publish ./${SERVICE_PATH}/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --no-restore -nowarn:NU1701 --output /trex/PSNode ; \
@@ -23,19 +24,6 @@ dotnet publish ./${SERVICE_PATH}/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS
 dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --no-restore -nowarn:NU1701 --output /trex/Utils ; \
 dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --no-restore -nowarn:NU1701 --output /trex/Utils
 
-
-#Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
+# Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
 COPY ./${SERVICE_PATH}/build/ignite-kubernetes-2.8.0.jar /trex/libs/
-
-WORKDIR /trex/libs/
-RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar ; \
-    wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar ; \
-    wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar ; \
-    wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
-	
-# RUN wget http://repo1.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
-# RUN wget http://repo1.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
-# RUN wget http://repo1.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
-# RUN wget http://repo1.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
-# RUN wget https://repo1.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
