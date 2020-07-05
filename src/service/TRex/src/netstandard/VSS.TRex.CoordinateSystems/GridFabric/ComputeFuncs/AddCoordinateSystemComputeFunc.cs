@@ -18,13 +18,11 @@ namespace VSS.TRex.CoordinateSystems.GridFabric.ComputeFuncs
     /// <summary>
     /// The Invoke method for the compute func - calls the TAG file processing executor to do the work
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public AddCoordinateSystemResponse Invoke(AddCoordinateSystemArgument arg)
     {
       var executor = new AddCoordinateSystemExecutor();
 
-      return new AddCoordinateSystemResponse { Succeeded = executor.Execute(arg.ProjectID, arg.CSIB)};
+      return new AddCoordinateSystemResponse { Succeeded = executor.Execute(arg.ProjectID, arg.CSIB) };
     }
   }
 }

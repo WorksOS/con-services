@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Utilities.Interfaces;
+using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;

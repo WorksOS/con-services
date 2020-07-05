@@ -14,9 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\CoreX.Wrapper\src\CoreX\CoreX.Wrapper.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\VSS.Tpaas.Client\src\VSS.Tpaas.Client.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
-    <ProjectReference Include="..\VSS.TRex.CoordinateSystems.Models\VSS.TRex.CoordinateSystems.Models.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
     <ProjectReference Include="..\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
     <ProjectReference Include="..\VSS.TRex.HttpClients\VSS.TRex.HttpClients.csproj" />
     <ProjectReference Include="..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />

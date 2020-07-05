@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
 {
@@ -14,21 +13,7 @@ namespace VSS.TRex.Geometry
     /// intersection then its position is returned in 'position', which is
     /// otherwise undefined.  If considerEnds is true, two lines starting or
     /// ending at the same point are considered intersecting }
-    /// 
     /// </summary>
-    /// <param name="line1StartX"></param>
-    /// <param name="line1StartY"></param>
-    /// <param name="line1EndX"></param>
-    /// <param name="line1EndY"></param>
-    /// <param name="line2StartX"></param>
-    /// <param name="line2StartY"></param>
-    /// <param name="line2EndX"></param>
-    /// <param name="line2EndY"></param>
-    /// <param name="PositionX"></param>
-    /// <param name="PositionY"></param>
-    /// <param name="considerEnds"></param>
-    /// <param name="LinesAreColinear"></param>
-    /// <returns></returns>
     public static bool LinesIntersect(double line1StartX,
       double line1StartY,
       double line1EndX,

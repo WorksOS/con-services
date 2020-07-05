@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics;
-using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
 {
   public static class UnitUtils
   {
     public static double DistToMeters(DistanceUnitsType distUnits)
-      // Returns the conversion factor required to convert a distance value in the
-      //    specified units to meters
-      //  NOTE: Meters is the internal distance value unit used in SVO
+    // Returns the conversion factor required to convert a distance value in the
+    //    specified units to meters
+    //  NOTE: Meters is the internal distance value unit used in SVO
     {
       const double USFeetToMeters = 0.304800609601;
       const double InternationalFeetToMeters = 0.3048;

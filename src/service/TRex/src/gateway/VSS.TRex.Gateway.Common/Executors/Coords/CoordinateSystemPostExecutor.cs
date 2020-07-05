@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       if (request == null)
         ThrowRequestTypeCastException<CoordinateSystemFile>();
 
-      var csd = await DIContext.Obtain<IConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
+      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

@@ -11,6 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\CoreX.Wrapper\src\CoreX.Wrapper.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\CoreX.Wrapper\src\CoreX\CoreX.Wrapper.csproj" />
     <ProjectReference Include="..\VSS.TRex.Cells\VSS.TRex.Cells.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common.Exceptions\VSS.TRex.Common.Exceptions.csproj" />
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />

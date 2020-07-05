@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.Common.Utilities.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces
 {

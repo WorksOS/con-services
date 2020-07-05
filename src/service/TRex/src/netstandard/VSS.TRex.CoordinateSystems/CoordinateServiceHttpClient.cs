@@ -12,12 +12,12 @@ namespace VSS.TRex.CoordinateSystems
   /// </summary>
   public class CoordinateServiceHttpClient
   {
-    private static readonly ILogger log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
-    private readonly HttpClient httpClient;
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
+    private readonly HttpClient _httpClient;
 
     public CoordinateServiceHttpClient(HttpClient httpClient)
     {
-      this.httpClient = httpClient;
+      this._httpClient = httpClient;
       httpClient.DefaultRequestHeaders.Add(HeaderConstants.ACCEPT, MediaTypes.JSON);
     }
 
@@ -42,25 +42,25 @@ namespace VSS.TRex.CoordinateSystems
     /// </summary>
     public Task<HttpResponseMessage> SendRequest(string route, MultipartFormDataContent content)
     {
-      var absoluteUriPath = httpClient.BaseAddress.AbsoluteUri + route;
+      var absoluteUriPath = _httpClient.BaseAddress.AbsoluteUri + route;
       
-      log.LogInformation($"{nameof(CoordinateServiceHttpClient)}: {nameof(SendRequest)}: ({HttpMethod.Put.Method})|{absoluteUriPath}");
+      _log.LogInformation($"{nameof(CoordinateServiceHttpClient)}: {nameof(SendRequest)}: ({HttpMethod.Put.Method})|{absoluteUriPath}");
 
-      return httpClient.PutAsync(absoluteUriPath, content);
+      return _httpClient.PutAsync(absoluteUriPath, content);
     }
 
     private Task<HttpResponseMessage> SendHttpClientRequest(string route, HttpMethod method, HttpContent httpContent = null)
     {
-      var absoluteUriPath = httpClient.BaseAddress.AbsoluteUri + route;
+      var absoluteUriPath = _httpClient.BaseAddress.AbsoluteUri + route;
 
-      log.LogInformation($"{nameof(CoordinateServiceHttpClient)}: {nameof(SendRequest)}: ({method})|{absoluteUriPath}");
+      _log.LogInformation($"{nameof(CoordinateServiceHttpClient)}: {nameof(SendRequest)}: ({method})|{absoluteUriPath}");
 
       var requestMessage = new HttpRequestMessage(method, absoluteUriPath)
       {
         Content = httpContent
       };
 
-      return httpClient.SendAsync(requestMessage);
+      return _httpClient.SendAsync(requestMessage);
     }
   }
 }

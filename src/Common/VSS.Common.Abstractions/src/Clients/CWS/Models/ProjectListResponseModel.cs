@@ -2,11 +2,12 @@
 using System.Linq;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class ProjectListResponseModel : IMasterDataModel
+  public class ProjectListResponseModel : IMasterDataModel, ISupportsPaging<ProjectResponseModel>
   {
     public ProjectListResponseModel()
     {
@@ -24,6 +25,13 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("hasMore")]
     public bool HasMore { get; set; }
+
+    [JsonIgnore]
+    public List<ProjectResponseModel> Models
+    {
+      get { return Projects;}
+      set { Projects = value; }
+    }
 
     public List<string> GetIdentifiers() => Projects?
                                               .SelectMany(d => d.GetIdentifiers())

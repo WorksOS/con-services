@@ -44,7 +44,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var csd = await DIContext.Obtain<IConvertCoordinates>().CSIBContentToCSD(csib);
+      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().CSIBContentToCSD(csib);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

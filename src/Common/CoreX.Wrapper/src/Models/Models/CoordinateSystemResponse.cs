@@ -1,6 +1,4 @@
-﻿using CoreX.Wrapper.Models;
-
-namespace CoreX.Wrapper
+﻿namespace CoreX.Models
 {
   public struct CoordinateSystemResponse
   {

@@ -24,9 +24,6 @@
     /// <summary>
     /// Constructor taking the left, right positions and zone information
     /// </summary>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <param name="uTMZone"></param>
     public UTMCoordPointPair(XYZ left, XYZ right, byte uTMZone)
     {
       Left = left;

@@ -95,7 +95,7 @@ namespace VSS.TRex.Webtools
       //Set up configuration for TRex
       DIContext.Inject(services.BuildServiceProvider());
 
-      services.AddSingleton<IConvertCoordinates>(new ConvertCoordinates());
+      services.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates());
       TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 

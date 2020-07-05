@@ -1,7 +1,8 @@
 PARAM (
     # General
-    [Parameter(Mandatory = $true)][string]$service,
-    [Parameter(Mandatory = $true)][string]$action,
+    [Parameter(Mandatory = $true)][string]$service, # The application service to build, test.
+    [Parameter(Mandatory = $true)][string]$action, # Actions include build | unittest | publish 
+    [Parameter(Mandatory = $false)][string]$dockerFile, # Optional Dockerfile. If defined will be used in the selected 'action'.
     # Unit testing
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$recordTestResults = "true",
     [Parameter(Mandatory = $false)][ValidateSet("true", "false")][string]$collectCoverage = "true",
@@ -49,15 +50,7 @@ function Build-Solution {
     Login-Aws
 
     $imageTag = "$serviceName-build"
-    $dockerFile = 'Dockerfile.build'
-    
-    switch ($serviceName) {
-        'trexwebtools' {
-            $dockerFile = 'Dockerfile.webtools.build'
-            continue
-        }
-        default { }
-    }
+    if (-not($dockerFile)) { $dockerFile = 'Dockerfile.build' }
 
     Write-Host "`nBuilding container image '$imageTag'..." -ForegroundColor Green
     docker build -f $servicePath/build/$dockerFile --tag $imageTag --no-cache --build-arg SERVICE_PATH=$servicePath .
@@ -82,6 +75,7 @@ function Build-Solution {
 
 function Run-Unit-Tests {
     $container_name = "$serviceName-unittest"
+    if (-not($dockerFile)) { $dockerFile = 'Dockerfile.unittest' }
 
     # Ensure required image exists
     $buildImage = "$serviceName-build:latest"
@@ -104,13 +98,17 @@ function Run-Unit-Tests {
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
     # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
-    Get-Content $servicePath/build/Dockerfile.unittest | docker build --tag $container_name `
+    Get-Content $servicePath/build/$dockerFile | docker build --tag $container_name `
         --no-cache `
         --build-arg FROM_IMAGE=$buildImage `
-        --build-arg SERVICE_PATH=$servicePath - 
+        --build-arg SERVICE_PATH=$servicePath `
+        --build-arg COLLECT_COVERAGE=$collectCoverage - 
     
     Write-Host "`nCreating unit test container..." -ForegroundColor Green
     $unique_container_name = "$container_name`_$(Get-Random -Minimum 1000 -Maximum 9999)"
+
+    # Had instances of the docker login failing, possibly due to AWS token expiry? 
+    Login-Aws
 
     # Start the container image and terminate and detach immediately
     docker create --name $unique_container_name $container_name
@@ -172,7 +170,9 @@ function Publish-Service {
     $publishProjectFileArg = ''
     if ($publishProjectFile) { $publishProjectFileArg = '=' + $publishProjectFile }
 
-    Get-Content $servicePath/build/Dockerfile.runtime | docker build `
+    if (-not($dockerFile)) { $dockerFile = 'Dockerfile.runtime' }
+
+    Get-Content $servicePath/build/$dockerFile | docker build `
     --tag $publishImage `
     --no-cache `
     --build-arg FROM_IMAGE=$buildImage `

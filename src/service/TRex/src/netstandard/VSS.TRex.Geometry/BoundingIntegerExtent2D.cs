@@ -9,12 +9,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Calculates the number of cells this integer extent covers
     /// </summary>
-    public long Area() => SizeX * (long) SizeY; 
+    public long Area() => SizeX * (long)SizeY;
 
     /// <summary>
     /// Assign the context of another 3D bounding extent to this one
     /// </summary>
-    /// <param name="source"></param>
     public void Assign(BoundingIntegerExtent2D source)
     {
       MinX = source.MinX;
@@ -26,16 +25,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Produce as human readable form of the state in this bounding extent
     /// </summary>
-    /// <returns></returns>
     public override string ToString() => $"MinX: {MinX}, MinY:{MinY}, MaxX: {MaxX}, MaxY:{MaxY}";
 
     /// <summary>
     /// Construct a 2D bounding extent from the supplied parameters
     /// </summary>
-    /// <param name="AMinX"></param>
-    /// <param name="AMinY"></param>
-    /// <param name="AMaxX"></param>
-    /// <param name="AMaxY"></param>
     public BoundingIntegerExtent2D(int AMinX, int AMinY, int AMaxX, int AMaxY)
     {
       MinX = AMinX;
@@ -47,8 +41,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine is this bounding extent encloses the extent provided as a parameter
     /// </summary>
-    /// <param name="AExtent"></param>
-    /// <returns></returns>
     public bool Encloses(BoundingIntegerExtent2D AExtent)
     {
       return IsValidExtent && AExtent.IsValidExtent &&
@@ -59,7 +51,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Expand the extent covered in X & Y isotropically using the supplied Delta
     /// </summary>
-    /// <param name="Delta"></param>
     public void Expand(int Delta)
     {
       MinX -= Delta;
@@ -71,8 +62,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Include the integer location coordinate specified by the X and Y parameters into the 2D bounding extent
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
     public void Include(int X, int Y)
     {
       if (MinX > X) MinX = X;
@@ -84,7 +73,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Include the extent contained in the parameter into the 2D bounding extent
     /// </summary>
-    /// <param name="Extent"></param>
     public void Include(BoundingIntegerExtent2D Extent)
     {
       if (Extent.IsValidExtent)
@@ -97,8 +85,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if the 2D bounding extent includes the coordinate given by the X and Y parameters
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
     /// <returns>A boolean indicating where the bounding extent includes the given position</returns>
     public bool Includes(int x, int y) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY;
 
@@ -112,8 +98,6 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Move the 2D bounding extent int he X and Y dimensions by the delta X & Y supplied in the parameters
     /// </summary>
-    /// <param name="DX"></param>
-    /// <param name="DY"></param>
     public void Offset(int DX, int DY)
     {
       MinX += DX;
@@ -143,14 +127,11 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Determine if this bounding extent equals another bounding extent instance
     /// </summary>
-    /// <param name="extent"></param>
-    /// <returns></returns>
     public bool Equals(BoundingIntegerExtent2D extent) => MinX == extent.MinX && MinY == extent.MinY && MaxX == extent.MaxX && MaxY == extent.MaxY;
 
     /// <summary>
     /// Creates a new 2D bounding extents structure with the corner points 'inverted'
     /// </summary>
-    /// <returns></returns>
     public static BoundingIntegerExtent2D Inverted()
     {
       BoundingIntegerExtent2D result = new BoundingIntegerExtent2D();
