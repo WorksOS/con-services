@@ -15,11 +15,7 @@ variables:
   serviceName: TRex
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
   ecrRepositoryName: "rpd-ccss-trex"
-  # Only generate code coverage for master branch.
-  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-    collectCoverage: true
-  ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
-    collectCoverage: false
+  isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 jobs:
   - job: buildtrex
