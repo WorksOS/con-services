@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
@@ -19,6 +20,11 @@ namespace CoreX.Wrapper
 
     public ConvertCoordinates(CoreX coreX)
     {
+      if (_coreX == null)
+      {
+        throw new InvalidOperationException("CoreX cannot be null");
+      }
+
       _coreX = coreX;
     }
 
