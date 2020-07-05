@@ -3,6 +3,7 @@ using FluentAssertions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
 
       var siteModelUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
-      var newSS = manager.Add(siteModelUid, new DesignDescriptor(designUid, "", ""), DateTime.UtcNow, BoundingWorldExtent3D.Null());
+      var newSS = manager.Add(siteModelUid, new DesignDescriptor(designUid, "", ""), DateTime.UtcNow, BoundingWorldExtent3D.Null(), new SubGridTreeSubGridExistenceBitMask());
 
       var results = manager.List(siteModelUid);
 
@@ -42,7 +43,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var siteModelUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
 
-      Action act = () => manager.Add(siteModelUid, new DesignDescriptor(designUid, "", ""), DateTime.Now, BoundingWorldExtent3D.Null());
+      Action act = () => manager.Add(siteModelUid, new DesignDescriptor(designUid, "", ""), DateTime.Now, BoundingWorldExtent3D.Null(), new SubGridTreeSubGridExistenceBitMask());
       act.Should().Throw<ArgumentException>().WithMessage("AsAtDate must be a UTC date time");
     }
 
@@ -63,7 +64,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces
       var manager = new SurveyedSurfaceManager(StorageMutability.Mutable);
 
       var siteModelUid = Guid.NewGuid();
-      manager.Add(siteModelUid, DesignDescriptor.Null(), DateTime.UtcNow, BoundingWorldExtent3D.Null());
+      manager.Add(siteModelUid, DesignDescriptor.Null(), DateTime.UtcNow, BoundingWorldExtent3D.Null(), new SubGridTreeSubGridExistenceBitMask());
 
       var results = manager.List(siteModelUid);
 

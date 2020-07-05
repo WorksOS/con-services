@@ -7,7 +7,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Alignments.GridFabric.Arguments;
+using VSS.TRex.Alignments.GridFabric.Requests;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
@@ -47,7 +48,16 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         log.LogInformation($"#In# UpdateSVLDesignExecutor. Update design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        if (!DIContext.Obtain<IAlignmentManager>().Remove(request.ProjectUid, request.DesignUid))
+
+        // Remove the alignment
+        var tRexRemoveRequest = new RemoveAlignmentRequest();
+        var removeResponse = await tRexRemoveRequest.ExecuteAsync(new RemoveAlignmentArgument
+        {
+          ProjectID = request.ProjectUid,
+          AlignmentID = request.DesignUid
+        });
+
+        if (removeResponse.RequestResult != DesignProfilerRequestResult.OK)
         {
           throw CreateServiceException<UpdateSVLDesignExecutor>
             (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
@@ -79,10 +89,13 @@ namespace VSS.TRex.Gateway.Common.Executors
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
         // Create the new alignment in our site model
-        _ = DIContext.Obtain<IAlignmentManager>()
-          .Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
-            extents);
+        var tRexAddRequest = new AddAlignmentRequest();
+        var alignmentUid = await tRexAddRequest.ExecuteAsync(new AddAlignmentArgument
+        {
+          ProjectID = request.ProjectUid,
+          DesignDescriptor = new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
+          Extents = extents
+        });
 
         log.LogInformation($"#Out# UpdateSVLDesignExecutor. Processed add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }

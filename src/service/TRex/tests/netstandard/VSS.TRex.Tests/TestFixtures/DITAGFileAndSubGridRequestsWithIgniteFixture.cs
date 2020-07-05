@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy;
 using VSS.MasterData.Models.Models;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
@@ -18,7 +19,6 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
@@ -52,7 +52,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
+using VSS.TRex.SiteModels.Interfaces.Executors;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -207,12 +207,10 @@ namespace VSS.TRex.Tests.TestFixtures
       ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
       var designUid = Guid.NewGuid();
-      var existenceMaps = DIContext.Obtain<IExistenceMaps>();
 
       // Create the design surface in the site model
-      var designSurface = DIContext.Obtain<IDesignManager>().Add(siteModel.ID,
-        new DesignDescriptor(designUid, filePath, fileName), extents);
-      existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designSurface.ID, ttm.SubGridOverlayIndex());
+      var _ = DIContext.Obtain<IDesignManager>().Add(siteModel.ID,
+        new DesignDescriptor(designUid, filePath, fileName), extents, ttm.SubGridOverlayIndex());
 
       // get the newly updated site model with the design reference included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
@@ -252,7 +250,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the design surface in the site model
       /*var alignmentDesign = */
-      DIContext.Obtain<IDesignManager>().Add(siteModel.ID, new DesignDescriptor(designUid, filePath, fileName), masterAlignment.BoundingBox());
+      /*var alignmentDesign = */ DIContext.Obtain<IAlignmentManager>().Add(siteModel.ID, new DesignDescriptor(designUid, filePath, fileName), masterAlignment.BoundingBox());
 
       // get the newly updated site model with the design reference included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
@@ -285,12 +283,10 @@ namespace VSS.TRex.Tests.TestFixtures
       ttm.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
       var surveyedSurfaceUid = Guid.NewGuid();
-      var existenceMaps = DIContext.Obtain<IExistenceMaps>();
 
       // Create the design surface in the site model
-      var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>().Add(siteModel.ID,
-        new DesignDescriptor(surveyedSurfaceUid, filePath, fileName), asAtDate, extents);
-      existenceMaps.SetExistenceMap(siteModel.ID, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID, ttm.SubGridOverlayIndex());
+      var _ = DIContext.Obtain<ISurveyedSurfaceManager>().Add(siteModel.ID,
+        new DesignDescriptor(surveyedSurfaceUid, filePath, fileName), asAtDate, extents, ttm.SubGridOverlayIndex());
 
       // get the newly updated site model with the surveyed surface included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);

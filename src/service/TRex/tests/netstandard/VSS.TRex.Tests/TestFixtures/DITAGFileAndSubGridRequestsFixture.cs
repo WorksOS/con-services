@@ -93,7 +93,7 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register a DI factory for ImmutableSpatialAffinityPartitionMap to represent an affinity partition map with just one partition
         .Add(x => x.AddSingleton<IImmutableSpatialAffinityPartitionMap>(mockImmutableSpatialAffinityPartitionMap.Object))
 
-        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddTransient<IAlignments>(factory => new TRex.Alignments.Alignments()))
         .Add(x => x.AddTransient<IDesigns>(factory => new TRex.Designs.Storage.Designs()))
 
         .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)

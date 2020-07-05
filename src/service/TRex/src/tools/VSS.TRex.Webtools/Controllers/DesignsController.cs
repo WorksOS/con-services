@@ -6,17 +6,15 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Webtools.Controllers
@@ -263,10 +261,9 @@ namespace VSS.TRex.Webtools.Controllers
         TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
         // Create the new design for the site model
+        //TODO: Use add design request
         var design = DIContext.Obtain<IDesignManager>()
-          .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName), extents);
-
-        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubGridOverlayIndex());
+          .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName), extents, TTM.SubGridOverlayIndex());
       }
       catch (Exception e)
       {
@@ -287,11 +284,10 @@ namespace VSS.TRex.Webtools.Controllers
         TTM.GetExtents(out extents.MinX, out extents.MinY, out extents.MaxX, out extents.MaxY);
         TTM.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
+        // TODO: Convert to requet per designs
         // Create the new design for the site model (note that SS and design types are different)
         var design = DIContext.Obtain<ISurveyedSurfaceManager>()
-          .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName), surveyedUtc, extents);
-
-        DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, design.ID, TTM.SubGridOverlayIndex());
+          .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName), surveyedUtc, extents, TTM.SubGridOverlayIndex());
       }
       catch (Exception e)
       {

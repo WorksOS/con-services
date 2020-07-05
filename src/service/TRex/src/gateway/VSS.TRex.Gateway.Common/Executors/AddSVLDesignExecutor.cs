@@ -7,12 +7,12 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Alignments.GridFabric.Arguments;
+using VSS.TRex.Alignments.GridFabric.Requests;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 
@@ -65,10 +65,13 @@ namespace VSS.TRex.Gateway.Common.Executors
         alignmentDesign.GetHeightRange(out extents.MinZ, out extents.MaxZ);
 
         // Create the new alignment in our site model
-        _ = DIContext.Obtain<IAlignmentManager>()
-          .Add(request.ProjectUid,
-            new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
-            extents);
+        var tRexRequest = new AddAlignmentRequest();
+        var alignmentUid = await tRexRequest.ExecuteAsync(new AddAlignmentArgument
+        {
+          ProjectID = request.ProjectUid,
+          DesignDescriptor = new Designs.Models.DesignDescriptor(request.DesignUid, localPathAndFileName, request.FileName),
+          Extents = extents
+        });
 
         log.LogInformation($"#Out# AddSVLDesignExecutor. Processed add design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }

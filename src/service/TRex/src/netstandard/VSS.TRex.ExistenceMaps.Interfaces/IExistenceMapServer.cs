@@ -1,5 +1,6 @@
 ﻿using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.Interfaces
 {
@@ -8,15 +9,6 @@ namespace VSS.TRex.ExistenceMaps.Interfaces
     /// <summary>
     /// Get a specific existence map given its key
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    ISerialisedByteArrayWrapper GetExistenceMap(INonSpatialAffinityKey key);
-
-    /// <summary>
-    /// Set or update a given existence map given its key.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="map"></param>
-    void SetExistenceMap(INonSpatialAffinityKey key, ISerialisedByteArrayWrapper map);
+    ISubGridTreeBitMask GetExistenceMap(INonSpatialAffinityKey key);
   }
 }

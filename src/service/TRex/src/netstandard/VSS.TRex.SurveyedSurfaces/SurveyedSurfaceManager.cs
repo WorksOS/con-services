@@ -1,13 +1,16 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.ExistenceMaps.GridFabric.Requests;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -80,13 +83,32 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <summary>
     /// Add a new surveyed surface to a site model
     /// </summary>
-    public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents)
+    public ISurveyedSurface Add(Guid siteModelUid, DesignDescriptor designDescriptor, DateTime asAtDate, BoundingWorldExtent3D extents,
+      ISubGridTreeBitMask existenceMap)
     {
       if (asAtDate.Kind != DateTimeKind.Utc)
         throw new ArgumentException("AsAtDate must be a UTC date time");
 
+      if (extents == null)
+        throw new ArgumentNullException(nameof(extents));
+
+      if (existenceMap == null)
+        throw new ArgumentNullException(nameof(existenceMap));
+
       var ss = Load(siteModelUid);
       var newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
+
+      // Store the existance map into the cache
+      using var stream = existenceMap.ToStream();
+      var fileName = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, designDescriptor.DesignID);
+      if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, fileName,
+                                                          FileSystemStreamType.DesignTopologyExistenceMap, stream, existenceMap) != FileSystemErrorStatus.OK)
+      {
+        _log.LogError("Failed to write existence map to persistent store for key {fileName}");
+        return null;
+      }
+
+      // Store performs Commit() operation
       Store(siteModelUid, ss);
 
       return newSurveyedSurface;
@@ -109,7 +131,19 @@ namespace VSS.TRex.SurveyedSurfaces
     {
       var ss = Load(siteModelUid);
       var result = ss.RemoveSurveyedSurface(surveySurfaceUid);
-      Store(siteModelUid, ss);
+
+      if (result)
+      {
+        var removeMapResult = _writeStorageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.DesignTopologyExistenceMap,
+          BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveySurfaceUid));
+
+        if (removeMapResult != FileSystemErrorStatus.OK)
+        {
+          _log.LogInformation($"Removing surveyed surface existence map for surveyed surface {surveySurfaceUid} project {siteModelUid} failed with error {removeMapResult}");
+        }
+
+        Store(siteModelUid, ss);
+      }
 
       return result;
     }
@@ -119,6 +153,18 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     public bool Remove(Guid siteModelUid, IStorageProxy storageProxy)
     {
+      // First remove all the existence maps associated with the surveyed surfaces
+      foreach(var surveyedSurface in Load(siteModelUid))
+      {
+        FileSystemErrorStatus fsresult;
+        var filename = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID);
+        if ((fsresult = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
+        {
+          _log.LogWarning($"Unable to remove existance map for surveyed surface {surveyedSurface.ID}, filename = {filename}, in project {siteModelUid} with result: {fsresult}");
+        }
+      }
+
+      // Then remove the surveyd surface list stream itself
       var result = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.Designs, SURVEYED_SURFACE_STREAM_NAME);
 
       if (result != FileSystemErrorStatus.OK)

@@ -6,7 +6,10 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.CoordinateSystems;
-using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.ComputeFuncs;
+using VSS.TRex.Designs.GridFabric.Requests;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Models;
@@ -17,6 +20,7 @@ using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Requests;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -27,7 +31,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
   [UnitTestCoveredRequest(RequestType = typeof(DeleteSiteModelRequest))]
   public class DeleteSiteModelRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddApplicationGridRouting() => IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
+    private void AddApplicationGridRouting()
+    {
+      IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
+      IgniteMock.Mutable.AddApplicationGridRouting<AddTTMDesignComputeFunc, AddTTMDesignArgument, AddTTMDesignResponse>();
+    }
 
     public DeleteSiteModelRequestTests()
     {
@@ -268,14 +276,22 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     [Theory]
     [InlineData(DeleteSiteModelSelectivity.All)]
     [InlineData(DeleteSiteModelSelectivity.Designs)]
-    public void DeleteModel_WithSiteDesigns(DeleteSiteModelSelectivity selectivity)
+    public async void DeleteModel_WithSiteDesigns(DeleteSiteModelSelectivity selectivity)
     {
       AddApplicationGridRouting();
 
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      DIContext.Obtain<IDesignManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1));
+      var request = new AddTTMDesignRequest();
+      var _ = await request.ExecuteAsync(new AddTTMDesignArgument
+      {
+        ProjectID = model.ID,
+        DesignDescriptor = new VSS.TRex.Designs.Models.DesignDescriptor(Guid.NewGuid(), "", ""),
+        Extents = new BoundingWorldExtent3D(0, 0, 1, 1),
+        ExistenceMap = new SubGridTreeSubGridExistenceBitMask()
+      });
+
       SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
@@ -292,7 +308,9 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      DIContext.Obtain<ISurveyedSurfaceManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
+      // TODO: Convert to request per designs
+      DIContext.Obtain<ISurveyedSurfaceManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1), 
+        new SubGridTreeSubGridExistenceBitMask());
       SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
