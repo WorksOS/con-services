@@ -20,6 +20,7 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -42,6 +43,7 @@ namespace VSS.TRex.SubGrids
     private GridDataType _gridDataType;
     private ICombinedFilter _filter;
     private readonly ICellPassAttributeFilterProcessingAnnex _filterAnnex = new CellPassAttributeFilterProcessingAnnex();
+
     private ISurfaceElevationPatchRequest _surfaceElevationPatchRequest;
     private bool _hasOverrideSpatialCellRestriction;
     private BoundingIntegerExtent2D _overrideSpatialCellRestriction;
@@ -117,7 +119,17 @@ namespace VSS.TRex.SubGrids
       _returnEarliestFilteredCellPass = _filter.AttributeFilter.ReturnEarliestFilteredCellPass;
       _processingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-      _surfaceElevationPatchArg = surfaceElevationPatchArgument;
+      // Create a clone of the argument so that concurrently executing requestors don't trample over it
+      _surfaceElevationPatchArg = new SurfaceElevationPatchArgument(
+        surfaceElevationPatchArgument.SiteModelID,
+        surfaceElevationPatchArgument.OTGCellBottomLeftX,
+        surfaceElevationPatchArgument.OTGCellBottomLeftY,
+        surfaceElevationPatchArgument.CellSize,
+        surfaceElevationPatchArgument.SurveyedSurfacePatchType,
+        null,
+        null);
+      _surfaceElevationPatchArg.IncludedSurveyedSurfaces = surfaceElevationPatchArgument.IncludedSurveyedSurfaces;
+
       _surfaceElevationPatchRequest = surfaceElevationPatchRequest;
 
       _subGridCache = subGridCache;

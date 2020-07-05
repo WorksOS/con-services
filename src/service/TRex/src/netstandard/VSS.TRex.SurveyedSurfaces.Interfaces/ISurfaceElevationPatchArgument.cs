@@ -42,7 +42,7 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// IE: If latest single elevations are needed then this list should be sorted in decreasing time,
     /// similarly if earliest single elevations are needed then this list should be sorted in increasing time.
     /// </summary>
-    Guid[] IncludedSurveyedSurfaces { get; }
+    Guid[] IncludedSurveyedSurfaces { get; set; }
 
     /// <summary>
     /// Overloaded ToString to add argument properties
