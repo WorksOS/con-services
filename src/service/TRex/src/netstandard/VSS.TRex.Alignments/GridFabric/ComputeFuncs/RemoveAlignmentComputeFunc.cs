@@ -22,7 +22,7 @@ namespace VSS.TRex.Alignments.GridFabric.ComputeFuncs
 
         return new RemoveAlignmentResponse
         {
-          DesignUid = arg.AlignmentID,
+          AlignmentUid = arg.AlignmentID,
           RequestResult = result
         };
       }
