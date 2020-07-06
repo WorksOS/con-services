@@ -372,10 +372,10 @@ namespace VSS.TRex.Rendering.Executors
 
       LLHCoords = new[]
       {
-        new XYZ(BLPoint.X, BLPoint.Y),
-        new XYZ(TRPoint.X, TRPoint.Y),
-        new XYZ(BLPoint.X, TRPoint.Y),
-        new XYZ(TRPoint.X, BLPoint.Y)
+        new XYZ(BLPoint.X, BLPoint.Y, 0),
+        new XYZ(TRPoint.X, TRPoint.Y, 0),
+        new XYZ(BLPoint.X, TRPoint.Y, 0),
+        new XYZ(TRPoint.X, BLPoint.Y, 0)
       };
       _log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
 
