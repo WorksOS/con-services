@@ -49,7 +49,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// The list of surveyed surfaces to be included in the calculation
     /// [Note: This is fairly inefficient, the receiver of the request should be able to access surveyed surfaces locally...]
     /// </summary>
-    public Guid[] IncludedSurveyedSurfaces { get; private set; }
+    public Guid[] IncludedSurveyedSurfaces { get; set; }
 
     /// <summary>
     /// Constructor taking the full state of the surface patch computation operation
@@ -74,7 +74,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
       OTGCellBottomLeftY = oTGCellBottomLeftY;
       CellSize = cellSize;
       SurveyedSurfacePatchType = surveyedSurfacePatchType;
-      ProcessingMap = new SubGridTreeBitmapSubGridBits(processingMap);
+      ProcessingMap = processingMap == null ? new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled) : new SubGridTreeBitmapSubGridBits(processingMap);
 
       // Prepare the list of surveyed surfaces for use by all invocations using this argument
       includedSurveyedSurfaces?.SortChronologically(surveyedSurfacePatchType == SurveyedSurfacePatchType.LatestSingleElevation);
