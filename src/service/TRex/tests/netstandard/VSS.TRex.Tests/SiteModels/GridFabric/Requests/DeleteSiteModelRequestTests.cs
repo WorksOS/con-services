@@ -99,17 +99,6 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     }
 
     [Fact]
-    public void EmptyNonCommittedModelIsEmpty()
-    {
-      AddApplicationGridRouting();
-
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      model.Should().NotBeNull();
-
-      IsModelEmpty(model).Should().BeTrue();
-    }
-
-    [Fact]
     public void DeleteEmptyModel_StandardMetaDataPersistence()
     {
       AddApplicationGridRouting();

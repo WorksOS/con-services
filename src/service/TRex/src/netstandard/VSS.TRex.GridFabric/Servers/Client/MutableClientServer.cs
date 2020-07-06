@@ -124,7 +124,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
     {
-      cfg.SpringConfigUrl = @".\igniteKubeConfig.xml";
+      cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
       cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.12.0.jar=8088:prometheusConfig.yaml");
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
