@@ -20,7 +20,7 @@ namespace CoreX.Wrapper
 
     public ConvertCoordinates(CoreX coreX)
     {
-      if (_coreX == null)
+      if (coreX == null)
       {
         throw new InvalidOperationException("CoreX cannot be null");
       }
