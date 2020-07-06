@@ -27,6 +27,7 @@ using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.WebApi.Common;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -85,7 +86,7 @@ namespace VSS.TRex.Gateway.WebApi
       });
 
       DIBuilder.Continue()
-        .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
+        .Add(x => x.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
         .Complete();
     }
 

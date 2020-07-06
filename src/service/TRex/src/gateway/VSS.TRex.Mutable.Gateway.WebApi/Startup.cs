@@ -87,7 +87,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT)))
-        .Add(x => x.AddSingleton<ImmutableClientServer>(new ImmutableClientServer("WEBAPI-CLIENT")))
         .Complete();
     }
 
