@@ -72,7 +72,9 @@ namespace CCSS.CWS.Client
 
       try
       {
-        projectSummaryListResponseModel = await GetAllPagedData<ProjectSummaryListResponseModel, ProjectSummaryResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, null, customHeaders);
+        // We need settings to get the boundary
+        var queryParams = new List<KeyValuePair<string, string>> {new KeyValuePair<string, string>("includeSettings", "true")};
+        projectSummaryListResponseModel = await GetAllPagedData<ProjectSummaryListResponseModel, ProjectSummaryResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, queryParams, customHeaders);
       }
       catch (HttpRequestException e)
       {
