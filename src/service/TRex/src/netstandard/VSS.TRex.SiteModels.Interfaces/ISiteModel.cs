@@ -137,7 +137,7 @@ IGenericSubGridTree_Long VersionMap { get; }
     void Include(ISiteModel source);
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
-    bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = false);
+    bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow);
     bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy);
     FileSystemErrorStatus LoadFromPersistentStore();
 

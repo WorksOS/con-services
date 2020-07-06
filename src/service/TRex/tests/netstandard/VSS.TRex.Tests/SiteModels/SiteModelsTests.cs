@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.SiteModels
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);
-      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy);
+      siteModel.SaveMetadataToPersistentStore(siteModel.PrimaryStorageProxy, true);
 
       var queriedSiteModel = sm.GetSiteModelRaw(siteModelId);
       queriedSiteModel.Should().NotBeNull();
