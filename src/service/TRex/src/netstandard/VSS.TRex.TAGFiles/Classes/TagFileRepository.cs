@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
@@ -39,9 +40,14 @@ namespace VSS.TRex.TAGFiles.Classes
     /// <returns></returns>
     public static bool ArchiveTagfileS3(TagFileDetail tagDetail)
     {
-      if (tagDetail.assetId == null || tagDetail.projectId == null || tagDetail.tagFileName == string.Empty || tagDetail.tagFileContent == null)
+
+      // CCSSCON-702 Archive any unknown asset (JohnDoe) to an empty guid machine folder. 
+      if (tagDetail.assetId == null)
+        tagDetail.assetId = Guid.Empty; 
+
+      if (tagDetail.projectId == null || tagDetail.tagFileName == string.Empty || tagDetail.tagFileContent == null)
       {
-        _log.LogError($"ArchiveTagfileS3. Bad request {tagDetail.tagFileName}. Asset{tagDetail.assetId}, Project:{tagDetail.projectId}");
+        _log.LogError($"ArchiveTagfileS3. Bad request missing value {tagDetail.tagFileName}. Asset{tagDetail.assetId}, Project:{tagDetail.projectId}");
         return false;
       }
 
