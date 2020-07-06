@@ -123,7 +123,7 @@ namespace VSS.TRex.SiteModels
           _cachedModels.Add(id, result);
 
           var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
-          result.SaveMetadataToPersistentStore(storageProxy);
+          result.SaveMetadataToPersistentStore(storageProxy, true);
 
           // Establish the metadata entry for this new site model
           DIContext.Obtain<ISiteModelMetadataManager>().Add(id, result.MetaData);
