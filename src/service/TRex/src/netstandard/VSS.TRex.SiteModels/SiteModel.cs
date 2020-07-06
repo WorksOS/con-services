@@ -114,7 +114,7 @@ namespace VSS.TRex.SiteModels
       IsMarkedForDeletion = true;
 
       // Save the deletion state to persistent storage. This will be reflected to the immutable proxy if this is the mutable context
-      SaveMetadataToPersistentStore(PrimaryStorageProxy);
+      SaveMetadataToPersistentStore(PrimaryStorageProxy, true);
 
       // Advise the grid that this site model is being deleted
 
@@ -129,7 +129,7 @@ namespace VSS.TRex.SiteModels
 
       // Save the deletion state to persistent storage. This will be reflected to the immutable proxy if this is the mutable context
       // Once saved, grid activities attempting access the site model will be allowed access again
-      SaveMetadataToPersistentStore(PrimaryStorageProxy);
+      SaveMetadataToPersistentStore(PrimaryStorageProxy, true);
     }
 
     private readonly object _lockObj = new object();
@@ -643,7 +643,7 @@ versionMap = null;
     /// <param name="storageProxy"></param>
     /// <param name="commitNow"></param>
     /// <returns></returns>
-    public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = true)
+    public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow)
     {
       using (var stream = this.ToStream())
       {
