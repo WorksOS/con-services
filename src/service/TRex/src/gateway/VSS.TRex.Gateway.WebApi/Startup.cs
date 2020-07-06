@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CoreX.Interfaces;
+using CoreX.Wrapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -9,32 +13,33 @@ using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
-using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.WebApi.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Gateway.WebApi.ActionServices;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.AWS.TransferProxy.Interfaces;
-using VSS.AWS.TransferProxy;
-using CoreX.Interfaces;
-using CoreX.Wrapper;
+using VSS.WebApi.Common;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
   public class Startup : BaseStartup
   {
+    /// <inheritdoc/>
     public override string ServiceName => "TRex Gateway API";
+
+    /// <inheritdoc/>
     public override string ServiceDescription => "TRex Gateway API";
+
+    /// <inheritdoc/>
     public override string ServiceVersion => "v1";
 
 
@@ -80,14 +85,13 @@ namespace VSS.TRex.Gateway.WebApi
         });
       });
 
-
       DIBuilder.Continue()
         .Add(x => x.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
         .Complete();
     }
 
+    /// <inheritdoc/>
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
-    {
-    }
+    { }
   }
 }
