@@ -14,6 +14,22 @@ namespace VSS.TRex.GridActivator
   {
     private static ILogger Log;
 
+    private static void EnsureAssemblyDependenciesAreLoaded()
+    {
+      // This static array ensures that all required assemblies are included into the artifacts by the linker
+      Type[] AssemblyDependencies =
+      {
+        typeof(VSS.TRex.TAGFiles.GridFabric.NodeFilters.TAGProcessorRoleBasedNodeFilter),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
+      };
+
+      foreach (var asmType in AssemblyDependencies)
+      {
+        if (asmType.FullName == "DummyTypeName")
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
+      }
+    }
+
     private static void DependencyInjection()
     {
       DIBuilder.New()
@@ -25,6 +41,7 @@ namespace VSS.TRex.GridActivator
 
     static void Main(string[] args)
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DependencyInjection();
 
       try
