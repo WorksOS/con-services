@@ -49,7 +49,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return converter;
     }
 
-    public static TAGFileConverter ReadTAGFile(string subFolder, string fileName)
+    public static TAGFileConverter ReadTAGFile(string subFolder, string fileName, bool treatAsJohnDoeMachine = false)
     {
       var converter = new TAGFileConverter();
 
@@ -57,19 +57,19 @@ namespace VSS.TRex.Tests.TestFixtures
 
       using (var fs = new FileStream(fn, FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs, Guid.NewGuid(), false);
+        converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
       }
 
       return converter;
     }
 
-    public static TAGFileConverter ReadTAGFileFullPath(string fileName)
+    public static TAGFileConverter ReadTAGFileFullPath(string fileName, bool treatAsJohnDoeMachine = false)
     {
       var converter = new TAGFileConverter();
 
       using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs, Guid.NewGuid(), false);
+        converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
       }
 
       return converter;

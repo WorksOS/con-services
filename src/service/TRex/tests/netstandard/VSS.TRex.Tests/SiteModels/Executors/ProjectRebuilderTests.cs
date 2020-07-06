@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nito.AsyncEx.Synchronous;
@@ -16,7 +17,6 @@ using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Classes.Queues;
@@ -102,19 +102,23 @@ namespace VSS.TRex.Tests.SiteModels.Executors
       result.DeletionResult.Should().Be(DeleteSiteModelResult.OK);
     }
 
-    [Fact]
-    public async void ExecuteAsync_SingleTAGFile()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async void ExecuteAsync_SingleTAGFile(bool treatMachineAsJohnDoe)
     {
       AddApplicationGridRouting();
 
       // Construct a site model from a single TAG file
       var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag") };
-      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false);
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _, true, false, treatMachineAsJohnDoe);
 
       // Push the tag file into the S3 bucket 
 
+      var uidForArchiveRepresentation = treatMachineAsJohnDoe ? Guid.Empty : siteModel.Machines[0].ID;
+
       var s3Proxy = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(TransferProxyType.TAGFiles);
-      s3Proxy.WriteFile(tagFiles[0], $"{siteModel.ID}/{siteModel.Machines[0].ID}/{Path.GetFileName(tagFiles[0])}");
+      s3Proxy.WriteFile(tagFiles[0], $"{siteModel.ID}/{uidForArchiveRepresentation}/{Path.GetFileName(tagFiles[0])}");
 
       var rebuilder = CreateBuilder(siteModel.ID, false, TransferProxyType.TAGFiles);
 
@@ -153,6 +157,14 @@ namespace VSS.TRex.Tests.SiteModels.Executors
       result.NumberOfTAGFilesFromS3.Should().Be(1);
 
       result.LastProcessedTagFile.Should().Be(Path.GetFileName(tagFiles[0]));
+
+      // Get the site model again and validate that there is still a single machine with the expected John Doe status
+      siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);
+      siteModel.Machines.Count.Should().Be(1);
+      siteModel.Machines[0].IsJohnDoeMachine.Should().Be(treatMachineAsJohnDoe);
+
+      // Belt and braces - clean the mocked TAG file buffer queue
+      mockQueueCacheDictionary.Clear();
     }
 
     public void Dispose()
