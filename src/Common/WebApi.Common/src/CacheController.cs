@@ -59,6 +59,13 @@ namespace VSS.WebApi.Common
       return Ok();
     }
 
+    [HttpGet("cache/clear")]
+    public IActionResult Clear()
+    {
+      cache.Clear();
+      return Ok();
+    }
+
     [HttpGet("cache/dump")]
     public IActionResult Dump()
     {

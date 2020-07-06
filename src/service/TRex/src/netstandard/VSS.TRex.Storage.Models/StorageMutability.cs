@@ -5,7 +5,7 @@
     /// </summary>
     public enum StorageMutability
     {
-        Mutable,
-        Immutable
+        Mutable = 0,
+        Immutable = 1
     }
 }

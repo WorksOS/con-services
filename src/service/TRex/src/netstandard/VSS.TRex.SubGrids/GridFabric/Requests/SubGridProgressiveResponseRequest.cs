@@ -37,7 +37,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// Immutable grid reference only
     /// </summary>
     private IIgnite ignite;
-    private IIgnite Ignite => ignite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+    private new IIgnite Ignite => ignite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
     /// <summary>
     /// Default no-arg constructor - used by unit tests
