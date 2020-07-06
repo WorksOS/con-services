@@ -25,7 +25,7 @@ namespace CCSS.CWS.Client
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
 
-    protected const int DefaultPageSize = 20;
+    protected const int DefaultPageSize = 50; 
 
     protected int FromRow = 0;
     protected int RowCount = 200;
