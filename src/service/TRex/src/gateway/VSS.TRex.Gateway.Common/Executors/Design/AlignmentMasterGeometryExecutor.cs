@@ -118,7 +118,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         AlignmentDesignID = request.DesignUid
       });
 
-      if (geometryResponse != null && geometryResponse.RequestResult != DesignProfilerRequestResult.OK)
+      if (geometryResponse != null && geometryResponse.RequestResult == DesignProfilerRequestResult.OK)
       {
         // Convert all coordinates from grid to lat/lon
         ConvertNEEToLLHCoords(siteModel.CSIB(), geometryResponse);
