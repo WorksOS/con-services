@@ -32,7 +32,8 @@ namespace CoreX.Wrapper
       const string DATABASE_PATH = "TGL_CsdDatabase";
 
       var geodataPath = Path.Combine(ROOT_DATA_FOLDER, "GeoData");
-      var xmlFilePath = Path.Combine(ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
+      //var xmlFilePath = Path.Combine(ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
+      var xmlFilePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
 
       if (!File.Exists(xmlFilePath))
       {
