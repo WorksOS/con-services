@@ -7,7 +7,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -28,6 +27,7 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.AWS.TransferProxy;
 using CoreX.Interfaces;
 using CoreX.Wrapper;
+using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -82,7 +82,7 @@ namespace VSS.TRex.Gateway.WebApi
 
 
       DIBuilder.Continue()
-        .Add(x => x.AddSingleton(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
+        .Add(x => x.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
         .Complete();
     }
 
