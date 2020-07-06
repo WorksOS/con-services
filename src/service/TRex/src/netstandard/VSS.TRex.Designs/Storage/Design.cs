@@ -20,30 +20,6 @@ namespace VSS.TRex.Designs.Storage
   public class Design : IEquatable<IDesign>, IBinaryReaderWriter, IDesign
   {
     /// <summary>
-    /// Singleton request used by all designs. This request encapsulates the Ignite reference which
-    /// is relatively slow to initialise when making many calls.
-    /// </summary>
-    private DesignElevationSpotRequest _elevSpotRequest;
-
-    /// <summary>
-    /// Singleton request used by all designs. This request encapsulates the Ignite reference which
-    /// is relatively slow to initialise when making many calls.
-    /// </summary>
-    private DesignElevationPatchRequest _elevPatchRequest;
-
-    /// <summary>
-    /// Singleton request used by all designs. This request encapsulates the Ignite reference which
-    /// is relatively slow to initialise when making many calls.
-    /// </summary>
-    private DesignProfileRequest _profileRequest;
-
-    /// <summary>
-    /// Singleton request used by all designs. This request encapsulates the Ignite reference which
-    /// is relatively slow to initialise when making many calls.
-    /// </summary>
-    private DesignFilterSubGridMaskRequest _filterMaskRequest;
-
-    /// <summary>
     /// Binary serialization logic
     /// </summary>
     /// <param name="writer"></param>
@@ -90,9 +66,9 @@ namespace VSS.TRex.Designs.Storage
       // Query the DesignProfiler service to get the patch of elevations calculated
       try
       {
-        _profileRequest ??= new DesignProfileRequest();
+        var profileRequest = new DesignProfileRequest();
 
-        var profile = await _profileRequest.ExecuteAsync(new CalculateDesignProfileArgument(projectUid, cellSize, DesignDescriptor.DesignID, offset, profilePath));
+        var profile = await profileRequest.ExecuteAsync(new CalculateDesignProfileArgument(projectUid, cellSize, DesignDescriptor.DesignID, offset, profilePath));
 
         result.profile = profile.Profile;
 
@@ -168,9 +144,9 @@ namespace VSS.TRex.Designs.Storage
     public async Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelId, double offset, double spotX, double spotY)
     {
       // Query the DesignProfiler service to get the spot elevation calculated
-      _elevSpotRequest ??= new DesignElevationSpotRequest();
+      var elevSpotRequest = new DesignElevationSpotRequest();
 
-      var response = await _elevSpotRequest.ExecuteAsync(new CalculateDesignElevationSpotArgument
+      var response = await elevSpotRequest.ExecuteAsync(new CalculateDesignElevationSpotArgument
         (siteModelId, spotX, spotY, new DesignOffset(DesignDescriptor.DesignID, offset)));
 
       return (response.Elevation, response.CalcResult);
@@ -181,16 +157,16 @@ namespace VSS.TRex.Designs.Storage
     /// </summary>
     public async Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(
       Guid siteModelId,
-      double offset, 
+      double offset,
       SubGridCellAddress originCellAddress,
       double cellSize)
     {
       // Query the DesignProfiler service to get the patch of elevations calculated
       (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
-      _elevPatchRequest ??= new DesignElevationPatchRequest();
+      var elevPatchRequest = new DesignElevationPatchRequest();
 
-      var response = await _elevPatchRequest.ExecuteAsync(new CalculateDesignElevationPatchArgument
+      var response = await elevPatchRequest.ExecuteAsync(new CalculateDesignElevationPatchArgument
       {
         CellSize = cellSize,
         ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, offset),
@@ -216,9 +192,9 @@ namespace VSS.TRex.Designs.Storage
       // Query the DesignProfiler service to get the requested filter mask
       (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
-      _filterMaskRequest ??= new DesignFilterSubGridMaskRequest(); 
+      var filterMaskRequest = new DesignFilterSubGridMaskRequest(); 
 
-      var maskResponse = await _filterMaskRequest.ExecuteAsync(new DesignSubGridFilterMaskArgument
+      var maskResponse = await filterMaskRequest.ExecuteAsync(new DesignSubGridFilterMaskArgument
       {
         CellSize = cellSize,
         ReferenceDesign = new DesignOffset(DesignDescriptor.DesignID, 0),
