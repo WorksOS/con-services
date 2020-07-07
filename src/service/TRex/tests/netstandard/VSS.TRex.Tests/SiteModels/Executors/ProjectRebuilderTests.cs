@@ -113,7 +113,7 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 
       AddApplicationGridRouting();
 
-      Log.LogInformation($"Test Guid {testGuid} Stage 0");
+      Log.LogInformation($"Test Guid {testGuid} Stage 0, treatMachineAsJohnDoe = {treatMachineAsJohnDoe}");
 
       // Construct a site model from a single TAG file
       var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag") };
@@ -155,6 +155,23 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 
       // While the rebuilder is waiting in the monitoring state, inject the contents of the TAGFileBuffer queue into the TAG file processor
       var mutableIgniteMock = DIContext.Obtain<Func<StorageMutability, IgniteMock>>()(StorageMutability.Mutable);
+
+      if (mutableIgniteMock.MockedCacheDictionaries.ContainsKey(TRexCaches.TAGFileBufferQueueCacheName()))
+      {
+        Log.LogInformation($"Key {TRexCaches.TAGFileBufferQueueCacheName()} not found in mocked cache dictionaries");
+        Log.LogInformation($"#Dictionaries in mock: {mutableIgniteMock.MockedCacheDictionaries.Count}");
+        if (mutableIgniteMock.MockedCacheDictionaries.Count > 0)
+        {
+          mutableIgniteMock.MockedCacheDictionaries.ForEach(x =>
+          {
+            Log.LogInformation($"Element: k/v = {x.Key}/{x.Value} with {x.Value.Count} items");
+          });
+        }
+        Log.LogInformation($"Site model representation: {siteModel.StorageRepresentationToSupply}");
+      }
+
+
+
       var mockQueueCacheDictionary = mutableIgniteMock.MockedCacheDictionaries[TRexCaches.TAGFileBufferQueueCacheName()] as Dictionary<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>;
 
       Log.LogInformation($"Test Guid {testGuid} Stage 7");
