@@ -28,6 +28,7 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.CoordinateSystems;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -53,6 +54,7 @@ namespace VSS.TRex.Gateway.WebApi
       DIBuilder.New(services)
         .Build()
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
+        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
