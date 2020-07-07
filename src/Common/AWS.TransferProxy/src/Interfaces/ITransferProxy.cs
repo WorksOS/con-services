@@ -12,7 +12,7 @@ namespace VSS.AWS.TransferProxy.Interfaces
 
     void UploadToBucket(Stream stream, string s3Key, string bucketName);
     void Upload(Stream stream, string s3Key);
-    bool UploadAndLock(Stream stream, string s3Key);
+    Task<bool> UploadAndLock(Stream stream, string s3Key);
     bool RemoveFromBucket(string s3Key);
     Task<bool> FileExists(string s3Key);
     string Upload(Stream stream, string s3Key, string contentType);
