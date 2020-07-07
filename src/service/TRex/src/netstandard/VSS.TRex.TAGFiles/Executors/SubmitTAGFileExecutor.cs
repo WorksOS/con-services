@@ -85,7 +85,7 @@ namespace VSS.TRex.TAGFiles.Executors
             if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive))
             {
               _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
-              if (!TagFileRepository.ArchiveTagfileS3(td))
+              if (! await TagFileRepository.ArchiveTagfileS3(td))
               {
                 _log.LogError($"SubmitTAGFileResponse. Failed to archive tag file. Returning TRexQueueSubmissionError error. ProjectUID:{td.projectId}, AssetUID:{td.assetId}, Tagfile:{tagFileName}");
                 throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"SubmitTAGFileResponse. Failed to archive tag file {tagFileName} to S3"));

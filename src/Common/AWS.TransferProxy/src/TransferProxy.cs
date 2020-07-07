@@ -239,14 +239,14 @@ namespace VSS.AWS.TransferProxy
     /// <summary>
     /// Place write delete object lock on file
     /// </summary>
-    private bool LockFile(string s3Key)
+    private async Task<bool> LockFile(string s3Key)
     {
       using (var s3Client = GetS3Client())
       {
         try
         {
-          var res = s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key,LegalHold = new ObjectLockLegalHold() { Status = "ON" } });
-          return res.Result.HttpStatusCode == System.Net.HttpStatusCode.OK;
+          var res = await s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key,LegalHold = new ObjectLockLegalHold() { Status = "ON" } });
+          return res.HttpStatusCode == System.Net.HttpStatusCode.OK;
         }
 
         catch (Amazon.S3.AmazonS3Exception ex)
@@ -259,10 +259,10 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
-    public bool UploadAndLock(Stream stream, string s3Key)
+    public async Task<bool> UploadAndLock(Stream stream, string s3Key)
     {
       UploadToBucket(stream, s3Key, awsBucketName);
-      return LockFile(s3Key);
+      return await LockFile(s3Key);
     }
 
 
