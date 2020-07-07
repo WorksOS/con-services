@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
@@ -35,9 +34,6 @@ namespace CoreX.Wrapper
     public XYZ NullWGSLLToXY(WGS84Point wgsPoint) => new XYZ(wgsPoint.Lon, wgsPoint.Lat);
 
     /// <inheritdoc />
-    public XYZ[] NullWGSLLToXY(WGS84Point[] wgsPoints) => wgsPoints.Select(x => new XYZ(x.Lon, x.Lat)).ToArray();
-
-    /// <inheritdoc />
     public NEE LLHToNEE(string csib, LLH coordinates, InputAs inputAs)
     {
       if (inputAs == InputAs.Degrees)
@@ -46,9 +42,7 @@ namespace CoreX.Wrapper
         coordinates.Longitude = coordinates.Longitude.DegreesToRadians();
       }
 
-      return _coreX
-        .SetCsibFromBase64String(csib)
-        .TransformLLHToNEE(coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+      return _coreX.TransformLLHToNEE(csib, coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
     }
 
     /// <inheritdoc />
@@ -64,9 +58,7 @@ namespace CoreX.Wrapper
         }
       }
 
-      return _coreX
-        .SetCsibFromBase64String(csib)
-        .TransformLLHToNEE(coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+      return _coreX.TransformLLHToNEE(csib, coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
     }
 
     /// <inheritdoc />
@@ -79,8 +71,7 @@ namespace CoreX.Wrapper
       }
 
       var neeCoords = _coreX
-        .SetCsibFromBase64String(csib)
-        .TransformLLHToNEE(coordinates.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+        .TransformLLHToNEE(csib, coordinates.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
       return new XYZ
       {
@@ -106,8 +97,7 @@ namespace CoreX.Wrapper
       }
 
       var neeCoords = _coreX
-        .SetCsibFromBase64String(csib)
-        .TransformLLHToNEE(coordinates.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+        .TransformLLHToNEE(csib, coordinates.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
       var responseArray = new XYZ[neeCoords.Length];
 
@@ -130,8 +120,7 @@ namespace CoreX.Wrapper
     public XYZ NEEToLLH(string csib, XYZ coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
       var llhCoords = _coreX
-        .SetCsibFromBase64String(csib)
-        .TransformNEEToLLH(coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
+        .TransformNEEToLLH(csib, coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
       var inDegrees = returnAs == ReturnAs.Degrees;
 
@@ -147,8 +136,7 @@ namespace CoreX.Wrapper
     public XYZ[] NEEToLLH(string csib, XYZ[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
       var llhCoords = _coreX
-        .SetCsibFromBase64String(csib)
-        .TransformNEEToLLH(coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
+        .TransformNEEToLLH(csib, coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
       var responseArray = new XYZ[llhCoords.Length];
       var inDegrees = returnAs == ReturnAs.Degrees;
@@ -172,8 +160,7 @@ namespace CoreX.Wrapper
     public LLH NEEToLLH(string csib, NEE coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
       var llhCoords = _coreX
-        .SetCsibFromBase64String(csib)
-        .TransformNEEToLLH(coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
+        .TransformNEEToLLH(csib, coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
       var inDegrees = returnAs == ReturnAs.Degrees;
 
@@ -189,8 +176,7 @@ namespace CoreX.Wrapper
     public LLH[] NEEToLLH(string csib, NEE[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
       var llhCoords = _coreX
-                      .SetCsibFromBase64String(csib)
-                      .TransformNEEToLLH(coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
+        .TransformNEEToLLH(csib, coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
       var responseArray = new LLH[llhCoords.Length];
       var inDegrees = returnAs == ReturnAs.Degrees;
@@ -211,11 +197,10 @@ namespace CoreX.Wrapper
     }
 
     /// <inheritdoc/>
-    public XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point)
+    public XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point)
     {
       var nee = _coreX
-        .SetCsibFromBase64String(id)
-        .TransformLLHToNEE(new LLH
+        .TransformLLHToNEE(csib, new LLH
         {
           Latitude = wgs84Point.Lat.DegreesToRadians(),
           Longitude = wgs84Point.Lon.DegreesToRadians(),
@@ -232,11 +217,10 @@ namespace CoreX.Wrapper
     }
 
     /// <inheritdoc/>
-    public XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points)
+    public XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points)
     {
       var neeCoords = _coreX
-                .SetCsibFromBase64String(id)
-                .TransformLLHToNEE(wgs84Points.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+        .TransformLLHToNEE(csib, wgs84Points.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
       var responseArray = new XYZ[neeCoords.Length];
 
@@ -256,9 +240,9 @@ namespace CoreX.Wrapper
     }
 
     /// <inheritdoc cref="CoreX.GetCSIBFromDCFile"/>
-    public string DCFileToCSIB(string filePath) => _coreX.GetCSIBFromDCFile(filePath);
+    public string DCFileToCSIB(string filePath) => CoreX.GetCSIBFromDCFile(filePath);
 
     /// <inheritdoc/>
-    public string GetCSIBFromDCFileContent(string fileContent) => _coreX.GetCSIBFromDCFileContent(fileContent);
+    public string GetCSIBFromDCFileContent(string fileContent) => CoreX.GetCSIBFromDCFileContent(fileContent);
   }
 }
