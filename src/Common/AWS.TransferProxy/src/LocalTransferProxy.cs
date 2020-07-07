@@ -172,10 +172,11 @@ namespace VSS.AWS.TransferProxy
       return File.Exists(s3Key);
     }
 
-    public bool UploadAndLock(Stream stream, string s3Key)
+    public Task<bool> UploadAndLock(Stream stream, string s3Key)
     {
       Upload(stream, s3Key);
-      return true; // no locking for local use
+      return Task.FromResult(true); // no locking for local use
+
     }
   }
 }
