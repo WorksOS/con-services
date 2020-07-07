@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -38,7 +39,7 @@ namespace VSS.TRex.TAGFiles.Classes
     /// </summary>
     /// <param name="tagDetail"></param>
     /// <returns></returns>
-    public static bool ArchiveTagfileS3(TagFileDetail tagDetail)
+    public static async Task<bool> ArchiveTagfileS3(TagFileDetail tagDetail)
     {
 
       // CCSSCON-702 Archive any unknown asset (JohnDoe) to an empty guid machine folder. 
@@ -57,8 +58,9 @@ namespace VSS.TRex.TAGFiles.Classes
         var proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(TransferProxyType.TAGFiles);
         using var stream = new MemoryStream(tagDetail.tagFileContent);
         if (!proxy.FileExists(s3FullPath).Result) // write once policy
-          proxy.UploadAndLock(stream, s3FullPath);
-        return true;
+          return await proxy.UploadAndLock(stream, s3FullPath);
+
+        return true; // already exists
       }
 
       catch (System.Exception ex)

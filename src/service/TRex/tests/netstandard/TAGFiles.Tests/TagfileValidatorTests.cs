@@ -237,7 +237,7 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      Assert.True(TagFileRepository.ArchiveTagfileS3(td), "Failed to archive tagfile");
+      Assert.True(TagFileRepository.ArchiveTagfileS3(td).Result, "Failed to archive tagfile");
     }
 
 
@@ -265,7 +265,7 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      Assert.False(TagFileRepository.ArchiveTagfileS3(td), "Failed to validate null data archive");
+      Assert.False(TagFileRepository.ArchiveTagfileS3(td).Result, "Failed to validate null data archive");
     }
 
     private void SetupDITfa(bool enableTfaService = true, GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest = null, GetProjectAndAssetUidsResult getProjectAndAssetUidsResult = null)
