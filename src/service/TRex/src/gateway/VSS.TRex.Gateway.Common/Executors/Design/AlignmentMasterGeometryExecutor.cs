@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
+using MySqlX.XDevAPI.Common;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -14,6 +15,7 @@ using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Gateway.Common.Executors.Design
@@ -118,13 +120,13 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         AlignmentDesignID = request.DesignUid
       });
 
-      if (geometryResponse != null && geometryResponse.RequestResult != DesignProfilerRequestResult.OK)
+      if (geometryResponse != null && geometryResponse.RequestResult == DesignProfilerRequestResult.OK)
       {
         // Convert all coordinates from grid to lat/lon
         ConvertNEEToLLHCoords(siteModel.CSIB(), geometryResponse);
 
         // Populate the converted coordinates into the result. Note: At this point, X = Longitude and Y = Latitude
-        return new AlignmentGeometryResult
+        var result = new AlignmentGeometryResult
         (ContractExecutionStatesEnum.ExecutedSuccessfully,
           request.DesignUid,
           geometryResponse.Vertices.Select(x =>
@@ -136,6 +138,8 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
               x.YC, x.XC, x.ZC, x.CW)).ToArray(),
           geometryResponse.Labels.Select(x =>
             new AlignmentGeometryResultLabel(x.Station, x.Y, x.X, x.Rotation)).ToArray());
+
+        return await AlignmentGeometryHelper.ConvertGeometry(result, request.FileName);
       }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
