@@ -13,11 +13,6 @@ namespace CoreX.Interfaces
     XYZ NullWGSLLToXY(WGS84Point wgsPoint);
 
     /// <summary>
-    /// Takes an array of WGS84Point and uses the Coordinate Service to convert it into XYZ data.
-    /// </summary>
-    XYZ[] NullWGSLLToXY(WGS84Point[] wgsPoints);
-
-    /// <summary>
     /// Takes an LLH and converts it into NEE data.
     /// </summary>
     NEE LLHToNEE(string csib, LLH coordinates, InputAs inputAs);
@@ -52,17 +47,20 @@ namespace CoreX.Interfaces
     /// </summary>
     LLH NEEToLLH(string csib, NEE coordinates, ReturnAs returnAs = ReturnAs.Radians);
 
+    /// <summary>
+    /// Takes an array of NEE and uses the Coordinate Service to convert it into LLH data.
+    /// </summary>
     LLH[] NEEToLLH(string csib, NEE[] coordinates, ReturnAs returnAs = ReturnAs.Radians);
 
     /// <summary>
     /// Uses the Coordinate Service to convert WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    XYZ WGS84ToCalibration(string id, WGS84Point wgs84Point);
+    XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point);
 
     /// <summary>
     /// Uses the Coordinate Service to convert an array of WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    XYZ[] WGS84ToCalibration(string id, WGS84Point[] wgs84Points);
+    XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points);
 
     /// <summary>
     /// Takes the full path and name of a DC file, reads it and uses the Trimble Coordinate service to convert it into a

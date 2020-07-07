@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -20,17 +19,16 @@ namespace VSS.TRex.TAGFiles.Executors
   /// <summary>
   /// Execute internal business logic to handle submission of a TAG file to TRex
   /// </summary>
-  ///  
   public class SubmitTAGFileExecutor
   {
-    private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubmitTAGFileExecutor>();
 
     private static readonly bool _tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
 
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
-    private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<ITAGFileBufferQueue>();
+    private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<Func<ITAGFileBufferQueue>>()();
 
     private bool OutputInformationalRequestLogging = true;
 
@@ -44,7 +42,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
     /// <param name="treatAsJohnDoe">The TAG file will be processed as if it were a john doe machine is projectId is also specified</param>
-    /// <returns></returns>
+    /// <param name="tagFileSubmissionFlags">A flag set controlling how certain aspects of managing a submitted TAG file should be managed</param>
     public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, 
       string tccOrgId, bool treatAsJohnDoe, TAGFileSubmissionFlags tagFileSubmissionFlags)
     {
@@ -89,7 +87,7 @@ namespace VSS.TRex.TAGFiles.Executors
               {
                 _log.LogError($"SubmitTAGFileResponse. Failed to archive tag file. Returning TRexQueueSubmissionError error. ProjectUID:{td.projectId}, AssetUID:{td.assetId}, Tagfile:{tagFileName}");
                 throw new ServiceException(HttpStatusCode.InternalServerError, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"SubmitTAGFileResponse. Failed to archive tag file {tagFileName} to S3"));
-              };
+              }
             }
 
             // switch from nullable to not nullable

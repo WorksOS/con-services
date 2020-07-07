@@ -137,7 +137,13 @@ namespace VSS.TRex.TAGFiles.Executors
       var tagFilesArray = tagFiles.ToArray(); // Enumerate collection just once
 
       if (tagFilesArray.Length == 0)
-        return null;
+      {
+        // Send back a response with an empty list
+        return new ProcessTAGFileResponse
+        {
+          Results = new List<IProcessTAGFileResponseItem>()
+        };
+      }
 
       _log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {tagFilesArray.Length} TAG files into project {projectId}");
 
