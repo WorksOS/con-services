@@ -313,8 +313,7 @@ namespace VSS.TRex.SiteModels.Executors
           SubmissionFlags = _metadata.Flags.HasFlag(RebuildSiteModelFlags.AddProcessedTagFileToArchive) ? TAGFileSubmissionFlags.AddToArchive : TAGFileSubmissionFlags.None |
                   TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
           TAGFileName = tagFileName,
-          TreatAsJohnDoe = false, // Todo: Determine if this setting has consequences for processing files in the same way as the original model
-                                  // Todo: It may be necessary to relate this to the preserved machine information in the model being rebuilt
+          TreatAsJohnDoe = assetUid.Equals(Guid.Empty),
           TagFileContent = ms.ToArray(),
         });
 

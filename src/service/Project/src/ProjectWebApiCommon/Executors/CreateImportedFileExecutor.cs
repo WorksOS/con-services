@@ -63,12 +63,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           importedFile.ImportedFileType == ImportedFileType.GeoTiff)
       {
         var project = ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);
-        string dxfFileName = null;
-        if (importedFile.ImportedFileType == ImportedFileType.Linework)
-          dxfFileName = importedFile.DataOceanFileName;
-
         var existing = projectRepo.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
         await Task.WhenAll(project, existing);
+
+        var dcFileName = importedFile.ImportedFileType == ImportedFileType.GeoTiff ?
+          null :
+          DataOceanFileUtil.DataOceanFileName(project.Result.CoordinateSystemFileName, false, importedFile.ProjectUid, null);
 
         //Generate raster tiles
         var jobRequest = TileGenerationRequestHelper.CreateRequest(
@@ -78,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           existing.Result.ImportedFileUid,
           importedFile.DataOceanRootFolder,
           importedFile.DataOceanFileName,
-          dxfFileName,
+          dcFileName,
           importedFile.DxfUnitsType,
           importedFile.SurveyedUtc);
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
