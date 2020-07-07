@@ -93,7 +93,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
 
-        .Add(x => x.AddSingleton<ITAGFileBufferQueue>(factory => new TAGFileBufferQueue()))
+        .Add(x => x.AddSingleton<Func<ITAGFileBufferQueue>>(factory => () => new TAGFileBufferQueue()))
         .Add(x => x.AddMemoryCache())
         .Add(x => x.AddServiceDiscovery())
         .Add(x => x.AddSingleton<IDataCache>(factory => new InMemoryDataCache(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IMemoryCache>())))

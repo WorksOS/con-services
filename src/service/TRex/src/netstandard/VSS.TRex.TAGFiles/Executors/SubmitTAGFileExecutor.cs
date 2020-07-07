@@ -28,7 +28,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
-    private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<ITAGFileBufferQueue>();
+    private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<Func<ITAGFileBufferQueue>>()();
 
     private bool OutputInformationalRequestLogging = true;
 

@@ -111,7 +111,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>>>
           (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new SiteModelMachineAffinityKeyEqualityComparer())))
 
-        .Add(x => x.AddSingleton<ITAGFileBufferQueue, TAGFileBufferQueue>(factory =>
+        .Add(x => x.AddSingleton<Func<ITAGFileBufferQueue>>(factory => () =>
         {
           _tagFileBufferQueue ??= new TAGFileBufferQueue();
           return _tagFileBufferQueue;
