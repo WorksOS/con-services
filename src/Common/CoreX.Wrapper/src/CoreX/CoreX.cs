@@ -199,26 +199,6 @@ namespace CoreX.Wrapper
       return transformer;
     }
 
-    private void GeoCartesianToGeographic(double x, double y, double z, out double lat, out double lon, out double height)
-    {
-      var result = GeodeticX.geoCartesianToGeographic(x, y, z, out lat, out lon, out height);
-
-      if (result != geoErrorCode.gecSuccess)
-      {
-        throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
-      }
-    }
-
-    private void GeoGeographicToCartesian(double lat, double lon, double height, out double x, out double y, out double z)
-    {
-      var result = GeodeticX.geoGeographicToCartesian(lat, lon, height, out x, out y, out z);
-
-      if (result != geoErrorCode.gecSuccess)
-      {
-        throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
-      }
-    }
-
     private bool _disposed = false;
 
     public void Dispose() => Dispose(true);
