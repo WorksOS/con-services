@@ -11,13 +11,6 @@ namespace CoreX.Wrapper
 {
   public class CoreX : IDisposable
   {
-    public string CSIB;
-
-    private GEOCsibBlobContainer _geoCsibBlobContainer;
-    private CSMCsibBlobContainer _csmCsibBlobContainer;
-    private PointerPointer_IGeodeticXTransformer _transformer;
-    private PointerPointer_IGeodeticXTransformer Transformer => GetGeodeticXTransformer();
-
     static CoreX()
     {
       SetupTGL();
@@ -32,7 +25,7 @@ namespace CoreX.Wrapper
       const string DATABASE_PATH = "TGL_CsdDatabase";
 
       var geodataPath = Path.Combine(ROOT_DATA_FOLDER, "GeoData");
-      var xmlFilePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location),ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
+      var xmlFilePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
 
       if (!File.Exists(xmlFilePath))
       {
@@ -53,82 +46,42 @@ namespace CoreX.Wrapper
     }
 
     /// <summary>
-    /// Extract the CSIB from a DC file string.
+    /// Returns the CSIB from a DC file string.
     /// </summary>
-    public string GetCSIBFromDCFileContent(string fileContent)
+    public static string GetCSIBFromDCFileContent(string fileContent)
     {
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      // Slow, 2.5 seconds, need to speed up.
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
+      // Slow, takes 2.5 seconds, need to speed up somehow?
+      var result = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
 
-      if (resultCode != (int)csmErrorCode.cecSuccess)
+      if (result != (int)csmErrorCode.cecSuccess)
       {
-        throw new Exception($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {resultCode}");
+        throw new Exception($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
       }
 
       var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);
 
-      return Convert.ToBase64String(Array.ConvertAll<sbyte, byte>(bytes, sb => unchecked((byte)sb)));
+      return Convert.ToBase64String(Array.ConvertAll(bytes, sb => unchecked((byte)sb)));
     }
 
     /// <summary>
-    /// Gets the CoreX CSIB for a given DC file.
+    /// Returns the CSIB from a DC file given it's filepath.
     /// </summary>
-    /// <param name="filePath">Fully qualified path to the source .DC file.</param>
-    public string GetCSIBFromDCFile(string filePath)
+    public static string GetCSIBFromDCFile(string filePath)
     {
-      string dcStr;
-      using (var streamReader = new StreamReader(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8))
-      {
-        dcStr = streamReader.ReadToEnd();
-      }
+      using var streamReader = new StreamReader(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8);
+      var dcStr = streamReader.ReadToEnd();
 
       return GetCSIBFromDCFileContent(dcStr);
-    }
-
-    /// <summary>
-    /// Sets the CoreX CSIB for a given DC file.
-    /// </summary>
-    /// <param name="filePath">Fully qualified path to the source .DC file.</param>
-    public CoreX SetCSIBFromDCFile(string filePath)
-    {
-      string dcStr;
-      using (var streamReader = new StreamReader(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8))
-      {
-        dcStr = streamReader.ReadToEnd();
-      }
-
-      _csmCsibBlobContainer = new CSMCsibBlobContainer();
-
-      // Slow, 2.5 seconds, need to speed up.
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(dcStr, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(_csmCsibBlobContainer));
-
-      if (resultCode != (int)csmErrorCode.cecSuccess)
-      {
-        throw new Exception($"TransformSelectCsdSystem: '{filePath}' failed, error {resultCode}");
-      }
-
-      var bytes = Utils.IntPtrToSByte(_csmCsibBlobContainer.pCSIBData, (int)_csmCsibBlobContainer.CSIBDataLength);
-
-      CSIB = Convert.ToBase64String(Array.ConvertAll<sbyte, byte>(bytes, sb => unchecked((byte)sb)));
-
-      _geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
-
-      if (_geoCsibBlobContainer.Length < 1)
-      {
-        throw new Exception($"Failed to set CSIB from coordinate system file '{filePath}'");
-      }
-
-      return this;
     }
 
     public CoreX SetCsibFromBase64String(string csibStr)
     {
       var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
-      _geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
+      var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
 
-      if (_geoCsibBlobContainer.Length < 1)
+      if (geoCsibBlobContainer.Length < 1)
       {
         throw new Exception($"Failed to set CSIB from base64 string, '{csibStr}'");
       }
@@ -140,9 +93,11 @@ namespace CoreX.Wrapper
     /// Transform an NEE to LLH with variable from and to coordinate type inputs.
     /// </summary>
     /// <returns>Returns LLH object in radians.</returns>
-    public LLH TransformNEEToLLH(NEE nee, CoordinateTypes fromType, CoordinateTypes toType)
+    public LLH TransformNEEToLLH(string csib, NEE nee, CoordinateTypes fromType, CoordinateTypes toType)
     {
-      Transformer.get().Transform(
+      var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+
+      transformer.Transform(
         (geoCoordinateTypes)fromType,
         nee.East,
         nee.North,
@@ -163,7 +118,7 @@ namespace CoreX.Wrapper
     /// Transform an array of NEE points to an array of LLH coordinates with variable from and to coordinate type inputs.
     /// </summary>
     /// <returns>Returns an array of LLH coordinates in radians.</returns>
-    public LLH[] TransformNEEToLLH(NEE[] coordinates, CoordinateTypes fromType, CoordinateTypes toType)
+    public LLH[] TransformNEEToLLH(string csib, NEE[] coordinates, CoordinateTypes fromType, CoordinateTypes toType)
     {
       var llhCoordinates = new LLH[coordinates.Length];
 
@@ -171,7 +126,7 @@ namespace CoreX.Wrapper
       {
         var nee = coordinates[i];
 
-        llhCoordinates[i] = TransformNEEToLLH(nee, fromType, toType);
+        llhCoordinates[i] = TransformNEEToLLH(csib, nee, fromType, toType);
       }
 
       return llhCoordinates;
@@ -181,9 +136,11 @@ namespace CoreX.Wrapper
     /// Transform an LLH to NEE with variable from and to coordinate type inputs.
     /// </summary>
     /// <returns>A NEE point of the LLH provided coordinates in radians.</returns>
-    public NEE TransformLLHToNEE(LLH coordinates, CoordinateTypes fromType, CoordinateTypes toType)
+    public NEE TransformLLHToNEE(string csib, LLH coordinates, CoordinateTypes fromType, CoordinateTypes toType)
     {
-      Transformer.get().Transform(
+      var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+
+      transformer.Transform(
         (geoCoordinateTypes)fromType,
         coordinates.Latitude,
         coordinates.Longitude,
@@ -203,37 +160,63 @@ namespace CoreX.Wrapper
     /// Transform an array of LLH coordinates to an array of NEE points with variable from and to coordinate type inputs.
     /// </summary>
     /// <returns>Returns an array of NEE points in radians.</returns>
-    public NEE[] TransformLLHToNEE(LLH[] coordinates, CoordinateTypes fromType, CoordinateTypes toType)
+    public NEE[] TransformLLHToNEE(string csib, LLH[] coordinates, CoordinateTypes fromType, CoordinateTypes toType)
     {
       var neeCoordinates = new NEE[coordinates.Length];
 
       for (var i = 0; i < coordinates.Length; i++)
       {
         var llh = coordinates[i];
-        neeCoordinates[i] = TransformLLHToNEE(llh, fromType, toType);
+        neeCoordinates[i] = TransformLLHToNEE(csib, llh, fromType, toType);
       }
 
       return neeCoordinates;
     }
 
-    /// <summary>
-    /// Create the GeodeticXTransformer for use with this object instance.
-    /// </summary>
-    private PointerPointer_IGeodeticXTransformer GetGeodeticXTransformer()
+    private GEOCsibBlobContainer CreateCsibBlobContainer(string csibStr)
     {
-      if (_transformer == null)
+      var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
+      var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
+
+      if (geoCsibBlobContainer.Length < 1)
       {
-        _transformer = new PointerPointer_IGeodeticXTransformer();
-
-        var errorCode = GeodeticX.geoCreateTransformer(_geoCsibBlobContainer, _transformer);
-
-        if (errorCode != geoErrorCode.gecSuccess)
-        {
-          throw new Exception("Failed to create GeodeticX transformer");
-        }
+        throw new Exception($"Failed to set CSIB from base64 string, '{csibStr}'");
       }
 
-      return _transformer;
+      return geoCsibBlobContainer;
+    }
+
+    private PointerPointer_IGeodeticXTransformer GeodeticXTransformer(GEOCsibBlobContainer geoCsibBlobContainer)
+    {
+      var transformer = new PointerPointer_IGeodeticXTransformer();
+      var result = GeodeticX.geoCreateTransformer(geoCsibBlobContainer, transformer);
+
+      if (result != geoErrorCode.gecSuccess)
+      {
+        throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
+      }
+
+      return transformer;
+    }
+
+    private void GeoCartesianToGeographic(double x, double y, double z, out double lat, out double lon, out double height)
+    {
+      var result = GeodeticX.geoCartesianToGeographic(x, y, z, out lat, out lon, out height);
+
+      if (result != geoErrorCode.gecSuccess)
+      {
+        throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
+      }
+    }
+
+    private void GeoGeographicToCartesian(double lat, double lon, double height, out double x, out double y, out double z)
+    {
+      var result = GeodeticX.geoGeographicToCartesian(lat, lon, height, out x, out y, out z);
+
+      if (result != geoErrorCode.gecSuccess)
+      {
+        throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
+      }
     }
 
     private bool _disposed = false;
@@ -249,7 +232,7 @@ namespace CoreX.Wrapper
 
       if (disposing)
       {
-        GeodeticX.geoDestroyTransformer(_transformer);
+        // Remove unmanged resources.
       }
 
       _disposed = true;

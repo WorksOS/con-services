@@ -11,17 +11,16 @@ namespace CoreX.Wrapper.UnitTests.Tests
   public class ConvertCoordinatesTests : IClassFixture<UnitTestBaseFixture>
   {
     private readonly IConvertCoordinates _convertCoordinates;
-    private readonly string _csib;
 
     private const double LL_CM_TOLERANCE = 0.00000001;
     private const double GRID_CM_TOLERANCE = 0.01;
 
+    private readonly string _csib;
+
     public ConvertCoordinatesTests(UnitTestBaseFixture testFixture)
     {
       _convertCoordinates = testFixture.ConvertCoordinates;
-
-      testFixture.CoreX.SetCSIBFromDCFile(DCFile.GetFilePath(DCFile.BOOTCAMP_2012));
-      _csib = testFixture.CoreX.CSIB;
+      _csib = testFixture.CSIB;
     }
 
     [Theory]
