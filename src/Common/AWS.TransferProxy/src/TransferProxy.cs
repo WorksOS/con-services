@@ -245,8 +245,8 @@ namespace VSS.AWS.TransferProxy
       {
         try
         {
-          var res = s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key,LegalHold = new ObjectLockLegalHold() { Status = "ON" } });
-          return res.Result.HttpStatusCode == System.Net.HttpStatusCode.OK;
+          var res = s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key,LegalHold = new ObjectLockLegalHold() { Status = "ON" } }).Result;
+          return res.HttpStatusCode == System.Net.HttpStatusCode.OK;
         }
 
         catch (Amazon.S3.AmazonS3Exception ex)
