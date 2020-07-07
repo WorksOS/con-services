@@ -11,8 +11,12 @@ namespace CoreX.Wrapper
 {
   public class CoreX : IDisposable
   {
+    private PointerPointer_IGeodeticXTransformer _transformer;
+
     static CoreX()
     {
+      // CoreX library appears to not be thread safe. If you attempt this from the default constructor you'll hit C++ 
+      // memory errors in the CsdManagementPINVOKE() call.
       SetupTGL();
     }
 
@@ -74,19 +78,6 @@ namespace CoreX.Wrapper
       var dcStr = streamReader.ReadToEnd();
 
       return GetCSIBFromDCFileContent(dcStr);
-    }
-
-    public CoreX SetCsibFromBase64String(string csibStr)
-    {
-      var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
-      var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
-
-      if (geoCsibBlobContainer.Length < 1)
-      {
-        throw new Exception($"Failed to set CSIB from base64 string, '{csibStr}'");
-      }
-
-      return this;
     }
 
     /// <summary>
@@ -175,6 +166,11 @@ namespace CoreX.Wrapper
 
     private GEOCsibBlobContainer CreateCsibBlobContainer(string csibStr)
     {
+      if (string.IsNullOrEmpty(csibStr))
+      {
+        throw new ArgumentNullException(csibStr, $"{nameof(CreateCsibBlobContainer)}: csibStr cannot be null");
+      }
+
       var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
       var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
 
@@ -188,15 +184,15 @@ namespace CoreX.Wrapper
 
     private PointerPointer_IGeodeticXTransformer GeodeticXTransformer(GEOCsibBlobContainer geoCsibBlobContainer)
     {
-      var transformer = new PointerPointer_IGeodeticXTransformer();
-      var result = GeodeticX.geoCreateTransformer(geoCsibBlobContainer, transformer);
+      _transformer = new PointerPointer_IGeodeticXTransformer();
+      var result = GeodeticX.geoCreateTransformer(geoCsibBlobContainer, _transformer);
 
       if (result != geoErrorCode.gecSuccess)
       {
         throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
       }
 
-      return transformer;
+      return _transformer;
     }
 
     private bool _disposed = false;
@@ -212,7 +208,7 @@ namespace CoreX.Wrapper
 
       if (disposing)
       {
-        // Remove unmanged resources.
+        GeodeticX.geoDestroyTransformer(_transformer);
       }
 
       _disposed = true;
