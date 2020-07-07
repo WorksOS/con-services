@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,6 +59,7 @@ namespace VSS.TRex.Server.MutableData
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
         .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
@@ -93,7 +96,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
 
-        .Add(x => x.AddSingleton<ITAGFileBufferQueue>(factory => new TAGFileBufferQueue()))
+        .Add(x => x.AddSingleton<Func<ITAGFileBufferQueue>>(factory => () => new TAGFileBufferQueue()))
         .Add(x => x.AddMemoryCache())
         .Add(x => x.AddServiceDiscovery())
         .Add(x => x.AddSingleton<IDataCache>(factory => new InMemoryDataCache(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IMemoryCache>())))

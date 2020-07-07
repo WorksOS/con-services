@@ -50,7 +50,7 @@ namespace TAGFiles.Tests
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<ITAGFileBufferQueue>(mockTagFileBufferQueue.Object))
+        .Add(x => x.AddSingleton<Func<ITAGFileBufferQueue>>(factory => () => mockTagFileBufferQueue.Object))
         .Complete();
 
       IgniteMock.Mutable.AddApplicationGridRouting<IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>, SubmitTAGFileRequestArgument, SubmitTAGFileResponse>();

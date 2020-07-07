@@ -25,8 +25,11 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DILoggingFixture : IDisposable
   {
+    public static void ClearDynamicFxtureContent()
+    {
+    }
 
-    private Dictionary<TransferProxyType, IS3FileTransfer> S3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+    private Dictionary<TransferProxyType, IS3FileTransfer> _s3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
 
     public void SetupFixture()
     {
@@ -124,11 +127,11 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>
           (factory => proxyType =>
           {
-            if (S3FileTransferProxies.TryGetValue(proxyType, out var proxy))
+            if (_s3FileTransferProxies.TryGetValue(proxyType, out var proxy))
               return proxy;
 
             proxy = new S3FileTransfer(proxyType);
-            S3FileTransferProxies.Add(proxyType, proxy);
+            _s3FileTransferProxies.Add(proxyType, proxy);
             return proxy;
           }))
 
