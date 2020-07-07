@@ -46,6 +46,11 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
+    public static void ClearDynamicFxtureContent()
+    {
+      DITagFileFixture.ClearDynamicFxtureContent();
+    }
+
     public new void SetupFixture()
     {
       // Provide the surveyed surface request mock

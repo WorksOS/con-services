@@ -61,6 +61,11 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
+    public static void ClearDynamicFxtureContent()
+    {
+      DITAGFileAndSubGridRequestsFixture.ClearDynamicFxtureContent();
+    }
+
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       return key switch

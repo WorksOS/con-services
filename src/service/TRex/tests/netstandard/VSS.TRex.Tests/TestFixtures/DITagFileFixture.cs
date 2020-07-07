@@ -36,6 +36,13 @@ namespace VSS.TRex.Tests.TestFixtures
   {
     private static TAGFileBufferQueue _tagFileBufferQueue;
 
+    public static void ClearDynamicFxtureContent()
+    {
+      _tagFileBufferQueue = null;
+
+      DILoggingFixture.ClearDynamicFxtureContent();
+    }
+
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
     public static TAGFileConverter ReadTAGFile(string fileName, Guid assetUid, bool isJohnDoe)
