@@ -46,6 +46,11 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
+    public static void ClearDynamicFxtureContent()
+    {
+      DITagFileFixture.ClearDynamicFxtureContent();
+    }
+
     public new void SetupFixture()
     {
       // Provide the surveyed surface request mock
@@ -113,12 +118,13 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <returns></returns>
     public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks, 
       bool callTaskProcessingComplete = true,
-      bool convertToImmutableRepresentation = true)
+      bool convertToImmutableRepresentation = true,
+      bool treatAsJohnDoeMachines = false)
     {
       var _tagFiles = tagFiles.ToList();
 
       // Convert TAG files using TAGFileConverters into mini-site models
-      var converters = _tagFiles.Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+      var converters = _tagFiles.Select(x => DITagFileFixture.ReadTAGFileFullPath(x, treatAsJohnDoeMachines)).ToArray();
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
@@ -128,7 +134,7 @@ namespace VSS.TRex.Tests.TestFixtures
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
 
-      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, treatAsJohnDoeMachines, Guid.NewGuid());
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
