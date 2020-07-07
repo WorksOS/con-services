@@ -122,7 +122,7 @@ namespace VSS.TRex.GridFabric
       {
         var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
         // Log the known state of the cluter
-        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster: {numClusterNodes}");
+        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster ({_gridName} [Ignite reported:{_ignite.Name}]): {numClusterNodes}");
 
         if (numClusterNodes > 0)
         {

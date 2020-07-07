@@ -20,8 +20,26 @@ namespace VSS.TRex.Service.Deployer
   {
     private static ILogger Log;
 
+    // This static array ensures that all required assemblies are included into the artifacts by the linker
+    private static void EnsureAssemblyDependenciesAreLoaded()
+    {
+      // This static array ensures that all required assemblies are included into the artifacts by the linker
+      Type[] AssemblyDependencies =
+      {
+        typeof(VSS.TRex.TAGFiles.GridFabric.NodeFilters.TAGProcessorRoleBasedNodeFilter),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
+      };
+
+      foreach (var asmType in AssemblyDependencies)
+      {
+        if (asmType.FullName == "DummyTypeName")
+          Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
+      }
+    }
+
     private static void DependencyInjection()
     {
+      EnsureAssemblyDependenciesAreLoaded();
       DIBuilder.New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CoreX.Interfaces;
+using CoreX.Wrapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -48,6 +50,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     {
       DIBuilder.New(services)
          .Build()
+         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
          .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -87,7 +90,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT)))
-        .Add(x => x.AddSingleton<ImmutableClientServer>(new ImmutableClientServer("WEBAPI-CLIENT")))
         .Complete();
     }
 

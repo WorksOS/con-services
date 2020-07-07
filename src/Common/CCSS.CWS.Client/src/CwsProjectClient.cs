@@ -39,30 +39,18 @@ namespace CCSS.CWS.Client
 
       var projectSummaryListResponseModel = await GetProjectsForMyCustomer(customerUid, userUid, customHeaders);
       var projectDetailListResponseModel = new ProjectDetailListResponseModel();
+      var tasks = new List<Task<ProjectDetailResponseModel>>(projectSummaryListResponseModel.Projects.Count);
       foreach (var project in projectSummaryListResponseModel.Projects)
       {
-        // Convert the summary model into a details model.
-        //If the project doesn't belong to the user and the user is not admin there will not be a boundary.
-        //We can get the boundary (currently only 3dp projects) using metadata.
-        ProjectDetailResponseModel details = null;
-        if (project.Boundary == null)
-        {
-          details = await GetProject(new Guid(project.ProjectId), userUid, true, customHeaders);
-        }
-        else
-        {
-          details = new ProjectDetailResponseModel
-          {
-            AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
-            ProjectTRN = project.ProjectTRN,
-            ProjectName = project.ProjectName,
-            ProjectType = project.ProjectType,
-            Status = project.Status,
-            UserProjectRole = project.UserProjectRole,
-            ProjectSettings = new ProjectSettingsModel {Boundary = project.Boundary, TimeZone = project.TimeZone}
-          };
-        }
-        projectDetailListResponseModel.Projects.Add(details);
+        var detailsTask = GetProjectDetailsFromSummary(project, customerUid, userUid, customHeaders);
+        tasks.Add(detailsTask);
+      }
+
+      await Task.WhenAll(tasks);
+
+      foreach (var task in tasks)
+      {
+        projectDetailListResponseModel.Projects.Add(task.Result);
       }
 
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: projectSummaryListResponseModel {JsonConvert.SerializeObject(projectSummaryListResponseModel)}");
@@ -84,7 +72,9 @@ namespace CCSS.CWS.Client
 
       try
       {
-        projectSummaryListResponseModel = await GetAllPagedData<ProjectSummaryListResponseModel, ProjectSummaryResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, null, customHeaders);
+        // We need settings to get the boundary
+        var queryParams = new List<KeyValuePair<string, string>> {new KeyValuePair<string, string>("includeSettings", "true")};
+        projectSummaryListResponseModel = await GetAllPagedData<ProjectSummaryListResponseModel, ProjectSummaryResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, queryParams, customHeaders);
       }
       catch (HttpRequestException e)
       {
@@ -190,6 +180,28 @@ namespace CCSS.CWS.Client
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
       await UpdateData($"/projects/{projectTrn}/boundary", projectBoundary, null, customHeaders);
+    }
+
+    private  Task<ProjectDetailResponseModel> GetProjectDetailsFromSummary(ProjectSummaryResponseModel project, Guid customerUid, Guid? userUid, IHeaderDictionary customHeaders)
+    {
+      // Convert the summary model into a details model.
+      //If the project doesn't belong to the user and the user is not admin there will not be a boundary.
+      //We can get the boundary (currently only 3dp projects) using metadata.
+      if (project.Boundary == null)
+      {
+        return GetProject(new Guid(project.ProjectId), userUid, true, customHeaders);
+      }
+
+      return Task.FromResult(new ProjectDetailResponseModel
+      {
+        AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
+        ProjectTRN = project.ProjectTRN,
+        ProjectName = project.ProjectName,
+        ProjectType = project.ProjectType,
+        Status = project.Status,
+        UserProjectRole = project.UserProjectRole,
+        ProjectSettings = new ProjectSettingsModel {Boundary = project.Boundary, TimeZone = project.TimeZone}
+      });
     }
   }
 }
