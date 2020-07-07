@@ -42,7 +42,6 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
@@ -52,7 +51,6 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.SiteModels.Interfaces.Executors;
 
 namespace VSS.TRex.Tests.TestFixtures
 {

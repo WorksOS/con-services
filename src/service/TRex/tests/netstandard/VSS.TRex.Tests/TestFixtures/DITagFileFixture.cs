@@ -18,7 +18,6 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
@@ -35,16 +34,16 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITagFileFixture : DILoggingFixture, IDisposable
   {
+    private static TAGFileBufferQueue _tagFileBufferQueue;
+
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
     public static TAGFileConverter ReadTAGFile(string fileName, Guid assetUid, bool isJohnDoe)
     {
       var converter = new TAGFileConverter();
 
-      using (var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read))
-      {
-        converter.Execute(fs, assetUid, isJohnDoe);
-      }
+      using var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read);
+      converter.Execute(fs, assetUid, isJohnDoe);
 
       return converter;
     }
@@ -52,13 +51,10 @@ namespace VSS.TRex.Tests.TestFixtures
     public static TAGFileConverter ReadTAGFile(string subFolder, string fileName, bool treatAsJohnDoeMachine = false)
     {
       var converter = new TAGFileConverter();
-
       var fn = Path.Combine("TestData", "TAGFiles", subFolder, fileName);
 
-      using (var fs = new FileStream(fn, FileMode.Open, FileAccess.Read))
-      {
-        converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
-      }
+      using var fs = new FileStream(fn, FileMode.Open, FileAccess.Read);
+      converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
 
       return converter;
     }
@@ -67,16 +63,16 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
-      using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
-      {
-        converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
-      }
+      using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+      converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
 
       return converter;
     }
 
     public static void AddProxyCacheFactoriesToDI()
     {
+      _tagFileBufferQueue = null;
+
       DIBuilder
         .Continue()
 
@@ -108,8 +104,11 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>>>
           (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new SiteModelMachineAffinityKeyEqualityComparer())))
 
-
-        .Add(x => x.AddSingleton<ITAGFileBufferQueue, TAGFileBufferQueue>())
+        .Add(x => x.AddSingleton<ITAGFileBufferQueue, TAGFileBufferQueue>(factory =>
+        {
+          _tagFileBufferQueue ??= new TAGFileBufferQueue();
+          return _tagFileBufferQueue;
+        }))
 
         .Build();
 

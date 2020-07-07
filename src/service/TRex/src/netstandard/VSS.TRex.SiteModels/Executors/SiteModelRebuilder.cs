@@ -258,6 +258,10 @@ namespace VSS.TRex.SiteModels.Executors
           {
             tagFileCollection.AddRange(Encoding.UTF8.GetString(uncompressedTagFileCollection.ToArray()).Split('|'));
           }
+          else
+          {
+            _log.LogInformation($"TAG file key collection {i} had no members");
+          }
         }
         catch (KeyNotFoundException e)
         {
