@@ -45,13 +45,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
           $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));
 
       var projectUid = request.ProjectUid ?? Guid.Empty;
-
       var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
+
+      var csib = Convert.ToBase64String(Array.ConvertAll<int, byte>(csd.CSIB, sb => unchecked((byte)sb)));
 
       var addCoordSystemResponse = await addCoordinateSystemRequest.ExecuteAsync(new AddCoordinateSystemArgument()
       {
         ProjectID = projectUid,
-        CSIB = csd.CoordinateSystem.Id
+        CSIB = csib
       });
 
       if (addCoordSystemResponse?.Succeeded ?? false)

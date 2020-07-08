@@ -78,16 +78,6 @@ namespace VSS.TRex.CoordinateSystems
     }
 
     /// <summary>
-    /// Extracts a CSIB from a DC file presented as a byte array.
-    /// </summary>
-    public async Task<string> ImportFromDCContentAsync(string filePath, byte[] fileContent)
-    {
-      var csd = await ImportCSDFromDCContentAsync(filePath, fileContent);
-
-      return csd.CoordinateSystem.Id;
-    }
-
-    /// <summary>
     /// Extracts a coordinate system definition response object from a CSIB string.
     /// </summary>
     public async Task<CoordinateSystemResponse> ImportCSDFromCSIBAsync(string csib)
