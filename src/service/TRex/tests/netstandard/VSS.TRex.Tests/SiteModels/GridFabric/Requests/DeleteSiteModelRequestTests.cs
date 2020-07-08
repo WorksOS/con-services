@@ -240,7 +240,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
 
-      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the defualt design is present
+      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the default design is present
       {
         model.SiteModelMachineDesigns.Count.Should().Be(1);
         model.SiteModelMachineDesigns[0].Id.Should().Be(0);
