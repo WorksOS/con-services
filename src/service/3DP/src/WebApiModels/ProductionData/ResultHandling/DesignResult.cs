@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// Creates an instance of the DesignResult class.
     /// </summary>
     /// <param name="designBoundaries">Array of design boundaries in GeoJson format.</param>
-    /// <returns>A created instance of the SurveyedSurfaceResult class.</returns>
+    /// <returns>A created instance of the AlignmentResult class.</returns>
     /// 
     public DesignResult (JObject[] designBoundaries)
     {

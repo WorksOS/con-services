@@ -25,6 +25,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// <summary>
   /// Controller for Designs resource.
   /// </summary>
+  [Route("api/v2/designs")]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class DesignController : Controller, IDesignContract
   {
@@ -88,14 +89,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="tolerance">The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.</param>
     /// <returns>Execution result with a list of design boundaries.</returns>
     [ProjectVerifier]
-    [Route("api/v2/designs/boundaries")]
+    [Route("boundaries")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
     {
       log.LogInformation($"{nameof(GetDesignBoundaries)}: " + Request.QueryString);
 
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      tolerance = tolerance ?? DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
+      tolerance ??= DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL;
 
       var request = new DesignBoundariesRequest(projectId, projectUid, tolerance.Value);
 
@@ -112,6 +113,36 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
     }
 
+
+    /// <summary>
+    /// Gets a list of models describing the geometry and station labeling for the master alignment in an alignment design.
+    /// Arcs may be optionally converted to poly lines with a specified arc chord tolerance.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="convertArcsToChords"></param>
+    /// <param name="arcChordTolerance"></param>
+    /// <returns></returns>
+    [ProjectVerifier]
+    [Route("alignment/master/geometries")]
+    [HttpGet]
+    public async Task<ContractExecutionResult> GetAlignmentGeometriesForRendering(
+      [FromQuery] Guid projectUid, 
+      [FromQuery] bool convertArcsToChords,
+      [FromQuery] double arcChordTolerance)
+    {
+      log.LogInformation($"{nameof(GetAlignmentGeometriesForRendering)}: " + Request.QueryString);
+
+      var request = new AlignmentGeometryRequest(projectUid, convertArcsToChords, arcChordTolerance);
+
+      request.Validate();
+
+      var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
+
+      fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.Linework && f.IsActivated).ToList();
+      return await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
+             configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
+    }
+
     /// <summary>
     /// Gets a model describing the geometry and station labeling for the master alignment in an alignment design
     /// Arcs may be optionally converted to poly lines with a specified arc chord tolerance
@@ -122,7 +153,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="arcChordTolerance"></param>
     /// <returns></returns>
     [ProjectVerifier]
-    [Route("api/v2/designs/alignment/master/geometry")]
+    [Route("alignment/master/geometry")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetAlignmentGeometryForRendering(
       [FromQuery] Guid projectUid, 
@@ -132,7 +163,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: " + Request.QueryString);
 
-      var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance);
+      var request = new AlignmentGeometryRequest(projectUid, convertArcsToChords, arcChordTolerance, designUid);
 
       request.Validate();
 

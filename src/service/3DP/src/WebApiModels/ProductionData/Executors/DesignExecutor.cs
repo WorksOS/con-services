@@ -38,13 +38,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var request = CastRequestObjectTo<DesignBoundariesRequest>(item);
         JObject[] geoJsons;
 
-        if (fileList != null && fileList.Count > 0)
+        if (fileList?.Count > 0)
         {
           var geoJsonList = new List<JObject>();
 
           for (var i = 0; i < fileList.Count; i++)
           {
-            log.LogDebug($"Getting GeoJson design boundary from Raptor for file: {fileList[i].Name}");
+            log.LogDebug($"Getting GeoJson design boundary for file: {fileList[i].Name}");
 #if RAPTOR
             if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY") ?? false)
 #endif
