@@ -17,6 +17,11 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 {
   public class SiteModelRebuilderManagerTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>, IDisposable
   {
+    public SiteModelRebuilderManagerTests()
+    {
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+    }
+
     [Fact]
     public void Creation()
     {
@@ -121,7 +126,6 @@ namespace VSS.TRex.Tests.SiteModels.Executors
     public void Dispose()
     {
       DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
-      IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
     }
   }
 }

@@ -20,6 +20,13 @@ namespace TAGFiles.Tests
   {
   //  private static readonly ILogger Log = VSS.TRex.Logging.Logger.CreateLogger<AggregatedDataIntegratorWorkerTests>();
 
+    public AggregatedDataIntegratorWorkerTests()
+    {
+      DITagFileFixture.ClearDynamicFxtureContent();
+      IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
+      IgniteMock.Immutable.ResetDynamicMockedIgniteContent();
+    }
+
     private ISiteModel BuildModel()
     {
       // Create the site model and machine etc to aggregate the processed TAG file into

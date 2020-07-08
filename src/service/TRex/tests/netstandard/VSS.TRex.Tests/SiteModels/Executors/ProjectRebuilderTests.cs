@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.SiteModels.Executors
   {
     public SiteModelRebuilderTests()
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ClearDynamicFxtureContent();
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
     }
 
     private static ISiteModelRebuilder CreateBuilder(Guid projectUid, bool archiveTagFiles, TransferProxyType transferProxyType)
@@ -176,7 +176,6 @@ namespace VSS.TRex.Tests.SiteModels.Executors
     public void Dispose()
     {
       DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
-      IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
     }
   }
 }
