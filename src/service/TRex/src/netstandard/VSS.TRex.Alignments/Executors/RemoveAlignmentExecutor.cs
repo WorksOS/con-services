@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
@@ -26,7 +26,7 @@ namespace VSS.TRex.Alignments.Executors
           return DesignProfilerRequestResult.NoSelectedSiteModel;
         }
 
-        var removed = DIContext.Obtain<IDesignManager>().Remove(projectUid, designUid);
+        var removed = DIContext.Obtain<IAlignmentManager>().Remove(projectUid, designUid);
 
         if (!removed)
         {

@@ -192,6 +192,8 @@ namespace VSS.Pegasus.Client
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
     private async Task<TileMetadata> GenerateTiles(string fileName, CreateExecutionMessage createExecutionMessage, IHeaderDictionary customHeaders, Action<IHeaderDictionary> setJobIdAction)
     {
+      Log.LogDebug($"Pegasus execution: {JsonConvert.SerializeObject(createExecutionMessage)}");
+
       TileMetadata metadata = null;
 
       //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existence.

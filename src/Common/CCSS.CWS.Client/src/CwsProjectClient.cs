@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -11,6 +13,7 @@ using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -33,35 +36,15 @@ namespace CCSS.CWS.Client
     ///   Cache to include userUid as different users have access to a different project set
     ///   cws team to generate a detailed list in 1 shot CCSSSCON-409
     /// </summary>
-    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true, CwsProjectType? type = null, ProjectStatus? status = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: customerUid {customerUid} userUid {userUid}");
 
-      var projectSummaryListResponseModel = await GetProjectsForMyCustomer(customerUid, userUid, customHeaders);
+      var projectSummaryListResponseModel = await GetProjectsForMyCustomer(customerUid, userUid, includeSettings, type, status, customHeaders);
       var projectDetailListResponseModel = new ProjectDetailListResponseModel();
       foreach (var project in projectSummaryListResponseModel.Projects)
       {
-        // Convert the summary model into a details model.
-        //If the project doesn't belong to the user and the user is not admin there will not be a boundary.
-        //We can get the boundary (currently only 3dp projects) using metadata.
-        ProjectDetailResponseModel details = null;
-        if (project.Boundary == null)
-        {
-          details = await GetProject(new Guid(project.ProjectId), userUid, true, customHeaders);
-        }
-        else
-        {
-          details = new ProjectDetailResponseModel
-          {
-            AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
-            ProjectTRN = project.ProjectTRN,
-            ProjectName = project.ProjectName,
-            ProjectType = project.ProjectType,
-            Status = project.Status,
-            UserProjectRole = project.UserProjectRole,
-            ProjectSettings = new ProjectSettingsModel {Boundary = project.Boundary, TimeZone = project.TimeZone}
-          };
-        }
+        var details = GetProjectDetailsFromSummary(project, customerUid);
         projectDetailListResponseModel.Projects.Add(details);
       }
 
@@ -75,7 +58,7 @@ namespace CCSS.CWS.Client
     ///   Cache to include userUid as different users have access to a different project set
     ///   This ONLY works with a user token.
     /// </summary>
-    public async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true, CwsProjectType? type = null, ProjectStatus? status = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForMyCustomer)}: customerUid {customerUid} userUid {userUid}");
 
@@ -84,7 +67,35 @@ namespace CCSS.CWS.Client
 
       try
       {
-        projectSummaryListResponseModel = await GetAllPagedData<ProjectSummaryListResponseModel, ProjectSummaryResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, null, customHeaders);
+        // We need settings to get the boundary
+        var queryParams = new List<KeyValuePair<string, string>>
+        {
+          new KeyValuePair<string, string>("includeSettings", includeSettings.ToString()),
+        };
+
+        // Do we need to filter for a specific type?
+        if (type != null)
+        {
+          queryParams.Add(new KeyValuePair<string, string>("projectType", ((int) type.Value).ToString()));
+        }
+
+        if (status != null)
+        {
+          var statusString = status.Value.GetEnumMemberValue(); // CWS Expects the EnumMember value (e.g ARCHIVED instead of 1)
+          queryParams.Add(new KeyValuePair<string, string>("status", statusString));
+        }
+
+        projectSummaryListResponseModel = await GetAllPagedData<ProjectSummaryListResponseModel, ProjectSummaryResponseModel>($"/accounts/{accountTrn}/projects", customerUid, userUid, queryParams, customHeaders);
+
+        // CWS doesn't return a project status - so set Archived if needed
+        if (status == ProjectStatus.Archived)
+        {
+          foreach (var project in projectSummaryListResponseModel.Projects)
+          {
+            project.Status = status.Value;
+          }
+        }
+
       }
       catch (HttpRequestException e)
       {
@@ -190,6 +201,21 @@ namespace CCSS.CWS.Client
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
       await UpdateData($"/projects/{projectTrn}/boundary", projectBoundary, null, customHeaders);
+    }
+
+    private  ProjectDetailResponseModel GetProjectDetailsFromSummary(ProjectSummaryResponseModel project, Guid customerUid)
+    {
+      // No need to query the metadata endpoint anymore, as the summary result with includeSettings has all the details
+      return new ProjectDetailResponseModel
+      {
+        AccountTRN = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT),
+        ProjectTRN = project.ProjectTRN,
+        ProjectName = project.ProjectName,
+        ProjectType = project.ProjectType,
+        Status = project.Status,
+        UserProjectRole = project.UserProjectRole,
+        ProjectSettings = new ProjectSettingsModel {Boundary = project.Boundary, TimeZone = project.TimeZone}
+      };
     }
   }
 }

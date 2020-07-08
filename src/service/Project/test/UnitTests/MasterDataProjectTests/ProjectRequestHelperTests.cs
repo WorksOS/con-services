@@ -127,10 +127,10 @@ namespace VSS.MasterData.ProjectTests
       var projectDetailListResponseModel = new ProjectDetailListResponseModel() {Projects = new List<ProjectDetailResponseModel>() {projectDetailResponseModel} };
 
       var mockCwsProjectClient = new Mock<ICwsProjectClient>();
-      mockCwsProjectClient.Setup(pr => pr.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailListResponseModel);
+      mockCwsProjectClient.Setup(pr => pr.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailListResponseModel);
 
       var projectDatabaseModelList = ProjectRequestHelper.GetProjectListForCustomer(_customerUid, _userUid,
-        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);
+        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, null, null, _customHeaders);
 
       var result = projectDatabaseModelList.Result;
       Assert.NotNull(result);
@@ -242,7 +242,7 @@ namespace VSS.MasterData.ProjectTests
       var projectDetailListResponseModel = new ProjectDetailListResponseModel() { Projects = new List<ProjectDetailResponseModel>() { projectDetailResponseModel } };
 
       var mockCwsProjectClient = new Mock<ICwsProjectClient>();
-      mockCwsProjectClient.Setup(pr => pr.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailListResponseModel);
+      mockCwsProjectClient.Setup(pr => pr.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailListResponseModel);
 
       var projectDatabaseModelList = ProjectRequestHelper.GetIntersectingProjects(_customerUid.ToString(), 89, 179,
         _projectUid.ToString(), _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, _customHeaders);

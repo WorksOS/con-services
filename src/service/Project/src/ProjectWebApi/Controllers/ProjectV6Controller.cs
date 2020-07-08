@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -53,10 +54,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v4/project")] // temporary kludge until ccssscon-219 
     [Route("api/v6/project")]
     [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6()
+    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6([FromQuery]CwsProjectType? projectType, [FromQuery] ProjectStatus projectStatus = ProjectStatus.Active)
     {
       Logger.LogInformation($"{nameof(GetProjectsV6)}");
-      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, projectType, projectStatus, customHeaders);
 
       return new ProjectV6DescriptorsListResult
       {

@@ -53,14 +53,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (importedFile.ImportedFileType == ImportedFileType.Linework || 
           importedFile.ImportedFileType == ImportedFileType.GeoTiff)
       {
-        string dxfFileName = null;
-        if (importedFile.ImportedFileType == ImportedFileType.Linework)
-          dxfFileName = importedFile.DataOceanFileName;
-        //Generate raster tiles
+        string dcFileName = null;
         if (importedFile.ImportedFileType == ImportedFileType.Linework)
         {
-          var projectTask = await ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);
-          dxfFileName = DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, Guid.Parse(projectTask.ProjectUID), null);
+          var project = await ProjectRequestHelper.GetProject(importedFile.ProjectUid, new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, customHeaders);
+          dcFileName = DataOceanFileUtil.DataOceanFileName(project.CoordinateSystemFileName, false, importedFile.ProjectUid, null);
         }
 
         var jobRequest = TileGenerationRequestHelper.CreateRequest(
@@ -70,7 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           existingImportedFile.ImportedFileUid,
           importedFile.DataOceanRootFolder,
           importedFile.DataOceanFileName,
-          dxfFileName,
+          dcFileName,
           importedFile.DxfUnitsTypeId,
           importedFile.SurveyedUtc);
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);

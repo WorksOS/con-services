@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace CCSS.CWS.Client
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
 
-    protected const int DefaultPageSize = 20;
+    protected const int DefaultPageSize = 50; 
 
     protected int FromRow = 0;
     protected int RowCount = 200;
@@ -74,10 +75,15 @@ namespace CCSS.CWS.Client
       var currentPage = 0;
       do
       {
-        var queryParameters = WithLimits(currentPage * DefaultPageSize, DefaultPageSize);
-        if(parameters != null)
-          queryParameters.AddRange(parameters);
         var cacheKeyPaging = $"{currentPage}-{DefaultPageSize}";
+        var queryParameters = WithLimits(currentPage * DefaultPageSize, DefaultPageSize);
+        if (parameters != null)
+        {
+          queryParameters.AddRange(parameters);
+          // Make sure we cache extra query paramters, as they'll return different results
+          cacheKeyPaging = parameters.Aggregate(cacheKeyPaging, (current, keyValuePair) => current + $"{keyValuePair.Key}/{keyValuePair.Value}");
+        }
+
         apiResult = await GetMasterDataItemServiceDiscovery<TListModel>(route, uid?.ToString(), userId?.ToString(), customHeaders, queryParameters, cacheKeyPaging);
         if (apiResult != null)
           results.AddRange(apiResult.Models);

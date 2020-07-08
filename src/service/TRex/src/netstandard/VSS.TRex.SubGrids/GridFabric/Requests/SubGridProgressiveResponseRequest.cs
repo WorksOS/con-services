@@ -31,13 +31,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// <summary>
     /// The compute projection representing the Ignite node identified by _nodeId
     /// </summary>
-    private readonly ICompute _compute;
+    private readonly ICompute _immutableCompute;
 
     /// <summary>
     /// Immutable grid reference only
     /// </summary>
-    private IIgnite ignite;
-    private IIgnite Ignite => ignite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+    private IIgnite immutableIgnite;
+    private IIgnite ImmutableIgnite => immutableIgnite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
     /// <summary>
     /// Default no-arg constructor - used by unit tests
@@ -56,7 +56,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
       {
         var sw = Stopwatch.StartNew();
 
-        var result = _compute.Apply(_computeFunc, arg);
+        var result = _immutableCompute.Apply(_computeFunc, arg);
 
         _log.LogDebug($"SubGridProgressiveResponseRequest.Execute() for request {arg.RequestDescriptor} with {arg.Payload.Bytes.Length} bytes completed in {sw.Elapsed}");
         return result;
@@ -76,19 +76,19 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     public SubGridProgressiveResponseRequest(Guid nodeId)
     {
       // Determine the single node the request needs to be sent to
-      _compute = Ignite
+      _immutableCompute = ImmutableIgnite
         .GetCluster()
         .ForNodeIds(new List<Guid> {nodeId})
         .GetCompute()
-        .WithExecutor(BaseIgniteClass.TREX_PROGRESSIVE_QUERY_CUSTOM_THREAD_POOL_NAME);
+        .WithExecutor(TREX_PROGRESSIVE_QUERY_CUSTOM_THREAD_POOL_NAME);
 
-      if (_compute == null)
+      if (_immutableCompute == null)
       {
         _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Compute cluster projection is null");
       }
       else
       {
-        var projectionSize = _compute?.ClusterGroup?.GetNodes()?.Count ?? 0;
+        var projectionSize = _immutableCompute?.ClusterGroup?.GetNodes()?.Count ?? 0;
         if (projectionSize == 0)
         {
           _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Topology projection contains no nodes");

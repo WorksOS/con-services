@@ -42,7 +42,6 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
@@ -52,7 +51,6 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
-using VSS.TRex.SiteModels.Interfaces.Executors;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -61,6 +59,11 @@ namespace VSS.TRex.Tests.TestFixtures
     public DITAGFileAndSubGridRequestsWithIgniteFixture()
     {
       SetupFixture();
+    }
+
+    public new static void ClearDynamicFxtureContent()
+    {
+      DITAGFileAndSubGridRequestsFixture.ClearDynamicFxtureContent();
     }
 
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
@@ -117,7 +120,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
-        // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
+        // Override the main Ignite grid factory method injected from TRexGridFactory.AddGridFactoriesToDI()
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) =>
         {
           if (true == gridName?.Equals(TRexGrids.MutableGridName()))
@@ -153,7 +156,7 @@ namespace VSS.TRex.Tests.TestFixtures
           };
         }))
         .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>(RebuildSiteModelCacheFactory))
-        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
+        .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(factory => (projectUid, archiveTagFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTagFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
 
@@ -172,13 +175,15 @@ namespace VSS.TRex.Tests.TestFixtures
 
     public static void ResetDynamicMockedIgniteContent()
     {
+      ClearDynamicFxtureContent();
+
       // Now that mocked ignite contexts are available, re-inject the proxy cache factories so they take notice of the ignite mocks
       // Note that the dynamic content of the Ignite mock must be instantiated first
       IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
       IgniteMock.Immutable.ResetDynamicMockedIgniteContent();
 
       // Recreate proxy caches based on the newly created cache contexts
-      DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
+      AddProxyCacheFactoriesToDI();
 
       // Create a new site models instance so that it recreates storage contexts
       // Also remove the singleton proxy cache factory injected as a part of the DITagFileFixture. This fixture supplies a 

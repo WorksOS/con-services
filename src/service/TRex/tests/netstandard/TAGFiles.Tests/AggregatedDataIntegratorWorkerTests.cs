@@ -20,6 +20,12 @@ namespace TAGFiles.Tests
   {
   //  private static readonly ILogger Log = VSS.TRex.Logging.Logger.CreateLogger<AggregatedDataIntegratorWorkerTests>();
 
+    public AggregatedDataIntegratorWorkerTests(DITagFileFixture fixture)
+    {
+      fixture.SetupFixture();
+      DITagFileFixture.ClearDynamicFxtureContent();
+    }
+
     private ISiteModel BuildModel()
     {
       // Create the site model and machine etc to aggregate the processed TAG file into
@@ -191,7 +197,7 @@ namespace TAGFiles.Tests
 
       // Convert TAG files using TAGFileConverters into mini-site models
       var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
-        .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+        .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(x => DITagFileFixture.ReadTAGFileFullPath(x)).ToArray();
 
    //   Log.LogInformation($"Completed constructing converters for {numToTake} files from index {skipTo}.");
 
@@ -406,7 +412,7 @@ namespace TAGFiles.Tests
       void Convert(string tagFileCollectionFolder, int skipTo, int numToTake)
       {
         var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
-          .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+          .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(x => DITagFileFixture.ReadTAGFileFullPath(x)).ToArray();
 
         converters.Length.Should().Be(numToTake);
 

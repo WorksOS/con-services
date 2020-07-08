@@ -17,7 +17,7 @@ namespace VSS.TRex.Profiling.Executors
   /// <summary>
   /// Executes business logic that calculates the profile between two points in space
   /// </summary>
-  public class ComputeProfileExecutor_ApplicationService<T> where T: class, IProfileCellBase, new()
+  public class ComputeProfileExecutor_ApplicationService<T> where T : class, IProfileCellBase, new()
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<ComputeProfileExecutor_ApplicationService<T>>();
 
@@ -38,7 +38,7 @@ namespace VSS.TRex.Profiling.Executors
           // Prepare the filters for use in profiling operations. Failure to prepare any filter results in this request terminating
           if (!arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK))
           {
-            return new ProfileRequestResponse<T>{ResultStatus = RequestErrorStatus.FailedToPrepareFilter};
+            return new ProfileRequestResponse<T> { ResultStatus = RequestErrorStatus.FailedToPrepareFilter };
           }
         }
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.Profiling.Executors
         // Perform coordinate conversion on the argument before broadcasting it:
         if (arg.PositionsAreGrid)
         {
-          arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().NullWGSLLToXY(new[] { arg.StartPoint, arg.EndPoint }.ToCoreX_WGS84Point()).ToTRex_XYZ();
+          arg2.NEECoords = new[] { arg.StartPoint, arg.EndPoint }.Select(x => new XYZ(x.Lon, x.Lat)).ToArray();
         }
         else
         {
@@ -67,7 +67,7 @@ namespace VSS.TRex.Profiling.Executors
 
           if (siteModel != null)
           {
-            arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] {arg.StartPoint, arg.EndPoint}.ToCoreX_WGS84Point()).ToTRex_XYZ();
+            arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint }.ToCoreX_WGS84Point()).ToTRex_XYZ();
           }
         }
 
@@ -85,10 +85,10 @@ namespace VSS.TRex.Profiling.Executors
           {
             // Remove all leading nulls
             if (_profileCells[i].IsNull() && i == firstNonNullIndex)
-              {
-                firstNonNullIndex++;
-                return false;
-              }
+            {
+              firstNonNullIndex++;
+              return false;
+            }
 
             // Collapse all interior nulls to single nulls, unless the null is at the end. Leave any single terminating null
             return i == 0 || !_profileCells[i].IsNull() || (_profileCells[i].IsNull() && !_profileCells[i - 1].IsNull());

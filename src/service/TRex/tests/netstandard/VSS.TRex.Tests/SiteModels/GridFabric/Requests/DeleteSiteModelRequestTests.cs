@@ -20,6 +20,7 @@ using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Requests;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -37,10 +38,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       IgniteMock.Mutable.AddApplicationGridRouting<AddTTMDesignComputeFunc, AddTTMDesignArgument, AddTTMDesignResponse>();
     }
 
-    public DeleteSiteModelRequestTests()
+    public DeleteSiteModelRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
       // This resets all modified content in the Ignite mocks between tests
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ClearDynamicFxtureContent();
+      fixture.SetupFixture();
     }
 
     private static bool IsModelEmpty(ISiteModel model)
@@ -96,17 +98,6 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       var req = new DeleteSiteModelRequest();
       req.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void EmptyNonCommittedModelIsEmpty()
-    {
-      AddApplicationGridRouting();
-
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      model.Should().NotBeNull();
-
-      IsModelEmpty(model).Should().BeTrue();
     }
 
     [Fact]
@@ -283,11 +274,15 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
+      model.StorageRepresentationToSupply.Should().Be(StorageMutability.Mutable);
+      model.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      model.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
+
       var request = new AddTTMDesignRequest();
       var _ = await request.ExecuteAsync(new AddTTMDesignArgument
       {
         ProjectID = model.ID,
-        DesignDescriptor = new VSS.TRex.Designs.Models.DesignDescriptor(Guid.NewGuid(), "", ""),
+        DesignDescriptor = new DesignDescriptor(Guid.NewGuid(), "", ""),
         Extents = new BoundingWorldExtent3D(0, 0, 1, 1),
         ExistenceMap = new SubGridTreeSubGridExistenceBitMask()
       });

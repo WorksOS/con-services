@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -38,7 +39,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -71,7 +72,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -107,7 +108,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -138,7 +139,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(ps => ps.GetProjectSettings(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProjectSettingsType>())).ReturnsAsync((ProjectSettings)null);
 
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(new ProjectDetailListResponseModel());
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(new ProjectDetailListResponseModel());
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -173,7 +174,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -232,7 +233,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();

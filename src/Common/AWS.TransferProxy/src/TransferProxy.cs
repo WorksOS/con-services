@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -214,43 +213,23 @@ namespace VSS.AWS.TransferProxy
         return false;
       }
 
-
-      /* Method2 hold for now
-      using (var s3Client = GetS3Client())
-      {
-        // some buckets have many thousands of objects so this is most effective way to determine if file exists 
-        try
-        {
-          s3Client.GetObjectMetadataAsync(awsBucketName, s3Key);
-          return true;
-        }
-
-        catch (Amazon.S3.AmazonS3Exception ex)
-        {
-          if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-            return false;
-          //status wasn't not found, so throw the exception
-          throw;
-        }
-      }
-      */
     }
 
     /// <summary>
     /// Place write delete object lock on file
     /// </summary>
-    private bool LockFile(string s3Key)
+    private async Task<bool> LockFile(string s3Key)
     {
       using (var s3Client = GetS3Client())
       {
         try
         {
-          var res = s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key,LegalHold = new ObjectLockLegalHold() { Status = "ON" } });
-          return res.Result.HttpStatusCode == System.Net.HttpStatusCode.OK;
+          var res = await s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key, LegalHold = new ObjectLockLegalHold() { Status = ObjectLockLegalHoldStatus.On }});
+          return res.HttpStatusCode == System.Net.HttpStatusCode.OK;
         }
-
         catch (Amazon.S3.AmazonS3Exception ex)
         {
+          logger.LogError($"LockFile. Exception:{ex.Message}, BucketName:{awsBucketName}, s3Key:{s3Key} ");
           if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             return false;
           //status wasn't not found, so throw the exception
@@ -259,10 +238,10 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
-    public bool UploadAndLock(Stream stream, string s3Key)
+    public async Task<bool> UploadAndLock(Stream stream, string s3Key)
     {
       UploadToBucket(stream, s3Key, awsBucketName);
-      return LockFile(s3Key);
+      return await LockFile(s3Key);
     }
 
 
