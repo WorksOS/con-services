@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
-    public static void ClearDynamicFxtureContent()
+    public new static void ClearDynamicFxtureContent()
     {
       DITagFileFixture.ClearDynamicFxtureContent();
     }

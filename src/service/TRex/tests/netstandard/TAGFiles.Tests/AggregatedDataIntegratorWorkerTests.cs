@@ -20,6 +20,12 @@ namespace TAGFiles.Tests
   {
   //  private static readonly ILogger Log = VSS.TRex.Logging.Logger.CreateLogger<AggregatedDataIntegratorWorkerTests>();
 
+    public AggregatedDataIntegratorWorkerTests(DITagFileFixture fixture)
+    {
+      fixture.SetupFixture();
+      DITagFileFixture.ClearDynamicFxtureContent();
+    }
+
     private ISiteModel BuildModel()
     {
       // Create the site model and machine etc to aggregate the processed TAG file into

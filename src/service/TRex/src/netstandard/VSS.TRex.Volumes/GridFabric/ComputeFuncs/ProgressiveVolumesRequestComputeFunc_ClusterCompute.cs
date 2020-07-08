@@ -15,7 +15,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
   /// </summary>
   public class ProgressiveVolumesRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesRequestComputeFunc_ClusterCompute>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ProgressiveVolumesRequestComputeFunc_ClusterCompute>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -27,11 +27,9 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// <summary>
     /// Invoke the progressive volumes request locally on this node
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public ProgressiveVolumesResponse Invoke(ProgressiveVolumesRequestArgument arg)
     {
-      Log.LogInformation("In ProgressiveVolumesRequestComputeFunc_ClusterCompute.Invoke()");
+      _log.LogInformation("In ProgressiveVolumesRequestComputeFunc_ClusterCompute.Invoke()");
 
       try
       {
@@ -49,13 +47,13 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
           arg.EndDate,
           arg.Interval);
 
-        Log.LogInformation("Executing volumes.ExecuteAsync()");
+        _log.LogInformation("Executing volumes.ExecuteAsync()");
 
         return volumes.ExecuteAsync().WaitAndUnwrapException();
       }
       finally
       {
-        Log.LogInformation("Exiting ProgressiveVolumesRequestComputeFunc_ClusterCompute.Invoke()");
+        _log.LogInformation("Exiting ProgressiveVolumesRequestComputeFunc_ClusterCompute.Invoke()");
       }
     }
   }

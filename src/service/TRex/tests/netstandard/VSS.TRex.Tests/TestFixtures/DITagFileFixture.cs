@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.TestFixtures
   {
     private static TAGFileBufferQueue _tagFileBufferQueue;
 
-    public static void ClearDynamicFxtureContent()
+    public new static void ClearDynamicFxtureContent()
     {
       _tagFileBufferQueue = null;
 
