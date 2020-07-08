@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -176,7 +177,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       log.LogInformation($"{nameof(ValidateProjectName)} projectName: {projectName} projectUid: {projectUid}");
       var duplicateProjectNames =
         (await ProjectRequestHelper.GetProjectListForCustomer(customerUid, userUid,
-          log, serviceExceptionHandler, cwsProjectClient, customHeaders))
+          log, serviceExceptionHandler, cwsProjectClient, null, ProjectStatus.Active, customHeaders))
         .Where(
           p => p.IsArchived == false &&
                 string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&
