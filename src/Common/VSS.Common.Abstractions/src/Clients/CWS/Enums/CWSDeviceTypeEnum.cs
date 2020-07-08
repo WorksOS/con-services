@@ -11,15 +11,15 @@ namespace VSS.Common.Abstractions.Clients.CWS.Enums
   {
     [EnumMember(Value = null)] Unknown = 0, // null
 
-    [EnumMember(Value = "EC520")] EC520,
+    [EnumMember(Value = "EC520")] EC520,     // Earthworks serialNumber ends YU
 
-    [EnumMember(Value = "EC520-W")] EC520W,
+    [EnumMember(Value = "EC520-W")] EC520W,  // Earthworks EC520-W serialNumber ends  
 
-    [EnumMember(Value = "CB430")] CB430,
+    [EnumMember(Value = "CB430")] CB430,     // GCS900 serialNumber ends SM
 
-    [EnumMember(Value = "CB450")] CB450,
+    [EnumMember(Value = "CB450")] CB450,     // GCS900 serialNumber ends SV
 
-    [EnumMember(Value = "CB460")] CB460,
+    [EnumMember(Value = "CB460")] CB460,     // GCS900 serialNumber ends SW
 
     [EnumMember(Value = "CD700")] CD700,
 
