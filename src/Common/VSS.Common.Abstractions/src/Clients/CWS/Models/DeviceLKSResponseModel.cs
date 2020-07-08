@@ -25,20 +25,20 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// Device TRN ID
     /// </summary>
     [JsonProperty("deviceId")]
-    public string DeviceTRN
+    public string TRN
     {
       get => _deviceTrn;
       set
       {
         _deviceTrn = value;
-        DeviceId = TRNHelper.ExtractGuidAsString(value);
+        Id = TRNHelper.ExtractGuidAsString(value);
       }
     }
 
     /// <summary>
     /// WorksOS device ID; the Guid extracted from the TRN.
     /// </summary>
-    public string DeviceId { get; private set; }
+    public string Id { get; private set; }
 
     /// <summary>
     /// latitude
@@ -59,7 +59,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     ///       nor the radio type e.g. Torch
     /// </summary>
     [JsonProperty("assetType")]
-    [JsonConverter(typeof(NullableEnumStringConverter), UserProjectRoleEnum.Unknown)]
+    [JsonConverter(typeof(NullableEnumStringConverter), CWSDeviceTypeEnum.Unknown)]
 
     public CWSDeviceTypeEnum DeviceType { get; set; }
 
@@ -91,7 +91,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("lastReported")]
     public DateTime? LastReportedUtc { get; set; }
 
-    public List<string> GetIdentifiers() => new List<string> { DeviceTRN, DeviceId };
+    public List<string> GetIdentifiers() => new List<string> { TRN, Id };
   }
 }
 
@@ -157,9 +157,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     "projects": [
         {
             "projectId": "trn::profilex:us-west-2:project:1978f53e-14a4-48d2-a33c-dfb2e10a0e68"
-        },
-        {
-            "projectId": "trn::profilex:us-west-2:project:760b3220-2d4d-4e71-b1b3-1167d36d0d4c"
         }
     ],
     "accountId": "trn::profilex:us-west-2:account:67c9f1e4-3e9b-4f94-9428-f4ed30d83d76"

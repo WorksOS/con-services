@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -33,9 +34,18 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(GetDeviceLKS)}: deviceName {deviceName}");
 
-      var deviceLksResponseModel = await GetData<DeviceLKSResponseModel>($"/devicelks/{deviceName}", null, null, null, customHeaders);
+      DeviceLKSResponseModel deviceLksResponseModel;
+      try
+      {
+        deviceLksResponseModel = await GetData<DeviceLKSResponseModel>($"/devicelks/{deviceName}", null, null, null, customHeaders);
+      }
+      catch (Exception e)
+      {
+        log.LogError(e, $"{nameof(GetDeviceLKS)}: failed to get deviceLKS. ");
+        return null;
+      }
 
-      log.LogDebug($"{nameof(GetDeviceLKS)}: deviceLKSResponseModel {JsonConvert.SerializeObject(deviceLksResponseModel)}");
+      log.LogDebug($"{nameof(GetDeviceLKS)}: deviceLKSResponseModel {(deviceLksResponseModel == null ? null : JsonConvert.SerializeObject(deviceLksResponseModel))}");
       return deviceLksResponseModel;
     }
 
@@ -43,7 +53,7 @@ namespace CCSS.CWS.Client
     /// Get devices LKS which last reported inside this project
     ///     Devices included are active and assigned to the project      
     ///     Optionally return only where device has reported after this earliestDate ("2020-04-29T07:02:57Z")
-    /// todoJeannie As of 2020_07_06 does this support paging?
+    /// As of 2020_07_06 pagination is not supported in cws.
     /// </summary>
     public async Task<DeviceLKSListResponseModel> GetDevicesLKSForProject(Guid projectUid, DateTime? earliestOfInterestUtc, IHeaderDictionary customHeaders = null)
     {
@@ -54,8 +64,9 @@ namespace CCSS.CWS.Client
       if (earliestOfInterestUtc != null)
         queryParameters.Add(new KeyValuePair<string, string>("lastReported", $"{earliestOfInterestUtc:yyyy-MM-ddTHH:mm:ssZ}"));
       var deviceLksListResponseModel = await GetData<DeviceLKSListResponseModel>($"/devicelks", projectUid, null, queryParameters, customHeaders);
+ 
+      log.LogDebug($"{nameof(GetDevicesLKSForProject)}: deviceLKSListResponseModel {(deviceLksListResponseModel == null ? null : JsonConvert.SerializeObject(deviceLksListResponseModel))}");
 
-      log.LogDebug($"{nameof(GetDevicesLKSForProject)}: deviceLKSListResponseModel {JsonConvert.SerializeObject(deviceLksListResponseModel)}");
       return deviceLksListResponseModel;
     }
   }

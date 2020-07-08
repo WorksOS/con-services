@@ -37,7 +37,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         {
           new DeviceLKSResponseModel()
           {
-            DeviceTRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+            TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
             Latitude = 89.3,
             Longitude = 189.1,
             DeviceType = CWSDeviceTypeEnum.EC520,
@@ -60,7 +60,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
         Assert.NotNull(result);
         Assert.Single(result.Devices);
-        Assert.Equal(deviceUid.ToString(), result.Devices[0].DeviceId);
+        Assert.Equal(deviceUid.ToString(), result.Devices[0].Id);
         return true;
       });
     }
@@ -79,7 +79,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         {
           new DeviceLKSResponseModel()
           {
-            DeviceTRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+            TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
             Latitude = 89.3,
             Longitude = 189.1,
             DeviceType = CWSDeviceTypeEnum.EC520,
@@ -102,7 +102,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
         Assert.NotNull(result);
         Assert.Single(result.Devices);
-        Assert.Equal(deviceUid.ToString(), result.Devices[0].DeviceId);
+        Assert.Equal(deviceUid.ToString(), result.Devices[0].Id);
         Assert.Equal(deviceLksListResponseModel.Devices[0].LastReportedUtc, result.Devices[0].LastReportedUtc);
         return true;
       });
@@ -119,7 +119,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
       var deviceLksResponseModel = new DeviceLKSResponseModel()
           {
-            DeviceTRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+            TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
             Latitude = 89.3,
             Longitude = 189.1,
             DeviceType = deviceType,
@@ -140,7 +140,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var result = await client.GetDeviceLKS(deviceName);
 
         Assert.NotNull(result);
-        Assert.Equal(deviceUid.ToString(), result.DeviceId);
+        Assert.Equal(deviceUid.ToString(), result.Id);
         Assert.Equal(deviceName, result.DeviceName);
         Assert.Equal(serialNumber, result.SerialNumber);
         return true;
