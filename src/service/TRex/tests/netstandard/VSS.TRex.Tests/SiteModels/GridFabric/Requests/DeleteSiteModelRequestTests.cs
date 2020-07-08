@@ -38,10 +38,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       IgniteMock.Mutable.AddApplicationGridRouting<AddTTMDesignComputeFunc, AddTTMDesignArgument, AddTTMDesignResponse>();
     }
 
-    public DeleteSiteModelRequestTests()
+    public DeleteSiteModelRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
       // This resets all modified content in the Ignite mocks between tests
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ClearDynamicFxtureContent();
+      fixture.SetupFixture();
     }
 
     private static bool IsModelEmpty(ISiteModel model)
