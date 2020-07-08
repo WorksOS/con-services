@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -214,26 +213,6 @@ namespace VSS.AWS.TransferProxy
         return false;
       }
 
-
-      /* Method2 hold for now
-      using (var s3Client = GetS3Client())
-      {
-        // some buckets have many thousands of objects so this is most effective way to determine if file exists 
-        try
-        {
-          s3Client.GetObjectMetadataAsync(awsBucketName, s3Key);
-          return true;
-        }
-
-        catch (Amazon.S3.AmazonS3Exception ex)
-        {
-          if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-            return false;
-          //status wasn't not found, so throw the exception
-          throw;
-        }
-      }
-      */
     }
 
     /// <summary>
@@ -245,12 +224,12 @@ namespace VSS.AWS.TransferProxy
       {
         try
         {
-          var res = await s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key,LegalHold = new ObjectLockLegalHold() { Status = "ON" } });
+          var res = await s3Client.PutObjectLegalHoldAsync(new PutObjectLegalHoldRequest() { BucketName = awsBucketName, Key = s3Key, LegalHold = new ObjectLockLegalHold() { Status = ObjectLockLegalHoldStatus.On }});
           return res.HttpStatusCode == System.Net.HttpStatusCode.OK;
         }
-
         catch (Amazon.S3.AmazonS3Exception ex)
         {
+          logger.LogError($"LockFile. Exception:{ex.Message}, BucketName:{awsBucketName}, s3Key:{s3Key} ");
           if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             return false;
           //status wasn't not found, so throw the exception
