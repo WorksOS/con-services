@@ -144,7 +144,12 @@ namespace CCSS.CWS.Client
         var route = $"/projects/{projectTrn}";
         if (useMetadata)
           route = $"{route}/metadata";
-        projectDetailResponseModel = await GetData<ProjectDetailResponseModel>(route, projectUid, userUid, null, customHeaders);
+
+        // If we don't add this query param, then get project will never return archived projects
+        // However, there is no harm to having it always on for active projects
+        var queryParams = new List<KeyValuePair<string, string>>() {new KeyValuePair<string, string>("includeArchived", "true")};
+
+        projectDetailResponseModel = await GetData<ProjectDetailResponseModel>(route, projectUid, userUid, queryParams, customHeaders);
 
         // get a project, with user role always returns null, but can only be called if the role IS ADMIN.
         if (userUid != null && !useMetadata)
