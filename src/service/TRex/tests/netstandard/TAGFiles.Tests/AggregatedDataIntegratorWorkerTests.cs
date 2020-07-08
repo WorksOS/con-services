@@ -20,11 +20,10 @@ namespace TAGFiles.Tests
   {
   //  private static readonly ILogger Log = VSS.TRex.Logging.Logger.CreateLogger<AggregatedDataIntegratorWorkerTests>();
 
-    public AggregatedDataIntegratorWorkerTests()
+    public AggregatedDataIntegratorWorkerTests(DITagFileFixture fixture)
     {
+      fixture.SetupFixture();
       DITagFileFixture.ClearDynamicFxtureContent();
-      IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
-      IgniteMock.Immutable.ResetDynamicMockedIgniteContent();
     }
 
     private ISiteModel BuildModel()
