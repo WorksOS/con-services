@@ -17,11 +17,6 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 {
   public class SiteModelRebuilderManagerTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>, IDisposable
   {
-    private void AddApplicationGridRouting()
-    {
-      IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
-    }
-
     [Fact]
     public void Creation()
     {
