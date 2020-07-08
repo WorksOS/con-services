@@ -134,6 +134,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Both coordinate system file name and contents must be provided.", 134);
       this.DynamicAddwithOffset("Mismatched customerUid.", 135);
       this.DynamicAddwithOffset("Unknown update type in project validation.", 136);
+      this.DynamicAddwithOffset("Invalid ProjectUid", 137);
+      this.DynamicAddwithOffset("Invalid earliestOfInterestUtc", 138);
     }
   }
 }
