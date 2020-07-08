@@ -181,7 +181,7 @@ namespace VSS.TRex.Tests.TestFixtures
       IgniteMock.Immutable.ResetDynamicMockedIgniteContent();
 
       // Recreate proxy caches based on the newly created cache contexts
-      DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
+      AddProxyCacheFactoriesToDI();
 
       // Create a new site models instance so that it recreates storage contexts
       // Also remove the singleton proxy cache factory injected as a part of the DITagFileFixture. This fixture supplies a 
