@@ -394,7 +394,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       (model?.ExistenceMap?.CountBits() ?? 0).Should().Be(0);
     }
 
-    [Theory(Skip="Flaky unit test,. Tobe investigated")]
+    [Theory]
     [InlineData(DeleteSiteModelSelectivity.All)]
     [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
     public void DeleteModel_WithTagFile(DeleteSiteModelSelectivity selectivity)
