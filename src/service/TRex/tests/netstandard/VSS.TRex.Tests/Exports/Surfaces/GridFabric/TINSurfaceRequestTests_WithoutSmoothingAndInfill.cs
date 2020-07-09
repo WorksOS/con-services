@@ -27,8 +27,10 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
       return null;
     }
 
-    public new void SetupFixture()
+    public override void SetupFixture()
     {
+      base.SetupFixture();
+
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<Func<DataSmootherOperation, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))

@@ -41,18 +41,20 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
   {
-    public DITAGFileAndSubGridRequestsFixture() : base()
+    public DITAGFileAndSubGridRequestsFixture()
     {
       SetupFixture();
     }
 
-    public new static void ClearDynamicFxtureContent()
+    public override void ClearDynamicFixtureContent()
     {
-      DITagFileFixture.ClearDynamicFxtureContent();
+      base.ClearDynamicFixtureContent();
     }
 
-    public new void SetupFixture()
+    public override void SetupFixture()
     {
+      base.SetupFixture();
+
       // Provide the surveyed surface request mock
       var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
       surfaceElevationPatchRequest.Setup(x => x.ExecuteAsync(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(Task.FromResult(new ClientHeightAndTimeLeafSubGrid() as IClientLeafSubGrid));

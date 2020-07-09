@@ -34,10 +34,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       AddSecondaryApplicationGridRouting(); // For the delete request
     }
 
-    public RebuildSiteModelRequestTests()
+    public RebuildSiteModelRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
       // This resets all modified content in the Ignite mocks between tests
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+      fixture.ResetDynamicMockedIgniteContent();
     }
 
     [Fact]

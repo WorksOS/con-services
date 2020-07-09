@@ -17,9 +17,9 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 {
   public class SiteModelRebuilderManagerTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>, IDisposable
   {
-    public SiteModelRebuilderManagerTests()
+    public SiteModelRebuilderManagerTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+      fixture.ResetDynamicMockedIgniteContent();
     }
 
     [Fact]
