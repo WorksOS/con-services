@@ -58,6 +58,26 @@ namespace CCSS.CWS.Client
       }
     }
 
+    protected async Task<TRes> GetDataNoCache<TRes>(string route, 
+      IList<KeyValuePair<string, string>> parameters = null,
+      IHeaderDictionary customHeaders = null) where TRes : class
+    {
+      try
+      {
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Get, parameters);
+        return result;
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return null;
+        }
+
+        throw;
+      }
+    }
+
     /// <summary>
     /// Gets data from CWS that supports paging via the HasMore property
     /// This method gets ALL data in one go.

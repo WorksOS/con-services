@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -24,7 +22,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///    We impose these rules for the UI:
     ///      a) only devices reporting within the last 30 days
     ///      b) restrict data to only that of interest to UI (at present): lat/long/deviceName/DeviceType/SerialNumber/LastReportedUTC
-    ///      possible future: restrict to devices of interest to WorksOS (EC and CB)? // todoJeannie
+    ///      possible future: restrict to devices of interest to WorksOS (EC and CB)
     /// </summary>
     /// <returns>
     ///  NotFound means that the endpoint was not found. if no devices or project not found, will return an empty list.
@@ -42,23 +40,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var devices = await CwsDeviceGatewayClient.GetDevicesLKSForProject(projectUid, earliestOfInterestUtc, customHeaders);
 
       Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} completed. devices {(devices == null ? null : JsonConvert.SerializeObject(devices))}");
-      if (devices == null)
-        return NotFound();
-
-      var result = new DeviceStatusDescriptorsListResult
-      {
-        DeviceStatusDescriptors = devices.Devices.Select(device =>
-            AutoMapperUtility.Automapper.Map<DeviceStatusDescriptor>(device))
-          .ToList()
-      };
-
-      return Ok(result);
+      return Ok(devices);
     }
 
     /// <summary>
     /// Gets device with last known status (LKS).
     ///    Is UI interested in what project the device is currently on? 
-    ///     i.e. UI gets list for project, but device moves off the project (can tell from ProjectName - include this for now todoJeannie)
+    ///     i.e. UI gets list for project, but device moves off the project (can tell from ProjectName - include this for now)
     /// </summary>
     [HttpGet("api/v1/device")]
     public async Task<IActionResult> GetDeviceWithLKS([FromQuery] string deviceName)
@@ -71,8 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (device == null)
         return NotFound();
 
-      var result = new DeviceStatusDescriptorSingleResult(AutoMapperUtility.Automapper.Map<DeviceStatusDescriptor>(device));
-      return Ok(result);
+      return Ok(device);
     }
   }
 }

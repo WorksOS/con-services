@@ -1,18 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using IntegrationTests.UtilityClasses;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
-using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Exceptions;
-using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace IntegrationTests.WebApiTests
@@ -35,20 +30,19 @@ namespace IntegrationTests.WebApiTests
 
       var response = await ts.GetDeviceLKSList(DIMENSIONS_CUSTOMER_UID, DIMENSIONS_PROJECT_UID);
       Assert.NotNull(response); 
-      var deviceStatusDescriptorsListResult = JsonConvert.DeserializeObject<DeviceStatusDescriptorsListResult>(response);
+      var deviceList = JsonConvert.DeserializeObject<List<DeviceLKSResponseModel>>(response);
       
-      Assert.NotNull(deviceStatusDescriptorsListResult);
-      var deviceList = deviceStatusDescriptorsListResult.DeviceStatusDescriptors.ToList();
+      Assert.NotNull(deviceList);
       Assert.Single(deviceList);
-      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, deviceList[0].DeviceUid);
-      Assert.Equal(DIMENSIONS_SERIAL, deviceList[0].SerialNumber);
-      Assert.Equal(89.9, deviceList[0].Latitude);
-      Assert.Equal(34.6, deviceList[0].Longitude);
-      Assert.Equal(CWSDeviceTypeEnum.EC520, deviceList[0].DeviceType);
-      Assert.Equal($"{CWSDeviceTypeEnum.EC520}-{DIMENSIONS_SERIAL}", deviceList[0].DeviceName);
-      Assert.Equal($"DimensionsProject", deviceList[0].ProjectName);
-      Assert.NotNull(deviceList[0].LastReportedUtc);
-      Assert.True(deviceList[0].LastReportedUtc.Value > DateTime.UtcNow.AddDays(-30));
+      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, deviceList[0].deviceUid);
+      Assert.Equal(DIMENSIONS_SERIAL, deviceList[0].assetSerialNumber);
+      Assert.Equal(89.9, deviceList[0].lat);
+      Assert.Equal(34.6, deviceList[0].lon);
+      Assert.Equal(CWSDeviceTypeEnum.EC520, deviceList[0].assetType);
+      Assert.Equal($"{CWSDeviceTypeEnum.EC520}-{DIMENSIONS_SERIAL}", deviceList[0].deviceName);
+      Assert.Equal($"DimensionsProject", deviceList[0].projectName);
+      Assert.NotNull(deviceList[0].lastReported);
+      Assert.True(deviceList[0].lastReported.Value > DateTime.UtcNow.AddDays(-30));
     }
 
     [Fact]
@@ -60,10 +54,9 @@ namespace IntegrationTests.WebApiTests
 
       var response = await ts.GetDeviceLKSList(DIMENSIONS_CUSTOMER_UID, Guid.NewGuid().ToString());
       Assert.NotNull(response);
-      var deviceStatusDescriptorsListResult = JsonConvert.DeserializeObject<DeviceStatusDescriptorsListResult>(response);
+      var deviceList = JsonConvert.DeserializeObject<List<DeviceLKSResponseModel>>(response);
 
-      Assert.NotNull(deviceStatusDescriptorsListResult);
-      var deviceList = deviceStatusDescriptorsListResult.DeviceStatusDescriptors.ToList();
+      Assert.NotNull(deviceList);
       Assert.Empty(deviceList);
     }
 
@@ -78,18 +71,18 @@ namespace IntegrationTests.WebApiTests
       var deviceName = $"{CWSDeviceTypeEnum.EC520}-{DIMENSIONS_SERIAL}";
       var response = await ts.GetDeviceLKS(DIMENSIONS_CUSTOMER_UID, deviceName);
       Assert.NotNull(response);
-      var deviceStatusDescriptorSingleResult = JsonConvert.DeserializeObject<DeviceStatusDescriptorSingleResult>(response);
+      var device = JsonConvert.DeserializeObject<DeviceLKSResponseModel>(response);
 
-      Assert.NotNull(deviceStatusDescriptorSingleResult);
-      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, deviceStatusDescriptorSingleResult.DeviceDescriptor.DeviceUid);
-      Assert.Equal(DIMENSIONS_SERIAL, deviceStatusDescriptorSingleResult.DeviceDescriptor.SerialNumber);
-      Assert.Equal(89.9, deviceStatusDescriptorSingleResult.DeviceDescriptor.Latitude);
-      Assert.Equal(34.6, deviceStatusDescriptorSingleResult.DeviceDescriptor.Longitude);
-      Assert.Equal(CWSDeviceTypeEnum.EC520, deviceStatusDescriptorSingleResult.DeviceDescriptor.DeviceType);
-      Assert.Equal(deviceName, deviceStatusDescriptorSingleResult.DeviceDescriptor.DeviceName);
-      Assert.Equal($"DimensionsProject", deviceStatusDescriptorSingleResult.DeviceDescriptor.ProjectName);
-      Assert.NotNull(deviceStatusDescriptorSingleResult.DeviceDescriptor.LastReportedUtc);
-      Assert.True(deviceStatusDescriptorSingleResult.DeviceDescriptor.LastReportedUtc.Value > DateTime.UtcNow.AddDays(-30));
+      Assert.NotNull(device);
+      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, device.deviceUid);
+      Assert.Equal(DIMENSIONS_SERIAL, device.assetSerialNumber);
+      Assert.Equal(89.9, device.lat);
+      Assert.Equal(34.6, device.lon);
+      Assert.Equal(CWSDeviceTypeEnum.EC520, device.assetType);
+      Assert.Equal(deviceName, device.deviceName);
+      Assert.Equal($"DimensionsProject", device.projectName);
+      Assert.NotNull(device.lastReported);
+      Assert.True(device.lastReported.Value > DateTime.UtcNow.AddDays(-30));
     }
 
     [Fact]

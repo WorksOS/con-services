@@ -26,6 +26,7 @@ data:
   cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
   cws_designmanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-designmanager-stg/1.0
   cws_profilesettings_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilesettings-stg/1.0
+  cws_devicegateway_public_v2: https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
 #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"

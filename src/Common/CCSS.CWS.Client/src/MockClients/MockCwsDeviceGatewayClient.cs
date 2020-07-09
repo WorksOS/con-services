@@ -9,6 +9,7 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
@@ -33,41 +34,36 @@ namespace CCSS.CWS.Client.MockClients
       var  deviceLksResponseModel = new DeviceLKSResponseModel()
       {
         TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-        Latitude = 89.3,
-        Longitude = 189.1,
-        DeviceType = CWSDeviceTypeEnum.EC520,
-        SerialNumber = serialNumber,
-        DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-        LastReportedUtc = DateTime.UtcNow.AddDays(-1),
+        lat = 89.3, lon = 189.1,
+        assetType = CWSDeviceTypeEnum.EC520,
+        assetSerialNumber = serialNumber,
+        deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+        lastReported = DateTime.UtcNow.AddDays(-1),
       };
       log.LogDebug($"{nameof(GetDeviceLKS)} Mock: deviceLKSResponseModel {JsonConvert.SerializeObject(deviceLksResponseModel)}");
       return Task.FromResult(deviceLksResponseModel);
     }
 
-    public Task<DeviceLKSListResponseModel> GetDevicesLKSForProject(Guid projectUid, DateTime? earliestOfInterestUtc, IHeaderDictionary customHeaders = null)
+    public Task<List<DeviceLKSResponseModel>> GetDevicesLKSForProject(Guid projectUid, DateTime? earliestOfInterestUtc, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevicesLKSForProject)} Mock: projectUid {projectUid} earliestOfInterestUtc {earliestOfInterestUtc}");
 
       var serialNumber = "12456YU";
-      var deviceLKSListResponseModel = new DeviceLKSListResponseModel()
-      {
-        Devices = new List<DeviceLKSResponseModel>()
+      var devices = new List<DeviceLKSResponseModel>()
         {
           new DeviceLKSResponseModel()
           {
             TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-            Latitude = 89.3,
-            Longitude = 189.1,
-            DeviceType = CWSDeviceTypeEnum.EC520,
-            SerialNumber = serialNumber,
-            DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-            LastReportedUtc = DateTime.UtcNow.AddDays(-1),
+            lat = 89.3, lon = 189.1,
+            assetType = CWSDeviceTypeEnum.EC520,
+            assetSerialNumber = serialNumber,
+            deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+            lastReported = DateTime.UtcNow.AddDays(-1),
           }
-        }
       };
 
-      log.LogDebug($"{nameof(GetDevicesLKSForProject)} Mock: deviceLKSListResponseModel {JsonConvert.SerializeObject(deviceLKSListResponseModel)}");
-      return Task.FromResult(deviceLKSListResponseModel);
+      log.LogDebug($"{nameof(GetDevicesLKSForProject)} Mock: deviceLKSListResponseModel {JsonConvert.SerializeObject(devices)}");
+      return Task.FromResult(devices);
     }
   }
 }

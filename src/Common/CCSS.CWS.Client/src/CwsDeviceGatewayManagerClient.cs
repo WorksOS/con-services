@@ -14,6 +14,8 @@ namespace CCSS.CWS.Client
 
     public override string CacheLifeKey => "CWS_DEVICEGATEWAY_CACHE_LIFE"; // we might want to make this much quicker than the default
 
+    protected const string ROUTE_PREFIX = "/devicegateway";
+
     protected CwsDeviceGatewayManagerClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
      dataCache, serviceResolution)
