@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
