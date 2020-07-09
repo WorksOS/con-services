@@ -2,11 +2,10 @@
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
-using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.Common
 {
-  public class BaseTests<TArgument, TResponse> : IClassFixture<DILoggingFixture>
+  public class BaseTests<TArgument, TResponse>
   {
     protected void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<IComputeFunc<TArgument, TResponse>, TArgument, TResponse>();
 

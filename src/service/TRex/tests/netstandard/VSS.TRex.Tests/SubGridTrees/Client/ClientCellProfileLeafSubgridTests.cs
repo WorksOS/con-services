@@ -1,4 +1,5 @@
-﻿using VSS.TRex.SubGridTrees.Client;
+﻿using Microsoft.Extensions.Logging;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Tests.TestFixtures;
@@ -9,6 +10,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   public class ClientCellProfileLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
+    private static readonly ILogger _log = VSS.TRex.Logging.Logger.CreateLogger<ClientCellProfileLeafSubgridTests>();
+
     [Fact]
     public void Test_NullCells()
     {
@@ -32,7 +35,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     public void DumpToLog()
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellProfile) as ClientCellProfileLeafSubgrid;
-      clientGrid.DumpToLog(clientGrid.ToString());
+      clientGrid.DumpToLog(_log, clientGrid.ToString());
     }
   }
 }

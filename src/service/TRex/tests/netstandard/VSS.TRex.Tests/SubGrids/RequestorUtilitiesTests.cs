@@ -23,6 +23,13 @@ namespace VSS.TRex.Tests.SubGrids
 {
   public class RequestorUtilitiesTests : IClassFixture<RequestorUtilitiesTestsLoggingFixture>
   {
+    private RequestorUtilitiesTestsLoggingFixture _fixture;
+
+    public RequestorUtilitiesTests(RequestorUtilitiesTestsLoggingFixture fixture)
+    {
+      _fixture = fixture;
+    }
+
     [Fact]
     public void Test_RequestorUtilities_Creation()
     {
@@ -49,8 +56,8 @@ namespace VSS.TRex.Tests.SubGrids
       intermediaries.Length.Should().Be(1);
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().BeNull();
-      intermediaries[0].CacheContext.Should().Be(RequestorUtilitiesTestsLoggingFixture.TRexSpatialMemoryCacheContext);
-      intermediaries[0].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      intermediaries[0].CacheContext.Should().Be(_fixture.TRexSpatialMemoryCacheContext);
+      intermediaries[0].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
     }
 
     [Fact]
@@ -77,8 +84,8 @@ namespace VSS.TRex.Tests.SubGrids
       intermediaries.Length.Should().Be(1);
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
-      intermediaries[0].CacheContext.Should().Be(RequestorUtilitiesTestsLoggingFixture.TRexSpatialMemoryCacheContext);
-      intermediaries[0].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+      intermediaries[0].CacheContext.Should().Be(_fixture.TRexSpatialMemoryCacheContext);
+      intermediaries[0].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
     }
 
     [Theory]
@@ -107,7 +114,7 @@ namespace VSS.TRex.Tests.SubGrids
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().BeNull();
         intermediaries[i].CacheContext.Should().NotBeNull();
-        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
 
@@ -144,7 +151,7 @@ namespace VSS.TRex.Tests.SubGrids
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
         intermediaries[i].CacheContext.Should().NotBeNull();
-        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
 
@@ -186,7 +193,7 @@ namespace VSS.TRex.Tests.SubGrids
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().BeEmpty();
         intermediaries[i].CacheContext.Should().NotBeNull();
-        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
 
@@ -234,7 +241,7 @@ namespace VSS.TRex.Tests.SubGrids
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface>{ss2});
         intermediaries[i].CacheContext.Should().NotBeNull();
-        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
 
@@ -289,7 +296,7 @@ namespace VSS.TRex.Tests.SubGrids
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface> { ss1 });
         intermediaries[i].CacheContext.Should().NotBeNull();
-        intermediaries[i].surfaceElevationPatchRequest.Should().Be(RequestorUtilitiesTestsLoggingFixture.SurfaceElevationPatchRequest);
+        intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
 

@@ -18,8 +18,6 @@ namespace VSS.TRex.SubGridTrees.Client
   /// </summary>
   public class ClientProgressiveHeightsLeafSubGrid : ClientLeafSubGrid, IClientProgressiveHeightsLeafSubGrid, IDisposable
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
-
     public static readonly float[,] NullHeights = InitialiseNullHeights();
 
     private static float[,] InitialiseNullHeights()
@@ -172,14 +170,14 @@ namespace VSS.TRex.SubGridTrees.Client
       }
     }
 
-    public override void DumpToLog(string title)
+    public override void DumpToLog(ILogger log, string title)
     {
-      Log.LogDebug(title);
-      Log.LogDebug($"Number of layers: {Heights.Count}");
+      log.LogDebug(title);
+      log.LogDebug($"Number of layers: {Heights.Count}");
 
       for (var i = 0; i < _numberOfHeightLayers; i++)
       {
-        Log.LogDebug("Height layer {i}");
+        log.LogDebug("Height layer {i}");
 
         var sb = new StringBuilder();
 
@@ -193,10 +191,10 @@ namespace VSS.TRex.SubGridTrees.Client
             sb.Append(" ");
           }
 
-          Log.LogDebug($"Row: {j}: {sb}");
+          log.LogDebug($"Row: {j}: {sb}");
         }
 
-        Log.LogDebug("");
+        log.LogDebug("");
       }
     }
 

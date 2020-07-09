@@ -168,7 +168,7 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
       ClearHelpers();
       DIBuilder.Eject();
