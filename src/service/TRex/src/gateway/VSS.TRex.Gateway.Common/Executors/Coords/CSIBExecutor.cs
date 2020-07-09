@@ -6,7 +6,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Productivity3D.Models;
-using VSS.TRex.Gateway.Common.Utilities;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -17,15 +16,13 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
   {
     public CSIBExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler)
       : base(configStore, logger, exceptionHandler)
-    {
-    }
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public CSIBExecutor()
-    {
-    }
+    { }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
@@ -42,7 +39,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      return new CSIBResult(CoordinateSystemUtility.FromCSIBKeyToString(csib));
+      return new CSIBResult(csib);
     }
   }
 }
