@@ -18,8 +18,8 @@ namespace VSS.TRex.Tests.SubGrids
 {
   public class RequestorUtilitiesTestsLoggingFixture : DILoggingFixture, IDisposable
   {
-    public static ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
-    public static ITRexSpatialMemoryCacheContext TRexSpatialMemoryCacheContext;
+    public ISurfaceElevationPatchRequest SurfaceElevationPatchRequest;
+    public ITRexSpatialMemoryCacheContext TRexSpatialMemoryCacheContext;
 
     public RequestorUtilitiesTestsLoggingFixture()
     {
@@ -56,7 +56,7 @@ namespace VSS.TRex.Tests.SubGrids
         .Complete();
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
 
