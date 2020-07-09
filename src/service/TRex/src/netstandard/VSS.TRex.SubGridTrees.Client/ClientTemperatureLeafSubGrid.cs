@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Events.Models;
@@ -6,7 +7,6 @@ using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.Types;
 
@@ -121,10 +121,9 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <summary>
         /// Dumps elevations from subgrid to the log
         /// </summary>
-        /// <param name="title"></param>
-        public override void DumpToLog(string title)
+        public override void DumpToLog(ILogger log, string title)
         {
-            base.DumpToLog(title);
+            base.DumpToLog(log, title);
             /*
              * var
               I, J : Integer;

@@ -351,7 +351,7 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

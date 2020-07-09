@@ -415,7 +415,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return AddDesignToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

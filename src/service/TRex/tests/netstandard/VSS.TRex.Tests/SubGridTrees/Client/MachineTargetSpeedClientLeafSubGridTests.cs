@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Records;
@@ -16,6 +17,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
   /// </summary>
   public class MachineTargetSpeedClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
+    private static readonly ILogger _log = VSS.TRex.Logging.Logger.CreateLogger<MachineTargetSpeedClientLeafSubGridTests>();
+
     [Fact]
     public void Test_NullCells()
     {
@@ -40,7 +43,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     public void DumpToLog()
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.MachineSpeedTarget) as ClientMachineTargetSpeedLeafSubGrid;
-      clientGrid.DumpToLog(clientGrid.ToString());
+      clientGrid.DumpToLog(_log, clientGrid.ToString());
     }
 
 

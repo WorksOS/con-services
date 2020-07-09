@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.TestFixtures
       smootherNullInfillMode = (NullInfillMode)config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int)Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

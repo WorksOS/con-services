@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -162,10 +163,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Dumps CCA values from sub grid to the log
     /// </summary>
-    /// <param name="title"></param>
-    public override void DumpToLog(string title)
+    public override void DumpToLog(ILogger log, string title)
     {
-      base.DumpToLog(title);
+      base.DumpToLog(log, title);
     }
 
     /// <summary>

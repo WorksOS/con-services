@@ -193,144 +193,149 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public async Task<bool> BuildAsync()
     {
-      // Ensure the task is initialised with the request descriptor
-      Task.RequestDescriptor = RequestDescriptor;
-
-      // Ensure the Task grid data type matches the pipeline processor
-      Task.GridDataType = GridDataType;
-
-      // Introduce the task and the pipeline to each other
-      Pipeline.PipelineTask = Task;
-      Task.PipeLine = Pipeline;
-
-      (Pipeline as ISubGridPipelineBase<TSubGridsRequestArgument>).CustomArgumentInitializer = CustomArgumentInitializer;
-
-      // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
-      foreach (var filter in Filters.Filters)
+      try
       {
-        if (filter != null && SurveyedSurfaceExclusionList.Length > 0)
+        // Ensure the task is initialised with the request descriptor
+        Task.RequestDescriptor = RequestDescriptor;
+
+        // Ensure the Task grid data type matches the pipeline processor
+        Task.GridDataType = GridDataType;
+
+        // Introduce the task and the pipeline to each other
+        Pipeline.PipelineTask = Task;
+        Task.PipeLine = Pipeline;
+
+        (Pipeline as ISubGridPipelineBase<TSubGridsRequestArgument>).CustomArgumentInitializer = CustomArgumentInitializer;
+
+        // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
+        foreach (var filter in Filters.Filters)
         {
-          SurveyedSurfaceExclusionList = new Guid[filter.AttributeFilter.SurveyedSurfaceExclusionList.Length];
-          Array.Copy(filter.AttributeFilter.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList,
-            SurveyedSurfaceExclusionList.Length);
-        }
-      }
-
-      // Get the SiteModel for the request
-      SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
-      if (SiteModel == null)
-      {
-        Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
-        return false;
-      }
-
-      SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);
-
-      if (!SpatialExtents.IsValidPlanExtent)
-      {
-        Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // Or there was no data in the model
-        return false;
-      }
-
-      // Get the current production data existence map from the site model
-      ProdDataExistenceMap = SiteModel.ExistenceMap;
-
-      // Obtain the sub grid existence map for the project
-      // Retrieve the existence map for the datamodel
-      OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask
-      {
-        CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.CellSize
-      };
-
-      if (RequireSurveyedSurfaceInformation)
-      {
-        // Obtain local reference to surveyed surfaces (lock free access)
-        var localSurveyedSurfaces = SiteModel.SurveyedSurfaces;
-
-        if (localSurveyedSurfaces != null)
-        {
-          // Construct two filtered surveyed surface lists to act as a rolling pair used as arguments
-          // to the ProcessSurveyedSurfacesForFilter method
-          var filterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-          var filteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-
-          SurveyedSurfacesExcludedViaTimeFiltering = Filters.Filters.Length > 0;
-
-          foreach (var filter in Filters.Filters)
+          if (filter != null && SurveyedSurfaceExclusionList.Length > 0)
           {
-            if (!localSurveyedSurfaces.ProcessSurveyedSurfacesForFilter(DataModelID, filter,
-              filteredSurveyedSurfaces, filterSurveyedSurfaces, OverallExistenceMap))
-            {
-              Response.ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
-              return false;
-            }
-
-            SurveyedSurfacesExcludedViaTimeFiltering &= filterSurveyedSurfaces.Count == 0;
+            SurveyedSurfaceExclusionList = new Guid[filter.AttributeFilter.SurveyedSurfaceExclusionList.Length];
+            Array.Copy(filter.AttributeFilter.SurveyedSurfaceExclusionList, SurveyedSurfaceExclusionList,
+              SurveyedSurfaceExclusionList.Length);
           }
         }
-      }
 
-      OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
-
-      foreach (var filter in Filters.Filters)
-      {
-        if (filter != null)
+        // Get the SiteModel for the request
+        SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+        if (SiteModel == null)
         {
-          if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, filter, OverallExistenceMap))
-          {
-            Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
-            return false;
-          }
-
-          if (filter.AttributeFilter.AnyFilterSelections)
-          {
-            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
-            if (Response.ResultStatus != RequestErrorStatus.OK)
-            {
-              _log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
-              return false;
-            }
-          }
-        }
-      }
-
-      // Adjust the extents we have been given to encompass the spatial extent of the supplied filters (if any)
-      Filters.ApplyFilterAndSubsetBoundariesToExtents(SpatialExtents);
-
-      // If this request involves a relationship with a design then ensure the existence map
-      // for the design is loaded in to memory to allow the request pipeline to confine
-      // sub grid requests that overlay the actual design
-      if (RequestRequiresAccessToDesignFileExistenceMap)
-      {
-        if (CutFillDesign == null || CutFillDesign.DesignID == Guid.Empty)
-        {
-            _log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
-            Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
-            return false;
-        }
-
-        DesignSubGridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
-
-        if (DesignSubGridOverlayMap == null)
-        {
-          _log.LogError($"Failed to request sub grid overlay index for design {CutFillDesign.DesignID} in datamodel {DataModelID}");
-          Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
+          Response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
           return false;
         }
 
-        DesignSubGridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.CellSize;
+        SpatialExtents = SiteModel.GetAdjustedDataModelSpatialExtents(SurveyedSurfaceExclusionList);
+
+        if (!SpatialExtents.IsValidPlanExtent)
+        {
+          Response.ResultStatus = RequestErrorStatus.FailedToRequestDatamodelStatistics; // Or there was no data in the model
+          return false;
+        }
+
+        // Get the current production data existence map from the site model
+        ProdDataExistenceMap = SiteModel.ExistenceMap;
+
+        // Obtain the sub grid existence map for the project
+        // Retrieve the existence map for the datamodel
+        OverallExistenceMap = new SubGridTreeSubGridExistenceBitMask {CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.CellSize};
+
+        if (RequireSurveyedSurfaceInformation)
+        {
+          // Obtain local reference to surveyed surfaces (lock free access)
+          var localSurveyedSurfaces = SiteModel.SurveyedSurfaces;
+
+          if (localSurveyedSurfaces != null)
+          {
+            // Construct two filtered surveyed surface lists to act as a rolling pair used as arguments
+            // to the ProcessSurveyedSurfacesForFilter method
+            var filterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+            var filteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+
+            SurveyedSurfacesExcludedViaTimeFiltering = Filters.Filters.Length > 0;
+
+            foreach (var filter in Filters.Filters)
+            {
+              if (!localSurveyedSurfaces.ProcessSurveyedSurfacesForFilter(DataModelID, filter,
+                filteredSurveyedSurfaces, filterSurveyedSurfaces, OverallExistenceMap))
+              {
+                Response.ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
+                return false;
+              }
+
+              SurveyedSurfacesExcludedViaTimeFiltering &= filterSurveyedSurfaces.Count == 0;
+            }
+          }
+        }
+
+        OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
+
+        foreach (var filter in Filters.Filters)
+        {
+          if (filter != null)
+          {
+            if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, filter, OverallExistenceMap))
+            {
+              Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
+              return false;
+            }
+
+            if (filter.AttributeFilter.AnyFilterSelections)
+            {
+              Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
+              if (Response.ResultStatus != RequestErrorStatus.OK)
+              {
+                _log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
+                return false;
+              }
+            }
+          }
+        }
+
+        // Adjust the extents we have been given to encompass the spatial extent of the supplied filters (if any)
+        Filters.ApplyFilterAndSubsetBoundariesToExtents(SpatialExtents);
+
+        // If this request involves a relationship with a design then ensure the existence map
+        // for the design is loaded in to memory to allow the request pipeline to confine
+        // sub grid requests that overlay the actual design
+        if (RequestRequiresAccessToDesignFileExistenceMap)
+        {
+          if (CutFillDesign == null || CutFillDesign.DesignID == Guid.Empty)
+          {
+            _log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
+            Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
+            return false;
+          }
+
+          DesignSubGridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
+
+          if (DesignSubGridOverlayMap == null)
+          {
+            _log.LogError($"Failed to request sub grid overlay index for design {CutFillDesign.DesignID} in datamodel {DataModelID}");
+            Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
+            return false;
+          }
+
+          DesignSubGridOverlayMap.CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModel.CellSize;
+        }
+
+        // Impose the final restriction on the spatial extents from the client context
+        SpatialExtents.Intersect(OverrideSpatialExtents);
+
+        // Introduce the Request analyzer to the pipeline and spatial extents it requires
+        RequestAnalyser.Pipeline = Pipeline;
+        RequestAnalyser.WorldExtents = SpatialExtents;
+
+        ConfigurePipeline();
+
+        return true;
       }
-
-      // Impose the final restriction on the spatial extents from the client context
-      SpatialExtents.Intersect(OverrideSpatialExtents);
-
-      // Introduce the Request analyzer to the pipeline and spatial extents it requires
-      RequestAnalyser.Pipeline = Pipeline;
-      RequestAnalyser.WorldExtents = SpatialExtents;
-
-      ConfigurePipeline();
-
-      return true;
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception occured in asynchronous pipeline builder");
+        throw;
+      }
     }
 
     /// <summary>
