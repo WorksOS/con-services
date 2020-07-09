@@ -27,8 +27,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// <summary>
         /// Instance method to return the partition mapper singleton instance
         /// </summary>
-        /// <returns></returns>
-        public static IImmutableSpatialAffinityPartitionMap Instance() 
+        public static IImmutableSpatialAffinityPartitionMap Instance()
           => _instance ??= DIContext.Obtain<IImmutableSpatialAffinityPartitionMap>() ?? new ImmutableSpatialAffinityPartitionMap();
     }
 }
