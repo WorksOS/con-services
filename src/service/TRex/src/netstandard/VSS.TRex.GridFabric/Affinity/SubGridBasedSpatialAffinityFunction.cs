@@ -13,8 +13,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Given a cache key, determine which partition the cache item should reside
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
     public override int GetPartition(object key)
     {
       // Pull the sub grid origin location for the sub grid or segment represented in the cache key and calculate the 

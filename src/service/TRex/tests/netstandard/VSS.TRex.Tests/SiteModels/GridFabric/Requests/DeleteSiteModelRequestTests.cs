@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
@@ -20,6 +21,7 @@ using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Requests;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -37,10 +39,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       IgniteMock.Mutable.AddApplicationGridRouting<AddTTMDesignComputeFunc, AddTTMDesignArgument, AddTTMDesignResponse>();
     }
 
-    public DeleteSiteModelRequestTests()
+    public DeleteSiteModelRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
       // This resets all modified content in the Ignite mocks between tests
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+      fixture.ClearDynamicFixtureContent();
+      fixture.SetupFixture();
     }
 
     private static bool IsModelEmpty(ISiteModel model)
@@ -238,7 +241,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
 
-      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the defualt design is present
+      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the default design is present
       {
         model.SiteModelMachineDesigns.Count.Should().Be(1);
         model.SiteModelMachineDesigns[0].Id.Should().Be(0);
@@ -272,11 +275,15 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
+      model.StorageRepresentationToSupply.Should().Be(StorageMutability.Mutable);
+      model.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      model.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
+
       var request = new AddTTMDesignRequest();
       var _ = await request.ExecuteAsync(new AddTTMDesignArgument
       {
         ProjectID = model.ID,
-        DesignDescriptor = new VSS.TRex.Designs.Models.DesignDescriptor(Guid.NewGuid(), "", ""),
+        DesignDescriptor = new DesignDescriptor(Guid.NewGuid(), "", ""),
         Extents = new BoundingWorldExtent3D(0, 0, 1, 1),
         ExistenceMap = new SubGridTreeSubGridExistenceBitMask()
       });
@@ -333,14 +340,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      var csibStream = new MemoryStream();
-      csibStream.Write(new byte[] {70, 71, 72, 73}, 0, 4);
-      csibStream.Position = 0;
-
-      model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
-        CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
-        FileSystemStreamType.CoordinateSystemCSIB,
-        csibStream, null);
+      model.SetCSIB(Encoding.ASCII.GetString(new byte[] {70, 71, 72, 73}));
 
       model.CSIB().Should().NotBeEmpty();
       SaveAndVerifyNotEmpty(model);
@@ -388,7 +388,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       (model?.ExistenceMap?.CountBits() ?? 0).Should().Be(0);
     }
 
-    [Theory(Skip="Flaky unit test,. Tobe investigated")]
+    [Theory]
     [InlineData(DeleteSiteModelSelectivity.All)]
     [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
     public void DeleteModel_WithTagFile(DeleteSiteModelSelectivity selectivity)

@@ -54,7 +54,7 @@ namespace VSS.TRex.SiteModels.Executors
       if (_siteModel.PrimaryStorageProxy.Mutability != StorageMutability.Mutable
       || _siteModel.PrimaryStorageProxy.ImmutableProxy == null)
       {
-        throw new TRexException($"Deletion is only supported in the context of the mutable grid for coordination");
+        throw new TRexException("Deletion is only supported in the context of the mutable grid for coordination");
       }
     }
 
@@ -100,7 +100,6 @@ namespace VSS.TRex.SiteModels.Executors
     /// <summary>
     /// Removes all the event elements for all machines within the site model
     /// </summary>
-    /// <param name="storageProxy"></param>
     private void RemovalAllMachineEvents(IStorageProxy storageProxy, bool exceptOverrideEvents)
     {
       foreach (var machine in _siteModel.Machines)

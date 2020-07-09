@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.X, x.Y, 0.0)).ToList());
 
       var convertedCoords = _convertCoordinates
-        .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ())
+        .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ(), CoreX.Types.ReturnAs.Degrees)
         .ToTRex_XYZ();
 
       // Copy the converted coordinates to the geometry response ready for inclusion in the request result

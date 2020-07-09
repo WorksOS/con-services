@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CoreX.Interfaces;
 using CoreX.Types;
-using CoreX.Wrapper;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Utilities;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Models;
@@ -44,28 +41,28 @@ namespace VSS.TRex.Filters
       {
         if (!filter.SpatialFilter.CoordsAreGrid)
         {
-          var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
+          var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
 
-          XYZ[] LLHCoords;
+          XYZ[] llhCoords;
           // If the filter has a spatial or positional context, then convert the LLH values in the
           // spatial context into the NEE values consistent with the data model.
           if (filter.SpatialFilter.IsSpatial)
           {
-            LLHCoords = new XYZ[filter.SpatialFilter.Fence.NumVertices];
+            llhCoords = new XYZ[filter.SpatialFilter.Fence.NumVertices];
 
             // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
-            for (var FencePointIdx = 0; FencePointIdx < filter.SpatialFilter.Fence.NumVertices; FencePointIdx++)
+            for (var fencePointIdx = 0; fencePointIdx < filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
             {
-              LLHCoords[FencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].X), MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[FencePointIdx].Y));
+              llhCoords[fencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[fencePointIdx].X), MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[fencePointIdx].Y));
             }
 
-            XYZ[] NEECoords;
+            XYZ[] neeCoords;
 
             try
             {
-              NEECoords = DIContext
+              neeCoords = DIContext
               .Obtain<IConvertCoordinates>()
-              .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), InputAs.Radians)
+              .LLHToNEE(siteModel.CSIB(), llhCoords.ToCoreX_XYZ(), InputAs.Radians)
               .ToTRex_XYZ();
             }
             catch
@@ -76,8 +73,8 @@ namespace VSS.TRex.Filters
 
             for (var fencePointIdx = 0; fencePointIdx < filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
             {
-              filter.SpatialFilter.Fence[fencePointIdx].X = NEECoords[fencePointIdx].X;
-              filter.SpatialFilter.Fence[fencePointIdx].Y = NEECoords[fencePointIdx].Y;
+              filter.SpatialFilter.Fence[fencePointIdx].X = neeCoords[fencePointIdx].X;
+              filter.SpatialFilter.Fence[fencePointIdx].Y = neeCoords[fencePointIdx].Y;
             }
 
             // Ensure that the bounding rectangle for the filter fence correctly encloses the newly calculated grid coordinates
@@ -87,15 +84,15 @@ namespace VSS.TRex.Filters
           if (filter.SpatialFilter.IsPositional)
           {
             // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
-            LLHCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY)) };
+            llhCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY)) };
 
-            XYZ[] NEECoords;
+            XYZ[] neeCoords;
 
             try
             {
-              NEECoords = DIContext
+              neeCoords = DIContext
                 .Obtain<IConvertCoordinates>()
-                .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), InputAs.Radians)
+                .LLHToNEE(siteModel.CSIB(), llhCoords.ToCoreX_XYZ(), InputAs.Radians)
                 .ToTRex_XYZ();
             }
             catch
@@ -103,8 +100,8 @@ namespace VSS.TRex.Filters
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
 
-            filter.SpatialFilter.PositionX = NEECoords[0].X;
-            filter.SpatialFilter.PositionY = NEECoords[0].Y;
+            filter.SpatialFilter.PositionX = neeCoords[0].X;
+            filter.SpatialFilter.PositionY = neeCoords[0].Y;
           }
 
           filter.SpatialFilter.CoordsAreGrid = true;
@@ -118,7 +115,7 @@ namespace VSS.TRex.Filters
         {
           var boundaryRequest = new AlignmentDesignFilterBoundaryRequest();
 
-          var BoundaryResult = boundaryRequest.Execute
+          var boundaryResult = boundaryRequest.Execute
           (new AlignmentDesignFilterBoundaryArgument()
           {
             ReferenceDesign = new DesignOffset(filter.SpatialFilter.AlignmentDesignMaskDesignUID, 0),
@@ -128,14 +125,14 @@ namespace VSS.TRex.Filters
             RightOffset = filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble
           });
 
-          if (BoundaryResult.RequestResult != DesignProfilerRequestResult.OK)
+          if (boundaryResult.RequestResult != DesignProfilerRequestResult.OK)
           {
             _log.LogError($"{nameof(PrepareFilterForUse)}: Failed to get boundary for alignment design ID:{filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
 
             return RequestErrorStatus.NoResultReturned;
           }
 
-          filter.SpatialFilter.AlignmentFence = BoundaryResult.Boundary;
+          filter.SpatialFilter.AlignmentFence = boundaryResult.Boundary;
         }
 
         // Is there a surface design to look up

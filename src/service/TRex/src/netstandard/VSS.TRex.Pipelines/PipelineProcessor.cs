@@ -26,10 +26,10 @@ namespace VSS.TRex.Pipelines
   /// </summary>
   public class PipelineProcessor<TSubGridsRequestArgument> : IPipelineProcessor<TSubGridsRequestArgument>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor<TSubGridsRequestArgument>>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<PipelineProcessor<TSubGridsRequestArgument>>();
 
     private IExistenceMaps _existenceMaps;
-    private IExistenceMaps GetExistenceMaps() => _existenceMaps ?? (_existenceMaps = DIContext.Obtain<IExistenceMaps>());
+    private IExistenceMaps GetExistenceMaps() => _existenceMaps ??= DIContext.Obtain<IExistenceMaps>();
 
     public Guid RequestDescriptor;
 
@@ -287,7 +287,7 @@ namespace VSS.TRex.Pipelines
             Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
             if (Response.ResultStatus != RequestErrorStatus.OK)
             {
-              Log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
+              _log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
               return false;
             }
           }
@@ -304,7 +304,7 @@ namespace VSS.TRex.Pipelines
       {
         if (CutFillDesign == null || CutFillDesign.DesignID == Guid.Empty)
         {
-            Log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
+            _log.LogError($"No design provided to cut fill, summary volume or thickness overlay render request for datamodel {DataModelID}");
             Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
             return false;
         }
@@ -313,7 +313,7 @@ namespace VSS.TRex.Pipelines
 
         if (DesignSubGridOverlayMap == null)
         {
-          Log.LogError($"Failed to request sub grid overlay index for design {CutFillDesign.DesignID} in datamodel {DataModelID}");
+          _log.LogError($"Failed to request sub grid overlay index for design {CutFillDesign.DesignID} in datamodel {DataModelID}");
           Response.ResultStatus = RequestErrorStatus.NoDesignProvided;
           return false;
         }
@@ -380,7 +380,7 @@ namespace VSS.TRex.Pipelines
       // Assign the filter set into the pipeline
       Pipeline.FilterSet = Filters;
 
-      Log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
+      _log.LogDebug($"Extents for query against DM={DataModelID}: {SpatialExtents}");
 
       Pipeline.IncludeSurveyedSurfaceInformation = RequireSurveyedSurfaceInformation && !SurveyedSurfacesExcludedViaTimeFiltering;
 
@@ -403,7 +403,7 @@ namespace VSS.TRex.Pipelines
           Pipeline.WaitForCompletion()
             .ContinueWith(x =>
             {
-              Log.LogInformation(x.Result ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
+              _log.LogInformation(x.Result ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
             }).Wait();
         }
 

@@ -530,8 +530,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         ConvertVolumeCalcType(volumeCalcType),
         request.GridPoints != null,
         request.GridPoints?.x1 ?? request.WGS84Points.lon1,
-        request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
+        request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
         AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings),
         AutoMapperUtility.Automapper.Map<LiftSettings>(liftBuildSettings)

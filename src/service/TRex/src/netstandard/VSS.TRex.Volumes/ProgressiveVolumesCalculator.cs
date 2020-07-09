@@ -178,9 +178,8 @@ namespace VSS.TRex.Volumes
 
         if (!await processor.BuildAsync())
         {
-          Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+          Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID} with status {processor.Response.ResultStatus}");
           VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
-
           return false;
         }
 
@@ -188,7 +187,7 @@ namespace VSS.TRex.Volumes
 
         if (processor.Response.ResultStatus != RequestErrorStatus.OK)
         {
-          Log.LogError($"Failed to compute progressive volumes data, for project: {SiteModel.ID}. response: {processor.Response.ResultStatus.ToString()}.");
+          Log.LogError($"Failed to compute progressive volumes data, for project: {SiteModel.ID}. response: {processor.Response.ResultStatus}.");
           VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
           return false;
         }
