@@ -68,11 +68,11 @@ namespace VSS.TRex.GridFabric.Affinity
 
           for (var partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
           {
-            result[partitionIndex].Add(nodes[NumPartitions % nodes.Count]);
+            result[partitionIndex].Add(nodes[partitionIndex % nodes.Count]);
 
             if (traceEnabled)
             {
-              Log.LogTrace($"--> Assigned node:{nodes[NumPartitions % nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
+              Log.LogTrace($"--> Assigned node:{nodes[partitionIndex % nodes.Count].ConsistentId} to partition {partitionIndex}");
             }
           }
         }

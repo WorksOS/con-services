@@ -15,7 +15,7 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Storage for bit flags used for elements such as ProdDataRequested and SurveyedSurfaceDataRequested
     /// </summary>
-    private byte DataRequestFlags;
+    private byte _dataRequestFlags;
 
     /// <summary>
     /// The X ordinate of the cell address
@@ -32,8 +32,8 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public bool ProdDataRequested
     {
-      get => BitFlagHelper.IsBitOn(DataRequestFlags, 0);
-      set => BitFlagHelper.SetBit(ref DataRequestFlags, 0, value);
+      get => BitFlagHelper.IsBitOn(_dataRequestFlags, 0);
+      set => BitFlagHelper.SetBit(ref _dataRequestFlags, 0, value);
     }
 
     /// <summary>
@@ -41,23 +41,23 @@ namespace VSS.TRex.SubGridTrees
     /// </summary>
     public bool SurveyedSurfaceDataRequested
     {
-      get => BitFlagHelper.IsBitOn(DataRequestFlags, 1);
-      set => BitFlagHelper.SetBit(ref DataRequestFlags, 1, value);
+      get => BitFlagHelper.IsBitOn(_dataRequestFlags, 1);
+      set => BitFlagHelper.SetBit(ref _dataRequestFlags, 1, value);
     }
 
-    private static readonly int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
+    private static readonly int _numPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
 
-    public SubGridCellAddress(int AX, int AY)
+    public SubGridCellAddress(int ax, int ay)
     {
-      X = AX;
-      Y = AY;
-      DataRequestFlags = 0;
+      X = ax;
+      Y = ay;
+      _dataRequestFlags = 0;
     }
 
-    public SubGridCellAddress(int AX, int AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested) : this(AX, AY)
+    public SubGridCellAddress(int ax, int ay, bool prodDataRequested, bool surveyedSurfaceDataRequested) : this(ax, ay)
     {
-      ProdDataRequested = AProdDataRequested;
-      SurveyedSurfaceDataRequested = ASurveyedSurfaceDataRequested;
+      ProdDataRequested = prodDataRequested;
+      SurveyedSurfaceDataRequested = surveyedSurfaceDataRequested;
     }
 
     /// <summary>
@@ -70,57 +70,57 @@ namespace VSS.TRex.SubGridTrees
 
 #pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
     /// <summary>
-    /// Constructs a single long quantity that encodes both the X & Y elements of the subgrid address.
+    /// Constructs a single long quantity that encodes both the X & Y elements of the sub grid address.
     /// X occupies the high 32 bits, Y the lower 32 bits
     /// </summary>
     public long ToNormalisedInt64 => ((long)X << 32) | Y;
 #pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
 
     /// <summary>
-    /// Construct a 'normalised' Int64 descriptor for the cell address in terms of the
-    /// leaf subgrid layer that contains the on-the-ground cells that the cell address 
-    /// is specified. The resulting normalised address identifies the subgrid parent that contains 
-    /// that cell address. All cell addresses within that subgrid will return the same normalised address.
+    /// Construct a 'normalized' Int64 descriptor for the cell address in terms of the
+    /// leaf sub grid layer that contains the on-the-ground cells that the cell address
+    /// is specified. The resulting normalized address identifies the sub grid parent that contains
+    /// that cell address. All cell addresses within that sub grid will return the same normalized address.
     /// Note: This cell address is expected to be in terms of the cell at the origin
-    /// of a subgrid of on the ground cells. The result is an int64 with the subgrid
+    /// of a sub grid of on the ground cells. The result is an int64 with the sub rid
     /// origin X and Y transformed into cell-relative indices in the next higher layer in
-    /// the subgrid tree then expressed as a normalised number in the least significant
+    /// the sub grid tree then expressed as a normalized number in the least significant
     /// number of bits in the resultant Int64 return type.
     /// </summary>
     public long ToNormalisedSubgridOriginInt64 => ((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) << ((SubGridTreeConsts.SubGridTreeLevels - 1) * SubGridTreeConsts.SubGridIndexBitsPerLevel)) | (Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
 
     /// <summary>
-    /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the 
+    /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the
     /// X and Y components of the cell address.
     /// </summary>
     public int ToSkipInterleavedDescriptor => (int)((X & 0x4AAAAAAA) | (Y & 0x15555555));
 
     /// <summary>
-    /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 
+    /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the
     /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
+    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalized
     /// origin descriptor.
     /// </summary>
-    public static int ToSpatialPartitionDescriptor(int X, int Y)
+    public static int ToSpatialPartitionDescriptor(int x, int y)
     {
-      return ((X & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((Y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % NumPartitionsPerDataCache;
+      return ((x & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % _numPartitionsPerDataCache;
     }
 
     /// <summary>
-    /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the 
+    /// Constructs a spatial partition descriptor from a cell address that skips and interleaves alternate bits from each of the
     /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
+    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised
     /// origin descriptor.
     /// </summary>
     public int ToSpatialPartitionDescriptor()
     {
-      return ((X & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((Y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % NumPartitionsPerDataCache;
+      return ((X & SubGridTreeConsts.SubGridLocalParentKeyMask) | ((Y & SubGridTreeConsts.SubGridLocalParentKeyMask) >> SubGridTreeConsts.SubGridIndexBitsPerLevel)) % _numPartitionsPerDataCache;
     }
 
     /// <summary>
     /// Constructs a descriptor from a cell address that skips and interleaves alternate bits from each of the 
     /// X and Y components of the cell address with the variation that the cell address is restricted to the address
-    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalised 
+    /// of the parent sub grid that contains it. All cell addresses within that sub grid will return the same normalized
     /// origin descriptor.
     /// </summary>
     public int ToSkipInterleavedSubgridOriginDescriptor => ((X >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x4AAAAAAA) | ((Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel) & 0x15555555);
@@ -128,22 +128,17 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Produce a human readable form of the cell address information
     /// </summary>
-    /// <returns></returns>
     public override string ToString() => $"{X}:{Y}";
 
     /// <summary>
     /// Sets the state of a cell address struct
     /// </summary>
-    /// <param name="AX"></param>
-    /// <param name="AY"></param>
-    /// <param name="AProdDataRequested"></param>
-    /// <param name="ASurveyedSurfaceDataRequested"></param>
-    public void Set(int AX, int AY, bool AProdDataRequested, bool ASurveyedSurfaceDataRequested)
+    public void Set(int ax, int ay, bool prodDataRequested, bool surveyedSurfaceDataRequested)
     {
-      X = AX;
-      Y = AY;
-      ProdDataRequested = AProdDataRequested;
-      SurveyedSurfaceDataRequested = ASurveyedSurfaceDataRequested;
+      X = ax;
+      Y = ay;
+      ProdDataRequested = prodDataRequested;
+      SurveyedSurfaceDataRequested = surveyedSurfaceDataRequested;
     }
   }
 }
