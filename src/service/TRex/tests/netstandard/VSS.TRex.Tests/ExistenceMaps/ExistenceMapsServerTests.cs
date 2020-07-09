@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using FluentAssertions;
 using VSS.TRex.ExistenceMaps.GridFabric.Requests;
 using VSS.TRex.ExistenceMaps.Servers;
-using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Tests.TestFixtures;
