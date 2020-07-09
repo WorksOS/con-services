@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DILoggingFixture : IDisposable
   {
-    public static void ClearDynamicFxtureContent()
+    public new static void ClearDynamicFxtureContent()
     {
     }
 

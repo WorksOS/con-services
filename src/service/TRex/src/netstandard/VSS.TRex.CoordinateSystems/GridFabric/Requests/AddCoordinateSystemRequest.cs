@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Apache.Ignite.Core.Compute;
 using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
 using VSS.TRex.CoordinateSystems.GridFabric.ComputeFuncs;
 using VSS.TRex.CoordinateSystems.GridFabric.Responses;

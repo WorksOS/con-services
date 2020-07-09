@@ -22,19 +22,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="loggerFactory"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="configStore"></param>
     public CoordinateSystemController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<CoordinateSystemController>(), serviceExceptionHandler, configStore)
-    {
-    }
+    { }
 
     /// <summary>
     /// Posts a coordinate system (CS) definition file to a TRex's for validation.
     /// </summary>
-    [Route("api/v1/coordsystem/validation")]
-    [HttpPost]
+    [HttpPost("api/v1/coordsystem/validation")]
     public Task<ContractExecutionResult> ValidateCoordinateSystem([FromBody] CoordinateSystemFileValidationRequest request)
     {
       Log.LogInformation($"{nameof(ValidateCoordinateSystem)}: {Request.QueryString}");
@@ -50,8 +45,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Gets a coordinate system (CS) definition assigned to a TRex's site model/project with a unique identifier.
     /// </summary>
-    [Route("api/v1/projects/{projectUid}/coordsystem")]
-    [HttpGet]
+    [HttpGet("api/v1/projects/{projectUid}/coordsystem")]
     public Task<ContractExecutionResult> GetCoordinateSystem([FromRoute] Guid projectUid)
     {
       Log.LogInformation($"{nameof(GetCoordinateSystem)}: {Request.QueryString}");
@@ -69,8 +63,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Posts a list of coordinates to a TRex's site model/project for conversion.
     /// </summary>
-    [Route("api/v1/coordinateconversion")]
-    [HttpPost]
+    [HttpPost("api/v1/coordinateconversion")]
     public Task<ContractExecutionResult> PostCoordinateConversion([FromBody] CoordinateConversionRequest request)
     {
       Log.LogInformation($"{nameof(PostCoordinateConversion)}: {Request.QueryString}");
@@ -86,8 +79,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Gets a coordinate system CSIB assigned to a TRex's site model/project with a unique identifier.
     /// </summary>
-    [Route("api/v1/projects/{projectUid}/csib")]
-    [HttpGet]
+    [HttpGet("api/v1/projects/{projectUid}/csib")]
     public CSIBResult GetCSIB([FromRoute] Guid projectUid)
     {
       Log.LogInformation($"{nameof(GetCSIB)}: {Request.QueryString}");
@@ -101,6 +93,5 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
           .Build<CSIBExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .Process(request) as CSIBResult);
     }
-
   }
 }

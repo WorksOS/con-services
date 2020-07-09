@@ -32,7 +32,7 @@ namespace CCSS.CWS.Client.MockClients
       var serialNumber = "12456YU";
       var  deviceLksResponseModel = new DeviceLKSResponseModel()
       {
-        DeviceTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
+        TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
         Latitude = 89.3,
         Longitude = 189.1,
         DeviceType = CWSDeviceTypeEnum.EC520,
@@ -55,7 +55,7 @@ namespace CCSS.CWS.Client.MockClients
         {
           new DeviceLKSResponseModel()
           {
-            DeviceTRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
+            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
             Latitude = 89.3,
             Longitude = 189.1,
             DeviceType = CWSDeviceTypeEnum.EC520,

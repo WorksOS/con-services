@@ -80,6 +80,8 @@ namespace CoreX.Wrapper
       return GetCSIBFromDCFileContent(dcStr);
     }
 
+    public static bool ValidateCsibString(string csib) => ValidateCsib(csib);
+
     /// <summary>
     /// Transform an NEE to LLH with variable from and to coordinate type inputs.
     /// </summary>
@@ -193,6 +195,32 @@ namespace CoreX.Wrapper
       }
 
       return _transformer;
+    }
+
+    private static bool ValidateCsib(string csib)
+    {
+      StringBuilder sb = new StringBuilder();
+      byte[] bytes = Encoding.ASCII.GetBytes(csib);
+
+      for (var i = 0; i < bytes.Length; i++)
+      {
+        sb.Append(bytes[i] + " ");
+      }
+
+      string[] blocks = sb.ToString().TrimEnd().Split(' ');
+      sbyte[] data = new sbyte[blocks.Length];
+
+      int index = 0;
+      foreach (string b in blocks)
+      {
+        data[index++] = (sbyte)Convert.ToByte(b);
+      }
+
+      var csmCsibData = new CSMCsibBlobContainer(data);
+      var csFromCSIB = new CSMCoordinateSystemContainer();
+      var csmErrorCode = CsdManagement.csmImportCoordSysFromCsib(csmCsibData, csFromCSIB);
+
+      return csmErrorCode == csmErrorCode.cecSuccess;
     }
 
     private bool _disposed = false;

@@ -22,15 +22,13 @@ namespace VSS.TRex.GridFabric.Affinity
     protected static readonly int NumPartitions = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
 
     /// <summary>
-    /// Return the number of partitions to use for affinity. 
+    /// Return the number of partitions to use for affinity.
     /// </summary>
     public int Partitions => NumPartitions;
     
     /// <summary>
     /// Determine how the nodes in the grid are to be assigned into the partitions configured in the cache
     /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
     public IEnumerable<IEnumerable<IClusterNode>> AssignPartitions(AffinityFunctionContext context)
     {
       // Create the (empty) list of node mappings for the affinity partition assignment
@@ -65,7 +63,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
           if (traceEnabled)
           {
-            Log.LogInformation("Assigning partitions to nodes");
+            Log.LogInformation($"Assigning partitions to {nodes.Count} nodes in {nameof(AffinityFunctionBase)}.{nameof(AssignPartitions)}");
           }
 
           for (var partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
@@ -91,10 +89,10 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Given a cache key, determine which partition the cache item should reside
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
     public virtual int GetPartition(object key)
     {
+      Log.LogWarning($"Base class GetPartition() called in {nameof(AffinityFunctionBase)}");
+
       // No-op in base class
       return 0;
     }
@@ -103,7 +101,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// Remove a node from the topology. There is no special logic required here; the AssignPartitions method should be called again
     /// to reassign the remaining nodes into the partitions
     /// </summary>
-    /// <param name="nodeId"></param>
     public void RemoveNode(Guid nodeId)
     {
       Log.LogInformation($"Removing node {nodeId}");

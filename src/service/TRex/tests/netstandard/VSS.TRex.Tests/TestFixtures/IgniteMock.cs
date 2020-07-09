@@ -315,11 +315,14 @@ namespace VSS.TRex.Tests.TestFixtures
       {
           var task = new Task<bool>(() =>
           {
-              if (mockCacheDictionary.ContainsKey(key))
+              lock (mockCacheDictionary)
               {
-                  mockCacheDictionary.Remove(key);
+                  if (mockCacheDictionary.ContainsKey(key))
+                  {
+                      mockCacheDictionary.Remove(key);
 
-                  return true;
+                      return true;
+                  }
               }
 
               return false;
