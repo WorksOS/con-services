@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
@@ -339,14 +340,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      var csibStream = new MemoryStream();
-      csibStream.Write(new byte[] {70, 71, 72, 73}, 0, 4);
-      csibStream.Position = 0;
-
-      model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
-        CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
-        FileSystemStreamType.CoordinateSystemCSIB,
-        csibStream, null);
+      model.SetCSIB(Encoding.ASCII.GetString(new byte[] {70, 71, 72, 73}));
 
       model.CSIB().Should().NotBeEmpty();
       SaveAndVerifyNotEmpty(model);
