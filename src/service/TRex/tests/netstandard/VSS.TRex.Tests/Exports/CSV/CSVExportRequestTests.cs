@@ -40,8 +40,11 @@ namespace VSS.TRex.Tests.Exports.CSV
       IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
-    public CSVExportRequestTests()
+    public CSVExportRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
+      fixture.ResetDynamicMockedIgniteContent();
+      fixture.SetupFixture();
+
       DILoggingFixture.SetMaxExportRowsConfig(Consts.DEFAULT_MAX_EXPORT_ROWS);
     }
 
