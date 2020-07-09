@@ -30,9 +30,9 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 {
   public class SiteModelRebuilderTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>, IDisposable
   {
-    public SiteModelRebuilderTests()
+    public SiteModelRebuilderTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+      fixture.ResetDynamicMockedIgniteContent();
     }
 
     private static ISiteModelRebuilder CreateBuilder(Guid projectUid, bool archiveTagFiles, TransferProxyType transferProxyType)

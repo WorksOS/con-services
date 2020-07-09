@@ -61,9 +61,9 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
-    public new static void ClearDynamicFxtureContent()
+    public override void ClearDynamicFixtureContent()
     {
-      DITAGFileAndSubGridRequestsFixture.ClearDynamicFxtureContent();
+      base.ClearDynamicFixtureContent();
     }
 
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
@@ -111,8 +111,10 @@ namespace VSS.TRex.Tests.TestFixtures
       };
     }
 
-    public new void SetupFixture()
+    public override void SetupFixture()
     {
+      base.SetupFixture();
+
       var mutableIgniteMock = new IgniteMock_Mutable();
       var immutableIgniteMock = new IgniteMock_Immutable();
 
@@ -173,9 +175,9 @@ namespace VSS.TRex.Tests.TestFixtures
       DIContext.Obtain<IRebuildSiteModelTAGNotifierListener>().StartListening();
     }
 
-    public static void ResetDynamicMockedIgniteContent()
+    public void ResetDynamicMockedIgniteContent()
     {
-      ClearDynamicFxtureContent();
+      ClearDynamicFixtureContent();
 
       // Now that mocked ignite contexts are available, re-inject the proxy cache factories so they take notice of the ignite mocks
       // Note that the dynamic content of the Ignite mock must be instantiated first

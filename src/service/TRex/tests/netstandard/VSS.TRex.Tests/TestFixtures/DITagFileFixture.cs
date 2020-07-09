@@ -34,13 +34,13 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITagFileFixture : DILoggingFixture, IDisposable
   {
-    private static TAGFileBufferQueue _tagFileBufferQueue;
+    private TAGFileBufferQueue _tagFileBufferQueue;
 
-    public new static void ClearDynamicFxtureContent()
+    public override void ClearDynamicFixtureContent()
     {
-      _tagFileBufferQueue = null;
+      base.ClearDynamicFixtureContent();
 
-      DILoggingFixture.ClearDynamicFxtureContent();
+      _tagFileBufferQueue = null;
     }
 
     public static Guid NewSiteModelGuid => Guid.NewGuid();
@@ -76,7 +76,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return converter;
     }
 
-    public static void AddProxyCacheFactoriesToDI()
+    public void AddProxyCacheFactoriesToDI()
     {
       _tagFileBufferQueue = null;
 
@@ -132,8 +132,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Build();
     }
 
-    public new void SetupFixture()
+    public override void SetupFixture()
     {
+      base.SetupFixture();
+
       var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
       var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
 

@@ -24,11 +24,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     long LastUpdateUtcTicks { get; set; }
 
     /// <summary>
-    /// Project being rebuilt
-    /// </summary>
-    public Guid ProjectUID { get; set; }
-
-    /// <summary>
     /// Defines how selective the site model delete operation should be.
     /// Selectivity allows certain portions of a site model to be deleted to help with operations
     /// like rebuilding projects on demand.

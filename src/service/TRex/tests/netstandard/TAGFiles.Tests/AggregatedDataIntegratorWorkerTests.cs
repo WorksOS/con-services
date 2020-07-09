@@ -22,8 +22,8 @@ namespace TAGFiles.Tests
 
     public AggregatedDataIntegratorWorkerTests(DITagFileFixture fixture)
     {
+      fixture.ClearDynamicFixtureContent();
       fixture.SetupFixture();
-      DITagFileFixture.ClearDynamicFxtureContent();
     }
 
     private ISiteModel BuildModel()

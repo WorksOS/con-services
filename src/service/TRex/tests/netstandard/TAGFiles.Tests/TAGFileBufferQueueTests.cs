@@ -6,9 +6,6 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.GridFabric.Servers.Client;
-using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Tests.TestFixtures;
@@ -16,81 +13,72 @@ using Xunit;
 
 namespace TAGFiles.Tests
 {
-    public class TAGFileBufferQueueTests : IClassFixture<DILoggingFixture>
+  public class TAGFileBufferQueueTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-        private static MutableClientServer TAGClientServer;
-        private static IIgnite ignite;
+    private static IIgnite _ignite;
 
-        private static void EnsureServer()
-        {
-            try
-            {
-              ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
-            }
-            catch (Exception)
-            {
-                TAGClientServer = TAGClientServer ?? new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT);
-              ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable);
-            }
-        }
+    private static void EnsureServer()
+    {
+      _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+    }
 
-        [Fact(Skip = "Requires live Ignite node")]
-        public void Test_TAGFileBufferQueue_Creation()
-        {
-            EnsureServer();
+    [Fact]
+    public void Test_TAGFileBufferQueue_Creation()
+    {
+      EnsureServer();
 
-            TAGFileBufferQueue queue = new TAGFileBufferQueue();
-            Assert.NotNull(queue);
-        }
+      var queue = new TAGFileBufferQueue();
+      Assert.NotNull(queue);
+    }
 
-        [Fact(Skip = "Requires live Ignite node")]
-        public void Test_TAGFileBufferQueue_AddingTAGFile()
-        {
-            EnsureServer();
+    [Fact]
+    public void Test_TAGFileBufferQueue_AddingTAGFile()
+    {
+      EnsureServer();
 
-            TAGFileBufferQueue queue = new TAGFileBufferQueue();
-            Assert.NotNull(queue);
+      var queue = new TAGFileBufferQueue();
+      Assert.NotNull(queue);
 
       // Load a TAG file and add it to the queue. Verify the TAG file appears in the cache
 
-            string tagFileName = "TestTAGFile-TAGFile-Read-Stream.tag";
+      var tagFileName = "TestTAGFile-TAGFile-Read-Stream.tag";
 
-            Guid projectID = Guid.NewGuid();
-            Guid assetID = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var assetUid = Guid.NewGuid();
 
-            byte[] tagContent;
-            using (FileStream tagFileStream =
-                new FileStream(Path.Combine("TestData", "TAGFiles", tagFileName),
-                    FileMode.Open, FileAccess.Read))
-            {
-                tagContent = new byte[tagFileStream.Length];
-                tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
-            }
+      byte[] tagContent;
+      using (var tagFileStream =
+        new FileStream(Path.Combine("TestData", "TAGFiles", tagFileName),
+          FileMode.Open, FileAccess.Read))
+      {
+        tagContent = new byte[tagFileStream.Length];
+        tagFileStream.Read(tagContent, 0, (int) tagFileStream.Length);
+      }
 
-            ITAGFileBufferQueueKey tagKey = new TAGFileBufferQueueKey(tagFileName, projectID, assetID);
-            TAGFileBufferQueueItem tagItem = new TAGFileBufferQueueItem
-            {
-                InsertUTC = DateTime.UtcNow,
-                ProjectID = projectID,
-                AssetID = assetID,
-                FileName = tagFileName,
-                Content = tagContent
-            };
+      var tagKey = new TAGFileBufferQueueKey(tagFileName, projectUid, assetUid);
+      var tagItem = new TAGFileBufferQueueItem
+      {
+        InsertUTC = DateTime.UtcNow,
+        ProjectID = projectUid,
+        AssetID = assetUid,
+        FileName = tagFileName,
+        Content = tagContent
+      };
 
-            // Perform the actual add
-            queue.Add(tagKey, tagItem);
+      // Perform the actual add
+      queue.Add(tagKey, tagItem);
 
-            // Read it back from the cache to ensure it was added as expected.
-            var QueueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+      // Read it back from the cache to ensure it was added as expected.
+      var queueCache = _ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
-            TAGFileBufferQueueItem tagItem2 = QueueCache.Get(tagKey);
+      var tagItem2 = queueCache.Get(tagKey);
 
-            Assert.True(tagItem2 != null, "Tag item read back from buffer queue cache was null");
-            Assert.True(tagItem.Content.Length == tagItem2.Content.Length, "Tag content lengths different");
-            Assert.True(tagItem.InsertUTC == tagItem2.InsertUTC, "Tag insert UTCs different");
-            Assert.True(tagItem.AssetID == tagItem2.AssetID, "Tag AssetUIDs different");
-            Assert.True(tagItem.FileName == tagItem2.FileName, "Tag FileNames different");
-            Assert.True(tagItem.ProjectID == tagItem2.ProjectID, "Tag ProjectUIDs different");
-        }
+      Assert.True(tagItem2 != null, "Tag item read back from buffer queue cache was null");
+      Assert.True(tagItem.Content.Length == tagItem2.Content.Length, "Tag content lengths different");
+      Assert.True(tagItem.InsertUTC == tagItem2.InsertUTC, "Tag insert UTCs different");
+      Assert.True(tagItem.AssetID == tagItem2.AssetID, "Tag AssetUIDs different");
+      Assert.True(tagItem.FileName == tagItem2.FileName, "Tag FileNames different");
+      Assert.True(tagItem.ProjectID == tagItem2.ProjectID, "Tag ProjectUIDs different");
     }
+  }
 }

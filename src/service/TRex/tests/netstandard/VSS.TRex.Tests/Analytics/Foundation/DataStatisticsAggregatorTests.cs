@@ -9,7 +9,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
   {
     public new void IncrementCountOfTransition(double value) => base.IncrementCountOfTransition(value);
 
-    public long GetMaximumValue() => base.GetMaximumValue();
+    public new long GetMaximumValue() => base.GetMaximumValue();
   }
 
   public class DataStatisticsAggregatorTests

@@ -25,15 +25,17 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DILoggingFixture : IDisposable
   {
-    public new static void ClearDynamicFxtureContent()
+    public virtual void ClearDynamicFixtureContent()
     {
     }
 
-    private Dictionary<TransferProxyType, IS3FileTransfer> _s3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+    private Dictionary<TransferProxyType, IS3FileTransfer> _s3FileTransferProxies;
 
-    public void SetupFixture()
+    public virtual void SetupFixture()
     {
-      DIBuilder
+       _s3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+
+       DIBuilder
         .New()
         .AddLogging()
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)

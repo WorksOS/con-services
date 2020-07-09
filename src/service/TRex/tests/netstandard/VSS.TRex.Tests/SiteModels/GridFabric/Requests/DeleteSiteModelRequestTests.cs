@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
@@ -41,7 +42,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     public DeleteSiteModelRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
       // This resets all modified content in the Ignite mocks between tests
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ClearDynamicFxtureContent();
+      fixture.ClearDynamicFixtureContent();
       fixture.SetupFixture();
     }
 
@@ -240,7 +241,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
 
-      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the defualt design is present
+      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the default design is present
       {
         model.SiteModelMachineDesigns.Count.Should().Be(1);
         model.SiteModelMachineDesigns[0].Id.Should().Be(0);
@@ -339,14 +340,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      var csibStream = new MemoryStream();
-      csibStream.Write(new byte[] {70, 71, 72, 73}, 0, 4);
-      csibStream.Position = 0;
-
-      model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
-        CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
-        FileSystemStreamType.CoordinateSystemCSIB,
-        csibStream, null);
+      model.SetCSIB(Encoding.ASCII.GetString(new byte[] {70, 71, 72, 73}));
 
       model.CSIB().Should().NotBeEmpty();
       SaveAndVerifyNotEmpty(model);
