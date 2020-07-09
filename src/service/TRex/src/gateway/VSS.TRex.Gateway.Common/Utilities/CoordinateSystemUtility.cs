@@ -7,16 +7,6 @@ namespace VSS.TRex.Gateway.Common.Utilities
 {
   public static class CoordinateSystemUtility
   {
-    public static string FromCSIBKeyToString(string csibKey)
-    {
-      var byteArray = FromCSIBKeyToBytes(csibKey);
-
-      if (byteArray == null)
-        return string.Empty;
-
-      return Convert.ToBase64String(byteArray);
-    }
-
     public static byte[] FromCSIBKeyToBytes(string csibKey)
     {
       const string NO_KEY = "-1";
