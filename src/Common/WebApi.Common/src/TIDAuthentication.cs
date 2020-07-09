@@ -13,6 +13,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Entitlements.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
 
@@ -211,7 +212,7 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// Do we need to validate that that the user is entitled to make the request
     /// </summary>
-    public virtual bool RequireEntitlementValidation(HttpContext context) => true;
+    public virtual bool RequireEntitlementValidation(HttpContext context) => store.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_SERVICES_CONFIG_KEY, true);
 
     /// <summary>
     /// Creates a TID principal. Override in a service to create custom service principals.
