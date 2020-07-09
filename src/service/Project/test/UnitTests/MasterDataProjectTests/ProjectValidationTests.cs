@@ -74,7 +74,7 @@ namespace VSS.MasterData.ProjectTests
 
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<bool>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       await ProjectDataValidator.ValidateProjectName(_customerUid, _userUid, projectName, request.ProjectUid,
         _log, ServiceExceptionHandler, cwsProjectClient.Object, _customHeaders);
@@ -99,7 +99,7 @@ namespace VSS.MasterData.ProjectTests
         }
       };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<bool>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       await ProjectDataValidator.ValidateProjectName(_customerUid, _userUid, projectName, request.ProjectUid,
         _log, ServiceExceptionHandler, cwsProjectClient.Object, _customHeaders);
@@ -123,7 +123,7 @@ namespace VSS.MasterData.ProjectTests
         }
       };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<bool>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, _userUid, projectName, request.ProjectUid,
@@ -148,7 +148,7 @@ namespace VSS.MasterData.ProjectTests
         }
       };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<bool>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, _userUid, projectName, request.ProjectUid,
@@ -175,7 +175,7 @@ namespace VSS.MasterData.ProjectTests
         }
       };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<bool>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var ex = await Assert.ThrowsAsync<ServiceException>(
         () => ProjectDataValidator.ValidateProjectName(_customerUid, _userUid, projectName, request.ProjectUid,

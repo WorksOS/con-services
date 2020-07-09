@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization;
@@ -36,17 +37,19 @@ namespace CCSS.CWS.Client
     ///   Cache to include userUid as different users have access to a different project set
     ///   cws team to generate a detailed list in 1 shot CCSSSCON-409
     /// </summary>
-    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true, CwsProjectType? type = null, ProjectStatus? status = null, IHeaderDictionary customHeaders = null)
+    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true, 
+      CwsProjectType? type = null, ProjectStatus? status = null, bool onlyAdmin = false, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: customerUid {customerUid} userUid {userUid}");
 
       var projectSummaryListResponseModel = await GetProjectsForMyCustomer(customerUid, userUid, includeSettings, type, status, customHeaders);
-      var projectDetailListResponseModel = new ProjectDetailListResponseModel();
-      foreach (var project in projectSummaryListResponseModel.Projects)
+      var projects = onlyAdmin ? 
+        projectSummaryListResponseModel.Projects.Where(p => p.UserProjectRole == UserProjectRoleEnum.Admin) :
+        projectSummaryListResponseModel.Projects;
+      var projectDetailListResponseModel = new ProjectDetailListResponseModel
       {
-        var details = GetProjectDetailsFromSummary(project, customerUid);
-        projectDetailListResponseModel.Projects.Add(details);
-      }
+        Projects = projects.Select(p => GetProjectDetailsFromSummary(p, customerUid)).ToList()
+      };
 
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: projectSummaryListResponseModel {JsonConvert.SerializeObject(projectSummaryListResponseModel)}");
       return projectDetailListResponseModel;
@@ -58,7 +61,7 @@ namespace CCSS.CWS.Client
     ///   Cache to include userUid as different users have access to a different project set
     ///   This ONLY works with a user token.
     /// </summary>
-    public async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true, CwsProjectType? type = null, ProjectStatus? status = null, IHeaderDictionary customHeaders = null)
+    private async Task<ProjectSummaryListResponseModel> GetProjectsForMyCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true, CwsProjectType? type = null, ProjectStatus? status = null, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForMyCustomer)}: customerUid {customerUid} userUid {userUid}");
 

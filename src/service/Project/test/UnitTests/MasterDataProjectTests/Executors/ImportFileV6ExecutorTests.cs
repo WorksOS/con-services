@@ -143,7 +143,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var projectList = CreateProjectListModel(_customerTrn, _projectTrn);
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(ps => ps.GetMyProject(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(project);
-      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
+      cwsProjectClient.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<bool>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(projectList);
 
       var scheduler = new Mock<ISchedulerProxy>();
       scheduler.Setup(s => s.ScheduleVSSJob(It.IsAny<JobRequest>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(new ScheduleJobResult());
