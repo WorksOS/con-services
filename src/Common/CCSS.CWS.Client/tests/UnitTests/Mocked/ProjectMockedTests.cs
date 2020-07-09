@@ -68,33 +68,6 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     }
 
     [Fact]
-    public void GetProjectsForMyAccount()
-    {
-      var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
-
-      var projectSummaryListResponseModel = new ProjectSummaryListResponseModel();
-      projectSummaryListResponseModel.Projects.Add(new ProjectSummaryResponseModel() {ProjectTRN = TRNHelper.MakeTRN(projectUid), UserProjectRole = UserProjectRoleEnum.Admin}
-      );
-      var route = $"/accounts/{TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT)}/projects";
-      var expectedUrl = $"{baseUrl}{route}?from=0&limit=20";
-      mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
-        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
-
-      MockUtilities.TestRequestSendsCorrectJson("Get projects for account", mockWebRequest, null, expectedUrl, HttpMethod.Get, projectSummaryListResponseModel, async () =>
-      {
-        var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
-        var result = await client.GetProjectsForMyCustomer(customerUid, userUid);
-
-        Assert.NotNull(result);
-        Assert.Single(result.Projects);
-        Assert.Equal(projectUid.ToString(), result.Projects[0].ProjectId);
-        return true;
-      });
-    }
-
-    [Fact]
     public void GetMyProject()
     {
       var customerUid = Guid.NewGuid();
