@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGridTrees.Client;
@@ -14,6 +15,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   public class ClientCellProfileAllPassesLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
+    private static readonly ILogger _log = VSS.TRex.Logging.Logger.CreateLogger<ClientCellProfileAllPassesLeafSubgridTests>();
+
     [Fact]
     public void Test_NullCells()
     {
@@ -61,7 +64,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     public void DumpToLog()
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.CellPasses) as ClientCellProfileAllPassesLeafSubgrid;
-      clientGrid.DumpToLog(clientGrid.ToString());
+      clientGrid.DumpToLog(_log, clientGrid.ToString());
     }
 
     [Fact]
