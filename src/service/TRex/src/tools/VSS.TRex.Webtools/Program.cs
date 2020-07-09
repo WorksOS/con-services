@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Serilog.Extensions.Logging;
 using VSS.Serilog.Extensions;
 
@@ -30,7 +30,9 @@ namespace VSS.TRex.Webtools
       try
       {
         EnsureAssemblyDependenciesAreLoaded();
-        BuildWebHost(args).Run();
+        CreateHostBuilder(args)
+          .Build()
+          .Run();
       }
       catch (Exception e)
       {
@@ -39,17 +41,16 @@ namespace VSS.TRex.Webtools
       }
     }
 
-    public static IWebHost BuildWebHost(string[] args)
-    {
-      return WebHost.CreateDefaultBuilder(args)
-                    .ConfigureLogging((hostContext, loggingBuilder) =>
-                    {
-                      loggingBuilder.AddProvider(
-                        p => new SerilogLoggerProvider(
-                          SerilogExtensions.Configure()));
-                    })
-                    .UseStartup<Startup>()
-                    .Build();
-    }
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+      Host.CreateDefaultBuilder(args)
+      .ConfigureWebHostDefaults(webBuilder =>
+      {
+        webBuilder.ConfigureLogging((hostContext, loggingBuilder) =>
+        {
+          loggingBuilder.AddProvider(
+            p => new SerilogLoggerProvider(SerilogExtensions.Configure()));
+        })
+        .UseStartup<Startup>();
+      });
   }
 }
