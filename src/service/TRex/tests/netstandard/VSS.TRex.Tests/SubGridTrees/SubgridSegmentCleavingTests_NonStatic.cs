@@ -18,7 +18,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-    public class SubgridSegmentCleavingTests_NonStatic : IClassFixture<DILoggingFixture>
+    public class SubgridSegmentCleavingTests_NonStatic : IClassFixture<DITagFileFixture>
   {
         private DateTime startTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 0, 0, 0), DateTimeKind.Utc);
 

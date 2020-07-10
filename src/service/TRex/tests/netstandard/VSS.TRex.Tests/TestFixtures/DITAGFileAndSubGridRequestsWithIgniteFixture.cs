@@ -7,7 +7,10 @@ using CoreX.Wrapper;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
@@ -164,6 +167,11 @@ namespace VSS.TRex.Tests.TestFixtures
 
         // Register the listener for site model rebuild TAG file processing notifications
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener>(new RebuildSiteModelTAGNotifierListener()))
+
+        //**** Web gateway related dependencies
+        .Add(x => x.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>())
+        .Add(x => x.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>())
+        //**** Web gateway related dependencies
 
         .Complete();
 
