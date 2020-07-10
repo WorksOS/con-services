@@ -45,7 +45,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
 
       // Process vertices...
       for (var i = 0; i < geometry.Vertices.Length; i++)
-        for (var n = 0; i < geometry.Vertices[i].Length; n++)
+        for (var n = 0; n < geometry.Vertices[i].Length; n++)
           AddPoint(geometry.Vertices[i][n][0], geometry.Vertices[i][n][1], centerlinePoints);
      
       // Process arcs as series of vertices...
