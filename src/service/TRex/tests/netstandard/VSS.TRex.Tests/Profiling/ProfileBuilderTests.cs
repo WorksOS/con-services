@@ -6,13 +6,14 @@ using VSS.TRex.DI;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.Profiling.Models;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Profiling
 {
-  public class ProfileBuilderTests_Fixture : IDisposable
-  {
+  public class ProfileBuilderTests_Fixture : IClassFixture<DILoggingFixture>, IDisposable
+  { 
     public ProfileBuilderTests_Fixture()
     {
         var factory = new Mock<IProfilerBuilderFactory<ProfileCell>>();
