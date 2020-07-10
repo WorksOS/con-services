@@ -3,11 +3,12 @@ using FluentAssertions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Designs
 {
-  public class DesignClassFactoryTests
+  public class DesignClassFactoryTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Creation()
