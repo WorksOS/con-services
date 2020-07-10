@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;
@@ -22,6 +21,14 @@ namespace CoreX.Wrapper.UnitTests.Tests
     public void GetCSIBFromDCFile_should_return_expected_CSIB_string()
     {
       var csibStr = CoreX.GetCSIBFromDCFile(DCFile.GetFilePath(DCFile.UTM_32_NN1954_08));
+
+      csibStr.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void GetCSIBFromDCFileContent_should_decode_base64_DC_file()
+    {
+      var csibStr = CoreX.GetCSIBFromDCFileContent(TestConsts.DIMENSIONS_2012_DC_FILE_BASE64);
 
       csibStr.Should().NotBeNullOrEmpty();
     }
