@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Complete();
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

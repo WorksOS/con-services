@@ -26,6 +26,14 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Fact]
+    public void GetCSIBFromDCFileContent_should_decode_base64_DC_file()
+    {
+      var csibStr = CoreX.GetCSIBFromDCFileContent(TestConsts.DIMENSIONS_2012_DC_FILE_BASE64);
+
+      csibStr.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
     public void GeodeticX_geoCreateTransformer_should_fail_When_CSIB_is_invalid()
     {
       var ex = Record.Exception(() => new CoreX().TransformLLHToNEE(

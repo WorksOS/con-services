@@ -805,13 +805,13 @@ Result = false;
 
 // Read its content from storage 
         var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, SubGridExistenceMapFileName,
-          FileSystemStreamType.SubGridExistenceMap, out var MS);
+          FileSystemStreamType.SubGridExistenceMap, out var ms);
 
-        if (MS != null)
+        if (ms != null)
         {
-          using (MS)
+          using (ms)
           {
-            localExistenceMap.FromStream(MS);
+            localExistenceMap.FromStream(ms);
           }
         }
         else
@@ -883,30 +883,30 @@ Result = false;
     /// datamodel, excepting those identified in the SurveyedSurfaceExclusionList
     /// </summary>
     /// <returns></returns>
-    public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
+    public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] surveyedSurfaceExclusionList)
     {
 // Start with the data model extents
-      var SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
+      var spatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
       if ((SurveyedSurfaces?.Count ?? 0) > 0)
       {
 // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
-        if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
+        if (surveyedSurfaceExclusionList == null || surveyedSurfaceExclusionList.Length == 0)
         {
           foreach (var surveyedSurface in SurveyedSurfaces)
-            SpatialExtents.Include(surveyedSurface.Extents);
+            spatialExtents.Include(surveyedSurface.Extents);
         }
         else
         {
           foreach (var surveyedSurface in SurveyedSurfaces)
           {
-            if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
-              SpatialExtents.Include(surveyedSurface.Extents);
+            if (surveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
+              spatialExtents.Include(surveyedSurface.Extents);
           }
         }
       }
 
-      return SpatialExtents;
+      return spatialExtents;
     }
 
     /// <summary>

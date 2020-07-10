@@ -15,8 +15,6 @@ namespace VSS.TRex.SubGridTrees.Client
   /// </summary>
   public class ClientHeightLeafSubGrid : GenericClientLeafSubGrid<float>, IClientHeightLeafSubGrid
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
-
     /// <summary>
     /// Surveyed surface map records which cells hold cell pass heights that were derived
     /// from a surveyed surface
@@ -249,10 +247,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Dumps Height values from sub grid to the log
     /// </summary>
-    /// <param name="title"></param>
-    public override void DumpToLog(string title)
+    public override void DumpToLog(ILogger log, string title)
     {
-      base.DumpToLog(title);
+      base.DumpToLog(log, title);
     }
   }
 }

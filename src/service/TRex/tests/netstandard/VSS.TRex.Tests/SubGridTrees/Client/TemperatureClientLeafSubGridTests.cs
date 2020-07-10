@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Filters.Models;
@@ -13,6 +14,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   public class TemperatureClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
+    private static readonly ILogger _log = VSS.TRex.Logging.Logger.CreateLogger<TemperatureClientLeafSubGridTests>();
+
     [Fact]
     public void Test_NullCells()
     {
@@ -36,7 +39,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     public void DumpToLog()
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Temperature) as ClientTemperatureLeafSubGrid;
-      clientGrid.DumpToLog(clientGrid.ToString());
+      clientGrid.DumpToLog(_log, clientGrid.ToString());
     }
 
     [Fact]

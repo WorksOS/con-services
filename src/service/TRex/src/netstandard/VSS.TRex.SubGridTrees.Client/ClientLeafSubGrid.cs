@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
@@ -15,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Client
 {
   /// <summary>
   /// ClientLeafSubGrid is a local base class for sub grid tree
-  /// leaf sub grid derivatives. This class defines support for assigning filtered
+  /// leaf sub grid derivatives. This class defines support for assigning 
   /// values to cells in the grid, and also adds a cache map to it. The cache
   /// map records which cells in the sub grid contain information that has been
   /// retrieved from the server.
@@ -219,7 +220,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Dumps the contents of this client leaf sub grid into the log in a human readable form
     /// </summary>
-    public abstract void DumpToLog(string title);
+    public abstract void DumpToLog(ILogger log, string title);
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
