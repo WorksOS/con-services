@@ -555,9 +555,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// Processes all available tasks in the TasksToProcess list up to the maximum number the worker will accept 
     /// for any single epoch of processing TAG files.
     /// </summary>
-    /// <param name="processedTasks"></param>
-    /// <param name="numTagFilesRepresented"></param>
-    /// <returns></returns>
     public bool ProcessTask(List<AggregatedDataIntegratorTask> processedTasks, int numTagFilesRepresented)
     {
       long totalPassCountInAggregation = 0;

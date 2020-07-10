@@ -117,7 +117,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Takes a list of TAG files and constructs an ephemeral site model that may be queried
     /// </summary>
-    /// <returns></returns>
     public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks, 
       bool callTaskProcessingComplete = true,
       bool convertToImmutableRepresentation = true,
@@ -166,6 +165,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       targetSiteModel.Should().NotBe(null);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
+      targetSiteModel.SiteModelExtent.IsValidPlanExtent.Should().BeTrue();
 
       // Modify the site model to switch from the mutable to immutable cell pass representation for read requests
       if (convertToImmutableRepresentation)
@@ -345,7 +345,6 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Takes a site model and modifies its internal representation to be the immutable form
     /// </summary>
-    /// <param name="siteModel"></param>
     public static void ConvertSiteModelToImmutable(ISiteModel siteModel)
     {
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
