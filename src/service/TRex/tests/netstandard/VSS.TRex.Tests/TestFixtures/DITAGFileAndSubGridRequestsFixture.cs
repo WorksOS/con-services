@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -108,6 +110,7 @@ namespace VSS.TRex.Tests.TestFixtures
         // partial responses of sub grids
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
+        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
         .Complete();
     }
 
