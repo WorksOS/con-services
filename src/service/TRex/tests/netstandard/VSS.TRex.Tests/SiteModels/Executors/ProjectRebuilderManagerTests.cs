@@ -5,8 +5,6 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Executors;
-using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
-using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Interfaces;
@@ -19,6 +17,9 @@ namespace VSS.TRex.Tests.SiteModels.Executors
   {
     public SiteModelRebuilderManagerTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
+      DIContext.Obtain<ISiteModelRebuilderManager>().AbortAll();
+
+      fixture.ClearDynamicFixtureContent();
       fixture.ResetDynamicMockedIgniteContent();
     }
 

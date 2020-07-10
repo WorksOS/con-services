@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -98,7 +97,7 @@ namespace VSS.TRex.SurveyedSurfaces
       var ss = Load(siteModelUid);
       var newSurveyedSurface = ss.AddSurveyedSurfaceDetails(designDescriptor.DesignID, designDescriptor, asAtDate, extents);
 
-      // Store the existance map into the cache
+      // Store the existence map into the cache
       using var stream = existenceMap.ToStream();
       var fileName = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, designDescriptor.DesignID);
       if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, fileName,
@@ -156,15 +155,15 @@ namespace VSS.TRex.SurveyedSurfaces
       // First remove all the existence maps associated with the surveyed surfaces
       foreach(var surveyedSurface in Load(siteModelUid))
       {
-        FileSystemErrorStatus fsresult;
+        FileSystemErrorStatus fsResult;
         var filename = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, surveyedSurface.ID);
-        if ((fsresult = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
+        if ((fsResult = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
         {
-          _log.LogWarning($"Unable to remove existance map for surveyed surface {surveyedSurface.ID}, filename = {filename}, in project {siteModelUid} with result: {fsresult}");
+          _log.LogWarning($"Unable to remove existence map for surveyed surface {surveyedSurface.ID}, filename = {filename}, in project {siteModelUid} with result: {fsResult}");
         }
       }
 
-      // Then remove the surveyd surface list stream itself
+      // Then remove the surveyed surface list stream itself
       var result = storageProxy.RemoveStreamFromPersistentStore(siteModelUid, FileSystemStreamType.Designs, SURVEYED_SURFACE_STREAM_NAME);
 
       if (result != FileSystemErrorStatus.OK)

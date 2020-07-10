@@ -173,7 +173,7 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

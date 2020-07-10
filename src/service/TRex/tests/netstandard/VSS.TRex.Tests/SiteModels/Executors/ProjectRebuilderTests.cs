@@ -32,6 +32,7 @@ namespace VSS.TRex.Tests.SiteModels.Executors
   {
     public SiteModelRebuilderTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
+      fixture.ClearDynamicFixtureContent();
       fixture.ResetDynamicMockedIgniteContent();
     }
 

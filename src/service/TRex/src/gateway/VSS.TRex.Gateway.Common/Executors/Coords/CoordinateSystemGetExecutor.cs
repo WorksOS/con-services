@@ -19,15 +19,13 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
   {
     public CoordinateSystemGetExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler)
       : base(configStore, logger, exceptionHandler)
-    {
-    }
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public CoordinateSystemGetExecutor()
-    {
-    }
+    { }
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -40,11 +38,13 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
       var csib = siteModel.CSIB();
 
-      if (csib ==  string.Empty)
+      if (csib == string.Empty)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
 
-      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().CSIBContentToCSD(csib);
+      var coordinateSystemId = await DIContext.Obtain<ITRexConvertCoordinates>().CSIBContentToCoordinateServiceId(csib);
+
+      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().CoordinateSystemIdToCSD(coordinateSystemId);
 
       if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

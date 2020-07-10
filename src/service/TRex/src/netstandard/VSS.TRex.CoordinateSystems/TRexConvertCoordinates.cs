@@ -16,18 +16,16 @@ namespace VSS.TRex.CoordinateSystems
   /// Implements a set of capabilities for coordinate conversion between WGS and grid contexts, and
   /// conversion of coordinate system files into CSIB (Coordinate System Information Block) strings.
   /// </summary>
-  /// <remarks>
-  /// While these methods can be called directly, it's recommended to utilize the static ConvertCoordinates helper.
-  /// </remarks>
   public class TRexConvertCoordinates : ITRexConvertCoordinates
   {
-    private static readonly object lockObject = new object();
+    private readonly CoordinatesServiceClient _serviceClient;
+    private static readonly object _lockObject = new object();
 
     public TRexConvertCoordinates()
     {
       var configurationStore = DIContext.Obtain<IConfigurationStore>();
 
-      lock (lockObject)
+      lock (_lockObject)
       {
         DIBuilder
           .Continue()
@@ -43,21 +41,16 @@ namespace VSS.TRex.CoordinateSystems
           .Complete();
       }
 
-      serviceClient = DIContext.Obtain<CoordinatesServiceClient>();
+      _serviceClient = DIContext.Obtain<CoordinatesServiceClient>();
     }
 
-    private readonly CoordinatesServiceClient serviceClient;
+    /// <inheritdoc/>
+    public Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent) => _serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent);
 
-    /// <summary>
-    /// Takes the content of a DC file as a byte array and uses the Trimble Coordinates Service to convert
-    /// it into a coordinate system definition response object.
-    /// </summary>
-    public Task<CoordinateSystemResponse> DCFileContentToCSD(string filePath, byte[] fileContent) => serviceClient.ImportCSDFromDCContentAsync(filePath, fileContent);
+    /// <inheritdoc/>
+    public Task<string> CSIBContentToCoordinateServiceId(string csib) => _serviceClient.ImportCoordinateServiceIdFromCSIBAsync(csib);
 
-    /// <summary>
-    /// Takes the CSIB string and uses the Trimble Coordinates Service to convert
-    /// it into a coordinate system definition response object.
-    /// </summary>
-    public Task<CoordinateSystemResponse> CSIBContentToCSD(string csib) => serviceClient.ImportCSDFromCSIBAsync(csib);
+    /// <inheritdoc/>
+    public Task<CoordinateSystemResponse> CoordinateSystemIdToCSD(string csib) => _serviceClient.ImportCSDFromCoordinateySystemId(csib);
   }
 }

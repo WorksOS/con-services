@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using CoreX.Models;
 using CoreX.Types;
+using CoreX.Wrapper.Extensions;
 using CoreX.Wrapper.Types;
 using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
@@ -54,6 +55,15 @@ namespace CoreX.Wrapper
     /// </summary>
     public static string GetCSIBFromDCFileContent(string fileContent)
     {
+      static bool IsBase64String(string base64) => 
+        Convert.TryFromBase64String(base64, new Span<byte>(new byte[base64.Length]), out var bytesParsed);
+
+      // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
+      if (IsBase64String(fileContent))
+      {
+        fileContent = fileContent.DecodeFromBase64();
+      }
+
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
       // Slow, takes 2.5 seconds, need to speed up somehow?
