@@ -78,7 +78,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
       var coordinates = boundaries.Boundaries.SelectMany(x => x.Boundary.Points).Select(pt => new XYZ(pt.X, pt.Y,0.0)).ToArray();
 
       // Perform conversion
-      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ());
+      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ(), CoreX.Types.ReturnAs.Degrees);
 
       // Recopy converted coordinates into boundaries
       var indexer = 0;

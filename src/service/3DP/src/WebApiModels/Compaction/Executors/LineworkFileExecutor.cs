@@ -45,9 +45,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var request = new LineworkRequest(dxfRequest).Validate();
 
-      return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
-        ? await ProcessForTRex(request)
-        : ProcessForRaptor(request);
+      //return UseTRexGateway("ENABLE_TREX_GATEWAY_LINEWORKFILE")
+      //  ? await ProcessForTRex(request)
+      //  : ProcessForRaptor(request);
+
+      return await ProcessForTRex(request);
     }
 
 
