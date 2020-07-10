@@ -1,8 +1,8 @@
-﻿using System;
-using CoreX.Interfaces;
+﻿using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace CoreX.Wrapper
 {
@@ -16,15 +16,12 @@ namespace CoreX.Wrapper
   public class ConvertCoordinates : IConvertCoordinates
   {
     private readonly CoreX _coreX;
+    private readonly ILogger _log;
 
-    public ConvertCoordinates(CoreX coreX)
+    public ConvertCoordinates(ILoggerFactory loggerFactory)
     {
-      if (coreX == null)
-      {
-        throw new InvalidOperationException("CoreX cannot be null");
-      }
-
-      _coreX = coreX;
+      _log = loggerFactory.CreateLogger(GetType().Name);
+      _coreX = new CoreX();
     }
 
     public ConvertCoordinates()
@@ -36,6 +33,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc />
     public NEE LLHToNEE(string csib, LLH coordinates, InputAs inputAs)
     {
+      _log.LogDebug($"{nameof(LLHToNEE)}: LLH: {coordinates}  InputAs: {inputAs}");
+
       if (inputAs == InputAs.Degrees)
       {
         coordinates.Latitude = coordinates.Latitude.DegreesToRadians();
@@ -48,6 +47,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc />
     public NEE[] LLHToNEE(string csib, LLH[] coordinates, InputAs inputAs)
     {
+      _log.LogDebug($"{nameof(LLHToNEE)}: LLH[]: {string.Concat(coordinates)}  InputAs: {inputAs}");
+
       if (inputAs == InputAs.Degrees)
       {
         for (var i = 0; i < coordinates.Length; i++)
@@ -64,6 +65,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc />
     public XYZ LLHToNEE(string csib, XYZ coordinates, InputAs inputAs)
     {
+      _log.LogDebug($"{nameof(LLHToNEE)}: XYZ: {coordinates}  InputAs: {inputAs}");
+
       if (inputAs == InputAs.Degrees)
       {
         coordinates.X = coordinates.X.DegreesToRadians();
@@ -84,6 +87,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ[] LLHToNEE(string csib, XYZ[] coordinates, InputAs inputAs)
     {
+      _log.LogDebug($"{nameof(LLHToNEE)}: XYZ[]: {string.Concat(coordinates)}  InputAs: {inputAs}");
+
       if (inputAs == InputAs.Degrees)
       {
         for (var i = 0; i < coordinates.Length; i++)
@@ -119,6 +124,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ NEEToLLH(string csib, XYZ coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      _log.LogDebug($"{nameof(NEEToLLH)}: XYZ: {coordinates}  ReturnAs: {returnAs}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -135,6 +142,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ[] NEEToLLH(string csib, XYZ[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      _log.LogDebug($"{nameof(NEEToLLH)}: XYZ[]: {string.Concat(coordinates)}  ReturnAs: {returnAs}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -159,6 +168,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public LLH NEEToLLH(string csib, NEE coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      _log.LogDebug($"{nameof(NEEToLLH)}: NEE: {coordinates}  ReturnAs: {returnAs}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -175,6 +186,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public LLH[] NEEToLLH(string csib, NEE[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      _log.LogDebug($"{nameof(NEEToLLH)}: NEE[]: {string.Concat(coordinates)}  ReturnAs: {returnAs}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -199,6 +212,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point)
     {
+      _log.LogDebug($"{nameof(WGS84ToCalibration)}: wgs84Point: {wgs84Point}");
+
       var nee = _coreX
         .TransformLLHToNEE(csib, new LLH
         {
@@ -219,6 +234,8 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points)
     {
+      _log.LogDebug($"{nameof(WGS84ToCalibration)}: wgs84Points[]: {string.Concat<WGS84Point>(wgs84Points)}");
+
       var neeCoords = _coreX
         .TransformLLHToNEE(csib, wgs84Points.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 

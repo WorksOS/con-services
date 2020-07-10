@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;

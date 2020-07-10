@@ -12,5 +12,7 @@
       Lon = lon;
       Height = height;
     }
+
+    public override string ToString() => $"Lat: {Lat}, Lon: {Lon}, Height: {Height} | ";
   }
 }
