@@ -134,6 +134,8 @@ namespace VSS.TRex.Tests.TestFixtures
       // Switch to mutable storage representation to allow creation of content in the site model
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
+      targetSiteModel.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      targetSiteModel.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
 
       var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, treatAsJohnDoeMachines, Guid.NewGuid());
 
@@ -162,6 +164,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Reacquire the target site model to ensure any notification based changes to the site model are observed
       targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(preTargetSiteModelId, false);
+
+      // The ISiteModels instance ill supply the immutable representation of the site model, ensure it is set to mutable
+      targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       targetSiteModel.Should().NotBe(null);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
