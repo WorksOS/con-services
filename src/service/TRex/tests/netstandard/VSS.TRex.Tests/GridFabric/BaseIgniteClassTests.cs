@@ -61,8 +61,10 @@ namespace VSS.TRex.Tests.GridFabric
 
       Action act = () => _ = new BaseIgniteClass(gridName, role);
 
-      act.Should().Throw<TRexException>().WithMessage("Ignite reference is null in AcquireIgniteTopologyProjections");
-      //act.Should().Throw<InvalidOperationException>().WithMessage("No service for type 'VSS.TRex.GridFabric.Grids.ITRexGridFactory' has been registered.");
+      if (DIContext.DefaultIsRequired)
+        act.Should().Throw<InvalidOperationException>().WithMessage("No service for type 'VSS.TRex.GridFabric.Grids.ITRexGridFactory' has been registered.");
+      else
+        act.Should().Throw<TRexException>().WithMessage("Ignite reference is null in AcquireIgniteTopologyProjections");
     }
 
     [Fact]
