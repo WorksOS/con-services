@@ -17,6 +17,12 @@ namespace VSS.TRex.Tests.GridFabric
 {
   public class BaseIgniteClassTests : IClassFixture<DILoggingFixture>
   {
+    public BaseIgniteClassTests(DILoggingFixture fixture)
+    {
+      fixture.ClearDynamicFixtureContent();
+      fixture.SetupFixture();
+    }
+
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithNullOrEmptyRole()
     {
@@ -43,19 +49,20 @@ namespace VSS.TRex.Tests.GridFabric
     [Fact]
     public void AcquireIgniteTopologyProjections_FailWithNullIgnite()
     {
-      // ENsure any DI'ed IIgnite is removed
+      // Ensure any injected IIgnite anf ITRexGridFactory are removed
 
       DIBuilder.Continue()
         .RemoveSingle<IIgnite>()
         .RemoveSingle<ITRexGridFactory>()
         .Complete();
 
-      string GridName = TRexGrids.GridName(StorageMutability.Immutable);
-      string Role = "TestRole";
+      var gridName = TRexGrids.GridName(StorageMutability.Immutable);
+      var role = "TestRole";
 
-      Action act = () => new BaseIgniteClass(GridName, Role);
+      Action act = () => _ = new BaseIgniteClass(gridName, role);
 
-      act.Should().Throw<TRexException>().WithMessage("Ignite reference is null in AcquireIgniteTopologyProjections");
+      //act.Should().Throw<TRexException>().WithMessage("Ignite reference is null in AcquireIgniteTopologyProjections");
+      act.Should().Throw<InvalidOperationException>().WithMessage("No service for type 'VSS.TRex.GridFabric.Grids.ITRexGridFactory' has been registered.");
     }
 
     [Fact]
