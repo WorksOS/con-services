@@ -13,7 +13,7 @@ namespace VSS.TRex.DI
   /// </summary>
   public class DIBuilder
   {
-    private static DIBuilder Instance;
+    private static DIBuilder _instance;
 
     public IServiceProvider ServiceProvider { get; private set; }
     private IServiceCollection ServiceCollection { get; set; }
@@ -37,17 +37,17 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Constructor accepting a lambda returning a service collection to add to the DI collection
     /// </summary>
-    public DIBuilder(Action<IServiceCollection> addDI)
+    public DIBuilder(Action<IServiceCollection> addDi)
     {
-      addDI(ServiceCollection);
+      addDi(ServiceCollection);
     }
 
     /// <summary>
     /// Adds a set of dependencies according to the supplied lambda
     /// </summary>
-    public DIBuilder Add(Action<IServiceCollection> addDI)
+    public DIBuilder Add(Action<IServiceCollection> addDi)
     {
-      addDI(ServiceCollection);
+      addDi(ServiceCollection);
       return this;
     }
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.DI
 
       ServiceCollection.AddHttpClient();
 
-      DefaultHttpClientBuilder builder = new DefaultHttpClientBuilder(ServiceCollection, typeof(TClient).Name, Instance);
+      var builder = new DefaultHttpClientBuilder(ServiceCollection, typeof(TClient).Name, _instance);
       builder.ConfigureHttpClient(configureClient);
       builder.AddTypedClient<TClient>();
 
@@ -97,12 +97,12 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Static method to create a new DIImplementation instance
     /// </summary>
-    public static DIBuilder New() => Instance = new DIBuilder();
+    public static DIBuilder New() => _instance = new DIBuilder();
 
     /// <summary>
     /// Static method to create a new DIImplementation instance
     /// </summary>
-    public static DIBuilder New(IServiceCollection serviceCollection) => Instance = new DIBuilder(serviceCollection);
+    public static DIBuilder New(IServiceCollection serviceCollection) => _instance = new DIBuilder(serviceCollection);
 
     /// <summary>
     /// Performs the Inject operation into the DIContext as a fluent operation from the DIImplementation
@@ -120,14 +120,14 @@ namespace VSS.TRex.DI
     {
       DIContext.Close();
 
-      if (Instance != null)
+      if (_instance != null)
       {
-        Instance.ServiceCollection.Clear();
-        Instance.ServiceCollection = null;
-        Instance.ServiceProvider = null;
+        _instance.ServiceCollection.Clear();
+        _instance.ServiceCollection = null;
+        _instance.ServiceProvider = null;
       }
 
-      Instance = null;
+      _instance = null;
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Allow continuation of building the DI context
     /// </summary>
-    public static DIBuilder Continue() => Instance ?? New();
+    public static DIBuilder Continue() => _instance ?? New();
 
     /// <summary>
     /// Allow continuation of building the DI context
@@ -148,29 +148,31 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Removes a single instance of a registered DI service type in DIContext. The first located instance of the supplied type is removed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
     public DIBuilder RemoveSingle<T>()
     {
-      var serviceDescriptor = Instance.ServiceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
+      var serviceDescriptor = _instance.ServiceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
       if (serviceDescriptor != null)
-        Instance.ServiceCollection.Remove(serviceDescriptor);
+      {
+        _instance.ServiceCollection.Remove(serviceDescriptor);
+        
+        // Validate the service was removed
+        if (_instance.ServiceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T)) != null)
+          throw new Exception($"Failed to remove single instance of {typeof(T).FullName} from service provider");
+      }
 
-      return Instance;
+      return _instance;
     }
 
     /// <summary>
     /// Removes all instances of a registered DI service type in DIContext. The first located instance of the supplied type is removed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
     public DIBuilder RemoveAll<T>()
     {
-      var serviceDescriptors = Instance.ServiceCollection.Where(descriptor => descriptor.ServiceType == typeof(T));
+      var serviceDescriptors = _instance.ServiceCollection.Where(descriptor => descriptor.ServiceType == typeof(T));
       foreach (var service in serviceDescriptors)
-        Instance.ServiceCollection.Remove(service);
+        _instance.ServiceCollection.Remove(service);
 
-      return Instance;
+      return _instance;
     }
   }
 }
