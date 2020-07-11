@@ -88,9 +88,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <param name="task">The 'seed' task used as a template for locating matching tasks</param>
     private ISiteModel ObtainSiteModel(AggregatedDataIntegratorTask task)
     {
-      // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
-      // and also explicitly provides the transactional storage proxy being used for processing the
-      // data from TAG files into the model
+      // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel
       var siteModelFromDatamodel = DIContext.Obtain<ISiteModels>().GetSiteModel(task.PersistedTargetSiteModelID, true);
 
       siteModelFromDatamodel?.SetStorageRepresentationToSupply(StorageMutability.Mutable);

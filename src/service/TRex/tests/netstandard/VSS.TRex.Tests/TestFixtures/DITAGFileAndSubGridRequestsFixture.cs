@@ -161,10 +161,13 @@ namespace VSS.TRex.Tests.TestFixtures
         worker.CompleteTaskProcessing();
 
       // Reacquire the target site model to ensure any notification based changes to the site model are observed
-      targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(targetSiteModel.ID, false);
+      targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(preTargetSiteModelId, false);
 
       targetSiteModel.Should().NotBe(null);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
+      targetSiteModel.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      targetSiteModel.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
+
       targetSiteModel.SiteModelExtent.IsValidPlanExtent.Should().BeTrue();
 
       // Modify the site model to switch from the mutable to immutable cell pass representation for read requests

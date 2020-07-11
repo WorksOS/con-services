@@ -6,7 +6,6 @@ using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.GridDecimator;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
