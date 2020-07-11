@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Extensions;
@@ -32,6 +33,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
   [UnitTestCoveredRequest(RequestType = typeof(DeleteSiteModelRequest))]
   public class DeleteSiteModelRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private static readonly ILogger _log = TRex.Logging.Logger.CreateLogger<DeleteSiteModelRequestTests>();
+
     private void AddApplicationGridRouting()
     {
       IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
@@ -61,7 +64,27 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
     private void VerifyModelIsEmpty(ISiteModel model)
     {
-      IsModelEmpty(model).Should().BeTrue();
+      var isModelEmpty = IsModelEmpty(model);
+
+      if (!isModelEmpty)
+      {
+        _log.LogInformation("Model contents");
+
+        // Log the contents
+        _log.LogInformation("Mutable");
+        IgniteMock.Mutable.MockedCacheDictionaries.ForEach(x =>
+        {
+            _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
+        });
+
+        _log.LogInformation("Immutable");
+        IgniteMock.Immutable.MockedCacheDictionaries.ForEach(x =>
+        {
+          _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
+        });
+      }
+
+      isModelEmpty.Should().BeTrue();
     }
 
     private void DeleteTheModel(ref ISiteModel model, DeleteSiteModelSelectivity selectivity, bool assertEmpty = true)
