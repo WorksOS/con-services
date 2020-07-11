@@ -191,7 +191,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var response = request.Execute(new DeleteSiteModelRequestArgument {ProjectID = model.ID, Selectivity = selectivity});
 
       response.Result.Should().Be(DeleteSiteModelResult.OK);
-      IsModelEmpty(model).Should().Be(selectivity == DeleteSiteModelSelectivity.All); // Because the override event should not be removed for DeleteSiteModelSelectivity.TagFileDerivedData
+
+      if (selectivity == DeleteSiteModelSelectivity.All)
+        VerifyModelIsEmpty(model);
+      else
+        IsModelEmpty(model).Should().BeFalse(); // Because the override event should not be removed for DeleteSiteModelSelectivity.TagFileDerivedData
 
       model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
 
@@ -219,7 +223,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var response = request.Execute(new DeleteSiteModelRequestArgument { ProjectID = model.ID, Selectivity = selectivity });
 
       response.Result.Should().Be(DeleteSiteModelResult.OK);
-      IsModelEmpty(model).Should().Be(selectivity == DeleteSiteModelSelectivity.All); // Because the override event should not be removed
+
+      if (selectivity == DeleteSiteModelSelectivity.All)
+        VerifyModelIsEmpty(model);
+      else
+        IsModelEmpty(model).Should().BeFalse(); // Because the override event should not be removed
 
       model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
 
