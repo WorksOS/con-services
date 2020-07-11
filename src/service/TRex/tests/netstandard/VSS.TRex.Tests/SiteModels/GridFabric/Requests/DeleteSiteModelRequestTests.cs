@@ -48,10 +48,15 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       fixture.SetupFixture();
     }
 
-    private static bool IsModelEmpty(ISiteModel model)
+    private bool IsModelEmpty(ISiteModel model, bool expectedToBeEmpty)
     {
       var clear1 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
                    !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
+
+      if (expectedToBeEmpty && !clear1)
+      {
+        DumpModelContents("Pre-commit empty check");
+      }
 
       // Perform a belt and braces check to ensure there were no pending uncommitted changes.
       model.PrimaryStorageProxy.Commit();
@@ -59,29 +64,39 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var clear2 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
                    !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
 
+      if (expectedToBeEmpty && !(clear1 && clear2))
+      {
+        DumpModelContents("After full check");
+      }
+
       return clear1 && clear2;
+    }
+
+    private void DumpModelContents(string title)
+    {
+      _log.LogInformation($"Model contents - {title}");
+
+      // Log the contents
+      _log.LogInformation("Mutable");
+      IgniteMock.Mutable.MockedCacheDictionaries.ForEach(x =>
+      {
+        _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
+      });
+
+      _log.LogInformation("Immutable");
+      IgniteMock.Immutable.MockedCacheDictionaries.ForEach(x =>
+      {
+        _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
+      });
     }
 
     private void VerifyModelIsEmpty(ISiteModel model)
     {
-      var isModelEmpty = IsModelEmpty(model);
+      var isModelEmpty = IsModelEmpty(model, true);
 
       if (!isModelEmpty)
       {
-        _log.LogInformation("Model contents");
-
-        // Log the contents
-        _log.LogInformation("Mutable");
-        IgniteMock.Mutable.MockedCacheDictionaries.ForEach(x =>
-        {
-            _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
-        });
-
-        _log.LogInformation("Immutable");
-        IgniteMock.Immutable.MockedCacheDictionaries.ForEach(x =>
-        {
-          _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
-        });
+        DumpModelContents("After full check");
       }
 
       isModelEmpty.Should().BeTrue();
@@ -113,7 +128,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Machines.ForEach(x => model.MachinesTargetValues[x.InternalSiteModelMachineIndex]?.SaveMachineEventsToPersistentStore(model.PrimaryStorageProxy));
       model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
       model.PrimaryStorageProxy.Commit();
-      IsModelEmpty(model).Should().BeFalse();
+      IsModelEmpty(model, false).Should().BeFalse();
     }
 
     [Fact]
@@ -132,7 +147,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SaveMetadataToPersistentStore(model.PrimaryStorageProxy, true);
-      IsModelEmpty(model).Should().BeFalse();
+      IsModelEmpty(model, false).Should().BeFalse();
 
       DeleteTheModel(ref model, DeleteSiteModelSelectivity.All);
     }
@@ -195,7 +210,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       if (selectivity == DeleteSiteModelSelectivity.All)
         VerifyModelIsEmpty(model);
       else
-        IsModelEmpty(model).Should().BeFalse(); // Because the override event should not be removed for DeleteSiteModelSelectivity.TagFileDerivedData
+        IsModelEmpty(model, false).Should().BeFalse(); // Because the override event should not be removed for DeleteSiteModelSelectivity.TagFileDerivedData
 
       model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
 
@@ -227,7 +242,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       if (selectivity == DeleteSiteModelSelectivity.All)
         VerifyModelIsEmpty(model);
       else
-        IsModelEmpty(model).Should().BeFalse(); // Because the override event should not be removed
+        IsModelEmpty(model, false).Should().BeFalse(); // Because the override event should not be removed
 
       model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
 
