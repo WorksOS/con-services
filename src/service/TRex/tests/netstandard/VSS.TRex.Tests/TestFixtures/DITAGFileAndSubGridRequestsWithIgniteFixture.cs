@@ -123,6 +123,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       DIBuilder
         .Continue()
+        .RemoveSingle<ITRexGridFactory>() // Remove mocked version of TRex grid factory
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method injected from TRexGridFactory.AddGridFactoriesToDI()
