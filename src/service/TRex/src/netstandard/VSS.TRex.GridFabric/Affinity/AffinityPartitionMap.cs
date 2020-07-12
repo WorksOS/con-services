@@ -11,20 +11,20 @@ using VSS.TRex.DI;
 namespace VSS.TRex.GridFabric.Affinity
 {
   /// <summary>
-  /// Provides capabilities for determining partition maps to nodes for Ignite caches. It is templated on 
-  /// the ket (TK) and value (TV) types of the cache being referenced.
+  /// Provides capabilities for determining partition maps to nodes for Ignite caches. It is based on
+  /// the key (TK) and value (TV) types of the cache being referenced.
   /// </summary>
   public class AffinityPartitionMap<TK, TV> : IEventListener<CacheRebalancingEvent>
   {
     /// <summary>
     /// Backing variable for PrimaryPartitions
     /// </summary>
-    private bool[] primaryPartitions;
+    private bool[] _primaryPartitions;
 
     /// <summary>
     /// Provides a map of primary partitions that this node is responsible for
     /// </summary>
-    public bool[] PrimaryPartitions() => primaryPartitions ?? (primaryPartitions = GetPrimaryPartitions());
+    public bool[] PrimaryPartitions() => _primaryPartitions ??= GetPrimaryPartitions();
 
     /// <summary>
     /// Backing variable for BackupPartitions
@@ -34,39 +34,44 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Provides a map of backup partitions that this node is responsible for
     /// </summary>
-    public Dictionary<int, bool> BackupPartitions => backupPartitions ?? (backupPartitions = GetBackupPartitions());
+    public Dictionary<int, bool> BackupPartitions => backupPartitions ??= GetBackupPartitions();
 
     /// <summary>
     /// The reference to the Ignite cache the partition map relates
     /// </summary>
-    private ICache<TK, TV> Cache { get; set; }
+    private ICache<TK, TV> Cache { get; }
 
-    private ICacheAffinity Affinity { get; set; }
-    private IClusterNode LocalNode { get; set; }
+    private ICacheAffinity Affinity { get; }
+    private IClusterNode LocalNode { get; }
 
-    protected static readonly int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
+    protected readonly int NumPartitionsPerDataCache = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUMPARTITIONS_PERDATACACHE", Consts.NUMPARTITIONS_PERDATACACHE);
 
     /// <summary>
     /// Constructor accepting a cache reference to obtain the partition map information for
     /// </summary>
-    /// <param name="cache"></param>
     public AffinityPartitionMap(ICache<TK, TV> cache)
     {
       Cache = cache ?? throw new ArgumentException("Supplied cache cannot be null", nameof(cache));
 
       Affinity = Cache.Ignite.GetAffinity(Cache.Name);
       LocalNode = Cache.Ignite.GetCluster().GetLocalNode();
+      Cache.Ignite.GetEvents().LocalListen(this, 
+        EventType.CacheRebalanceStopped, 
+        EventType.CacheRebalanceStarted,
+        EventType.NodeFailed,
+        EventType.NodeJoined,
+        EventType.NodeLeft,
+        EventType.CacheNodesLeft);
     }
 
     /// <summary>
     /// Asks Ignite for the list of primary partitions this node is responsible for in the provided cache 
     /// </summary>
-    /// <returns></returns>
     private bool[] GetPrimaryPartitions()
     {
-      bool[] result = new bool[NumPartitionsPerDataCache];
+      var result = new bool[NumPartitionsPerDataCache];
 
-      foreach (int partition in Affinity.GetPrimaryPartitions(LocalNode))
+      foreach (var partition in Affinity.GetPrimaryPartitions(LocalNode))
         result[partition] = true;
 
       return result;
@@ -75,34 +80,27 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Asks Ignite for the list of primary partitions this node is responsible for in the provided cache 
     /// </summary>
-    /// <returns></returns>
     private Dictionary<int, bool> GetBackupPartitions() => Affinity.GetBackupPartitions(LocalNode).ToDictionary(k => k, v => true);
 
     /// <summary>
     /// Determines the Ignite partition index responsible for hold this given key.
-    /// This is not so performant as it performant as it involves a full lookup of the cache affinity context from Ignite.
+    /// This does not perform so well as it involves a full lookup of the cache affinity context from Ignite.
     /// If performance is important, use the AffinityKeyFunction assigned to the cache configuration directly
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
     public int PartitionFor(TK key) => Cache.Ignite.GetAffinity(Cache.Name).GetPartition(key);
 
     /// <summary>
     /// Determines if this node hold the primary partition for the given key
-    /// This is not so performant as it performant as it involves a full lookup of the cache affinity context from Ignite.
+    /// This does not perform so well  as it involves a full lookup of the cache affinity context from Ignite.
     /// If performance is important, use the PrimaryPartitionMap dictionary available from this class.
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
     public bool HasPrimaryPartitionFor(TK key) => PrimaryPartitions()[PartitionFor(key)];
 
     /// <summary>
     /// Determines if this node holds a backup partition for the given key
-    /// This is not so performant as it performant as it involves a full lookup of the cache affinity context from Ignite.
+    /// This does not perform so well  as it involves a full lookup of the cache affinity context from Ignite.
     /// If performance is important, use the BackupPartitionMap dictionary available from this class.
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
     public bool HasBackupPartitionFor(TK key) => BackupPartitions[PartitionFor(key)];
 
     public bool Invoke(CacheRebalancingEvent evt)
@@ -110,7 +108,7 @@ namespace VSS.TRex.GridFabric.Affinity
       if (evt.CacheName.Equals(Cache.Name)) // && evt.DiscoveryEventType == )
       {
         // Assign primary and backup partition maps to null to force them to be recalculated
-        primaryPartitions = null;
+        _primaryPartitions = null;
         backupPartitions = null;
       }
 

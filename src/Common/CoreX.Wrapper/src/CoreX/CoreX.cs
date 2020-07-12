@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using CoreX.Models;
 using CoreX.Types;
+using CoreX.Wrapper.Extensions;
 using CoreX.Wrapper.Types;
 using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
@@ -54,6 +55,15 @@ namespace CoreX.Wrapper
     /// </summary>
     public static string GetCSIBFromDCFileContent(string fileContent)
     {
+      static bool IsBase64String(string base64) => 
+        Convert.TryFromBase64String(base64, new Span<byte>(new byte[base64.Length]), out var bytesParsed);
+
+      // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
+      if (IsBase64String(fileContent))
+      {
+        fileContent = fileContent.DecodeFromBase64();
+      }
+
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
       // Slow, takes 2.5 seconds, need to speed up somehow?
@@ -79,6 +89,8 @@ namespace CoreX.Wrapper
 
       return GetCSIBFromDCFileContent(dcStr);
     }
+
+    public static bool ValidateCsibString(string csib) => ValidateCsib(csib);
 
     /// <summary>
     /// Transform an NEE to LLH with variable from and to coordinate type inputs.
@@ -193,6 +205,32 @@ namespace CoreX.Wrapper
       }
 
       return _transformer;
+    }
+
+    private static bool ValidateCsib(string csib)
+    {
+      StringBuilder sb = new StringBuilder();
+      byte[] bytes = Encoding.ASCII.GetBytes(csib);
+
+      for (var i = 0; i < bytes.Length; i++)
+      {
+        sb.Append(bytes[i] + " ");
+      }
+
+      string[] blocks = sb.ToString().TrimEnd().Split(' ');
+      sbyte[] data = new sbyte[blocks.Length];
+
+      int index = 0;
+      foreach (string b in blocks)
+      {
+        data[index++] = (sbyte)Convert.ToByte(b);
+      }
+
+      var csmCsibData = new CSMCsibBlobContainer(data);
+      var csFromCSIB = new CSMCoordinateSystemContainer();
+      var csmErrorCode = CsdManagement.csmImportCoordSysFromCsib(csmCsibData, csFromCSIB);
+
+      return csmErrorCode == csmErrorCode.cecSuccess;
     }
 
     private bool _disposed = false;

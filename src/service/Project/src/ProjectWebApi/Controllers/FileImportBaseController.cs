@@ -60,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       LogCustomerDetails("GetProject", projectUid);
       var project =
-        (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders))
+        (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, null, null, true, customHeaders))
         .FirstOrDefault(p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {

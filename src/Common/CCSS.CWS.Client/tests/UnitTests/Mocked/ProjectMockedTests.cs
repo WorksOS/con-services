@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Jose.native;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS;
@@ -59,33 +63,6 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
         Assert.NotNull(result);
         Assert.Equal(expectedProjectUid, result.Id);
-        return true;
-      });
-    }
-
-    [Fact]
-    public void GetProjectsForMyAccount()
-    {
-      var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
-
-      var projectSummaryListResponseModel = new ProjectSummaryListResponseModel();
-      projectSummaryListResponseModel.Projects.Add(new ProjectSummaryResponseModel() {ProjectTRN = TRNHelper.MakeTRN(projectUid), UserProjectRole = UserProjectRoleEnum.Admin}
-      );
-      var route = $"/accounts/{TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT)}/projects";
-      var expectedUrl = $"{baseUrl}{route}?from=0&limit=20";
-      mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
-        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
-
-      MockUtilities.TestRequestSendsCorrectJson("Get projects for account", mockWebRequest, null, expectedUrl, HttpMethod.Get, projectSummaryListResponseModel, async () =>
-      {
-        var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
-        var result = await client.GetProjectsForMyCustomer(customerUid, userUid);
-
-        Assert.NotNull(result);
-        Assert.Single(result.Projects);
-        Assert.Equal(projectUid.ToString(), result.Projects[0].ProjectId);
         return true;
       });
     }
@@ -190,5 +167,73 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       });
     }
 
+    [Fact]
+    public void GetProjectSetsCorrectQueryParameters()
+    {
+      var customerUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
+      var userUid = new Guid("d5842a67-208a-40f5-b51d-f533ca740929");
+      var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
+      var route = $"/accounts/{accountTrn}/projects";
+      var expectedUrl = $"{baseUrl}{route}";
+
+
+      // When we pass the values to the API Client, we expect them to be passed as query params EXACTLY
+      // Each of these test cases represent these values
+      // Null (not provided) options leave the values off, and get the CWS Default
+      var testCases = new List<(bool includeSettings, CwsProjectType? projectType, ProjectStatus? status, List<KeyValuePair<string, string>> queryParamValues)>();
+      testCases.Add((true, CwsProjectType.AcceptsTagFiles, ProjectStatus.Active, new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("includeSettings", true.ToString()), new KeyValuePair<string, string>("status", "ACTIVE"), new KeyValuePair<string, string>("projectType", "1")
+      }));
+
+      testCases.Add((true, CwsProjectType.Standard, ProjectStatus.Active, new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("includeSettings", true.ToString()), new KeyValuePair<string, string>("status", "ACTIVE"), new KeyValuePair<string, string>("projectType", "0")
+      }));
+
+      testCases.Add((true, CwsProjectType.Standard, ProjectStatus.Archived, new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("includeSettings", true.ToString()), new KeyValuePair<string, string>("status", "ARCHIVED"), new KeyValuePair<string, string>("projectType", "0")
+      }));
+
+      testCases.Add((true, null, null, new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("includeSettings", true.ToString())
+      }));
+
+      foreach (var (includeSettings, projectType, status, expectedQueryParams) in testCases)
+      {
+        mockServiceResolution.Reset();
+        mockWebRequest.Reset();
+        IList<KeyValuePair<string, string>> passedQueryParams = null;
+      
+        mockServiceResolution
+          .Setup(m => m.ResolveRemoteServiceEndpoint(It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>()))
+          .Callback<string, ApiType, ApiVersion, string, IList<KeyValuePair<string, string>>>((serviceName, apiType, apiVersion, r, p) => { passedQueryParams = p; })
+          .Returns(Task.FromResult(expectedUrl));
+
+        // Setup so that the second call returns the second model and any follow up calls throw an exception
+        mockWebRequest.Setup(s => s.ExecuteRequest<ProjectSummaryListResponseModel>(It.IsAny<string>(),
+            It.IsAny<Stream>(),
+            It.IsAny<IHeaderDictionary>(),
+            It.IsAny<HttpMethod>(),
+            It.IsAny<int?>(),
+            It.IsAny<int>(),
+            It.IsAny<bool>()))
+          .Returns(Task.FromResult(new ProjectSummaryListResponseModel()));
+
+        var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
+        var result = client.GetProjectsForCustomer(customerUid, userUid, includeSettings, projectType, status).Result;
+
+        Assert.NotNull(result);
+        foreach (var (expectedKey, expectedValue) in expectedQueryParams)
+        {
+          // Each query param should be there with the correct value
+          var (passedKey, passedValue) = passedQueryParams.SingleOrDefault(q => q.Key == expectedKey);
+          Assert.Equal(expectedKey, passedKey);
+          Assert.Equal(expectedValue, passedValue);
+        }
+      }
+    }
   }
 }
