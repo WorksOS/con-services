@@ -59,6 +59,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       }
 
       // Perform a belt and braces check to ensure there were no pending uncommitted changes.
+      model.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      model.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
       model.PrimaryStorageProxy.Commit();
 
       var clear2 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
