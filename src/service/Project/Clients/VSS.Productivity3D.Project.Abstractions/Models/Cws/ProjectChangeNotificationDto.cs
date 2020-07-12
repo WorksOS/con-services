@@ -24,6 +24,11 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.Cws
     public NotificationType NotificationType { get; set; }
 
     /// <summary>
+    /// The request update type this payload represents.
+    /// </summary>
+    public CwsUpdateType UpdateType { get; set; }
+
+    /// <summary>
     /// File name for the coordinate system
     /// </summary>
     [JsonProperty(PropertyName = "CoordinateSystemFilename", Required = Required.Default)]

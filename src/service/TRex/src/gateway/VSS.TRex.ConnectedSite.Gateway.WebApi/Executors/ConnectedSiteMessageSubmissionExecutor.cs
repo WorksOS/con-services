@@ -72,7 +72,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.Executors
         {
           if (tagDetails.Execute(tagData))
           {
-            var client = DIContext.Obtain<IConnectedSiteClient>();
+            var client = DIContext.ObtainOptional<IConnectedSiteClient>();
             if (client == null)
             {
               throw new ConnectedSiteClientException("Could not obtain Connected Site Client, have you added it to DI?");

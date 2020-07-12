@@ -7,12 +7,13 @@ using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types.CellPasses;
 using Xunit;
 
 namespace VSS.TRex.Tests.DataSmoothing
 {
-  public class ConvolutionToolsTests
+  public class ConvolutionToolsTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Creation()

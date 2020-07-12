@@ -48,26 +48,30 @@ namespace VSS.TRex.CoordinateSystems
       {
         var uniqueIdentifier = $"{nameof(ImportCSDFromDCContentAsync)}-{filePath}-{GenerateHash(fileContent)}";
         var cacheKey = GenerateKey(uniqueIdentifier);
+
         if (_cache.TryGetValue<CoordinateSystemResponse>(cacheKey, out var cachedItem))
-          return cachedItem;
-
-        using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
-          content.Add(new StreamContent(new MemoryStream(fileContent)), "file", Path.GetFileName(filePath));
-
-          var response = await _serviceHttpClient.SendRequest("/coordinatesystems/imports/dc/file", content);
-          if (!response.IsSuccessStatusCode)
-          {
-            throw new Exception(response.ToString());
-          }
-
-          var json = await response.Content.ReadAsStringAsync();
-          var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystemResponse>>(json);
-
-          var result = csList.FirstOrDefault();
-          _cache.Set(uniqueIdentifier, result, _cacheTimeout);
-          return result;
+          return cachedItem;
         }
+
+        using var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture))
+        {
+          { new StreamContent(new MemoryStream(fileContent)), "file", Path.GetFileName(filePath) }
+        };
+
+        var response = await _serviceHttpClient.SendRequest("/coordinatesystems/imports/dc/file", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+          throw new Exception(response.ToString());
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var csList = JsonConvert.DeserializeObject<IEnumerable<CoordinateSystemResponse>>(json);
+
+        var result = csList.FirstOrDefault();
+        _cache.Set(uniqueIdentifier, result, _cacheTimeout);
+        return result;
       }
       catch (Exception exception)
       {
@@ -78,40 +82,73 @@ namespace VSS.TRex.CoordinateSystems
     }
 
     /// <summary>
-    /// Extracts a CSIB from a DC file presented as a byte array.
+    /// Extracts a coordinate system id from a CSIB string.
     /// </summary>
-    public async Task<string> ImportFromDCContentAsync(string filePath, byte[] fileContent)
+    public async Task<string> ImportCoordinateServiceIdFromCSIBAsync(string csib)
     {
-      var csd = await ImportCSDFromDCContentAsync(filePath, fileContent);
+      try
+      {
+        var uniqueIdentifier = $"{nameof(ImportCoordinateServiceIdFromCSIBAsync)}-{csib}";
+        var cacheKey = GenerateKey(uniqueIdentifier);
 
-      return csd.CoordinateSystem.Id;
+        if (_cache.TryGetValue<string>(cacheKey, out var cachedItem))
+        {
+          return cachedItem;
+        }
+
+        var urlEncodedCsib = System.Net.WebUtility.UrlEncode(csib);
+
+        using var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+        var response = await _serviceHttpClient.SendRequest($"/coordinatesystems/imports/csib/base64?csib_64={urlEncodedCsib}", HttpMethod.Put);
+
+        if (!response.IsSuccessStatusCode)
+        {
+          throw new Exception(response.ToString());
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<CoordinateSystemResponse>(json);
+
+        _cache.Set(uniqueIdentifier, result.CoordinateSystem.Id, _cacheTimeout);
+
+        return result.CoordinateSystem.Id;
+      }
+      catch (Exception exception)
+      {
+        _log.LogError(exception, "Failed to import coordinate system definition from CSIB");
+      }
+
+      return null;
     }
 
     /// <summary>
     /// Extracts a coordinate system definition response object from a CSIB string.
     /// </summary>
-    public async Task<CoordinateSystemResponse> ImportCSDFromCSIBAsync(string csib)
+    public async Task<CoordinateSystemResponse> ImportCSDFromCoordinateySystemId(string csib)
     {
       try
       {
-        var uniqueIdentifier = $"{nameof(ImportCSDFromCSIBAsync)}-{csib}";
+        var uniqueIdentifier = $"{nameof(ImportCSDFromCoordinateySystemId)}-{csib}";
         var cacheKey = GenerateKey(uniqueIdentifier);
+
         if (_cache.TryGetValue<CoordinateSystemResponse>(cacheKey, out var cachedItem))
-          return cachedItem;
-
-        using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
-          var response = await _serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get);
-          if (!response.IsSuccessStatusCode)
-          {
-            throw new Exception(response.ToString());
-          }
-
-          var json = await response.Content.ReadAsStringAsync();
-          var result = JsonConvert.DeserializeObject<CoordinateSystemResponse>(json);
-          _cache.Set(uniqueIdentifier, result, _cacheTimeout);
-          return result;
+          return cachedItem;
         }
+
+        using var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+        var response = await _serviceHttpClient.SendRequest($"/coordinatesystems/byId?id={csib}", HttpMethod.Get);
+
+        if (!response.IsSuccessStatusCode)
+        {
+          throw new Exception(response.ToString());
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<CoordinateSystemResponse>(json);
+        _cache.Set(uniqueIdentifier, result, _cacheTimeout);
+
+        return result;
       }
       catch (Exception exception)
       {
@@ -123,23 +160,19 @@ namespace VSS.TRex.CoordinateSystems
 
     private string GenerateHash(byte[] data)
     {
-      using (var md5 = MD5.Create())
+      using var md5 = MD5.Create();
+      md5.Initialize();
+      var hash = md5.ComputeHash(data);
+      var sb = new StringBuilder();
+
+      foreach (var b in hash)
       {
-        md5.Initialize();
-        var hash = md5.ComputeHash(data);
-        var sb = new StringBuilder();
-        foreach (var b in hash)
-        {
-          sb.Append(b.ToString("X2"));
-        }
-
-        return sb.ToString();
+        sb.Append(b.ToString("X2"));
       }
+
+      return sb.ToString();
     }
 
-    private string GenerateKey(string data)
-    {
-      return GenerateHash(Encoding.UTF8.GetBytes(data));
-    }
+    private string GenerateKey(string data) => GenerateHash(Encoding.UTF8.GetBytes(data));
   }
 }

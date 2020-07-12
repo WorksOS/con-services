@@ -7,7 +7,10 @@ using CoreX.Wrapper;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
@@ -61,9 +64,9 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
-    public new static void ClearDynamicFxtureContent()
+    public override void ClearDynamicFixtureContent()
     {
-      DITAGFileAndSubGridRequestsFixture.ClearDynamicFxtureContent();
+      base.ClearDynamicFixtureContent();
     }
 
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
@@ -111,13 +114,16 @@ namespace VSS.TRex.Tests.TestFixtures
       };
     }
 
-    public new void SetupFixture()
+    public override void SetupFixture()
     {
+      base.SetupFixture();
+
       var mutableIgniteMock = new IgniteMock_Mutable();
       var immutableIgniteMock = new IgniteMock_Immutable();
 
       DIBuilder
         .Continue()
+        .RemoveSingle<ITRexGridFactory>() // Remove mocked version of TRex grid factory
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method injected from TRexGridFactory.AddGridFactoriesToDI()
@@ -145,7 +151,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
-        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates(new CoreX.Wrapper.CoreX())))
+        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
         .Add(x => x.AddSingleton<Func<StorageMutability, IgniteMock>>(mutability =>
         {
           return mutability switch
@@ -163,6 +169,11 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register the listener for site model rebuild TAG file processing notifications
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener>(new RebuildSiteModelTAGNotifierListener()))
 
+        //**** Web gateway related dependencies
+        .Add(x => x.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>())
+        .Add(x => x.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>())
+        //**** Web gateway related dependencies
+
         .Complete();
 
       ResetDynamicMockedIgniteContent();
@@ -173,9 +184,9 @@ namespace VSS.TRex.Tests.TestFixtures
       DIContext.Obtain<IRebuildSiteModelTAGNotifierListener>().StartListening();
     }
 
-    public static void ResetDynamicMockedIgniteContent()
+    public void ResetDynamicMockedIgniteContent()
     {
-      ClearDynamicFxtureContent();
+      ClearDynamicFixtureContent();
 
       // Now that mocked ignite contexts are available, re-inject the proxy cache factories so they take notice of the ignite mocks
       // Note that the dynamic content of the Ignite mock must be instantiated first
@@ -413,7 +424,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return AddDesignToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

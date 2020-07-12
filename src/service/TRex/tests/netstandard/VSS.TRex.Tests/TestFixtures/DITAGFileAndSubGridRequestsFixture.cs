@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -41,18 +43,20 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITAGFileAndSubGridRequestsFixture : DITagFileFixture, IDisposable
   {
-    public DITAGFileAndSubGridRequestsFixture() : base()
+    public DITAGFileAndSubGridRequestsFixture()
     {
       SetupFixture();
     }
 
-    public new static void ClearDynamicFxtureContent()
+    public override void ClearDynamicFixtureContent()
     {
-      DITagFileFixture.ClearDynamicFxtureContent();
+      base.ClearDynamicFixtureContent();
     }
 
-    public new void SetupFixture()
+    public override void SetupFixture()
     {
+      base.SetupFixture();
+
       // Provide the surveyed surface request mock
       var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
       surfaceElevationPatchRequest.Setup(x => x.ExecuteAsync(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(Task.FromResult(new ClientHeightAndTimeLeafSubGrid() as IClientLeafSubGrid));
@@ -98,9 +102,6 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register a DI factory for ImmutableSpatialAffinityPartitionMap to represent an affinity partition map with just one partition
         .Add(x => x.AddSingleton<IImmutableSpatialAffinityPartitionMap>(mockImmutableSpatialAffinityPartitionMap.Object))
 
-        .Add(x => x.AddTransient<IAlignments>(factory => new TRex.Alignments.Alignments()))
-        .Add(x => x.AddTransient<IDesigns>(factory => new TRex.Designs.Storage.Designs()))
-
         .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
 
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
@@ -109,13 +110,13 @@ namespace VSS.TRex.Tests.TestFixtures
         // partial responses of sub grids
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
+        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
         .Complete();
     }
 
     /// <summary>
     /// Takes a list of TAG files and constructs an ephemeral site model that may be queried
     /// </summary>
-    /// <returns></returns>
     public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks, 
       bool callTaskProcessingComplete = true,
       bool convertToImmutableRepresentation = true,
@@ -133,6 +134,8 @@ namespace VSS.TRex.Tests.TestFixtures
       // Switch to mutable storage representation to allow creation of content in the site model
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
+      targetSiteModel.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      targetSiteModel.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
 
       var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, treatAsJohnDoeMachines, Guid.NewGuid());
 
@@ -160,10 +163,17 @@ namespace VSS.TRex.Tests.TestFixtures
         worker.CompleteTaskProcessing();
 
       // Reacquire the target site model to ensure any notification based changes to the site model are observed
-      targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(targetSiteModel.ID, false);
+      targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(preTargetSiteModelId, false);
+
+      // The ISiteModels instance ill supply the immutable representation of the site model, ensure it is set to mutable
+      targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       targetSiteModel.Should().NotBe(null);
       targetSiteModel.ID.Should().Be(preTargetSiteModelId);
+      targetSiteModel.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      targetSiteModel.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
+
+      targetSiteModel.SiteModelExtent.IsValidPlanExtent.Should().BeTrue();
 
       // Modify the site model to switch from the mutable to immutable cell pass representation for read requests
       if (convertToImmutableRepresentation)
@@ -343,13 +353,12 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Takes a site model and modifies its internal representation to be the immutable form
     /// </summary>
-    /// <param name="siteModel"></param>
     public static void ConvertSiteModelToImmutable(ISiteModel siteModel)
     {
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

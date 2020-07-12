@@ -13,15 +13,10 @@ namespace CoreX.Wrapper.Types
 
     public static sbyte[] IntPtrToSByte(IntPtr value, int length)
     {
-      byte[] bytes = new byte[length];
+      var bytes = new byte[length];
       System.Runtime.InteropServices.Marshal.Copy(value, bytes, 0, length);
 
-      // convert byte array to sbyte array
-      sbyte[] sbytes = new sbyte[bytes.Length];
-      for (int i = 0; i < bytes.Length; i++)
-        sbytes[i] = (sbyte)bytes[i];
-
-      return sbytes;
+      return (sbyte[]) (Array) bytes;
     }
   }
 }

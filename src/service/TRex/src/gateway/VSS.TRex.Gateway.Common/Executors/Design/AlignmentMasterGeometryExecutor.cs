@@ -52,7 +52,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.X, x.Y, 0.0)).ToList());
 
       var convertedCoords = _convertCoordinates
-        .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ())
+        .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ(), CoreX.Types.ReturnAs.Degrees)
         .ToTRex_XYZ();
 
       // Copy the converted coordinates to the geometry response ready for inclusion in the request result
@@ -118,7 +118,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         AlignmentDesignID = request.DesignUid
       });
 
-      if (geometryResponse != null && geometryResponse.RequestResult != DesignProfilerRequestResult.OK)
+      if (geometryResponse != null && geometryResponse.RequestResult == DesignProfilerRequestResult.OK)
       {
         // Convert all coordinates from grid to lat/lon
         ConvertNEEToLLHCoords(siteModel.CSIB(), geometryResponse);

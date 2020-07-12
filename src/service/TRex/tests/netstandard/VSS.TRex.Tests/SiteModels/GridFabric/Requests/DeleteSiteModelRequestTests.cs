@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Extensions;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -32,6 +33,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
   [UnitTestCoveredRequest(RequestType = typeof(DeleteSiteModelRequest))]
   public class DeleteSiteModelRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private static readonly ILogger _log = TRex.Logging.Logger.CreateLogger<DeleteSiteModelRequestTests>();
+
     private void AddApplicationGridRouting()
     {
       IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
@@ -41,27 +44,58 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     public DeleteSiteModelRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
       // This resets all modified content in the Ignite mocks between tests
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ClearDynamicFxtureContent();
+      fixture.ClearDynamicFixtureContent();
       fixture.SetupFixture();
     }
 
-    private static bool IsModelEmpty(ISiteModel model)
+    private bool IsModelEmpty(ISiteModel model, bool expectedToBeEmpty)
     {
       var clear1 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
                    !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
 
+      if (expectedToBeEmpty && !clear1)
+      {
+        DumpModelContents("Pre-commit empty check");
+      }
+
       // Perform a belt and braces check to ensure there were no pending uncommitted changes.
+      model.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
+      model.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
       model.PrimaryStorageProxy.Commit();
 
       var clear2 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
                    !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
 
+      if (expectedToBeEmpty && !(clear1 && clear2))
+      {
+        DumpModelContents("After full check");
+      }
+
       return clear1 && clear2;
+    }
+
+    private void DumpModelContents(string title)
+    {
+      _log.LogInformation($"Model contents - {title}");
+
+      // Log the contents
+      _log.LogInformation("Mutable");
+      IgniteMock.Mutable.MockedCacheDictionaries.ForEach(x =>
+      {
+        _log.LogInformation($"{x.Key}: {x.Value.Keys.Count} keys, {x.Value.Values.Count} values");
+      });
+
+      _log.LogInformation("Immutable");
+      IgniteMock.Immutable.MockedCacheDictionaries.ForEach(x =>
+      {
+        _log.LogInformation($"{x.Key}: {x.Value.Keys.Count} keys, {x.Value.Values.Count} values");
+      });
     }
 
     private void VerifyModelIsEmpty(ISiteModel model)
     {
-      IsModelEmpty(model).Should().BeTrue();
+      var isModelEmpty = IsModelEmpty(model, true);
+      isModelEmpty.Should().BeTrue();
     }
 
     private void DeleteTheModel(ref ISiteModel model, DeleteSiteModelSelectivity selectivity, bool assertEmpty = true)
@@ -90,7 +124,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Machines.ForEach(x => model.MachinesTargetValues[x.InternalSiteModelMachineIndex]?.SaveMachineEventsToPersistentStore(model.PrimaryStorageProxy));
       model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
       model.PrimaryStorageProxy.Commit();
-      IsModelEmpty(model).Should().BeFalse();
+      IsModelEmpty(model, false).Should().BeFalse();
     }
 
     [Fact]
@@ -109,7 +143,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SaveMetadataToPersistentStore(model.PrimaryStorageProxy, true);
-      IsModelEmpty(model).Should().BeFalse();
+      IsModelEmpty(model, false).Should().BeFalse();
 
       DeleteTheModel(ref model, DeleteSiteModelSelectivity.All);
     }
@@ -168,7 +202,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var response = request.Execute(new DeleteSiteModelRequestArgument {ProjectID = model.ID, Selectivity = selectivity});
 
       response.Result.Should().Be(DeleteSiteModelResult.OK);
-      IsModelEmpty(model).Should().Be(selectivity == DeleteSiteModelSelectivity.All); // Because the override event should not be removed for DeleteSiteModelSelectivity.TagFileDerivedData
+
+      if (selectivity == DeleteSiteModelSelectivity.All)
+        VerifyModelIsEmpty(model);
+      else
+        IsModelEmpty(model, false).Should().BeFalse(); // Because the override event should not be removed for DeleteSiteModelSelectivity.TagFileDerivedData
 
       model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
 
@@ -196,7 +234,11 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var response = request.Execute(new DeleteSiteModelRequestArgument { ProjectID = model.ID, Selectivity = selectivity });
 
       response.Result.Should().Be(DeleteSiteModelResult.OK);
-      IsModelEmpty(model).Should().Be(selectivity == DeleteSiteModelSelectivity.All); // Because the override event should not be removed
+
+      if (selectivity == DeleteSiteModelSelectivity.All)
+        VerifyModelIsEmpty(model);
+      else
+        IsModelEmpty(model, false).Should().BeFalse(); // Because the override event should not be removed
 
       model = DIContext.Obtain<ISiteModels>().GetSiteModel(model.ID);
 
@@ -240,7 +282,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       DeleteTheModel(ref model, selectivity, selectivity == DeleteSiteModelSelectivity.All);
 
-      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the defualt design is present
+      if (selectivity != DeleteSiteModelSelectivity.All) // Check only the default design is present
       {
         model.SiteModelMachineDesigns.Count.Should().Be(1);
         model.SiteModelMachineDesigns[0].Id.Should().Be(0);
@@ -339,14 +381,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      var csibStream = new MemoryStream();
-      csibStream.Write(new byte[] {70, 71, 72, 73}, 0, 4);
-      csibStream.Position = 0;
-
-      model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
-        CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
-        FileSystemStreamType.CoordinateSystemCSIB,
-        csibStream, null);
+      model.SetCSIB(Encoding.ASCII.GetString(new byte[] {70, 71, 72, 73}));
 
       model.CSIB().Should().NotBeEmpty();
       SaveAndVerifyNotEmpty(model);
@@ -394,7 +429,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       (model?.ExistenceMap?.CountBits() ?? 0).Should().Be(0);
     }
 
-    [Theory(Skip="Flaky unit test,. Tobe investigated")]
+    [Theory]
     [InlineData(DeleteSiteModelSelectivity.All)]
     [InlineData(DeleteSiteModelSelectivity.TagFileDerivedData)]
     public void DeleteModel_WithTagFile(DeleteSiteModelSelectivity selectivity)

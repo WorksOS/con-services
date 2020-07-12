@@ -31,7 +31,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       var projectUid = string.IsNullOrEmpty(data.ProjectTrn) ? null : TRNHelper.ExtractGuid(data.ProjectTrn);
 
-      if (data.NotificationType.HasFlag(NotificationType.CoordinateSystem))
+      //CWS are not sending the correct NotificationType so check what data has been sent
+      var updatingCoordSystem = !string.IsNullOrEmpty(data.CoordinateSystemFileName) ||
+                                (data.CoordinateSystemFileContent != null && data.CoordinateSystemFileContent.Length > 0);
+
+      if (data.NotificationType.HasFlag(NotificationType.CoordinateSystem) || updatingCoordSystem)
       {
         if (!projectUid.HasValue)
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 5);
@@ -45,7 +49,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         await SaveCoordinateSystem(projectUid.Value, data.CoordinateSystemFileName, data.CoordinateSystemFileContent);
       }
 
-      if (data.NotificationType.HasFlag(NotificationType.MetaData))
+      if (data.NotificationType.HasFlag(NotificationType.MetaData) || !updatingCoordSystem)
       {
         if (projectUid.HasValue)
         {

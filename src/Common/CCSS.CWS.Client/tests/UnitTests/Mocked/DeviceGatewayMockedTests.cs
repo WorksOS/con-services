@@ -111,19 +111,19 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var deviceName = $"{deviceType}-{serialNumber}";
 
       var deviceLksResponseModel = new DeviceLKSResponseModel()
-          {
-            TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+      {
+        TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
             lat = 89.3, lon = 189.1,
             assetType = deviceType,
             assetSerialNumber = serialNumber,
             deviceName = deviceName,
             lastReported = DateTime.UtcNow.AddDays(1),
-           };
+      };
 
       var route = $"/devicegateway/devicelks/{deviceName}";
       var expectedUrl = $"{baseUrl}{route}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
-        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), 
+        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(),
         route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
       MockUtilities.TestRequestSendsCorrectJson("Get device LKS", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceLksResponseModel, async () =>

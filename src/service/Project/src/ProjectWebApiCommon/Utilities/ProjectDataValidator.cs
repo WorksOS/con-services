@@ -177,7 +177,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       log.LogInformation($"{nameof(ValidateProjectName)} projectName: {projectName} projectUid: {projectUid}");
       var duplicateProjectNames =
         (await ProjectRequestHelper.GetProjectListForCustomer(customerUid, userUid,
-          log, serviceExceptionHandler, cwsProjectClient, null, ProjectStatus.Active, customHeaders))
+          log, serviceExceptionHandler, cwsProjectClient, null, ProjectStatus.Active, false, customHeaders))
         .Where(
           p => p.IsArchived == false &&
                 string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&

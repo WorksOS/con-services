@@ -104,7 +104,7 @@ namespace VSS.TRex.Tests.RecyclableMemoryStream
       stream.Position.Should().Be(1);
       stream.Position = 0;
 
-      var buffer = new Byte[10];
+      var buffer = new byte[10];
       var numBytes = stream.Read(buffer, 0, buffer.Length);
 
       numBytes.Should().Be(1);

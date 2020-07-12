@@ -69,7 +69,7 @@ namespace CCSS.CWS.Client
       if (earliestOfInterestUtc != null)
         queryParameters.Add(new KeyValuePair<string, string>("lastReported", $"{earliestOfInterestUtc:yyyy-MM-ddTHH:mm:ssZ}"));
       var deviceLksListResponseModel = await GetDataNoCache<List<DeviceLKSResponseModel>>($"{ROUTE_PREFIX}/devicelks", queryParameters, customHeaders);
- 
+
       log.LogDebug($"{nameof(GetDevicesLKSForProject)}: deviceLKSListResponseModel {(deviceLksListResponseModel == null ? null : JsonConvert.SerializeObject(deviceLksListResponseModel))}");
       return deviceLksListResponseModel;
     }

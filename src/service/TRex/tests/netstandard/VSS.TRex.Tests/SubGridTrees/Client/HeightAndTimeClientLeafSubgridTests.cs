@@ -1,4 +1,4 @@
-﻿
+﻿using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -13,6 +13,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
   /// </summary>
   public class HeightAndTimeClientLeafSubgridTests : IClassFixture<DILoggingFixture>
   {
+    private static readonly ILogger _log = VSS.TRex.Logging.Logger.CreateLogger<HeightAndTimeClientLeafSubgridTests>();
+
     [Fact]
     public void Test_NullCells()
     {
@@ -35,7 +37,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     public void DumpToLog()
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.HeightAndTime) as ClientHeightAndTimeLeafSubGrid;
-      clientGrid.DumpToLog(clientGrid.ToString());
+      clientGrid.DumpToLog(_log, clientGrid.ToString());
     }
   }
 }

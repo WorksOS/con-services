@@ -86,7 +86,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
     public string ts { get; set; }
     public double? h { get; set; }
     public string operatorName { get; set; }
-    public bool? isLlhSiteLocal { get; set; } 
+    public bool? isLlhSiteLocal { get; set; }
     public string language { get; set; }
     public string coordinateSystemHash { get; set; }
     public bool? isDataLogging { get; set; }

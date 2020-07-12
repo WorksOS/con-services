@@ -20,20 +20,27 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.AWS.TransferProxy.Interfaces;
 using System.Collections.Generic;
+using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
   public class DILoggingFixture : IDisposable
   {
-    public new static void ClearDynamicFxtureContent()
+    public virtual void ClearDynamicFixtureContent()
     {
     }
 
-    private Dictionary<TransferProxyType, IS3FileTransfer> _s3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+    private Dictionary<TransferProxyType, IS3FileTransfer> _s3FileTransferProxies;
 
-    public void SetupFixture()
+    public virtual void SetupFixture()
     {
-      DIBuilder
+      // At this stage in the DI configuration create a mocked TRexIgniteFactory to permit, for example, storage proxies to 
+      // obtain a non-null factory that will return null grid references
+      var mockTRexGridFactory = new Mock<ITRexGridFactory>();
+
+      _s3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+
+       DIBuilder
         .New()
         .AddLogging()
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
@@ -135,6 +142,8 @@ namespace VSS.TRex.Tests.TestFixtures
             return proxy;
           }))
 
+        .Add(x => x.AddSingleton(mockTRexGridFactory.Object))
+
         .Complete();
     }
 
@@ -166,7 +175,7 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
       ClearHelpers();
       DIBuilder.Eject();

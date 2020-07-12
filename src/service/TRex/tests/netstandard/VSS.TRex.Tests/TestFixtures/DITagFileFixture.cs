@@ -13,6 +13,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Factories;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -34,13 +35,13 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DITagFileFixture : DILoggingFixture, IDisposable
   {
-    private static TAGFileBufferQueue _tagFileBufferQueue;
+    private TAGFileBufferQueue _tagFileBufferQueue;
 
-    public new static void ClearDynamicFxtureContent()
+    public override void ClearDynamicFixtureContent()
     {
-      _tagFileBufferQueue = null;
+      base.ClearDynamicFixtureContent();
 
-      DILoggingFixture.ClearDynamicFxtureContent();
+      _tagFileBufferQueue = null;
     }
 
     public static Guid NewSiteModelGuid => Guid.NewGuid();
@@ -76,7 +77,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return converter;
     }
 
-    public static void AddProxyCacheFactoriesToDI()
+    public void AddProxyCacheFactoriesToDI()
     {
       _tagFileBufferQueue = null;
 
@@ -132,8 +133,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Build();
     }
 
-    public new void SetupFixture()
+    public override void SetupFixture()
     {
+      base.SetupFixture();
+
       var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
       var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
 
@@ -154,8 +157,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
         .Add(x => x.AddSingleton<ISiteModelMetadataManager>(mockSiteModelMetadataManager.Object))
 
+        .Add(x => x.AddTransient<IDesigns>(factory => new TRex.Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
+        .Add(x => x.AddTransient<IAlignments>(factory => new TRex.Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
 
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(mockSiteModelAttributesChangedEventSender.Object))
@@ -171,7 +176,7 @@ namespace VSS.TRex.Tests.TestFixtures
       SetupFixture();
     }
 
-    public new void Dispose()
+    public override void Dispose()
     {
       base.Dispose();
     }

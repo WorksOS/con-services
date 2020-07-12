@@ -31,7 +31,7 @@ namespace CCSS.CWS.Client.MockClients
       log.LogDebug($"{nameof(GetDeviceLKS)} Mock: serialNumber {deviceName}");
 
       var serialNumber = "12456YU";
-      var  deviceLksResponseModel = new DeviceLKSResponseModel()
+      var deviceLksResponseModel = new DeviceLKSResponseModel()
       {
         TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
         lat = 89.3, lon = 189.1,

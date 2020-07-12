@@ -1,5 +1,4 @@
-﻿
-namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
+﻿namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
 {
   public class GNSSAntenna
   {

@@ -17,8 +17,8 @@ namespace CCSS.CWS.Client
     protected const string ROUTE_PREFIX = "/devicegateway";
 
     protected CwsDeviceGatewayManagerClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
-     IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
-     dataCache, serviceResolution)
+      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
+      dataCache, serviceResolution)
     { }
   }
 }

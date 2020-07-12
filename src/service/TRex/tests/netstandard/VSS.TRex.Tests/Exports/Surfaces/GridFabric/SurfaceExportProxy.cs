@@ -12,6 +12,13 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
   {
     public SurfaceExportProxy()
     {
+      SetupFixture();
+    }
+
+    public override void SetupFixture()
+    {
+      base.SetupFixture();
+
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
 
