@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
-using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -21,7 +19,6 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
-using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 

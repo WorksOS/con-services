@@ -62,24 +62,22 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
           Log.LogInformation("Executing render.ExecuteAsync()");
 
-          using (var bmp = render.ExecuteAsync().WaitAndUnwrapException())
+          using var bmp = render.ExecuteAsync().WaitAndUnwrapException();
+          Log.LogInformation($"Render status = {render.ResultStatus}");
+
+          if (bmp == null)
           {
-            Log.LogInformation($"Render status = {render.ResultStatus}");
-
-            if (bmp == null)
-            {
-              Log.LogInformation("Null bitmap returned by executor");
-            }
-
-            // Get the rendering factory from the DI context
-            var renderingFactory = DIContext.Obtain<IRenderingFactory>();
-            var response = renderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
-
-            if (response != null)
-              response.ResultStatus = render.ResultStatus;
-
-            return response;
+            Log.LogInformation("Null bitmap returned by executor");
           }
+
+          // Get the rendering factory from the DI context
+          var renderingFactory = DIContext.Obtain<IRenderingFactory>();
+          var response = renderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+
+          if (response != null)
+            response.ResultStatus = render.ResultStatus;
+
+          return response;
         }
         finally
         {

@@ -20,7 +20,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class ServerSubGridTreeLeafTests : IClassFixture<DILoggingFixture>
+  public class ServerSubGridTreeLeafTests : IClassFixture<DITagFileFixture>
   {
     private CellPass CreateTestCellPass()
     {

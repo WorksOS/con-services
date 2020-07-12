@@ -15,9 +15,13 @@ namespace VSS.TRex.DI
     public static void Inject(DIBuilder implementation) => Inject(implementation.ServiceProvider);
 
     /// <summary>
+    /// Determines the default behaviour of Obtain<T>: Optional or mandatory presence in the service provider
+    /// </summary>
+    public static bool DefaultIsRequired = false;
+
+    /// <summary>
     /// Injects the service provider collection in the TRex DI context.
     /// </summary>
-    /// <param name="serviceProvider"></param>
     public static void Inject(IServiceProvider serviceProvider)
     {
       // Register the service provider with the overall TRex DI context
@@ -38,16 +42,39 @@ namespace VSS.TRex.DI
     }
 
     /// <summary>
+    /// Obtain a service instance matching a provided type T. If there is no ServiceProvider or the service provider
+    /// returns a default service then return that default/null service
+    /// </summary>
+    public static T ObtainOptional<T>() => ServiceProvider == null ? default(T) : ServiceProvider.GetService<T>();
+
+    /// <summary>
     /// Obtain a service instance matching a provided type T
     ///  </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns>The service implementing T. If there is no ServiceProvider available then return a default(T)</returns>
-    public static T Obtain<T>() => ServiceProvider == null ? default(T) : ServiceProvider.GetService<T>();
+    /// <returns>The service implementing T. If there is no ServiceProvider or the service provider returns a default
+    /// service then throw an exception (ie: All Obtains are required services</returns>
+    public static T ObtainRequired<T>()
+    {
+      if (ServiceProvider == null)
+        throw new Exception("DIContext service provider not available");
+
+      var result = ServiceProvider.GetRequiredService<T>();
+
+      if (result == null)
+        throw new Exception("Required service not available, null result on GetRequiredService");
+
+      return result;
+    }
+
+    /// <summary>
+    /// Obtain a service instance matching a provided type T using the default required/optional mechanism
+    ///  </summary>
+    /// <returns>The service implementing T. If there is no ServiceProvider or the service provider returns a default
+    /// service then throw an exception (ie: All Obtains are required services</returns>
+    public static T Obtain<T>() => DefaultIsRequired ? ObtainRequired<T>() : ObtainOptional<T>();
 
     /// <summary>
     /// Obtain all service instances matching a provided type T
     ///  </summary>
-    /// <typeparam name="T"></typeparam>
     /// <returns>The services implementing T. If there is no ServiceProvider available then return null</returns>
     public static IEnumerable<T> ObtainMany<T>() => ServiceProvider?.GetServices<T>();
   }

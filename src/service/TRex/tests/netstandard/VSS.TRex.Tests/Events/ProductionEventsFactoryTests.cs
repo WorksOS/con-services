@@ -3,17 +3,18 @@ using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Models;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Events
 {
-  public class ProductionEventsFactoryTests
+  public class ProductionEventsFactoryTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_ProductionEventsFactory_FactoryCreation()
     {
-      ProductionEventsFactory factory = new ProductionEventsFactory();
+      var factory = new ProductionEventsFactory();
 
       Assert.True(factory != null);
     }
@@ -22,7 +23,7 @@ namespace VSS.TRex.Tests.Events
     public void Test_ProductionEventsFactory_ExpectedNumberOfEventTypes()
     {
       const int expectedCount = 27;
-      int actualCount = Enum.GetValues(typeof(ProductionEventType)).Length;
+      var actualCount = Enum.GetValues(typeof(ProductionEventType)).Length;
 
       Assert.True(actualCount == expectedCount, 
         $"Number of production event types is {actualCount }, not {expectedCount} as expected");
@@ -32,9 +33,9 @@ namespace VSS.TRex.Tests.Events
     public void Test_ProductionEventsFactory_ExpectedNumberOfCreatableEventTypes()
     {
       const int expectedCount = 23;
-      int actualCount = 0;
+      var actualCount = 0;
 
-      ProductionEventsFactory factory = new ProductionEventsFactory();
+      var factory = new ProductionEventsFactory();
 
       foreach (ProductionEventType eventType in Enum.GetValues(typeof(ProductionEventType)))
         if (factory.NewEventList(-1, Guid.Empty, eventType) != null)
@@ -70,7 +71,7 @@ namespace VSS.TRex.Tests.Events
     [InlineData(ProductionEventType.DesignChange, typeof(ProductionEvents<int>))]
     public void Test_ProductionEventsFactory_EventListCreation(ProductionEventType eventType, Type listType)
     {
-      ProductionEventsFactory factory = new ProductionEventsFactory();
+      var factory = new ProductionEventsFactory();
 
       var list = factory.NewEventList(-1, Guid.Empty, eventType);
 

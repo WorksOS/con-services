@@ -88,9 +88,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <param name="task">The 'seed' task used as a template for locating matching tasks</param>
     private ISiteModel ObtainSiteModel(AggregatedDataIntegratorTask task)
     {
-      // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
-      // and also explicitly provides the transactional storage proxy being used for processing the
-      // data from TAG files into the model
+      // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel
       var siteModelFromDatamodel = DIContext.Obtain<ISiteModels>().GetSiteModel(task.PersistedTargetSiteModelID, true);
 
       siteModelFromDatamodel?.SetStorageRepresentationToSupply(StorageMutability.Mutable);
@@ -543,7 +541,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     private void CommitSiteModelExistenceMapToPersistentStore(ISiteModel siteModelFromDatamodel)
     {
       // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-      siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable);
+      if (!siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable))
+      {
+        _log.LogError($"SaveToPersistentStoreForTAGFileIngest() failed for sitemodel {siteModelFromDatamodel.ID}");
+      }
 
       if (!_storageProxyMutable.Commit())
       {
@@ -555,9 +556,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// Processes all available tasks in the TasksToProcess list up to the maximum number the worker will accept 
     /// for any single epoch of processing TAG files.
     /// </summary>
-    /// <param name="processedTasks"></param>
-    /// <param name="numTagFilesRepresented"></param>
-    /// <returns></returns>
     public bool ProcessTask(List<AggregatedDataIntegratorTask> processedTasks, int numTagFilesRepresented)
     {
       long totalPassCountInAggregation = 0;

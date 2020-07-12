@@ -1,6 +1,4 @@
-﻿using VSS.TRex.DI;
-
-namespace VSS.TRex.IO.Helpers
+﻿namespace VSS.TRex.IO.Helpers
 {
     public static class GenericTwoDArrayCacheHelper<T>
     {
@@ -18,9 +16,7 @@ namespace VSS.TRex.IO.Helpers
           {
             if (_caches == null)
             {
-              _caches = DIContext.Obtain<IGenericTwoDArrayCache<T>>()
-                        ?? new GenericTwoDArrayCache<T>(DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_DIMENSION_SIZE,
-                          DEFAULT_TWOD_ARRAY_CACHE_SIZE);
+              _caches = new GenericTwoDArrayCache<T>(DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_DIMENSION_SIZE, DEFAULT_TWOD_ARRAY_CACHE_SIZE);
 
               GenericTwoDArrayCacheRegister.Add(_caches);
             }

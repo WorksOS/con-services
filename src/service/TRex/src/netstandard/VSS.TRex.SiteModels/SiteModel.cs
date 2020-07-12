@@ -147,7 +147,7 @@ namespace VSS.TRex.SiteModels
 
     public bool GridLoaded => grid != null;
 
-    private ISubGridTreeBitMask existenceMap;
+    private ISubGridTreeBitMask _existenceMap;
 
     /// <summary>
     /// Returns a reference to the existence map for the site model. If the map is not yet present load it from storage/cache.
@@ -160,7 +160,7 @@ namespace VSS.TRex.SiteModels
     /// Gets the loaded state of the existence map. This permits testing if a map is loaded without forcing
     /// the map to be loaded via the ExistenceMap property
     /// </summary>
-    public bool ExistenceMapLoaded => existenceMap != null;
+    public bool ExistenceMapLoaded => _existenceMap != null;
 
     /* VersionMap commented out in interim pending consistency scope review
     private IGenericSubGridTree_Long versionMap;
@@ -473,7 +473,7 @@ namespace VSS.TRex.SiteModels
         ? originModel.CSIB()
         : null;
 
-      existenceMap = originModel.ExistenceMapLoaded &&
+      _existenceMap = originModel.ExistenceMapLoaded &&
                      (originFlags & SiteModelOriginConstructionFlags.PreserveExistenceMap) != 0
         ? originModel.ExistenceMap
         : null;
@@ -533,7 +533,7 @@ versionMap = originModel.VersionMapLoaded && (originFlags & SiteModelOriginConst
       IsTransient = isTransient;
 
 // Allow existence & version map loading to be deferred/lazy on reference
-      existenceMap = null;
+      _existenceMap = null;
 
 /* VersionMap commented out in interim pending consistency scope review
 versionMap = null;
@@ -692,6 +692,7 @@ versionMap = null;
       {
         if (!SaveMetadataToPersistentStore(storageProxy, false))
         {
+          _log.LogError($"Failed to save metadata for site model {ID} to persistent store");
           result = false;
         }
 
@@ -758,11 +759,11 @@ Result = false;
     {
       var result = FileSystemErrorStatus.OK;
 
-      if (existenceMap != null)
+      if (_existenceMap != null)
       {
-        using var stream = existenceMap.ToStream();
+        using var stream = _existenceMap.ToStream();
         result = storageProxy.WriteStreamToPersistentStore(ID, SubGridExistenceMapFileName,
-          FileSystemStreamType.SubGridExistenceMap, stream, existenceMap);
+          FileSystemStreamType.SubGridExistenceMap, stream, _existenceMap);
       }
 
       return result;
@@ -790,14 +791,14 @@ Result = false;
     /// <returns></returns>
     private ISubGridTreeBitMask LoadProductionDataExistenceMapFromStorage()
     {
-      var existenceMapCopy = existenceMap;
+      var existenceMapCopy = _existenceMap;
       if (existenceMapCopy != null)
         return existenceMapCopy;
 
       lock (_lockObj)
       {
 // Check we this is the winning thread
-        existenceMapCopy = existenceMap;
+        existenceMapCopy = _existenceMap;
         if (existenceMapCopy != null)
           return existenceMapCopy;
 
@@ -821,7 +822,7 @@ Result = false;
         }
 
         // Replace existence map with the newly read map
-        existenceMap = localExistenceMap;
+        _existenceMap = localExistenceMap;
         return localExistenceMap;
       }
     }

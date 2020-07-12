@@ -1,6 +1,4 @@
-﻿using VSS.TRex.DI;
-
-namespace VSS.TRex.IO.Helpers
+﻿namespace VSS.TRex.IO.Helpers
 {
   public static class GenericArrayPoolCacheHelper<T>
   {
@@ -8,7 +6,7 @@ namespace VSS.TRex.IO.Helpers
 
     private static IGenericArrayPoolCaches<T> _caches;
 
-    public static IGenericArrayPoolCaches<T> Caches() 
+    public static IGenericArrayPoolCaches<T> Caches()
     {
       if (_caches == null)
       {
@@ -16,7 +14,7 @@ namespace VSS.TRex.IO.Helpers
         {
           if (_caches == null)
           {
-            _caches = DIContext.Obtain<IGenericArrayPoolCaches<T>>() ?? new GenericArrayPoolCaches<T>();
+            _caches = new GenericArrayPoolCaches<T>();
             GenericArrayPoolCachesRegister.Add(_caches);
           }
         }

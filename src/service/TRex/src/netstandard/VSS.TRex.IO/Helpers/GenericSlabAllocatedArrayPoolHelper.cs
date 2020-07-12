@@ -1,6 +1,4 @@
-﻿using VSS.TRex.DI;
-
-namespace VSS.TRex.IO.Helpers
+﻿namespace VSS.TRex.IO.Helpers
 {
   public static class GenericSlabAllocatedArrayPoolHelper<T>
   {
@@ -16,14 +14,14 @@ namespace VSS.TRex.IO.Helpers
         {
           if (_pool == null)
           {
-            _pool = DIContext.Obtain<ISlabAllocatedArrayPool<T>>() ?? new SlabAllocatedArrayPool<T>();
+            _pool = new SlabAllocatedArrayPool<T>();
             GenericSlabAllocatedArrayPoolRegister.Add(_pool);
           }
         }
       }
 
       return _pool;
-    } 
+    }
 
     public static void Clear() => _pool = null;
   }
