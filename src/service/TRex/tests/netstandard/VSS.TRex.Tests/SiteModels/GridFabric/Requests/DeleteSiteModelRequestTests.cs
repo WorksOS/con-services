@@ -82,13 +82,13 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       _log.LogInformation("Mutable");
       IgniteMock.Mutable.MockedCacheDictionaries.ForEach(x =>
       {
-        _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
+        _log.LogInformation($"{x.Key}: {x.Value.Keys.Count} keys, {x.Value.Values.Count} values");
       });
 
       _log.LogInformation("Immutable");
       IgniteMock.Immutable.MockedCacheDictionaries.ForEach(x =>
       {
-        _log.LogInformation($"{x.Key}: {x.Value.Values.Count} values");
+        _log.LogInformation($"{x.Key}: {x.Value.Keys.Count} keys, {x.Value.Values.Count} values");
       });
     }
 
