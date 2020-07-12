@@ -55,14 +55,8 @@ namespace CoreX.Wrapper
     /// </summary>
     public static string GetCSIBFromDCFileContent(string fileContent)
     {
-      static bool IsBase64String(string base64) => 
-        Convert.TryFromBase64String(base64, new Span<byte>(new byte[base64.Length]), out var bytesParsed);
-
       // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
-      if (IsBase64String(fileContent))
-      {
-        fileContent = fileContent.DecodeFromBase64();
-      }
+      fileContent = fileContent.DecodeFromBase64();
 
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 

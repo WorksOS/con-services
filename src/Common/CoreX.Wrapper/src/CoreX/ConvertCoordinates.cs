@@ -3,6 +3,7 @@ using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace CoreX.Wrapper
 {
@@ -16,15 +17,12 @@ namespace CoreX.Wrapper
   public class ConvertCoordinates : IConvertCoordinates
   {
     private readonly CoreX _coreX;
+    private readonly ILogger _log;
 
-    public ConvertCoordinates(CoreX coreX)
+    public ConvertCoordinates(ILoggerFactory loggerFactory)
     {
-      if (coreX == null)
-      {
-        throw new InvalidOperationException("CoreX cannot be null");
-      }
-
-      _coreX = coreX;
+      _log = loggerFactory.CreateLogger(GetType().Name);
+      _coreX = new CoreX();
     }
 
     public ConvertCoordinates()
@@ -36,18 +34,34 @@ namespace CoreX.Wrapper
     /// <inheritdoc />
     public NEE LLHToNEE(string csib, LLH coordinates, InputAs inputAs)
     {
+      var requestId = Guid.NewGuid();
+
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, LLH: {coordinates}  InputAs: {inputAs}");
+
       if (inputAs == InputAs.Degrees)
       {
         coordinates.Latitude = coordinates.Latitude.DegreesToRadians();
         coordinates.Longitude = coordinates.Longitude.DegreesToRadians();
       }
 
-      return _coreX.TransformLLHToNEE(csib, coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+      var result = _coreX.TransformLLHToNEE(
+        csib,
+        coordinates,
+        fromType: CoordinateTypes.ReferenceGlobalLLH,
+        toType: CoordinateTypes.OrientatedNEE);
+
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, Returning NEE: {result}");
+
+      return result;
     }
 
     /// <inheritdoc />
     public NEE[] LLHToNEE(string csib, LLH[] coordinates, InputAs inputAs)
     {
+      var requestId = Guid.NewGuid();
+
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, LLH[]: {string.Concat(coordinates)}  InputAs: {inputAs}, CSIB: {csib}");
+
       if (inputAs == InputAs.Degrees)
       {
         for (var i = 0; i < coordinates.Length; i++)
@@ -58,12 +72,24 @@ namespace CoreX.Wrapper
         }
       }
 
-      return _coreX.TransformLLHToNEE(csib, coordinates, fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+      var result = _coreX.TransformLLHToNEE(
+        csib,
+        coordinates,
+        fromType: CoordinateTypes.ReferenceGlobalLLH,
+        toType: CoordinateTypes.OrientatedNEE);
+
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, Returning NEE[]: {string.Concat(result)}");
+
+      return result;
     }
 
     /// <inheritdoc />
     public XYZ LLHToNEE(string csib, XYZ coordinates, InputAs inputAs)
     {
+      var requestId = Guid.NewGuid();
+
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, XYZ: {coordinates}  InputAs: {inputAs}, CSIB: {csib}");
+
       if (inputAs == InputAs.Degrees)
       {
         coordinates.X = coordinates.X.DegreesToRadians();
@@ -73,17 +99,25 @@ namespace CoreX.Wrapper
       var neeCoords = _coreX
         .TransformLLHToNEE(csib, coordinates.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
-      return new XYZ
+      var result = new XYZ
       {
         X = neeCoords.East,
         Y = neeCoords.North,
         Z = neeCoords.Elevation
       };
+
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, Returning XYZ: {result}");
+
+      return result;
     }
 
     /// <inheritdoc/>
     public XYZ[] LLHToNEE(string csib, XYZ[] coordinates, InputAs inputAs)
     {
+      var requestId = Guid.NewGuid();
+
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, XYZ[]: {string.Concat(coordinates)}  InputAs: {inputAs}, CSIB: {csib}");
+
       if (inputAs == InputAs.Degrees)
       {
         for (var i = 0; i < coordinates.Length; i++)
@@ -113,28 +147,40 @@ namespace CoreX.Wrapper
         };
       }
 
+      _log.LogDebug($"{nameof(LLHToNEE)}: CoreXRequestID: {requestId}, Returning XYZ[]: {string.Concat(responseArray)}");
+
       return responseArray;
     }
 
     /// <inheritdoc/>
     public XYZ NEEToLLH(string csib, XYZ coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      var requestId = Guid.NewGuid();
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, XYZ: {coordinates}  ReturnAs: {returnAs}, CSIB: {csib}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
       var inDegrees = returnAs == ReturnAs.Degrees;
 
-      return new XYZ
+      var result = new XYZ
       {
         Y = inDegrees ? llhCoords.Latitude.RadiansToDegrees() : llhCoords.Latitude,
         X = inDegrees ? llhCoords.Longitude.RadiansToDegrees() : llhCoords.Longitude,
         Z = llhCoords.Height
       };
+
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, Returning XYZ {result}");
+
+      return result;
     }
 
     /// <inheritdoc/>
     public XYZ[] NEEToLLH(string csib, XYZ[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      var requestId = Guid.NewGuid();
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, XYZ[]: {string.Concat(coordinates)}  ReturnAs: {returnAs}, CSIB: {csib}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates.ToNEE(), fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -153,28 +199,40 @@ namespace CoreX.Wrapper
         };
       }
 
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, Returning XYZ[]: {string.Concat(responseArray)}");
+
       return responseArray;
     }
 
     /// <inheritdoc/>
     public LLH NEEToLLH(string csib, NEE coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      var requestId = Guid.NewGuid();
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, NEE: {coordinates}  ReturnAs: {returnAs}, CSIB: {csib}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
       var inDegrees = returnAs == ReturnAs.Degrees;
 
-      return new LLH
+      var result = new LLH
       {
         Longitude = inDegrees ? llhCoords.Longitude.RadiansToDegrees() : llhCoords.Longitude,
         Latitude = inDegrees ? llhCoords.Latitude.RadiansToDegrees() : llhCoords.Latitude,
         Height = llhCoords.Height
       };
+
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, Returning LLH: {result}");
+
+      return result;
     }
 
     /// <inheritdoc/>
     public LLH[] NEEToLLH(string csib, NEE[] coordinates, ReturnAs returnAs = ReturnAs.Radians)
     {
+      var requestId = Guid.NewGuid();
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, NEE[]: {string.Concat(coordinates)}  ReturnAs: {returnAs}, CSIB: {csib}");
+
       var llhCoords = _coreX
         .TransformNEEToLLH(csib, coordinates, fromType: CoordinateTypes.OrientatedNEE, toType: CoordinateTypes.ReferenceGlobalLLH);
 
@@ -193,12 +251,17 @@ namespace CoreX.Wrapper
         };
       }
 
+      _log.LogDebug($"{nameof(NEEToLLH)}: CoreXRequestID: {requestId}, Returning LLH[]: {string.Concat(responseArray)}");
+
       return responseArray;
     }
 
     /// <inheritdoc/>
     public XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point)
     {
+      var requestId = Guid.NewGuid();
+      _log.LogDebug($"{nameof(WGS84ToCalibration)}: CoreXRequestID: {requestId}, wgs84Point: {wgs84Point}, CSIB: {csib}");
+
       var nee = _coreX
         .TransformLLHToNEE(csib, new LLH
         {
@@ -208,17 +271,25 @@ namespace CoreX.Wrapper
         },
         fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
-      return new XYZ
+      var result = new XYZ
       {
         X = nee.East,
         Y = nee.North,
         Z = nee.Elevation
       };
+
+      _log.LogDebug($"{nameof(WGS84ToCalibration)}: CoreXRequestID: {requestId}, Returning XYZ: {result}");
+
+      return result;
     }
 
     /// <inheritdoc/>
     public XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points)
     {
+      var requestId = Guid.NewGuid();
+
+      _log.LogDebug($"{nameof(WGS84ToCalibration)}: CoreXRequestID: {requestId}, wgs84Points[]: {string.Concat<WGS84Point>(wgs84Points)}, CSIB: {csib}");
+
       var neeCoords = _coreX
         .TransformLLHToNEE(csib, wgs84Points.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
 
@@ -235,6 +306,8 @@ namespace CoreX.Wrapper
           Z = llh.Elevation
         };
       }
+
+      _log.LogDebug($"{nameof(WGS84ToCalibration)}: CoreXRequestID: {requestId}, Returning XYZ[]: {string.Concat(responseArray)}");
 
       return responseArray;
     }
