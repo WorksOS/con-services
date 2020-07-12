@@ -692,6 +692,7 @@ versionMap = null;
       {
         if (!SaveMetadataToPersistentStore(storageProxy, false))
         {
+          _log.LogError($"Failed to save metadata for site model {ID} to persistent store");
           result = false;
         }
 
