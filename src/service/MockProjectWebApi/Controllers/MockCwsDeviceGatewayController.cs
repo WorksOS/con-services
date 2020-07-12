@@ -5,8 +5,7 @@ using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Utils;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
-using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -18,32 +17,33 @@ namespace MockProjectWebApi.Controllers
     { }
 
     [HttpGet]
-    [Route("api/v2/devicelks")]
-    public DeviceLKSListResponseModel GetDevicesLKSForProject(
+    [Route("api/v2/devicegateway/devicelks")]
+    public List<DeviceLKSResponseModel> GetDevicesLKSForProject(
       [FromQuery] string projectid,
       [FromQuery] DateTime? lastReported)
     {
       Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} projectid {projectid} lastReported {lastReported}");
 
-      var result = new DeviceLKSListResponseModel();
+      var result = new List<DeviceLKSResponseModel>();
       if (TRNHelper.ExtractGuid(projectid) == new Guid(ConstantsUtil.DIMENSIONS_PROJECT_UID))
-        result.Devices = new List<DeviceLKSResponseModel>()
-        { new DeviceLKSResponseModel() 
-          { TRN = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
-            SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
-            Latitude = 89.9, Longitude = 34.6,
-            DeviceType = CWSDeviceTypeEnum.EC520,
-            DeviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
-            ProjectName = "DimensionsProject",
-            LastReportedUtc = DateTime.UtcNow.AddDays(-1)
-          }};
+        result.Add(new DeviceLKSResponseModel()
+        {
+          TRN = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
+          assetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
+          lat = 89.9,
+          lon = 34.6,
+          assetType = CWSDeviceTypeEnum.EC520,
+          deviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
+          projectName = "DimensionsProject",
+          lastReported = DateTime.UtcNow.AddDays(-1)
+        });
 
       return result;
     }
 
     [HttpGet]
-    [Route("api/v2/devicelks/{deviceName}")]
-    public DeviceLKSResponseModel GetDeviceWithLKS(string deviceName )
+    [Route("api/v2/devicegateway/devicelks/{deviceName}")]
+    public DeviceLKSResponseModel GetDeviceWithLKS(string deviceName)
     {
       Logger.LogInformation($"{nameof(GetDeviceWithLKS)} deviceName {deviceName}");
 
@@ -51,13 +51,13 @@ namespace MockProjectWebApi.Controllers
         return new DeviceLKSResponseModel()
         {
           TRN = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
-          SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
-          Latitude = 89.9,
-          Longitude = 34.6,
-          DeviceType = CWSDeviceTypeEnum.EC520,
-          DeviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
-          ProjectName = "DimensionsProject",
-          LastReportedUtc = DateTime.UtcNow.AddDays(-1)
+          assetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
+          lat = 89.9,
+          lon = 34.6,
+          assetType = CWSDeviceTypeEnum.EC520,
+          deviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
+          projectName = "DimensionsProject",
+          lastReported = DateTime.UtcNow.AddDays(-1)
         };
 
       return null;

@@ -15,7 +15,9 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v1/users/me/accounts")]
     [HttpGet]
-    public AccountListResponseModel GetMyAccounts()
+    public AccountListResponseModel GetMyAccounts(
+      [FromQuery] int from,
+      [FromQuery] int limit)
     {
       var accountListResponseModel = new AccountListResponseModel()
       {
