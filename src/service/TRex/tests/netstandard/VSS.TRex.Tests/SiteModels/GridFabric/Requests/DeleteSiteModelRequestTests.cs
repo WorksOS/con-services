@@ -95,12 +95,6 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     private void VerifyModelIsEmpty(ISiteModel model)
     {
       var isModelEmpty = IsModelEmpty(model, true);
-
-      if (!isModelEmpty)
-      {
-        DumpModelContents("After full check");
-      }
-
       isModelEmpty.Should().BeTrue();
     }
 
