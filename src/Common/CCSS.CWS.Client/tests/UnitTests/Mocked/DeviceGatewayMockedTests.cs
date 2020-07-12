@@ -8,6 +8,7 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using Xunit;
 
@@ -31,36 +32,32 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var projectUid = Guid.NewGuid();
 
       var serialNumber = "12456YU";
-      var deviceLksListResponseModel = new DeviceLKSListResponseModel()
-      {
-        Devices = new List<DeviceLKSResponseModel>()
+      var devices = new List<DeviceLKSResponseModel>()
         {
           new DeviceLKSResponseModel()
           {
             TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
-            Latitude = 89.3,
-            Longitude = 189.1,
-            DeviceType = CWSDeviceTypeEnum.EC520,
-            SerialNumber = serialNumber,
-            DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-            LastReportedUtc = DateTime.UtcNow.AddDays(-1),
+            lat = 89.3, lon = 189.1,
+            assetType = CWSDeviceTypeEnum.EC520,
+            assetSerialNumber = serialNumber,
+            deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+            lastReported = DateTime.UtcNow.AddDays(-1),
           }
-        }
       };
 
-      var route = $"/devicelks";
+      var route = $"/devicegateway/devicelks";
       var expectedUrl = $"{baseUrl}{route}?projectid={TRNHelper.MakeTRN(projectUid.ToString())}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
-      MockUtilities.TestRequestSendsCorrectJson("Get devices for project", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceLksListResponseModel, async () =>
+      MockUtilities.TestRequestSendsCorrectJson("Get devices for project", mockWebRequest, null, expectedUrl, HttpMethod.Get, devices, async () =>
       {
         var client = ServiceProvider.GetRequiredService<ICwsDeviceGatewayClient>();
         var result = await client.GetDevicesLKSForProject(projectUid);
 
         Assert.NotNull(result);
-        Assert.Single(result.Devices);
-        Assert.Equal(deviceUid.ToString(), result.Devices[0].Id);
+        Assert.Single(result);
+        Assert.Equal(deviceUid.ToString(), result[0].deviceUid);
         return true;
       });
     }
@@ -73,37 +70,33 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var earliestOfInterestUtc = DateTime.UtcNow.AddDays(-2).AddHours(4.5);
 
       var serialNumber = "12456YU";
-      var deviceLksListResponseModel = new DeviceLKSListResponseModel()
-      {
-        Devices = new List<DeviceLKSResponseModel>()
+      var devices = new List<DeviceLKSResponseModel>()
         {
           new DeviceLKSResponseModel()
           {
             TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
-            Latitude = 89.3,
-            Longitude = 189.1,
-            DeviceType = CWSDeviceTypeEnum.EC520,
-            SerialNumber = serialNumber,
-            DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-            LastReportedUtc = earliestOfInterestUtc.AddDays(1),
+            lat = 89.3, lon = 189.1,
+            assetType = CWSDeviceTypeEnum.EC520,
+            assetSerialNumber = serialNumber,
+            deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+            lastReported = earliestOfInterestUtc.AddDays(1),
           }
-        }
       };
 
-      var route = $"/devicelks";
+      var route = $"/devicegateway/devicelks";
       var expectedUrl = $"{baseUrl}{route}?projectid={TRNHelper.MakeTRN(projectUid.ToString())}&lastReported={earliestOfInterestUtc:yyyy-MM-ddTHH:mm:ssZ}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
-      MockUtilities.TestRequestSendsCorrectJson("Get devices for project with earliestDate", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceLksListResponseModel, async () =>
+      MockUtilities.TestRequestSendsCorrectJson("Get devices for project with earliestDate", mockWebRequest, null, expectedUrl, HttpMethod.Get, devices, async () =>
       {
         var client = ServiceProvider.GetRequiredService<ICwsDeviceGatewayClient>();
         var result = await client.GetDevicesLKSForProject(projectUid);
 
         Assert.NotNull(result);
-        Assert.Single(result.Devices);
-        Assert.Equal(deviceUid.ToString(), result.Devices[0].Id);
-        Assert.Equal(deviceLksListResponseModel.Devices[0].LastReportedUtc, result.Devices[0].LastReportedUtc);
+        Assert.Single(result);
+        Assert.Equal(deviceUid.ToString(), result[0].deviceUid);
+        Assert.Equal(devices[0].lastReported, result[0].lastReported);
         return true;
       });
     }
@@ -118,20 +111,20 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var deviceName = $"{deviceType}-{serialNumber}";
 
       var deviceLksResponseModel = new DeviceLKSResponseModel()
-          {
-            TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
-            Latitude = 89.3,
-            Longitude = 189.1,
-            DeviceType = deviceType,
-            SerialNumber = serialNumber,
-            DeviceName = deviceName,
-            LastReportedUtc = DateTime.UtcNow.AddDays(1),
-           };
+      {
+        TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+        lat = 89.3,
+        lon = 189.1,
+        assetType = deviceType,
+        assetSerialNumber = serialNumber,
+        deviceName = deviceName,
+        lastReported = DateTime.UtcNow.AddDays(1),
+      };
 
-      var route = $"/devicelks/{deviceName}";
+      var route = $"/devicegateway/devicelks/{deviceName}";
       var expectedUrl = $"{baseUrl}{route}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
-        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), 
+        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(),
         route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
       MockUtilities.TestRequestSendsCorrectJson("Get device LKS", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceLksResponseModel, async () =>
@@ -140,9 +133,9 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var result = await client.GetDeviceLKS(deviceName);
 
         Assert.NotNull(result);
-        Assert.Equal(deviceUid.ToString(), result.Id);
-        Assert.Equal(deviceName, result.DeviceName);
-        Assert.Equal(serialNumber, result.SerialNumber);
+        Assert.Equal(deviceUid.ToString(), result.deviceUid);
+        Assert.Equal(deviceName, result.deviceName);
+        Assert.Equal(serialNumber, result.assetSerialNumber);
         return true;
       });
     }

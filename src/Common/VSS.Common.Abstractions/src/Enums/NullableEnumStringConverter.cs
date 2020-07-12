@@ -17,7 +17,15 @@ namespace VSS.Common.Abstractions.Enums
     {
       if (reader.Value == null)
         return _defaultValue;
-      return base.ReadJson(reader, objectType, existingValue, serializer);
+
+      var type = _defaultValue;
+      try
+      {
+        type = base.ReadJson(reader, objectType, existingValue, serializer);
+      }
+      catch (Exception)
+      { }
+      return type;
     }
   }
 }

@@ -26,7 +26,7 @@ namespace CCSS.CWS.Client
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
 
-    protected const int DefaultPageSize = 50; 
+    protected const int DefaultPageSize = 50;
 
     protected int FromRow = 0;
     protected int RowCount = 200;
@@ -58,6 +58,26 @@ namespace CCSS.CWS.Client
       }
     }
 
+    protected async Task<TRes> GetDataNoCache<TRes>(string route,
+      IList<KeyValuePair<string, string>> parameters = null,
+      IHeaderDictionary customHeaders = null) where TRes : class
+    {
+      try
+      {
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Get, parameters);
+        return result;
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.IsNotFoundException())
+        {
+          return null;
+        }
+
+        throw;
+      }
+    }
+
     /// <summary>
     /// Gets data from CWS that supports paging via the HasMore property
     /// This method gets ALL data in one go.
@@ -66,7 +86,7 @@ namespace CCSS.CWS.Client
     /// <typeparam name="TModel">The Actual model the list represents</typeparam>
     protected async Task<TListModel> GetAllPagedData<TListModel, TModel>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
-      IHeaderDictionary customHeaders = null) 
+      IHeaderDictionary customHeaders = null)
       where TModel : IMasterDataModel
       where TListModel : class, IMasterDataModel, ISupportsPaging<TModel>, new()
     {
@@ -92,7 +112,7 @@ namespace CCSS.CWS.Client
 
       } while (apiResult?.HasMore ?? false);
 
-      return new TListModel {Models = results};
+      return new TListModel { Models = results };
     }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
@@ -248,7 +268,7 @@ namespace CCSS.CWS.Client
     {
       return new List<KeyValuePair<string, string>>
       {
-        new KeyValuePair<string, string>("from", fromRow.ToString()), 
+        new KeyValuePair<string, string>("from", fromRow.ToString()),
         new KeyValuePair<string, string>("limit", rowCount.ToString())
       };
     }
