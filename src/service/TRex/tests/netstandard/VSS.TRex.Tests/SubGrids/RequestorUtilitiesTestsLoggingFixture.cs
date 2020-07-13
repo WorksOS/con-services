@@ -13,6 +13,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.SubGrids
 {
@@ -33,8 +34,8 @@ namespace VSS.TRex.Tests.SubGrids
       TRexSpatialMemoryCacheContext = tRexSpatialMemoryCacheContext.Object;
 
       var tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
-      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(TRexSpatialMemoryCacheContext);
-      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(TRexSpatialMemoryCacheContext);
+      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<GridDataType>(), It.IsAny<string>())).Returns(TRexSpatialMemoryCacheContext);
+      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<GridDataType>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(TRexSpatialMemoryCacheContext);
 
       DIBuilder
         .Continue()
