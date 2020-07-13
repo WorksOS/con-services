@@ -50,6 +50,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
     public VibrationState EventVibrationState{get; set;}
 
     public ushort LastPassValidTemperature{get; set;}
+    public ushort TempWarningLevelMin { get; set; }
+    public ushort TempWarningLevelMax { get; set; }
 
     public float Height{get; set;}
 
@@ -87,6 +89,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       EventMachineGear = MachineGear.Null;
       EventVibrationState = VibrationState.Invalid;
       LastPassValidTemperature = CellPassConsts.NullMaterialTemperatureValue;
+      TempWarningLevelMin = CellPassConsts.NullMaterialTemperatureValue;
+      TempWarningLevelMax = CellPassConsts.NullMaterialTemperatureValue;
       Height = Consts.NullHeight;
       HalfPass = false;
       CCVChange = 0;
@@ -128,6 +132,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       EventMachineGear = (MachineGear) reader.ReadByte();
       EventVibrationState = (VibrationState) reader.ReadByte();
       LastPassValidTemperature = reader.ReadUInt16();
+      TempWarningLevelMin = reader.ReadUInt16();
+      TempWarningLevelMax = reader.ReadUInt16();
       Height = reader.ReadSingle();
       HalfPass = reader.ReadBoolean();
       CCVChange = reader.ReadSingle();
@@ -162,6 +168,8 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       writer.Write((byte)EventMachineGear);
       writer.Write((byte)EventVibrationState);
       writer.Write(LastPassValidTemperature);
+      writer.Write(TempWarningLevelMin);
+      writer.Write(TempWarningLevelMax);
       writer.Write(Height);
       writer.Write(HalfPass);
       writer.Write(CCVChange);
