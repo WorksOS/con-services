@@ -1,4 +1,7 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using Microsoft.Extensions.Logging;
+using Remotion.Linq.Parsing;
+using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
 {
@@ -7,6 +10,8 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheStorage<T> : ITRexSpatialMemoryCacheStorage<T> where T : ITRexMemoryCacheItem
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<TRexSpatialMemoryCacheStorage<T>>();
+
     private readonly TRexCacheItem<T>[] _items;
 
     public int MRUHead { get; private set; }
@@ -64,7 +69,16 @@ namespace VSS.TRex.Caching
       var lruHead = _items[MRUHead].Prev;
       _items[MRUHead].Prev = _items[lruHead].Prev;
 
-      MRUHead = _items[MRUHead].Next;
+      try
+      {
+        MRUHead = _items[MRUHead].Next;
+      }
+      catch 
+      {
+        _log.LogError($"Failure evicting element: MRUHead = {MRUHead}, lruHead = {lruHead}");
+        throw;
+      }
+
       _items[lruHead].Prev = -1;
 
       if (_freeListHead != -1)
