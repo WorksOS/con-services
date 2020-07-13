@@ -113,11 +113,11 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var deviceLksResponseModel = new DeviceLKSResponseModel()
       {
         TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
-            lat = 89.3, lon = 189.1,
-            assetType = deviceType,
-            assetSerialNumber = serialNumber,
-            deviceName = deviceName,
-            lastReported = DateTime.UtcNow.AddDays(1),
+        lat = 89.3, lon = 189.1,
+        assetType = deviceType,
+        assetSerialNumber = serialNumber,
+        deviceName = deviceName,
+        lastReported = DateTime.UtcNow.AddDays(1),
       };
 
       var route = $"/devicegateway/devicelks/{deviceName}";

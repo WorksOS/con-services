@@ -6,17 +6,9 @@
     public string antennaSerialNumber { get; set; }
     public SatelliteVehicle svsUsed { get; set; }
 
-    public GNSSAntenna() { }
-  }
-
-  public class SatelliteVehicle
-  {
-    public long? gps { get; set; }
-    public long? gln { get; set; }
-    public long? bds { get; set; }
-    public long? gal { get; set; }
-    public long? irnss { get; set; }
-
-    public SatelliteVehicle() { }
+    public GNSSAntenna()
+    {
+    }
   }
 }
+
