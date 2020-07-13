@@ -127,6 +127,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         return new AlignmentGeometryResult
         (ContractExecutionStatesEnum.ExecutedSuccessfully,
           request.DesignUid,
+          request.FileName,
           geometryResponse.Vertices.Select(x =>
             x.Select(v => new[] { v[1], v[0], v[2] }).ToArray()).ToArray(),
           geometryResponse.Arcs.Select(x =>

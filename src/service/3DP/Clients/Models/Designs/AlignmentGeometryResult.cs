@@ -11,6 +11,9 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     [JsonProperty(PropertyName = "designUid", Required = Required.Always)]
     public Guid DesignUid { get; set; }
 
+    [JsonProperty(PropertyName = "fileName", Required = Required.Default)]
+    public string FileName { get; set; }
+
     /// <summary>
     /// The collection of arrays of vertices describing a poly line representation of the alignment center line
     /// Vertices is a collection of arrays of arrays containing three doubles, containing the WGS84 latitude (index 0, decimal degrees),
@@ -43,9 +46,10 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     /// <param name="arcs"></param>
     /// <param name="labels"></param>
     /// <param name="message"></param>
-    public AlignmentGeometryResult(int code, Guid designUid, double[][][] vertices, AlignmentGeometryResultArc[] arcs, AlignmentGeometryResultLabel[] labels, string message = DefaultMessage) : base(code, message)
+    public AlignmentGeometryResult(int code, Guid designUid, string fileName, double[][][] vertices, AlignmentGeometryResultArc[] arcs, AlignmentGeometryResultLabel[] labels, string message = DefaultMessage) : base(code, message)
     {
       DesignUid = designUid;
+      FileName = fileName;
       Vertices = vertices;
       Arcs = arcs;
       Labels = labels;
