@@ -98,9 +98,9 @@ namespace VSS.TRex.Gateway.Common.Executors
           Frequency = cellPass.LastPassValidFreq,
           GpsModeStore = (byte)cellPass.LastPassValidGPSMode,
           MachineId = cellPass.InternalSiteModelMachineIndex,
-          MaterialTemperature = ushort.MaxValue, // Not present in cell pass
+          MaterialTemperature =cellPass.LastPassValidTemperature,
           RadioLatency = byte.MaxValue, // Not present in cell pass
-          
+          HalfPass = cellPass.HalfPass
         },
         TargetsValue = new CellPassesV2Result.CellTargetsValue
         {
@@ -108,8 +108,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           TargetMdp = cellPass.TargetMDP,
           TargetPassCount = (ushort)cellPass.TargetPassCount,
           TargetThickness = cellPass.TargetThickness,
-          TempWarningLevelMax = CellPassConsts.MaxMaterialTempValue, //Not present in cell pass
-          TempWarningLevelMin = CellPassConsts.MinMaterialTempValue//Not present in cell pass
+          TempWarningLevelMax = cellPass.TempWarningLevelMin,
+          TempWarningLevelMin = cellPass.TempWarningLevelMax
         },
         EventsValue = new CellPassesV2Result.CellEventsValue
         {
