@@ -20,7 +20,7 @@ variables:
 jobs:
   - job: buildtrex
     displayName: "Build, test and Deploy: TRex"
-    timeoutInMinutes: 40
+    timeoutInMinutes: 60
 
     steps:
       - checkout: self
