@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
@@ -33,7 +34,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("patches")]
     public async Task<FileResult> PostSubGridPatches([FromBody] PatchDataRequest patchRequest)
     {
-      Log.LogInformation($"{nameof(PostSubGridPatches)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostSubGridPatches)}:  {JsonConvert.SerializeObject(patchRequest)}");
 
       patchRequest.Validate();
       ValidateFilterMachines(nameof(PostSubGridPatches), patchRequest.ProjectUid, patchRequest.Filter);
@@ -63,7 +64,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("cells/datum")]
     public Task<ContractExecutionResult> PostCellDatum([FromBody] CellDatumTRexRequest cellDatumRequest)
     {
-      Log.LogInformation($"{nameof(PostCellDatum)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostCellDatum)}: {JsonConvert.SerializeObject(cellDatumRequest)}");
 
       cellDatumRequest.Validate();
       ValidateFilterMachines(nameof(PostCellDatum), cellDatumRequest.ProjectUid, cellDatumRequest.Filter);
@@ -79,7 +80,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("cells/passes")]
     public Task<ContractExecutionResult> PostCellPasses([FromBody] CellPassesTRexRequest cellPassesRequest)
     {
-      Log.LogInformation($"{nameof(PostCellPasses)}: {Request.QueryString}");
+      Log.LogInformation($"{nameof(PostCellPasses)}: {JsonConvert.SerializeObject(cellPassesRequest)}");
 
       cellPassesRequest.Validate();
 
