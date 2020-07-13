@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using Xunit;
 
 namespace IntegrationTests.WebApiTests

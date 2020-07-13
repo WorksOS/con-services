@@ -297,7 +297,7 @@ namespace TestUtility
     /// </summary>
     public async Task<string> GetDeviceLKSList(string customerUid, string projectUid, DateTime? earliestOfInterestUtc = null)
     {
-      var route = "api/v1/devices/";
+      var route = "api/v1/devices";
       route += $"?projectUid={projectUid}";
       if (earliestOfInterestUtc != null)
         route += $"&earliestOfInterestUtc={earliestOfInterestUtc:yyyy-MM-ddTHH:mm:ssZ}";
@@ -309,7 +309,7 @@ namespace TestUtility
     /// </summary>
     public async Task<string> GetDeviceLKS(string customerUid, string deviceName, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
-      var route = "api/v1/device/";
+      var route = "api/v1/device";
       route += $"?deviceName={deviceName}";
       return await CallProjectWebApi(route, HttpMethod.Get, null, customerUid.ToString(), statusCode: statusCode);
     }
