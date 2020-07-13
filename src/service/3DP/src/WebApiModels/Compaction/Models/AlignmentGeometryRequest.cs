@@ -10,14 +10,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
   {
     public Guid? DesignUid { get; private set; }
 
+    public string FileName { get; private set; }
+
     public bool ConvertArcsToChords { get; private set; }
 
     public double ArcChordTolerance { get; private set; }
 
-    public AlignmentGeometryRequest(Guid projectUid, bool convertArcsToChords, double arcChordTolerance, Guid? designUid = null)
+    public AlignmentGeometryRequest(Guid projectUid, bool convertArcsToChords, double arcChordTolerance, string fileName = "", Guid? designUid = null)
     {
       ProjectUid = projectUid;
       DesignUid = designUid;
+      FileName = fileName;
       ConvertArcsToChords = convertArcsToChords;
       ArcChordTolerance = arcChordTolerance;
     }

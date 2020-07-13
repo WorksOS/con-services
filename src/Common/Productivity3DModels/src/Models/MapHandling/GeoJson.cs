@@ -27,19 +27,19 @@ namespace VSS.Productivity3D.Models.Models.MapHandling
     public string Type { get; set; }
 
     [JsonProperty(PropertyName = "geometry")]
-    public BaseGeometry Geometry { get; set; }
+    public Geometry Geometry { get; set; }
 
     [JsonProperty(PropertyName = "properties")]
     public Properties Properties { get; set; }
   }
 
-  public class BaseGeometry
+  public class Geometry
   {
     [JsonProperty(PropertyName = "type")]
     protected string Type { get; set; }
   }
 
-  public class CenterlineGeometry : BaseGeometry
+  public class CenterlineGeometry : Geometry
   {
     [JsonProperty(PropertyName = "coordinates")]
     public List<double[]> CenterlineCoordinates { get; set; } = new List<double[]>();
@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.Models.Models.MapHandling
     }
   }
 
-  public class FenceGeometry: BaseGeometry
+  public class FenceGeometry: Geometry
   {
     [JsonProperty(PropertyName = "coordinates")]
     public List<List<double[]>> FenceCoordinates { get; set; } = new List<List<double[]>>();

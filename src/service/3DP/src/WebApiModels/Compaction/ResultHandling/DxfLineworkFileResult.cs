@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       return geoJson;
     }
 
-    private static BaseGeometry GetCoordinatesFromFencePoints(List<double[]> fencePoints, bool convertLineStringCoordsToPolygon)
+    private static Geometry GetCoordinatesFromFencePoints(List<double[]> fencePoints, bool convertLineStringCoordsToPolygon)
     {
       if (fencePoints.First()[0] != fencePoints.Last()[0] && fencePoints.First()[1] != fencePoints.Last()[1])
       {
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
           fencePoints.Add(fencePoints.First());
       }
 
-      BaseGeometry geometry;
+      Geometry geometry;
 
       if (convertLineStringCoordsToPolygon)
       {

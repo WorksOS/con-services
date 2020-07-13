@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             for (var i = 0; i < fileList.Count; i++)
             {
               log.LogDebug($"{LOG_MSG}: {fileList[i].Name}");
-              await ProcessRequest(siteModelId, fileList[i].ImportedFileUid, convertArcsToChords, arcChordTolerance, geoJsonList);
+              await ProcessRequest(siteModelId, fileList[i].ImportedFileUid, convertArcsToChords, arcChordTolerance, fileList[i].Name, geoJsonList);
             }
 
             geoJsons = geoJsonList.ToArray();
@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         {
           log.LogDebug($"{LOG_MSG} ID: {request.DesignUid}");
 
-          await ProcessRequest(siteModelId, request.DesignUid.ToString(), convertArcsToChords, arcChordTolerance, geoJsonList);
+          await ProcessRequest(siteModelId, request.DesignUid.ToString(), convertArcsToChords, arcChordTolerance, request.FileName, geoJsonList);
           geoJsons = geoJsonList.ToArray();
         }
 
@@ -68,14 +68,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
     }
 
-    private async Task ProcessRequest(string siteModelId, string designUid, string convertArcsToChords, string arcChordTolerance, List<JObject> geoJsonList)
+    private async Task ProcessRequest(string siteModelId, string designUid, string convertArcsToChords, string arcChordTolerance, string fileName, List<JObject> geoJsonList)
     {
       var queryParams = new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>( "projectUid", siteModelId ),
           new KeyValuePair<string, string>( "designUid", designUid ),
-          new KeyValuePair<string, string>( "convertArcsToChords", convertArcsToChords),
-          new KeyValuePair<string, string>( "arcChordTolerance", arcChordTolerance)
+          new KeyValuePair<string, string>( "fileName", fileName ),
+          new KeyValuePair<string, string>( "convertArcsToChords", convertArcsToChords ),
+          new KeyValuePair<string, string>( "arcChordTolerance", arcChordTolerance )
         };
 
       var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<AlignmentDesignGeometryResult>(siteModelId, "/design/alignment/master/geometry", customHeaders, queryParams);

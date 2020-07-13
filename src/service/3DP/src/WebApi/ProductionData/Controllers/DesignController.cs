@@ -149,6 +149,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="designUid"></param>
+    /// <param name="fileName"></param>
     /// <param name="convertArcsToChords"></param>
     /// <param name="arcChordTolerance"></param>
     /// <returns></returns>
@@ -157,13 +158,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpGet]
     public async Task<ContractExecutionResult> GetAlignmentGeometryForRendering(
       [FromQuery] Guid projectUid, 
-      [FromQuery] Guid designUid, 
+      [FromQuery] Guid designUid,
+      [FromQuery] string fileName,
       [FromQuery] bool convertArcsToChords,
       [FromQuery] double arcChordTolerance)
     {
       log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: " + Request.QueryString);
 
-      var request = new AlignmentGeometryRequest(projectUid, convertArcsToChords, arcChordTolerance, designUid);
+      var request = new AlignmentGeometryRequest(projectUid, convertArcsToChords, arcChordTolerance, fileName, designUid);
 
       request.Validate();
 
