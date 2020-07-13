@@ -11,6 +11,7 @@ using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -127,6 +128,8 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       if (request.ProjectUid != null)
       {
         var projectTask = GetLegacyProjectId(request.ProjectUid);
+        
+        // the boundary parameter is only used by Raptor. This is handy validation for manual import anyway.
         boundary = GetProjectBoundary(request.ProjectUid.Value);
 
         await Task.WhenAll(projectTask, boundary);
@@ -195,8 +198,13 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// </summary>
     private async Task<WGS84Fence> GetProjectBoundary(Guid projectUid)
     {
-      var projectData = await ((RaptorPrincipal)User).GetProject(projectUid);
-      
+      var projectData = await ((RaptorPrincipal) User).GetProject(projectUid);
+      var result = GeofenceValidation.ValidateWKT(projectData.ProjectGeofenceWKT);
+      if (string.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"{nameof(GetProjectBoundary)}: The project has an invalid boundary ({result})."));
+
       return projectData.ProjectGeofenceWKT == null
         ? null
         : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
