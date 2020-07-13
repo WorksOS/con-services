@@ -33,10 +33,10 @@ namespace VSS.Productivity3D.Models.Models.MapHandling
     public Properties Properties { get; set; }
   }
 
-  public class Geometry
+  public abstract class Geometry
   {
     [JsonProperty(PropertyName = "type")]
-    protected string Type { get; set; }
+    protected abstract string Type { get; }
   }
 
   public class CenterlineGeometry : Geometry
@@ -44,10 +44,7 @@ namespace VSS.Productivity3D.Models.Models.MapHandling
     [JsonProperty(PropertyName = "coordinates")]
     public List<double[]> CenterlineCoordinates { get; set; } = new List<double[]>();
 
-    public CenterlineGeometry()
-    {
-      Type = GeometryTypes.LINESTRING;
-    }
+    protected override string Type => GeometryTypes.LINESTRING;
   }
 
   public class FenceGeometry: Geometry
@@ -55,10 +52,7 @@ namespace VSS.Productivity3D.Models.Models.MapHandling
     [JsonProperty(PropertyName = "coordinates")]
     public List<List<double[]>> FenceCoordinates { get; set; } = new List<List<double[]>>();
 
-    public FenceGeometry()
-    {
-      Type = GeometryTypes.POLYGON;
-    }
+    protected override string Type => GeometryTypes.POLYGON;
   }
 
   public class GeometryTypes
