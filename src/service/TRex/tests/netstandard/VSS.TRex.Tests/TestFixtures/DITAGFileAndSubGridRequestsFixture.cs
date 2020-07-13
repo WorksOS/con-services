@@ -163,7 +163,9 @@ namespace VSS.TRex.Tests.TestFixtures
         worker.CompleteTaskProcessing();
 
       // Reacquire the target site model to ensure any notification based changes to the site model are observed
+      targetSiteModel.SiteModelExtent.IsValidPlanExtent.Should().BeTrue();
       targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(preTargetSiteModelId, false);
+      targetSiteModel.SiteModelExtent.IsValidPlanExtent.Should().BeTrue();
 
       // The ISiteModels instance ill supply the immutable representation of the site model, ensure it is set to mutable
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
