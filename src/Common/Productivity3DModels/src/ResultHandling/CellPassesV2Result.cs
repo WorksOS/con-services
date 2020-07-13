@@ -38,10 +38,10 @@ public class CellPassesV2Result : ContractExecutionResult
       public float? Height { get; set; }
 
       /// <summary>
-      /// The numeric identifier assigned to the machine at the time the TAG file containing the cell pass is processed
+      /// The TRex identifier assigned to the machine at the time the TAG file containing the cell pass is processed
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public long? MachineId { get; set; }
+      public Guid? MachineUid { get; set; }
 
       /// <summary>
       /// The calculated speed of the machine at the time the cell pass is measured, measured in centimeters per second.
@@ -279,7 +279,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// The ID of the machine that recorded the cell pass that contributed the CCV value
       /// </summary>
-      public long? CcvMachineId { get; set; }
+      public Guid? CcvMachineUid { get; set; }
 
       /// <summary>
       /// The time the cell pass was recorded that contributed the CCV value.
@@ -328,7 +328,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// The machine ID of the last cell pass contributed to the layer
       /// </summary>
-      public long? MachineId { get; set; }
+      public Guid? MachineUid { get; set; }
 
       /// <summary>
       /// The material temperature (recorded by asphalt compactors).
@@ -344,7 +344,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// The ID of the machine that recorded the material temperature for the layer
       /// </summary>
-      public long? MaterialTemperatureMachineId { get; set; }
+      public Guid? MaterialTemperatureMachineUid { get; set; }
 
       /// <summary>
       /// The time the cell pass that contributed the material temperature value
@@ -376,7 +376,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// The ID of the machine that recorded the cell pass that contributed the MDP value
       /// </summary>
-      public long MdpMachineId { get; set; }
+      public Guid? MdpMachineUid { get; set; }
 
       /// <summary>
       /// The time the cell pass was recorded that contributed the CCV value.

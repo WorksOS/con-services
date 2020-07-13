@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Caching.Interfaces
 {
@@ -24,8 +25,8 @@ namespace VSS.TRex.Caching.Interfaces
     ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, int originX, int originY);
     void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element);
 
-    ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint);
-    ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint, TimeSpan cacheDuration);
+    ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, GridDataType gridDataType, string contextFingerPrint);
+    ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, GridDataType gridDataType, string contextFingerPrint, TimeSpan cacheDuration);
 
     void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask);
     void InvalidateDueToDesignChange(Guid projectUid, Guid designUid);

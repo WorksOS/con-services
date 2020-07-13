@@ -23,7 +23,7 @@ namespace VSS.TRex.SubGrids.Interfaces
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,
       ISubGridTreeBitMask PDExistenceMap,
-      ITRexSpatialMemoryCacheContext subGridCacheContext,
+      ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
       IOverrideParameters overrides,
       ILiftParameters liftParams);
   }
