@@ -230,7 +230,7 @@ namespace VSS.TRex.SubGrids
       // If there is a cache context for this sub grid, but the sub grid does not support assignation then complain
       var assignationSupported =  ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)_clientGrid.GridDataType];
 
-      var subGridCacheContext = _subGridCacheContexts.FirstOrDefault(x => x.GridDataType == _clientGrid.GridDataType);
+      var subGridCacheContext = _subGridCacheContexts?.FirstOrDefault(x => x.GridDataType == _clientGrid.GridDataType);
 
       if (subGridCacheContext != null && !assignationSupported)
       {
