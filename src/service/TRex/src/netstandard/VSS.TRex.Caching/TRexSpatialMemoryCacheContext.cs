@@ -75,7 +75,7 @@ namespace VSS.TRex.Caching
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
       CacheDurationTime = cacheDurationTime;
-      FingerPrint = fingerPrint;
+      FingerPrint = fingerPrint ?? Guid.NewGuid().ToString();
       ProjectUID = projectUid;
       OwnerMemoryCache = ownerMemoryCache;
     }
