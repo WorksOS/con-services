@@ -19,13 +19,13 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     [Route("api/v2/devicegateway/devicelks")]
     public List<DeviceLKSResponseModel> GetDevicesLKSForProject(
-      [FromQuery] string projectid,
+      [FromQuery] string projectId,
       [FromQuery] DateTime? lastReported)
     {
-      Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} projectid {projectid} lastReported {lastReported}");
+      Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} projectId {projectId} lastReported {lastReported}");
 
       var result = new List<DeviceLKSResponseModel>();
-      if (TRNHelper.ExtractGuid(projectid) == new Guid(ConstantsUtil.DIMENSIONS_PROJECT_UID))
+      if (TRNHelper.ExtractGuid(projectId) == new Guid(ConstantsUtil.DIMENSIONS_PROJECT_UID))
         result.Add(new DeviceLKSResponseModel()
         {
           TRN = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),

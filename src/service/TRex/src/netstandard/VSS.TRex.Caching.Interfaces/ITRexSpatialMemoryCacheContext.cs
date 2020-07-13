@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Caching.Interfaces
 {
@@ -8,6 +9,8 @@ namespace VSS.TRex.Caching.Interfaces
     Guid ProjectUID { get; }
 
     string FingerPrint { get; }
+
+    GridDataType GridDataType { get; }
 
     bool MarkedForRemoval { get; set; }
 
