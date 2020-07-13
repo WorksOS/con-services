@@ -105,7 +105,7 @@ namespace VSS.TRex.SubGrids
           var context1 = SubGridCache?.LocateOrCreateContext(siteModel.ID, contextType1,
             SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, contextType1, filter, filteredSurveyedSurfacesAsArray));
           var context2 = SubGridCache?.LocateOrCreateContext(siteModel.ID, contextType2,
-            SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, contextType1, filter, filteredSurveyedSurfacesAsArray));
+            SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, contextType2, filter, filteredSurveyedSurfacesAsArray));
 
           if (context1 != null || context2 != null)
             subGridCacheContexts = new[] {context1, context2}.Where(x => x != null).ToArray();
