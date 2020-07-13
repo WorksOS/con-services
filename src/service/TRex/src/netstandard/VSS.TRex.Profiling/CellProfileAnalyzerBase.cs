@@ -146,7 +146,7 @@ namespace VSS.TRex.Profiling
        processingMap: new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled));
 
       var _cache = DIContext.Obtain<ITRexSpatialMemoryCache>();
-      var _context = _cache?.LocateOrCreateContext(SiteModel.ID, SurfaceElevationPatchArg.CacheFingerprint());
+      var _context = _cache?.LocateOrCreateContext(SiteModel.ID, GridDataType.SurveyedSurfaceHeightAndTime, SurfaceElevationPatchArg.CacheFingerprint());
 
       SurfaceElevationPatchRequest = SurfaceElevationPatchRequestFactory(_cache, _context);
     }

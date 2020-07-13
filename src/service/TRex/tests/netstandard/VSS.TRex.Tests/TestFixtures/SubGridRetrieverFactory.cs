@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.TestFixtures
       AreaControlSet areaControlSet,
       IFilteredValuePopulationControl populationControl,
       ISubGridTreeBitMask pdExistenceMap,
-      ITRexSpatialMemoryCacheContext subGridCacheContext,
+      ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
       IOverrideParameters overrides,
       ILiftParameters liftParams)
     {
@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.TestFixtures
           filterAnnex,
           hasOverrideSpatialCellRestriction,
           overrideSpatialCellRestriction,
-          subGridCacheContext != null,
+          subGridCacheContexts != null,
           maxNumberOfPassesToReturn,
           areaControlSet,
           populationControl,
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.TestFixtures
           filterAnnex,
           hasOverrideSpatialCellRestriction,
           overrideSpatialCellRestriction,
-          subGridCacheContext != null,
+          subGridCacheContexts != null,
           maxNumberOfPassesToReturn,
           areaControlSet,
           populationControl,
