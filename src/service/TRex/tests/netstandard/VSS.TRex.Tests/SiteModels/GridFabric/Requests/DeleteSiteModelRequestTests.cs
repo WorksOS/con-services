@@ -50,6 +50,9 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
     private bool IsModelEmpty(ISiteModel model, bool expectedToBeEmpty)
     {
+      var mutableCount = IgniteMock.Mutable.MockedCacheDictionaries.Count;
+      var immutableCount = IgniteMock.Immutable.MockedCacheDictionaries.Count;
+
       var clear1MutableCount = IgniteMock.Mutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
       var clear1ImmutableCount = IgniteMock.Immutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
      
@@ -57,7 +60,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       if (expectedToBeEmpty && !clear1)
       {
-        DumpModelContents($"Pre-commit empty check, clear1MutableCount = {clear1MutableCount}, clear1ImmutableCount = {clear1ImmutableCount}");
+        DumpModelContents($"Pre-commit empty check, mutableCount = {mutableCount}, immutableCount = {immutableCount}, clear1MutableCount = {clear1MutableCount}, clear1ImmutableCount = {clear1ImmutableCount}");
       }
 
       // Perform a belt and braces check to ensure there were no pending uncommitted changes.
@@ -72,7 +75,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       if (expectedToBeEmpty && !(clear1 && clear2))
       {
-        DumpModelContents("After full check, clear2MutableCount = {clear2MutableCount}, clear2ImmutableCount = {clear2ImmutableCount}");
+        DumpModelContents($"After full check, mutableCount = {mutableCount}, immutableCount = {immutableCount}, clear2MutableCount = {clear2MutableCount}, clear2ImmutableCount = {clear2ImmutableCount}");
       }
 
       return clear1 && clear2;
