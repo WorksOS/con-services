@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching;
@@ -56,7 +57,7 @@ namespace VSS.TRex.SubGrids
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-      ITRexSpatialMemoryCacheContext CacheContext)[] 
+      ITRexSpatialMemoryCacheContext[] CacheContexts)[] 
       ConstructRequestorIntermediaries(
         ISiteModel siteModel,
         IFilterSet filters,
@@ -68,7 +69,7 @@ namespace VSS.TRex.SubGrids
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-      ITRexSpatialMemoryCacheContext CacheContext) GetIntermediary(ICombinedFilter filter)
+      ITRexSpatialMemoryCacheContext[] CacheContexts) GetIntermediary(ICombinedFilter filter)
       {
         // Construct the appropriate list of surveyed surfaces
         // Obtain local reference to surveyed surface list. If it is replaced while processing the
@@ -93,12 +94,21 @@ namespace VSS.TRex.SubGrids
         var filteredSurveyedSurfacesAsArray = filteredSurveyedSurfaces?.Count > 0 ? filteredSurveyedSurfaces.Select(s => s.ID).ToArray() : new Guid[0];
 
         // Get a caching context for the sub grids returned by this requester, but only if the requested grid data type supports it
-        ITRexSpatialMemoryCacheContext subGridCacheContext = null;
+        ITRexSpatialMemoryCacheContext[] subGridCacheContexts = null;
 
         if (_enableGeneralSubGridResultCaching && 
             ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)gridDataType])
         {
-          subGridCacheContext = SubGridCache?.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, filteredSurveyedSurfacesAsArray));
+          var contextType1 = Utilities.IntermediaryICGridDataTypeForDataType(gridDataType, true);
+          var contextType2 = Utilities.IntermediaryICGridDataTypeForDataType(gridDataType, false);
+
+          var context1 = SubGridCache?.LocateOrCreateContext(siteModel.ID, contextType1,
+            SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, contextType1, filter, filteredSurveyedSurfacesAsArray));
+          var context2 = SubGridCache?.LocateOrCreateContext(siteModel.ID, contextType2,
+            SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, contextType1, filter, filteredSurveyedSurfacesAsArray));
+
+          if (context1 != null || context2 != null)
+            subGridCacheContexts = new[] {context1, context2}.Where(x => x != null).ToArray();
         }
 
         // Instantiate a single instance of the argument object for the surface elevation patch requests and populate it with 
@@ -118,9 +128,9 @@ namespace VSS.TRex.SubGrids
         return (gridDataType,
           filter,
           filteredSurveyedSurfaces,
-          _surfaceElevationPatchRequestFactory(SubGridCache, SubGridCache?.LocateOrCreateContext(siteModel.ID, surfaceElevationPatchArg.CacheFingerprint())),
+          _surfaceElevationPatchRequestFactory(SubGridCache, SubGridCache?.LocateOrCreateContext(siteModel.ID, GridDataType.SurveyedSurfaceHeightAndTime, surfaceElevationPatchArg.CacheFingerprint())),
           surfaceElevationPatchArg,
-          subGridCacheContext);
+          subGridCacheContexts);
       }
 
       // Construct the intermediary request state
@@ -140,7 +150,7 @@ namespace VSS.TRex.SubGrids
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-        ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
+        ITRexSpatialMemoryCacheContext[] CacheContexts)[] intermediaries,
       AreaControlSet areaControlSet,
       ISubGridTreeBitMask prodDataMask
       )
@@ -162,7 +172,7 @@ namespace VSS.TRex.SubGrids
           new FilteredValuePopulationControl(),
           prodDataMask,
           SubGridCache,
-          x.CacheContext,
+          x.CacheContexts,
           x.FilteredSurveyedSurfaces,
           x.surfaceElevationPatchRequest,
           x.surfaceElevationPatchArgument,

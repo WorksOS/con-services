@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -62,7 +63,7 @@ namespace VSS.TRex.SubGrids
     private bool _returnEarliestFilteredCellPass;
 
     private ITRexSpatialMemoryCache _subGridCache;
-    private ITRexSpatialMemoryCacheContext _subGridCacheContext;
+    private ITRexSpatialMemoryCacheContext[] _subGridCacheContexts;
 
     private IDesignWrapper _elevationRangeDesign;
     private IDesign _surfaceDesignMaskDesign;
@@ -86,7 +87,7 @@ namespace VSS.TRex.SubGrids
                            IFilteredValuePopulationControl populationControl,
                            ISubGridTreeBitMask pdExistenceMap,
                            ITRexSpatialMemoryCache subGridCache,
-                           ITRexSpatialMemoryCacheContext subGridCacheContext,
+                           ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
                            ISurveyedSurfaces filteredSurveyedSurfaces,
                            ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
                            ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
@@ -112,7 +113,7 @@ namespace VSS.TRex.SubGrids
                                        areaControlSet,
                                        populationControl,
                                        pdExistenceMap,
-                                       subGridCacheContext,
+                                       subGridCacheContexts,
                                        overrides,
                                        liftParams);
 
@@ -127,13 +128,15 @@ namespace VSS.TRex.SubGrids
         surfaceElevationPatchArgument.CellSize,
         surfaceElevationPatchArgument.SurveyedSurfacePatchType,
         null,
-        null);
-      _surfaceElevationPatchArg.IncludedSurveyedSurfaces = surfaceElevationPatchArgument.IncludedSurveyedSurfaces;
+        null)
+      {
+        IncludedSurveyedSurfaces = surfaceElevationPatchArgument.IncludedSurveyedSurfaces
+      };
 
       _surfaceElevationPatchRequest = surfaceElevationPatchRequest;
 
       _subGridCache = subGridCache;
-      _subGridCacheContext = subGridCacheContext;
+      _subGridCacheContexts = subGridCacheContexts;
 
       _filteredSurveyedSurfaces = filteredSurveyedSurfaces;
 
@@ -226,16 +229,24 @@ namespace VSS.TRex.SubGrids
     {
       // If there is a cache context for this sub grid, but the sub grid does not support assignation then complain
       var assignationSupported =  ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)_clientGrid.GridDataType];
-      if (_subGridCacheContext != null && !assignationSupported)
+
+      var subGridCacheContext = _subGridCacheContexts.FirstOrDefault(x => x.GridDataType == _clientGrid.GridDataType);
+
+      if (subGridCacheContext != null && !assignationSupported)
       {
         throw new TRexException($"Client sub grid of type {_clientGrid.GridDataType} does not support assignation from cached sub grids but has a cache context enabled for it.");
       }
 
-      if (_subGridCacheContext != null && assignationSupported)
+      if (subGridCacheContext != null && assignationSupported)
       {
+        if (subGridCacheContext != null && _clientGrid.GridDataType != subGridCacheContext.GridDataType)
+        {
+          _log.LogWarning($"Client grid data type does not match type of sub grid cache context");
+        }
+
         // Determine if there is a suitable pre-calculated result present in the general sub grid result cache.
         // If there is, then apply the filter mask to the cached data and copy it to the client grid
-        var cachedSubGrid = (IClientLeafSubGrid) _subGridCacheContext?.Get(_clientGrid.CacheOriginX, _clientGrid.CacheOriginY);
+        var cachedSubGrid = (IClientLeafSubGrid)subGridCacheContext?.Get(_clientGrid.CacheOriginX, _clientGrid.CacheOriginY);
 
         // If there was a cached sub grid located, assign its contents according the client grid mask into the client grid and return it
         if (cachedSubGrid != null)
@@ -258,7 +269,7 @@ namespace VSS.TRex.SubGrids
       {
         // Determine if this sub grid is suitable for storage in the cache
         // Don't add sub grids computed using a non-trivial WMS sieve to the general sub grid cache
-        var shouldBeCached = _subGridCacheContext != null && !sieveFilterInUse;
+        var shouldBeCached = subGridCacheContext != null && !sieveFilterInUse && (_clientGrid.GridDataType == subGridCacheContext.GridDataType);
 
         var clientGrid2 = ClientLeafSubGridFactory.GetSubGrid(_clientGrid.GridDataType);
         clientGrid2.Assign(_clientGrid);
@@ -269,9 +280,9 @@ namespace VSS.TRex.SubGrids
           //Log.LogInformation($"Adding sub grid {ClientGrid.Moniker()} in data model {SiteModel.ID} to result cache");
 
           // Add the newly computed client sub grid to the cache by creating a clone of the client and adding it...
-          if (!_subGridCache.Add(_subGridCacheContext, _clientGrid))
+          if (!_subGridCache.Add(subGridCacheContext, _clientGrid))
           {
-            _log.LogWarning($"Failed to add sub grid {clientGrid2.Moniker()}, data model {_siteModel.ID} to sub grid result cache context [FingerPrint:{_subGridCacheContext.FingerPrint}], returning sub grid to factory as not added to cache");
+            _log.LogWarning($"Failed to add sub grid {clientGrid2.Moniker()}, data model {_siteModel.ID} to sub grid result cache context [FingerPrint:{subGridCacheContext.FingerPrint}], returning sub grid to factory as not added to cache");
             ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
           }
         }

@@ -444,7 +444,7 @@ namespace VSS.TRex.SubGrids.Executors
       ISurveyedSurfaces FilteredSurveyedSurfaces, 
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-      ITRexSpatialMemoryCacheContext CacheContext)[] _requestorIntermediaries;
+      ITRexSpatialMemoryCacheContext[] CacheContexts)[] _requestorIntermediaries;
 
     /// <summary>
     /// Process the set of sub grids in the request that have partition mappings that match their affinity with this node
