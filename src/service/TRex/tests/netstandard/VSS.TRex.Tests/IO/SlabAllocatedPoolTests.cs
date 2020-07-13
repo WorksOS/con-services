@@ -2,11 +2,12 @@
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.IO;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.IO
 {
-  public class SlabAllocatedPoolTests
+  public class SlabAllocatedPoolTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Creation()

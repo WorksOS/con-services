@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
     public void Creation_WithCache()
     {
       var cache = new TRexSpatialMemoryCache(100, 1000, 0.5);
-      var context = cache.LocateOrCreateContext(Guid.NewGuid(), "Creation_WithCache", TimeSpan.FromHours(1));
+      var context = cache.LocateOrCreateContext(Guid.NewGuid(), GridDataType.All, "Creation_WithCache", TimeSpan.FromHours(1));
 
       var req = new SurfaceElevationPatchRequest(cache, context);
       req.Should().NotBeNull();
@@ -119,7 +119,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleSurveyedSurfaceAboutOrigin(ref siteModel, 1.0f, asAtDate);
 
       var cache = new TRexSpatialMemoryCache(100, 10000, 0.5);
-      var context = cache.LocateOrCreateContext(siteModel.ID, $"Execute_SingleSurveyedSurface_WithSpatialCaching-{patchType}", TimeSpan.FromHours(1));
+      var context = cache.LocateOrCreateContext(siteModel.ID, expectedGridType, $"Execute_SingleSurveyedSurface_WithSpatialCaching-{patchType}", TimeSpan.FromHours(1));
       var req = new SurfaceElevationPatchRequest(cache, context);
 
       // Make one call which will populate the cache

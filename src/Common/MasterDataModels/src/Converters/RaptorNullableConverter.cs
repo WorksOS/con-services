@@ -25,7 +25,8 @@ namespace VSS.MasterData.Models.Converters
       {typeof(long), long.MaxValue},
       {typeof(ulong), ulong.MaxValue},
       {typeof(float), float.MaxValue},
-      {typeof(DateTime), DateTime.MinValue}
+      {typeof(DateTime), DateTime.MinValue},
+      {typeof(Guid), Guid.Empty}
     };
 
     public RaptorNullableConverter()

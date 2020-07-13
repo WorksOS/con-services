@@ -257,7 +257,9 @@ namespace VSS.TRex.Tests.Exports.CSV
         TargetThickness = 45,
         EventMachineGear = MachineGear.Forward2,
         EventVibrationState = VibrationState.On,
-        LastPassValidTemperature = 1040
+        LastPassValidTemperature = 1040,
+        TempWarningLevelMin = 1000,
+        TempWarningLevelMax = 2000
       };
       return clientGrid;
     }
@@ -359,7 +361,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       // tagFileDirectory: "Dimensions2018-CaseMachine" - extents match the CSIB constant
       //                   "ElevationMappingMode-KettlewellDrive"
       var tagFiles = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileDirectory), "*.tag").ToArray();
-      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var _);
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var csvExportUserPreference = new CSVExportUserPreferences();
       requestArgument = new CSVExportRequestArgument
       (

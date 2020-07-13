@@ -31,19 +31,7 @@ using Xunit;
 
 namespace TAGFiles.Tests
 {
-  public class TAGProcessorStateBase_Test : TAGProcessorStateBase, IClassFixture<DILoggingFixture>
-  {
-    public EpochStateEvent TriggeredEpochStateEvent = EpochStateEvent.Unknown;
-
-    public override bool DoEpochStateEvent(EpochStateEvent eventType)
-    {
-      TriggeredEpochStateEvent = eventType;
-
-      return base.DoEpochStateEvent(eventType);
-    }
-  }
-
-  public class TAGValueMatcherTests
+  public class TAGValueMatcherTests : IClassFixture<DILoggingFixture>
   {
     private void InitStateAndSink(out TAGProcessorStateBase sink, out TAGValueMatcherState state)
     {

@@ -12,8 +12,8 @@ WORKDIR /build
 COPY --from=build_container ${SOURCE_PATH} /trex/
 
 # Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
-COPY --from=build_container /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
-COPY --from=build_container build/service/TRex/build/ignite-kubernetes-2.8.0.jar /trex/libs/
+COPY --from=build_container /root/.nuget/packages/apache.ignite/2.8.1/build/output/libs/ /trex/libs/
+COPY --from=build_container build/service/TRex/build/ignite-kubernetes-2.8.1.jar /trex/libs/
 COPY --from=build_container build/service/TRex/build/control-scripts /trex/bin
 
 WORKDIR /trex/libs/

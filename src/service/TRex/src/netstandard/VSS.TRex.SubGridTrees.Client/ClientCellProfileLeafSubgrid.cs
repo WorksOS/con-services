@@ -240,6 +240,8 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].EventMachineGear = lastPass.EventValues.EventMachineGear;
       Cells[cellX, cellY].EventVibrationState = lastPass.EventValues.EventVibrationState;
       Cells[cellX, cellY].LastPassValidTemperature = lastPass.FilteredPass.MaterialTemperature; // Bug32323 show only last pass temp.  Passes.LastPassValidTemperature;
+      Cells[cellX, cellY].TempWarningLevelMin = lastPass.TargetValues.TempWarningLevelMin;
+      Cells[cellX, cellY].TempWarningLevelMax = lastPass.TargetValues.TempWarningLevelMax;
       Cells[cellX, cellY].Height = lastPass.FilteredPass.Height;
 
       CalculateCmvChange(cellProfileFromContext);

@@ -4,12 +4,13 @@ using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types.CellPasses;
 using Xunit;
 
 namespace VSS.TRex.Tests.DataSmoothing
 {
-  public class ConvolutionContextTests
+  public class ConvolutionContextTests : IClassFixture<DILoggingFixture>
   {
     private GenericSubGridTree<float, GenericLeafSubGrid_Float> ConstructSingleSubGridElevationSubGridTreeAtOrigin(float elevation)
     {
@@ -36,11 +37,11 @@ namespace VSS.TRex.Tests.DataSmoothing
       var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       subGrid.Should().NotBeNull();
 
-      // Create the context with a single subgrid and no neighbours
+      // Create the context with a single sub grid and no neighbors
       var context = new ConvolutionSubGridContext<GenericLeafSubGrid<float>, float>(subGrid, CellPassConsts.NullHeight);
       context.Should().NotBeNull();
 
-      // Check all acquired values in the single subgrid are zero
+      // Check all acquired values in the single sub grid are zero
       for (var i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
       {
         for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
@@ -49,7 +50,7 @@ namespace VSS.TRex.Tests.DataSmoothing
         }
       }
 
-      // Check all values in the subgrids surrounding the single subgrid are null
+      // Check all values in the sub grids surrounding the single sub grid are null
       for (var i = -SubGridTreeConsts.SubGridTreeDimension; i < 2 * SubGridTreeConsts.SubGridTreeDimension; i++)
       {
         for (var j = -SubGridTreeConsts.SubGridTreeDimension; j < 2 * SubGridTreeConsts.SubGridTreeDimension; j++)

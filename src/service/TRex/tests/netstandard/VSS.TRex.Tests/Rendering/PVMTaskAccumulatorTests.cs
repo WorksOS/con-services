@@ -5,11 +5,12 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Rendering
 {
-  public class PVMTaskAccumulatorTests
+  public class PVMTaskAccumulatorTests : IClassFixture<DILoggingFixture>
   {
     private ClientLeafSubGrid NewClientSubGrid()
     {

@@ -20,6 +20,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.AWS.TransferProxy.Interfaces;
 using System.Collections.Generic;
+using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -33,7 +34,11 @@ namespace VSS.TRex.Tests.TestFixtures
 
     public virtual void SetupFixture()
     {
-       _s3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
+      // At this stage in the DI configuration create a mocked TRexIgniteFactory to permit, for example, storage proxies to 
+      // obtain a non-null factory that will return null grid references
+      var mockTRexGridFactory = new Mock<ITRexGridFactory>();
+
+      _s3FileTransferProxies = new Dictionary<TransferProxyType, IS3FileTransfer>();
 
        DIBuilder
         .New()
@@ -136,6 +141,8 @@ namespace VSS.TRex.Tests.TestFixtures
             _s3FileTransferProxies.Add(proxyType, proxy);
             return proxy;
           }))
+
+        .Add(x => x.AddSingleton(mockTRexGridFactory.Object))
 
         .Complete();
     }

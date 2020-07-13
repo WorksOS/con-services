@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.SiteModelChangeMaps;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
@@ -29,7 +30,11 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       {
         var _ = new SiteModelChangeProcessorItemHandler();
       };
-      act.Should().Throw<TRexException>().WithMessage("Failed to obtain immutable Ignite reference");
+
+      if (DIContext.DefaultIsRequired)
+        act.Should().Throw<Exception>().WithMessage("DIContext service provider not available");
+      else
+        act.Should().Throw<TRexException>().WithMessage("Failed to obtain immutable Ignite reference");
     }
   }
 

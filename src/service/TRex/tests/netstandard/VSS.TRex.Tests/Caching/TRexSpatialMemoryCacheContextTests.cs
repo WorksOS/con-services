@@ -5,6 +5,7 @@ using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Caching
@@ -45,7 +46,7 @@ namespace VSS.TRex.Tests.Caching
     {
       Guid _projectUID = Guid.NewGuid();
 
-      ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null, TimeSpan.Zero, "", _projectUID);
+      ITRexSpatialMemoryCacheContext context = new TRexSpatialMemoryCacheContext(null, null, TimeSpan.Zero, "", GridDataType.All, _projectUID);
 
       Assert.True(context.ProjectUID == _projectUID, "Default projectUID not set.");
     }
