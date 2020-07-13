@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.Productivity3D.Productivity3D.Models.Designs;
-using CenterlineGeometry = VSS.Productivity3D.Models.Models.MapHandling.Geometry;
 
 namespace VSS.TRex.Gateway.Common.Helpers
 {
@@ -28,11 +27,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
       };
 
       // Create a header for centerline...
-      var geo = new CenterlineGeometry
-      {
-        Type = CenterlineGeometry.Types.LINESTRING,
-        Coordinates = new List<List<double[]>>()
-      };
+      var geo = new CenterlineGeometry();
 
       var feature = new Feature
       {
@@ -41,25 +36,21 @@ namespace VSS.TRex.Gateway.Common.Helpers
         Properties = new Properties { Name = fileName }
       };
 
-      var centerlinePoints = new List<double[]>();
-
       // Process vertices...
       for (var i = 0; i < geometry.Vertices.Length; i++)
         for (var n = 0; n < geometry.Vertices[i].Length; n++)
-          AddPoint(geometry.Vertices[i][n][0], geometry.Vertices[i][n][1], centerlinePoints);
+          AddPoint(geometry.Vertices[i][n][0], geometry.Vertices[i][n][1], geo.CenterlineCoordinates);
      
       // Process arcs as series of vertices...
       for (var i = 0; i < geometry.Arcs.Length; i++)
       {
-        AddPoint(geometry.Arcs[i].Lon1, geometry.Arcs[i].Lat1, centerlinePoints);
-        AddPoint(geometry.Arcs[i].Lon2, geometry.Arcs[i].Lat2, centerlinePoints);
+        AddPoint(geometry.Arcs[i].Lon1, geometry.Arcs[i].Lat1, geo.CenterlineCoordinates);
+        AddPoint(geometry.Arcs[i].Lon2, geometry.Arcs[i].Lat2, geo.CenterlineCoordinates);
       }
-
-      geo.Coordinates.Add(centerlinePoints);
 
       geoJson.Features.Add(feature);
 
-      Log.LogInformation($"Alignment design geometry conversion completed with number of vertices: {centerlinePoints.Count}");
+      Log.LogInformation($"Alignment design geometry conversion completed with number of vertices: {geo.CenterlineCoordinates.Count}");
 
       return await Task.FromResult(new AlignmentDesignGeometryResult(geoJson));
     }

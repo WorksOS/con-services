@@ -368,7 +368,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       foreach (var feature in root.Features)
       {
         var points = new List<WGSPoint>();
-        foreach (var coordList in feature.Geometry.Coordinates)
+        foreach (var coordList in (feature.Geometry as FenceGeometry).FenceCoordinates)
         {
           foreach (var coordPair in coordList)
           {

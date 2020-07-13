@@ -114,16 +114,19 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       geoJSon.Features.Count.Should().Be(1);
       geoJSon.Features.Count.Should().Be(expectedResult.GeoJSON.Features.Count);
 
-      geoJSon.Features[0].Geometry.Coordinates.Count.Should().Be(1);
-      geoJSon.Features[0].Geometry.Coordinates.Count.Should().Be(expectedResult.GeoJSON.Features[0].Geometry.Coordinates.Count);
+      var coordinates = (geoJSon.Features[0].Geometry as FenceGeometry).FenceCoordinates;
+      var expectedCoordinates = (expectedResult.GeoJSON.Features[0].Geometry as FenceGeometry).FenceCoordinates;
 
-      geoJSon.Features[0].Geometry.Coordinates[0].Count.Should().Be(NUMBER_OF_COORDINATES);
-      geoJSon.Features[0].Geometry.Coordinates[0].Count.Should().Be(expectedResult.GeoJSON.Features[0].Geometry.Coordinates[0].Count);
+      coordinates.Count.Should().Be(1);
+      coordinates.Count.Should().Be(expectedCoordinates.Count);
 
-      for (var i = 0; i < geoJSon.Features[0].Geometry.Coordinates[0].Count; i++)
+      coordinates[0].Count.Should().Be(NUMBER_OF_COORDINATES);
+      coordinates[0].Count.Should().Be(expectedCoordinates[0].Count);
+
+      for (var i = 0; i < coordinates[0].Count; i++)
       {
-        var coordinate = geoJSon.Features[0].Geometry.Coordinates[0][i];
-        var resultCoordinate = expectedResult.GeoJSON.Features[0].Geometry.Coordinates[0][i];
+        var coordinate = coordinates[0][i];
+        var resultCoordinate = expectedCoordinates[0][i];
 
         coordinate[0].Should().Be(resultCoordinate[0]);
         coordinate[1].Should().Be(resultCoordinate[1]);

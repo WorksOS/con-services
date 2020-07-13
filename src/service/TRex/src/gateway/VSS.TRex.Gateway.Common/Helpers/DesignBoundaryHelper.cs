@@ -7,7 +7,6 @@ using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using FenceGeometry = VSS.Productivity3D.Models.Models.MapHandling.Geometry;
 
 namespace VSS.TRex.Gateway.Common.Helpers
 {
@@ -35,11 +34,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
       foreach (var fence in boundary)
       {
         // Create a header for each polygon...
-        var geo = new FenceGeometry
-        {
-          Type = FenceGeometry.Types.POLYGON,
-          Coordinates = new List<List<double[]>>()
-        };
+        var geo = new FenceGeometry();
 
         var feature = new Feature
         {
@@ -88,7 +83,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
         for (var fencePointIdx = 0; fencePointIdx < llhCoords.Length; fencePointIdx++)
           AddPoint(llhCoords[fencePointIdx].X, llhCoords[fencePointIdx].Y, fencePoints);
 
-        geo.Coordinates.Add(fencePoints);
+        geo.FenceCoordinates.Add(fencePoints);
 
         geoJson.Features.Add(feature);
       }

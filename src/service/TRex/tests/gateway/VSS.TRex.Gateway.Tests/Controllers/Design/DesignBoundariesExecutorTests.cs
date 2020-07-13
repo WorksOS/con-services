@@ -16,6 +16,7 @@ using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.Geometry;
+using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.TRex.Tests.Analytics.Common;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -97,13 +98,14 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       designBoundaryResult.GeoJSON.Should().NotBeNull();
       designBoundaryResult.GeoJSON.Features.Count.Should().Be(1);
 
-      designBoundaryResult.GeoJSON.Features[0].Geometry.Coordinates.Count.Should().Be(1);
+      var geometry = designBoundaryResult.GeoJSON.Features[0].Geometry as FenceGeometry;
 
-      designBoundaryResult.GeoJSON.Features[0].Geometry.Coordinates[0].Count.Should().Be(llhCoords.Length);
+      geometry.FenceCoordinates.Count.Should().Be(1);
+      geometry.FenceCoordinates[0].Count.Should().Be(llhCoords.Length);
 
       for (var i = 0; i < llhCoords.Length; i++)
       {
-        var coordinate = designBoundaryResult.GeoJSON.Features[0].Geometry.Coordinates[0][i];
+        var coordinate = geometry.FenceCoordinates[0][i];
 
         coordinate[0].Should().Be(llhCoords[i].X);
         coordinate[1].Should().Be(llhCoords[i].Y);

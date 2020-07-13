@@ -59,27 +59,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       return geoJson;
     }
 
-    private static Geometry GetCoordinatesFromFencePoints(List<double[]> fencePoints, bool convertLineStringCoordsToPolygon)
+    private static BaseGeometry GetCoordinatesFromFencePoints(List<double[]> fencePoints, bool convertLineStringCoordsToPolygon)
     {
-      var boundaryType = Geometry.Types.POLYGON;
-
       if (fencePoints.First()[0] != fencePoints.Last()[0] && fencePoints.First()[1] != fencePoints.Last()[1])
       {
         if (convertLineStringCoordsToPolygon)
-        {
           fencePoints.Add(fencePoints.First());
-        }
-        else
-        {
-          boundaryType = Geometry.Types.LINESTRING;
-        }
       }
 
-      return new Geometry
+      BaseGeometry geometry;
+
+      if (convertLineStringCoordsToPolygon)
       {
-        Type = boundaryType,
-        Coordinates = new List<List<double[]>> { fencePoints }
-      };
+        geometry = new FenceGeometry();
+        (geometry as FenceGeometry).FenceCoordinates.Add(fencePoints);
+      }
+      else
+      {
+        geometry = new CenterlineGeometry();
+        fencePoints.ForEach(p => (geometry as CenterlineGeometry).CenterlineCoordinates.Add(p));
+      }
+      
+      return geometry;
     }
   }
 }

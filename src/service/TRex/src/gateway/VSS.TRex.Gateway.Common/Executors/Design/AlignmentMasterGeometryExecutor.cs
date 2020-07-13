@@ -47,11 +47,11 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
     {
       var coords = new List<XYZ>();
       if ((geometryResponse.Vertices?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[0], x[1], x[2])).ToArray()).ToList());
+        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[1], x[0], x[2])).ToArray()).ToList());
       if ((geometryResponse.Arcs?.Length ?? 0) > 0)
         coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, x.Z1), new XYZ(x.Y2, x.X2, x.Z2), new XYZ(x.YC, x.XC, x.ZC) }).ToList());
       if ((geometryResponse.Labels?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.X, x.Y, 0.0)).ToList());
+        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.Y, x.X, 0.0)).ToList());
 
       var convertedCoords = _convertCoordinates
         .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ(), CoreX.Types.ReturnAs.Degrees)
@@ -130,7 +130,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         (ContractExecutionStatesEnum.ExecutedSuccessfully,
           request.DesignUid,
           geometryResponse.Vertices.Select(x =>
-            x.Select(v => new[] { v[1], v[0], v[2] }).ToArray()).ToArray(),
+            x.Select(v => new[] { v[0], v[1], v[2] }).ToArray()).ToArray(),
           geometryResponse.Arcs.Select(x =>
             new AlignmentGeometryResultArc
             (x.Y1, x.X1, x.Z1,
