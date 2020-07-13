@@ -205,9 +205,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             $"{nameof(GetProjectBoundary)}: The project has an invalid boundary ({result})."));
 
-      return projectData.ProjectGeofenceWKT == null
-        ? null
-        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
+      return new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
     }
   }
 }
