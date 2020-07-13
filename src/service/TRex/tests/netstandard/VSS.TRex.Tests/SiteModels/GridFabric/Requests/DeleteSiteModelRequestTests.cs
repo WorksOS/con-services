@@ -50,12 +50,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
     private bool IsModelEmpty(ISiteModel model, bool expectedToBeEmpty)
     {
-      var clear1 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
-                   !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
+      var clear1MutableCount = IgniteMock.Mutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
+      var clear1ImmutableCount = IgniteMock.Immutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
+     
+      var clear1 = clear1MutableCount == 0 && clear1ImmutableCount == 0;
 
       if (expectedToBeEmpty && !clear1)
       {
-        DumpModelContents("Pre-commit empty check");
+        DumpModelContents($"Pre-commit empty check, clear1MutableCount = {clear1MutableCount}, clear1ImmutableCount = {clear1ImmutableCount}");
       }
 
       // Perform a belt and braces check to ensure there were no pending uncommitted changes.
@@ -63,12 +65,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
       model.PrimaryStorageProxy.Commit();
 
-      var clear2 = !IgniteMock.Mutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0) &&
-                   !IgniteMock.Immutable.MockedCacheDictionaries.Values.Any(cache => cache.Keys.Count > 0);
+      var clear2MutableCount = IgniteMock.Mutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
+      var clear2ImmutableCount = IgniteMock.Immutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
+
+      var clear2 = clear2MutableCount == 0 && clear2ImmutableCount == 0;
 
       if (expectedToBeEmpty && !(clear1 && clear2))
       {
-        DumpModelContents("After full check");
+        DumpModelContents("After full check, clear2MutableCount = {clear2MutableCount}, clear2ImmutableCount = {clear2ImmutableCount}");
       }
 
       return clear1 && clear2;
