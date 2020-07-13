@@ -4,6 +4,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Caching
 {
@@ -22,6 +23,11 @@ namespace VSS.TRex.Caching
     /// THe fingerprint used to distinguish this cache context from others stored in the overall cache
     /// </summary>
     public string FingerPrint { get; }
+
+    /// <summary>
+    /// The underlying grid data type this cache context is storing
+    /// </summary>
+    public GridDataType GridDataType { get; }
 
     /// <summary>
     /// Notes if this context has been marked for removal, for instance as a result of the last element within it
@@ -60,7 +66,7 @@ namespace VSS.TRex.Caching
     /// Constructs a new cache context for the given owning cache and MRU list. Time base expiry is defaulted to 'never'.
     /// </summary>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
-      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan, null, Guid.Empty)
+      ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList) : this(ownerMemoryCache, mruList, NullCacheTimeSpan, null, GridDataType.All, Guid.Empty)
     {
     }
 
@@ -70,12 +76,13 @@ namespace VSS.TRex.Caching
     /// </summary>
     public TRexSpatialMemoryCacheContext(ITRexSpatialMemoryCache ownerMemoryCache,
       ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> mruList,
-      TimeSpan cacheDurationTime, string fingerPrint, Guid projectUid)
+      TimeSpan cacheDurationTime, string fingerPrint, GridDataType gridDataType, Guid projectUid)
     {
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
       CacheDurationTime = cacheDurationTime;
       FingerPrint = fingerPrint ?? Guid.NewGuid().ToString();
+      GridDataType = gridDataType;
       ProjectUID = projectUid;
       OwnerMemoryCache = ownerMemoryCache;
     }

@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
         Frequency = ushort.MaxValue,
         GpsModeStore = byte.MaxValue,
         Height = float.MaxValue,
-        MachineId = long.MaxValue,
+        MachineUid = Guid.Empty,
         MachineSpeed = ushort.MaxValue,
         MaterialTemperature = ushort.MaxValue,
         Mdp = short.MaxValue,
@@ -78,6 +78,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
         }
       };
 
+      var machineUid = Guid.NewGuid();
       var layers = new[]
       {
         new CellPassesV2Result.ProfileLayer()
@@ -85,7 +86,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
           Amplitude = ushort.MaxValue,
           Ccv = short.MaxValue,
           CcvElev = 525,
-          CcvMachineId = 1,
+          CcvMachineUid = machineUid,
           CcvTime = DateTime.MinValue,
           FilteredHalfPassCount = 1,
           FilteredPassCount = 1,
@@ -94,16 +95,16 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
           Height = 400,
           LastLayerPassTime = DateTime.MinValue,
           LastPassHeight = 525,
-          MachineId = 1,
+          MachineUid = machineUid,
           MaterialTemperature = ushort.MaxValue,
           MaterialTemperatureElev = 500,
-          MaterialTemperatureMachineId = 1,
+          MaterialTemperatureMachineUid = machineUid,
           MaterialTemperatureTime = DateTime.MinValue,
           MaximumPassHeight = 525,
           MaxThickness = 1.5F,
           Mdp = short.MaxValue,
           MdpElev = 525,
-          MdpMachineId = 1,
+          MdpMachineUid = machineUid,
           MdpTime = DateTime.MinValue,
           MinimumPassHeight = 445,
           RadioLatency = 12,
@@ -122,6 +123,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
 
     private CellPassesV2Result GetCellPassesV2Result()
     {
+      var machineUid = Guid.NewGuid();
       var filteredPass = new CellPassesV2Result.CellPassValue()
       {
         Amplitude = 120,
@@ -129,7 +131,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
         Frequency = 25,
         GpsModeStore = 3,
         Height = 400,
-        MachineId = 1,
+        MachineUid = machineUid,
         MachineSpeed = 15,
         MaterialTemperature = 120,
         Mdp = 210,
@@ -185,7 +187,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
           Amplitude = 100,
           Ccv = 200,
           CcvElev = 525,
-          CcvMachineId = 1,
+          CcvMachineUid = machineUid,
           CcvTime = DateTime.UtcNow,
           FilteredHalfPassCount = 1,
           FilteredPassCount = 1,
@@ -194,16 +196,16 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
           Height = 400,
           LastLayerPassTime = DateTime.UtcNow,
           LastPassHeight = 525,
-          MachineId = 1,
+          MachineUid = machineUid,
           MaterialTemperature = 150,
           MaterialTemperatureElev = 500,
-          MaterialTemperatureMachineId = 1,
+          MaterialTemperatureMachineUid = machineUid,
           MaterialTemperatureTime = DateTime.UtcNow,
           MaximumPassHeight = 525,
           MaxThickness = 1.5F,
           Mdp = 250,
           MdpElev = 525,
-          MdpMachineId = 1,
+          MdpMachineUid = machineUid,
           MdpTime = DateTime.UtcNow,
           MinimumPassHeight = 445,
           RadioLatency = 12,
@@ -756,7 +758,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(pl.Amplitude, cpv2.Layers[0].Amplitude);
       Assert.AreEqual(pl.CCV, cpv2.Layers[0].Ccv);
       Assert.AreEqual(pl.CCV_Elev, cpv2.Layers[0].CcvElev);
-      Assert.AreEqual(pl.CCV_MachineID, cpv2.Layers[0].CcvMachineId);
+      Assert.AreEqual(pl.CCV_MachineID, long.MaxValue);
       Assert.AreEqual(pl.CCV_Time, cpv2.Layers[0].CcvTime);
       Assert.AreEqual(pl.FilteredHalfPassCount, cpv2.Layers[0].FilteredHalfPassCount);
       Assert.AreEqual(pl.FilteredPassCount, cpv2.Layers[0].FilteredPassCount);
@@ -765,16 +767,16 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(pl.Height, cpv2.Layers[0].Height);
       Assert.AreEqual(pl.LastLayerPassTime, cpv2.Layers[0].LastLayerPassTime);
       Assert.AreEqual(pl.LastPassHeight, cpv2.Layers[0].LastPassHeight);
-      Assert.AreEqual(pl.MachineID, cpv2.Layers[0].MachineId);
+      Assert.AreEqual(pl.MachineID, long.MaxValue);
       Assert.AreEqual(pl.MaterialTemperature, cpv2.Layers[0].MaterialTemperature);
       Assert.AreEqual(pl.MaterialTemperature_Elev, cpv2.Layers[0].MaterialTemperatureElev);
-      Assert.AreEqual(pl.MaterialTemperature_MachineID, cpv2.Layers[0].MaterialTemperatureMachineId);
+      Assert.AreEqual(pl.MaterialTemperature_MachineID, long.MaxValue);
       Assert.AreEqual(pl.MaterialTemperature_Time, cpv2.Layers[0].MaterialTemperatureTime);
       Assert.AreEqual(pl.MaximumPassHeight, cpv2.Layers[0].MaximumPassHeight);
       Assert.AreEqual(pl.MaxThickness, cpv2.Layers[0].MaxThickness);
       Assert.AreEqual(pl.MDP, cpv2.Layers[0].Mdp);
       Assert.AreEqual(pl.MDP_Elev, cpv2.Layers[0].MdpElev);
-      Assert.AreEqual(pl.MDP_MachineID, cpv2.Layers[0].MdpMachineId);
+      Assert.AreEqual(pl.MDP_MachineID, long.MaxValue);
       Assert.AreEqual(pl.MDP_Time, cpv2.Layers[0].MdpTime);
       Assert.AreEqual(pl.MinimumPassHeight, cpv2.Layers[0].MinimumPassHeight);
       Assert.AreEqual(pl.RadioLatency, cpv2.Layers[0].RadioLatency);
@@ -795,7 +797,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(fp.CCV, fp2.Ccv);
       Assert.AreEqual(fp.Frequency, fp2.Frequency);
       Assert.AreEqual(fp.Height, fp2.Height);
-      Assert.AreEqual(fp.MachineID, fp2.MachineId);
+      Assert.AreEqual(fp.MachineID, long.MaxValue);
       Assert.AreEqual(fp.MachineSpeed, fp2.MachineSpeed);
       Assert.AreEqual(fp.MaterialTemperature, fp2.MaterialTemperature);
       Assert.AreEqual(fp.MDP, fp2.Mdp);

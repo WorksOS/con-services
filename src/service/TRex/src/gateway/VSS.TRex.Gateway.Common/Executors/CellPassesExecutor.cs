@@ -64,7 +64,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       var cellPasses = new List<CellPassesV2Result.FilteredPassData>();
       foreach (var cellPass in response.CellPasses)
       {
-        cellPasses.Add(ConvertCellPass(cellPass));
+        var machineId = siteModel.Machines[cellPass.InternalSiteModelMachineIndex].ID;
+        cellPasses.Add(ConvertCellPass(cellPass, machineId));
       }
 
       var layer = new CellPassesV2Result.ProfileLayer
@@ -82,7 +83,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       };
     }
 
-    private CellPassesV2Result.FilteredPassData ConvertCellPass(ClientCellProfileLeafSubgridRecord cellPass)
+    private CellPassesV2Result.FilteredPassData ConvertCellPass(ClientCellProfileLeafSubgridRecord cellPass, Guid machineId)
     {
       var result = new CellPassesV2Result.FilteredPassData
       {
@@ -97,10 +98,10 @@ namespace VSS.TRex.Gateway.Common.Executors
           MachineSpeed = cellPass.MachineSpeed,
           Frequency = cellPass.LastPassValidFreq,
           GpsModeStore = (byte)cellPass.LastPassValidGPSMode,
-          MachineId = cellPass.InternalSiteModelMachineIndex,
-          MaterialTemperature = ushort.MaxValue, // Not present in cell pass
+          MachineUid = machineId,
+          MaterialTemperature =cellPass.LastPassValidTemperature,
           RadioLatency = byte.MaxValue, // Not present in cell pass
-          
+          HalfPass = cellPass.HalfPass
         },
         TargetsValue = new CellPassesV2Result.CellTargetsValue
         {
@@ -108,8 +109,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           TargetMdp = cellPass.TargetMDP,
           TargetPassCount = (ushort)cellPass.TargetPassCount,
           TargetThickness = cellPass.TargetThickness,
-          TempWarningLevelMax = CellPassConsts.MaxMaterialTempValue, //Not present in cell pass
-          TempWarningLevelMin = CellPassConsts.MinMaterialTempValue//Not present in cell pass
+          TempWarningLevelMax = cellPass.TempWarningLevelMin,
+          TempWarningLevelMin = cellPass.TempWarningLevelMax
         },
         EventsValue = new CellPassesV2Result.CellEventsValue
         {
@@ -117,6 +118,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           EventDesignNameId = cellPass.EventDesignNameID,
           EventIcFlags = CellPassConsts.NullEventIcFlags, // Not present in cell pass
           EventInAvoidZoneState = CellPassConsts.NullEventAvoidZoneState, // Not present in cell pass
+          EventMachineGear = (MachineGearType)cellPass.EventMachineGear,
           EventVibrationState = ConvertVibState(cellPass.EventVibrationState),
           EventOnGroundState = OnGroundStateType.Unknown, // Not present in cell pass
           GpsAccuracy = ConvertGpsAccuracy(cellPass.GPSAccuracy),

@@ -65,7 +65,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
 
       var tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
-      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(tRexSpatialMemoryCacheContext.Object);
+      tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<GridDataType>(), It.IsAny<string>())).Returns(tRexSpatialMemoryCacheContext.Object);
 
       var mockImmutableSpatialAffinityPartitionMap = new Mock<IImmutableSpatialAffinityPartitionMap>();
       mockImmutableSpatialAffinityPartitionMap.Setup(x => x.PrimaryPartitions()).Returns(Enumerable.Range(0, (int) Consts.NUMPARTITIONS_PERDATACACHE).Select(x => true).ToArray());

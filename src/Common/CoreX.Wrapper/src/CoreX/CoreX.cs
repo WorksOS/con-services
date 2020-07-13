@@ -12,8 +12,6 @@ namespace CoreX.Wrapper
 {
   public class CoreX : IDisposable
   {
-    private PointerPointer_IGeodeticXTransformer _transformer;
-
     static CoreX()
     {
       // CoreX library appears to not be thread safe. If you attempt this from the default constructor you'll hit C++ 
@@ -55,14 +53,8 @@ namespace CoreX.Wrapper
     /// </summary>
     public static string GetCSIBFromDCFileContent(string fileContent)
     {
-      static bool IsBase64String(string base64) => 
-        Convert.TryFromBase64String(base64, new Span<byte>(new byte[base64.Length]), out var bytesParsed);
-
       // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
-      if (IsBase64String(fileContent))
-      {
-        fileContent = fileContent.DecodeFromBase64();
-      }
+      fileContent = fileContent.DecodeFromBase64();
 
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
@@ -98,7 +90,7 @@ namespace CoreX.Wrapper
     /// <returns>Returns LLH object in radians.</returns>
     public LLH TransformNEEToLLH(string csib, NEE nee, CoordinateTypes fromType, CoordinateTypes toType)
     {
-      var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
 
       transformer.Transform(
         (geoCoordinateTypes)fromType,
@@ -141,7 +133,7 @@ namespace CoreX.Wrapper
     /// <returns>A NEE point of the LLH provided coordinates in radians.</returns>
     public NEE TransformLLHToNEE(string csib, LLH coordinates, CoordinateTypes fromType, CoordinateTypes toType)
     {
-      var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
 
       transformer.Transform(
         (geoCoordinateTypes)fromType,
@@ -196,20 +188,20 @@ namespace CoreX.Wrapper
 
     private PointerPointer_IGeodeticXTransformer GeodeticXTransformer(GEOCsibBlobContainer geoCsibBlobContainer)
     {
-      _transformer = new PointerPointer_IGeodeticXTransformer();
-      var result = GeodeticX.geoCreateTransformer(geoCsibBlobContainer, _transformer);
+      var transformer = new PointerPointer_IGeodeticXTransformer();
+      var result = GeodeticX.geoCreateTransformer(geoCsibBlobContainer, transformer);
 
       if (result != geoErrorCode.gecSuccess)
       {
         throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
       }
 
-      return _transformer;
+      return transformer;
     }
 
     private static bool ValidateCsib(string csib)
     {
-      StringBuilder sb = new StringBuilder();
+      var sb = new StringBuilder();
       byte[] bytes = Encoding.ASCII.GetBytes(csib);
 
       for (var i = 0; i < bytes.Length; i++)
@@ -245,9 +237,7 @@ namespace CoreX.Wrapper
       }
 
       if (disposing)
-      {
-        GeodeticX.geoDestroyTransformer(_transformer);
-      }
+      { }
 
       _disposed = true;
     }

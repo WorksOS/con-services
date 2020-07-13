@@ -21,7 +21,7 @@ namespace VSS.TRex.SubGrids.Interfaces
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-      ITRexSpatialMemoryCacheContext CacheContext)[] ConstructRequestorIntermediaries(ISiteModel siteModel,
+      ITRexSpatialMemoryCacheContext[] CacheContexts)[] ConstructRequestorIntermediaries(ISiteModel siteModel,
         IFilterSet filters,
         bool includeSurveyedSurfaceInformation,
         GridDataType gridDataType);
@@ -40,7 +40,7 @@ namespace VSS.TRex.SubGrids.Interfaces
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
-        ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
+        ITRexSpatialMemoryCacheContext[] CacheContexts)[] intermediaries,
       AreaControlSet areaControlSet,
       ISubGridTreeBitMask prodDataMask);
   }

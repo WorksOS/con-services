@@ -9,6 +9,7 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
@@ -37,7 +38,7 @@ namespace CCSS.CWS.Client
       DeviceLKSResponseModel deviceLksResponseModel;
       try
       {
-        deviceLksResponseModel = await GetData<DeviceLKSResponseModel>($"/devicelks/{deviceName}", null, null, null, customHeaders);
+        deviceLksResponseModel = await GetData<DeviceLKSResponseModel>($"{ROUTE_PREFIX}/devicelks/{deviceName}", null, null, null, customHeaders);
       }
       catch (Exception e)
       {
@@ -53,20 +54,23 @@ namespace CCSS.CWS.Client
     /// Get devices LKS which last reported inside this project
     ///     Devices included are active and assigned to the project      
     ///     Optionally return only where device has reported after this earliestDate ("2020-04-29T07:02:57Z")
-    /// As of 2020_07_06 pagination is not supported in cws.
+    /// As of 2020_07_06 pagination is not supported in cws for this endpoint.
+    ///
+    /// Note that the cws response is an unnamed list e.g. [{},{}] and not [devices:{},{}]
+    ///    therefore the response must be a List<> and not a class containing a List<>
+    ///    therefore this special need for GetDataNoCache()
     /// </summary>
-    public async Task<DeviceLKSListResponseModel> GetDevicesLKSForProject(Guid projectUid, DateTime? earliestOfInterestUtc, IHeaderDictionary customHeaders = null)
+    public async Task<List<DeviceLKSResponseModel>> GetDevicesLKSForProject(Guid projectUid, DateTime? earliestOfInterestUtc, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevicesLKSForProject)}: projectUID {projectUid}");
       var projectTrn = TRNHelper.MakeTRN(projectUid);
       var queryParameters = new List<KeyValuePair<string, string>>
-        { new KeyValuePair<string, string>("projectid", projectTrn) };
+        { new KeyValuePair<string, string>("projectId", projectTrn) };
       if (earliestOfInterestUtc != null)
         queryParameters.Add(new KeyValuePair<string, string>("lastReported", $"{earliestOfInterestUtc:yyyy-MM-ddTHH:mm:ssZ}"));
-      var deviceLksListResponseModel = await GetData<DeviceLKSListResponseModel>($"/devicelks", projectUid, null, queryParameters, customHeaders);
- 
-      log.LogDebug($"{nameof(GetDevicesLKSForProject)}: deviceLKSListResponseModel {(deviceLksListResponseModel == null ? null : JsonConvert.SerializeObject(deviceLksListResponseModel))}");
+      var deviceLksListResponseModel = await GetDataNoCache<List<DeviceLKSResponseModel>>($"{ROUTE_PREFIX}/devicelks", queryParameters, customHeaders);
 
+      log.LogDebug($"{nameof(GetDevicesLKSForProject)}: deviceLKSListResponseModel {(deviceLksListResponseModel == null ? null : JsonConvert.SerializeObject(deviceLksListResponseModel))}");
       return deviceLksListResponseModel;
     }
   }

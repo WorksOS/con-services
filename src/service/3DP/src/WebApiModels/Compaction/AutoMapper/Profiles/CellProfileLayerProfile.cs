@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
         .ForMember(x => x.CCV_Elev,
           opt => opt.MapFrom(pl => pl.CcvElev))
         .ForMember(x => x.CCV_MachineID,
-          opt => opt.MapFrom(pl => pl.CcvMachineId))
+          opt => opt.MapFrom(pl => long.MaxValue))
         .ForMember(x => x.CCV_Time,
           opt => opt.MapFrom(pl => pl.CcvTime))
         .ForMember(x => x.FilteredHalfPassCount,
@@ -38,13 +38,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
         .ForMember(x => x.LastPassHeight,
           opt => opt.MapFrom(pl => pl.LastPassHeight))
         .ForMember(x => x.MachineID,
-          opt => opt.MapFrom(pl => pl.MachineId))
+          opt => opt.MapFrom(pl => long.MaxValue))
         .ForMember(x => x.MaterialTemperature,
           opt => opt.MapFrom(pl => pl.MaterialTemperature))
         .ForMember(x => x.MaterialTemperature_Elev,
           opt => opt.MapFrom(pl => pl.MaterialTemperatureElev))
         .ForMember(x => x.MaterialTemperature_MachineID,
-          opt => opt.MapFrom(pl => pl.MaterialTemperatureMachineId))
+          opt => opt.MapFrom(pl => long.MaxValue))
         .ForMember(x => x.MaterialTemperature_Time,
           opt => opt.MapFrom(pl => pl.MaterialTemperatureTime))
         .ForMember(x => x.MaximumPassHeight,
@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
         .ForMember(x => x.MDP_Elev,
           opt => opt.MapFrom(pl => pl.MdpElev))
         .ForMember(x => x.MDP_MachineID,
-          opt => opt.MapFrom(pl => pl.MdpMachineId))
+          opt => opt.MapFrom(pl => long.MaxValue))
         .ForMember(x => x.MDP_Time,
           opt => opt.MapFrom(pl => pl.MdpTime))
         .ForMember(x => x.MinimumPassHeight,
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper.Profiles
         .ForMember(x => x.Height,
           opt => opt.MapFrom(cev => cev.Height))
         .ForMember(x => x.MachineID,
-          opt => opt.MapFrom(cev => cev.MachineId))
+          opt => opt.MapFrom(pl => long.MaxValue))
         .ForMember(x => x.MachineSpeed,
           opt => opt.MapFrom(cev => cev.MachineSpeed))
         .ForMember(x => x.MaterialTemperature,

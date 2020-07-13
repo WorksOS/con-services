@@ -26,8 +26,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_MetadataChanged_BothAccountAndProject()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.MetaData)]
+    public async Task ProjectChangedExecutor_MetadataChanged_BothAccountAndProject(NotificationType notificationType)
     {
       var projectUid = Guid.NewGuid();
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
@@ -39,7 +41,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = projectTrn,
-        NotificationType = NotificationType.MetaData,
+        NotificationType = notificationType,
         CoordinateSystemFileName = null,
         CoordinateSystemFileContent = null
       };
@@ -51,8 +53,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_MetadataChanged_Account()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.MetaData)]
+    public async Task ProjectChangedExecutor_MetadataChanged_Account(NotificationType notificationType)
     {
       var projectUid = Guid.NewGuid();
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
@@ -64,7 +68,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = null,
-        NotificationType = NotificationType.MetaData,
+        NotificationType = notificationType,
         CoordinateSystemFileName = null,
         CoordinateSystemFileContent = null
       };
@@ -76,8 +80,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_MetadataChanged_Project()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.MetaData)]
+    public async Task ProjectChangedExecutor_MetadataChanged_Project(NotificationType notificationType)
     {
       var projectUid = Guid.NewGuid();
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
@@ -89,7 +95,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = null,
         ProjectTrn = projectTrn,
-        NotificationType = NotificationType.MetaData,
+        NotificationType = notificationType,
         CoordinateSystemFileName = null,
         CoordinateSystemFileContent = null
       };
@@ -101,8 +107,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_CoordSystemChanged_HappyPath()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.CoordinateSystem)]
+    public async Task ProjectChangedExecutor_CoordSystemChanged_HappyPath(NotificationType notificationType)
     {
       var projectUid = Guid.NewGuid();
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
@@ -123,7 +131,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = projectTrn,
-        NotificationType = NotificationType.CoordinateSystem,
+        NotificationType = notificationType,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -136,14 +144,16 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingProjectUid()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.CoordinateSystem)]
+    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingProjectUid(NotificationType notificationType)
     {
       var request = new ProjectChangeNotificationDto
       {
         AccountTrn = _customerTrn,
         ProjectTrn = null,
-        NotificationType = NotificationType.CoordinateSystem,
+        NotificationType = notificationType,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -157,8 +167,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Contains("Missing ProjectUID.", ex.GetContent);
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingCoordinateSystemFileName()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.CoordinateSystem)]
+    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingCoordinateSystemFileName(NotificationType notificationType)
     {
       var projectUid = Guid.NewGuid();
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
@@ -167,7 +179,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = projectTrn,
-        NotificationType = NotificationType.CoordinateSystem,
+        NotificationType = notificationType,
         CoordinateSystemFileName = null,
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };
@@ -181,8 +193,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Contains("Missing coordinate system file name.", ex.GetContent);
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingCoordinateSystemContents()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.CoordinateSystem)]
+    public async Task ProjectChangedExecutor_CoordSystemChanged_MissingCoordinateSystemContents(NotificationType notificationType)
     {
       var projectUid = Guid.NewGuid();
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
@@ -191,7 +205,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = _customerTrn,
         ProjectTrn = projectTrn,
-        NotificationType = NotificationType.CoordinateSystem,
+        NotificationType = notificationType,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = null
       };
@@ -205,8 +219,11 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Contains("Missing coordinate system file contents.", ex.GetContent);
     }
 
-    [Fact]
-    public async Task ProjectChangedExecutor_CoordSystemChanged_MismatchedCustomerUid()
+    [Theory]
+    [InlineData(NotificationType.Unknown)]
+    [InlineData(NotificationType.MetaData)]
+    [InlineData(NotificationType.CoordinateSystem)]
+    public async Task ProjectChangedExecutor_CoordSystemChanged_MismatchedCustomerUid(NotificationType notificationType)
     {
       var projectUid = Guid.NewGuid();
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_ACCOUNT);
@@ -215,7 +232,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       {
         AccountTrn = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_ACCOUNT),
         ProjectTrn = projectTrn,
-        NotificationType = NotificationType.CoordinateSystem,
+        NotificationType = notificationType,
         CoordinateSystemFileName = "some file name",
         CoordinateSystemFileContent = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }
       };

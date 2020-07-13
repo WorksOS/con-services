@@ -59,7 +59,7 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Display human readable version of the XYZ fields
     /// </summary>
-    public override string ToString() => Z == Consts.NullDouble ? $"X:{X:F6}, Y:{Y:F6}, Z:Null, " : $"X:{X:F6}, Y:{Y:F6}, Z:{Z:F6}";
+    public override string ToString() => Z == Consts.NullDouble ? $"X:{X:F6}, Y:{Y:F6}, Z:Null | " : $"X:{X:F6}, Y:{Y:F6}, Z:{Z:F6} | ";
 
     /// <summary>
     /// XYZ constructor taking X,Y and Z dimensions

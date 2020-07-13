@@ -10,7 +10,6 @@ namespace CoreX.Wrapper.UnitTests
     private readonly IServiceProvider _serviceProvider;
 
     public IConvertCoordinates ConvertCoordinates => _serviceProvider.GetRequiredService<IConvertCoordinates>();
-    public CoreX CoreX => _serviceProvider.GetRequiredService<CoreX>();
 
     private string _csib = null;
     public string CSIB => _csib ??= CoreX.GetCSIBFromDCFile(DCFile.GetFilePath(DCFile.BOOTCAMP_2012));
@@ -18,7 +17,7 @@ namespace CoreX.Wrapper.UnitTests
     public UnitTestBaseFixture()
     {
       _serviceProvider = new ServiceCollection()
-        .AddSingleton<CoreX>()
+        .AddLogging()
         .AddSingleton<IConvertCoordinates, ConvertCoordinates>()
         .BuildServiceProvider();
     }
