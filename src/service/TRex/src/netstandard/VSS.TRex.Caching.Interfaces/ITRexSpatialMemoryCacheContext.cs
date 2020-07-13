@@ -15,6 +15,8 @@ namespace VSS.TRex.Caching.Interfaces
 
     ITRexSpatialMemoryCache OwnerMemoryCache { get; }
 
+    IGenericSubGridTree_Int ContextTokens { get; }
+
     ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
 
     int TokenCount { get; }
