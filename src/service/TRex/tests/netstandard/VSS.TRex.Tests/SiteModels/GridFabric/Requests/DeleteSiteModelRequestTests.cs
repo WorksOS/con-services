@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
@@ -46,6 +47,14 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       // This resets all modified content in the Ignite mocks between tests
       fixture.ClearDynamicFixtureContent();
       fixture.SetupFixture();
+
+      // Modify the SiteModels instance to be mutable, rather than immutable to mimic the mutable context 
+      // project deletion operates in 
+      DIBuilder
+        .Continue()
+        .RemoveSingle<ISiteModels>()
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(StorageMutability.Mutable)))
+        .Complete();
     }
 
     private bool IsModelEmpty(ISiteModel model, bool expectedToBeEmpty)
