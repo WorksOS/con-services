@@ -1,12 +1,19 @@
-﻿namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
+﻿using Newtonsoft.Json;
+
+namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
 {
   public class SatelliteVehicle
   {
-    public long? gps { get; set; }
-    public long? gln { get; set; }
-    public long? bds { get; set; }
-    public long? gal { get; set; }
-    public long? irnss { get; set; }
+    [JsonProperty("gps")]
+    public long? Gps { get; set; }
+    [JsonProperty("gln")]
+    public long? Gln { get; set; }
+    [JsonProperty("bds")]
+    public long? Bds { get; set; }
+    [JsonProperty("gal")]
+    public long? Gal { get; set; }
+    [JsonProperty("irnss")]
+    public long? Irnss { get; set; }
 
     public SatelliteVehicle() { }
   }

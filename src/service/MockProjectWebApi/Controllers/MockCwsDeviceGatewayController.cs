@@ -28,14 +28,13 @@ namespace MockProjectWebApi.Controllers
       if (TRNHelper.ExtractGuid(projectId) == new Guid(ConstantsUtil.DIMENSIONS_PROJECT_UID))
         result.Add(new DeviceLKSResponseModel()
         {
-          TRN = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
-          assetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
-          lat = 89.9,
-          lon = 34.6,
-          assetType = CWSDeviceTypeEnum.EC520,
-          deviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
-          projectName = "DimensionsProject",
-          lastReported = DateTime.UtcNow.AddDays(-1)
+          DeviceTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
+          AssetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
+          Latitude = 89.9, Longitude = 34.6,
+          AssetType = CWSDeviceTypeEnum.EC520,
+          DeviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
+          ProjectName = "DimensionsProject",
+          LastReportedUtc = DateTime.UtcNow.AddDays(-1)
         });
 
       return result;
@@ -50,14 +49,13 @@ namespace MockProjectWebApi.Controllers
       if (deviceName == $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}")
         return new DeviceLKSResponseModel()
         {
-          TRN = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
-          assetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
-          lat = 89.9,
-          lon = 34.6,
-          assetType = CWSDeviceTypeEnum.EC520,
-          deviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
-          projectName = "DimensionsProject",
-          lastReported = DateTime.UtcNow.AddDays(-1)
+          DeviceTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
+          AssetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
+          Latitude = 89.9, Longitude = 34.6,
+          AssetType = CWSDeviceTypeEnum.EC520,
+          DeviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
+          ProjectName = "DimensionsProject",
+          LastReportedUtc = DateTime.UtcNow.AddDays(-1)
         };
 
       return null;

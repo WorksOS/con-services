@@ -1,28 +1,51 @@
-﻿namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
+﻿using Newtonsoft.Json;
+
+namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
 {
   public class Network
   {
-    public string type { get; set; }
-    public double? signal { get; set; }
-    public string state { get; set; }
-    public short? dbm { get; set; }
-    public short? uptime { get; set; }
-    public string carrier { get; set; }
-    public bool? roaming { get; set; }
-    public string cellTech { get; set; }
-    public string mcc { get; set; }
-    public string mnc { get; set; }
-    public string simId { get; set; }
-    public string iccId { get; set; }
-    public string phoneNumber { get; set; }
-    public long? modemResets { get; set; }
-    public string apn { get; set; }
-    public string apnUsername { get; set; }
-    public bool? apnPasswordSet { get; set; }
-    public short? txData { get; set; }
-    public short? rxData { get; set; }
-    public string regulatoryDomain { get; set; }
-    public string regulatoryDomainMethod { get; set; }
+    [JsonProperty("type")]
+    public string Type { get; set; }
+    [JsonProperty("signal")] 
+    public double? Signal { get; set; }
+    [JsonProperty("state")] 
+    public string State { get; set; }
+    [JsonProperty("dbm")]
+    public short? Dbm { get; set; }
+    [JsonProperty("uptime")]
+    public short? Uptime { get; set; }
+    [JsonProperty("carrier")]
+    public string Carrier { get; set; }
+    [JsonProperty("roaming")]
+    public bool? Roaming { get; set; }
+    [JsonProperty("cellTech")]
+    public string CellTech { get; set; }
+    [JsonProperty("mcc")]
+    public string Mcc { get; set; }
+    [JsonProperty("mnc")]
+    public string Mnc { get; set; }
+    [JsonProperty("simId")]
+    public string SimId { get; set; }
+    [JsonProperty("iccId")]
+    public string IccId { get; set; }
+    [JsonProperty("phoneNumber")]
+    public string PhoneNumber { get; set; }
+    [JsonProperty("modemResets")]
+    public long? ModemResets { get; set; }
+    [JsonProperty("apn")]
+    public string Apn { get; set; }
+    [JsonProperty("apnUsername")]
+    public string ApnUsername { get; set; }
+    [JsonProperty("apnPasswordSet")]
+    public bool? ApnPasswordSet { get; set; }
+    [JsonProperty("txData")]
+    public short? TxData { get; set; }
+    [JsonProperty("rxData")]
+    public short? RxData { get; set; }
+    [JsonProperty("regulatoryDomain")]
+    public string RegulatoryDomain { get; set; }
+    [JsonProperty("regulatoryDomainMethod")]
+    public string RegulatoryDomainMethod { get; set; }
 
     public Network() { }
   }

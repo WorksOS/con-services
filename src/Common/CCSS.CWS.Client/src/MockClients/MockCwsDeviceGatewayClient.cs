@@ -32,12 +32,12 @@ namespace CCSS.CWS.Client.MockClients
       var serialNumber = "12456YU";
       var deviceLksResponseModel = new DeviceLKSResponseModel()
       {
-        TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-        lat = 89.3, lon = 189.1,
-        assetType = CWSDeviceTypeEnum.EC520,
-        assetSerialNumber = serialNumber,
-        deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-        lastReported = DateTime.UtcNow.AddDays(-1),
+        DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
+        Latitude = 89.3, Longitude = 189.1,
+        AssetType = CWSDeviceTypeEnum.EC520,
+        AssetSerialNumber = serialNumber,
+        DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+        LastReportedUtc = DateTime.UtcNow.AddDays(-1),
       };
       log.LogDebug($"{nameof(GetDeviceLKS)} Mock: deviceLKSResponseModel {JsonConvert.SerializeObject(deviceLksResponseModel)}");
       return Task.FromResult(deviceLksResponseModel);
@@ -52,12 +52,12 @@ namespace CCSS.CWS.Client.MockClients
         {
           new DeviceLKSResponseModel()
           {
-            TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-            lat = 89.3, lon = 189.1,
-            assetType = CWSDeviceTypeEnum.EC520,
-            assetSerialNumber = serialNumber,
-            deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-            lastReported = DateTime.UtcNow.AddDays(-1),
+            DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
+            Latitude = 89.3, Longitude = 189.1,
+            AssetType = CWSDeviceTypeEnum.EC520,
+            AssetSerialNumber = serialNumber,
+            DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+            LastReportedUtc = DateTime.UtcNow.AddDays(-1),
           }
       };
 
@@ -65,9 +65,10 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(devices);
     }
 
-    public async Task CreateDeviceLKS(string deviceName, CreateDeviceLKSRequestModel createDeviceLksRequestModel, IHeaderDictionary customHeaders = null)
+    public Task CreateDeviceLKS(string deviceName, DeviceLKSModel deviceLKSModel, IHeaderDictionary customHeaders = null)
     {
-      log.LogDebug($"{nameof(CreateDeviceLKS)}  Mock: deviceName {deviceName} createDeviceLksRequestModel {JsonConvert.SerializeObject(createDeviceLksRequestModel)}");
+      log.LogDebug($"{nameof(CreateDeviceLKS)}  Mock: deviceName {deviceName} deviceLKSModel {JsonConvert.SerializeObject(deviceLKSModel)}");
+      return Task.CompletedTask;
     }
   }
 }

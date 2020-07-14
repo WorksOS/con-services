@@ -35,12 +35,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         {
           new DeviceLKSResponseModel()
           {
-            TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
-            lat = 89.3, lon = 189.1,
-            assetType = CWSDeviceTypeEnum.EC520,
-            assetSerialNumber = serialNumber,
-            deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-            lastReported = DateTime.UtcNow.AddDays(-1),
+            DeviceTrn = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+            Latitude = 89.3, Longitude = 189.1,
+            AssetType = CWSDeviceTypeEnum.EC520,
+            AssetSerialNumber = serialNumber,
+            DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+            LastReportedUtc = DateTime.UtcNow.AddDays(-1),
           }
       };
 
@@ -56,7 +56,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
         Assert.NotNull(result);
         Assert.Single(result);
-        Assert.Equal(deviceUid.ToString(), result[0].deviceUid);
+        Assert.Equal(deviceUid.ToString(), result[0].DeviceUid);
         return true;
       });
     }
@@ -73,12 +73,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         {
           new DeviceLKSResponseModel()
           {
-            TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
-            lat = 89.3, lon = 189.1,
-            assetType = CWSDeviceTypeEnum.EC520,
-            assetSerialNumber = serialNumber,
-            deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
-            lastReported = earliestOfInterestUtc.AddDays(1),
+            DeviceTrn = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+            Latitude = 89.3, Longitude = 189.1,
+            AssetType = CWSDeviceTypeEnum.EC520,
+            AssetSerialNumber = serialNumber,
+            DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+            LastReportedUtc = earliestOfInterestUtc.AddDays(1),
           }
       };
 
@@ -94,8 +94,8 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
         Assert.NotNull(result);
         Assert.Single(result);
-        Assert.Equal(deviceUid.ToString(), result[0].deviceUid);
-        Assert.Equal(devices[0].lastReported, result[0].lastReported);
+        Assert.Equal(deviceUid.ToString(), result[0].DeviceUid);
+        Assert.Equal(devices[0].LastReportedUtc, result[0].LastReportedUtc);
         return true;
       });
     }
@@ -110,12 +110,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
       var deviceLksResponseModel = new DeviceLKSResponseModel()
       {
-        TRN = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
-        lat = 89.3, lon = 189.1,
-        assetType = deviceType,
-        assetSerialNumber = serialNumber,
-        deviceName = deviceName,
-        lastReported = DateTime.UtcNow.AddDays(1),
+        DeviceTrn = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
+        Latitude = 89.3, Longitude = 189.1,
+        AssetType = deviceType,
+        AssetSerialNumber = serialNumber,
+        DeviceName = deviceName,
+        LastReportedUtc = DateTime.UtcNow.AddDays(1),
       };
 
       var route = $"/devicegateway/devicelks/{deviceName}";
@@ -130,9 +130,9 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var result = await client.GetDeviceLKS(deviceName);
 
         Assert.NotNull(result);
-        Assert.Equal(deviceUid.ToString(), result.deviceUid);
-        Assert.Equal(deviceName, result.deviceName);
-        Assert.Equal(serialNumber, result.assetSerialNumber);
+        Assert.Equal(deviceUid.ToString(), result.DeviceUid);
+        Assert.Equal(deviceName, result.DeviceName);
+        Assert.Equal(serialNumber, result.AssetSerialNumber);
         return true;
       });
     }
@@ -144,14 +144,14 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var serialNumber = "12456YU";
       var deviceName = $"{deviceType}-{serialNumber}";
 
-      var createDeviceLksRequestModel = new CreateDeviceLKSRequestModel()
+      var deviceLKSModel = new DeviceLKSModel()
       {
         TimeStamp = DateTime.UtcNow.AddDays(1),
         Latitude = -2,
         Longitude = 3,
         Height = 1,
-        SerialNumber = serialNumber,
-        DeviceType = deviceType,
+        AssetSerialNumber = serialNumber,
+        AssetType = deviceType,
         AssetNickname = "Little Nicky",
         DesignName = "Highway to hell",
         AppName = "Trimble Groundworks",
@@ -170,7 +170,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
       {
         var client = ServiceProvider.GetRequiredService<ICwsDeviceGatewayClient>();
-        await client.CreateDeviceLKS(deviceName, createDeviceLksRequestModel);
+        await client.CreateDeviceLKS(deviceName, deviceLKSModel);
         return true;
       });
     }
