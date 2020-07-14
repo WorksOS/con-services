@@ -124,19 +124,20 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         ConvertNEEToLLHCoords(siteModel.CSIB(), geometryResponse);
 
         // Populate the converted coordinates into the result. Note: At this point, X = Longitude and Y = Latitude
-        return new AlignmentGeometryResult
-        (ContractExecutionStatesEnum.ExecutedSuccessfully,
-          request.DesignUid,
-          request.FileName,
-          geometryResponse.Vertices.Select(x =>
-            x.Select(v => new[] { v[1], v[0], v[2] }).ToArray()).ToArray(),
-          geometryResponse.Arcs.Select(x =>
-            new AlignmentGeometryResultArc
-            (x.Y1, x.X1, x.Z1,
-              x.Y2, x.X2, x.Z2,
-              x.YC, x.XC, x.ZC, x.CW)).ToArray(),
-          geometryResponse.Labels.Select(x =>
-            new AlignmentGeometryResultLabel(x.Station, x.Y, x.X, x.Rotation)).ToArray());
+        return new AlignmentGeometryResult(
+        ContractExecutionStatesEnum.ExecutedSuccessfully,
+          new AlignmentGeometry(
+            request.DesignUid,
+            request.FileName,
+            geometryResponse.Vertices.Select(x =>
+              x.Select(v => new[] { v[1], v[0], v[2] }).ToArray()).ToArray(),
+            geometryResponse.Arcs.Select(x =>
+              new AlignmentGeometryResultArc
+              (x.Y1, x.X1, x.Z1,
+                x.Y2, x.X2, x.Z2,
+                x.YC, x.XC, x.ZC, x.CW)).ToArray(),
+            geometryResponse.Labels.Select(x =>
+              new AlignmentGeometryResultLabel(x.Station, x.Y, x.X, x.Rotation)).ToArray()));
       }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

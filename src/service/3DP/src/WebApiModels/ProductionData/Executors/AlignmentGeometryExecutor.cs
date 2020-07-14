@@ -20,35 +20,65 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
         throw new ServiceException("Master alignment geometry request is not support for Raptor");
 #endif
-
         log.LogDebug("Getting master alignment geometry from TRex");
 
         var request = CastRequestObjectTo<AlignmentGeometryRequest>(item);
-        var siteModelId = request.ProjectUid.ToString();
-        var designUid = request.DesignUid.ToString();
+
+        var siteModelId = request.ProjectUid.ToString();        
         var convertArcsToChords = request.ConvertArcsToChords.ToString();
         var arcChordTolerance = request.ArcChordTolerance.ToString(CultureInfo.InvariantCulture);
-        var queryParams = new List<KeyValuePair<string, string>>
-        {
-          new KeyValuePair<string, string>( "projectUid", siteModelId ),
-          new KeyValuePair<string, string>( "designUid", designUid ),
-          new KeyValuePair<string, string>( "convertArcsToChords", convertArcsToChords),
-          new KeyValuePair<string, string>( "arcChordTolerance", arcChordTolerance)
-        };
-     
-        var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<AlignmentGeometryResult>(siteModelId, "/design/alignment/master/geometry", customHeaders, queryParams);
 
-        if (returnedResult != null)
-          return returnedResult;
-       
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Failed to get alignment center line geometry for alignment: {designUid}"));
+        const string LOG_MSG = "Getting an alignment geometry for file";
+
+        if (request.DesignUid == null)
+        {
+          var alignmentGeometries = new List<AlignmentGeometry>();
+
+          if (fileList?.Count > 0)
+          {
+            for (var i = 0; i < fileList.Count; i++)
+            {
+              log.LogDebug($"{LOG_MSG}: {fileList[i].Name}");
+              
+              var geometryResult = await ProcessRequest(siteModelId, fileList[i].ImportedFileUid, convertArcsToChords, arcChordTolerance, fileList[i].Name);
+              alignmentGeometries.Add(geometryResult.AlignmentGeometry);
+            }
+          }
+
+          return await Task.FromResult(new AlignmentGeometriesResult(ContractExecutionStatesEnum.ExecutedSuccessfully, alignmentGeometries.ToArray()));
+        }
+        else
+        {
+          log.LogDebug($"{LOG_MSG} ID: {request.DesignUid}");
+
+          return await ProcessRequest(siteModelId, request.DesignUid.ToString(), convertArcsToChords, arcChordTolerance, request.FileName);
+        }
       }
       finally
       {
         ContractExecutionStates.ClearDynamic();
       }
+    }
+
+    private async Task<AlignmentGeometryResult> ProcessRequest(string siteModelId, string designUid, string convertArcsToChords, string arcChordTolerance, string fileName)
+    {
+      var queryParams = new List<KeyValuePair<string, string>>
+        {
+          new KeyValuePair<string, string>( "projectUid", siteModelId ),
+          new KeyValuePair<string, string>( "designUid", designUid ),
+          new KeyValuePair<string, string>( "fileName", fileName ),
+          new KeyValuePair<string, string>( "convertArcsToChords", convertArcsToChords ),
+          new KeyValuePair<string, string>( "arcChordTolerance", arcChordTolerance )
+        };
+
+      var returnedResult = await trexCompactionDataProxy.SendDataGetRequest<AlignmentGeometryResult>(siteModelId, "/design/alignment/master/geometry", customHeaders, queryParams);
+
+      if (returnedResult?.Code == 0 && returnedResult?.AlignmentGeometry != null)
+        return returnedResult;
+
+      throw new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"Failed to get alignment center line geometry for alignment: {designUid}"));
     }
   }
 }
