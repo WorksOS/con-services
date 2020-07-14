@@ -8,8 +8,8 @@ using VSS.Common.Abstractions.Enums;
 namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
 {
   ///
-  /// We only want to send location, not the other LKS stuff,
-  ///     so this model is restricted for that purpose
+  /// We only want to send a subset of possible LKS values,
+  ///     so this model is restricted to those
   public class CreateDeviceLKSRequestModel
   {
 

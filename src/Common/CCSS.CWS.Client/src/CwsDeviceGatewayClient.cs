@@ -75,7 +75,7 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// Adding a location to cws using deviceName
+    /// Adding some LastKnownStatus values to cws using deviceName
     ///  CreateDeviceLocationRequestModel could be extended as other status supported
     /// </summary>
     public async Task CreateDeviceLKS(string deviceName, CreateDeviceLKSRequestModel createDeviceLksRequestModel, IHeaderDictionary customHeaders = null)
