@@ -51,6 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private ICwsDeviceClient _cwsDeviceClient;
     private ICwsDesignClient _cwsDesignClient;
     private ICwsProfileSettingsClient _cwsProfileSettingsClient;
+    private ICwsDeviceGatewayClient _cwsDeviceGatewayClient;
     private IConfigurationStore _configurationStore;
     private INotificationHubClient _notificationHubClient;
 
@@ -73,6 +74,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ??= HttpContext.RequestServices.GetService<ICwsDeviceClient>();
     protected ICwsDesignClient CwsDesignClient => _cwsDesignClient ??= HttpContext.RequestServices.GetService<ICwsDesignClient>();
     protected ICwsProfileSettingsClient CwsProfileSettingsClient => _cwsProfileSettingsClient ??= HttpContext.RequestServices.GetService<ICwsProfileSettingsClient>();
+    protected ICwsDeviceGatewayClient CwsDeviceGatewayClient => _cwsDeviceGatewayClient ??= HttpContext.RequestServices.GetService<ICwsDeviceGatewayClient>();
+    
     protected ITPaaSApplicationAuthentication Authorization => _authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
     protected INotificationHubClient NotificationHubClient => _notificationHubClient ??= HttpContext.RequestServices.GetService<INotificationHubClient>();
     /// <summary>

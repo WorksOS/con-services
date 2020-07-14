@@ -10,7 +10,7 @@ Write-Host "Removing old application containers"
 docker ps -aq --filter "name=project_" | ForEach-Object { docker rm $_ }
 
 Write-Host "Connecting to image host" -ForegroundColor DarkGray
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile okta)
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile fsm-okta)
 
 IF (-not $?) {
     Write-Host "Error: Logging in to AWS, won't pull latest images for container dependencies." -ForegroundColor Red
