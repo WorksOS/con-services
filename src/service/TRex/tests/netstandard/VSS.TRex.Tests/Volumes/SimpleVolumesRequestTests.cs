@@ -9,6 +9,9 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.ComputeFuncs;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -81,6 +84,12 @@ namespace VSS.TRex.Tests.Volumes
     private void AddClusterComputeGridRouting()
     {
       IgniteMock.Immutable.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
+    }
+
+    private void AddDesignProfilerGridRouting()
+    {
+      IgniteMock.Immutable.AddApplicationGridRouting
+        <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
     }
 
     [Fact]
@@ -223,7 +232,7 @@ namespace VSS.TRex.Tests.Volumes
       JsonConvert.DeserializeObject<SimpleVolumesResponse>(expectedResponseText).Should().BeEquivalentTo(response);
     }
 
-    private SimpleVolumesRequestArgument RequestArgForSimpleRquestsWithIntermediaryFilter(ISiteModel siteModel)
+    private SimpleVolumesRequestArgument RequestArgForSimpleRequestsWithIntermediaryFilter(ISiteModel siteModel)
     {
       var (startUtc, endUtc) = siteModel.GetDateRange();
 
@@ -286,7 +295,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(RequestArgForSimpleRquestsWithIntermediaryFilter(siteModel));
+      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel));
 
       CheckVolumesResponse(response);
     }
@@ -324,7 +333,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(RequestArgForSimpleRquestsWithIntermediaryFilter(siteModel));
+      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel));
 
       CheckVolumesResponse(response);
     }
@@ -451,6 +460,75 @@ namespace VSS.TRex.Tests.Volumes
       var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleCutCellAtOriginResponse(response);
+    }
+
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToDesign_SingleCell()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
+
+      var topDesign = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var arg = SimpleDefaultRequestArg(siteModel.ID);
+      arg.VolumeType = VolumeComputationType.BetweenFilterAndDesign;
+      arg.TopDesign = new DesignOffset(topDesign, 0);
+
+      var response = await request.ExecuteAsync(arg);
+
+      const double EPSILON = 0.000001;
+
+      response.Should().NotBeNull();
+      response.Cut.Should().BeApproximately(1.0 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.Fill.Should().BeApproximately(0, EPSILON);
+      response.CutArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.FillArea.Should().BeApproximately(0, EPSILON);
+      response.TotalCoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+
+      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+    }
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DesignToDefaultFilter_SingleCell()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
+
+      var baseDesign = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var arg = SimpleDefaultRequestArg(siteModel.ID);
+      arg.VolumeType = VolumeComputationType.BetweenDesignAndFilter;
+      arg.BaseDesign = new DesignOffset(baseDesign, 0);
+
+      var response = await request.ExecuteAsync(arg);
+
+      const double EPSILON = 0.000001;
+
+      response.Should().NotBeNull();
+      response.Cut.Should().BeApproximately(3.5 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.Fill.Should().BeApproximately(0, EPSILON);
+      response.CutArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.FillArea.Should().BeApproximately(0, EPSILON);
+      response.TotalCoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+
+      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
     }
   }
 }
