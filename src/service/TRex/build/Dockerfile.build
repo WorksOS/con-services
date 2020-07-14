@@ -25,5 +25,5 @@ dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridA
 dotnet publish ./${SERVICE_PATH}/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --no-restore -nowarn:NU1701 --output /trex/Utils
 
 # Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
-RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
-COPY ./${SERVICE_PATH}/build/ignite-kubernetes-2.8.0.jar /trex/libs/
+RUN cp -r /root/.nuget/packages/apache.ignite/2.8.1/build/output/libs/ /trex/libs/
+COPY ./${SERVICE_PATH}/build/ignite-kubernetes-2.8.1.jar /trex/libs/

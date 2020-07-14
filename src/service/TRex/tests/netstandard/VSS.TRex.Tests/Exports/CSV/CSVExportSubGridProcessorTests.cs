@@ -257,7 +257,9 @@ namespace VSS.TRex.Tests.Exports.CSV
         TargetThickness = 45,
         EventMachineGear = MachineGear.Forward2,
         EventVibrationState = VibrationState.On,
-        LastPassValidTemperature = 1040
+        LastPassValidTemperature = 1040,
+        TempWarningLevelMin = 1000,
+        TempWarningLevelMax = 2000
       };
       return clientGrid;
     }

@@ -15,6 +15,7 @@ variables:
   serviceName: "Mock"
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/MockProjectWebApi"
   ecrRepositoryName: 'rpd-ccss-mock-webapi'
+  isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 jobs:
   - job: BuildTestAndDeploy
@@ -53,4 +54,13 @@ jobs:
         displayName: "Push Docker Image"
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -buildId $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
+          arguments: "-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -imageSuffix $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)"
+
+      # This task could be negated by changing all service docker-compose files to pull 'latest', as we no longer have the notion of a windows and linux version of MockWebAPI.
+      - task: PowerShell@2
+        # Only run for /master branch
+        condition: and(succeeded(), eq(variables['isMasterBranch'], true))
+        displayName: "Push Docker Image (latest-linux)"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action pushImage -branch latest -imageSuffix linux -ecrRepositoryName $(ecrRepositoryName)"

@@ -9,6 +9,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.Caching
 {
@@ -111,7 +112,7 @@ namespace VSS.TRex.Caching
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
-    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint, TimeSpan cacheDuration)
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, GridDataType gridDataType, string contextFingerPrint, TimeSpan cacheDuration)
     {
       lock (_contexts)
       {
@@ -124,7 +125,7 @@ namespace VSS.TRex.Caching
         }
 
         // Create the new context
-        var newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint, projectUid); 
+        var newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint, gridDataType, projectUid);
         _contexts.Add(contextFingerPrint, newContext);
 
         lock (_projectContexts)
@@ -148,9 +149,9 @@ namespace VSS.TRex.Caching
     /// Locates a cache context responsible for storing elements that share the same context fingerprint. If there is no matching context
     /// available then a new one is created and returned. This operation is performed under a lock covering the pool of available contexts
     /// </summary>
-    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint)
+    public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, GridDataType gridDataType, string contextFingerPrint)
     {
-      return LocateOrCreateContext(projectUid, contextFingerPrint, TRexSpatialMemoryCacheContext.NullCacheTimeSpan);
+      return LocateOrCreateContext(projectUid, gridDataType, contextFingerPrint, TRexSpatialMemoryCacheContext.NullCacheTimeSpan);
     }
 
     /// <summary>

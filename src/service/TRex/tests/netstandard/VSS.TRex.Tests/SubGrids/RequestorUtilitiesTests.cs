@@ -56,7 +56,7 @@ namespace VSS.TRex.Tests.SubGrids
       intermediaries.Length.Should().Be(1);
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().BeNull();
-      intermediaries[0].CacheContext.Should().Be(_fixture.TRexSpatialMemoryCacheContext);
+      intermediaries[0].CacheContexts[0].Should().Be(_fixture.TRexSpatialMemoryCacheContext);
       intermediaries[0].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
     }
 
@@ -84,7 +84,7 @@ namespace VSS.TRex.Tests.SubGrids
       intermediaries.Length.Should().Be(1);
       intermediaries[0].Filter.Should().Be(filter);
       intermediaries[0].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
-      intermediaries[0].CacheContext.Should().Be(_fixture.TRexSpatialMemoryCacheContext);
+      intermediaries[0].CacheContexts[0].Should().Be(_fixture.TRexSpatialMemoryCacheContext);
       intermediaries[0].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
     }
 
@@ -113,7 +113,7 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().BeNull();
-        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].CacheContexts[0].Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
@@ -150,7 +150,7 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(surveyedSurfaces);
-        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].CacheContexts[0].Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
@@ -192,7 +192,7 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().BeEmpty();
-        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].CacheContexts[0].Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
@@ -240,7 +240,7 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface>{ss2});
-        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].CacheContexts[0].Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }
@@ -295,7 +295,7 @@ namespace VSS.TRex.Tests.SubGrids
       {
         intermediaries[i].Filter.Should().Be(filters[i]);
         intermediaries[i].FilteredSurveyedSurfaces.Should().Equal(new List<ISurveyedSurface> { ss1 });
-        intermediaries[i].CacheContext.Should().NotBeNull();
+        intermediaries[i].CacheContexts[0].Should().NotBeNull();
         intermediaries[i].surfaceElevationPatchRequest.Should().Be(_fixture.SurfaceElevationPatchRequest);
       }
     }

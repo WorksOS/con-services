@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -289,6 +290,28 @@ namespace TestUtility
           CompareTheActualProjectListWithExpected(actualProjects, expectedProjects, ignoreZeros);
         }
       }
+    }
+
+    /// <summary>
+    /// Call projectSvc deviceGateway endpoint for deviceLKS List for project
+    /// </summary>
+    public async Task<string> GetDeviceLKSList(string customerUid, string projectUid, DateTime? earliestOfInterestUtc = null)
+    {
+      var route = "api/v1/devices";
+      route += $"?projectUid={projectUid}";
+      if (earliestOfInterestUtc != null)
+        route += $"&earliestOfInterestUtc={earliestOfInterestUtc:yyyy-MM-ddTHH:mm:ssZ}";
+      return await CallProjectWebApi(route, HttpMethod.Get,null, customerUid.ToString());
+    }
+
+    /// <summary>
+    ///Call projectSvc deviceGateway endpoint deviceLKS for deviceName
+    /// </summary>
+    public async Task<string> GetDeviceLKS(string customerUid, string deviceName, HttpStatusCode statusCode = HttpStatusCode.OK)
+    {
+      var route = "api/v1/device";
+      route += $"?deviceName={deviceName}";
+      return await CallProjectWebApi(route, HttpMethod.Get, null, customerUid.ToString(), statusCode: statusCode);
     }
 
     /// <summary>

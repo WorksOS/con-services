@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
+using CoreX.Types;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -75,10 +76,11 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
       var csib = DIContext.Obtain<IConvertCoordinates>().GetCSIBFromDCFileContent(coordinateSystemFileData);
 
       // Convert grid coordinates into WGS: assemble and convert. Note: 2D conversion only, elevation is set to 0
-      var coordinates = boundaries.Boundaries.SelectMany(x => x.Boundary.Points).Select(pt => new XYZ(pt.X, pt.Y,0.0)).ToArray();
+      //Note YXZ is correct here as it's treated as NEE
+      var coordinates = boundaries.Boundaries.SelectMany(x => x.Boundary.Points).Select(pt => new XYZ(pt.Y, pt.X,0.0)).ToArray();
 
       // Perform conversion
-      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ());
+      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ(), ReturnAs.Degrees);
 
       // Recopy converted coordinates into boundaries
       var indexer = 0;

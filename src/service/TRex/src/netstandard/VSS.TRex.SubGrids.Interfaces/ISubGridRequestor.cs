@@ -44,7 +44,7 @@ namespace VSS.TRex.SubGrids.Interfaces
       IFilteredValuePopulationControl populationControl,
       ISubGridTreeBitMask PDExistenceMap,
       ITRexSpatialMemoryCache subGridCache,
-      ITRexSpatialMemoryCacheContext subGridCacheContext,
+      ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
       ISurveyedSurfaces filteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,

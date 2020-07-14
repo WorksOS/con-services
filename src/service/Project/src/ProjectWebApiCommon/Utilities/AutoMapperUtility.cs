@@ -202,7 +202,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore())
             ;
-
         }
       );
 

@@ -43,13 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #endif
         if (success)
         {
-          //Project without any tagfile data will have these values for extents from TRex
-          const double MIN_RANGE = -1E100;
-          const double MAX_RANGE = 1E100;
-          var noExtents = bbExtents.MinX == MAX_RANGE && bbExtents.MaxX == MIN_RANGE &&
-                          bbExtents.MinY == MAX_RANGE && bbExtents.MaxY == MIN_RANGE &&
-                          bbExtents.MinZ == MAX_RANGE && bbExtents.MaxZ == MIN_RANGE;
-          if (!noExtents)
+          if (bbExtents.ValidExtents)
           {
             return ProjectExtentsResult.CreateProjectExtentsResult(bbExtents);
           }

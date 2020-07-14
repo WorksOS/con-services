@@ -120,6 +120,7 @@ namespace VSS.TRex.Profiling
     private readonly ICellPassFastEventLookerUpper CellPassFastEventLookerUpper;
     private ISubGridSegmentCellPassIterator CellPassIterator;
 
+
     /// <summary>
     /// The count of filtered call passes used to construct the top most (latest) layer
     /// </summary>
@@ -829,15 +830,14 @@ namespace VSS.TRex.Profiling
     /// </summary>
     private void RemoveNonFilteredPasses(ref FilteredValueAssignmentContext AssignmentContext)
     {
-      int Count = 0;
-      int HalfPassCount = 0;
-      int PrevIdx = 0;
-      DateTime tme = DateTime.MinValue;
-      int lowPassIdx = Consts.NullLowestPassIdx;
-      float lowestHeight = Consts.NullHeight; 
+      var count = 0;
+      var halfPassCount = 0;
+      var prevIdx = 0;
+      var tme = DateTime.MinValue;
+      var lowPassIdx = Consts.NullLowestPassIdx;
+      var lowestHeight = float.MaxValue; 
       float hgt;
       short prevMachine = -1;
-      int LowPassIdx;
 
 
       for (int LayerIndex = 0; LayerIndex < Cell.Layers.Count(); LayerIndex++)
@@ -852,10 +852,10 @@ namespace VSS.TRex.Profiling
 
         int PassStartIdx = Cell.Layers[LayerIndex].StartCellPassIdx;
         int CCVIdx = Cell.Layers[LayerIndex].CCV_CellPassIdx;
-        if (PassStartIdx > PrevIdx)  // Alter the CCV_CellPassIdx if starting index was set higher due to invalid passes
-           Cell.Layers[LayerIndex].CCV_CellPassIdx  -= (PassStartIdx - PrevIdx);
+        if (PassStartIdx > prevIdx)  // Alter the CCV_CellPassIdx if starting index was set higher due to invalid passes
+           Cell.Layers[LayerIndex].CCV_CellPassIdx  -= (PassStartIdx - prevIdx);
         int EndPassIdx = Cell.Layers[LayerIndex].EndCellPassIdx;
-        PrevIdx = EndPassIdx + 1; // position at possible start location for next layer
+        prevIdx = EndPassIdx + 1; // position at possible start location for next layer
 
         if (LayerIndex > 0)
         {
@@ -898,7 +898,7 @@ namespace VSS.TRex.Profiling
                   {
                     lowestHeight = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Height;
                     tme = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Time;
-                    LowPassIdx = Count;
+                    lowPassIdx = count;
                     CurrentLayer.LastPassHeight = hgt;
                   }
                 }
@@ -906,13 +906,13 @@ namespace VSS.TRex.Profiling
                 { // new machine so take value
                   lowestHeight = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Height;
                   tme = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.Time;
-                  LowPassIdx = Count;
+                  lowPassIdx = count;
                 }
               }
               else // reset as rules broken
               {
-                lowestHeight = Consts.NullHeight;
-                LowPassIdx = -1;
+                lowestHeight = float.MaxValue;
+                lowPassIdx = -1;
                 CurrentLayer.LastPassHeight = hgt;
               };
 
@@ -921,25 +921,25 @@ namespace VSS.TRex.Profiling
             prevMachine = Cell.Passes.FilteredPassData[PassIndex].FilteredPass.InternalSiteModelMachineIndex;
 
             // count makes sure we always start at index 0 for for first layer
-            if (Count != PassIndex)
+            if (count != PassIndex)
             {
-              Cell.Passes.FilteredPassData[Count] = Cell.Passes.FilteredPassData[PassIndex];
-              Cell.FilteredPassFlags[Count] = Cell.FilteredPassFlags[PassIndex];
+              Cell.Passes.FilteredPassData[count] = Cell.Passes.FilteredPassData[PassIndex];
+              Cell.FilteredPassFlags[count] = Cell.FilteredPassFlags[PassIndex];
             }
 
-            if (MachineTypeUtilities.IsHalfPassCompactorMachine(Cell.Passes.FilteredPassData[Count].MachineType) ||
-                Cell.Passes.FilteredPassData[Count].FilteredPass.HalfPass)
+            if (MachineTypeUtilities.IsHalfPassCompactorMachine(Cell.Passes.FilteredPassData[count].MachineType) ||
+                Cell.Passes.FilteredPassData[count].FilteredPass.HalfPass)
             {
-              HalfPassCount++;
+              halfPassCount++;
               LayerHalfPassCount++;
             }
             else
             {
-              HalfPassCount += 2;
+              halfPassCount += 2;
               LayerHalfPassCount += 2;
             }
 
-            Count++;
+            count++;
           }
           else
           {
@@ -950,7 +950,7 @@ namespace VSS.TRex.Profiling
           }
         }
 
-        if (lowestHeight != Consts.NullHeight)  // This mean the lastpass was in lowest elevation mapping mode and needs to be set again
+        if (lowestHeight != float.MaxValue)  // This mean the lastpass was in lowest elevation mapping mode and needs to be set again
           {
             Cell.Layers[LayerIndex].LastPassHeight = lowestHeight;
             Cell.Layers[LayerIndex].LastLayerPassTime = tme;
@@ -966,16 +966,16 @@ namespace VSS.TRex.Profiling
         {
           // make sure first layer indexes are correct
           Cell.Layers[LayerIndex].StartCellPassIdx = 0;
-          Cell.Layers[LayerIndex].EndCellPassIdx = Count - 1;
+          Cell.Layers[LayerIndex].EndCellPassIdx = count - 1;
         }
 
         Cell.Layers[LayerIndex].FilteredPassCount = Cell.Layers[LayerIndex].PassCount;
         Cell.Layers[LayerIndex].FilteredHalfPassCount = LayerHalfPassCount;
       }
 
-      Cell.FilteredPassCount = Count;
-      Cell.FilteredHalfPassCount = HalfPassCount;
-      Cell.SetFilteredPassCount(Count);
+      Cell.FilteredPassCount = count;
+      Cell.FilteredHalfPassCount = halfPassCount;
+      Cell.SetFilteredPassCount(count);
 
       // Remove any layers at the top of the stack that do not have any cell passes in them
       for (int LayerIndex = Cell.Layers.Count() - 1; LayerIndex >= 0; LayerIndex--)
