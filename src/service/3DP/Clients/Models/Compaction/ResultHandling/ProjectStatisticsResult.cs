@@ -57,6 +57,13 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
       extents = null;
     }
 
+    public void Empty()
+    {
+      startTime = DateTime.UtcNow.AddMilliseconds(-1);
+      endTime = DateTime.UtcNow;
+      extents = new BoundingBox3DGrid();
+    }
+
     /// <summary>
     /// ToString override
     /// </summary>

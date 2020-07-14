@@ -70,6 +70,14 @@ namespace VSS.MasterData.Models.Models
       MaxZ = maxz;
     }
 
+    //Project without any tagfile data will have these values for extents from TRex
+    const double MIN_RANGE = -1E100;
+    const double MAX_RANGE = 1E100;
+    [JsonIgnore]
+    public bool ValidExtents => !(MinX == MAX_RANGE && MaxX == MIN_RANGE &&
+                                  MinY == MAX_RANGE && MaxY == MIN_RANGE &&
+                                  MinZ == MAX_RANGE && MaxZ == MIN_RANGE);
+
     /// <summary>
     /// ToString override
     /// </summary>
