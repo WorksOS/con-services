@@ -8,7 +8,6 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
@@ -34,8 +33,7 @@ namespace CCSS.CWS.Client.MockClients
       var deviceLksResponseModel = new DeviceLKSResponseModel()
       {
         TRN = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-        lat = 89.3,
-        lon = 189.1,
+        lat = 89.3, lon = 189.1,
         assetType = CWSDeviceTypeEnum.EC520,
         assetSerialNumber = serialNumber,
         deviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",

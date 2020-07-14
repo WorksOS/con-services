@@ -92,8 +92,9 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddCwsClient<ICwsProjectClient, CwsProjectClient, MockCwsProjectClient>(CwsClientMockExtensionMethods.MOCK_PROJECT_KEY);
       services.AddCwsClient<ICwsDeviceClient, CwsDeviceClient, MockCwsDeviceClient>(CwsClientMockExtensionMethods.MOCK_DEVICE_KEY);
       services.AddCwsClient<ICwsDesignClient, CwsDesignClient, MockCwsDesignClient>(CwsClientMockExtensionMethods.MOCK_DESIGN_KEY);
-      services.AddCwsClient<ICwsProfileSettingsClient, CwsProfileSettingsClient, MockCwsProfileSettingsClient>(CwsClientMockExtensionMethods.MOCK_PROFILE_KEY);	
-	    services.AddTransient<IWebClientWrapper, WebClientWrapper>();
+      services.AddCwsClient<ICwsProfileSettingsClient, CwsProfileSettingsClient, MockCwsProfileSettingsClient>(CwsClientMockExtensionMethods.MOCK_PROFILE_KEY);
+      services.AddCwsClient<ICwsDeviceGatewayClient, CwsDeviceGatewayClient, MockCwsDeviceGatewayClient>(CwsClientMockExtensionMethods.MOCK_DEVICEGATEWAY_KEY);
+      services.AddTransient<IWebClientWrapper, WebClientWrapper>();
 
       services.AddOpenTracing(builder => builder.ConfigureAspNetCore(options => options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping")));
 

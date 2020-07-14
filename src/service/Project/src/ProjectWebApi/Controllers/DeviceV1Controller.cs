@@ -1,98 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Clients.CWS;
+using Newtonsoft.Json;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Project.WebAPI.Internal;
-using VSS.Productivity.Push.Models.Notifications.Changes;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Device controller v1
+  ///   For first release, we'll mimic what WorksManager does:
+  ///      "We'll only show devices that are "actively" reporting within the boundary of the project.
+  ///           Once they step outside of the boundary, they'll still be associated with the project but won't show on the map.
+  ///           I say "active" as I believe we remove them from the map if they haven't reported in the last 30 days"
+  ///  CWS by default restricts devices to those claimed, and associated with the project.
   /// </summary>
   public class DeviceV1Controller : BaseController<DeviceV1Controller>
   {
-    //TODO: Is this mock data still used ?
-
     /// <summary>
-    /// Get location data for a given set of Devices.
+    /// Gets list of devices with last known status (LKS) for this project
+    ///    We impose these rules for the UI:
+    ///      a) only devices reporting within the last 30 days
+    ///      b) restrict data to only that of interest to UI (at present): lat/long/deviceName/DeviceType/SerialNumber/LastReportedUTC
+    ///      possible future: restrict to devices of interest to WorksOS (EC and CB)
     /// </summary>
-    [HttpPost("api/v1/device/location")]
-    public IActionResult GetDeviceLocationData([FromBody] List<Guid> deviceIds)
-    {
-      var deviceIdsDisplay = string.Join(", ", deviceIds ?? new List<Guid>());
-      Logger.LogInformation($"{nameof(GetDeviceLocationData)} Getting Device location data for: {deviceIdsDisplay}");
-
-      var assets = MockDeviceRepository.GetAssets(deviceIds);
-
-      var resultSet = new List<AssetLocationData>(assets.Count);
-
-      foreach (var asset in assets)
-      {
-        resultSet.Add(new AssetLocationData
-        {
-          AssetUid = Guid.Parse(asset.AssetUID),
-          AssetIdentifier = asset.EquipmentVIN,
-          AssetSerialNumber = asset.SerialNumber,
-          AssetType = asset.AssetType,
-          LocationLastUpdatedUtc = asset.LastActionedUtc,
-          MachineName = asset.Name,
-          Latitude = 0,
-          Longitude = 0,
-        });
-      }
-
-      Logger.LogInformation($"Returning location data for {resultSet.Count} Assets.");
-      return Json(resultSet);
-    }
-
-    /// <summary>
-    /// Gets list of devices with last known status (LKS).
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="lastReported"></param>
-    /// <returns></returns>
+    /// <returns>
+    ///  NotFound means that the endpoint was not found. if no devices or project not found, will return an empty list.
+    /// </returns>
     [HttpGet("api/v1/devices")]
-    public IActionResult GetDevicesWithLKS(
-      [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? lastReported)
+    public async Task<IActionResult> GetDevicesLKSForProject(
+      [FromQuery] Guid projectUid,
+      [FromQuery] DateTime? earliestOfInterestUtc)
     {
-      var logMsg = $"{nameof(GetDevicesWithLKS)} Getting list of devices with last known status (LKS)";
-      var project = projectUid != Guid.Empty ? $"for: {projectUid}" : "";
-      var lastReportedDate = lastReported != null ? $"at: {lastReported}" : "";
+      Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} projectUid {projectUid} earliestOfInterestUtc {earliestOfInterestUtc}");
+      DeviceDataValidator.ValidateProjectUid(projectUid);
+      DeviceDataValidator.ValidateEarliestOfInterestUtc(earliestOfInterestUtc);
 
-      Logger.LogInformation($"{logMsg} {project} {lastReportedDate}.");
+      earliestOfInterestUtc ??= DateTime.UtcNow.AddDays(-30);
+      var devices = await CwsDeviceGatewayClient.GetDevicesLKSForProject(projectUid, earliestOfInterestUtc, customHeaders);
 
-      var devices = MockDeviceRepository.GetDevicesWithLKS();
-
-      logMsg = "Returning list of devices with last known status (LKS) data";
-
-      Logger.LogInformation($"{logMsg} {project} {lastReportedDate}.");
-
-      return Json(devices);
+      Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} completed. devices {(devices == null ? null : JsonConvert.SerializeObject(devices))}");
+      return Ok(devices);
     }
 
     /// <summary>
     /// Gets device with last known status (LKS).
+    ///    Is UI interested in what project the device is currently on? 
+    ///     i.e. UI gets list for project, but device moves off the project (can tell from ProjectName - include this for now)
     /// </summary>
-    /// <param name="deviceName"></param>
-    /// <returns></returns>
     [HttpGet("api/v1/device")]
-    public IActionResult GetDeviceWithLKS([FromQuery] string deviceName)
+    public async Task<IActionResult> GetDeviceWithLKS([FromQuery] string deviceName)
     {
-      Logger.LogInformation($"{nameof(GetDeviceWithLKS)} Getting device with last known status (LKS). Device name: {deviceName}");
-
+      Logger.LogInformation($"{nameof(GetDeviceWithLKS)} deviceName {deviceName}");
       DeviceDataValidator.ValidateDeviceName(deviceName);
 
-      var device = MockDeviceRepository.GetDeviceWithLKS();
+      var device = await CwsDeviceGatewayClient.GetDeviceLKS(deviceName, customHeaders);
+      Logger.LogInformation($"{nameof(GetDeviceWithLKS)} completed. device {(device == null ? null : JsonConvert.SerializeObject(device))}");
+      if (device == null)
+        return NotFound();
 
-      Logger.LogInformation($"Returning device with last known status (LKS). Device name: {deviceName}.");
-
-      return Json(device);
+      return Ok(device);
     }
   }
 }
