@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
@@ -11,5 +10,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
   {
     Task<DeviceLKSResponseModel> GetDeviceLKS(string deviceName, IHeaderDictionary customHeaders = null);
     Task<List<DeviceLKSResponseModel>> GetDevicesLKSForProject(Guid projectUid, DateTime? earliestOfInterestUtc = null, IHeaderDictionary customHeaders = null);
+    Task CreateDeviceLKS(string deviceName, CreateDeviceLKSRequestModel createDeviceLksRequestModel, IHeaderDictionary customHeaders = null);
   }
 }

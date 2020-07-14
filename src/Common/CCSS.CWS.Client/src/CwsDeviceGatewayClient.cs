@@ -73,5 +73,16 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetDevicesLKSForProject)}: deviceLKSListResponseModel {(deviceLksListResponseModel == null ? null : JsonConvert.SerializeObject(deviceLksListResponseModel))}");
       return deviceLksListResponseModel;
     }
+
+    /// <summary>
+    /// Adding a location to cws using deviceName
+    ///  CreateDeviceLocationRequestModel could be extended as other status supported
+    /// </summary>
+    public async Task CreateDeviceLKS(string deviceName, CreateDeviceLKSRequestModel createDeviceLksRequestModel, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(CreateDeviceLKS)}: deviceName {deviceName} createDeviceLksRequestModel {JsonConvert.SerializeObject(createDeviceLksRequestModel)}");
+
+      await PostData<CreateDeviceLKSRequestModel>($"{ROUTE_PREFIX}/status/{deviceName}", createDeviceLksRequestModel, null, customHeaders);
+    }
   }
 }

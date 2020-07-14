@@ -7,7 +7,6 @@ using Moq;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using Xunit;
@@ -101,7 +100,6 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       });
     }
 
-
     [Fact]
     public void GetDeviceLKS()
     {
@@ -135,6 +133,44 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Assert.Equal(deviceUid.ToString(), result.deviceUid);
         Assert.Equal(deviceName, result.deviceName);
         Assert.Equal(serialNumber, result.assetSerialNumber);
+        return true;
+      });
+    }
+
+    [Fact]
+    public void CreateDeviceLKS()
+    {
+      var deviceType = CWSDeviceTypeEnum.EC520;
+      var serialNumber = "12456YU";
+      var deviceName = $"{deviceType}-{serialNumber}";
+
+      var createDeviceLksRequestModel = new CreateDeviceLKSRequestModel()
+      {
+        TimeStamp = DateTime.UtcNow.AddDays(1),
+        Latitude = -2,
+        Longitude = 3,
+        Height = 1,
+        SerialNumber = serialNumber,
+        DeviceType = deviceType,
+        AssetNickname = "Little Nicky",
+        DesignName = "Highway to hell",
+        AppName = "Trimble Groundworks",
+        AppVersion = "1.1.19200.96",
+        Devices = new List<ConnectedDevice> { new ConnectedDevice { Model = "SNM940", SerialNumber = "123456" } }
+      };
+
+      var route = $"/devicegateway/status/{deviceName}";
+      var expectedUrl = $"{baseUrl}{route}";
+      mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
+        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(),
+        route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
+
+      MockUtilities.TestRequestSendsCorrectJson("Post device LKS", mockWebRequest, null, expectedUrl, 
+        HttpMethod.Post, async () =>
+
+      {
+        var client = ServiceProvider.GetRequiredService<ICwsDeviceGatewayClient>();
+        await client.CreateDeviceLKS(deviceName, createDeviceLksRequestModel);
         return true;
       });
     }

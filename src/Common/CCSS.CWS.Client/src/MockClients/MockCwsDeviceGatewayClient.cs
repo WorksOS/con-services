@@ -64,5 +64,10 @@ namespace CCSS.CWS.Client.MockClients
       log.LogDebug($"{nameof(GetDevicesLKSForProject)} Mock: deviceLKSListResponseModel {JsonConvert.SerializeObject(devices)}");
       return Task.FromResult(devices);
     }
+
+    public async Task CreateDeviceLKS(string deviceName, CreateDeviceLKSRequestModel createDeviceLksRequestModel, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(CreateDeviceLKS)}  Mock: deviceName {deviceName} createDeviceLksRequestModel {JsonConvert.SerializeObject(createDeviceLksRequestModel)}");
+    }
   }
 }
