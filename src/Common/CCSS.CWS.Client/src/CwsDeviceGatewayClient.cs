@@ -76,13 +76,12 @@ namespace CCSS.CWS.Client
 
     /// <summary>
     /// Adding some LastKnownStatus values to cws using deviceName
-    ///  CreateDeviceLocationRequestModel could be extended as other status supported
     /// </summary>
     public async Task CreateDeviceLKS(string deviceName, DeviceLKSModel deviceLKSModel, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(CreateDeviceLKS)}: deviceName {deviceName} deviceLKSModel {JsonConvert.SerializeObject(deviceLKSModel)}");
 
-      await PostData<DeviceLKSModel>($"{ROUTE_PREFIX}/status/{deviceName}", deviceLKSModel, null, customHeaders);
+      await PostData($"{ROUTE_PREFIX}/status/{deviceName}", deviceLKSModel, null, customHeaders);
     }
   }
 }
