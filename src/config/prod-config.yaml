@@ -50,8 +50,6 @@ data:
 #AWS configuration  
   # This is used for Tag File Gateway
   AWS_ALL_TAGFILE_BUCKET_NAME: s3-pdxa-csp-tagarchive
-  # This is used for Data model Archive
-  AWS_TAGFILE_BUCKET_NAME: s3-pdxa-csp-trex-dm-archive
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-csp-trex-files
   AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-csp-export
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
