@@ -5,7 +5,8 @@ namespace CoreX.Wrapper.UnitTests.Types
 {
   public static class DCFile
   {
-    public const string BOOTCAMP_2012 = "BootCamp 2012.dc";
+    public const string DIMENSIONS_2012_DC_FILE_WITHOUT_VERT_ADJUST = "BootCamp_2012_WithoutVertAdjust.dc";
+    public const string DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST = "BootCamp_2012_WithVertAdjust.dc";
     public const string UTM_32_NN1954_08 = "UTM_32_NN1954-08.dc";
 
     public static string GetFilePath(string filename) => Path.Combine("TestData", "CoordinateSystems", filename);

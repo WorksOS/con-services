@@ -12,7 +12,7 @@ namespace CoreX.Wrapper.UnitTests
     public IConvertCoordinates ConvertCoordinates => _serviceProvider.GetRequiredService<IConvertCoordinates>();
 
     private string _csib = null;
-    public string CSIB => _csib ??= CoreX.GetCSIBFromDCFile(DCFile.GetFilePath(DCFile.BOOTCAMP_2012));
+    public string CSIB => _csib ??= CoreX.GetCSIBFromDCFile(DCFile.GetFilePath(DCFile.DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST));
 
     public UnitTestBaseFixture()
     {
