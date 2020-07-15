@@ -12,7 +12,7 @@ namespace VSS.TRex.Caching
   /// Represents a context within the overall memory cache where all the elements within the context
   /// are related, such as being members of spatial data results returned from filters with the same fingerprint
   /// </summary>
-  public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext
+  public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext, IDisposable
   {
     /// <summary>
     /// The project for which this cache context stores items
@@ -39,11 +39,11 @@ namespace VSS.TRex.Caching
 
     public DateTime MarkedForRemovalAtUtc { get; set; } = Consts.MIN_DATETIME_AS_UTC;
 
-    public ITRexSpatialMemoryCache OwnerMemoryCache { get; }
+    public ITRexSpatialMemoryCache OwnerMemoryCache { get; private set; }
 
-    public IGenericSubGridTree_Int ContextTokens { get; }
+    public IGenericSubGridTree_Int ContextTokens { get; private set; }
 
-    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; }
+    public ITRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem> MRUList { get; private set; }
 
     private int _tokenCount;
     // ReSharper disable once ConvertToAutoPropertyWhenPossible
@@ -317,6 +317,14 @@ namespace VSS.TRex.Caching
         MarkedForRemovalAtUtc = Consts.MIN_DATETIME_AS_UTC;
         MarkedForRemoval = false;
       }
+    }
+
+    public void Dispose()
+    {
+      ContextTokens?.Dispose();
+      ContextTokens = null;
+      OwnerMemoryCache = null;
+      MRUList = null;
     }
   }
 }

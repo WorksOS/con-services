@@ -199,5 +199,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         void ToStream(Stream stream);
 
         void FromStream(MemoryStream stream);
-  }
+
+        void Dispose();
+    }
 }

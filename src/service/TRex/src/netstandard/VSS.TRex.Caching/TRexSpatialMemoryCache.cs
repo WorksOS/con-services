@@ -309,6 +309,9 @@ namespace VSS.TRex.Caching
           // 2. From the project list of contexts
           _projectContexts[context.ProjectUID].Remove(context);
 
+          // 3. Dispose the context
+          context.Dispose();
+
           numRemoved++;
           Interlocked.Increment(ref _contextRemovalCount);
         }

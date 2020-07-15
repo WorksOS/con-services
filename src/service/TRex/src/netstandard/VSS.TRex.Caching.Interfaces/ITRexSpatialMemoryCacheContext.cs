@@ -43,5 +43,7 @@ namespace VSS.TRex.Caching.Interfaces
     void MarkForRemoval(DateTime markedForRemovalAtUtc);
 
     void Reanimate();
+
+    void Dispose();
   }
 }
