@@ -9,6 +9,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -131,7 +132,11 @@ namespace VSS.TRex.SubGridTrees.Client
       //SurveyedSurfaceMap.Assign(((ClientHeightAndTimeLeafSubGrid)source).SurveyedSurfaceMap);
     }
 
-
+    public override bool SupportsAssignationFrom(GridDataType gridDataType)
+    {
+      return gridDataType == GridDataType.Height && gridDataType == GridDataType.HeightAndTime;
+    }
+    
     /// <summary>
     /// Assign cell information from a previously cached result held in the general sub grid result cache
     /// using the supplied map to control which cells from the cached sub grid should be copied into this
