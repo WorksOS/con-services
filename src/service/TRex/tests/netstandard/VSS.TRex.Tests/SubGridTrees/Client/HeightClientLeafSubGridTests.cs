@@ -122,5 +122,13 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
       clientGrid.DumpToLog(_log, clientGrid.ToString());
     }
+
+    [Fact]
+    public void SupportsCorrectAssignableTypes()
+    {
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height) as ClientHeightLeafSubGrid;
+      clientGrid.SupportsAssignationFrom(GridDataType.Height).Should().BeTrue();
+      clientGrid.SupportsAssignationFrom(GridDataType.HeightAndTime).Should().BeTrue();
+    }
   }
 }

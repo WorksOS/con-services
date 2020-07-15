@@ -134,7 +134,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public override bool SupportsAssignationFrom(GridDataType gridDataType)
     {
-      return gridDataType == GridDataType.Height && gridDataType == GridDataType.HeightAndTime;
+      return gridDataType == GridDataType.Height || gridDataType == GridDataType.HeightAndTime;
     }
     
     /// <summary>
