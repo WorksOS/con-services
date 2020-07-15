@@ -73,5 +73,15 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetDevicesLKSForProject)}: deviceLKSListResponseModel {(deviceLksListResponseModel == null ? null : JsonConvert.SerializeObject(deviceLksListResponseModel))}");
       return deviceLksListResponseModel;
     }
+
+    /// <summary>
+    /// Adding some LastKnownStatus values to cws using deviceName
+    /// </summary>
+    public async Task CreateDeviceLKS(string deviceName, DeviceLKSModel deviceLKSModel, IHeaderDictionary customHeaders = null)
+    {
+      log.LogDebug($"{nameof(CreateDeviceLKS)}: deviceName {deviceName} deviceLKSModel {JsonConvert.SerializeObject(deviceLKSModel)}");
+
+      await PostData($"{ROUTE_PREFIX}/status/{deviceName}", deviceLKSModel, null, customHeaders);
+    }
   }
 }

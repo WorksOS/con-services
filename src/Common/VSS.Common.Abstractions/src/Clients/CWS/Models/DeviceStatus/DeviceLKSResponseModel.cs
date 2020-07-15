@@ -16,7 +16,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
   ///  There is an issue on staging, where cws can list other projects and the name can be different.
   ///   Apparently, it IS the correct device, only the names are wrong.
   ///  This shouldn't happen in production.
-  public class DeviceLKSResponseModel : IMasterDataModel
+  public class DeviceLKSResponseModel : DeviceLKSModel, IMasterDataModel
   {
     private string _deviceTrn;
 
@@ -24,123 +24,56 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
     /// Device TRN ID
     /// </summary>
     [JsonProperty("deviceId")]
-    public string TRN
+    public string DeviceTrn
     {
       get => _deviceTrn;
       set
       {
         _deviceTrn = value;
-        deviceUid = TRNHelper.ExtractGuidAsString(value);
+        DeviceUid = TRNHelper.ExtractGuidAsString(value);
       }
     }
 
     /// <summary>
-    /// WorksOS device ID; the Guid extracted from the TRN.
+    /// WorksOS deviceUid; the Guid extracted from the TRN.
     /// </summary>
-    public string deviceUid { get; private set; }
+    [JsonProperty("deviceUid")]
+    public string DeviceUid { get; private set; }
 
     /// <summary>
     /// deviceName
     ///     "AssetType"-"serialNumber"
     ///     e.g. "TABLET-12345YU" 
     /// </summary>
-    public string deviceName { get; set; }
+    [JsonProperty("deviceName")]
+    public string DeviceName { get; set; }
+    [JsonProperty("deviceNickname")] 
+    public string DeviceNickname { get; set; }
 
-    public double? lat { get; set; }
+    [JsonProperty("designId")]
+    public string DesignId { get; set; }
 
-    public double? lon { get; set; }
-
-    /// <summary>
-    /// The type of device running the earthworks software
-    ///    e.g. TABLET EC520 etc
-    ///    this is not the 'asset' type i.e. excavator
-    ///       nor the radio type e.g. Torch
-    /// </summary>
-    [JsonConverter(typeof(NullableEnumStringConverter), CWSDeviceTypeEnum.Unknown)]
-    public CWSDeviceTypeEnum assetType { get; set; }
-
-    /// <summary>
-    /// projectName
-    ///     should be project which the device is currently on
-    ///     could return the projectId which is in the attached list..
-    ///       ... wait to see what the requirements are.
-    /// </summary>
-    public string projectName { get; set; }
-
-    public DateTime? lastReported { get; set; }
-    
-    /// <summary>
-    /// assetSerialNumber
-    ///     e.g. "12345YU" 
-    /// </summary>
-    public string assetSerialNumber { get; set; }
-
-
-    public string designName { get; set; }
-    public string designId { get; set; }
-    public string deviceNickname { get; set; }
-    public string swWarrantyExpUtc { get; set; }
-    public string osName { get; set; }
-    public string appName { get; set; }
-    public string correctionSource { get; set; }
-    public string ts { get; set; }
-    public double? h { get; set; }
-    public string operatorName { get; set; }
-    public bool? isLlhSiteLocal { get; set; }
-    public string language { get; set; }
-    public string coordinateSystemHash { get; set; }
-    public bool? isDataLogging { get; set; }
-    public string antennaType { get; set; }
-    public string targetType { get; set; }
-    public double? rodHeight { get; set; }
-    public short? radioIntegrity { get; set; }
-    public string systemStatus { get; set; }
-    public string attachmentName { get; set; }
-    public string attachmentWearUpdateUtc { get; set; }
-    public string workOrderName { get; set; }
-    public string designType { get; set; }
-    public string designSurfaceName { get; set; }
-    public double? designVertOffset { get; set; }
-    public double? designPerpOffset { get; set; }
-    public string assetNickname { get; set; }
-    public string assetMake { get; set; }
-    public string assetModel { get; set; }
-    public string osVersion { get; set; }
-    public string appVersion { get; set; }
-    public double? freeSpace { get; set; }
-    public short? batteryPercent { get; set; }
-    public string powerSource { get; set; }
-    public string licenseCodes { get; set; }
-    public string baseStationName { get; set; }
-    public double? baseStationLat { get; set; }
-    public double? baseStationLon { get; set; }
-    public double? baseStationHeight { get; set; }
-    public short? internalTemp { get; set; }
-    public short? totalRunTime { get; set; }
-    public short? totalCellTime { get; set; }
-    public short? totalWifiTime { get; set; }
-    public short? totalAppTime { get; set; }
-    public short? totalAutomaticsTime { get; set; }
+    [JsonProperty("lastReported")]
+    public DateTime? LastReportedUtc { get; set; }
 
     private string _accountTrn;
 
-    public string accountId
+    [JsonProperty("accountId")]
+    public string AccountTrn
     {
       get => _accountTrn;
       set
       {
         _accountTrn = value;
-        accountUid = TRNHelper.ExtractGuidAsString(value);
+        AccountUid = TRNHelper.ExtractGuidAsString(value);
       }
     }
 
-    public string accountUid { get; private set; }
-
-    public List<Network> networks { get; set; }
-    public List<GNSSAntenna> gnss { get; set; }
-    public List<ConnectedDevice> devices { get; set; }
+    [JsonProperty("accountUid")]
+    public string AccountUid { get; private set; }
+    
     public List<ProjectId> projects { get; set; }
-    public List<string> GetIdentifiers() => new List<string> { TRN, deviceUid };
+    public List<string> GetIdentifiers() => new List<string> { DeviceTrn, DeviceUid };
   }
 }
 
