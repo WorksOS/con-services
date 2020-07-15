@@ -39,8 +39,6 @@ namespace VSS.TRex.Tests.Common
 
       bs.WriteBinary(new TRexException("An Exception"), writer.Object);
 
-      //act.Should().Throw<NotImplementedException>();
-
       var reader = new Mock<TestBinaryReader>(writer.Object._stream.BaseStream as MemoryStream);
       reader.Setup(x => x.ReadObject<Exception>("Exception")).Returns(new Exception("An exception"));
 
@@ -48,7 +46,6 @@ namespace VSS.TRex.Tests.Common
 
       bs.ReadBinary(e, reader.Object);
       e.Message.Should().Be("An exception");
-      //act.Should().Throw<NotImplementedException>();
     }
 
     [Fact]
