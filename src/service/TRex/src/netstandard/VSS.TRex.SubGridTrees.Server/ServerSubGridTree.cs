@@ -488,7 +488,7 @@ namespace VSS.TRex.SubGridTrees.Server
       _disposedValue = true;
     }
 
-    public override void Dispose()
+    public void Dispose()
     {
       Dispose(true);
     }
