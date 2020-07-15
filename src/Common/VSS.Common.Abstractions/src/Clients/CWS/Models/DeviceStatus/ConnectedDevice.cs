@@ -1,14 +1,24 @@
-﻿namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
+﻿using System;
+using Newtonsoft.Json;
+
+namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
 {
   public class ConnectedDevice
   {
-    public string nickname { get; set; }
-    public string serialNumber { get; set; }
-    public string model { get; set; }
-    public string firmware { get; set; }
-    public float? batteryPercent { get; set; }
-    public string licenseCodes { get; set; }
-    public string swWarrantyExpUtc { get; set; }
+    [JsonProperty("nickname")]
+    public string Nickname { get; set; }
+    [JsonProperty("model")]
+    public string Model { get; set; }
+    [JsonProperty("serialNumber")]
+    public string SerialNumber { get; set; }
+    [JsonProperty("firmware")]
+    public string Firmware { get; set; }
+    [JsonProperty("batteryPercent")]
+    public int? BatteryPercent { get; set; }
+    [JsonProperty("licenseCodes")]
+    public string LicenseCodes { get; set; }
+    [JsonProperty("swWarrantyExpUtc")]
+    public DateTime? WarrantyExpirationUtc { get; set; }
 
     public ConnectedDevice() { }
   }

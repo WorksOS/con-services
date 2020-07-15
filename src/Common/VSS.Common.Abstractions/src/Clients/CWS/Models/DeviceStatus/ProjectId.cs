@@ -7,19 +7,20 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
     private string _projectTrn;
 
     [JsonProperty("projectId")]
-    public string TRN
+    public string ProjectTrn
     {
       get => _projectTrn;
       set
       {
         _projectTrn = value;
-        projectUid = TRNHelper.ExtractGuidAsString(value);
+        ProjectUid = TRNHelper.ExtractGuidAsString(value);
       }
     }
 
     /// <summary>
     /// WorksOS device ID; the Guid extracted from the TRN.
     /// </summary>
-    public string projectUid { get; private set; }
+    [JsonProperty("projectUid")]
+    public string ProjectUid { get; private set; }
   }
 }

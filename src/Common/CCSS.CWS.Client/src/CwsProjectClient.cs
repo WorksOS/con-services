@@ -37,13 +37,13 @@ namespace CCSS.CWS.Client
     ///   Cache to include userUid as different users have access to a different project set
     ///   cws team to generate a detailed list in 1 shot CCSSSCON-409
     /// </summary>
-    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true, 
+    public async Task<ProjectDetailListResponseModel> GetProjectsForCustomer(Guid customerUid, Guid? userUid = null, bool includeSettings = true,
       CwsProjectType? type = null, ProjectStatus? status = null, bool onlyAdmin = false, IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForCustomer)}: customerUid {customerUid} userUid {userUid}");
 
       var projectSummaryListResponseModel = await GetProjectsForMyCustomer(customerUid, userUid, includeSettings, type, status, customHeaders);
-      var projects = onlyAdmin ? 
+      var projects = onlyAdmin ?
         projectSummaryListResponseModel.Projects.Where(p => p.UserProjectRole == UserProjectRoleEnum.Admin) :
         projectSummaryListResponseModel.Projects;
       var projectDetailListResponseModel = new ProjectDetailListResponseModel
@@ -79,7 +79,7 @@ namespace CCSS.CWS.Client
         // Do we need to filter for a specific type?
         if (type != null)
         {
-          queryParams.Add(new KeyValuePair<string, string>("projectType", ((int) type.Value).ToString()));
+          queryParams.Add(new KeyValuePair<string, string>("projectType", ((int)type.Value).ToString()));
         }
 
         if (status != null)
@@ -150,7 +150,7 @@ namespace CCSS.CWS.Client
 
         // If we don't add this query param, then get project will never return archived projects
         // However, there is no harm to having it always on for active projects
-        var queryParams = new List<KeyValuePair<string, string>>() {new KeyValuePair<string, string>("includeArchived", "true")};
+        var queryParams = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("includeArchived", "true") };
 
         projectDetailResponseModel = await GetData<ProjectDetailResponseModel>(route, projectUid, userUid, queryParams, customHeaders);
 
@@ -211,7 +211,7 @@ namespace CCSS.CWS.Client
       await UpdateData($"/projects/{projectTrn}/boundary", projectBoundary, null, customHeaders);
     }
 
-    private  ProjectDetailResponseModel GetProjectDetailsFromSummary(ProjectSummaryResponseModel project, Guid customerUid)
+    private ProjectDetailResponseModel GetProjectDetailsFromSummary(ProjectSummaryResponseModel project, Guid customerUid)
     {
       // No need to query the metadata endpoint anymore, as the summary result with includeSettings has all the details
       return new ProjectDetailResponseModel
@@ -222,7 +222,7 @@ namespace CCSS.CWS.Client
         ProjectType = project.ProjectType,
         Status = project.Status,
         UserProjectRole = project.UserProjectRole,
-        ProjectSettings = new ProjectSettingsModel {Boundary = project.Boundary, TimeZone = project.TimeZone}
+        ProjectSettings = new ProjectSettingsModel { Boundary = project.Boundary, TimeZone = project.TimeZone }
       };
     }
   }
