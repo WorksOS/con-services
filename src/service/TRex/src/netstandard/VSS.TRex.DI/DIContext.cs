@@ -17,7 +17,7 @@ namespace VSS.TRex.DI
     /// <summary>
     /// Determines the default behaviour of Obtain<T>: Optional or mandatory presence in the service provider
     /// </summary>
-    public static bool DefaultIsRequired = false;
+    public static bool DefaultIsRequired = true;
 
     /// <summary>
     /// Injects the service provider collection in the TRex DI context.
