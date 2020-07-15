@@ -396,6 +396,8 @@ namespace VSS.TRex.Rendering.Executors
       var dx = NEECoords[2].X - NEECoords[0].X;
       var dy = NEECoords[2].Y - NEECoords[0].Y;
 
+      TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
+
       RotatedTileBoundingExtents.SetInverted();
       foreach (var xyz in NEECoords)
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
