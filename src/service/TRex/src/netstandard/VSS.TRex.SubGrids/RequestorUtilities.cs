@@ -34,7 +34,7 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// The DI injected TRex spatial memory cache for general sub grid results
     /// </summary>
-    private ITRexSpatialMemoryCache SubGridCache => _subGridCache ??= DIContext.Obtain<ITRexSpatialMemoryCache>();
+    private ITRexSpatialMemoryCache SubGridCache => _subGridCache ??= DIContext.ObtainOptional<ITRexSpatialMemoryCache>();
      
     /// <summary>
     /// The DI injected factory to create request instances

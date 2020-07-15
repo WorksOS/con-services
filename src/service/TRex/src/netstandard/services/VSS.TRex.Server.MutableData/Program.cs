@@ -80,6 +80,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<ISegmentRetirementQueue>(factory => new SegmentRetirementQueue()))
+        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))
         .Build()
         .Add(x => x.AddSingleton(new TagProcComputeServer()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
@@ -90,7 +91,6 @@ namespace VSS.TRex.Server.MutableData
         // Register the sender for the site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
 
-        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))

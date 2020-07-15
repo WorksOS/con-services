@@ -113,7 +113,11 @@ namespace VSS.TRex.Webtools
       services.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces());
       services.AddTransient<IDesigns>(factory => new Designs.Storage.Designs());
       services.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory());
-      services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
+      //services.AddSingleton<IMutabilityConverter>(new MutabilityConverter());
+
+      services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable));
+
+      DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton(new ImmutableClientServer("Webtools-Immutable"));
       services.AddSingleton(new MutableClientServer("Webtools-Mutable"));
@@ -127,7 +131,6 @@ namespace VSS.TRex.Webtools
       services.AddTransient<IAlignments>(factory => new Alignments.Alignments());
       services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable));
 
-      services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable));
       services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
 
       ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI(services);

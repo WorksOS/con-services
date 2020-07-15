@@ -87,9 +87,8 @@ namespace VSS.TRex.Designs.GridFabric.Events
           }
         }
 
-        // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
-        DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToDesignChange(message.SiteModelUid, message.DesignUid);
-
+        // Advise any configured spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
+        DIContext.ObtainOptional<ITRexSpatialMemoryCache>()?.InvalidateDueToDesignChange(message.SiteModelUid, message.DesignUid);
       }
       catch (Exception e)
       {
