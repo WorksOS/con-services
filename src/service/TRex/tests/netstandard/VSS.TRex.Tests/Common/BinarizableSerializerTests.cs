@@ -6,11 +6,12 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.Tests.BinarizableSerialization;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Common
 {
-  public class BinarizableSerializerTests
+  public class BinarizableSerializerTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Creation()
