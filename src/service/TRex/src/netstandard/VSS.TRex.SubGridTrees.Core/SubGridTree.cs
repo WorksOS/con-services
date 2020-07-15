@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -149,13 +150,15 @@ namespace VSS.TRex.SubGridTrees
         public int IndexOriginOffset => indexOriginOffset;
 
         /// <summary>
+        /// An optional slim reader writer lock to manage cooperating threads operating on a sub grid tree
+        /// </summary>
+        public ReaderWriterLockSlim ReaderWriterLock { get; private set; } = null;
+
+        /// <summary>
         /// Base Sub Grid Tree constructor. Creates a tree with the requested number of levels, 
         /// using the requested cell size for leaf cells and the supplied sub grid factory to create
         /// its leaf and node sub grids
         /// </summary>
-        /// <param name="numLevels"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="subGridFactory"></param>
         public SubGridTree(byte numLevels,
                            double cellSize,
                            ISubGridFactory subGridFactory)
@@ -569,6 +572,12 @@ namespace VSS.TRex.SubGridTrees
       /// The header version to be written into a serialized sub grid tree
       /// </summary>
       public virtual int SerialisedVersion() => 0;
+
+      /// <summary>
+      /// Provisions a slim reader write lock for sub grid tree activities to take advantage of when coordinating
+      /// concurrent activities with in the tree
+      /// </summary>
+      public void InitialiseReaderWriterLocking() => ReaderWriterLock ??= new ReaderWriterLockSlim();
 
       /// <summary>
       /// The internal logic to serialise out the content of the sub grid tree using the SubGridTreePersistor

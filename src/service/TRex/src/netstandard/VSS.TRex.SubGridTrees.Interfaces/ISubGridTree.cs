@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Types;
 
@@ -57,10 +58,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// intersect the given real world extent. Each sub grid that exists in the
         /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
-        /// <param name="extent"></param>
-        /// <param name="leafFunctor"></param>
-        /// <param name="nodeFunctor"></param>
-        /// <returns></returns>
         bool ScanSubGrids(BoundingWorldExtent3D extent,
                                  Func<ISubGrid, bool> leafFunctor = null,
                                  Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null);
@@ -70,10 +67,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// intersect the given cell address space extent. Each sub grid that exists in the
         /// extent is passed to the OnProcessLeafSubGrid event for processing 
         /// </summary>
-        /// <param name="extent"></param>
-        /// <param name="leafFunctor"></param>
-        /// <param name="nodeFunctor"></param>
-        /// <returns></returns>
         bool ScanSubGrids(BoundingIntegerExtent2D extent,
                           Func<ISubGrid, bool> leafFunctor = null,
                           Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null);
@@ -82,9 +75,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// ScanAllSubGrids scans all sub grids. Each sub grid that exists in the
         /// extent is passed to the OnProcessLeafSub grid event for processing 
         /// </summary>
-        /// <param name="leafFunctor"></param>
-        /// <param name="nodeFunctor"></param>
-        /// <returns></returns>
         bool ScanAllSubGrids(Func<ISubGrid, bool> leafFunctor = null,
                              Func<ISubGrid, SubGridProcessNodeSubGridResult> nodeFunctor = null);
 
@@ -97,13 +87,11 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// <summary>
         /// FullGridExtent returns the maximum world extent that this grid is capable of covering.
         /// </summary>
-        /// <returns></returns>
         BoundingWorldExtent3D FullGridExtent();
 
         /// <summary>
         /// FullCellExtent returns the total extent of cells within this sub grid tree. 
         /// </summary>
-        /// <returns></returns>
         BoundingIntegerExtent2D FullCellExtent();
 
         /// <summary>
@@ -115,34 +103,23 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// PathType is pctCreatePathToLeaf it returns the node sub grid instance that
         /// owns the leaf sub grid that contains the cell
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="pathType"></param>
-        /// <returns></returns>
+
         ISubGrid ConstructPathToCell(int cellX, int cellY, SubGridPathConstructionType pathType);
 
         /// <summary>
         /// CalculateIndexOfCellContainingPosition takes a world position and determines
         /// the X/Y index of the cell that the position lies in. If the position is
-        /// outside of the extent covered by the grid the function returns false.  
+        /// outside of the extent covered by the grid the function returns false.
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
-        bool CalculateIndexOfCellContainingPosition(double X, double Y,
-                                                    out int CellX, out int CellY);
+
+        bool CalculateIndexOfCellContainingPosition(double x, double y,
+                                                    out int cellX, out int cellY);
 
         /// <summary>
         /// LocateSubGridContaining attempts to locate a sub grid at the level in the tree
         /// given by Level that contains the on-the-ground cell identified by
         /// CellX and CellY
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="level"></param>
-        /// <returns></returns>
         ISubGrid LocateSubGridContaining(int cellX, int cellY, byte level);
 
         /// <summary>
@@ -150,9 +127,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// but defaults to looking at the bottom level
         /// CellX and CellY
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <returns></returns>
         ISubGrid LocateSubGridContaining(int cellX, int cellY);
 
         /// <summary>
@@ -161,10 +135,6 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// Level to find the requested cell, then returns that sub grid.
         /// The returned node may be a leaf sub grid or a node sub grid
         /// </summary>
-        /// <param name="cellX"></param>
-        /// <param name="cellY"></param>
-        /// <param name="level"></param>
-        /// <returns></returns>
         ISubGrid LocateClosestSubGridContaining(int cellX, int cellY, byte level);
 
         /// <summary>
@@ -173,11 +143,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// bottom left origin of the grid. The returned CX, CY values are translated
         /// to the centered origin of the real world coordinate system
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="cx"></param>
-        /// <param name="cy"></param>
-        void GetCellCenterPosition(int X, int Y, out double cx, out double cy);
+        void GetCellCenterPosition(int x, int y, out double cx, out double cy);
 
         /// <summary>
         /// GetCellOriginPosition computes the real world location of the origin
@@ -185,11 +151,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// bottom left origin of the grid. The returned OX, OY values are translated
         /// to the centered origin of the real world coordinate system
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="ox"></param>
-        /// <param name="oy"></param>
-        void GetCellOriginPosition(int X, int Y, out double ox, out double oy);
+        void GetCellOriginPosition(int x, int y, out double ox, out double oy);
 
         /// <summary>
         /// GetCellExtents computes the real world extents of the OTG cell identified
@@ -197,10 +159,7 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// The returned extents are translated to the centered origin of the real
         /// world coordinate system
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <returns></returns>
-        BoundingWorldExtent3D GetCellExtents(int X, int Y);
+        BoundingWorldExtent3D GetCellExtents(int x, int y);
 
         /// <summary>
         /// GetCellExtents computes the real world extents of the OTG cell identified
@@ -208,25 +167,17 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// The returned extents are translated to the centered origin of the real
         /// world coordinate system
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="extents"></param>
-        /// <returns></returns>
-        void GetCellExtents(int X, int Y, ref BoundingWorldExtent3D extents);
+        void GetCellExtents(int x, int y, ref BoundingWorldExtent3D extents);
    
         /// <summary>
         /// CreateUnattachedLeaf Creates an instance of a sub grid leaf node and returns
         /// it to the caller. The newly created sub grid is _not_ attached to this grid.
         /// </summary>
-        /// <returns></returns>
         ILeafSubGrid CreateUnattachedLeaf();
 
         /// <summary>
         /// CalculateRegionGridCoverage determines the extent of on-the-ground grid cells that correspond to the given world extent.
         /// </summary>
-        /// <param name="worldExtent"></param>
-        /// <param name="cellExtent"></param>
-        /// <returns></returns>
         void CalculateRegionGridCoverage(BoundingWorldExtent3D worldExtent, out BoundingIntegerExtent2D cellExtent);
 
         /// <summary>
@@ -235,6 +186,9 @@ namespace VSS.TRex.SubGridTrees.Interfaces
         /// it is unattached until explicitly inserted.
         /// </summary>
         ISubGrid CreateNewSubGrid(byte level);
+
+        void InitialiseReaderWriterLocking();
+        ReaderWriterLockSlim ReaderWriterLock { get; }
 
         byte[] ToBytes();
 
