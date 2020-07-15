@@ -143,7 +143,8 @@ namespace VSS.TRex.SubGridTrees
         public virtual ISubGrid CreateNewSubGrid(byte level) => _subGridFactory.GetSubGrid(this, level);
 
         protected int indexOriginOffset;
-
+        private bool _disposedValue;
+       
         /// <summary>
         /// The value of the index origin offset for this sub grid tree
         /// </summary>
@@ -611,9 +612,24 @@ namespace VSS.TRex.SubGridTrees
       /// </summary>
       public void FromStream(MemoryStream stream) => FromToBytes.FromStream(stream, SerialiseInReader);
 
+      protected virtual void Dispose(bool disposing)
+      {
+        if (!_disposedValue)
+        {
+          if (disposing)
+          {
+            ReaderWriterLock?.Dispose();
+            ReaderWriterLock = null;
+          }
+
+          _disposedValue = true;
+        }
+      }
+
       public void Dispose()
       {
-        ReaderWriterLock?.Dispose();
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
       }
     }
 }

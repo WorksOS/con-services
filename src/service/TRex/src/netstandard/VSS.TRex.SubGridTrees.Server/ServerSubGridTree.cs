@@ -467,23 +467,28 @@ namespace VSS.TRex.SubGridTrees.Server
     #region IDisposable Support
     private bool _disposedValue; // To detect redundant calls
 
-    protected virtual void Dispose(bool disposing)
+    protected override void Dispose(bool disposing)
     {
-      if (_disposedValue) 
+      if (_disposedValue)
         return;
 
-      // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
-      // Traverse all loaded sub grids and advise each to dispose themselves
-      ScanAllSubGrids(leaf =>
+      if (disposing)
       {
-        (leaf as IServerLeafSubGrid)?.Dispose();
-        return true;
-      });
+        // Treat disposal and finalization as the same, dependent on the primary disposedValue flag
+        // Traverse all loaded sub grids and advise each to dispose themselves
+        ScanAllSubGrids(leaf =>
+        {
+          (leaf as IServerLeafSubGrid)?.Dispose();
+          return true;
+        });
+      }
+
+      base.Dispose(disposing);
 
       _disposedValue = true;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
       Dispose(true);
     }
