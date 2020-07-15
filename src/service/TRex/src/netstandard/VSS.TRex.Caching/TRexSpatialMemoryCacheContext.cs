@@ -81,7 +81,7 @@ namespace VSS.TRex.Caching
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
       MRUList = mruList;
       CacheDurationTime = cacheDurationTime;
-      FingerPrint = fingerPrint;
+      FingerPrint = fingerPrint ?? Guid.NewGuid().ToString();
       GridDataType = gridDataType;
       ProjectUID = projectUid;
       OwnerMemoryCache = ownerMemoryCache;
@@ -97,10 +97,10 @@ namespace VSS.TRex.Caching
       var x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      lock (this)
+      lock (FingerPrint)
       {
         // Add the element to storage and obtain its index in that storage, inserting it into the context
-        // Note: The index is added as a 1-based index to the ContextTokens to differentiate iot from the null value
+        // Note: The index is added as a 1-based index to the ContextTokens to differentiate it from the null value
         // of 0 used as the null value in integer based sub grid trees
         if (ContextTokens[x, y] != 0)
         {
@@ -126,7 +126,7 @@ namespace VSS.TRex.Caching
       var x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      lock (this)
+      lock (FingerPrint)
       {
         RemoveNoLock(x, y);
       }
@@ -162,7 +162,7 @@ namespace VSS.TRex.Caching
       var x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      lock (this)
+      lock (FingerPrint)
       {
         var index = ContextTokens[x, y];
 
@@ -245,7 +245,7 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Reanimate()
     {
-      lock (this)
+      lock (FingerPrint)
       {
         MarkedForRemovalAtUtc = Consts.MIN_DATETIME_AS_UTC;
         MarkedForRemoval = false;

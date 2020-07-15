@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Nito.AsyncEx.Synchronous;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.Common.Extensions;
@@ -34,6 +35,14 @@ namespace VSS.TRex.Tests.SiteModels.Executors
     {
       fixture.ClearDynamicFixtureContent();
       fixture.ResetDynamicMockedIgniteContent();
+
+      // Modify the SiteModels instance to be mutable, rather than immutable to mimic the mutable context 
+      // project deletion operates in 
+      DIBuilder
+        .Continue()
+        .RemoveSingle<ISiteModels>()
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(StorageMutability.Mutable)))
+        .Complete();
     }
 
     private static ISiteModelRebuilder CreateBuilder(Guid projectUid, bool archiveTagFiles, TransferProxyType transferProxyType)

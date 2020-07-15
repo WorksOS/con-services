@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
@@ -59,11 +60,14 @@ namespace VSS.TRex.Storage
 
       var commitTasks = CommittableCaches.Select(x => Task.Factory.Run(() => LocalCommit(x))).ToArray();
       var commitResults = commitTasks.WhenAll();
-      commitResults.Wait();
+      commitResults.WaitAndUnwrapException();
 
       if (commitResults.IsFaulted || commitTasks.Any(x => x.IsFaulted))
+      {
+        _log.LogError(commitResults.Exception, $"Asynchronous Commit() faulted");
         return false;
-
+      }
+      
       foreach (var (numDeletedLocal, numUpdatedLocal, numBytesWrittenLocal) in commitResults.Result)
       {
         numDeleted += numDeletedLocal;
