@@ -117,7 +117,7 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Takes a list of TAG files and constructs an ephemeral site model that may be queried
     /// </summary>
-    public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks, 
+    public static ISiteModel BuildModel(IEnumerable<string> tagFiles, out List<AggregatedDataIntegratorTask> ProcessedTasks,
       bool callTaskProcessingComplete = true,
       bool convertToImmutableRepresentation = true,
       bool treatAsJohnDoeMachines = false)
@@ -167,7 +167,7 @@ namespace VSS.TRex.Tests.TestFixtures
       targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(preTargetSiteModelId, false);
       targetSiteModel.SiteModelExtent.IsValidPlanExtent.Should().BeTrue();
 
-      // The ISiteModels instance ill supply the immutable representation of the site model, ensure it is set to mutable
+      // The ISiteModels instance will supply the immutable representation of the site model, ensure it is set to mutable
       targetSiteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       targetSiteModel.Should().NotBe(null);

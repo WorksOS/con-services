@@ -6,8 +6,6 @@ using Apache.Ignite.Core.Cache.Event;
 using FluentAssertions;
 using Moq;
 using VSS.MasterData.Models.Models;
-using VSS.TRex.Common.Exceptions;
-using VSS.TRex.DI;
 using VSS.TRex.SiteModelChangeMaps;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
@@ -21,23 +19,6 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SiteModelChangeMaps
 {
-  public class SiteModelChangeProcessorItemHandlerTests_NoDI
-  {
-    [Fact]
-    public void Creation_NoIgnite()
-    {
-      Action act = () =>
-      {
-        var _ = new SiteModelChangeProcessorItemHandler();
-      };
-
-      if (DIContext.DefaultIsRequired)
-        act.Should().Throw<Exception>().WithMessage("DIContext service provider not available");
-      else
-        act.Should().Throw<TRexException>().WithMessage("Failed to obtain immutable Ignite reference");
-    }
-  }
-
   public class SiteModelChangeProcessorItemHandlerTests : SiteModelChangeTestsBase
   {
     [Fact]

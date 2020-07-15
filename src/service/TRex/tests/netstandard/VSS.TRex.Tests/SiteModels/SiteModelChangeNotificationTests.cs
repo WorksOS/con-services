@@ -3,6 +3,7 @@ using FluentAssertions;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -142,6 +143,7 @@ namespace VSS.TRex.Tests.SiteModels
       // Create the new site model
       var guid = Guid.NewGuid();
       var siteModel = siteModels.GetSiteModel(guid, true);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
       siteModel.MarkForDeletion();
 
       // Note the site model is marked for deletion
