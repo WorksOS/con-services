@@ -141,7 +141,7 @@ namespace CoreX.Wrapper
         coordinates.Longitude,
         coordinates.Height,
         (geoCoordinateTypes)toType,
-        out var toX, out var toY, out var toZ);
+        out var toY, out var toX, out var toZ);
 
       return new NEE
       {

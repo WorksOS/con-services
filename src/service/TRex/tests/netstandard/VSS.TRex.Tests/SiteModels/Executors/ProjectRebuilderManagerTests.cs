@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
@@ -8,6 +9,7 @@ using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -21,6 +23,14 @@ namespace VSS.TRex.Tests.SiteModels.Executors
 
       fixture.ClearDynamicFixtureContent();
       fixture.ResetDynamicMockedIgniteContent();
+
+      // Modify the SiteModels instance to be mutable, rather than immutable to mimic the mutable context 
+      // project deletion operates in 
+      DIBuilder
+        .Continue()
+        .RemoveSingle<ISiteModels>()
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(StorageMutability.Mutable)))
+        .Complete();
     }
 
     [Fact]

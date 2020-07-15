@@ -68,7 +68,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
     public string projectName { get; set; }
 
     public DateTime? lastReported { get; set; }
-
+    
     /// <summary>
     /// assetSerialNumber
     ///     e.g. "12345YU" 

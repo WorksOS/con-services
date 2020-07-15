@@ -196,12 +196,10 @@ namespace VSS.TRex.Tests.TestFixtures
       // Recreate proxy caches based on the newly created cache contexts
       AddProxyCacheFactoriesToDI();
 
-      // Create a new site models instance so that it recreates storage contexts
-      // Also remove the singleton proxy cache factory injected as a part of the DITagFileFixture. This fixture supplies a 
+      // Remove the singleton proxy cache factory injected as a part of the DITagFileFixture. This fixture supplies a 
       // full ignite mock with standard storage proxy factory
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => null))
         .Complete();
     }

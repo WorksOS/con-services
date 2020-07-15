@@ -25,6 +25,7 @@ data:
   cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/connectedsiteprofiles-dev/1.0
   cws_designmanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-designmanager-dev/1.0
   cws_profilesettings_public_v1: https://api-stg.trimble.com/t/trimble.com/connectedsiteprofilesettings-dev/1.0
+  cws_devicegateway_public_v2: https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-dev/2.0
   tpaasemail_public_v1: https://api-stg.trimble.com/t/trimble.com/tpaas-email-service/1.0/emails/
   #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
@@ -45,7 +46,8 @@ data:
 #AWS configuration  
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-trex-designfiles
   AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-rpd-workos-exports
-  AWS_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-tagfile-archive
+  AWS_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-trex-dm-archive
+  AWS_ALL_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-tagfile-archive
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
   USE_LOCAL_S3_TRANSFER_PROXY_STORE: "false"
   #Raptor configuration

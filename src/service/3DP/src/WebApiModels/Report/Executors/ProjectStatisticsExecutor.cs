@@ -29,8 +29,11 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var tRexRequest =
           new ProjectStatisticsTRexRequest(request.ProjectUid.Value, request.ExcludedSurveyedSurfaceUids);
-        return await trexCompactionDataProxy.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(
+        var result = await trexCompactionDataProxy.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(
           tRexRequest, $"/sitemodels/statistics", customHeaders);
+        if (!result.extents.ValidExtents)
+          result.Empty();
+        return result;
       }
 #if RAPTOR
       bool success = raptorClient.GetDataModelStatistics(
