@@ -64,7 +64,7 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Base class for implementation of sub grid trees that defines various parameters and constants related to them
     /// </summary>
-    public class SubGridTree : ISubGridTree
+    public class SubGridTree : ISubGridTree, IDisposable
     {
         // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
 
@@ -610,5 +610,10 @@ namespace VSS.TRex.SubGridTrees
       /// Deserializes the content of the sub grid tree from a memory stream
       /// </summary>
       public void FromStream(MemoryStream stream) => FromToBytes.FromStream(stream, SerialiseInReader);
+
+      public void Dispose()
+      {
+        ReaderWriterLock?.Dispose();
+      }
     }
 }
