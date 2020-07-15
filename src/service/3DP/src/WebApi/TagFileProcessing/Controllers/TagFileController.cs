@@ -104,25 +104,6 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
             "The project has been archived and this function is not allowed."));
       }
 
-      //First submit tag file to connected site gateway
-      // Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
-#pragma warning disable 4014
-      RequestExecutorContainerFactory
-        .Build<TagFileConnectedSiteSubmissionExecutor>(_logger,
-#if RAPTOR
-          _raptorClient, 
-          _tagProcessor, 
-#endif
-          _configStore, transferProxyFactory:_transferProxyFactory, tRexTagFileProxy:_tRexTagFileProxy, tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
-        .ProcessAsync(request).ContinueWith((task) =>
-        {
-          if (task.IsFaulted)
-          {
-            _log.LogError(task.Exception, $"{nameof(PostTagFileNonDirectSubmission)}: Error Sending to Connected Site", null);
-          }
-        }, TaskContinuationOptions.OnlyOnFaulted);
-#pragma warning restore 4014
-
       //Now submit tag file to Raptor and/or TRex
       Task<WGS84Fence> boundary = null;
       if (request.ProjectUid != null)
