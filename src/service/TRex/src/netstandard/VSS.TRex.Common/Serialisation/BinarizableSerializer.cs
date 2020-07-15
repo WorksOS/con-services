@@ -16,7 +16,7 @@ namespace VSS.TRex.Common.Serialisation
     public void WriteBinary(object obj, IBinaryWriter writer)
     {
       // Add a global exception trapper for binarizable serialization to provide visibility via C# stack traces in the log
-      // to compliment the Java stack trace
+      // to complement the Java stack trace
       try
       {
         switch (obj)
@@ -59,7 +59,7 @@ namespace VSS.TRex.Common.Serialisation
       }
       catch (Exception e)
       {
-        _log.LogCritical(e, "WriteBinary failure");
+        _log.LogCritical(e, "ReadBinary failure");
 
         // Rethrow the exception - the intent here is not to handle it, but to add visibility to it
         throw;
