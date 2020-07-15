@@ -23,7 +23,10 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
 
     /// <summary>
     /// The array of labels to be rendered along the alignment. These are generated according to the interval specified
-    /// in the request and relevant features within the alignment
+    /// in the request and relevant features within the alignment.
+    /// ************************************************************************************************************
+    /// ************** The Labels data is ignored at present until it is supplied in a useful form *****************
+    /// ************************************************************************************************************
     /// </summary>
     [JsonProperty(PropertyName = "labels", Required = Required.Always)]
     public AlignmentGeometryResultLabel[] Labels { get; }

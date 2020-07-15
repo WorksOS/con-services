@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             }
           }
 
-          return await Task.FromResult(new AlignmentGeometriesResult(ContractExecutionStatesEnum.ExecutedSuccessfully, alignmentGeometries.ToArray()));
+          return new AlignmentGeometriesResult(ContractExecutionStatesEnum.ExecutedSuccessfully, alignmentGeometries.ToArray());
         }
         else
         {
