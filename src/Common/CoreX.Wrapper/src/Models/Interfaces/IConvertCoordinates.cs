@@ -55,12 +55,12 @@ namespace CoreX.Interfaces
     /// <summary>
     /// Uses the Coordinate Service to convert WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point);
+    XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point, InputAs inputAs);
 
     /// <summary>
     /// Uses the Coordinate Service to convert an array of WGS84 coordinates into the site calibration used by the project.
     /// </summary>
-    XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points);
+    XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points, InputAs inputAs);
 
     /// <summary>
     /// Takes the full path and name of a DC file, reads it and uses the Trimble Coordinate service to convert it into a

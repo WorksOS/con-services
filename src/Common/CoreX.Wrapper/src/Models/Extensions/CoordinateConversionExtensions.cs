@@ -1,4 +1,5 @@
 ﻿using CoreX.Models;
+using CoreX.Types;
 
 namespace CoreX.Wrapper.Extensions
 {
@@ -111,16 +112,18 @@ namespace CoreX.Wrapper.Extensions
     /// <summary>
     /// Converts an array of WSG84 point coordinate data to LLH formatted objects.
     /// </summary>
-    public static LLH[] ToLLH(this WGS84Point[] data)
+    public static LLH[] ToLLH(this WGS84Point[] data, InputAs inputAs)
     {
       var result = new LLH[data.Length];
+
+      var inDegrees = inputAs == InputAs.Degrees;
 
       for (var i = 0; i < data.Length; i++)
       {
         result[i] = new LLH
         {
-          Latitude = data[i].Lat.DegreesToRadians(),
-          Longitude = data[i].Lon.DegreesToRadians(),
+          Latitude = inDegrees ? data[i].Lat.DegreesToRadians() : data[i].Lat,
+          Longitude = inDegrees ? data[i].Lon.DegreesToRadians() : data[i].Lon,
           Height = data[i].Height
         };
       }
