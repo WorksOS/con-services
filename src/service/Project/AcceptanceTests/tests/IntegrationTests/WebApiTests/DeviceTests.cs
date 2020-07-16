@@ -32,15 +32,15 @@ namespace IntegrationTests.WebApiTests
       
       Assert.NotNull(deviceList);
       Assert.Single(deviceList);
-      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, deviceList[0].deviceUid);
-      Assert.Equal(DIMENSIONS_SERIAL, deviceList[0].assetSerialNumber);
-      Assert.Equal(89.9, deviceList[0].lat);
-      Assert.Equal(34.6, deviceList[0].lon);
-      Assert.Equal(CWSDeviceTypeEnum.EC520, deviceList[0].assetType);
-      Assert.Equal($"{CWSDeviceTypeEnum.EC520}-{DIMENSIONS_SERIAL}", deviceList[0].deviceName);
-      Assert.Equal($"DimensionsProject", deviceList[0].projectName);
-      Assert.NotNull(deviceList[0].lastReported);
-      Assert.True(deviceList[0].lastReported.Value > DateTime.UtcNow.AddDays(-30));
+      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, deviceList[0].DeviceUid);
+      Assert.Equal(DIMENSIONS_SERIAL, deviceList[0].AssetSerialNumber);
+      Assert.Equal(89.9, deviceList[0].Latitude);
+      Assert.Equal(34.6, deviceList[0].Longitude);
+      Assert.Equal("Grader", deviceList[0].AssetType);
+      Assert.Equal($"{CWSDeviceTypeEnum.EC520}-{DIMENSIONS_SERIAL}", deviceList[0].DeviceName);
+      Assert.Equal($"DimensionsProject", deviceList[0].ProjectName);
+      Assert.NotNull(deviceList[0].LastReportedUtc);
+      Assert.True(deviceList[0].LastReportedUtc.Value > DateTime.UtcNow.AddDays(-30));
     }
 
     [Fact]
@@ -72,15 +72,15 @@ namespace IntegrationTests.WebApiTests
       var device = JsonConvert.DeserializeObject<DeviceLKSResponseModel>(response);
 
       Assert.NotNull(device);
-      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, device.deviceUid);
-      Assert.Equal(DIMENSIONS_SERIAL, device.assetSerialNumber);
-      Assert.Equal(89.9, device.lat);
-      Assert.Equal(34.6, device.lon);
-      Assert.Equal(CWSDeviceTypeEnum.EC520, device.assetType);
-      Assert.Equal(deviceName, device.deviceName);
-      Assert.Equal($"DimensionsProject", device.projectName);
-      Assert.NotNull(device.lastReported);
-      Assert.True(device.lastReported.Value > DateTime.UtcNow.AddDays(-30));
+      Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, device.DeviceUid);
+      Assert.Equal(DIMENSIONS_SERIAL, device.AssetSerialNumber);
+      Assert.Equal(89.9, device.Latitude);
+      Assert.Equal(34.6, device.Longitude);
+      Assert.Equal("Excavator", device.AssetType);
+      Assert.Equal(deviceName, device.DeviceName);
+      Assert.Equal($"DimensionsProject", device.ProjectName);
+      Assert.NotNull(device.LastReportedUtc);
+      Assert.True(device.LastReportedUtc.Value > DateTime.UtcNow.AddDays(-30));
     }
 
     [Fact]
