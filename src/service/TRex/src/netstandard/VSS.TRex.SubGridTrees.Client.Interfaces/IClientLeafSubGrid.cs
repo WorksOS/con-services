@@ -40,9 +40,10 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// <summary>
     /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+
     bool LeafContentEquals(IClientLeafSubGrid other);
+
+    bool SupportsAssignationFrom(GridDataType gridDataType);
 
     void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source);
 
@@ -58,7 +59,6 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// <summary>
     /// World extent of the client leaf sub grid map of cells
     /// </summary>
-    /// <returns></returns>
     BoundingWorldExtent3D WorldExtents();
 
     void DumpToLog();
