@@ -106,6 +106,11 @@ namespace VSS.TRex.SubGridTrees.Client
       false // Progressive volumes = = 0x0000001D
     };
 
+    public virtual bool SupportsAssignationFrom(GridDataType gridDataType)
+    {
+      return gridDataType == _gridDataType && ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int) gridDataType];
+    }
+
     /// <summary>
     /// Existence map of where we know Prod Data exists 
     /// </summary>

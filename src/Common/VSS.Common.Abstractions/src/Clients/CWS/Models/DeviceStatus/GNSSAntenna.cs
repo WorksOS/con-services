@@ -1,10 +1,15 @@
-﻿namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
+﻿using Newtonsoft.Json;
+
+namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
 {
   public class GNSSAntenna
   {
-    public string antennaLocation { get; set; }
-    public string antennaSerialNumber { get; set; }
-    public SatelliteVehicle svsUsed { get; set; }
+    [JsonProperty("antennaLocation")]
+    public string AntennaLocation { get; set; }
+    [JsonProperty("antennaSerialNumber")]
+    public string AntennaSerialNumber { get; set; }
+    [JsonProperty("svsUsed")] 
+    public SatelliteVehicle SvsUsed { get; set; }
 
     public GNSSAntenna()
     {

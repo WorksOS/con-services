@@ -130,8 +130,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       //SurveyedSurfaceMap.Assign(((ClientHeightAndTimeLeafSubGrid)source).SurveyedSurfaceMap);
     }
-
-
+    
     /// <summary>
     /// Assign cell information from a previously cached result held in the general sub grid result cache
     /// using the supplied map to control which cells from the cached sub grid should be copied into this

@@ -257,16 +257,22 @@ namespace CoreX.Wrapper
     }
 
     /// <inheritdoc/>
-    public XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point)
+    public XYZ WGS84ToCalibration(string csib, WGS84Point wgs84Point, InputAs inputAs)
     {
       var requestId = Guid.NewGuid();
       _log.LogDebug($"{nameof(WGS84ToCalibration)}: CoreXRequestID: {requestId}, wgs84Point: {wgs84Point}, CSIB: {csib}");
 
+      if (inputAs == InputAs.Degrees)
+      {
+        wgs84Point.Lat = wgs84Point.Lat.DegreesToRadians();
+        wgs84Point.Lon = wgs84Point.Lon.DegreesToRadians();
+      }
+
       var nee = _coreX
         .TransformLLHToNEE(csib, new LLH
         {
-          Latitude = wgs84Point.Lat.DegreesToRadians(),
-          Longitude = wgs84Point.Lon.DegreesToRadians(),
+          Latitude = wgs84Point.Lat,
+          Longitude = wgs84Point.Lon,
           Height = wgs84Point.Height
         },
         fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
@@ -284,14 +290,18 @@ namespace CoreX.Wrapper
     }
 
     /// <inheritdoc/>
-    public XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points)
+    public XYZ[] WGS84ToCalibration(string csib, WGS84Point[] wgs84Points, InputAs inputAs)
     {
       var requestId = Guid.NewGuid();
 
       _log.LogDebug($"{nameof(WGS84ToCalibration)}: CoreXRequestID: {requestId}, wgs84Points[]: {string.Concat<WGS84Point>(wgs84Points)}, CSIB: {csib}");
 
       var neeCoords = _coreX
-        .TransformLLHToNEE(csib, wgs84Points.ToLLH(), fromType: CoordinateTypes.ReferenceGlobalLLH, toType: CoordinateTypes.OrientatedNEE);
+        .TransformLLHToNEE(
+          csib, 
+          wgs84Points.ToLLH(inputAs), 
+          fromType: CoordinateTypes.ReferenceGlobalLLH, 
+          toType: CoordinateTypes.OrientatedNEE);
 
       var responseArray = new XYZ[neeCoords.Length];
 
