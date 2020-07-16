@@ -67,7 +67,12 @@ namespace VSS.TRex.Profiling.Executors
 
           if (siteModel != null)
           {
-            arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(siteModel.CSIB(), new[] { arg.StartPoint, arg.EndPoint }.ToCoreX_WGS84Point()).ToTRex_XYZ();
+            arg2.NEECoords = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(
+              siteModel.CSIB(),
+              new[] { arg.StartPoint, arg.EndPoint }
+              .ToCoreX_WGS84Point(),
+              CoreX.Types.InputAs.Radians)
+              .ToTRex_XYZ();
           }
         }
 
