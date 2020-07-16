@@ -601,9 +601,9 @@ namespace VSS.TRex.Tests.Caching
       {
         for (var loopCount = 0; loopCount < 100; loopCount++)
         {
-          for (var i = 99; i > 0; i--)
+          for (var i = 99; i >= 0; i--)
           {
-            for (var j = 99; j > 0; j--)
+            for (var j = 99; j >= 0; j--)
             {
               foreach (var context in contexts)
               {
