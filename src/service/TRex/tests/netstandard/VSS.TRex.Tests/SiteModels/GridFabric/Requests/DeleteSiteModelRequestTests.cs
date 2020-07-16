@@ -62,9 +62,32 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var mutableCount = IgniteMock.Mutable.MockedCacheDictionaries.Count;
       var immutableCount = IgniteMock.Immutable.MockedCacheDictionaries.Count;
 
-      var clear1MutableCount = IgniteMock.Mutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
-      var clear1ImmutableCount = IgniteMock.Immutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
-     
+      // var clear1MutableCount = IgniteMock.Mutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
+      var clear1MutableCount = 0;
+      IgniteMock.Mutable.MockedCacheDictionaries.ForEach(x =>
+      {
+        var value = x.Value.Keys.Count;
+        clear1MutableCount += value;
+
+        if (value > 0 && expectedToBeEmpty)
+        {
+          _log.LogError($"Mutable cache {x.Key} has {value} elements within it, expected to be zero.");
+        }
+      });
+
+      // var clear1ImmutableCount = IgniteMock.Immutable.MockedCacheDictionaries.Values.Sum(cache => cache.Keys.Count);
+      var clear1ImmutableCount = 0;
+      IgniteMock.Immutable.MockedCacheDictionaries.ForEach(x =>
+      {
+        var value = x.Value.Keys.Count;
+        clear1ImmutableCount += value;
+
+        if (value > 0 && expectedToBeEmpty)
+        {
+          _log.LogError($"Immutable cache {x.Key} has {value} elements within it, expected to be zero.");
+        }
+      });
+
       var clear1 = clear1MutableCount == 0 && clear1ImmutableCount == 0;
 
       if (expectedToBeEmpty && !clear1)
