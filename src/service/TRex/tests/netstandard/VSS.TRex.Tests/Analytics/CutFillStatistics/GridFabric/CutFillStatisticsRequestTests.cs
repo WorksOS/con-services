@@ -39,7 +39,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(designUid, offset),
-        Offsets = new double[0]
+        Offsets = new double[7]
       };
     }
 
