@@ -143,19 +143,21 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       {
         var alignmentGeometries = new List<AlignmentGeometry>();
 
-        foreach (var file in fileList)
-        {
-          if (Guid.TryParse(file.ImportedFileUid, out var designUid))
+        await Task.Run(async () => {
+          foreach (var file in fileList)
           {
-            var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance, file.Name);
-            request.Validate();
+            if (Guid.TryParse(file.ImportedFileUid, out var designUid))
+            {
+              var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance, file.Name);
+              request.Validate();
 
-            var result = await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
-             configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request) as AlignmentGeometryResult;
+              var result = await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
+               configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request) as AlignmentGeometryResult;
 
-            alignmentGeometries.Add(result.AlignmentGeometry);
+              alignmentGeometries.Add(result.AlignmentGeometry);
+            }
           }
-        }
+        });
 
         return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());
       }
