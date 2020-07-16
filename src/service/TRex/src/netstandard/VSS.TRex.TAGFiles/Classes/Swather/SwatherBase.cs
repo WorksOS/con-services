@@ -47,9 +47,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
             // added to it.
 
             // The grid we are populating is a in-memory grid (ie: not the actual sub grid database
-            // for this data model). Changes will not need to be synchronized with the main
-            // server interlock (ICServerModule.Server.AcquireLock) and we may interact
-            // directly with the sub grid tree being populated
+            // for this data model).
 
             var SubGrid = Grid.ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf) as IServerLeafSubGrid;
 

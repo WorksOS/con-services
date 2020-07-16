@@ -244,45 +244,42 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
       _log.LogDebug("Aggregation Task Process --> Creating and updating machines in the live site model");
 
-      lock (siteModelFromDatamodel)
+      // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
+      siteModelFromDatamodel.Include(task.IntermediaryTargetSiteModel);
+
+      // Iterate over all the machine events collected in the task
+      foreach (var machineFromTask in task.IntermediaryTargetMachines)
       {
-        // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
-        siteModelFromDatamodel.Include(task.IntermediaryTargetSiteModel);
+        // Need to locate or create a matching machine in the site model.
+        var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.Name, machineFromTask.IsJohnDoeMachine);
 
-        // Iterate over all the machine events collected in the task
-        foreach (var machineFromTask in task.IntermediaryTargetMachines)
+        // Log.LogInformation($"Selecting machine: PersistedTargetMachineID={task.PersistedTargetMachineID}, IsJohnDoe?:{task.IntermediaryTargetMachine.IsJohnDoeMachine}, Result: {machineFromDatamodel}");
+
+        if (machineFromDatamodel == null)
         {
-          // Need to locate or create a matching machine in the site model.
-          var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.Name, machineFromTask.IsJohnDoeMachine);
-
-          // Log.LogInformation($"Selecting machine: PersistedTargetMachineID={task.PersistedTargetMachineID}, IsJohnDoe?:{task.IntermediaryTargetMachine.IsJohnDoeMachine}, Result: {machineFromDatamodel}");
-
-          if (machineFromDatamodel == null)
-          {
-            machineFromDatamodel = siteModelFromDatamodel.Machines.CreateNew(machineFromTask.Name,
-              machineFromTask.MachineHardwareID,
-              machineFromTask.MachineType,
-              machineFromTask.DeviceType,
-              machineFromTask.IsJohnDoeMachine,
-              machineFromTask.ID);
-            machineFromDatamodel.Assign(machineFromTask);
-          }
-
-          // Update the internal name of the machine with the machine name from the TAG file
-          if (machineFromTask.Name != "" && machineFromDatamodel.Name != machineFromTask.Name)
-            machineFromDatamodel.Name = machineFromTask.Name;
-
-          // Update the internal type of the machine with the machine type from the TAG file
-          // if the existing internal machine type is zero then
-          if (machineFromTask.MachineType != 0 && machineFromDatamodel.MachineType == 0)
-            machineFromDatamodel.MachineType = machineFromTask.MachineType;
-
-          // If the machine target values can't be found then create them
-          var siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
-
-          if (siteModelMachineTargetValues == null)
-            siteModelFromDatamodel.MachinesTargetValues.Add(new ProductionEventLists(siteModelFromDatamodel, machineFromDatamodel.InternalSiteModelMachineIndex));
+          machineFromDatamodel = siteModelFromDatamodel.Machines.CreateNew(machineFromTask.Name,
+            machineFromTask.MachineHardwareID,
+            machineFromTask.MachineType,
+            machineFromTask.DeviceType,
+            machineFromTask.IsJohnDoeMachine,
+            machineFromTask.ID);
+          machineFromDatamodel.Assign(machineFromTask);
         }
+
+        // Update the internal name of the machine with the machine name from the TAG file
+        if (machineFromTask.Name != "" && machineFromDatamodel.Name != machineFromTask.Name)
+          machineFromDatamodel.Name = machineFromTask.Name;
+
+        // Update the internal type of the machine with the machine type from the TAG file
+        // if the existing internal machine type is zero then
+        if (machineFromTask.MachineType != 0 && machineFromDatamodel.MachineType == 0)
+          machineFromDatamodel.MachineType = machineFromTask.MachineType;
+
+        // If the machine target values can't be found then create them
+        var siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
+
+        if (siteModelMachineTargetValues == null)
+          siteModelFromDatamodel.MachinesTargetValues.Add(new ProductionEventLists(siteModelFromDatamodel, machineFromDatamodel.InternalSiteModelMachineIndex));
       }
     }
 
@@ -311,26 +308,23 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         // Integrate the machine events into the main site model. This requires the
         // site model interlock as aspects of the site model state (machine) are being changed.
-        lock (siteModelFromDatamodel)
+        if (siteModelMachineTargetValues != null)
         {
-          if (siteModelMachineTargetValues != null)
+          //Update machine last known value (events) from integrated model before saving
+          var comparison = machineFromDatamodel.LastKnownPositionTimeStamp.CompareTo(machineFromDatamodel.LastKnownPositionTimeStamp);
+          if (comparison == -1)
           {
-            //Update machine last known value (events) from integrated model before saving
-            var comparison = machineFromDatamodel.LastKnownPositionTimeStamp.CompareTo(machineFromDatamodel.LastKnownPositionTimeStamp);
-            if (comparison == -1)
-            {
-              machineFromDatamodel.LastKnownDesignName = siteModelFromDatamodel.SiteModelMachineDesigns[siteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
-              machineFromDatamodel.LastKnownLayerId = siteModelMachineTargetValues.LayerIDStateEvents.Count() > 0 ? siteModelMachineTargetValues.LayerIDStateEvents.LastStateValue() : (ushort)0;
-              machineFromDatamodel.LastKnownPositionTimeStamp = machineFromDatamodel.LastKnownPositionTimeStamp;
-              machineFromDatamodel.LastKnownX = machineFromDatamodel.LastKnownX;
-              machineFromDatamodel.LastKnownY = machineFromDatamodel.LastKnownY;
-            }
+            machineFromDatamodel.LastKnownDesignName = siteModelFromDatamodel.SiteModelMachineDesigns[siteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
+            machineFromDatamodel.LastKnownLayerId = siteModelMachineTargetValues.LayerIDStateEvents.Count() > 0 ? siteModelMachineTargetValues.LayerIDStateEvents.LastStateValue() : (ushort)0;
+            machineFromDatamodel.LastKnownPositionTimeStamp = machineFromDatamodel.LastKnownPositionTimeStamp;
+            machineFromDatamodel.LastKnownX = machineFromDatamodel.LastKnownX;
+            machineFromDatamodel.LastKnownY = machineFromDatamodel.LastKnownY;
           }
-          else
-          {
-            _log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
-            return false;
-          }
+        }
+        else
+        {
+          _log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
+          return false;
         }
 
         // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
