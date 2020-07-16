@@ -141,9 +141,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       if (fileList.Count > 0)
       {
-        var alignmentGeometries = new List<AlignmentGeometry>();
+        return await Task.Run(async () => {
+          var alignmentGeometries = new List<AlignmentGeometry>();
 
-        await Task.Run(async () => {
           foreach (var file in fileList)
           {
             if (Guid.TryParse(file.ImportedFileUid, out var designUid))
@@ -157,9 +157,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
               alignmentGeometries.Add(result.AlignmentGeometry);
             }
           }
-        });
 
-        return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());
+          return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());
+        });   
       }
 
       return NoContent();
