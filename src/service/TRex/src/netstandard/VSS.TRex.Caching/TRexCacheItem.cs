@@ -17,8 +17,8 @@ namespace VSS.TRex.Caching
 
     /// <summary>
     /// The token assigned to this item by the cache item store
-    /// </summary>   
-    public long MRUEpochToken; // No get/set semantics on purpose as this is a struct
+    /// </summary>
+    public long MRUEpochToken;
 
     /// <summary>
     /// The time at which the cached item is no longer valid and will not be returned on a Get() call
@@ -85,20 +85,20 @@ namespace VSS.TRex.Caching
 
     /// <summary>
     /// Removes this item from the context it is associated with by setting the index reference in the MRU list
-    /// held in the subgrid tree to 0
+    /// held in the sub grid tree to 0
+    /// Note: This call operates within a write lock obtained from the sub grid tree in an ancestor calling context
     /// </summary>
-    public void RemoveFromContext()
+    public void RemoveFromContextNoLock()
     {
-      Context?.RemoveFromContextTokensOnly(Item);
+      Context?.RemoveFromContextTokensOnlyNoLock(Item);
     }
 
     /// <summary>
     /// Sets the valid state of the item to true, returning the previous validity state 
     /// </summary>
-    /// <returns></returns>
     public bool Validate()
     {
-      bool result = Valid;
+      var result = Valid;
       Valid = true;
       return result;
     }
@@ -106,10 +106,9 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// Sets the valid state of the item to false, returning the previous validity state 
     /// </summary>
-    /// <returns></returns>
     public bool Invalidate()
     {
-      bool result = Valid;
+      var result = Valid;
       Valid = false;
       return result;
     }

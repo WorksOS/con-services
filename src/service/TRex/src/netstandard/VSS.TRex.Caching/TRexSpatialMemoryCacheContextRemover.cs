@@ -34,7 +34,7 @@ namespace VSS.TRex.Caching
         }
         catch (Exception e)
         {
-          log.LogError(e, "Exception thrown during RemoveContextsMarkedForRemoval()");
+          log.LogError(e, $"Exception thrown during {nameof(PerformRemovalOperation)}");
         }
 
         if (!_cancelled)
