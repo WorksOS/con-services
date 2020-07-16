@@ -44,6 +44,8 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Designs.GridFabric.Events;
 using CoreX.Interfaces;
 using CoreX.Wrapper;
+using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 
 namespace VSS.TRex.Server.Reports
 {
@@ -104,7 +106,6 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
-        .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
         .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
