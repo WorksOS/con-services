@@ -6,11 +6,12 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.Tests.BinarizableSerialization;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.Common
 {
-  public class BinarizableSerializerTests
+  public class BinarizableSerializerTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Creation()
@@ -38,8 +39,6 @@ namespace VSS.TRex.Tests.Common
 
       bs.WriteBinary(new TRexException("An Exception"), writer.Object);
 
-      //act.Should().Throw<NotImplementedException>();
-
       var reader = new Mock<TestBinaryReader>(writer.Object._stream.BaseStream as MemoryStream);
       reader.Setup(x => x.ReadObject<Exception>("Exception")).Returns(new Exception("An exception"));
 
@@ -47,7 +46,6 @@ namespace VSS.TRex.Tests.Common
 
       bs.ReadBinary(e, reader.Object);
       e.Message.Should().Be("An exception");
-      //act.Should().Throw<NotImplementedException>();
     }
 
     [Fact]
