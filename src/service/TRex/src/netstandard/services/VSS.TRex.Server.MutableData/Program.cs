@@ -49,6 +49,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -75,8 +76,12 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Build()
         .Add(x => x.AddServiceDiscovery())
+        
         .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>())
+        .Add(x => x.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>())
+        .Add(x => x.AddTransient<ITPaasProxy, TPaasProxy>())
         .Add(x => x.AddSingleton<ICwsDeviceGatewayClient, CwsDeviceGatewayClient>())
+
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))

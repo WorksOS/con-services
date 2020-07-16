@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;

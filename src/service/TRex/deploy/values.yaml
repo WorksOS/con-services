@@ -93,6 +93,7 @@ mutableData:
     className: aws-efs
     
   environment:
+    enableDeviceGateway: false
     enableTfa: true
     enableTagFileArchiving: true
     enableTagFileArchivingMetadata: false

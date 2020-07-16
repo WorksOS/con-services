@@ -34,7 +34,7 @@ namespace CCSS.CWS.Client.MockClients
       {
         DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
         Latitude = 89.3, Longitude = 189.1,
-        AssetType = CWSDeviceTypeEnum.EC520,
+        AssetType = "grader",
         AssetSerialNumber = serialNumber,
         DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
         LastReportedUtc = DateTime.UtcNow.AddDays(-1),
@@ -54,7 +54,7 @@ namespace CCSS.CWS.Client.MockClients
           {
             DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
             Latitude = 89.3, Longitude = 189.1,
-            AssetType = CWSDeviceTypeEnum.EC520,
+            AssetType = "excavator",
             AssetSerialNumber = serialNumber,
             DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
             LastReportedUtc = DateTime.UtcNow.AddDays(-1),

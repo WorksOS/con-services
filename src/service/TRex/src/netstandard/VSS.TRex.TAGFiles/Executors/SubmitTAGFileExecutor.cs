@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
@@ -22,6 +19,7 @@ using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
@@ -40,7 +38,9 @@ namespace VSS.TRex.TAGFiles.Executors
     private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<Func<ITAGFileBufferQueue>>()();
 
     private bool OutputInformationalRequestLogging = true;
-    private static readonly bool isDeviceGatewayEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_DEVICE_GATEWAY", Consts.ENABLE_DEVICE_GATEWAY);
+    private static readonly bool _isDeviceGatewayEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_DEVICE_GATEWAY", Consts.ENABLE_DEVICE_GATEWAY);
+    private static readonly ITPaaSApplicationAuthentication _tPaaSApplicationAuthentication = DIContext.Obtain<ITPaaSApplicationAuthentication>();
+
 
     /// <summary>
     /// Receive a TAG file to be processed, validate TAG File Authorization for the file, and add it to the 
@@ -93,7 +93,7 @@ namespace VSS.TRex.TAGFiles.Executors
           
           if (result.Code == (int) TRexTagFileResultCode.Valid)
           {
-            if (isDeviceGatewayEnabled)
+            if (_isDeviceGatewayEnabled)
               SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
 
             result = await TagfileValidator.ValidSubmission(td, tagFilePreScan);
@@ -180,7 +180,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// Send devices lastKnownStatus to cws deviceGateway aka connected site
     ///     Don't need to await as this process should be fire and forget
     /// 
-    private void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
+    public static void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
     {
       if (tagFilePreScan.PlatformType == MachineControlPlatformType.EC520 ||
            tagFilePreScan.PlatformType == MachineControlPlatformType.UNKNOWN)
@@ -209,16 +209,14 @@ namespace VSS.TRex.TAGFiles.Executors
             Height = tagFilePreScan.SeedHeight,
             AssetSerialNumber = tagFilePreScan.HardwareID,
             AssetNickname = tagFilePreScan.MachineID,
-            AppName = "GCS900",
             AppVersion = tagFilePreScan.ApplicationVersion,
             DesignName = tagFilePreScan.DesignName,
-            
-            // todoJeannie  should machine type be stored, where? cws assetType is actually the PlatformType e.g. 'EC520' NOT 'gradeer'
-            //AssetType = tagFilePreScan.MachineType.ToString(),
 
-            // In future, may need to support tablet or other.
-            // As at 2020_07-1 Marine dredgers are configured as CB430s
-            AssetType = (CWSDeviceTypeEnum) Enum.Parse(typeof(CWSDeviceTypeEnum), tagFilePreScan.PlatformType.ToString()),
+
+            // PlatformType is only passed as part of DeviceName {platformType}-{assetSerialNumber}
+            // As at 2020_07-1 Marine dredgers: CutterSuctionDredge = 70, BargeMountedExcavator = 71
+            //                 are configured in cws as CBs
+            AssetType = tagFilePreScan.MachineType.ToString(),
         
             Devices = string.IsNullOrWhiteSpace(tagFilePreScan.RadioSerial) ? null :
               new List<ConnectedDevice>
@@ -231,7 +229,7 @@ namespace VSS.TRex.TAGFiles.Executors
               }
           };
           var cwsDeviceGatewayClient = DIContext.Obtain<ICwsDeviceGatewayClient>();
-          var customHeaders = new HeaderDictionary(); // todoJeannie oooo will this take app token like tfa does to call ProjectSvc?
+          var customHeaders = _tPaaSApplicationAuthentication.CustomHeaders();
 
           _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Posting deviceLks to cws deviceGateway: {JsonConvert.SerializeObject(deviceLksModel)}");
 
@@ -241,44 +239,11 @@ namespace VSS.TRex.TAGFiles.Executors
             {
               if (task.IsFaulted)
               {
-                _log.LogError(task.Exception, $"{nameof(SendDeviceStatusToDeviceGateway)}: Error Sending to Connected Site", null);
+                _log.LogError(task.Exception, $"#Progress# {nameof(SendDeviceStatusToDeviceGateway)}: Error Sending to Connected Site", null);
               }
             }, TaskContinuationOptions.OnlyOnFaulted);
         }
       }
-      /*
-
-       var response = await client.PostMessage(message);
-
-              if (response.IsSuccessStatusCode)
-              {
-                result = ConnectedSiteMessageResult.Create(0, await response.Content.ReadAsStringAsync());
-              }
-              else
-              {
-                result = ConnectedSiteMessageResult.Create((int)response.StatusCode, await response.Content.ReadAsStringAsync());
-              }
-
-
-      //First submit tag file to connected site gateway todoJeannie
-      // Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
-#pragma warning disable 4014
-      RequestExecutorContainerFactory
-        .Build<TagFileConnectedSiteSubmissionExecutor>(_logger,
-#if RAPTOR
-          _raptorClient, 
-          _tagProcessor, 
-#endif
-          _configStore, transferProxyFactory:_transferProxyFactory, tRexTagFileProxy:_tRexTagFileProxy, tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
-        .ProcessAsync(request).ContinueWith((task) =>
-        {
-          if (task.IsFaulted)
-          {
-            _log.LogError(task.Exception, $"{nameof(PostTagFileNonDirectSubmission)}: Error Sending to Connected Site", null);
-          }
-        }, TaskContinuationOptions.OnlyOnFaulted);
-#pragma warning restore 4014
-       */
     }
   }
 }
