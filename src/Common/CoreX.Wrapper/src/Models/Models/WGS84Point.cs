@@ -13,6 +13,6 @@
       Height = height;
     }
 
-    public override string ToString() => $"Lat: {Lat}, Lon: {Lon}, Height: {Height} | ";
+    public override string ToString() => $"Lat: {Lat}, Lon: {Lon}, Height: {Height}";
   }
 }

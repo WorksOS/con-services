@@ -20,6 +20,6 @@
       Z = NULL_DOUBLE;
     }
 
-    public override string ToString() => $"X: {X}, Y: {Y}, Z: {Z} | ";
+    public override string ToString() => $"X: {X}, Y: {Y}, Z: {Z}";
   }
 }

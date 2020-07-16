@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;
@@ -18,20 +19,37 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Fact]
+    public void GetCSIBFromDCFileContent_should_throw_When_DC_file_hasnt_been_encoded_correctly()
+    {
+      var base64EncodedDCFileWithNoLineEndings = "MDBOTVNDIFYxMC03MCAgICAgICAgICAgMjktMDUtMjAxOSAwNDowNTIzMTExMTEwTk1Kb2IgTmFtZSAgICAgICAgMTIxMTExNzhOTTExMTNOTUNvcmVYIDIuMDY1S0kyMDkyNTYwNC40NzQxOTEzMjk4LjI1NzIyMjkzMjg5NUQ1S0kwLjAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAuMDAwMDAwMDAwMDAwMDAxLjAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAuMDAwMDAwMDAwMDAwMDA2NEtJMzM2LjIwNjU1NTM3MTAwMDAgLSAxMTUuMDI2MjY3ODE4MDAwLjAwMDAwMDAwMDAwMDAwMzY3My43MDgwMDAwMDM3MzcxOTguMDgxMDAwMDA3MzEwLjAwMDAwMDAwMDAwMDAwMS4wMDAwODY3MjMwMDAwMDAuMDAwMDAwMDAwMDAwMDAwLjAwMDAwMDAwMDAwMDAwNDlLSTMyMDkyNTYwNC40NzQxNjY3Mjk4LjI1NzIyMzU2MDAwMDAuMDAwMDAwMDAwMDAwMDAwLjAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAuMDAwMDAwMDAwMDAwMDAwLjAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAuMDAwMDAwMDAwMDAwMDA1MEtJMTE5OC43OTczMzkwOTE5MDI0OTEuNDgyODkxNTQ0MzEwLjAwMjY2MDkwOTMyMTgyMC4wMDAxMzcxNjAyNzQzMjAuMDAwMDMzMzAwODI5NzYxLjAwMDAxMzAxMzAwMDAwODFLSTEwLjAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAuMDAwMDAwMDAwMDAwMDAwLjAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMEM4S0k0UHJvamVjdGlvbiBmcm9tIERhdGEgQ29sbGVjdG9yICBab25lIGZyb20gRGF0YSBDb2xsZWN0b3IoV0dTIDg0KQ==";
+
+      var ex = Record.Exception(() => CoreX.GetCSIBFromDCFileContent(base64EncodedDCFileWithNoLineEndings));
+
+      ex.Message.Should().StartWith("GetCSIBFromDCFileContent: Get CSIB from file content failed, error cecDCParseLineNotEndingWithLF");
+    }
+
+    [Fact]
+    [Description("Tests that a CS file read from disk can be passed to CoreX to return a valid CSIB")]
     public void GetCSIBFromDCFile_should_return_expected_CSIB_string()
     {
-      var csibStr = CoreX.GetCSIBFromDCFile(DCFile.GetFilePath(DCFile.UTM_32_NN1954_08));
+      var csibStr = CoreX.GetCSIBFromDCFile(DCFile.GetFilePath(DCFile.DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST));
 
+      // Due to encoding differences between Windows and Linux it's not possible to expect the two to encode to the same result.
+      // We only check content here; validity is exercised in the base fixture where it loads a DC file from disk to get the CSIB.
       csibStr.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
+    [Description("Tests that a CS file base64 encoded can be passed to CoreX to return a valid CSIB")]
     public void GetCSIBFromDCFileContent_should_decode_base64_DC_file()
     {
-      var csibStr = CoreX.GetCSIBFromDCFileContent(TestConsts.DIMENSIONS_2012_DC_FILE_BASE64);
+      var csibStr = CoreX.GetCSIBFromDCFileContent(TestConsts.DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST);
 
+      // Due to encoding differences between Windows and Linux it's not possible to expect the two to encode to the same result.
+      // We only check content here; validity is exercised in the base fixture where it loads a DC file from disk to get the CSIB.
       csibStr.Should().NotBeNullOrEmpty();
     }
+
 
     [Fact]
     public void GeodeticX_geoCreateTransformer_should_fail_When_CSIB_is_invalid()

@@ -69,8 +69,8 @@ namespace CoreX.Wrapper.Extensions
       {
         result[i] = new LLH
         {
-          Longitude = data[i].X,
           Latitude = data[i].Y,
+          Longitude = data[i].X,
           Height = data[i].Z
         };
       }
@@ -83,8 +83,8 @@ namespace CoreX.Wrapper.Extensions
     /// </summary>
     public static NEE ToNEE(this XYZ data) => new NEE
     {
-      East = data.X,
       North = data.Y,
+      East = data.X,
       Elevation = data.Z
     };
 
@@ -99,8 +99,8 @@ namespace CoreX.Wrapper.Extensions
       {
         result[i] = new NEE
         {
-          East = data[i].X,
           North = data[i].Y,
+          East = data[i].X,
           Elevation = data[i].Z
         };
       }

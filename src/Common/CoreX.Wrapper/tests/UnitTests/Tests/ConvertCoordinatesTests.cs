@@ -207,13 +207,5 @@ namespace CoreX.Wrapper.UnitTests.Tests
       neeCoords[1].X.Should().BeApproximately(2757.6347846893877, GRID_CM_TOLERANCE);
       neeCoords[1].Z.Should().BeApproximately(69.1538811614891, GRID_CM_TOLERANCE);
     }
-
-    [Fact]
-    public void CoordinateService_ImportCSIBFromDC()
-    {
-      var csib = _convertCoordinates.DCFileToCSIB(DCFile.GetFilePath(DCFile.BOOTCAMP_2012));
-
-      csib.Should().Be(_csib);
-    }
   }
 }
