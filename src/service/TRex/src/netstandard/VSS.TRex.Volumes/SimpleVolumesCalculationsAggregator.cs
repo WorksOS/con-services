@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
+using Serilog;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities;
@@ -26,7 +27,7 @@ namespace VSS.TRex.Volumes
   /// </summary>
   public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>
   {
-    private static readonly ILogger _log = Logging.Logger.CreateLogger<SimpleVolumesCalculationsAggregator>();
+    private static readonly Microsoft.Extensions.Logging.ILogger _log = Logging.Logger.CreateLogger<SimpleVolumesCalculationsAggregator>();
 
     /// <summary>
     /// Defines a sub grid full of null values to run through the volumes engine in cases when 
@@ -406,7 +407,14 @@ namespace VSS.TRex.Volumes
           }
         }
 
-        await Task.WhenAll(taskList);
+        try
+        {
+          await Task.WhenAll(taskList);
+        }
+        catch (Exception e)
+        {
+          _log.LogError(e, "Exception: SimpleVolumesCalculationsAggregator: WhenAll() failed");
+        }
       }
       finally
       {
