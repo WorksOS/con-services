@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MySqlX.XDevAPI.Common;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -11,6 +14,7 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Designs;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
@@ -124,22 +128,39 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("alignment/master/geometries")]
     [HttpGet]
-    public async Task<ContractExecutionResult> GetAlignmentGeometriesForRendering(
+    public async Task<IActionResult> GetAlignmentGeometriesForRendering(
       [FromQuery] Guid projectUid,
       [FromQuery] bool convertArcsToChords,
       [FromQuery] double arcChordTolerance)
     {
       log.LogInformation($"{nameof(GetAlignmentGeometriesForRendering)}: " + Request.QueryString);
 
-      var request = new AlignmentGeometryRequest(projectUid, convertArcsToChords, arcChordTolerance);
-
-      request.Validate();
-
       var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), GetUserId(), Request.Headers.GetCustomHeaders());
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.Alignment && f.IsActivated).ToList();
-      return await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
-             configStore: configStore, fileList: fileList, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
+
+      if (fileList.Count > 0)
+      {
+        var alignmentGeometries = new List<AlignmentGeometry>();
+
+        foreach (var file in fileList)
+        {
+          if (Guid.TryParse(file.ImportedFileUid, out var designUid))
+          {
+            var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance, file.Name);
+            request.Validate();
+
+            var result = await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
+             configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request) as AlignmentGeometryResult;
+
+            alignmentGeometries.Add(result.AlignmentGeometry);
+          }
+        }
+
+        return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());
+      }
+
+      return NoContent();
     }
 
     /// <summary>
@@ -148,6 +169,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="designUid"></param>
+    /// <param name="fileName"></param>
     /// <param name="convertArcsToChords"></param>
     /// <param name="arcChordTolerance"></param>
     /// <returns></returns>
@@ -163,7 +185,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: " + Request.QueryString);
 
-      var request = new AlignmentGeometryRequest(projectUid, convertArcsToChords, arcChordTolerance, fileName, designUid);
+      var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance, fileName);
 
       request.Validate();
 

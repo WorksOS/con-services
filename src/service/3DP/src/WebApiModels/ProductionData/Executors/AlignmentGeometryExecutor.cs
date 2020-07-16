@@ -28,31 +28,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var convertArcsToChords = request.ConvertArcsToChords.ToString();
         var arcChordTolerance = request.ArcChordTolerance.ToString(CultureInfo.InvariantCulture);
 
-        const string LOG_MSG = "Getting an alignment geometry for file";
+        log.LogDebug($"Getting an alignment geometry for file ID: {request.DesignUid}");
 
-        if (request.DesignUid == null)
-        {
-          var alignmentGeometries = new List<AlignmentGeometry>();
-
-          if (fileList?.Count > 0)
-          {
-            for (var i = 0; i < fileList.Count; i++)
-            {
-              log.LogDebug($"{LOG_MSG}: {fileList[i].Name}");
-              
-              var geometryResult = await ProcessRequest(siteModelId, fileList[i].ImportedFileUid, convertArcsToChords, arcChordTolerance, fileList[i].Name);
-              alignmentGeometries.Add(geometryResult.AlignmentGeometry);
-            }
-          }
-
-          return new AlignmentGeometriesResult(ContractExecutionStatesEnum.ExecutedSuccessfully, alignmentGeometries.ToArray());
-        }
-        else
-        {
-          log.LogDebug($"{LOG_MSG} ID: {request.DesignUid}");
-
-          return await ProcessRequest(siteModelId, request.DesignUid.ToString(), convertArcsToChords, arcChordTolerance, request.FileName);
-        }
+        return await ProcessRequest(siteModelId, request.DesignUid.ToString(), convertArcsToChords, arcChordTolerance, request.FileName);
       }
       finally
       {

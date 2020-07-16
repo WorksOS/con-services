@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
 
-      var request = new AlignmentGeometryRequest(projectUid, false, 0.0, "", designUid);
+      var request = new AlignmentGeometryRequest(projectUid, designUid, false, 0.0);
       var expectedResult = new AlignmentGeometryResult
       (
         0,
@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectUid = Guid.NewGuid();
       var designUid = Guid.NewGuid();
 
-      var request = new AlignmentGeometryRequest(projectUid, false, 0.0, "", designUid);
+      var request = new AlignmentGeometryRequest(projectUid, designUid, false, 0.0);
       AlignmentGeometryResult expectedResult = null;
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
