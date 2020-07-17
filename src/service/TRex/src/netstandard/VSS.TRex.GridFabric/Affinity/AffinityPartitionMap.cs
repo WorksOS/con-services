@@ -108,7 +108,7 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public bool Invoke(CacheRebalancingEvent evt)
     {
-      if (evt.CacheName.Equals(Cache.Name)))
+      if (evt.CacheName.Equals(Cache.Name))
       {
         // Assign primary and backup partition maps to null to force them to be recalculated
         _primaryPartitions = null;
