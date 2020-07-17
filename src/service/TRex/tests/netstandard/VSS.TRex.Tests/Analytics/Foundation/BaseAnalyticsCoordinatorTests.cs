@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.Analytics.Foundation
       // This exception should be trapped and a null response returned now that the base analytics coordinator manages thes exceptions
       Func<Task<PassCountStatisticsResponse>> act = async () => await coordinator.ExecuteAsync(new PassCountStatisticsArgument());
 
-      act.Should().BeNull();
+      act.Invoke().Should().BeNull();
 //      if (DIContext.DefaultIsRequired)
 //        act.Should().Throw<InvalidOperationException>().WithMessage("No service for type 'VSS.TRex.SiteModels.Interfaces.ISiteModels' has been registered.");
 //      else
