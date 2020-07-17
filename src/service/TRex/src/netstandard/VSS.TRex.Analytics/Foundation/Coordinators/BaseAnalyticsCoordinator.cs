@@ -19,7 +19,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
   public abstract class BaseAnalyticsCoordinator<TArgument, TResponse> : IBaseAnalyticsCoordinator<TArgument, TResponse> where TArgument : BaseApplicationServiceRequestArgument
       where TResponse : BaseAnalyticsResponse, new()
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// The SiteModel context for computing the result of the request
@@ -34,34 +34,44 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
     /// <summary>
     /// Execution method for the derived coordinator to override
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public async Task<TResponse> ExecuteAsync(TArgument arg)
     {
-      Log.LogInformation("In: Executing Coordination logic");
+      _log.LogInformation("In: Executing Coordination logic");
+      TResponse response = default;
 
-      var response = new TResponse();
-      RequestDescriptor = Guid.NewGuid();
-      SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
-
-      if (SiteModel == null)
+      try
       {
-        response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
-        return response;
+        response = new TResponse();
+
+        RequestDescriptor = Guid.NewGuid();
+        SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+
+        if (SiteModel == null)
+        {
+          response.ResultStatus = RequestErrorStatus.NoSuchDataModel;
+          return response;
+        }
+
+        using var aggregator = ConstructAggregator(arg);
+        var computor = ConstructComputor(arg, aggregator);
+
+        if (await computor.ComputeAnalytics(response))
+        {
+          // Instruct the aggregator to perform any finalisation logic before returning results
+          aggregator.Finalise();
+
+          ReadOutResults(aggregator, response);
+        }
       }
-
-      using var aggregator = ConstructAggregator(arg);
-      var computor = ConstructComputor(arg, aggregator);
-
-      if (await computor.ComputeAnalytics(response))
+      catch (Exception e)
       {
-        // Instruct the aggregator to perform any finalisation logic before returning results
-        aggregator.Finalise();
-
-        ReadOutResults(aggregator, response);
+        _log.LogError(e, "Exception occurred while coordinating analytics function");
+        return default;
       }
-
-      Log.LogInformation("Out: Executing Coordination logic");
+      finally
+      {
+        _log.LogInformation("Out: Executing Coordination logic");
+      }
 
       return response;
     }
