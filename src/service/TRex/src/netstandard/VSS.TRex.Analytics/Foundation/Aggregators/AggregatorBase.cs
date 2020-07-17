@@ -9,8 +9,10 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
   /// Base class used by all analytics aggregators supporting functions such as pass count summary/details, cut/fill summary, speed summary/details etc
   /// where the analytics are calculated at the cluster compute layer and reduced at the application service layer.
   /// </summary>
-  public abstract class AggregatorBase : ISubGridRequestsAggregator
+  public abstract class AggregatorBase : ISubGridRequestsAggregator, IDisposable
   {
+    private bool _disposedValue;
+
     /// <summary>
     /// The project the aggregation is operating on
     /// </summary>
@@ -43,6 +45,24 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
     /// </summary>
     public AggregatorBase()
     {
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!_disposedValue)
+      {
+        if (disposing)
+        {
+        }
+
+        _disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: true);
     }
   }
 }

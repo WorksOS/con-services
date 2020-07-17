@@ -52,7 +52,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
           return response;
         }
 
-        var aggregator = ConstructAggregator(arg);
+        using var aggregator = ConstructAggregator(arg);
         var computor = ConstructComputor(arg, aggregator);
 
         if (await computor.ComputeAnalytics(response))
