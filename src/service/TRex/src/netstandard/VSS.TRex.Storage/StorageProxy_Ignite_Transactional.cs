@@ -58,7 +58,7 @@ namespace VSS.TRex.Storage
         }
       }
 
-      var commitTasks = CommittableCaches.Select(x => Task.Factory.Run(() => LocalCommit(x))).ToArray();
+      var commitTasks = CommittableCaches.Select(x => Task.Run(() => LocalCommit(x))).ToArray();
       var commitResults = commitTasks.WhenAll();
       commitResults.WaitAndUnwrapException();
 
