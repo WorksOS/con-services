@@ -55,7 +55,6 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     {
       var aggregator = _getMDPAggregator(Arg_Details);
 
-      Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg_Details.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
 
@@ -70,7 +69,6 @@ namespace VSS.TRex.Tests.Analytics.MDPStatistics
     {
       var aggregator = _getMDPAggregator(Arg_Summary);
 
-      Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg_Summary.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
       Assert.True(aggregator.OverrideMachineMDP == Arg_Summary.Overrides.OverrideMachineMDP, "Invalid aggregator value for OverrideMachineMDP.");
