@@ -19,6 +19,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Profiling;
@@ -125,10 +126,10 @@ namespace VSS.TRex.Tests.TestFixtures
       var _tagFiles = tagFiles.ToList();
 
       // Convert TAG files using TAGFileConverters into mini-site models
-      var converters = _tagFiles.Select(x => DITagFileFixture.ReadTAGFileFullPath(x, treatAsJohnDoeMachines)).ToArray();
+      var converters = _tagFiles.Select(x => ReadTAGFileFullPath(x, treatAsJohnDoeMachines)).ToArray();
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
+      var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(NewSiteModelGuid, true);
       var preTargetSiteModelId = targetSiteModel.ID;
 
       // Switch to mutable storage representation to allow creation of content in the site model
@@ -137,16 +138,25 @@ namespace VSS.TRex.Tests.TestFixtures
       targetSiteModel.PrimaryStorageProxy.Mutability.Should().Be(StorageMutability.Mutable);
       targetSiteModel.PrimaryStorageProxy.ImmutableProxy.Should().NotBeNull();
 
-      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, treatAsJohnDoeMachines, Guid.NewGuid());
+      IMachine targetMachine = null;
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
 
-      foreach (var c in converters)
+      var currentMachineName = string.Empty;
+      for (var i=0; i < converters.Length; i++)
       {
-        c.Machine.ID = targetMachine.ID;
-        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,
-          c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
+        //One converter per tag file. See if machine changed if using real tag files.
+        var parts = _tagFiles[i].Split("--");
+        var tagMachineName = parts.Length == 3 ? parts[1] : "Test Machine";
+        if (string.Compare(currentMachineName, tagMachineName, StringComparison.OrdinalIgnoreCase) != 0)
+        {
+          currentMachineName = tagMachineName;
+          targetMachine = targetSiteModel.Machines.CreateNew(currentMachineName, "", MachineType.Dozer, DeviceTypeEnum.SNM940, treatAsJohnDoeMachines, Guid.NewGuid());
+        }
+        converters[i].Machine.ID = targetMachine.ID;
+        integrator.AddTaskToProcessList(converters[i].SiteModel, targetSiteModel.ID, converters[i].Machines,
+          converters[i].SiteModelGridAggregator, converters[i].ProcessedCellPassCount, converters[i].MachinesTargetValueChangesAggregator);
       }
 
       // Construct an integration worker and ask it to perform the integration
