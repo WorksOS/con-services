@@ -22,7 +22,6 @@ namespace VSS.TRex.Analytics.PassCountStatistics
     /// <returns></returns>
     public override AggregatorBase ConstructAggregator(PassCountStatisticsArgument argument) => new PassCountStatisticsAggregator()
     {
-      RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.CellSize,
       OverrideTargetPassCount = argument.Overrides.OverrideTargetPassCount,

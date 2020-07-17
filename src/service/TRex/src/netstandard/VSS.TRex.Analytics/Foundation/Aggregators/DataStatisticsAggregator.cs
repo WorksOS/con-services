@@ -11,14 +11,6 @@ namespace VSS.TRex.Analytics.Foundation.Aggregators
   public class DataStatisticsAggregator : AggregatorBase
   {
     /// <summary>
-    /// Aggregator state is now single threaded in the context of processing sub grid
-    /// information into it as the processing threads access independent sub-state aggregators which
-    /// are aggregated together to form the final aggregation result. However, in contexts that do support
-    /// threaded access to this structure the FRequiresSerialisation flag should be set
-    /// </summary>
-    public bool RequiresSerialisation { get; set; }
-
-    /// <summary>
     /// Details data values.
     /// </summary>
     public int[] DetailsDataValues { get; set; }

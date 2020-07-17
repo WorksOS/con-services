@@ -17,14 +17,6 @@ namespace VSS.TRex.Analytics.ElevationStatistics
   public class ElevationStatisticsAggregator : AggregatorBase
   {
     /// <summary>
-    /// Aggregator state is now single threaded in the context of processing sub grid
-    /// information into it as the processing threads access independent sub-state aggregators which
-    /// are aggregated together to form the final aggregation result. However, in contexts that do support
-    /// threaded access to this structure the FRequiresSerialisation flag should be set
-    /// </summary>
-    public bool RequiresSerialisation { get; set; }
-
-    /// <summary>
     /// The minimum elevation value of the site model. 
     /// </summary>
     public double MinElevation { get; set; }
@@ -74,8 +66,6 @@ namespace VSS.TRex.Analytics.ElevationStatistics
       MaxElevation = Consts.MIN_ELEVATION;
 
       BoundingExtents.SetInverted();
-
-      RequiresSerialisation = false;
     }
 
     /// <summary>

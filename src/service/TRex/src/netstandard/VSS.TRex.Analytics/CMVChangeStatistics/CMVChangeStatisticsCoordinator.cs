@@ -15,7 +15,6 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
   {
     public override AggregatorBase ConstructAggregator(CMVChangeStatisticsArgument argument) => new CMVChangeStatisticsAggregator
     {
-      RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.CellSize,
       CMVChangeDetailsDataValues = argument.CMVChangeDetailsDataValues,
