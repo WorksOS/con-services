@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
       response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2) response).TileBitmapData.Should().NotBeNull();
+      ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
     }
 
     [Theory]
@@ -115,7 +115,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       AddClusterComputeGridRouting();
 
       var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
-      
+
       var request = new TileRenderRequest();
       var filter = new CellPassAttributeFilter() { MachinesList = new[] { siteModel.Machines[0].ID }, LayerID = 1 };
       var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode, null, filter));
@@ -241,19 +241,19 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var tileExtents = siteModel.Grid.GetCellExtents(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
 
       var request = new TileRenderRequest();
-      var arg =  new TileRenderRequestArgument(siteModel.ID, displayMode, null, tileExtents, true, 256, 256, new FilterSet(new CombinedFilter()), new DesignOffset());
+      var arg = new TileRenderRequestArgument(siteModel.ID, displayMode, null, tileExtents, true, 256, 256, new FilterSet(new CombinedFilter()), new DesignOffset());
 
       var startTime = DateTime.UtcNow;
       var response = await request.ExecuteAsync(arg);
       var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
       // 30 seconds should be ample time, even on a slow computer - but well under the 2 minute timeout which is enforced by the pipeline processor.
-      duration.Should().BeLessThan(30 * 1000, "Empty tile should return quickly - see BUG# 86870"); 
+      duration.Should().BeLessThan(30 * 1000, "Empty tile should return quickly - see BUG# 86870");
 
       // And the tile should NOT be null
       CheckSimpleRenderTileResponse(response, displayMode);
 
-//      File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //      File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
     }
 
     [Theory]
@@ -333,6 +333,25 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       //The tile for 0 offset is red, for -25 it is blue
       //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+    }
+
+    [Fact]
+    public async Task Test_TileRenderRequest_SurveyedSurface_ElevationOnly()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructFlatSurveyedSurfaceEncompassingExtent(ref siteModel,
+        new TRex.Geometry.BoundingWorldExtent3D(0, 0, 100, 100), 100, DateTime.UtcNow);
+      var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
+
+      var request = new TileRenderRequest();
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.Height, palette);
+
+      var response = await request.ExecuteAsync(arg);
+      CheckSimpleRenderTileResponse(response);
     }
   }
 }
