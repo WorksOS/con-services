@@ -396,13 +396,8 @@ namespace VSS.TRex.Tests.TestFixtures
       return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
     }
 
-    /// <summary>
-    /// Constructs a flat design surface comprising two triangles covering the events of a provided site model.
-    /// </summary>
-    public static Guid ConstructFlatTTMDesignEncompassingSiteModel(ref ISiteModel siteModel, float elevation)
+    private static TrimbleTINModel Construct2TriangleSurfaceOverExtent(BoundingWorldExtent3D extent, double elevation)
     {
-      // Make a mutable TIN containing two as below and register it to the site model
-      var extent = siteModel.SiteModelExtent;
       var tin = new TrimbleTINModel();
       tin.Vertices.InitPointSearch(extent.MinX - 100, extent.MinY - 100, extent.MaxX + 100, extent.MaxX + 100, 6);
 
@@ -416,11 +411,51 @@ namespace VSS.TRex.Tests.TestFixtures
         tin.Vertices.AddPoint(extent.MaxX + 100, extent.MaxY + 100, elevation),
         tin.Vertices.AddPoint(extent.MaxX + 100, extent.MinY - 100, elevation));
 
+      return tin;
+    }
+
+    /// <summary>
+    /// Constructs a flat design surface comprising two triangles covering the events of a provided site model.
+    /// </summary>
+    public static Guid ConstructFlatTTMDesignEncompassingSiteModel(ref ISiteModel siteModel, float elevation)
+    {
+      // Make a mutable TIN containing two as below and register it to the site model
+      var tin = Construct2TriangleSurfaceOverExtent(siteModel.SiteModelExtent, elevation);
+
       var tempFileName = Path.GetTempFileName() + ".ttm";
       tin.SaveToFile(tempFileName, true);
 
       return AddDesignToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
     }
+
+    /// <summary>
+    /// Constructs a flat surveyed surface comprising two triangles covering the extents of a provided site model.
+    /// </summary>
+    public static Guid ConstructFlatSurveyedSurfaceEncompassingSiteModel(ref ISiteModel siteModel, float elevation, DateTime asAtDate)
+    {
+      // Make a mutable TIN containing two as below and register it to the site model
+      var tin = Construct2TriangleSurfaceOverExtent(siteModel.SiteModelExtent, elevation);
+
+      var tempFileName = Path.GetTempFileName() + ".ttm";
+      tin.SaveToFile(tempFileName, true);
+
+      return AddSurveyedSurfaceToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), asAtDate, true);
+    }
+
+    /// <summary>
+    /// Constructs a flat surveyed surface comprising two triangles covering the given exents.
+    /// </summary>
+    public static Guid ConstructFlatSurveyedSurfaceEncompassingExtent(ref ISiteModel siteModel, BoundingWorldExtent3D extents, float elevation, DateTime asAtDate)
+    {
+      // Make a mutable TIN containing two as below and register it to the site model
+      var tin = Construct2TriangleSurfaceOverExtent(extents, elevation);
+
+      var tempFileName = Path.GetTempFileName() + ".ttm";
+      tin.SaveToFile(tempFileName, true);
+
+      return AddSurveyedSurfaceToSiteModel(ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), asAtDate, true);
+    }
+
 
     public override void Dispose()
     {
