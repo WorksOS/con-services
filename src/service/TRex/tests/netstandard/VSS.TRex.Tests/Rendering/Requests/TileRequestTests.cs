@@ -349,6 +349,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.Height, palette);
+      arg.Extents = new TRex.Geometry.BoundingWorldExtent3D(0, 0, 100, 100);
 
       var response = await request.ExecuteAsync(arg);
       CheckSimpleRenderTileResponse(response);
