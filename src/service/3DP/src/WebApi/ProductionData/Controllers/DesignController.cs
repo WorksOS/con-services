@@ -141,25 +141,30 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       if (fileList.Count > 0)
       {
-        return await Task.Run(async () => {
-          var alignmentGeometries = new List<AlignmentGeometry>();
+        var alignmentGeometries = new List<AlignmentGeometry>();
 
-          foreach (var file in fileList)
+        var tasks = new List<Task<ContractExecutionResult>>();
+
+        foreach (var file in fileList)
+        {
+          if (Guid.TryParse(file.ImportedFileUid, out var designUid))
           {
-            if (Guid.TryParse(file.ImportedFileUid, out var designUid))
-            {
-              var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance, file.Name);
-              request.Validate();
+            var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance, file.Name);
+            request.Validate();
 
-              var result = await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
-               configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request) as AlignmentGeometryResult;
+            var result = RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(logger,
+              configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request);
 
-              alignmentGeometries.Add(result.AlignmentGeometry);
-            }
+            tasks.Add(result);
           }
+        }
 
-          return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());
-        });   
+        Task.WaitAll(tasks.ToArray());
+
+        foreach (var task in tasks)
+          alignmentGeometries.Add((task.Result as AlignmentGeometryResult).AlignmentGeometry);
+
+        return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());        
       }
 
       return NoContent();
