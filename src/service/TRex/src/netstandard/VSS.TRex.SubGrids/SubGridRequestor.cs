@@ -51,14 +51,13 @@ namespace VSS.TRex.SubGrids
     private bool _prodDataRequested;
     private bool _surveyedSurfaceDataRequested;
     private IClientLeafSubGrid _clientGrid;
-    private ISurfaceElevationPatchArgument _surfaceElevationPatchArg;
-
     public SubGridTreeBitmapSubGridBits CellOverrideMask { get; set; } = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
 
     // For height requests, the ProcessingMap is ultimately used to indicate which elevations were provided from a surveyed surface (if any)
     private SubGridTreeBitmapSubGridBits _processingMap;
 
     private ISurveyedSurfaces _filteredSurveyedSurfaces;
+    private Guid[] _filteredSurveyedSurfacesAsGuidArray;
 
     private bool _returnEarliestFilteredCellPass;
 
@@ -70,6 +69,8 @@ namespace VSS.TRex.SubGrids
 
     private float[,] _designElevations;
     private float[,] _surfaceDesignMaskElevations;
+
+    private SurveyedSurfacePatchType _surveyedSurfacePatchType;
 
     /// <summary>
     /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
@@ -90,7 +91,6 @@ namespace VSS.TRex.SubGrids
                            ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
                            ISurveyedSurfaces filteredSurveyedSurfaces,
                            ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-                           ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
                            IOverrideParameters overrides,
                            ILiftParameters liftParams)
     {
@@ -120,25 +120,16 @@ namespace VSS.TRex.SubGrids
       _returnEarliestFilteredCellPass = _filter.AttributeFilter.ReturnEarliestFilteredCellPass;
       _processingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-      // Create a clone of the argument so that concurrently executing requestors don't trample over it
-      _surfaceElevationPatchArg = new SurfaceElevationPatchArgument(
-        surfaceElevationPatchArgument.SiteModelID,
-        surfaceElevationPatchArgument.OTGCellBottomLeftX,
-        surfaceElevationPatchArgument.OTGCellBottomLeftY,
-        surfaceElevationPatchArgument.CellSize,
-        surfaceElevationPatchArgument.SurveyedSurfacePatchType,
-        null,
-        null)
-      {
-        IncludedSurveyedSurfaces = surfaceElevationPatchArgument.IncludedSurveyedSurfaces
-      };
-
       _surfaceElevationPatchRequest = surfaceElevationPatchRequest;
 
       _subGridCache = subGridCache;
       _subGridCacheContexts = subGridCacheContexts;
 
+      _surveyedSurfacePatchType = _filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation;
+        
       _filteredSurveyedSurfaces = filteredSurveyedSurfaces;
+      _filteredSurveyedSurfaces?.SortChronologically(_surveyedSurfacePatchType == SurveyedSurfacePatchType.LatestSingleElevation);
+      _filteredSurveyedSurfacesAsGuidArray = _filteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0];
 
       var elevRangeDesignFilter = _filter.AttributeFilter.ElevationRangeDesign;
       if (elevRangeDesignFilter.DesignID != Guid.Empty)
@@ -335,10 +326,21 @@ namespace VSS.TRex.SubGrids
       try
       {
         // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
-        _surfaceElevationPatchArg.SetOTGBottomLeftLocation(_clientGrid.OriginX, _clientGrid.OriginY);
-        _surfaceElevationPatchArg.ProcessingMap.Assign(_processingMap);
 
-        if (!(await _surfaceElevationPatchRequest.ExecuteAsync(_surfaceElevationPatchArg) is ClientHeightAndTimeLeafSubGrid surfaceElevations))
+        // Instantiate an argument object for the surface elevation patch request. We always want to request all surface elevations to 
+        // promote cacheability.
+        var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
+          {
+          SiteModelID = _siteModel.ID,
+          OTGCellBottomLeftX = _clientGrid.OriginX,
+          OTGCellBottomLeftY = _clientGrid.OriginY,
+          CellSize = _siteModel.CellSize,
+          IncludedSurveyedSurfaces = _filteredSurveyedSurfacesAsGuidArray,
+          SurveyedSurfacePatchType = _surveyedSurfacePatchType,
+          ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
+        };
+
+        if (!(await _surfaceElevationPatchRequest.ExecuteAsync(surfaceElevationPatchArg) is ClientHeightAndTimeLeafSubGrid surfaceElevations))
         {
           return result;
         }

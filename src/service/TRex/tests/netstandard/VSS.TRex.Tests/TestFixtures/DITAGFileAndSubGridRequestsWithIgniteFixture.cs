@@ -402,14 +402,14 @@ namespace VSS.TRex.Tests.TestFixtures
       tin.Vertices.InitPointSearch(extent.MinX - 100, extent.MinY - 100, extent.MaxX + 100, extent.MaxX + 100, 6);
 
       tin.Triangles.AddTriangle(
-        tin.Vertices.AddPoint(extent.MinX - 100, extent.MinY - 100, elevation),
-        tin.Vertices.AddPoint(extent.MinX - 100, extent.MaxY + 100, elevation),
-        tin.Vertices.AddPoint(extent.MaxX + 100, extent.MinY - 100, elevation));
+        tin.Vertices.AddPoint(extent.MinX, extent.MinY, elevation),
+        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, elevation),
+        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, elevation));
 
       tin.Triangles.AddTriangle(
-        tin.Vertices.AddPoint(extent.MinX - 100, extent.MaxY + 100, elevation),
-        tin.Vertices.AddPoint(extent.MaxX + 100, extent.MaxY + 100, elevation),
-        tin.Vertices.AddPoint(extent.MaxX + 100, extent.MinY - 100, elevation));
+        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, elevation),
+        tin.Vertices.AddPoint(extent.MaxX, extent.MaxY, elevation),
+        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, elevation));
 
       return tin;
     }

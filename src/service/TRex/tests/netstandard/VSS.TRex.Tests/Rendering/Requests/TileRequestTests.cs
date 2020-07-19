@@ -338,21 +338,39 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Fact]
     public async Task Test_TileRenderRequest_SurveyedSurface_ElevationOnly()
     {
+      // Render a surveyed surface area of 100x100 meters in a tile 150x150 meters with a single cell with 
+      // production data placed at the origin
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
 
-      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      // A location on the bug36372.ttm surface - X=247500.0, Y=193350.0
+      const double LOCATION_X = 00.0;
+      const double LOCATION_Y = 0.0;
+
+      // Find the location of the cell in the site model for that location
+      SubGridTree.CalculateIndexOfCellContainingPosition
+        (LOCATION_X, LOCATION_Y, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset, out var cellX, out var cellY);
+
+      // Create the site model containing a single cell and add the surveyed surface to it 
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
+
       DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructFlatSurveyedSurfaceEncompassingExtent(ref siteModel,
         new TRex.Geometry.BoundingWorldExtent3D(0, 0, 100, 100), 100, DateTime.UtcNow);
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
 
       var request = new TileRenderRequest();
       var arg = SimpleTileRequestArgument(siteModel, DisplayMode.Height, palette);
-      arg.Extents = new TRex.Geometry.BoundingWorldExtent3D(0, 0, 100, 100);
+      arg.Extents = new TRex.Geometry.BoundingWorldExtent3D(0, 0, 150, 150);
 
       var response = await request.ExecuteAsync(arg);
-      CheckSimpleRenderTileResponse(response);
+
+      const string FILE_NAME = "SimpleSurveyedSurface.bmp";
+      var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
+
+      var saveFileName = @$"c:\temp\{FILE_NAME}";
+
+      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
   }
 }
