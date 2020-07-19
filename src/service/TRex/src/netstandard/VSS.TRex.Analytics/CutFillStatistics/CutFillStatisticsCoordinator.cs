@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
+﻿using System;
+using Remotion.Linq.Parsing;
+using VSS.TRex.Analytics.CutFillStatistics.GridFabric;
 using VSS.TRex.Analytics.Foundation;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Analytics.Foundation.Coordinators;
@@ -18,16 +20,21 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     /// design instance representing the design the cut/fill information is being calculated against
     /// and supply that to the aggregator
     /// </summary>
-    /// <param name="argument"></param>
-    /// <returns></returns>
-    public override AggregatorBase ConstructAggregator(CutFillStatisticsArgument argument) => new CutFillStatisticsAggregator
+    public override AggregatorBase ConstructAggregator(CutFillStatisticsArgument argument)
     {
-      RequiresSerialisation = true,
-      SiteModelID = argument.ProjectID,
-      CellSize = SiteModel.CellSize,
-      Offsets = argument.Offsets,
-      Counts = argument.Offsets != null ? new long[argument.Offsets.Length] : null
-    };
+      if (argument.Offsets == null || argument.Offsets.Length != 7)
+      {
+        throw new ArgumentException($"Argument.offsets is null or not 7 elements as expected: {argument.Offsets?.Length.ToString() ?? "<null>"}");
+      }
+
+      return new CutFillStatisticsAggregator
+      {
+        SiteModelID = argument.ProjectID,
+        CellSize = SiteModel.CellSize,
+        Offsets = argument.Offsets,
+        Counts = new long[argument.Offsets.Length]
+      };
+    }
 
     /// <summary>
     /// Constructs the computor from the supplied argument and aggregator for the cut fill statistics analytics request

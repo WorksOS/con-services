@@ -56,6 +56,13 @@ namespace VSS.Productivity3D.Models.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Design must be specified for cut-fill details"));
       }
+
+      if (CutFillTolerances == null || CutFillTolerances.Length != 7)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "CutFillTolerances must specify the standard set of 7 values representing the cut/fill offset bands"));
+      }
     }
   }
 }

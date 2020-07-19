@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -42,7 +43,7 @@ namespace VSS.TRex.SiteModels
     }
 
     /// <summary>
-    /// The primary grid this sitemodels instance is targeting based on the desired mutability
+    /// The primary grid this site models instance is targeting based on the desired mutability
     /// </summary>
     public StorageMutability PrimaryMutability { get; }
 
@@ -123,6 +124,12 @@ namespace VSS.TRex.SiteModels
           _cachedModels.Add(id, result);
 
           var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+
+          if (storageProxy.Mutability != StorageMutability.Mutable)
+          {
+            throw new TRexPersistencyException($"Site model {id} may only be created within the mutable context");
+          }
+          
           result.SaveMetadataToPersistentStore(storageProxy, true);
 
           // Establish the metadata entry for this new site model
@@ -277,10 +284,10 @@ namespace VSS.TRex.SiteModels
         }
 
         // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
-        DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
+        DIContext.ObtainOptional<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
 
         // Advise any registered site model change map notifier of the changes
-        DIContext.Obtain<ISiteModelChangeMapDeltaNotifier>()?.Notify(message.SiteModelID, DateTime.UtcNow, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
+        DIContext.ObtainOptional<ISiteModelChangeMapDeltaNotifier>()?.Notify(message.SiteModelID, DateTime.UtcNow, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
       }
     }
 

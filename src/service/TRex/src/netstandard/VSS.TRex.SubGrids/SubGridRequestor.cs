@@ -241,7 +241,7 @@ namespace VSS.TRex.SubGrids
       {
         if (subGridCacheContext != null && _clientGrid.GridDataType != subGridCacheContext.GridDataType)
         {
-          _log.LogWarning($"Client grid data type does not match type of sub grid cache context");
+          _log.LogWarning($"Client grid data type {_clientGrid.GridDataType} does not match type of sub grid cache context {subGridCacheContext.GridDataType}");
         }
 
         // Determine if there is a suitable pre-calculated result present in the general sub grid result cache.
@@ -253,10 +253,16 @@ namespace VSS.TRex.SubGrids
         {
           // Log.LogInformation($"Acquired sub grid {CachedSubGrid.Moniker()} for client sub grid {ClientGrid.Moniker()} in data model {SiteModel.ID} from result cache");
 
-          // Use the filter mask to copy the relevant cells from the cache to the client sub grid
-          _clientGrid.AssignFromCachedPreProcessedClientSubGrid(cachedSubGrid, _clientGrid.FilterMap);
+          // Check the cache supplied a tpe of sub grid we can use. If not (due to an issue), ignore the returned item and request the result directly
+          if (_clientGrid.SupportsAssignationFrom(cachedSubGrid.GridDataType))
+          {
+            // Use the filter mask to copy the relevant cells from the cache to the client sub grid
+            _clientGrid.AssignFromCachedPreProcessedClientSubGrid(cachedSubGrid, _clientGrid.FilterMap);
 
-          return ServerRequestResult.NoError;
+            return ServerRequestResult.NoError;
+          }
+
+          _log.LogError($"Sub grid retrieved from cache is not valid for assigning into client grid. Ignoring. Client sub grid = {_clientGrid.Moniker()}/{_clientGrid.GridDataType}. Cache sub grid = {cachedSubGrid.Moniker()}/{cachedSubGrid.GridDataType}");
         }
       }
 

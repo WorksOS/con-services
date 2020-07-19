@@ -14,6 +14,7 @@ variables:
   buildConfiguration: 'Release'
   serviceName: Common
   rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service'
+  isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 jobs:
   - job: BuildTestCommon
@@ -33,7 +34,7 @@ jobs:
         inputs:
           command: 'test'
           projects: 'src/Common/Common.sln'
-          arguments: '--no-restore -nowarn:NU1701 -nowarn:CS1591'
+          arguments: '--no-restore -nowarn:NU1701 -nowarn:CS1591 /p:CollectCoverage=${isMasterBranch}'
           publishTestResults: true
 
   - job: Build3DPService

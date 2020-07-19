@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
-using Remotion.Linq.Parsing;
+﻿using Microsoft.Extensions.Logging;
 using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Caching
@@ -73,7 +71,7 @@ namespace VSS.TRex.Caching
       {
         MRUHead = _items[MRUHead].Next;
       }
-      catch 
+      catch
       {
         _log.LogError($"Failure evicting element: MRUHead = {MRUHead}, lruHead = {lruHead}");
         throw;
@@ -94,7 +92,7 @@ namespace VSS.TRex.Caching
       _freeListHead = lruHead;
 
       // Set the index in the context to the element just evicted to zero
-      _items[_freeListHead].RemoveFromContext();
+      _items[_freeListHead].RemoveFromContextNoLock();
 
       // Adjust the token count in the MRU list
       _tokenCount--;
@@ -123,7 +121,7 @@ namespace VSS.TRex.Caching
 
         // As it is already invalid, to prevent recurring invalidation again and again, remove it
         RemoveNoLock(index);
-        _items[index].RemoveFromContext();
+        _items[index].RemoveFromContextNoLock();
       }
     }
 
@@ -133,11 +131,10 @@ namespace VSS.TRex.Caching
     /// <returns>The index of the newly added item</returns>
     public int Add(T element, ITRexSpatialMemoryCacheContext context)
     {
-      int index;
-      var token = NextToken();
-
       lock (_items)
       {
+        var token = NextToken();
+
         // Obtain item from free list
         if (_freeListHead == -1)
         {
@@ -145,7 +142,7 @@ namespace VSS.TRex.Caching
           EvictOneLRUItemNoLock();
         }
 
-        index = _freeListHead;
+        var index = _freeListHead;
 
         _freeListHead = _items[index].Next;
 
@@ -163,10 +160,10 @@ namespace VSS.TRex.Caching
         MRUHead = index;
 
         _tokenCount++;
-      }
 
-      // Return the token to the caller
-      return index;
+        // Return the token to the caller
+        return index;
+      }
     }
 
     /// <summary>
@@ -174,18 +171,18 @@ namespace VSS.TRex.Caching
     /// </summary>
     private void RemoveNoLock(int index)
     {
-        _items[index].GetPrevAndNext(out var prev, out var next);
+      _items[index].GetPrevAndNext(out var prev, out var next);
 
-        if (prev != -1)
-          _items[prev].Next = next;
+      if (prev != -1)
+        _items[prev].Next = next;
 
-        if (next != -1)
-          _items[next].Prev = prev;
+      if (next != -1)
+        _items[next].Prev = prev;
 
-        _items[index].Set(default, null, -1, -1, _freeListHead);
-        _freeListHead = index;
+      _items[index].Set(default, null, -1, -1, _freeListHead);
+      _freeListHead = index;
 
-        _tokenCount--;
+      _tokenCount--;
     }
 
     /// <summary>
@@ -238,7 +235,7 @@ namespace VSS.TRex.Caching
         if (cacheItem.Expired || !cacheItem.Valid)
         {
           RemoveNoLock(index);
-          cacheItem.RemoveFromContext();
+          cacheItem.RemoveFromContextNoLock();
           return default;
         }
 

@@ -61,8 +61,6 @@ namespace VSS.TRex.SiteModels.Executors
     /// <summary>
     /// Removes all sub grid directory and segment information in the site model
     /// </summary>
-    /// <param name="storageProxy"></param>
-    /// <returns></returns>
     private bool RemoveAllSpatialCellPassData(IStorageProxy storageProxy)
     {
       var subGridRemovalSuccessful = true;

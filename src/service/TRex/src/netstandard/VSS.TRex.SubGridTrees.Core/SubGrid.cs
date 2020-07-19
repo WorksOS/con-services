@@ -290,7 +290,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Write the contents of the Items array using the supplied writer
         /// </summary>
-        /// <param name="writer"></param>
         public virtual void Write(BinaryWriter writer)
         {
             writer.Write(level);
@@ -312,7 +311,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Converts the sub grid origin cell location into a SubGridAddress identifying this sub grid
         /// </summary>
-        /// <returns></returns>
         public SubGridCellAddress OriginAsCellAddress() => new SubGridCellAddress(originX, originY);
 
         public byte[] ToBytes() => FromToBytes.ToBytes(Write);
@@ -323,8 +321,6 @@ namespace VSS.TRex.SubGridTrees
         /// Iterates over all the cells in the sub grid calling functor on each of them.
         /// Both non-null and null values are presented to functor.
         /// </summary>
-        /// <param name="functor"></param>
-        /// <returns></returns>
         public void ForEach(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
     
      
@@ -332,8 +328,6 @@ namespace VSS.TRex.SubGridTrees
         /// Iterates over all the cells in the sub grid calling functor on each of them.
         /// Both non-null and null values are presented to functor.
         /// </summary>
-        /// <param name="functor"></param>
-        /// <returns></returns>
         public static void ForEachStatic(Action<byte, byte> functor) => SubGridUtilities.SubGridDimensionalIterator((x, y) => functor((byte)x, (byte)y));
     }
 }

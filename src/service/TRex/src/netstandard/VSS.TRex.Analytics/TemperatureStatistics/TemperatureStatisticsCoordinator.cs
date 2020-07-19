@@ -20,7 +20,6 @@ namespace VSS.TRex.Analytics.TemperatureStatistics
 		/// <returns></returns>
 		public override AggregatorBase ConstructAggregator(TemperatureStatisticsArgument argument) => new TemperatureStatisticsAggregator
 		{
-			RequiresSerialisation = true,
 			SiteModelID = argument.ProjectID,
 			CellSize = SiteModel.CellSize,
 			OverrideTemperatureWarningLevels = argument.Overrides.OverrideTemperatureWarningLevels,

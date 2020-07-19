@@ -127,7 +127,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<DesignProfileResult, DesignProfileRequest>(designProfileRequest, "/profile/design", customHeaders);
 
-      return trexResult != null && trexResult.HasData() ? ConvertTRexProfileResult(trexResult) : null;
+      return trexResult?.Code == ContractExecutionStatesEnum.ExecutedSuccessfully ? ConvertTRexProfileResult(trexResult) : null;
     }
 
     private CompactionProfileResult<CompactionProfileVertex> ConvertTRexProfileResult(DesignProfileResult profile)
@@ -136,12 +136,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var profileResult = new CompactionProfileResult<CompactionProfileVertex>();
 
-      profileResult.results = profile.ProfileLine.ConvertAll(dpv => new CompactionProfileVertex
+      profileResult.results = profile.HasData() ? profile.ProfileLine.ConvertAll(dpv => new CompactionProfileVertex
       {
         cellType = dpv.Z >= VelociraptorConstants.NO_HEIGHT ? ProfileCellType.Gap : ProfileCellType.Edge,
-        elevation = dpv.Z >= VelociraptorConstants.NO_HEIGHT ? float.NaN : (float) dpv.Z,
+        elevation = dpv.Z >= VelociraptorConstants.NO_HEIGHT ? float.NaN : (float)dpv.Z,
         station = dpv.Station
-      });
+      }) : new List<CompactionProfileVertex>();
 
       profileResult.gridDistanceBetweenProfilePoints =
         profile.ProfileLine.Count > 1 ? profile.ProfileLine[profile.ProfileLine.Count - 1].Station - profile.ProfileLine[0].Station : 0;
