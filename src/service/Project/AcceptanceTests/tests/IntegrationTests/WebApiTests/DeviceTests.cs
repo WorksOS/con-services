@@ -19,7 +19,7 @@ namespace IntegrationTests.WebApiTests
     public const string DIMENSIONS_SERIAL_DEVICEUID = "039c1ee8-1f21-e311-9ee2-00505688274d";
 
 
-    [Fact]
+    [Fact(Skip = "Jeannie waiting on MockProjectWebAPI deploy")]
     public async Task GetDevicesLKSForProject_HappyPath()
     {
       const string testText = "GetDevicesLKS test 1";
@@ -59,7 +59,7 @@ namespace IntegrationTests.WebApiTests
     }
 
 
-    [Fact]
+    [Fact(Skip = "Jeannie waiting on MockProjectWebAPI deploy")]
     public async Task GetDeviceLKS_HappyPath()
     {
       const string testText = "GetDevicesLKS test 3";

@@ -436,11 +436,28 @@ namespace VSS.TRex.Tests
 
 
     [Fact()]
-    public void Test_TAGProcessorStateBase_MachineControlTypeValid()
+    public void Test_TAGProcessorStateBase_MachineControlType_CB460_Valid()
     {
       var state = new TAGProcessorStateBase();
       state.HardwareID = "2432J011SW";
       state.GetPlatformType().Should().Be(MachineControlPlatformType.CB460);
+    }
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlType_EC520_Valid()
+    {
+      var state = new TAGProcessorStateBase();
+      state.HardwareID = "2432J011YU";
+      state.GetPlatformType().Should().Be(MachineControlPlatformType.EC520);
+    }
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlType_Marine_Valid()
+    {
+      var state = new TAGProcessorStateBase();
+      state.HardwareID = Guid.NewGuid().ToString();
+      state.MachineType = MachineType.CutterSuctionDredge;
+      state.GetPlatformType().Should().Be(MachineControlPlatformType.CB450);
     }
   }
 }

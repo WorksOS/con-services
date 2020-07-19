@@ -179,6 +179,7 @@ namespace VSS.TRex.TAGFiles.Executors
     ///
     /// Send devices lastKnownStatus to cws deviceGateway aka connected site
     ///     Don't need to await as this process should be fire and forget
+    ///        We don't care if the post is valid, or device exists etc
     /// 
     public static void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
     {
