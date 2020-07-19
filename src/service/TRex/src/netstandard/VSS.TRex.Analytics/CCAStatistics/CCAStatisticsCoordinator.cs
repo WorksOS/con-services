@@ -20,7 +20,6 @@ namespace VSS.TRex.Analytics.CCAStatistics
     /// <returns></returns>
     public override AggregatorBase ConstructAggregator(CCAStatisticsArgument argument) => new CCAStatisticsAggregator
     {
-      RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.CellSize,
     };

@@ -9,6 +9,9 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.ComputeFuncs;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Events;
 using VSS.TRex.SiteModels.Interfaces;
@@ -81,6 +84,12 @@ namespace VSS.TRex.Tests.Volumes
     private void AddClusterComputeGridRouting()
     {
       IgniteMock.Immutable.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
+    }
+
+    private void AddDesignProfilerGridRouting()
+    {
+      IgniteMock.Immutable.AddApplicationGridRouting
+        <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
     }
 
     [Fact]
@@ -168,7 +177,7 @@ namespace VSS.TRex.Tests.Volumes
     [Fact]
     public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilter_MidTimeToLatest_Execute_SingleTAGFile()
     {
-      const string expectedResponseText = "{\"Cut\":2.1789614852905275,\"Fill\":0.5822854339599614,\"TotalCoverageArea\":279.75200000000007,\"CutArea\":164.84560000000002,\"FillArea\":72.71240000000002,\"BoundingExtentGrid\":{\"MinX\":537669.2000000001,\"MinY\":5427396.54,\"MaxX\":537675.6600000001,\"MaxY\":5427509.76,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":731.4012000072782,\"CenterX\":537672.4300000002,\"CenterY\":5427453.15,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":true,\"LargestPlanDimension\":113.21999999973923,\"SizeX\":6.460000000079162,\"SizeY\":113.21999999973923,\"SizeZ\":0.0},\"BoundingExtentLLH\":{\"MinX\":1E+308,\"MinY\":1E+308,\"MaxX\":1E+308,\"MaxY\":1E+308,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":0.0,\"CenterX\":1E+308,\"CenterY\":1E+308,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":false,\"LargestPlanDimension\":1E+308,\"SizeX\":0.0,\"SizeY\":0.0,\"SizeZ\":0.0},\"ResponseCode\":1,\"ClusterNode\":\"\",\"NumSubgridsProcessed\":0,\"NumSubgridsExamined\":0,\"NumProdDataSubGridsProcessed\":0,\"NumProdDataSubGridsExamined\":0,\"NumSurveyedSurfaceSubGridsProcessed\":0,\"NumSurveyedSurfaceSubGridsExamined\":0}";
+      const string expectedResponseText = "{\"Cut\":2.178961485290527,\"Fill\":0.5822854339599612,\"TotalCoverageArea\":279.75200000000007,\"CutArea\":164.84560000000002,\"FillArea\":72.71240000000002,\"BoundingExtentGrid\":{\"MinX\":537669.2000000001,\"MinY\":5427396.54,\"MaxX\":537675.6600000001,\"MaxY\":5427509.76,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":731.4012000072782,\"CenterX\":537672.4300000002,\"CenterY\":5427453.15,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":true,\"LargestPlanDimension\":113.21999999973923,\"SizeX\":6.460000000079162,\"SizeY\":113.21999999973923,\"SizeZ\":0.0},\"BoundingExtentLLH\":{\"MinX\":1E+308,\"MinY\":1E+308,\"MaxX\":1E+308,\"MaxY\":1E+308,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":0.0,\"CenterX\":1E+308,\"CenterY\":1E+308,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":false,\"LargestPlanDimension\":1E+308,\"SizeX\":0.0,\"SizeY\":0.0,\"SizeZ\":0.0},\"ResponseCode\":1,\"ClusterNode\":\"\",\"NumSubgridsProcessed\":0,\"NumSubgridsExamined\":0,\"NumProdDataSubGridsProcessed\":0,\"NumProdDataSubGridsExamined\":0,\"NumSurveyedSurfaceSubGridsProcessed\":0,\"NumSurveyedSurfaceSubGridsExamined\":0}";
 
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -197,7 +206,7 @@ namespace VSS.TRex.Tests.Volumes
     [Fact]
     public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilter_EarliestToMidTime_Execute_SingleTAGFile()
     {
-      const string expectedResponseText = "{\"Cut\":0.6670116119384775,\"Fill\":2.243906668090823,\"TotalCoverageArea\":279.75200000000007,\"CutArea\":78.72360000000002,\"FillArea\":175.24960000000004,\"BoundingExtentGrid\":{\"MinX\":537669.2000000001,\"MinY\":5427396.54,\"MaxX\":537675.6600000001,\"MaxY\":5427509.76,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":731.4012000072782,\"CenterX\":537672.4300000002,\"CenterY\":5427453.15,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":true,\"LargestPlanDimension\":113.21999999973923,\"SizeX\":6.460000000079162,\"SizeY\":113.21999999973923,\"SizeZ\":0.0},\"BoundingExtentLLH\":{\"MinX\":1E+308,\"MinY\":1E+308,\"MaxX\":1E+308,\"MaxY\":1E+308,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":0.0,\"CenterX\":1E+308,\"CenterY\":1E+308,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":false,\"LargestPlanDimension\":1E+308,\"SizeX\":0.0,\"SizeY\":0.0,\"SizeZ\":0.0},\"ResponseCode\":1,\"ClusterNode\":\"\",\"NumSubgridsProcessed\":0,\"NumSubgridsExamined\":0,\"NumProdDataSubGridsProcessed\":0,\"NumProdDataSubGridsExamined\":0,\"NumSurveyedSurfaceSubGridsProcessed\":0,\"NumSurveyedSurfaceSubGridsExamined\":0}";
+      const string expectedResponseText = "{\"Cut\":0.6670116119384769,\"Fill\":2.2439066680908204,\"TotalCoverageArea\":279.75200000000007,\"CutArea\":78.72360000000002,\"FillArea\":175.24960000000004,\"BoundingExtentGrid\":{\"MinX\":537669.2000000001,\"MinY\":5427396.54,\"MaxX\":537675.6600000001,\"MaxY\":5427509.76,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":731.4012000072782,\"CenterX\":537672.4300000002,\"CenterY\":5427453.15,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":true,\"LargestPlanDimension\":113.21999999973923,\"SizeX\":6.460000000079162,\"SizeY\":113.21999999973923,\"SizeZ\":0.0},\"BoundingExtentLLH\":{\"MinX\":1E+308,\"MinY\":1E+308,\"MaxX\":1E+308,\"MaxY\":1E+308,\"MinZ\":1E+308,\"MaxZ\":1E+308,\"Area\":0.0,\"CenterX\":1E+308,\"CenterY\":1E+308,\"CenterZ\":1E+308,\"IsMaximalPlanConverage\":false,\"IsValidHeightExtent\":false,\"IsValidPlanExtent\":false,\"LargestPlanDimension\":1E+308,\"SizeX\":0.0,\"SizeY\":0.0,\"SizeZ\":0.0},\"ResponseCode\":1,\"ClusterNode\":\"\",\"NumSubgridsProcessed\":0,\"NumSubgridsExamined\":0,\"NumProdDataSubGridsProcessed\":0,\"NumProdDataSubGridsExamined\":0,\"NumSurveyedSurfaceSubGridsProcessed\":0,\"NumSurveyedSurfaceSubGridsExamined\":0}";
 
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -223,7 +232,7 @@ namespace VSS.TRex.Tests.Volumes
       JsonConvert.DeserializeObject<SimpleVolumesResponse>(expectedResponseText).Should().BeEquivalentTo(response);
     }
 
-    private SimpleVolumesRequestArgument RequestArgForSimpleRquestsWithIntermediaryFilter(ISiteModel siteModel)
+    private SimpleVolumesRequestArgument RequestArgForSimpleRequestsWithIntermediaryFilter(ISiteModel siteModel)
     {
       var (startUtc, endUtc) = siteModel.GetDateRange();
 
@@ -286,7 +295,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(RequestArgForSimpleRquestsWithIntermediaryFilter(siteModel));
+      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel));
 
       CheckVolumesResponse(response);
     }
@@ -324,7 +333,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(RequestArgForSimpleRquestsWithIntermediaryFilter(siteModel));
+      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel));
 
       CheckVolumesResponse(response);
     }
@@ -451,6 +460,75 @@ namespace VSS.TRex.Tests.Volumes
       var response = await request.ExecuteAsync(SimpleDefaultRequestArg(siteModel.ID));
 
       CheckDefaultFilterToFilterSingleCutCellAtOriginResponse(response);
+    }
+
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DefaultFilterToDesign_SingleCell()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
+
+      var topDesign = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var arg = SimpleDefaultRequestArg(siteModel.ID);
+      arg.VolumeType = VolumeComputationType.BetweenFilterAndDesign;
+      arg.TopDesign = new DesignOffset(topDesign, 0);
+
+      var response = await request.ExecuteAsync(arg);
+
+      const double EPSILON = 0.000001;
+
+      response.Should().NotBeNull();
+      response.Cut.Should().BeApproximately(1.0 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.Fill.Should().BeApproximately(0, EPSILON);
+      response.CutArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.FillArea.Should().BeApproximately(0, EPSILON);
+      response.TotalCoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+
+      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+    }
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DesignToDefaultFilter_SingleCell()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
+
+      var baseDesign = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var arg = SimpleDefaultRequestArg(siteModel.ID);
+      arg.VolumeType = VolumeComputationType.BetweenDesignAndFilter;
+      arg.BaseDesign = new DesignOffset(baseDesign, 0);
+
+      var response = await request.ExecuteAsync(arg);
+
+      const double EPSILON = 0.000001;
+
+      response.Should().NotBeNull();
+      response.Cut.Should().BeApproximately(3.5 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.Fill.Should().BeApproximately(0, EPSILON);
+      response.CutArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.FillArea.Should().BeApproximately(0, EPSILON);
+      response.TotalCoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+
+      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
     }
   }
 }

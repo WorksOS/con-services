@@ -46,7 +46,8 @@ data:
 #AWS configuration  
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-trex-designfiles
   AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-rpd-workos-exports
-  AWS_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-tagfile-archive
+  AWS_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-trex-dm-archive
+  AWS_ALL_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-tagfile-archive
   AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
   USE_LOCAL_S3_TRANSFER_PROXY_STORE: "false"
   #Raptor configuration

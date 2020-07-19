@@ -42,6 +42,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 
       request.Validate();
       ValidateFilterMachines(nameof(GetTile), request.ProjectUid, request.Filter1);
+      ValidateFilterMachines(nameof(GetTile), request.ProjectUid, request.Filter2);
 
       var tileResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer

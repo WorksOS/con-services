@@ -41,7 +41,6 @@ namespace VSS.TRex.Tests.Profiling
     }
   }
 
-  [Collection("ProfileBuilderTests")]
   public class ProfileBuilderTests : IClassFixture<ProfileBuilderTests_Fixture>
   {
     [Fact]

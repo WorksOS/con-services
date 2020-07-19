@@ -1,6 +1,7 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using Force.DeepCloner;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Common.Serialisation
@@ -10,18 +11,30 @@ namespace VSS.TRex.Common.Serialisation
   /// </summary>
   public class BinarizableSerializer : IBinarySerializer
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<BinarizableSerializer>();
+
     public void WriteBinary(object obj, IBinaryWriter writer)
     {
-      if (obj is IBinarizable bin)
+      // Add a global exception trapper for binarizable serialization to provide visibility via C# stack traces in the log
+      // to complement the Java stack trace
+      try
       {
-        bin.WriteBinary(writer);
-        return;
+        switch (obj)
+        {
+          case IBinarizable bin:
+            bin.WriteBinary(writer);
+            return;
+          case Exception e:
+            writer.WriteObject("Exception", e);
+            return;
+        }
       }
-
-      if (obj is Exception e)
+      catch (Exception e)
       {
-        writer.WriteObject("Exception", e);
-        return;
+        _log.LogCritical(e, "WriteBinary failure");
+
+        // Rethrow the exception - the intent here is not to handle it, but to add visibility to it
+        throw;
       }
 
       throw new TRexNonBinarizableException($"Not IBinarizable on WriteBinary: {obj.GetType()}");
@@ -29,17 +42,27 @@ namespace VSS.TRex.Common.Serialisation
 
     public void ReadBinary(object obj, IBinaryReader reader)
     {
-      if (obj is IBinarizable bin)
+      // Add a global exception trapper for binarizable serialization to provide visibility via C# stack traces in the log
+      // to compliment the Java stack trace
+      try
       {
-        bin.ReadBinary(reader);
-        return;
+        switch (obj)
+        {
+          case IBinarizable bin:
+            bin.ReadBinary(reader);
+            return;
+          case Exception e:
+            var res = reader.ReadObject<Exception>("Exception");
+            res.ShallowCloneTo(e);
+            return;
+        }
       }
-
-      if (obj is Exception e)
+      catch (Exception e)
       {
-        var res = reader.ReadObject<Exception>("Exception");
-        res.ShallowCloneTo(e);
-        return;
+        _log.LogCritical(e, "ReadBinary failure");
+
+        // Rethrow the exception - the intent here is not to handle it, but to add visibility to it
+        throw;
       }
 
       throw new TRexNonBinarizableException($"Not IBinarizable on ReadBinary: {obj.GetType()}");

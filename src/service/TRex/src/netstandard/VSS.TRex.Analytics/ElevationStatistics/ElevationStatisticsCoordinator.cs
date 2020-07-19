@@ -20,7 +20,6 @@ namespace VSS.TRex.Analytics.ElevationStatistics
     /// <returns></returns>
     public override AggregatorBase ConstructAggregator(ElevationStatisticsArgument argument) => new ElevationStatisticsAggregator
     {
-      RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.CellSize
     };

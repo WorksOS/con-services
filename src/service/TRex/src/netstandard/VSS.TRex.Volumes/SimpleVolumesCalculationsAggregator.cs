@@ -24,7 +24,7 @@ namespace VSS.TRex.Volumes
   /// <summary>
   /// Defines an aggregator that summaries simple volumes information for sub grids
   /// </summary>
-  public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>
+  public class SimpleVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<SimpleVolumesCalculationsAggregator>, IDisposable
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SimpleVolumesCalculationsAggregator>();
 
@@ -33,6 +33,8 @@ namespace VSS.TRex.Volumes
     /// one of the two sub grids is not available to allow for correctly tracking of statistics
     /// </summary>
     private static readonly ClientHeightLeafSubGrid _nullHeightSubGrid = new ClientHeightLeafSubGrid(null, null, 0, 0, 0);
+
+    private SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
 
     // CoverageMap maps the area of cells that we have considered and successfully
     // computed volume information from
@@ -52,8 +54,6 @@ namespace VSS.TRex.Volumes
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
     public Guid SiteModelID { get; set; } = Guid.Empty;
-
-    public bool RequiresSerialization { get; set; } = true;
 
     // The sum of the aggregated summarized information relating to volumes summary based reports
 
@@ -83,6 +83,7 @@ namespace VSS.TRex.Volumes
     public CutFillVolume CutFillVolume = new CutFillVolume(0, 0);
 
     public DesignDescriptor DesignDescriptor = DesignDescriptor.Null(); // no {get;set;} intentionally
+    private bool _disposedValue;
 
     public double TopLevel { get; set; } = 0;
     public double BaseLevel { get; set; } = 0;
@@ -104,16 +105,7 @@ namespace VSS.TRex.Volumes
     // be cut
     public double FillTolerance { get; set; } = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
 
-    public SimpleVolumesCalculationsAggregator()
-    {
-      // NOTE: This aggregator state is now single threaded in the context of processing sub grid
-      // information into it as the processing threads access independent sub-state aggregators which
-      // are aggregated together to form the final aggregation result. However, in contexts that do support
-      // threaded access to this structure the RequiresSerialization flag should be set
-
-      // if Assigned(Source) then
-      //    Initialise(Source);
-    }
+    public SimpleVolumesCalculationsAggregator() { }
 
     public void Finalise()
     {
@@ -123,32 +115,6 @@ namespace VSS.TRex.Volumes
       TotalArea = CellsScanned * CellSize * CellSize;
       BoundingExtents = CoverageMap.ComputeCellsWorldExtents();
     }
-
-    /*
-     * procedure TICVolumesCalculationsAggregateState.Initialise(const Source : TICVolumesCalculationsAggregateState);
-        begin
-      if Assigned(Source) then
-        begin
-          FCellSize := Source.CellSize;
-          FDesignDescriptor := Source.DesignDescriptor;
-          FVolumeType := Source.VolumeType;
-          FBaseLevel := Source.BaseLevel;
-          FTopLevel := Source.TopLevel;
-
-          LiftBuildSettings := Source.LiftBuildSettings;
-          SiteModelID := Source.SiteModelID;
-          DesignProfilerService := Source.DesignProfilerService;
-
-          CutTolerance := Source.CutTolerance;
-          FillTolerance := Source.FillTolerance;
-        end;
-
-    //  FNoChangeMap := TSubGridTreeBitMask.Create(kSubGridTreeLevels, CellSize);
-
-      FNullHeightSubgrid := TICClientSubGridTreeLeaf_Height.Create(Nil, Nil, kSubGridTreeLevels, CellSize, 0); //cell size of datamodel in question
-      FNullHeightSubgrid.Clear;
-    end;
-    */
 
     protected async Task ProcessVolumeInformationForSubGrid(ClientHeightLeafSubGrid baseScanSubGrid,
                                                             ClientHeightLeafSubGrid topScanSubGrid)
@@ -178,10 +144,18 @@ namespace VSS.TRex.Volumes
       // ReSharper disable once CompareOfFloatsByEqualityOperator
       var standardVolumeProcessing = LiftParams.TargetLiftThickness == Consts.NullHeight || LiftParams.TargetLiftThickness <= 0;
 
+      var localCellsScanned = 0;
+      var localCellsUsed = 0;
+      var localCellsDiscarded = 0;
+      var localCellsUsedCut = 0;
+      var localCellsUsedFill = 0;
+      var localVolume = 0.0d;
+      var localCutFillVolume = new CutFillVolume(0, 0);
+
       // If we are interested in standard volume processing use this cycle
       if (standardVolumeProcessing)
       {
-        CellsScanned += SubGridTreeConsts.SubGridTreeCellsPerSubGrid;
+        localCellsScanned += SubGridTreeConsts.SubGridTreeCellsPerSubGrid;
 
         for (var i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
         {
@@ -195,7 +169,7 @@ namespace VSS.TRex.Volumes
             // the first pass made in the cell.
             if (LiftParams.FirstPassThickness > 0)
             {
-                baseZ -= LiftParams.FirstPassThickness;
+              baseZ -= LiftParams.FirstPassThickness;
             }
 
             if (VolumeType == VolumeComputationType.BetweenFilterAndDesign ||
@@ -219,12 +193,12 @@ namespace VSS.TRex.Volumes
                   // ReSharper disable once CompareOfFloatsByEqualityOperator
                   if (baseZ != Consts.NullHeight)
                   {
-                    CellsUsed++;
+                    localCellsUsed++;
                     if (baseZ > BaseLevel)
-                      Volume += cellArea * (baseZ - BaseLevel);
+                      localVolume += cellArea * (baseZ - BaseLevel);
                   }
                   else
-                    CellsDiscarded++;
+                    localCellsDiscarded++;
 
                   break;
                 }
@@ -234,13 +208,13 @@ namespace VSS.TRex.Volumes
                   // ReSharper disable once CompareOfFloatsByEqualityOperator
                   if (baseZ != Consts.NullHeight)
                   {
-                    CellsUsed++;
+                    localCellsUsed++;
 
                     if (baseZ > BaseLevel)
-                      Volume += cellArea * (baseZ < TopLevel ? (baseZ - BaseLevel) : (TopLevel - BaseLevel));
+                      localVolume += cellArea * (baseZ < TopLevel ? (baseZ - BaseLevel) : (TopLevel - BaseLevel));
                   }
                   else
-                    CellsDiscarded++;
+                    localCellsDiscarded++;
 
                   break;
                 }
@@ -255,7 +229,7 @@ namespace VSS.TRex.Volumes
                       // ReSharper disable once CompareOfFloatsByEqualityOperator
                       topZ != Consts.NullHeight)
                   {
-                    CellsUsed++;
+                    localCellsUsed++;
 
                     //  Note the fact we have processed this cell in the coverage map
                     bits.SetBit(i, j);
@@ -269,18 +243,18 @@ namespace VSS.TRex.Volumes
 
                       // Accumulate the 'surplus' volume. Ie: the simple summation of
                       // all cuts and fills.
-                      Volume += volumeDifference;
+                      localVolume += volumeDifference;
 
                       // Accumulate the cuts and fills into discrete cut and fill quantities
                       if (topZ < baseZ)
                       {
-                        CellsUsedCut++;
-                        CutFillVolume.AddCutVolume(Math.Abs(volumeDifference));
+                        localCellsUsedCut++;
+                        localCutFillVolume.AddCutVolume(Math.Abs(volumeDifference));
                       }
                       else
                       {
-                        CellsUsedFill++;
-                        CutFillVolume.AddFillVolume(Math.Abs(volumeDifference));
+                        localCellsUsedFill++;
+                        localCutFillVolume.AddFillVolume(Math.Abs(volumeDifference));
                       }
                     }
                     else
@@ -291,7 +265,7 @@ namespace VSS.TRex.Volumes
                   }
                   else
                   {
-                    CellsDiscarded++;
+                    localCellsDiscarded++;
                   }
                 }
                 break;
@@ -310,63 +284,69 @@ namespace VSS.TRex.Volumes
       //If we are interested in thickness calculations do them
       if (targetLiftThicknessCalculationsRequired)
       {
-          var belowToleranceToCheck = LiftParams.TargetLiftThickness - LiftParams.BelowToleranceLiftThickness;
-          var aboveToleranceToCheck = LiftParams.TargetLiftThickness + LiftParams.AboveToleranceLiftThickness;
+        var belowToleranceToCheck = LiftParams.TargetLiftThickness - LiftParams.BelowToleranceLiftThickness;
+        var aboveToleranceToCheck = LiftParams.TargetLiftThickness + LiftParams.AboveToleranceLiftThickness;
 
-          SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+        SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+        {
+          var baseZ = baseScanSubGrid.Cells[i, j];
+          var topZ = topScanSubGrid.Cells[i, j];
+
+          // ReSharper disable once CompareOfFloatsByEqualityOperator
+          if (baseZ != Consts.NullHeight ||
+              // ReSharper disable once CompareOfFloatsByEqualityOperator
+              topZ != Consts.NullHeight)
           {
-              var baseZ = baseScanSubGrid.Cells[i, j];
-              var topZ = topScanSubGrid.Cells[i, j];
+            localCellsScanned++;
+          }
 
+          //Test if we don't have NULL values and carry on
+          // ReSharper disable once CompareOfFloatsByEqualityOperator
+          if (baseZ != Consts.NullHeight &&
               // ReSharper disable once CompareOfFloatsByEqualityOperator
-              if (baseZ != Consts.NullHeight ||
-                  // ReSharper disable once CompareOfFloatsByEqualityOperator
-                  topZ != Consts.NullHeight)
-              {
-                CellsScanned++;
-              }
+              topZ != Consts.NullHeight)
+          {
+            bits.SetBit(i, j);
+            double elevationDiff = topZ - baseZ;
 
-              //Test if we don't have NULL values and carry on
-              // ReSharper disable once CompareOfFloatsByEqualityOperator
-              if (baseZ != Consts.NullHeight &&
-                  // ReSharper disable once CompareOfFloatsByEqualityOperator
-                  topZ != Consts.NullHeight)
-              {
-                  bits.SetBit(i, j);
-                  double elevationDiff = topZ - baseZ;
-
-                  if (elevationDiff <= aboveToleranceToCheck && elevationDiff >= belowToleranceToCheck)
-                      CellsUsed++;
-                  else
-                      if (elevationDiff > aboveToleranceToCheck)
-                          CellsUsedFill++;
-                      else
-                          if (elevationDiff < belowToleranceToCheck)
-                              CellsUsedCut++;
-              }
-              else
-              {
-                CellsDiscarded++;
-              }
-          });
+            if (elevationDiff <= aboveToleranceToCheck && elevationDiff >= belowToleranceToCheck)
+              localCellsUsed++;
+            else if (elevationDiff > aboveToleranceToCheck)
+              localCellsUsedFill++;
+            else if (elevationDiff < belowToleranceToCheck)
+              localCellsUsedCut++;
+          }
+          else
+          {
+            localCellsDiscarded++;
+          }
+        });
       }
 
-      // Record the bits for this sub grid in the coverage map by requesting the whole sub grid
-      // of bits from the leaf level and setting it in one operation under an exclusive lock
-      if (!bits.IsEmpty())
+      // Update the quantities in the aggregator proper
+      // Note: the lock is not asynchronous as this will be highly non-contended
+      _lock.Wait();
+      try
       {
-        if (RequiresSerialization)
-          Monitor.Enter(CoverageMap);
-        try
+        CellsScanned += localCellsScanned;
+        CellsUsed += localCellsUsed;
+        CellsDiscarded += localCellsDiscarded;
+        CellsUsedCut += localCellsUsedCut;
+        CellsUsedFill += localCellsUsedFill;
+        Volume += localVolume;
+        CutFillVolume.AddCutFillVolume(localCutFillVolume.CutVolume, localCutFillVolume.FillVolume);
+
+        // Record the bits for this sub grid in the coverage map by requesting the whole sub grid
+        // of bits from the leaf level and setting it in one operation under an exclusive lock
+        if (!bits.IsEmpty())
         {
           var coverageMapSubGrid = CoverageMap.ConstructPathToCell(baseScanSubGrid.OriginX, baseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
           ((SubGridTreeLeafBitmapSubGrid)coverageMapSubGrid).Bits = bits;
         }
-        finally
-        {
-          if (RequiresSerialization)
-            Monitor.Exit(CoverageMap);
-        }
+      }
+      finally
+      {
+        _lock.Release();
       }
     }
 
@@ -375,43 +355,39 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public async Task SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
     {
-      if (RequiresSerialization)
-        Monitor.Enter(this);
+      var taskList = new List<Task>(subGrids.Length);
+
+      foreach (var subGridResult in subGrids)
+      {
+        if (subGridResult != null)
+        {
+          // We have a sub grid from the Production Database. If we are processing volumes
+          // between two filters, then there will be a second sub grid in the sub grids array.
+          // By convention BaseSubGrid is always the first sub grid in the array,
+          // regardless of whether it really forms the 'top' or 'bottom' of the interval.
+
+          var baseSubGrid = subGridResult[0];
+
+          if (baseSubGrid == null)
+          {
+            _log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
+          }
+          else
+          {
+            var topSubGrid = subGridResult.Length > 1 ? subGridResult[1] : _nullHeightSubGrid;
+
+            taskList.Add(ProcessVolumeInformationForSubGrid(baseSubGrid as ClientHeightLeafSubGrid, topSubGrid as ClientHeightLeafSubGrid));
+          }
+        }
+      }
 
       try
       {
-        var taskList = new List<Task>(subGrids.Length);
-
-        foreach (var subGridResult in subGrids)
-        {
-          if (subGridResult != null)
-          {
-            // We have a sub grid from the Production Database. If we are processing volumes
-            // between two filters, then there will be a second sub grid in the sub grids array.
-            // By convention BaseSubGrid is always the first sub grid in the array,
-            // regardless of whether it really forms the 'top' or 'bottom' of the interval.
-
-            var baseSubGrid = subGridResult[0];
-
-            if (baseSubGrid == null)
-            {
-              _log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
-            }
-            else
-            {
-              var topSubGrid = subGridResult.Length > 1 ? subGridResult[1] : _nullHeightSubGrid;
-
-              taskList.Add(ProcessVolumeInformationForSubGrid(baseSubGrid as ClientHeightLeafSubGrid, topSubGrid as ClientHeightLeafSubGrid));
-            }
-          }
-        }
-
         await Task.WhenAll(taskList);
       }
-      finally
+      catch (Exception e)
       {
-        if (RequiresSerialization)
-          Monitor.Exit(this);
+        _log.LogError(e, "Exception: SimpleVolumesCalculationsAggregator: WhenAll() failed");
       }
     }
 
@@ -430,10 +406,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public SimpleVolumesCalculationsAggregator AggregateWith(SimpleVolumesCalculationsAggregator other)
     {
-      if (RequiresSerialization)
-      {
-        //  TMonitor.Enter(Self);
-      }
+      _lock.Wait();
       try
       {
         //  SIGLogMessage.PublishNoODS(Self, Format('Aggregating From:%s', [Source.ToString]));
@@ -458,10 +431,7 @@ namespace VSS.TRex.Volumes
       }
       finally
       {
-        if (RequiresSerialization)
-        {
-          //   TMonitor.Exit(Self);
-        }
+        _lock.Release();
       }
     }
 
@@ -471,6 +441,26 @@ namespace VSS.TRex.Volumes
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       SummarizeSubGridResultAsync(subGrids).WaitAndUnwrapException();
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!_disposedValue)
+      {
+        if (disposing)
+        {
+          _lock?.Dispose();
+          _lock = null;
+        }
+
+        _disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: true);
     }
   }
 }

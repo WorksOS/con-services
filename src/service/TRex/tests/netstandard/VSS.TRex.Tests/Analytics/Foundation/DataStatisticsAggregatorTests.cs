@@ -24,7 +24,6 @@ namespace VSS.TRex.Tests.Analytics.Foundation
               Aggregator.CellsScannedUnderTarget == 0 &&
               Aggregator.IsTargetValueConstant == true &&
               Aggregator.MissingTargetValue == false &&
-              Aggregator.RequiresSerialisation == false &&
               Aggregator.SiteModelID == Guid.Empty &&
               Aggregator.SummaryCellsScanned == 0 &&
               Math.Abs(Aggregator.SummaryProcessedArea) < Epsilon &&

@@ -206,25 +206,22 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     protected void SelectCurrentDesignExtent()
     {
-      lock (SiteModel.SiteModelDesigns)
+      int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(_Design);
+
+      if (DesignIndex == -1)
       {
-        int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(_Design);
+        // This may be because there is no selected design name, or that the
+        // entry for this named design is not in the list. If the former, just clear the
+        // design extents. If the latter, create a new design extents entry
 
-        if (DesignIndex == -1)
-        {
-          // This may be because there is no selected design name, or that the
-          // entry for this named design is not in the list. If the former, just clear the
-          // design extents. If the latter, create a new design extents entry
+        // Clear the design extent being maintained in the processor.
+        DesignExtent.SetInverted();
 
-          // Clear the design extent being maintained in the processor.
-          DesignExtent.SetInverted();
-
-          if (_Design != string.Empty)
-            SiteModel.SiteModelDesigns.CreateNew(_Design, DesignExtent);
-        }
-        else
-          DesignExtent = SiteModel.SiteModelDesigns[DesignIndex].Extents;
+        if (_Design != string.Empty)
+          SiteModel.SiteModelDesigns.CreateNew(_Design, DesignExtent);
       }
+      else
+        DesignExtent = SiteModel.SiteModelDesigns[DesignIndex].Extents;
     }
 
     /// <summary>
@@ -631,18 +628,15 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     /// </summary>
     protected void UpdateCurrentDesignExtent()
     {
-      lock (SiteModel.SiteModelDesigns)
+      int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(_Design);
+
+      if (DesignIndex != -1)
       {
-        int DesignIndex = SiteModel.SiteModelDesigns.IndexOf(_Design);
-
-        if (DesignIndex != -1)
-        {
-          SiteModel.SiteModelDesigns[DesignIndex].Extents = DesignExtent;
-        }
-
-        // Clear the design extent being maintained in the processor.
-        DesignExtent.SetInverted();
+        SiteModel.SiteModelDesigns[DesignIndex].Extents = DesignExtent;
       }
+
+      // Clear the design extent being maintained in the processor.
+      DesignExtent.SetInverted();
     }
 
     /// <summary>

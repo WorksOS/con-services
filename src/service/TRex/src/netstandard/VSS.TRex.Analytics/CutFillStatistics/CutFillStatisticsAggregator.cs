@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
 using VSS.TRex.Analytics.Foundation.Aggregators;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
@@ -12,6 +13,9 @@ namespace VSS.TRex.Analytics.CutFillStatistics
   /// </summary>
   public class CutFillStatisticsAggregator : DataStatisticsAggregator
   {
+    private SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
+    private bool _disposedValue;
+
     /// <summary>
     /// The array of height offsets representing the cut and fill bands of the cut-fill isopac surface being analysed
     /// </summary>
@@ -28,7 +32,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     /// <summary>
     /// Determines which cut/fill band to allocate the height value for a cell
     /// </summary>
-    /// <param name="value"></param>
     private void IncrementCountOfCutFillTransition(double value)
     {
       // Works out what percentage of cut/fill map colours are used
@@ -80,16 +83,16 @@ namespace VSS.TRex.Analytics.CutFillStatistics
     /// Processes an elevation sub grid into a cut fill isopach and calculate the counts of cells where the cut fill
     /// height fits into the requested bands
     /// </summary>
-    /// <param name="subGrids"></param>
     public override void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      lock (this)
+      _lock.Wait();
+      try
       {
         base.ProcessSubGridResult(subGrids);
 
         // Works out the percentage each colour on the map represents
 
-        foreach (IClientLeafSubGrid[] subGrid in subGrids)
+        foreach (var subGrid in subGrids)
         {
           if ((subGrid?.Length ?? 0) > 0 && subGrid[0] is ClientHeightLeafSubGrid SubGrid)
           {
@@ -104,6 +107,26 @@ namespace VSS.TRex.Analytics.CutFillStatistics
             });
           }
         }
+      }
+      finally
+      {
+        _lock.Release();
+      }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+      if (!_disposedValue)
+      {
+        if (disposing)
+        {
+          _lock.Dispose();
+          _lock = null;
+        }
+
+        base.Dispose(disposing);
+
+        _disposedValue = true;
       }
     }
   }

@@ -105,16 +105,19 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     protected override void Dispose(bool disposing)
     {
-      if (!_disposed)
+      if (_disposed)
+        return;
+
+      if (disposing)
       {
-        if (disposing)
-        {
-          _writer?.Dispose();
-          _csv?.Dispose();
-          base.Dispose(disposing);
-        }
-        _disposed = true;
+        _writer?.Dispose();
+        _csv?.Dispose();
+        base.Dispose(disposing);
       }
+
+      base.Dispose(disposing);
+
+      _disposed = true;
     }
 
     public new void Dispose()
