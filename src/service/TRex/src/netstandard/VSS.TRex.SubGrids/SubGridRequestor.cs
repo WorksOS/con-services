@@ -336,6 +336,7 @@ namespace VSS.TRex.SubGrids
       {
         // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
         _surfaceElevationPatchArg.SetOTGBottomLeftLocation(_clientGrid.OriginX, _clientGrid.OriginY);
+        _surfaceElevationPatchArg.ProcessingMap.Assign(_processingMap);
 
         if (!(await _surfaceElevationPatchRequest.ExecuteAsync(_surfaceElevationPatchArg) is ClientHeightAndTimeLeafSubGrid surfaceElevations))
         {
