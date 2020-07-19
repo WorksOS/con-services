@@ -14,7 +14,7 @@ namespace VSS.TRex.GridFabric.Affinity
   /// Provides capabilities for determining partition maps to nodes for Ignite caches. It is based on
   /// the key (TK) and value (TV) types of the cache being referenced.
   /// </summary>
-  public class AffinityPartitionMap<TK, TV> : IEventListener<CacheRebalancingEvent>, IEventListener<DiscoveryEvent>
+  public class AffinityPartitionMap<TK, TV> : IEventListener<CacheRebalancingEvent>, IEventListener<CacheEvent>, IDisposable
   {
     /// <summary>
     /// Backing variable for PrimaryPartitions
@@ -30,6 +30,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// Backing variable for BackupPartitions
     /// </summary>
     public Dictionary<int, bool> backupPartitions;
+    private bool _disposedValue;
 
     /// <summary>
     /// Provides a map of backup partitions that this node is responsible for
@@ -39,7 +40,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// The reference to the Ignite cache the partition map relates
     /// </summary>
-    private ICache<TK, TV> Cache { get; }
+    private ICache<TK, TV> Cache { get; set; }
 
     private ICacheAffinity Affinity { get; }
     private IClusterNode LocalNode { get; }
@@ -56,15 +57,8 @@ namespace VSS.TRex.GridFabric.Affinity
       Affinity = Cache.Ignite.GetAffinity(Cache.Name);
       LocalNode = Cache.Ignite.GetCluster().GetLocalNode();
 
-      Cache.Ignite.GetEvents().LocalListen<CacheRebalancingEvent>(this,
-        EventType.CacheRebalanceStopped,
-        EventType.CacheRebalanceStarted);
-
-      Cache.Ignite.GetEvents().LocalListen<DiscoveryEvent>(this,
-        EventType.NodeFailed,
-        EventType.NodeJoined,
-        EventType.NodeLeft,
-        EventType.CacheNodesLeft);
+      Cache.Ignite.GetEvents().LocalListen<CacheRebalancingEvent>(this, EventType.CacheRebalanceAll);
+      Cache.Ignite.GetEvents().LocalListen<CacheEvent>(this, EventType.CacheLifecycleAll);
     }
 
     /// <summary>
@@ -118,7 +112,7 @@ namespace VSS.TRex.GridFabric.Affinity
       return true;
     }
 
-    public bool Invoke(DiscoveryEvent evt)
+    public bool Invoke(CacheEvent evt)
     {
       // Something in the topology has changed. Drop the partition maps to stimulate their re-request on next request
       // Assign primary and backup partition maps to null to force them to be recalculated
@@ -126,6 +120,27 @@ namespace VSS.TRex.GridFabric.Affinity
       backupPartitions = null;
 
       return true;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!_disposedValue)
+      {
+        if (disposing)
+        {
+          Cache?.Ignite?.GetEvents()?.StopLocalListen<CacheRebalancingEvent>(this, EventType.CacheRebalanceAll);
+          Cache?.Ignite?.GetEvents()?.StopLocalListen<CacheEvent>(this, EventType.CacheLifecycleAll);
+
+          Cache = null;
+        }
+
+        _disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      Dispose(disposing: true);
     }
   }
 }
