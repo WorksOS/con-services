@@ -56,9 +56,19 @@ namespace VSS.TRex.Rendering.Palettes
 
     public HeightPalette(double minElevation, double maxElevation) : base(null)
     {
-      MinElevation = minElevation;
-      MaxElevation = maxElevation;
-      ElevationPerBand = (MaxElevation - MinElevation) / (ElevationPalette.Length - 1);
+      // Prevent div by zero on zero height bands...
+      if (maxElevation > (minElevation + 0.001))
+      {
+        MinElevation = minElevation;
+        MaxElevation = maxElevation;
+        ElevationPerBand = (MaxElevation - MinElevation) / (ElevationPalette.Length - 1);
+      }
+      else
+      {
+        MinElevation = minElevation - 0.001;
+        MaxElevation = minElevation + 0.001;
+        ElevationPerBand = (MaxElevation - MinElevation) / (ElevationPalette.Length - 1);
+      }
     }
 
     /// <summary>
