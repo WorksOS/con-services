@@ -419,7 +419,7 @@ namespace VSS.TRex.SubGrids.Executors
       var addressListCopy = new SubGridCellAddress[addressCount];
       Array.Copy(addressList, addressListCopy, addressCount);
 
-      _tasks.Add(Task.Run(() => PerformSubGridRequestList(addressListCopy, addressCount)));
+      _tasks.Add(PerformSubGridRequestList(addressListCopy, addressCount));
     }
 
     /// <summary>
