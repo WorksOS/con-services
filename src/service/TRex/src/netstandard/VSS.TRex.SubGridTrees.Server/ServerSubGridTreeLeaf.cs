@@ -598,7 +598,7 @@ namespace VSS.TRex.SubGridTrees.Server
             // The first MoveNext will locate the first segment in the directory marked as dirty
             while (iterator.MoveNext())
             {
-                if (iterator.CurrentSubGridSegment != null && !iterator.CurrentSubGridSegment.Dirty)
+                if (iterator.CurrentSubGridSegment != null && !iterator.CurrentSubGridSegment.Dirty && iterator.ReturnDirtyOnly)
                 {
                     throw new TRexException($"Iterator returned non-dirty segment in ComputeLatestPassInformation for {Moniker()}");
                 }

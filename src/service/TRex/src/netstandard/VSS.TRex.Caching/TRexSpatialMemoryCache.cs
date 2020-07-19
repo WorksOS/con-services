@@ -186,10 +186,10 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-        context.Remove(element);        
+      context.Remove(element);
 
-        // Perform some house keeping to keep the cache size in bounds
-        ItemRemovedFromContext(element.IndicativeSizeInBytes());
+      // Perform some house keeping to keep the cache size in bounds
+      ItemRemovedFromContext(element.IndicativeSizeInBytes());
     }
 
     private void ItemAddedToContext(int sizeInBytes)
@@ -255,26 +255,23 @@ namespace VSS.TRex.Caching
       // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
       foreach (var context in projectContexts)
       {
-        lock (context)
+        // Empty contexts are ignored
+        if (context.TokenCount > 0)
         {
-          // Empty contexts are ignored
-          if (context.TokenCount > 0)
+          // If the context in question is not sensitive to production data ingest then ignore it
+          if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) != 0)
           {
-            // If the context in question is not sensitive to production data ingest then ignore it
-            if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) != 0)
+            // Iterate across all elements in the mask:
+            // 1. Locate the cache entry
+            // 2. Mark it as dirty
+            mask.ScanAllSetBitsAsSubGridAddresses(origin =>
             {
-              // Iterate across all elements in the mask:
-              // 1. Locate the cache entry
-              // 2. Mark it as dirty
-              mask.ScanAllSetBitsAsSubGridAddresses(origin =>
-              {
-                context.InvalidateSubGridNoLock(origin.X, origin.Y, out var subGridPresentForInvalidation);
+              context.InvalidateSubGrid(origin.X, origin.Y, out var subGridPresentForInvalidation);
 
-                numScannedSubGrids++;
-                if (subGridPresentForInvalidation)
-                  numInvalidatedSubGrids++;
-              });
-            }
+              numScannedSubGrids++;
+              if (subGridPresentForInvalidation)
+                numInvalidatedSubGrids++;
+            });
           }
         }
       }
@@ -312,6 +309,9 @@ namespace VSS.TRex.Caching
           // 2. From the project list of contexts
           _projectContexts[context.ProjectUID].Remove(context);
 
+          // 3. Dispose the context
+          context.Dispose();
+
           numRemoved++;
           Interlocked.Increment(ref _contextRemovalCount);
         }
@@ -343,7 +343,7 @@ namespace VSS.TRex.Caching
         }
       }
 
-      if (projectContexts == null || projectContexts.Count <= 0)
+      if (projectContexts == null || projectContexts.Count == 0)
         return;
 
       var numInvalidatedContexts = 0;
@@ -352,17 +352,14 @@ namespace VSS.TRex.Caching
       // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
       foreach (var context in projectContexts)
       {
-        lock (context)
+        if (context.FingerPrint.Contains(designUid.ToString()))
         {
-          if (context.FingerPrint.Contains(designUid.ToString()))
-          {
-            context.InvalidateAllSubGridsNoLock();
-            numInvalidatedContexts++;
-          }
+          context.InvalidateAllSubGrids();
+          numInvalidatedContexts++;
         }
       }
+
       _log.LogInformation($"Invalidating sub grids due to design change for Project:{projectUid},  Design{designUid}, #ContextsInvalidated:{numInvalidatedContexts}");
     }
-
   }
 }

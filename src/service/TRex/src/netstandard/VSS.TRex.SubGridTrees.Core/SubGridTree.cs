@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -63,7 +64,7 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Base class for implementation of sub grid trees that defines various parameters and constants related to them
     /// </summary>
-    public class SubGridTree : ISubGridTree
+    public class SubGridTree : ISubGridTree, IDisposable
     {
         // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridTree>();
 
@@ -142,20 +143,23 @@ namespace VSS.TRex.SubGridTrees
         public virtual ISubGrid CreateNewSubGrid(byte level) => _subGridFactory.GetSubGrid(this, level);
 
         protected int indexOriginOffset;
-
+        private bool _disposedValue;
+       
         /// <summary>
         /// The value of the index origin offset for this sub grid tree
         /// </summary>
         public int IndexOriginOffset => indexOriginOffset;
 
         /// <summary>
+        /// An optional slim reader writer lock to manage cooperating threads operating on a sub grid tree
+        /// </summary>
+        public ReaderWriterLockSlim ReaderWriterLock { get; private set; } = null;
+
+        /// <summary>
         /// Base Sub Grid Tree constructor. Creates a tree with the requested number of levels, 
         /// using the requested cell size for leaf cells and the supplied sub grid factory to create
         /// its leaf and node sub grids
         /// </summary>
-        /// <param name="numLevels"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="subGridFactory"></param>
         public SubGridTree(byte numLevels,
                            double cellSize,
                            ISubGridFactory subGridFactory)
@@ -571,6 +575,12 @@ namespace VSS.TRex.SubGridTrees
       public virtual int SerialisedVersion() => 0;
 
       /// <summary>
+      /// Provisions a slim reader write lock for sub grid tree activities to take advantage of when coordinating
+      /// concurrent activities with in the tree
+      /// </summary>
+      public void InitialiseReaderWriterLocking() => ReaderWriterLock ??= new ReaderWriterLockSlim();
+
+      /// <summary>
       /// The internal logic to serialise out the content of the sub grid tree using the SubGridTreePersistor
       /// </summary>
       private void SerialiseInReader(BinaryReader reader) => SubGridTreePersistor.Read(this, SerialisedHeaderName(), SerialisedVersion(), reader);
@@ -601,5 +611,25 @@ namespace VSS.TRex.SubGridTrees
       /// Deserializes the content of the sub grid tree from a memory stream
       /// </summary>
       public void FromStream(MemoryStream stream) => FromToBytes.FromStream(stream, SerialiseInReader);
+
+      protected virtual void Dispose(bool disposing)
+      {
+        if (!_disposedValue)
+        {
+          if (disposing)
+          {
+            ReaderWriterLock?.Dispose();
+            ReaderWriterLock = null;
+          }
+
+          _disposedValue = true;
+        }
+      }
+
+      public void Dispose()
+      {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+      }
     }
 }

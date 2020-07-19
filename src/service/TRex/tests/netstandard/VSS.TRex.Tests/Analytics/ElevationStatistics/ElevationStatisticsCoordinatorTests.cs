@@ -44,7 +44,6 @@ namespace VSS.TRex.Tests.Analytics.ElevationStatistics
     {
       var aggregator = _getElevationAggregator();
 
-      Assert.True(aggregator.RequiresSerialisation, "Invalid aggregator value for RequiresSerialisation.");
       Assert.True(aggregator.SiteModelID == Arg.ProjectID, "Invalid aggregator value for SiteModelID.");
       Assert.True(Math.Abs(aggregator.CellSize - _siteModel.CellSize) < Consts.TOLERANCE_DIMENSION, "Invalid aggregator value for CellSize.");
       Assert.True(Math.Abs(aggregator.MinElevation - Consts.MAX_ELEVATION) < Consts.TOLERANCE_HEIGHT, "Invalid aggregator value for MinElevation.");

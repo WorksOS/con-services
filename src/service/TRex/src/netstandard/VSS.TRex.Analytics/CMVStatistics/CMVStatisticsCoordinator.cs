@@ -22,7 +22,6 @@ namespace VSS.TRex.Analytics.CMVStatistics
     /// <returns></returns>
     public override AggregatorBase ConstructAggregator(CMVStatisticsArgument argument) => new CMVStatisticsAggregator
     {
-      RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.CellSize,
       OverrideMachineCMV = argument.Overrides.OverrideMachineCCV,

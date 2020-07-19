@@ -117,11 +117,27 @@ namespace CoreX.Wrapper
     {
       var llhCoordinates = new LLH[coordinates.Length];
 
+      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+
       for (var i = 0; i < coordinates.Length; i++)
       {
         var nee = coordinates[i];
 
-        llhCoordinates[i] = TransformNEEToLLH(csib, nee, fromType, toType);
+        transformer.Transform(
+          (geoCoordinateTypes)fromType,
+          nee.East,
+          nee.North,
+          nee.Elevation,
+          (geoCoordinateTypes)toType,
+          out var toY, out var toX, out var toZ);
+
+        // The toX and toY parameters mirror the order of the input parameters fromX and fromY; they are not grid coordinate positions.
+        llhCoordinates[i] = new LLH
+        {
+          Latitude = toY,
+          Longitude = toX,
+          Height = toZ
+        };
       }
 
       return llhCoordinates;
@@ -141,7 +157,7 @@ namespace CoreX.Wrapper
         coordinates.Longitude,
         coordinates.Height,
         (geoCoordinateTypes)toType,
-        out var toX, out var toY, out var toZ);
+        out var toY, out var toX, out var toZ);
 
       return new NEE
       {
@@ -159,10 +175,26 @@ namespace CoreX.Wrapper
     {
       var neeCoordinates = new NEE[coordinates.Length];
 
+      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+
       for (var i = 0; i < coordinates.Length; i++)
       {
         var llh = coordinates[i];
-        neeCoordinates[i] = TransformLLHToNEE(csib, llh, fromType, toType);
+
+        transformer.Transform(
+          (geoCoordinateTypes)fromType,
+          llh.Latitude,
+          llh.Longitude,
+          llh.Height,
+          (geoCoordinateTypes)toType,
+          out var toY, out var toX, out var toZ);
+
+        neeCoordinates[i] = new NEE
+        {
+          North = toY,
+          East = toX,
+          Elevation = toZ
+        };
       }
 
       return neeCoordinates;

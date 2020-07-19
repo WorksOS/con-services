@@ -110,6 +110,11 @@ namespace VSS.TRex.SiteModels
 
     public void MarkForDeletion()
     {
+      if (PrimaryStorageProxy.Mutability != StorageMutability.Mutable)
+      {
+        throw new TRexPersistencyException($"Site model {ID} may only be marked for deletion within the mutable context");
+      }
+
       // Note this site model as being prepared for deletion
       IsMarkedForDeletion = true;
 
@@ -124,6 +129,11 @@ namespace VSS.TRex.SiteModels
 
     public void RemovedMarkForDeletion()
     {
+      if (PrimaryStorageProxy.Mutability != StorageMutability.Mutable)
+      {
+        throw new TRexPersistencyException($"Site model {ID} may only be unmarked for deletion within the mutable context");
+      }
+
       // Note this site model as being ready for use after a deletion operation
       IsMarkedForDeletion = false;
 
@@ -640,9 +650,6 @@ versionMap = null;
     /// <summary>
     /// Saves only the core metadata about the site model to the persistent store
     /// </summary>
-    /// <param name="storageProxy"></param>
-    /// <param name="commitNow"></param>
-    /// <returns></returns>
     public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow)
     {
       using (var stream = this.ToStream())
@@ -683,7 +690,6 @@ versionMap = null;
     /// Save the site model metadata and core mutated state driven by TAG file ingest
     /// </summary>
     /// <param name="storageProxy"></param>
-    /// <returns></returns>
     public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
     {
       var result = true;

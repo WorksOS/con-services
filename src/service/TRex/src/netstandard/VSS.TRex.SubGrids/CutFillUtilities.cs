@@ -14,16 +14,12 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public static class CutFillUtilities
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger("CutFillUtilities");
+    private static readonly ILogger _log = Logging.Logger.CreateLogger("CutFillUtilities");
 
     /// <summary>
     /// Calculates a cut/fill sub grid from a production data elevation sub grid and an elevation sub grid computed from a referenced design,
     /// replacing the elevations in the first sub grid with the resulting cut fill values
     /// </summary>
-    /// <param name="designWrapper"></param>
-    /// <param name="SubGrid"></param>
-    /// <param name="DataModelID"></param>
-    /// <returns></returns>
     public static async Task<(bool executionResult, DesignProfilerRequestResult profilerRequestResult)> ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid, IDesignWrapper designWrapper, Guid DataModelID)
     {
       (bool executionResult, DesignProfilerRequestResult profilerRequestResult) result = (false, DesignProfilerRequestResult.UnknownError);
@@ -37,7 +33,7 @@ namespace VSS.TRex.SubGrids
 
       if (result.profilerRequestResult != DesignProfilerRequestResult.OK && result.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
       {
-        Log.LogError($"Design profiler sub grid elevation request for {SubGrid.OriginAsCellAddress()} failed with error {result.profilerRequestResult}");
+        _log.LogError($"Design profiler sub grid elevation request for {SubGrid.OriginAsCellAddress()} failed with error {result.profilerRequestResult}");
         return result;
       }
 
@@ -51,8 +47,6 @@ namespace VSS.TRex.SubGrids
     /// Calculates a cut/fill sub grid from two elevation sub grids, replacing the elevations
     /// in the first sub grid with the resulting cut fill values
     /// </summary>
-    /// <param name="subGrid1"></param>
-    /// <param name="subGrid2"></param>
     public static void ComputeCutFillSubGrid(IClientHeightLeafSubGrid subGrid1, IClientHeightLeafSubGrid subGrid2)
     {
       SubGridUtilities.SubGridDimensionalIterator((I, J) =>

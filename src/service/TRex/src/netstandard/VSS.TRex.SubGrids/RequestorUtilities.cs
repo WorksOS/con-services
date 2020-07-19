@@ -99,6 +99,7 @@ namespace VSS.TRex.SubGrids
         if (_enableGeneralSubGridResultCaching && 
             ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)gridDataType])
         {
+          filter.AttributeFilter.SiteModel = siteModel;
           var contextType1 = Utilities.IntermediaryICGridDataTypeForDataType(gridDataType, true);
           var contextType2 = Utilities.IntermediaryICGridDataTypeForDataType(gridDataType, false);
 

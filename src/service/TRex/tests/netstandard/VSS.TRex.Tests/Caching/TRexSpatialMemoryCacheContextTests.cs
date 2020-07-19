@@ -209,14 +209,15 @@ namespace VSS.TRex.Tests.Caching
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
-       context.InvalidateSubGridNoLock(0, 0, out bool present);
-       present.Should().BeFalse();
+      // context.InvalidateSubGrid facades context.InvalidateSubGrid
+      context.InvalidateSubGrid(0, 0, out var present);
+      present.Should().BeFalse();
 
-       var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
-       context.Add(element);
+      var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
+      context.Add(element);
 
-       context.InvalidateSubGridNoLock(2000, 3000, out present);
-       present.Should().BeTrue();
+      context.InvalidateSubGrid(2000, 3000, out present);
+      present.Should().BeTrue();
     }
   }
 }

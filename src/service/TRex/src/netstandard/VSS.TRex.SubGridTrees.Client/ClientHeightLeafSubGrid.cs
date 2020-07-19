@@ -7,6 +7,7 @@ using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -242,6 +243,11 @@ namespace VSS.TRex.SubGridTrees.Client
       return base.IndicativeSizeInBytes() + 
              //SurveyedSurfaceMap.IndicativeSizeInBytes() +
              SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+    }
+
+    public override bool SupportsAssignationFrom(GridDataType gridDataType)
+    {
+      return gridDataType == GridDataType.Height || gridDataType == GridDataType.HeightAndTime;
     }
 
     /// <summary>

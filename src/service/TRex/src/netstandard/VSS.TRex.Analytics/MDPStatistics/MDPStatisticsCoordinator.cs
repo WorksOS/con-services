@@ -20,7 +20,6 @@ namespace VSS.TRex.Analytics.MDPStatistics
     /// <returns></returns>
     public override AggregatorBase ConstructAggregator(MDPStatisticsArgument argument) => new MDPStatisticsAggregator
     {
-      RequiresSerialisation = true,
       SiteModelID = argument.ProjectID,
       CellSize = SiteModel.CellSize,
       OverrideMachineMDP = argument.Overrides.OverrideMachineMDP,

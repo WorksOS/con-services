@@ -35,11 +35,12 @@ namespace VSS.TRex.Tests.SubGridTrees.Server
     {
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel
         (new [] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag")}, out _);
-      siteModel.SetStorageRepresentationToSupply(StorageMutability.Immutable);
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       siteModel.Grid.CountLeafSubGridsInMemory().Should().Be(0);
       siteModel.Grid.CachingStrategy.Should().Be(ServerSubGridTreeCachingStrategy.CacheSubGridsInTree);
+
+      siteModel.ExistenceMap.CountBits().Should().BeGreaterThan(0);
 
       // Request all sub grids and ensure they are present in cache
       siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(address =>

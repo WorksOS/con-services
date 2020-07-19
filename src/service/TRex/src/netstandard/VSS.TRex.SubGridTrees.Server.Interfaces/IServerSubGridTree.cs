@@ -6,7 +6,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
-  public interface IServerSubGridTree : ISubGridTree, IDisposable
+  public interface IServerSubGridTree : ISubGridTree
   {
     bool IsMutable { get; }
 

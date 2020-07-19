@@ -11,21 +11,18 @@ namespace VSS.TRex.SubGridTrees
   /// are in turn implemented using a GenericLeafSubGrid in T based subclass, S.
   /// The tree automates tree node and leaf sub grid management behind a uniform tree wide Cells[,] facade.
   /// </summary>
-  /// <typeparam name="T"></typeparam>
-  /// <typeparam name="S"></typeparam>
+
   public class GenericSubGridTree<T, S> : SubGridTree, IGenericSubGridTree<T, S> 
     where S : IGenericLeafSubGrid<T>, ILeafSubGrid, new()
   {
     /// <summary>
     /// Default indexer property to access the cells as a default property of the generic sub grid
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <returns></returns>
+
     public T this[int x, int y]
     {
       get => GetCell(x, y); 
-      set => SetCell(x, y, value); 
+      set => SetCell(x, y, value);
     }
 
     /// <summary>
@@ -33,12 +30,9 @@ namespace VSS.TRex.SubGridTrees
     /// Setting a value for a cell automatically creates all necessary node & leaf sub grids to
     /// store the value.
     /// </summary>
-    /// <param name="cellX"></param>
-    /// <param name="cellY"></param>
-    /// <returns></returns>
     private T GetCell(int cellX, int cellY)
     {
-      ISubGrid subGrid = LocateSubGridContaining(cellX, cellY, numLevels);
+      var subGrid = LocateSubGridContaining(cellX, cellY, numLevels);
 
       if (subGrid == null)
         return NullCellValue;
@@ -54,12 +48,9 @@ namespace VSS.TRex.SubGridTrees
     /// If there is no leaf sub grid, or the value in the leaf sub grid is nul, this function returns the value
     /// represented by NullCellValue().
     /// </summary>
-    /// <param name="cellX"></param>
-    /// <param name="cellY"></param>
-    /// <param name="value"></param>
     private void SetCell(int cellX, int cellY, T value)
     {
-      ISubGrid subGrid = ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf);
+      var subGrid = ConstructPathToCell(cellX, cellY, SubGridPathConstructionType.CreateLeaf);
 
       subGrid.GetSubGridCellIndex(cellX, cellY, out byte subGridX, out byte subGridY);
       ((S) subGrid).Items[subGridX, subGridY] = value;
@@ -70,7 +61,6 @@ namespace VSS.TRex.SubGridTrees
     /// Descendants should override this method. Calling it directly will result in the standard .Net
     /// default value for type T being returned.
     /// </summary>
-    /// <returns></returns>
     public virtual T NullCellValue => default(T);
 
     /// <summary>
@@ -78,8 +68,6 @@ namespace VSS.TRex.SubGridTrees
     /// the sub grid factory is created from the standard NodeSubGrid class, and the base generic leaf sub grid
     /// derived from T. Note: This is only suitable if the default(T) value is appropriate for the cell null value.
     /// </summary>
-    /// <param name="numLevels"></param>
-    /// <param name="cellSize"></param>
     public GenericSubGridTree(byte numLevels,
       double cellSize) : base(numLevels, cellSize, new SubGridFactory<NodeSubGrid, S>())
     {
@@ -99,7 +87,6 @@ namespace VSS.TRex.SubGridTrees
     /// iterated over and all values (both null and non-null) in the leaf sub grid are presented
     /// to the functor.
     /// </summary>
-    /// <param name="functor"></param>
     public void ForEach(Func<T, bool> functor)
     {
       ScanAllSubGrids(subGrid =>

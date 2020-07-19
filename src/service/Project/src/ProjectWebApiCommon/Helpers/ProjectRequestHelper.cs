@@ -48,12 +48,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (projects.Projects != null)
         foreach (var project in projects.Projects)
         {
-          if (project.UserProjectRole == UserProjectRoleEnum.Admin)
-          {
-            var projectDatabaseModel = ConvertCwsToWorksOSProject(project, log);
-            if (projectDatabaseModel != null)
-              projectDatabaseModelList.Add(projectDatabaseModel);
-          }
+          var projectDatabaseModel = ConvertCwsToWorksOSProject(project, log);
+          if (projectDatabaseModel != null)
+            projectDatabaseModelList.Add(projectDatabaseModel);
         }
 
       log.LogDebug($"{nameof(GetProjectListForCustomer)} Project list contains {projectDatabaseModelList.Count} projects");

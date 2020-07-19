@@ -67,7 +67,7 @@ namespace TAGFiles.Tests
     [InlineData(10)]
     public async Task Test_TAGFileConverter_Execute_SingleFileMultipleTimesConcurrently(int instanceCount)
     {
-      var result = await Enumerable.Range(1, instanceCount).Select(x => Task.Factory.Run(() => DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false))).WhenAll();
+      var result = await Enumerable.Range(1, instanceCount).Select(x => Task.Run(() => DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false))).WhenAll();
 
       result.Length.Should().Be(instanceCount);
 

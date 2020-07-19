@@ -56,7 +56,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Theory]
-    [InlineData(1204.00000000004, 2312.999999989388, 609.0)]
+    [InlineData(2312.999999989388, 1204.00000000004, 609.0)]
     public void CoordinateService_SimpleLLHToNEE(double toNorthing, double toEasting, double toElevation)
     {
       var neeCoords = _convertCoordinates.LLHToNEE(_csib,
@@ -85,12 +85,12 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       neeCoords.Should().NotBeNull();
 
-      neeCoords[0].North.Should().BeApproximately(1204.00000000004, GRID_CM_TOLERANCE);
-      neeCoords[0].East.Should().BeApproximately(2312.999999989388, GRID_CM_TOLERANCE);
+      neeCoords[0].North.Should().BeApproximately(2312.999999989388, GRID_CM_TOLERANCE);
+      neeCoords[0].East.Should().BeApproximately(1204.00000000004, GRID_CM_TOLERANCE);
       neeCoords[0].Elevation.Should().BeApproximately(609.0, GRID_CM_TOLERANCE);
 
-      neeCoords[1].North.Should().BeApproximately(1204.00000000004, GRID_CM_TOLERANCE);
-      neeCoords[1].East.Should().BeApproximately(2312.999999989388, GRID_CM_TOLERANCE);
+      neeCoords[1].North.Should().BeApproximately(2312.999999989388, GRID_CM_TOLERANCE);
+      neeCoords[1].East.Should().BeApproximately(1204.00000000004, GRID_CM_TOLERANCE);
       neeCoords[1].Elevation.Should().BeApproximately(609.0, GRID_CM_TOLERANCE);
     }
 
@@ -121,8 +121,8 @@ namespace CoreX.Wrapper.UnitTests.Tests
       var xyz = _convertCoordinates.LLHToNEE(_csib, new XYZ(-115.01, 36.21, 10), InputAs.Degrees);
 
       xyz.Should().NotBeNull();
-      xyz.Y.Should().BeApproximately(3656.9996220201547, GRID_CM_TOLERANCE);
-      xyz.X.Should().BeApproximately(1502.0980247307239, GRID_CM_TOLERANCE);
+      xyz.Y.Should().BeApproximately(1502.0980247307239, GRID_CM_TOLERANCE);
+      xyz.X.Should().BeApproximately(3656.9996220201547, GRID_CM_TOLERANCE);
       xyz.Z.Should().BeApproximately(68.058950967814724, GRID_CM_TOLERANCE);
     }
 
@@ -140,16 +140,16 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       neeCoords.Should().NotBeNull();
 
-      neeCoords[0].Y.Should().BeApproximately(3656.9996220201547, GRID_CM_TOLERANCE);
-      neeCoords[0].X.Should().BeApproximately(1502.0980247307239, GRID_CM_TOLERANCE);
+      neeCoords[0].Y.Should().BeApproximately(1502.0980247307239, GRID_CM_TOLERANCE);
+      neeCoords[0].X.Should().BeApproximately(3656.9996220201547, GRID_CM_TOLERANCE);
       neeCoords[0].Z.Should().BeApproximately(68.058950967814724, GRID_CM_TOLERANCE);
 
-      neeCoords[1].Y.Should().BeApproximately(2757.6347846893877, GRID_CM_TOLERANCE);
-      neeCoords[1].X.Should().BeApproximately(2611.7640792344355, GRID_CM_TOLERANCE);
+      neeCoords[1].Y.Should().BeApproximately(2611.7640792344355, GRID_CM_TOLERANCE);
+      neeCoords[1].X.Should().BeApproximately(2757.6347846893877, GRID_CM_TOLERANCE);
       neeCoords[1].Z.Should().BeApproximately(69.1538811614891, GRID_CM_TOLERANCE);
 
-      neeCoords[2].Y.Should().BeApproximately(1858.4988322410918, GRID_CM_TOLERANCE);
-      neeCoords[2].X.Should().BeApproximately(3721.5247073087949, GRID_CM_TOLERANCE);
+      neeCoords[2].Y.Should().BeApproximately(3721.5247073087949, GRID_CM_TOLERANCE);
+      neeCoords[2].X.Should().BeApproximately(1858.4988322410918, GRID_CM_TOLERANCE);
       neeCoords[2].Z.Should().BeApproximately(70.248819491614839, GRID_CM_TOLERANCE);
     }
 
@@ -175,15 +175,16 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Theory]
-    [InlineData(3656.9996220201547, 1502.0980247307239, 68.058950967814724)]
-    public void CoordinateService_SimpleWGS84PointToXYZNEE(double easting, double northing, double elevation)
+    [InlineData(36.21, -115.01, 10, 1502.0980247307239, 3656.9996220201547, 68.058950967814724, InputAs.Degrees)]
+    [InlineData(0.63211125328050133, -2.007779249296807, 550.87194700441933, 2313, 1204, 609, InputAs.Radians)]
+    public void CoordinateService_SimpleWGS84PointToXYZNEE(double lat, double lon, double height, double toY, double toX, double toZ, InputAs inputAs)
     {
-      var neeCoords = _convertCoordinates.WGS84ToCalibration(_csib, new WGS84Point(-115.01, 36.21, 10));
+      var neeCoords = _convertCoordinates.WGS84ToCalibration(_csib, new WGS84Point(lon, lat, height), inputAs);
 
       neeCoords.Should().NotBeNull();
-      neeCoords.Y.Should().BeApproximately(easting, GRID_CM_TOLERANCE);
-      neeCoords.X.Should().BeApproximately(northing, GRID_CM_TOLERANCE);
-      neeCoords.Z.Should().BeApproximately(elevation, GRID_CM_TOLERANCE);
+      neeCoords.Y.Should().BeApproximately(toY, GRID_CM_TOLERANCE);
+      neeCoords.X.Should().BeApproximately(toX, GRID_CM_TOLERANCE);
+      neeCoords.Z.Should().BeApproximately(toZ, GRID_CM_TOLERANCE);
     }
 
     [Fact]
@@ -195,25 +196,17 @@ namespace CoreX.Wrapper.UnitTests.Tests
         new WGS84Point(-115.02, 36.22, 11)
       };
 
-      var neeCoords = _convertCoordinates.WGS84ToCalibration(_csib, points);
+      var neeCoords = _convertCoordinates.WGS84ToCalibration(_csib, points, InputAs.Degrees);
 
       neeCoords.Should().NotBeNull();
 
-      neeCoords[0].Y.Should().BeApproximately(3656.9996220201547, GRID_CM_TOLERANCE);
-      neeCoords[0].X.Should().BeApproximately(1502.0980247307239, GRID_CM_TOLERANCE);
+      neeCoords[0].Y.Should().BeApproximately(1502.0980247307239, GRID_CM_TOLERANCE);
+      neeCoords[0].X.Should().BeApproximately(3656.9996220201547, GRID_CM_TOLERANCE);
       neeCoords[0].Z.Should().BeApproximately(68.058950967814724, GRID_CM_TOLERANCE);
 
-      neeCoords[1].Y.Should().BeApproximately(2757.6347846893877, GRID_CM_TOLERANCE);
-      neeCoords[1].X.Should().BeApproximately(2611.7640792344355, GRID_CM_TOLERANCE);
+      neeCoords[1].Y.Should().BeApproximately(2611.7640792344355, GRID_CM_TOLERANCE);
+      neeCoords[1].X.Should().BeApproximately(2757.6347846893877, GRID_CM_TOLERANCE);
       neeCoords[1].Z.Should().BeApproximately(69.1538811614891, GRID_CM_TOLERANCE);
-    }
-
-    [Fact]
-    public void CoordinateService_ImportCSIBFromDC()
-    {
-      var csib = _convertCoordinates.DCFileToCSIB(DCFile.GetFilePath(DCFile.BOOTCAMP_2012));
-
-      csib.Should().Be(_csib);
     }
   }
 }
