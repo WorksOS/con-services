@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
@@ -35,7 +37,6 @@ using VSS.Productivity3D.Project.Abstractions.Extensions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.Project.Abstractions.Utilities;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -811,5 +812,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     #endregion fileActivation
+
+    #region coordinate system file aka calibration file
+    [Route("api/v6/calibration")]
+    [HttpGet]
+    public async Task<CoordinateSystemFileResult> GetCalibration([FromQuery] string projectUid)
+    {
+      Logger.LogInformation($"{nameof(GetCalibration)}: projectUid={projectUid}");
+
+      //Get the calibration file from CWS
+      var result = await CwsProfileSettingsClient.GetProjectConfiguration(Guid.Parse(projectUid), ProjectConfigurationFileType.CALIBRATION, customHeaders);
+      var contents = await CwsProfileSettingsClient.DownloadData(result.FileDownloadLink, customHeaders);
+      return new  CoordinateSystemFileResult{FileName = CwsFileNameHelper.ExtractFileName(result.FileName), Contents = Convert.ToBase64String(contents)};
+    }
+    #endregion
+
   }
 }
