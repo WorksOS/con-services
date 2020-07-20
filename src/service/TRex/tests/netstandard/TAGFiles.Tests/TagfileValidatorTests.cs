@@ -20,6 +20,7 @@ using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
+using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -57,9 +58,10 @@ namespace TAGFiles.Tests
       };
 
       // Validate tagfile 
-      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      var result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
       Assert.True(result.Code == (int)TRexTagFileResultCode.TRexInvalidTagfile, "Failed to return correct error code");
       Assert.Equal("TRexInvalidTagfile", result.Message);
+      Assert.NotNull(tagFilePreScan);
     }
 
     [Fact]
@@ -67,7 +69,7 @@ namespace TAGFiles.Tests
     {
       SetupDITfa(false);
 
-      TagFileDetail td = new TagFileDetail()
+      var td = new TagFileDetail()
       {
         assetId = Guid.NewGuid(),
         projectId = Guid.NewGuid(),
@@ -77,10 +79,11 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      // Validate tagfile
-      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      // Validate tagfile 
+      var result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
       Assert.True(result.Code == (int)TRexTagFileResultCode.TRexTagFileReaderError, "Failed to return correct error code");
       Assert.Equal("InvalidValueTypeID", result.Message);
+      Assert.NotNull(tagFilePreScan);
     }
 
     [Fact]
@@ -91,7 +94,7 @@ namespace TAGFiles.Tests
       SetupDITfa();
 
       byte[] tagContent;
-      using (FileStream tagFileStream =
+      using (var tagFileStream =
         new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"),
           FileMode.Open, FileAccess.Read))
       {
@@ -99,7 +102,7 @@ namespace TAGFiles.Tests
         tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
-      TagFileDetail td = new TagFileDetail()
+      var td = new TagFileDetail()
       {
         assetId = Guid.NewGuid(),
         projectId = Guid.NewGuid(),
@@ -109,7 +112,12 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      var result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
+      Assert.Equal("success", result.Message);
+      Assert.NotNull(tagFilePreScan);
+      Assert.Equal("0523J019SW", tagFilePreScan.HardwareID);
+
+      result = await TagfileValidator.ValidSubmission(td, tagFilePreScan).ConfigureAwait(false);
       Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
@@ -124,7 +132,7 @@ namespace TAGFiles.Tests
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
-      using (FileStream tagFileStream =
+      using (var tagFileStream =
         new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"),
           FileMode.Open, FileAccess.Read))
       {
@@ -132,7 +140,7 @@ namespace TAGFiles.Tests
         tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
-      TagFileDetail td = new TagFileDetail()
+      var td = new TagFileDetail()
       {
         assetId = null,
         projectId = projectUid,
@@ -142,7 +150,10 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      var tagFilePreScan = new TAGFilePreScan();
+      await using (var stream = new MemoryStream(td.tagFileContent))
+        tagFilePreScan.Execute(stream);
+      var result = await TagfileValidator.ValidSubmission(td, tagFilePreScan).ConfigureAwait(false);
       Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
@@ -157,7 +168,7 @@ namespace TAGFiles.Tests
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
-      using (FileStream tagFileStream =
+      using (var tagFileStream =
         new FileStream(Path.Combine("TestData", "TAGFiles", "SeedPosition-usingNEE.tag"),
           FileMode.Open, FileAccess.Read))
       {
@@ -165,7 +176,7 @@ namespace TAGFiles.Tests
         tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
-      TagFileDetail td = new TagFileDetail()
+      var td = new TagFileDetail()
       {
         assetId = null,
         projectId = projectUid,
@@ -175,7 +186,10 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      var tagFilePreScan = new TAGFilePreScan();
+      await using (var stream = new MemoryStream(td.tagFileContent))
+        tagFilePreScan.Execute(stream); 
+      var result = await TagfileValidator.ValidSubmission(td, tagFilePreScan).ConfigureAwait(false);
       Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
       Assert.Equal("success", result.Message);
     }
@@ -190,7 +204,7 @@ namespace TAGFiles.Tests
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
-      using (FileStream tagFileStream =
+      using (var tagFileStream =
         new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"),
           FileMode.Open, FileAccess.Read))
       {
@@ -198,7 +212,7 @@ namespace TAGFiles.Tests
         tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
-      TagFileDetail td = new TagFileDetail()
+      var td = new TagFileDetail()
       {
         assetId = null,
         projectId = projectUid,
@@ -208,7 +222,10 @@ namespace TAGFiles.Tests
         IsJohnDoe = false
       };
 
-      var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
+      var tagFilePreScan = new TAGFilePreScan();
+      await using (var stream = new MemoryStream(td.tagFileContent))
+        tagFilePreScan.Execute(stream);
+      var result = await TagfileValidator.ValidSubmission(td, tagFilePreScan).ConfigureAwait(false);
       Assert.True(result.Code == 3044, "Failed to return correct error code");
       Assert.Equal("Manual Import: cannot import to a Civil type project", result.Message);
     }
@@ -219,7 +236,7 @@ namespace TAGFiles.Tests
       SetupDITfa();
 
       byte[] tagContent;
-      using (FileStream tagFileStream =
+      using (var tagFileStream =
         new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"),
           FileMode.Open, FileAccess.Read))
       {
@@ -227,7 +244,7 @@ namespace TAGFiles.Tests
         tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
-      TagFileDetail td = new TagFileDetail()
+      var td = new TagFileDetail()
       {
         assetId = Guid.Parse("{00000000-0000-0000-0000-000000000001}"),
         projectId = Guid.Parse("{00000000-0000-0000-0000-000000000001}"),
@@ -247,7 +264,7 @@ namespace TAGFiles.Tests
       SetupDITfa();
 
       byte[] tagContent;
-      using (FileStream tagFileStream =
+      using (var tagFileStream =
         new FileStream(Path.Combine("TestData", "TAGFiles", "TestTAGFile.tag"),
           FileMode.Open, FileAccess.Read))
       {
@@ -255,7 +272,7 @@ namespace TAGFiles.Tests
         tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
       }
 
-      TagFileDetail td = new TagFileDetail()
+      var td = new TagFileDetail()
       {
         assetId = Guid.Parse("{00000000-0000-0000-0000-000000000001}"),
         projectId = Guid.Parse("{00000000-0000-0000-0000-000000000001}"),

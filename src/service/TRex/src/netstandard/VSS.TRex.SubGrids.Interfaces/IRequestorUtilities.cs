@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.Caching.Interfaces;
+﻿using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -20,7 +19,6 @@ namespace VSS.TRex.SubGrids.Interfaces
       ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       ITRexSpatialMemoryCacheContext[] CacheContexts)[] ConstructRequestorIntermediaries(ISiteModel siteModel,
         IFilterSet filters,
         bool includeSurveyedSurfaceInformation,
@@ -39,7 +37,6 @@ namespace VSS.TRex.SubGrids.Interfaces
         ICombinedFilter Filter,
         ISurveyedSurfaces FilteredSurveyedSurfaces,
         ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-        ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
         ITRexSpatialMemoryCacheContext[] CacheContexts)[] intermediaries,
       AreaControlSet areaControlSet,
       ISubGridTreeBitMask prodDataMask);

@@ -24,8 +24,6 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
     /// <returns></returns>
     public ProfileRequestResponse<T> AggregateWith(ProfileRequestResponse<T> other)
     {
-      GridDistanceBetweenProfilePoints += other.GridDistanceBetweenProfilePoints;
-
       ProfileCells.AddRange(other.ProfileCells);
 
       return this;

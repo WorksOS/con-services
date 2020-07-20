@@ -20,7 +20,7 @@ namespace VSS.TRex.Volumes.Executors
   /// <summary>
   /// Computes a simple volumes calculation within a partition in the cache compute cluster
   /// </summary>
-  public class ComputeSimpleVolumes_Coordinator
+  public class ComputeSimpleVolumes_Coordinator : IDisposable
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeSimpleVolumes_Coordinator>();
 
@@ -91,6 +91,7 @@ namespace VSS.TRex.Volumes.Executors
     /// Parameters for lift analysis
     /// </summary>
     private ILiftParameters LiftParams;
+    private bool _disposedValue;
 
     /// <summary>
     /// Performs functional initialization of ComputeVolumes state that is dependent on the initial state
@@ -183,7 +184,6 @@ namespace VSS.TRex.Volumes.Executors
           // underlying volume calculation
           Aggregator = new SimpleVolumesCalculationsAggregator
           {
-            RequiresSerialization = true,
             SiteModelID = SiteModelID,
             LiftParams = LiftParams,
             CellSize = siteModel.CellSize,
@@ -262,6 +262,26 @@ namespace VSS.TRex.Volumes.Executors
       }
 
       return volumesResult;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!_disposedValue)
+      {
+        if (disposing)
+        {
+          Aggregator?.Dispose();
+          Aggregator = null;
+        }
+
+        _disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: true);
     }
   }
 }

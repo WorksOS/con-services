@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using FluentAssertions;
 using VSS.TRex.Common.Utilities;
@@ -16,6 +14,7 @@ namespace VSS.TRex.Tests.Utility
     [InlineData("123abcSV", MachineControlPlatformType.CB450)]
     [InlineData("123abcSW", MachineControlPlatformType.CB460)]
     [InlineData("123abcYU", MachineControlPlatformType.EC520)]
+    [InlineData("ZZ", MachineControlPlatformType.UNKNOWN)]
     public void Test_SerialToPlatform(string serial, MachineControlPlatformType expectedModel)
     {
       MachineSerialUtilities.MapSerialToModel(serial).Should().Be(expectedModel);
@@ -34,7 +33,6 @@ namespace VSS.TRex.Tests.Utility
 
 
     [Theory]
-    [InlineData("ZZ")]
     [InlineData("")]
     public void Test_InvalidMappings(string serial)
     {

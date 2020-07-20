@@ -90,6 +90,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(Consts.kMinTagFileLengthDefault);
           config.Setup(c => c.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(Consts.ENABLE_TFA_SERVICE);
+          config.Setup(c => c.GetValueBool("ENABLE_DEVICE_GATEWAY", It.IsAny<bool>())).Returns(Consts.ENABLE_DEVICE_GATEWAY);
           config.Setup(c => c.GetValueString("TAGFILE_ARCHIVE_FOLDER", It.IsAny<string>())).Returns("");
 
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("UnitTestAWSBucketKey");

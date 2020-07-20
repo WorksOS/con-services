@@ -47,7 +47,6 @@ namespace VSS.TRex.SubGrids.Interfaces
       ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
       ISurveyedSurfaces filteredSurveyedSurfaces,
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       IOverrideParameters overrides,
       ILiftParameters liftParams
     );

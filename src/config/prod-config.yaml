@@ -126,3 +126,4 @@ data:
   MOCK_CWS_PROFILE: "false"
   MOCK_CWS_PROJECT: "false"
   MOCK_CWS_USER: "false"
+  MOCK_CWS_DEVICEGATEWAY: "false"

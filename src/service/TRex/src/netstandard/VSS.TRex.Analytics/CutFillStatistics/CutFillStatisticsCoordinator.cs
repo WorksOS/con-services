@@ -29,7 +29,6 @@ namespace VSS.TRex.Analytics.CutFillStatistics
 
       return new CutFillStatisticsAggregator
       {
-        RequiresSerialisation = true,
         SiteModelID = argument.ProjectID,
         CellSize = SiteModel.CellSize,
         Offsets = argument.Offsets,

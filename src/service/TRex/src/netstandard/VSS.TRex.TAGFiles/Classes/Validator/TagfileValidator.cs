@@ -148,25 +148,30 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       return tfaResult;
     }
 
-    /// <summary>
-    /// Inputs a tagfile for validation and asset licensing checks
+    /// <summary> 
+    /// reads and validates tagFile, returning model for multi-use  
     /// </summary>
-    /// <param name="tagDetail"></param>
-    /// <returns></returns>
-    public static async Task<ContractExecutionResult> ValidSubmission(TagFileDetail tagDetail)
+    public static ContractExecutionResult PreScanTagFile(TagFileDetail tagDetail, out TAGFilePreScan tagFilePreScan)
     {
-      // Perform some Validation Checks
+      tagFilePreScan = new TAGFilePreScan(); 
+      
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
         return new ContractExecutionResult((int)TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
-
-      var tagFilePresScan = new TAGFilePreScan();
-
+      
       using (var stream = new MemoryStream(tagDetail.tagFileContent))
-        tagFilePresScan.Execute(stream);
+        tagFilePreScan.Execute(stream);
 
-      if (tagFilePresScan.ReadResult != TAGReadResult.NoError)
-        return new ContractExecutionResult((int)TRexTagFileResultCode.TRexTagFileReaderError, tagFilePresScan.ReadResult.ToString());
+      if (tagFilePreScan.ReadResult != TAGReadResult.NoError)
+        return new ContractExecutionResult((int)TRexTagFileResultCode.TRexTagFileReaderError, tagFilePreScan.ReadResult.ToString());
+      return new ContractExecutionResult((int)TRexTagFileResultCode.Valid);
+    }
 
+    /// <summary>
+    /// Inputs a tagfile for validation and asset licensing checks
+    ///      includes already scanned tagfile
+    /// </summary>
+    public static async Task<ContractExecutionResult> ValidSubmission(TagFileDetail tagDetail, TAGFilePreScan tagFilePreScan)
+    {
       // TAG file contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service
       {
@@ -194,7 +199,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
 
       // Contact TFA service to validate tag file details
-      var tfaResult = await CheckFileIsProcessable(tagDetail, tagFilePresScan).ConfigureAwait(false);
+      var tfaResult = await CheckFileIsProcessable(tagDetail, tagFilePreScan).ConfigureAwait(false);
       return new ContractExecutionResult((int)tfaResult.Code, tfaResult.Message);
     }
   }

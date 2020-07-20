@@ -1,18 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Types;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
@@ -31,6 +38,9 @@ namespace VSS.TRex.TAGFiles.Executors
     private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<Func<ITAGFileBufferQueue>>()();
 
     private bool OutputInformationalRequestLogging = true;
+    private static readonly bool _isDeviceGatewayEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_DEVICE_GATEWAY", Consts.ENABLE_DEVICE_GATEWAY);
+    private static readonly ITPaaSApplicationAuthentication _tPaaSApplicationAuthentication = DIContext.Obtain<ITPaaSApplicationAuthentication>();
+
 
     /// <summary>
     /// Receive a TAG file to be processed, validate TAG File Authorization for the file, and add it to the 
@@ -73,7 +83,22 @@ namespace VSS.TRex.TAGFiles.Executors
           };
 
           // Validate tag file submission
-          var result = await TagfileValidator.ValidSubmission(td);
+
+          //var tagFilePreScan = new TAGFilePreScan();
+          //await using (var stream = new MemoryStream(td.tagFileContent))
+          //  tagFilePreScan.Execute(stream);
+
+          ContractExecutionResult result; 
+          result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
+          
+          if (result.Code == (int) TRexTagFileResultCode.Valid)
+          {
+            if (_isDeviceGatewayEnabled)
+              SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
+
+            result = await TagfileValidator.ValidSubmission(td, tagFilePreScan);
+          }
+
           response.Code = result.Code;
           response.Message = result.Message;
           
@@ -149,6 +174,78 @@ namespace VSS.TRex.TAGFiles.Executors
           _log.LogInformation($"#Out# SubmitTAGFileResponse. Processed {tagFileName} Result: {response.Success}, Message:{response.Message} Code:{response.Code}");
       }
       return response;
+    }
+
+    ///
+    /// Send devices lastKnownStatus to cws deviceGateway aka connected site
+    ///     Don't need to await as this process should be fire and forget
+    ///        We don't care if the post is valid, or device exists etc
+    /// 
+    public static void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
+    {
+      // Marine devices will come through as CB450s
+      if (tagFilePreScan.PlatformType == MachineControlPlatformType.EC520 ||
+           tagFilePreScan.PlatformType == MachineControlPlatformType.UNKNOWN)
+        _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Not an applicable DeviceType: {tagFilePreScan.PlatformType}");
+      else
+      {
+        var seedLatitude = MathUtilities.RadiansToDegrees(tagFilePreScan.SeedLatitude ?? 0.0);
+        var seedLongitude = MathUtilities.RadiansToDegrees(tagFilePreScan.SeedLongitude ?? 0.0);
+        var seedNorthing = tagFilePreScan.SeedNorthing;
+        var seedEasting = tagFilePreScan.SeedEasting;
+        if (Math.Abs(seedLatitude) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE)
+        {
+          // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
+          var message = $"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} tagfile: {tagFileDetail.tagFileName} doesn't have a valid Seed Lat/Long. {tagFilePreScan.SeedLatitude}/{tagFilePreScan.SeedLongitude}. ";
+          if (seedNorthing != null && seedEasting != null)
+            message += $" It does have a Seed Northing/Easting {seedNorthing}/{seedEasting} however local grids are not currently supported for deviceGateway.";
+          _log.LogWarning(message);
+        }
+        else
+        {
+          var deviceLksModel = new DeviceLKSModel() 
+          {
+            TimeStamp = tagFilePreScan.SeedTimeUTC,
+            Latitude = seedLatitude,
+            Longitude = seedLongitude,
+            Height = tagFilePreScan.SeedHeight,
+            AssetSerialNumber = tagFilePreScan.HardwareID,
+            AssetNickname = tagFilePreScan.MachineID,
+            AppVersion = tagFilePreScan.ApplicationVersion,
+            DesignName = tagFilePreScan.DesignName,
+
+
+            // PlatformType is only passed as part of DeviceName {platformType}-{assetSerialNumber}
+            // As at 2020_07-1 Marine dredgers: CutterSuctionDredge = 70, BargeMountedExcavator = 71
+            //                 are configured in cws as CBs
+            AssetType = tagFilePreScan.MachineType.ToString(),
+        
+            Devices = string.IsNullOrWhiteSpace(tagFilePreScan.RadioSerial) ? null :
+              new List<ConnectedDevice>
+              {
+                new ConnectedDevice
+                {
+                  Model = tagFilePreScan.RadioType,
+                  SerialNumber = tagFilePreScan.RadioSerial
+                }
+              }
+          };
+          var cwsDeviceGatewayClient = DIContext.Obtain<ICwsDeviceGatewayClient>();
+          var customHeaders = _tPaaSApplicationAuthentication.CustomHeaders();
+
+          _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Posting deviceLks to cws deviceGateway: {JsonConvert.SerializeObject(deviceLksModel)}");
+
+          // don't await this call, should be fire and forget
+          cwsDeviceGatewayClient.CreateDeviceLKS($"{deviceLksModel.AssetType.ToString()}-{deviceLksModel.AssetSerialNumber}", deviceLksModel, customHeaders)
+            .ContinueWith((task) =>
+            {
+              if (task.IsFaulted)
+              {
+                _log.LogError(task.Exception, $"#Progress# {nameof(SendDeviceStatusToDeviceGateway)}: Error Sending to Connected Site", null);
+              }
+            }, TaskContinuationOptions.OnlyOnFaulted);
+        }
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -36,6 +37,7 @@ namespace VSS.TRex.Tests.SiteModels
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       siteModel.MarkForDeletion();
 
@@ -49,6 +51,7 @@ namespace VSS.TRex.Tests.SiteModels
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       siteModel.MarkForDeletion();
       sm.GetSiteModel(siteModelId, false).Should().BeNull("Site models marked for deletion cannot be returned for standard query operations");
@@ -78,6 +81,7 @@ namespace VSS.TRex.Tests.SiteModels
 
       var siteModelId = Guid.NewGuid();
       var siteModel = sm.GetSiteModel(siteModelId, true);
+      siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       siteModel.MarkForDeletion();
 

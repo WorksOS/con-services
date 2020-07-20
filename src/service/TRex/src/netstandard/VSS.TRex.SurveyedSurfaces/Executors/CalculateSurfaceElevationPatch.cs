@@ -204,14 +204,13 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Performs execution business logic for this executor
     /// </summary>
-    /// <returns></returns>
     public IClientLeafSubGrid Execute()
     {
       // Perform the design profile calculation
       //try
       //{
       // Calculate the patch of elevations and return it
-      IClientLeafSubGrid result = Calc(out DesignProfilerRequestResult CalcResult);
+      var result = Calc(out var calcResult);
 
       // TODO: Handle case of failure to request patch of elevations from design
 

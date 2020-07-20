@@ -37,7 +37,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
           {
             DeviceTrn = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
             Latitude = 89.3, Longitude = 189.1,
-            AssetType = CWSDeviceTypeEnum.EC520,
+            AssetType = "Grader",
             AssetSerialNumber = serialNumber,
             DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
             LastReportedUtc = DateTime.UtcNow.AddDays(-1),
@@ -75,7 +75,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
           {
             DeviceTrn = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
             Latitude = 89.3, Longitude = 189.1,
-            AssetType = CWSDeviceTypeEnum.EC520,
+            AssetType = "Excavator",
             AssetSerialNumber = serialNumber,
             DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
             LastReportedUtc = earliestOfInterestUtc.AddDays(1),
@@ -104,7 +104,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     public void GetDeviceLKS()
     {
       var deviceUid = Guid.NewGuid();
-      var deviceType = CWSDeviceTypeEnum.EC520;
+      var deviceType = CWSDeviceTypeEnum.CB450;
       var serialNumber = "12456YU";
       var deviceName = $"{deviceType}-{serialNumber}";
 
@@ -112,7 +112,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       {
         DeviceTrn = TRNHelper.MakeTRN(deviceUid.ToString(), TRNHelper.TRN_DEVICE),
         Latitude = 89.3, Longitude = 189.1,
-        AssetType = deviceType,
+        AssetType = "BargeMountedExcavator",
         AssetSerialNumber = serialNumber,
         DeviceName = deviceName,
         LastReportedUtc = DateTime.UtcNow.AddDays(1),
@@ -151,7 +151,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Longitude = 3,
         Height = 1,
         AssetSerialNumber = serialNumber,
-        AssetType = deviceType,
+        AssetType = "Dozer",
         AssetNickname = "Little Nicky",
         DesignName = "Highway to hell",
         AppName = "Trimble Groundworks",

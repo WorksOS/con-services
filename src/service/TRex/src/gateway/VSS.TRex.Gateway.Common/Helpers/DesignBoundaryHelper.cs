@@ -95,7 +95,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
 
       Log.LogInformation($"Boundary conversion completed with number of vertices: {vertsCount}");
 
-      return new DesignBoundaryResult(geoJson);
+      return await Task.FromResult(new DesignBoundaryResult(geoJson));
     }
 
     private static void AddPoint(double x, double y, List<double[]> fencePoints)
