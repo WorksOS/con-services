@@ -822,8 +822,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //Get the calibration file from CWS
       var result = await CwsProfileSettingsClient.GetProjectConfiguration(Guid.Parse(projectUid), ProjectConfigurationFileType.CALIBRATION, customHeaders);
-      var contents = await CwsProfileSettingsClient.DownloadData(result.FileDownloadLink, customHeaders);
-      return new  CoordinateSystemFileResult{FileName = CwsFileNameHelper.ExtractFileName(result.FileName), Contents = Convert.ToBase64String(contents)};
+      if (result != null)
+      {
+        var contents = await CwsProfileSettingsClient.DownloadData(result.FileDownloadLink, customHeaders);
+        return new CoordinateSystemFileResult {FileName = CwsFileNameHelper.ExtractFileName(result.FileName), Contents = Convert.ToBase64String(contents)};
+      }
+
+      return new CoordinateSystemFileResult(11012, "Config File not found for given project Id");
     }
     #endregion
 
