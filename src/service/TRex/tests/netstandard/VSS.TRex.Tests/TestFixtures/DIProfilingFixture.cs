@@ -12,7 +12,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
-  public class DIProfilingFixture : DITAGFileAndSubGridRequestsFixture, IDisposable
+  public class DIProfilingFixture : DITAGFileAndSubGridRequestsWithIgniteFixture, IDisposable
   {
     public DIProfilingFixture()
     {

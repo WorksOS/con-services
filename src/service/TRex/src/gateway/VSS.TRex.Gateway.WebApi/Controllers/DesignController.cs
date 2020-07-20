@@ -192,13 +192,14 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     /// <param name="projectUid"></param>
     /// <param name="designUid"></param>
+    /// <param name="fileName"></param>
     /// <returns></returns>
     [HttpGet("alignment/master/geometry")]
-    public Task<ContractExecutionResult> GetAlignmentGeometryForRendering([FromQuery] Guid projectUid, [FromQuery] Guid designUid)
+    public Task<ContractExecutionResult> GetAlignmentGeometryForRendering([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] string fileName)
     {
-      Log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: projectUid:{projectUid}, designUid:{designUid}");
+      Log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}");
 
-      var alignmentMasterGeometryRequest = new AlignmentDesignGeometryRequest(projectUid, designUid);
+      var alignmentMasterGeometryRequest = new AlignmentDesignGeometryRequest(projectUid, designUid, fileName);
 
       alignmentMasterGeometryRequest.Validate();
 

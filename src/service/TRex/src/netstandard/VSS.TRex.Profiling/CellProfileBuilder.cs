@@ -57,10 +57,6 @@ namespace VSS.TRex.Profiling
     private ICellSpatialFilter CellFilter;
     private IDesignWrapper CutFillDesignWrapper;
 
-    public double GridDistanceBetweenProfilePoints { get; set; }
-
-    //private Func<IProfileCellBase> ProfileCellFactoryFunc = DIContext.Obtain<Func<T>>();
-
     /// <summary>
     /// The design to be used as a TIN surface design based 'cookie cutter' selection mask for production data
     /// </summary>
@@ -234,7 +230,6 @@ namespace VSS.TRex.Profiling
       CurrStationPos = 0;
 
       CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
-      GridDistanceBetweenProfilePoints = 0;
       ReturnDesignElevation = CutFillDesignWrapper?.Design != null;
       DesignElevations = null;
 
@@ -268,7 +263,6 @@ namespace VSS.TRex.Profiling
         CalculateHorizontalIntercepts(CurrStationPos); // pass the distance down alignment this segment starts
         CalculateVerticalIntercepts(CurrStationPos);
 
-        GridDistanceBetweenProfilePoints += Distance; // add actual distance along line
         CurrStationPos += Distance; // add distance to current station
       }
 

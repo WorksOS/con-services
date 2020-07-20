@@ -18,6 +18,7 @@ using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -260,6 +261,8 @@ namespace VSS.TRex.Tests.Volumes
 
     private ISiteModel BuildModelForSingleCellProgressiveVolume(int numCellPasses, DateTime baseTime, TimeSpan timeIncrement, float baseHeight, float heightIncrement)
     {
+      var dummy = new ClientHeightLeafSubGrid(); // Ensure NullCells is intialised for this class,
+
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 

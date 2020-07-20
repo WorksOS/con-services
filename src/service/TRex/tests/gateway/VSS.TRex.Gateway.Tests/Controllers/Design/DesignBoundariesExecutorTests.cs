@@ -71,18 +71,18 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
 
       llhCoords[0].X = Math.Round(-115.02063908350371, DECIMALS);
       llhCoords[0].Y = Math.Round(36.20750448242144, DECIMALS);
-      llhCoords[0].X = Math.Round(-115.02063948986357, DECIMALS);
-      llhCoords[0].Y = Math.Round(36.20749820152535, DECIMALS);
-      llhCoords[0].X = Math.Round(-115.02064019968294, DECIMALS);
-      llhCoords[0].Y = Math.Round(36.20748723020888, DECIMALS);
-      llhCoords[0].X = Math.Round(-115.01853140279106, DECIMALS);
-      llhCoords[0].Y = Math.Round(36.2070834400289, DECIMALS);
-      llhCoords[0].X = Math.Round(-115.0185314141189, DECIMALS);
-      llhCoords[0].Y = Math.Round(36.20708383310118, DECIMALS);
-      llhCoords[0].X = Math.Round(-115.02058364119604, DECIMALS);
-      llhCoords[0].Y = Math.Round(36.20750093926768, DECIMALS);
-      llhCoords[0].X = Math.Round(-115.02063908350371, DECIMALS);
-      llhCoords[0].Y = Math.Round(36.20750448242144, DECIMALS);
+      llhCoords[1].X = Math.Round(-115.02063948986357, DECIMALS);
+      llhCoords[1].Y = Math.Round(36.20749820152535, DECIMALS);
+      llhCoords[2].X = Math.Round(-115.02064019968294, DECIMALS);
+      llhCoords[2].Y = Math.Round(36.20748723020888, DECIMALS);
+      llhCoords[3].X = Math.Round(-115.01853140279106, DECIMALS);
+      llhCoords[3].Y = Math.Round(36.2070834400289, DECIMALS);
+      llhCoords[4].X = Math.Round(-115.0185314141189, DECIMALS);
+      llhCoords[4].Y = Math.Round(36.20708383310118, DECIMALS);
+      llhCoords[5].X = Math.Round(-115.02058364119604, DECIMALS);
+      llhCoords[5].Y = Math.Round(36.20750093926768, DECIMALS);
+      llhCoords[6].X = Math.Round(-115.02063908350371, DECIMALS);
+      llhCoords[6].Y = Math.Round(36.20750448242144, DECIMALS);
 
       var convertCoordinatesMock = new Mock<IConvertCoordinates>();
 

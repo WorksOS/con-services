@@ -19,5 +19,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
       ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IHeaderDictionary customHeaders = null);
 
     Task DeleteProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null);
+
+    Task<byte[]> DownloadData(string downloadUrl, IHeaderDictionary customHeaders = null);
   }
 }
