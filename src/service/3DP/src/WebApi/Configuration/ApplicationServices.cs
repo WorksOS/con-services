@@ -73,7 +73,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
-      services.AddScoped<ITransferProxyFactory, TransferProxyFactory>();
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IRaptorFileUploadUtility, RaptorFileUploadUtility>();
 
@@ -85,7 +84,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
       services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();
       services.AddTransient<ITRexTagFileProxy, TRexTagFileV2Proxy>();
-      services.AddTransient<ITRexConnectedSiteProxy, TRexConnectedSiteV1Proxy>();
       services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>();
       services.AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>();
     }

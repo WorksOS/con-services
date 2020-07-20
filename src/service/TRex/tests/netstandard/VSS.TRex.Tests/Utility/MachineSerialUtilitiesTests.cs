@@ -27,6 +27,7 @@ namespace VSS.TRex.Tests.Utility
     [InlineData(MachineControlPlatformType.CB450, "CB450")]
     [InlineData(MachineControlPlatformType.CB460, "CB460")]
     [InlineData(MachineControlPlatformType.EC520, "EC520")]
+    [InlineData(MachineControlPlatformType.UNKNOWN, "ZZ")]
     public void Test_StringRepresentation_of_Platform(MachineControlPlatformType type, string expectedModel)
     {
       type.ToString().Should().Be(expectedModel);
@@ -34,7 +35,6 @@ namespace VSS.TRex.Tests.Utility
 
 
     [Theory]
-    [InlineData("ZZ")]
     [InlineData("")]
     public void Test_InvalidMappings(string serial)
     {
