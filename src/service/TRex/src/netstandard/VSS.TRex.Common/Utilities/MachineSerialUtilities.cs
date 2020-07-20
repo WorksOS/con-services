@@ -24,6 +24,10 @@ namespace VSS.TRex.Common.Utilities
       {
         return MachineControlPlatformType.EC520;
       }
+      else if (!string.IsNullOrEmpty(serial))
+      {
+        return MachineControlPlatformType.UNKNOWN;
+      }
       throw new ArgumentException("No mapping exists for this serial number");
     }
   }

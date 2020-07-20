@@ -142,6 +142,11 @@ namespace VSS.TRex.Common
     public const bool ENABLE_TFA_SERVICE = true;                       // override with:  ENABLE_TFA_SERVICE
 
     /// <summary>
+    /// Should we write deviceLKS to cws deviceGateway
+    /// </summary>
+    public const bool ENABLE_DEVICE_GATEWAY = true;                       // override with:  ENABLE_DEVICE_GATEWAY
+
+    /// <summary>
     /// Archive tag file (this has normally already been done prior to submission to TRex 
     /// </summary>
     public const bool ENABLE_TAGFILE_ARCHIVING = false;                   // override with: ENABLE_TAGFILE_ARCHIVING

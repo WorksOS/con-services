@@ -63,6 +63,8 @@ spec:
           value: "/trex/"
         - name: ENABLE_TFA_SERVICE
           value: {{ .Values.mutableData.environment.enableTfa | quote }}
+        - name: ENABLE_DEVICE_GATEWAY
+          value: {{ .Values.mutableData.environment.enableDeviceGateway | quote }}
         - name: IS_KUBERNETES
           value: "true"
         - name: DEPLOYED_ENV

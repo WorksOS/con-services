@@ -7,8 +7,6 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.ServiceDiscovery;
-using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
-using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.CoordinateSystems;
@@ -76,7 +74,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Build();
 
       services.AddServiceDiscovery();
-      services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>();
       services.AddSingleton<ITransferProxyFactory, TransferProxyFactory>();
 
       services.AddOpenTracing(builder =>

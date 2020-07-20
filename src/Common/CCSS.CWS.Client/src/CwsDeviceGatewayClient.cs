@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -8,7 +7,6 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
@@ -77,11 +75,11 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// Adding some LastKnownStatus values to cws using deviceName
     /// </summary>
-    public async Task CreateDeviceLKS(string deviceName, DeviceLKSModel deviceLKSModel, IHeaderDictionary customHeaders = null)
+    public Task CreateDeviceLKS(string deviceName, DeviceLKSModel deviceLksModel, IHeaderDictionary customHeaders = null)
     {
-      log.LogDebug($"{nameof(CreateDeviceLKS)}: deviceName {deviceName} deviceLKSModel {JsonConvert.SerializeObject(deviceLKSModel)}");
+      log.LogDebug($"{nameof(CreateDeviceLKS)}: deviceName {deviceName} deviceLksModel {JsonConvert.SerializeObject(deviceLksModel)}");
 
-      await PostData($"{ROUTE_PREFIX}/status/{deviceName}", deviceLKSModel, null, customHeaders);
+      return PostData($"{ROUTE_PREFIX}/status/{deviceName}", deviceLksModel, null, customHeaders);
     }
   }
 }
