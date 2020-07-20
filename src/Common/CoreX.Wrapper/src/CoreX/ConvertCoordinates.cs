@@ -14,14 +14,14 @@ namespace CoreX.Wrapper
   /// <remarks>
   /// While these methods can be called directly, it's recommended to utilize the static ConvertCoordinates helper.
   /// </remarks>
-  public class ConvertCoordinates : IConvertCoordinates
+  public class ConvertCoordinates : IConvertCoordinates, IDisposable
   {
     private readonly CoreX _coreX;
     private readonly ILogger _log;
 
     public ConvertCoordinates(ILoggerFactory loggerFactory)
     {
-      _log = loggerFactory.CreateLogger(GetType().Name);
+      _log = loggerFactory.CreateLogger<ConvertCoordinates>();
       _coreX = new CoreX();
     }
 
@@ -298,9 +298,9 @@ namespace CoreX.Wrapper
 
       var neeCoords = _coreX
         .TransformLLHToNEE(
-          csib, 
-          wgs84Points.ToLLH(inputAs), 
-          fromType: CoordinateTypes.ReferenceGlobalLLH, 
+          csib,
+          wgs84Points.ToLLH(inputAs),
+          fromType: CoordinateTypes.ReferenceGlobalLLH,
           toType: CoordinateTypes.OrientatedNEE);
 
       var responseArray = new XYZ[neeCoords.Length];
@@ -327,5 +327,24 @@ namespace CoreX.Wrapper
 
     /// <inheritdoc/>
     public string GetCSIBFromDCFileContent(string fileContent) => CoreX.GetCSIBFromDCFileContent(fileContent);
+
+    private bool _disposed = false;
+
+    public void Dispose() => Dispose(true);
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (_disposed)
+      {
+        return;
+      }
+
+      if (disposing)
+      {
+        _coreX?.Dispose();
+      }
+
+      _disposed = true;
+    }
   }
 }

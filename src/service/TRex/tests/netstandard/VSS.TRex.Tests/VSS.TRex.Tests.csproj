@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\CoreX.Wrapper\src\CoreX\CoreX.Wrapper.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\src\gateway\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
     <ProjectReference Include="..\..\..\src\gateway\VSS.TRex.Gateway.WebApi\VSS.TRex.Gateway.WebApi.csproj" />

@@ -16,6 +16,8 @@ namespace CoreX.Wrapper.UnitTests
 
     public UnitTestBaseFixture()
     {
+      Environment.SetEnvironmentVariable("TGL_GEODATA_PATH", "Geodata");
+
       _serviceProvider = new ServiceCollection()
         .AddLogging()
         .AddSingleton<IConvertCoordinates, ConvertCoordinates>()

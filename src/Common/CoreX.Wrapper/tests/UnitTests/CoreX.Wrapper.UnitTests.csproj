@@ -23,7 +23,7 @@
     <ProjectReference Include="..\..\src\Models\CoreX.Models.csproj" />
   </ItemGroup>
 
-  <!-- Bulk copy static runtime file dependencies. -->
+  <!-- Bulk copy static unittest file dependencies. -->
   <ItemGroup>
     <Compile Remove="TestData\**" />
     <EmbeddedResource Remove="TestData\**" />
@@ -32,8 +32,13 @@
   <ItemGroup>
     <TestData Include="./TestData/**" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="app - Copy.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-    <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
   <!-- End bulk copy. -->
 

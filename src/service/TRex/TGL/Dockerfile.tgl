@@ -1,4 +1,4 @@
-FROM amd64/debian as base
+FROM amd64/debian as builder
 
 WORKDIR /app
 
@@ -22,3 +22,8 @@ RUN bash -c 'echo -e "StrictHostKeyChecking no\n" > /root/.ssh/config'
 RUN git clone ssh://git@bitbucket.trimble.tools/tgl/tgl_geodata.git
 
 RUN rm -r tgl_geodata/.git
+
+# Bundle the TGL geodetic database files into a bare bones image for later COPYing into the TRex runtime image.
+FROM scratch as publish-image
+
+COPY --from=builder /tgl_geodata/ /tgl_geodata/

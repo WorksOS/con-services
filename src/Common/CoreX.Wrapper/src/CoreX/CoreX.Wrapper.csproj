@@ -31,9 +31,9 @@
   <!-- END -->
 
   <!-- Copy static runtime (TGL) file dependencies. -->
-  <ItemGroup>    
-    <None Update="Data\TGL_CsdDatabase\CoordSystemDatabase.xml">
-      <Link>Data\TGL_CsdDatabase\%(Filename)%(Extension)</Link>
+  <ItemGroup>
+    <None Update="GeoData\CoordSystemDatabase.xml">
+      <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

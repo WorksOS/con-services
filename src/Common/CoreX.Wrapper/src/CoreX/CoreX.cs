@@ -12,6 +12,8 @@ namespace CoreX.Wrapper
 {
   public class CoreX : IDisposable
   {
+    public static string GeodeticDatabasePath;
+
     static CoreX()
     {
       // CoreX library appears to not be thread safe. If you attempt this from the default constructor you'll hit C++ 
@@ -24,11 +26,7 @@ namespace CoreX.Wrapper
     /// </summary>
     private static void SetupTGL()
     {
-      const string ROOT_DATA_FOLDER = "Data";
-      const string DATABASE_PATH = "TGL_CsdDatabase";
-
-      var geodataPath = Path.Combine(ROOT_DATA_FOLDER, "GeoData");
-      var xmlFilePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
+      var xmlFilePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "CoordSystemDatabase.xml");
 
       if (!File.Exists(xmlFilePath))
       {
@@ -44,8 +42,20 @@ namespace CoreX.Wrapper
         throw new Exception($"Error '{resultCode}' attempting to load coordinate system database '{xmlFilePath}'");
       }
 
-      CsdManagementPINVOKE.csmSetGeodataPath(geodataPath);
-      GeodeticX.geoSetGeodataPath(geodataPath);
+      GeodeticDatabasePath = Environment.GetEnvironmentVariable("TGL_GEODATA_PATH");
+
+      Console.WriteLine($"***** {GeodeticDatabasePath} ***** ");
+      if (string.IsNullOrEmpty(GeodeticDatabasePath))
+      {
+        throw new Exception("Environment variable TGL_GEODATA_PATH must be set to the Geodetic data folder.");
+      }
+      if (!Directory.Exists(GeodeticDatabasePath))
+      {
+        throw new Exception($"Failed to find directory '{GeodeticDatabasePath}' defined by environment variable TGL_GEODATA_PATH.");
+      }
+
+      CsdManagementPINVOKE.csmSetGeodataPath(GeodeticDatabasePath);
+      GeodeticX.geoSetGeodataPath(GeodeticDatabasePath);
     }
 
     /// <summary>
@@ -59,11 +69,16 @@ namespace CoreX.Wrapper
       var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
       // Slow, takes 2.5 seconds, need to speed up somehow?
-      var result = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
+      var result = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(
+        fileContent,
+        false,
+        CppFileListCallback.getCPtr(Utils.FileListCallBack),
+        CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback),
+        CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
 
       if (result != (int)csmErrorCode.cecSuccess)
       {
-        throw new Exception($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
+        throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
       }
 
       var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);
@@ -234,18 +249,18 @@ namespace CoreX.Wrapper
     private static bool ValidateCsib(string csib)
     {
       var sb = new StringBuilder();
-      byte[] bytes = Encoding.ASCII.GetBytes(csib);
+      var bytes = Encoding.ASCII.GetBytes(csib);
 
       for (var i = 0; i < bytes.Length; i++)
       {
         sb.Append(bytes[i] + " ");
       }
 
-      string[] blocks = sb.ToString().TrimEnd().Split(' ');
-      sbyte[] data = new sbyte[blocks.Length];
+      var blocks = sb.ToString().TrimEnd().Split(' ');
+      var data = new sbyte[blocks.Length];
 
-      int index = 0;
-      foreach (string b in blocks)
+      var index = 0;
+      foreach (var b in blocks)
       {
         data[index++] = (sbyte)Convert.ToByte(b);
       }
