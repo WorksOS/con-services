@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
@@ -37,6 +38,7 @@ namespace VSS.TRex.Tests.TAGFiles.GridFabric
       var req = new ProcessTAGFileRequest();
       var arg = new ProcessTAGFileRequestArgument
       {
+        ProjectID = Guid.NewGuid(),
         TAGFiles = new List<ProcessTAGFileRequestFileItem>
         {
           new ProcessTAGFileRequestFileItem
@@ -65,6 +67,7 @@ namespace VSS.TRex.Tests.TAGFiles.GridFabric
       var req = new ProcessTAGFileRequest();
       var arg = new ProcessTAGFileRequestArgument
       {
+        ProjectID = Guid.NewGuid(),
         TAGFiles = new List<ProcessTAGFileRequestFileItem>
         {
           new ProcessTAGFileRequestFileItem
