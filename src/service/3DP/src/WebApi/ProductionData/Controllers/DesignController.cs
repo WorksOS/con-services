@@ -149,6 +149,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         {
           if (Guid.TryParse(file.ImportedFileUid, out var designUid))
           {
+            log.LogInformation($"Processing alignment data. File UID: {designUid}, File Name: {file.Name}");
+
             var request = new AlignmentGeometryRequest(projectUid, designUid, convertArcsToChords, arcChordTolerance, file.Name);
             request.Validate();
 
@@ -157,6 +159,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
             tasks.Add(result);
           }
+          else
+            log.LogInformation($"Invalid alignment data file UID: {designUid}. File Name: {file.Name}");
         }
 
         Task.WaitAll(tasks.ToArray());
@@ -166,6 +170,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
         return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());        
       }
+
+      log.LogInformation($"Project {projectUid} doe not have any alignment data.");
 
       return NoContent();
     }
