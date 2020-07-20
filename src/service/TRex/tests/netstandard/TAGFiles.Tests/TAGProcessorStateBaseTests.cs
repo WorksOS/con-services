@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using VSS.TRex.Common;
-using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 using Xunit;
 
-namespace VSS.TRex.Tests
+namespace TAGFiles.Tests
 {
   public class TAGProcessorStateBaseTests : IClassFixture<DILoggingFixture>
   {
@@ -389,7 +389,7 @@ namespace VSS.TRex.Tests
     {
       var state = new TAGProcessorStateBase();
 
-      Assert.True(state.DoEpochStateEvent(TRex.TAGFiles.Types.EpochStateEvent.Unknown), "Base function failed - it is not supposed to be implemented!");
+      Assert.True(state.DoEpochStateEvent(VSS.TRex.TAGFiles.Types.EpochStateEvent.Unknown), "Base function failed - it is not supposed to be implemented!");
     }
 
     [Fact()]
