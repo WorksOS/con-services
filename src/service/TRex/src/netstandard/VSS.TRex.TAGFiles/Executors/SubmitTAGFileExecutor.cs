@@ -183,6 +183,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// 
     public static void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
     {
+      // Marine devices will come through as CB450s
       if (tagFilePreScan.PlatformType == MachineControlPlatformType.EC520 ||
            tagFilePreScan.PlatformType == MachineControlPlatformType.UNKNOWN)
         _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Not an applicable DeviceType: {tagFilePreScan.PlatformType}");
