@@ -62,7 +62,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       Parallel.ForEach(inputs, (llh) =>
       {
-        _ = _convertCoordinates.LLHToNEE(CSIB.DIMENSIONS_2012, llh, InputAs.Radians);
+        _ = _convertCoordinates.LLHToNEE(CSIB.DIMENSIONS_2012_WITHOUT_VERT_ADJUST, llh, InputAs.Radians);
       });
     }
 
@@ -111,7 +111,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       Parallel.ForEach(inputs, (nee) =>
       {
-        _ = _convertCoordinates.NEEToLLH(CSIB.DIMENSIONS_2012, nee);
+        _ = _convertCoordinates.NEEToLLH(CSIB.DIMENSIONS_2012_WITHOUT_VERT_ADJUST, nee);
       });
     }
   }

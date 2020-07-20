@@ -46,7 +46,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
     [InlineData(0.63211125328050133, -2.007779249296807, 608.99998527743593, ReturnAs.Radians, DCFile.DIMENSIONS_2012_DC_FILE_WITHOUT_VERT_ADJUST)]
     [InlineData(36.21730699569774, -115.0372771786517, 550.8719470044193, ReturnAs.Degrees, DCFile.DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST)]
     [InlineData(0.63211125328050133, -2.007779249296807, 550.87194700441933, ReturnAs.Radians, DCFile.DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST)]
-    public void CoordinateService_SimpleXYZNEEToLLH(double lat, double lon, double height, ReturnAs returnAs, string dcFilename)
+    public void Should_see_Height_values_differ_when_comparing_CS_files_with_VERT_ADJUST(double lat, double lon, double height, ReturnAs returnAs, string dcFilename)
     {
       var csib = GetCSIBFromDC(dcFilename);
 

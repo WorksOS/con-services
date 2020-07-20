@@ -58,15 +58,10 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Theory]
-    [InlineData(0.63211125328050133, -2.007779249296807, 550.87194700441933, 2312.999999989388, 1204.00000000004, 609.0, InputAs.Radians, null)]
     [InlineData(0.63211125328050133, -2.007779249296807, 550.87194700441933, 2312.999999989388, 1204.00000000004, 609.0, InputAs.Radians, CSIB.DIMENSIONS_2012_WITH_VERT_ADJUST)]
     [InlineData(0.8596496002217967, 0.14732153048180185, 0, 5457618.2482351921, 3459373.8527301643, -50.623720502480865, InputAs.Radians, CSIB.PHILIPSBURG)]
-    public void CoordinateService_SimpleLLHToNEE(double lat, double lon, double height, double northing, double easting, double elevation, InputAs inputAs, string dcFile)
+    public void CoordinateService_SimpleLLHToNEE(double lat, double lon, double height, double northing, double easting, double elevation, InputAs inputAs, string csib)
     {
-      var csib = !string.IsNullOrEmpty(dcFile)
-        ? dcFile
-        : _csib;
-
       var neeCoords = _convertCoordinates.LLHToNEE(csib,
         new LLH
         {
