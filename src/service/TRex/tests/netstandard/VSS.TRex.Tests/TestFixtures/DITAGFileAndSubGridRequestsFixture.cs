@@ -35,6 +35,7 @@ using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.Types;
@@ -58,10 +59,6 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       base.SetupFixture();
 
-      // Provide the surveyed surface request mock
-      var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
-      surfaceElevationPatchRequest.Setup(x => x.ExecuteAsync(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(Task.FromResult(new ClientHeightAndTimeLeafSubGrid() as IClientLeafSubGrid));
-
       // Provide the mocks for spatial caching
       var tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
 
@@ -75,8 +72,8 @@ namespace VSS.TRex.Tests.TestFixtures
         .Continue()
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
         .Build()
-        // Register the mock factory for surface elevation requests
-        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => surfaceElevationPatchRequest.Object))
+        // Register the factory for surface elevation requests
+        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => new SurfaceElevationPatchRequest(cache, context)))
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
         .Build()
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))

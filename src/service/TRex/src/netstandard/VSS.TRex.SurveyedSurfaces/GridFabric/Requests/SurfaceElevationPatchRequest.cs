@@ -30,7 +30,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
     /// Reference to the client sub grid factory
     /// </summary>
 
-    private readonly IClientLeafSubGridFactory ClientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
+    private readonly IClientLeafSubGridFactory _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
     /// <summary>
     /// The compute function used for surface elevation patch requests
@@ -54,7 +54,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
     {
       IClientLeafSubGrid ExtractFromCachedItem(IClientLeafSubGrid cachedItem, SubGridTreeBitmapSubGridBits map)
       {
-        var resultItem = ClientLeafSubGridFactory.GetSubGridEx
+        var resultItem = _clientLeafSubGridFactory.GetSubGridEx
           (arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime,
           cachedItem.CellSize, cachedItem.Level, cachedItem.OriginX, cachedItem.OriginY);
         resultItem.AssignFromCachedPreProcessedClientSubGrid(cachedItem, map);
@@ -82,10 +82,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
       if (result.Bytes != null)
       {
-        clientResult = ClientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
+        clientResult = _clientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
         clientResult.FromBytes(result.Bytes);
 
-        // Fow now, only cache non-composite elevation sub grids
+        // For now, only cache non-composite elevation sub grids
         if (cachingSupported)
           _cache?.Add(_context, clientResult);
 

@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <summary>
         /// The array of null values to be used to set all cell values to their client grid respective value
         /// It is the responsibility of the derived class to proved a class constructor to initialise the
-        /// values NullCells to the correct nu ll values
+        /// values NullCells to the correct null values
         /// </summary>
         public static readonly T[,] NullCells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 

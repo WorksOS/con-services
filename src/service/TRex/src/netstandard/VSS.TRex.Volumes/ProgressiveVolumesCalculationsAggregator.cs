@@ -11,6 +11,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Volumes
 {
