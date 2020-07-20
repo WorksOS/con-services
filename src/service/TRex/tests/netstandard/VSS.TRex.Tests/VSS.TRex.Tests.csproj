@@ -112,12 +112,17 @@
     <Compile Remove="TestData\**" />
     <EmbeddedResource Remove="TestData\**" />
     <None Remove="TestData\**" />
+    <Compile Remove="Geodata\**" />
+    <EmbeddedResource Remove="Geodata\**" />
+    <None Remove="Geodata\**" />
   </ItemGroup>
   <ItemGroup>
     <TestData Include="./TestData/**" />
+    <GeodataTestData Include="./TestData/Geodata/**" />
   </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(GeodataTestData)" DestinationFolder="$(OutputPath)/Geodata" SkipUnchangedFiles="true" />
   </Target>
   <!-- End bulk copy. -->
 

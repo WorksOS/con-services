@@ -22,11 +22,13 @@ namespace CoreX.Wrapper
     public ConvertCoordinates(ILoggerFactory loggerFactory)
     {
       _log = loggerFactory.CreateLogger<ConvertCoordinates>();
-      _coreX = new CoreX();
+      _coreX = new CoreX(loggerFactory);
     }
 
     public ConvertCoordinates()
     { }
+
+    public string GeodeticDatabasePath => _coreX.GeodeticDatabasePath;
 
     /// <inheritdoc />
     public XYZ NullWGSLLToXY(WGS84Point wgsPoint) => new XYZ(wgsPoint.Lon, wgsPoint.Lat);
@@ -323,10 +325,10 @@ namespace CoreX.Wrapper
     }
 
     /// <inheritdoc cref="CoreX.GetCSIBFromDCFile"/>
-    public string DCFileToCSIB(string filePath) => CoreX.GetCSIBFromDCFile(filePath);
+    public string DCFileToCSIB(string filePath) => _coreX.GetCSIBFromDCFile(filePath);
 
     /// <inheritdoc/>
-    public string GetCSIBFromDCFileContent(string fileContent) => CoreX.GetCSIBFromDCFileContent(fileContent);
+    public string GetCSIBFromDCFileContent(string fileContent) => _coreX.GetCSIBFromDCFileContent(fileContent);
 
     private bool _disposed = false;
 

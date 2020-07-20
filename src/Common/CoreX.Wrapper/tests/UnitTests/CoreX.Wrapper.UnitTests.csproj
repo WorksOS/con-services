@@ -32,11 +32,6 @@
   <ItemGroup>
     <TestData Include="./TestData/**" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="app - Copy.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
