@@ -79,7 +79,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
     {
       var message = new SiteModelAttributesChangedEvent();
       var listener = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
-      listener.Invoke(Guid.Empty, message).Should().BeTrue();
+      listener.Invoke(Guid.NewGuid(), message).Should().BeTrue();
     }
 
     [Fact]
