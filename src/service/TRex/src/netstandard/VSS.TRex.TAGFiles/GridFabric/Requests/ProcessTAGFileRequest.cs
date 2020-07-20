@@ -13,7 +13,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
   /// </summary>
   public class ProcessTAGFileRequest : TAGFileProcessingPoolRequest<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProcessTAGFileRequest>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ProcessTAGFileRequest>();
 
     /// <summary>
     /// Local reference to the compute func used to execute the processing request on the grid.
@@ -32,22 +32,16 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
     /// <summary>
     /// Processes a set of TAG files from a machine into a project synchronously
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public override ProcessTAGFileResponse Execute(ProcessTAGFileRequestArgument arg)
     {
       try
       {
         // Send the appropriate response to the caller
         return Compute.Apply(func, arg);
-
-        // This is an early implementation using an async pattern with a .Result, which is not so helpful
-        // Task<ProcessTAGFileResponse> taskResult = Compute.ApplyAsync(func, arg);
-        // return taskResult.Result;
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception occured during execution of {nameof(Execute)}");
+        _log.LogError(e, $"Exception occured during execution of {nameof(Execute)}");
         return null;
       }
     }
@@ -55,8 +49,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
     /// <summary>
     /// Processes a set of TAG files from a machine into a project asynchronously
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public override Task<ProcessTAGFileResponse> ExecuteAsync(ProcessTAGFileRequestArgument arg)
     {
       try
@@ -66,8 +58,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception occured during execution of {nameof(Execute)}");
-        return null;
+        _log.LogError(e, $"Exception occured during execution of {nameof(Execute)}");
+        return Task.FromResult<ProcessTAGFileResponse>(null);
       }
     }
   }
