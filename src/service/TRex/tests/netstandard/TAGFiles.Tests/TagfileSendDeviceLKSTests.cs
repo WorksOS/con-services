@@ -7,19 +7,7 @@ using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
-using VSS.Productivity3D.TagFileAuth.Models;
-using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.TRex.DI;
-using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
-using VSS.TRex.SiteModels;
-using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
-using VSS.TRex.Storage.Models;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
@@ -28,7 +16,7 @@ using Xunit;
 
 namespace TAGFiles.Tests
 {
-  public class TagfileSendDeviceLKSTests : IClassFixture<DILoggingFixture>
+  public class TagfileSendDeviceLKSTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
     public void DeviceLKS_DIMocking()
