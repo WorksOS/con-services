@@ -33,13 +33,18 @@ namespace VSS.MasterData.Proxies
     private const int DEFAULT_LOG_MAX_CHAR = 1000;
     protected readonly int _logMaxChar;
 
-    protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache)
+    private readonly GracefulWebRequest _gracefulWebRequest;
+
+    protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IHttpClientFactory clientFactory = null)
     {
       log = logger.CreateLogger<BaseProxy>();
       this.logger = logger;
+
       this.configurationStore = configurationStore;
       _dataCache = dataCache;
       _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DEFAULT_LOG_MAX_CHAR);
+
+      _gracefulWebRequest = new GracefulWebRequest(logger, configurationStore, clientFactory: clientFactory);
     }
 
     /// <summary>
@@ -63,25 +68,25 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"{nameof(SendRequestInternal)}: Preparing {url} ({method}) headers {customHeaders.LogHeaders(_logMaxChar)}");
       try
       {
-        var request = new GracefulWebRequest(logger, configurationStore);
+
         if (method != HttpMethod.Get)
         {
           if (streamPayload != null && payload == null)
           {
-            result = await request.ExecuteRequest<T>(url, streamPayload, customHeaders, method, timeout, retries);
+            result = await _gracefulWebRequest.ExecuteRequest<T>(url, streamPayload, customHeaders, method, timeout, retries);
           }
           else
           {
             if (payload != null)
             {
               using var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload));
-              result = await request.ExecuteRequest<T>(url, ms, customHeaders, method, timeout, retries);
+              result = await _gracefulWebRequest.ExecuteRequest<T>(url, ms, customHeaders, method, timeout, retries);
             }
           }
         }
         else
         {
-          result = await request.ExecuteRequest<T>(url, method: HttpMethod.Get, customHeaders: customHeaders, timeout: timeout, retries: retries);
+          result = await _gracefulWebRequest.ExecuteRequest<T>(url, method: HttpMethod.Get, customHeaders: customHeaders, timeout: timeout, retries: retries);
         }
 
         log.LogDebug($"{nameof(SendRequestInternal)}: Result of send to master data request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
@@ -169,8 +174,8 @@ namespace VSS.MasterData.Proxies
       var url = ExtractUrl(urlKey, route, queryParams);
       try
       {
-        var request = new GracefulWebRequest(logger, configurationStore);
-        result = await request.ExecuteRequest<TK>(url, customHeaders: customHeaders, method: HttpMethod.Get);
+        result = await _gracefulWebRequest.ExecuteRequest<TK>(url, customHeaders: customHeaders, method: HttpMethod.Get);
+
         log.LogDebug($"{nameof(GetObjectsFromMasterdata)}: Result of get item request: {JsonConvert.SerializeObject(result).Truncate(_logMaxChar)}");
         BaseProxyHealthCheck.SetStatus(true, GetType());
       }
@@ -217,15 +222,15 @@ namespace VSS.MasterData.Proxies
         if (method == null)
           method = HttpMethod.Get;
 
-        var request = new GracefulWebRequest(logger, configurationStore);
+
         if (method != HttpMethod.Get)
         {
           var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
-          result = await (await request.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
+          result = await (await _gracefulWebRequest.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
         }
         else
         {
-          result = await (await request.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
+          result = await (await _gracefulWebRequest.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
         }
 
         BaseProxyHealthCheck.SetStatus(true, GetType());
@@ -321,9 +326,9 @@ namespace VSS.MasterData.Proxies
                 entry.SetOptions(opts);
                 // We need to support clearing cache by the user - the model doesn't know about the user info
                 var identifiers = result.GetIdentifiers() ?? new List<string>();
-                if(!string.IsNullOrEmpty(uid)) 
+                if (!string.IsNullOrEmpty(uid))
                   identifiers.Add(uid);
-                if(!string.IsNullOrEmpty(userId))
+                if (!string.IsNullOrEmpty(userId))
                   identifiers.Add(userId);
                 return new CacheItem<T>(result, identifiers);
               }
@@ -340,9 +345,9 @@ namespace VSS.MasterData.Proxies
           {
             // We need to support clearing cache by the user - the model doesn't know about the user info
             var identifiers = result.GetIdentifiers() ?? new List<string>();
-            if(!string.IsNullOrEmpty(uid))
+            if (!string.IsNullOrEmpty(uid))
               identifiers.Add(uid);
-            if(!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(userId))
               identifiers.Add(userId);
             return _dataCache.Set(cacheKey, result, identifiers, opts);
           }

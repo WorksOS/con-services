@@ -20,6 +20,7 @@ namespace VSS.MasterData.Proxies.UnitTests
                         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.MasterData.Proxies.UnitTests.log")))
                         .AddSingleton<IConfigurationStore, GenericConfiguration>()
                         .AddTransient<IMemoryCache, MemoryCache>()
+                        .AddHttpClient()
                         .BuildServiceProvider();
     }
 
