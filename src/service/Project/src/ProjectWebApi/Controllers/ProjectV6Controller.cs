@@ -57,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectV6DescriptorsListResult> GetProjectsV6([FromQuery]CwsProjectType? projectType, [FromQuery] ProjectStatus projectStatus = ProjectStatus.Active, [FromQuery] bool onlyAdmin = true)
     {
       Logger.LogInformation($"{nameof(GetProjectsV6)}");
-      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, projectType, projectStatus, onlyAdmin, customHeaders);
+      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, projectType, projectStatus, onlyAdmin, true, customHeaders);
 
       return new ProjectV6DescriptorsListResult
       {

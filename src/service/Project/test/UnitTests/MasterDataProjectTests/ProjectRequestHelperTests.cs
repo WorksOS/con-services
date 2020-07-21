@@ -130,7 +130,7 @@ namespace VSS.MasterData.ProjectTests
       mockCwsProjectClient.Setup(pr => pr.GetProjectsForCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<CwsProjectType?>(), It.IsAny<ProjectStatus?>(), It.IsAny<bool>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(projectDetailListResponseModel);
 
       var projectDatabaseModelList = ProjectRequestHelper.GetProjectListForCustomer(_customerUid, _userUid,
-        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, null, null, false, _customHeaders);
+        _logger, _serviceExceptionHandler, mockCwsProjectClient.Object, null, null, false, true, _customHeaders);
 
       var result = projectDatabaseModelList.Result;
       Assert.NotNull(result);
