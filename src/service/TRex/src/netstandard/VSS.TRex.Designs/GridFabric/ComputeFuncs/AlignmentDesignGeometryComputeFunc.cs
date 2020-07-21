@@ -12,7 +12,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
   public class AlignmentDesignGeometryComputeFunc : BaseComputeFunc, IComputeFunc<AlignmentDesignGeometryArgument, AlignmentDesignGeometryResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<AlignmentDesignGeometryComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AlignmentDesignGeometryComputeFunc>();
 
     public AlignmentDesignGeometryResponse Invoke(AlignmentDesignGeometryArgument arg)
     {
@@ -32,10 +32,10 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
         
         return new AlignmentDesignGeometryResponse(DesignProfilerRequestResult.UnknownError, null, null, null);
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception: ");
-        return null;
+        _log.LogError(e, "Exception obtaining design geometry boundary");
+        return new AlignmentDesignGeometryResponse { RequestResult = DesignProfilerRequestResult.UnknownError };
       }
     }
   }

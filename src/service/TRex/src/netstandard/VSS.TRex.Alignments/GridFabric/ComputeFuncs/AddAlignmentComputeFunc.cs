@@ -38,8 +38,13 @@ namespace VSS.TRex.Alignments.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception: ");
-        return null;
+        _log.LogError(e, "Exception adding alignment");
+
+        return new AddAlignmentResponse()
+        {
+          AlignmentUid = Guid.Empty,
+          RequestResult = DesignProfilerRequestResult.UnknownError
+        };
       }
     }
   }

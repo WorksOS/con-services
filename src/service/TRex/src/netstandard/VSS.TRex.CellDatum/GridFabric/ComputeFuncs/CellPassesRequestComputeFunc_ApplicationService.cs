@@ -31,11 +31,15 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
         return request.ExecuteAsync(arg).WaitAndUnwrapException();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception in cell passes application service compute func");
+        return new CellPassesResponse { ReturnCode = CellDatumReturnCode.UnexpectedError };
+      }
       finally
       {
         _log.LogInformation($"Exiting {nameof(CellPassesRequestComputeFunc_ApplicationService)}.Invoke()");
       } 
-
     }
   }
 }
