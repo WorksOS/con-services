@@ -13,12 +13,16 @@ namespace VSS.Productivity3D.Models.Models
     /// 3 cut values greater than zero, on-grade equal to zero and 3 fill values less than zero.
     /// Values are in meters.
     /// </summary>
-    public double[] CutFillTolerances { get; private set; }
+    public double[] CutFillTolerances { get; set; }
 
     /// <summary>
     /// The descriptor for the design for which to to generate the cut-fill data.
     /// </summary>
-    public DesignDescriptor DesignDescriptor { get; private set; }
+    public DesignDescriptor DesignDescriptor { get; set; }
+
+    public TRexCutFillDetailsRequest()
+    {
+    }
 
     /// <summary>
     /// Overload constructor with parameters.
