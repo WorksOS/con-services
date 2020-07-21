@@ -21,7 +21,7 @@ COPY --from=build_container build/service/TRex/build/ignite-kubernetes-2.8.1.jar
 COPY --from=build_container build/service/TRex/build/control-scripts /trex/bin
 
 # Copy the static TGL geodetic database files into the target runtime.
-COPY --from=tgl-geodata /tgl_geodata/ /trex/bin/GeoData/Data
+COPY --from=tgl-geodata /tgl_geodata/ /trex/TGL_GeoData/
 
 WORKDIR /trex/libs/
 

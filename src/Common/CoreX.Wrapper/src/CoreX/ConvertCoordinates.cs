@@ -4,6 +4,7 @@ using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.Extensions;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 
 namespace CoreX.Wrapper
 {
@@ -19,10 +20,10 @@ namespace CoreX.Wrapper
     private readonly CoreX _coreX;
     private readonly ILogger _log;
 
-    public ConvertCoordinates(ILoggerFactory loggerFactory)
+    public ConvertCoordinates(ILoggerFactory loggerFactory, IConfigurationStore configStore)
     {
       _log = loggerFactory.CreateLogger<ConvertCoordinates>();
-      _coreX = new CoreX(loggerFactory);
+      _coreX = new CoreX(loggerFactory, configStore);
     }
 
     public ConvertCoordinates()

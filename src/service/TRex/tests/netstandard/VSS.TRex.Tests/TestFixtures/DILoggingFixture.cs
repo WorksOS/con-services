@@ -122,6 +122,8 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS")).Returns(1000);
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", It.IsAny<int>())).Returns(1000);
 
+          config.Setup(c => c.GetValueString("TGL_GEODATA_PATH", It.IsAny<string>())).Returns("Geodata");
+
           return config;
         }))
         .Build()

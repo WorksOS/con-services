@@ -2,6 +2,8 @@
 using CoreX.Interfaces;
 using CoreX.Wrapper.UnitTests.Types;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Common.Abstractions.Configuration;
+using VSS.ConfigurationStore;
 
 namespace CoreX.Wrapper.UnitTests
 {
@@ -18,6 +20,7 @@ namespace CoreX.Wrapper.UnitTests
     {
       _serviceProvider = new ServiceCollection()
         .AddLogging()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddSingleton<IConvertCoordinates, ConvertCoordinates>()
         .BuildServiceProvider();
     }
