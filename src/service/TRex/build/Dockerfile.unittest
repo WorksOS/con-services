@@ -1,16 +1,9 @@
 ARG FROM_IMAGE
 
-# Scratch image with just the TGL geodata geodetic files.
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex:TGLDatabase as tgl-geodata
-
 FROM ${FROM_IMAGE}
 
 ARG SERVICE_PATH
 ARG COLLECT_COVERAGE=true
-ENV TGL_GEODATA_PATH=/build/service/TGL_GeoData/
-
-# Copy the static TGL geodetic database files into the target runtime.
-COPY --from=tgl-geodata /tgl_geodata/ ${TGL_GEODATA_PATH}}
 
 WORKDIR /build/${SERVICE_PATH}
 

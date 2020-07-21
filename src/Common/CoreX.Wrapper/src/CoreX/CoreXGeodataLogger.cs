@@ -40,7 +40,7 @@ namespace CoreX.Wrapper
         {
           var fileInfo = new FileInfo(file);
           var fileDetails = $"{fileInfo.FullName}, Hash: {fileInfo.GetHashCode()}, Last updated UTC: {fileInfo.LastWriteTimeUtc}";
-          Console.WriteLine(fileDetails);
+
           log.LogDebug($"{fileDetails}");
         }
 

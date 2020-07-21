@@ -52,13 +52,14 @@ namespace CoreX.Wrapper
       }
 
       GeodeticDatabasePath = Environment.GetEnvironmentVariable("TGL_GEODATA_PATH");
+      _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
 
       if (string.IsNullOrEmpty(GeodeticDatabasePath))
       {
         GeodeticDatabasePath = "Geodata";
       }
 
-      _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
+      _log.LogInformation($"CoreX {nameof(SetupTGL)}: GeodeticDatabasePath='{GeodeticDatabasePath}'");
 
       if (string.IsNullOrEmpty(GeodeticDatabasePath))
       {
@@ -84,7 +85,7 @@ namespace CoreX.Wrapper
 
       using var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      // Trimble.CsdManagementWrapper.CsdManagementPINVOKE isn't a thread safe singleton.
+      // CsdManagementPINVOKE isn't a thread safe singleton.
       lock (_lock)
       {
         // Slow, takes 2.5 seconds, need to speed up somehow?
