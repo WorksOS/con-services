@@ -11,7 +11,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
 {
   public class OverrideEventComputeFunc : BaseComputeFunc, IComputeFunc<OverrideEventRequestArgument, OverrideEventResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<OverrideEventComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<OverrideEventComputeFunc>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available TAG processing server nodes on the mutable grid projection
@@ -25,7 +25,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
     /// </summary>
     public OverrideEventResponse Invoke(OverrideEventRequestArgument arg)
     {
-      Log.LogInformation("In OverrideEventComputeFunc.Invoke()");
+      _log.LogInformation("In OverrideEventComputeFunc.Invoke()");
 
       if (arg == null)
         throw new ArgumentException("Argument for ComputeFunc must be provided");
@@ -38,15 +38,19 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         else
           executor = new AddOverrideEventExecutor();
 
-        Log.LogInformation("Executing OverrideEventComputeFunc.ExecuteAsync()");
+        _log.LogInformation("Executing OverrideEventComputeFunc.ExecuteAsync()");
 
         return executor.ExecuteAsync(arg).WaitAndUnwrapException();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception processing override event request");
+        return new OverrideEventResponse { Success = false, Message = "Excepgtion"};
+      }
       finally
       {
-        Log.LogInformation("Exiting OverrideEventComputeFunc.Invoke()");
+        _log.LogInformation("Exiting OverrideEventComputeFunc.Invoke()");
       }
-
     }
   }
 }

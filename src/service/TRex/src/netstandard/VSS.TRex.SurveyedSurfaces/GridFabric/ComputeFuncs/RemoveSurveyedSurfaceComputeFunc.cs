@@ -28,8 +28,8 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception: ");
-        return null;
+        _log.LogError(e, "Exception removing surveyed surface");
+        return new RemoveSurveyedSurfaceResponse { RequestResult = Designs.Models.DesignProfilerRequestResult.UnknownError};
       }
     }
   }

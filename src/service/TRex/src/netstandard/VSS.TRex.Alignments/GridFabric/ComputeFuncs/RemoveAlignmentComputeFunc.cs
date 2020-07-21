@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Alignments.Executors;
 using VSS.TRex.Alignments.GridFabric.Arguments;
 using VSS.TRex.Alignments.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.ComputeFuncs;
 
 namespace VSS.TRex.Alignments.GridFabric.ComputeFuncs
@@ -28,8 +29,13 @@ namespace VSS.TRex.Alignments.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception: ");
-        return null;
+        _log.LogError(e, "Exception removing alignment");
+
+        return new RemoveAlignmentResponse()
+        {
+          AlignmentUid = Guid.Empty,
+          RequestResult = DesignProfilerRequestResult.UnknownError
+        };
       }
     }
   }

@@ -28,8 +28,8 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception: ");
-        return null;
+        _log.LogError(e, "Exception: removing TTM design");
+        return new RemoveTTMDesignResponse { RequestResult = Models.DesignProfilerRequestResult.UnknownError};
       }
     }
   }

@@ -21,7 +21,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
   /// </summary>
   public class TileRenderRequestComputeFunc : BaseComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<TileRenderRequestComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<TileRenderRequestComputeFunc>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -36,7 +36,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
       {
         var startTime = DateTime.UtcNow;
 
-        Log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
+        _log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
         try
         {
@@ -44,7 +44,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
           // sub grid results to it.
           arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
 
-          Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
+          _log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
           var render = new RenderOverlayTile
           (arg.ProjectID,
@@ -60,14 +60,14 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
             arg.TRexNodeID,
             arg.LiftParams);
 
-          Log.LogInformation("Executing render.ExecuteAsync()");
+          _log.LogInformation("Executing render.ExecuteAsync()");
 
           using var bmp = render.ExecuteAsync().WaitAndUnwrapException();
-          Log.LogInformation($"Render status = {render.ResultStatus}");
+          _log.LogInformation($"Render status = {render.ResultStatus}");
 
           if (bmp == null)
           {
-            Log.LogInformation("Null bitmap returned by executor");
+            _log.LogInformation("Null bitmap returned by executor");
           }
 
           // Get the rendering factory from the DI context
@@ -81,13 +81,13 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         }
         finally
         {
-          Log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
+          _log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
         }
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occurred in TileRenderRequestComputeFunc.Invoke()");
-        throw e; // rethrow exception - logging here is for context only
+        _log.LogError(e, "Exception occurred in TileRenderRequestComputeFunc.Invoke()");
+        return new TileRenderResponse { ResultStatus = Types.RequestErrorStatus.Exception };
       }
     }
   }

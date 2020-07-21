@@ -93,6 +93,9 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueBool("ENABLE_DEVICE_GATEWAY", It.IsAny<bool>())).Returns(Consts.ENABLE_DEVICE_GATEWAY);
           config.Setup(c => c.GetValueString("TAGFILE_ARCHIVE_FOLDER", It.IsAny<string>())).Returns("");
 
+          config.Setup(c => c.GetValueBool("ENABLE_DEVICE_GATEWAY")).Returns(false);
+          config.Setup(c => c.GetValueBool("ENABLE_DEVICE_GATEWAY", It.IsAny<bool>())).Returns(false);
+
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("UnitTestAWSBucketKey");
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME", It.IsAny<string>())).Returns("UnitTestAWSBucketKey");
 
