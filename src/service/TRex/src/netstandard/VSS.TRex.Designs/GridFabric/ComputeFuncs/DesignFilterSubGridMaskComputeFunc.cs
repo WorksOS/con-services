@@ -44,10 +44,10 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
         }
         return result;
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception: ");
-        return null;
+        Log.LogError(e, "Exception calculating design filter sub grid mask");
+        return new DesignFilterSubGridMaskResponse { Bits = null, RequestResult = Models.DesignProfilerRequestResult.UnknownError };
       }
     }
   }
