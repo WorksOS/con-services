@@ -542,7 +542,8 @@ namespace VSS.TRex.Tests.Caching
       }
     }
 
-    [Fact]
+    [Fact(Skip = "Slow test - better if run locally")]
+    [Trait("Category", "Slow")]
     public void Test_TRexSpatialMemoryCacheTests_ConcurrentAccessWithDesignAndProductionDataIngestInvalidation()
     {
       using var cache = new TRexSpatialMemoryCache(20000, 1000000, 0.5);
