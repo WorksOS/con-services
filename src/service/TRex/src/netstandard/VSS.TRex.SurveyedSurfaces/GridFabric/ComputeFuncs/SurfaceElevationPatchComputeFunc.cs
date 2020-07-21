@@ -19,8 +19,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     /// </summary>
     public ISerialisedByteArrayWrapper Invoke(ISurfaceElevationPatchArgument arg)
     {
-      byte[] resultAsBytes = null;
-
       try
       {
         _log.LogDebug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
@@ -28,6 +26,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
         var executor = new CalculateSurfaceElevationPatch(arg);
         var result = executor.Execute();
 
+        byte[] resultAsBytes = null;
         if (result != null)
         {
           try
@@ -39,13 +38,14 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
             DIContext.Obtain<IClientLeafSubGridFactory>().ReturnClientSubGrid(ref result);
           }
         }
+
+        return new SerialisedByteArrayWrapper(resultAsBytes);
       }
       catch (Exception e)
       {
         _log.LogError(e, $"{nameof(SurfaceElevationPatchComputeFunc)}.Invoke: Exception:");
+        return null;
       }
-
-      return new SerialisedByteArrayWrapper(resultAsBytes);
     }
   }
 }

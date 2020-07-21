@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Filters;
@@ -50,6 +51,11 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         _log.LogInformation("Executing volumes.ExecuteAsync()");
 
         return volumes.ExecuteAsync().WaitAndUnwrapException();
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception requesting progressive volume at cluster compute layer");
+        return new ProgressiveVolumesResponse { ResultStatus = Types.RequestErrorStatus.Exception, Volumes = null };
       }
       finally
       {

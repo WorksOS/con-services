@@ -8,14 +8,13 @@ using VSS.TRex.QuantizedMesh.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.QuantizedMesh.Executors;
-using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 {
   public class QuantizedMeshRequestComputeFunc : BaseComputeFunc, IComputeFunc<QuantizedMeshRequestArgument, QuantizedMeshResponse>
   {
 
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<QuantizedMeshRequestComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<QuantizedMeshRequestComputeFunc>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -27,12 +26,10 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
     /// <summary>
     /// Quantized Mesh Response.
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public QuantizedMeshResponse Invoke(QuantizedMeshRequestArgument arg)
     {
 
-      Log.LogInformation("In QuantizedMeshRequestComputeFunc.Invoke()");
+      _log.LogInformation("In QuantizedMeshRequestComputeFunc.Invoke()");
 
       try
       {
@@ -41,23 +38,27 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
         // subgrid results to it.
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
 
-        Log.LogDebug($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
+        _log.LogDebug($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
         var request = new QMTileExecutor(arg.ProjectID, arg.Filters, arg.X, arg.Y, arg.Z, arg.DisplayMode, arg.HasLighting, arg.TRexNodeID);
 
-        Log.LogInformation("Executing request.Execute()");
+        _log.LogInformation("Executing request.Execute()");
 
         if (!request.ExecuteAsync().WaitAndUnwrapException())
-          Log.LogError("Request execution failed");
+          _log.LogError("Request execution failed");
 
         return request.QMTileResponse; 
 
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception requesting quantized mesh");
+        return new QuantizedMeshResponse { ResultStatus = Types.RequestErrorStatus.Exception };
+      }
       finally
       {
-        Log.LogDebug($"Exiting QuantizedMeshRequestComputeFunc.Invoke()");
+        _log.LogDebug($"Exiting QuantizedMeshRequestComputeFunc.Invoke()");
       }
     }
-
   }
 }
