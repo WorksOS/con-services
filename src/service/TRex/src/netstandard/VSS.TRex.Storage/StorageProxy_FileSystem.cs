@@ -16,6 +16,8 @@ namespace VSS.TRex.Storage
   [ExcludeFromCodeCoverage] // Not currently used...
   public class StorageProxy_FileSystem : IStorageProxy
   {
+    public Guid ProxyID { get; } = Guid.NewGuid();
+
     public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialCache(FileSystemStreamType streamType) => null; // Not implemented
     public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache(FileSystemStreamType streamType) => null; // Not implemented
 

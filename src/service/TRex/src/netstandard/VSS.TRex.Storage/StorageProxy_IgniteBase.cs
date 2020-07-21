@@ -20,7 +20,7 @@ namespace VSS.TRex.Storage
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<StorageProxy_IgniteBase>();
 
-    public Guid ProxyID { get; }
+    public Guid ProxyID { get; } = Guid.NewGuid();
 
     private IMutabilityConverter _mutabilityConverter;
     private IMutabilityConverter MutabilityConverter => _mutabilityConverter ??= DIContext.Obtain<IMutabilityConverter>();
@@ -93,8 +93,6 @@ namespace VSS.TRex.Storage
 
     protected StorageProxy_IgniteBase(StorageMutability mutability)
     {
-      ProxyID = Guid.NewGuid();
-
       Mutability = mutability;
 
       var factory = DIContext.Obtain<ITRexGridFactory>();
