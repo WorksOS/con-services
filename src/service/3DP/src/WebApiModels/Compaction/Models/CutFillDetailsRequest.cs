@@ -57,7 +57,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// </summary>
     public override void Validate()
     {
+      const int NUM_TOLERANCES = 7;
+
       base.Validate();
+
+      if (CutFillTolerances?.Length != NUM_TOLERANCES)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"{NUM_TOLERANCES} tolerances must be specified for cut-fill details"));
+      }
 
       Filter?.Validate();  
 
