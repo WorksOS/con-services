@@ -201,8 +201,6 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           fence.UpdateExtents();
         }
 
-        var fileUid = src.DesignFile != null ? src.DesignFile.FileUid.Value : (src.AlignmentFile != null ? src.AlignmentFile.FileUid.Value : Guid.Empty);
-
         return new CellSpatialFilter
         {
           CoordsAreGrid = src.PolygonGrid != null,
@@ -210,7 +208,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           Fence = fence,
           IsDesignMask = src.DesignFile != null,
           IsAlignmentMask = src.AlignmentFile != null,
-          AlignmentDesignMaskDesignUID = fileUid,
+          AlignmentDesignMaskDesignUID = src.AlignmentFile != null ? src.AlignmentFile.FileUid.Value : Guid.Empty,
+          SurfaceDesignMaskDesignUid = src.DesignFile != null ? src.DesignFile.FileUid.Value : Guid.Empty,
           StartStation = src.StartStation,
           EndStation = src.EndStation,
           LeftOffset = src.LeftOffset,
