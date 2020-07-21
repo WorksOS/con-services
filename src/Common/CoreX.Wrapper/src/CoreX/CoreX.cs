@@ -8,6 +8,7 @@ using CoreX.Wrapper.Types;
 using Microsoft.Extensions.Logging;
 using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
+using VSS.Common.Abstractions.Configuration;
 
 namespace CoreX.Wrapper
 {
@@ -18,12 +19,15 @@ namespace CoreX.Wrapper
     private static readonly object _lock = new object();
     private readonly ILogger _log;
 
-    public CoreX(ILoggerFactory loggerFactory)
+    public CoreX(ILoggerFactory loggerFactory, IConfigurationStore configStore)
     {
       _log = loggerFactory.CreateLogger<CoreX>();
 
       lock (_lock)
       {
+        GeodeticDatabasePath = configStore.GetValueString("TGL_GEODATA_PATH", "GeoData");
+        _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
+
         SetupTGL();
       }
 
@@ -49,14 +53,6 @@ namespace CoreX.Wrapper
       if (resultCode != (int)csmErrorCode.cecSuccess)
       {
         throw new Exception($"Error '{resultCode}' attempting to load coordinate system database '{xmlFilePath}'");
-      }
-
-      GeodeticDatabasePath = Environment.GetEnvironmentVariable("TGL_GEODATA_PATH");
-      _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
-
-      if (string.IsNullOrEmpty(GeodeticDatabasePath))
-      {
-        GeodeticDatabasePath = "Geodata";
       }
 
       _log.LogInformation($"CoreX {nameof(SetupTGL)}: GeodeticDatabasePath='{GeodeticDatabasePath}'");
