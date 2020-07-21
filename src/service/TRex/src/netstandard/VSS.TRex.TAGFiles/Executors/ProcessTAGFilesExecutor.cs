@@ -10,7 +10,6 @@ using VSS.TRex.TAGFiles.Classes.Integrator;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;
-using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
