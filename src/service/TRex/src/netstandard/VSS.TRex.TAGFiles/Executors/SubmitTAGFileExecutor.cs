@@ -32,7 +32,7 @@ namespace VSS.TRex.TAGFiles.Executors
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubmitTAGFileExecutor>();
 
-    private static readonly bool _tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
+    private readonly bool _tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
 
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
@@ -40,8 +40,8 @@ namespace VSS.TRex.TAGFiles.Executors
     private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<Func<ITAGFileBufferQueue>>()();
 
     private bool OutputInformationalRequestLogging = true;
-    private static readonly bool _isDeviceGatewayEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_DEVICE_GATEWAY", Consts.ENABLE_DEVICE_GATEWAY);
-    private static readonly ITPaaSApplicationAuthentication _tPaaSApplicationAuthentication = DIContext.Obtain<ITPaaSApplicationAuthentication>();
+    private readonly bool _isDeviceGatewayEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_DEVICE_GATEWAY", Consts.ENABLE_DEVICE_GATEWAY);
+    private readonly ITPaaSApplicationAuthentication _tPaaSApplicationAuthentication = DIContext.Obtain<ITPaaSApplicationAuthentication>();
 
 
     /// <summary>
@@ -90,7 +90,7 @@ namespace VSS.TRex.TAGFiles.Executors
           //await using (var stream = new MemoryStream(td.tagFileContent))
           //  tagFilePreScan.Execute(stream);
 
-          ContractExecutionResult result; 
+          ContractExecutionResult result;
           result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
           
           if (result.Code == (int) TRexTagFileResultCode.Valid)
@@ -178,12 +178,12 @@ namespace VSS.TRex.TAGFiles.Executors
       return response;
     }
 
-    ///
+    /// <summary>
     /// Send devices lastKnownStatus to cws deviceGateway aka connected site
     ///     Don't need to await as this process should be fire and forget
     ///        We don't care if the post is valid, or device exists etc
-    /// 
-    public static void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
+    /// </summary>
+    public void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
     {
       // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
       if (tagFilePreScan.PlatformType == CWSDeviceTypeEnum.EC520 ||
@@ -206,7 +206,7 @@ namespace VSS.TRex.TAGFiles.Executors
         }
         else
         {
-          var deviceLksModel = new DeviceLKSModel() 
+          var deviceLksModel = new DeviceLKSModel
           {
             TimeStamp = tagFilePreScan.SeedTimeUTC,
             Latitude = seedLatitude,
@@ -244,7 +244,7 @@ namespace VSS.TRex.TAGFiles.Executors
           _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Got customHeaders");
 
           // don't await this call, should be fire and forget
-          cwsDeviceGatewayClient.CreateDeviceLKS($"{deviceLksModel.AssetType.ToString()}-{deviceLksModel.AssetSerialNumber}", deviceLksModel, customHeaders)
+          cwsDeviceGatewayClient.CreateDeviceLKS($"{deviceLksModel.AssetType}-{deviceLksModel.AssetSerialNumber}", deviceLksModel, customHeaders)
             .ContinueWith((task) =>
             {
               if (task.IsFaulted)

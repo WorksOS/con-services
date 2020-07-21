@@ -17,7 +17,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {
     // ReSharper disable once StaticMemberInGenericType
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     /// <summary>
     /// Default no-arg constructor
@@ -31,13 +31,11 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
     /// <summary>
     /// Invoke function called in the context of the cluster compute node
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public TSubGridRequestsResponse Invoke(TSubGridsRequestArgument arg)
     {
       TSubGridRequestsResponse result;
 
-      Log.LogInformation("#In# SubGridsRequestComputeFunc.invoke()");
+      _log.LogInformation("#In# SubGridsRequestComputeFunc.invoke()");
 
       try
       {
@@ -51,12 +49,12 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         }
         finally
         {
-          Log.LogInformation("Out SubGridsRequestComputeFunc.invoke()");
+          _log.LogInformation("Out SubGridsRequestComputeFunc.invoke()");
         }
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occurred:");
+        _log.LogError(e, "Exception occurred in base sub grid request compute function");
 
         return new TSubGridRequestsResponse {ResponseCode = SubGridRequestsResponseResult.Unknown};
       }

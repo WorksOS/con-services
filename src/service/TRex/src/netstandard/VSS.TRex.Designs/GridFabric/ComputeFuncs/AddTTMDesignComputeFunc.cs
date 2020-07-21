@@ -38,8 +38,8 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception: ");
-        return null;
+        _log.LogError(e, "Exception adding TTM design ");
+        return new AddTTMDesignResponse { DesignUid = Guid.Empty, RequestResult = DesignProfilerRequestResult.UnknownError };
       }
     }
   }

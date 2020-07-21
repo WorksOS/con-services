@@ -8,34 +8,34 @@ using VSS.TRex.GridFabric.ComputeFuncs;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
-    /// <summary>
-    /// Ignite ComputeFunc responsible for executing the elevation patch calculator
-    /// </summary>
-    public class CalculateDesignElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>
+  /// <summary>
+  /// Ignite ComputeFunc responsible for executing the elevation patch calculator
+  /// </summary>
+  public class CalculateDesignElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>
+  {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationPatchComputeFunc>();
+
+    public CalculateDesignElevationPatchResponse Invoke(CalculateDesignElevationPatchArgument args)
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatchComputeFunc>();
+      try
+      {
+        // Log.LogInformation($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
-        public CalculateDesignElevationPatchResponse Invoke(CalculateDesignElevationPatchArgument args)
+        var Executor = new CalculateDesignElevationPatch();
+
+        var heightsResult = Executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
+
+        return new CalculateDesignElevationPatchResponse
         {
-            try
-            {
-                // Log.LogInformation($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
-
-                var Executor = new CalculateDesignElevationPatch();
-
-                var heightsResult = Executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
-
-                return new CalculateDesignElevationPatchResponse
-                {
-                    CalcResult = calcResult,
-                    Heights = heightsResult
-                };
-            }
-            catch (Exception E)
-            {
-                Log.LogError(E, "Exception:");
-                return null;
-            }
-        }
+          CalcResult = calcResult,
+          Heights = heightsResult
+        };
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception calculating design elevation patch");
+        return new CalculateDesignElevationPatchResponse { Heights = null, CalcResult = Models.DesignProfilerRequestResult.UnknownError }; 
+      }
     }
+  }
 }

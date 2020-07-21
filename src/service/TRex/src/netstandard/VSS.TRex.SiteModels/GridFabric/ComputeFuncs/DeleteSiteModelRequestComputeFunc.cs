@@ -47,8 +47,8 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"Unhandled exception in {nameof(Invoke)}");
-        return new DeleteSiteModelRequestResponse {Result = DeleteSiteModelResult.UnhandledException};
+        _log.LogError(e, "Exception deleting site model");
+        return new DeleteSiteModelRequestResponse { Result = DeleteSiteModelResult.UnhandledException };
       }
     }
   }

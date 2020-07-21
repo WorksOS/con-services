@@ -4,6 +4,7 @@ using System;
 using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.ComputeFuncs;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
@@ -13,7 +14,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
   /// </summary>
   public class CalculateDesignElevationSpotComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignElevationSpotArgument, CalculateDesignElevationSpotResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationSpotComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationSpotComputeFunc>();
 
     public CalculateDesignElevationSpotResponse Invoke(CalculateDesignElevationSpotArgument args)
     {
@@ -23,10 +24,10 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         return Executor.Execute(args.ProjectID, args.ReferenceDesign, args.SpotX, args.SpotY);
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception:");
-        return new CalculateDesignElevationSpotResponse { Elevation = Common.Consts.NullDouble};
+        _log.LogError(e, "Exception calculating design spot height");
+        return new CalculateDesignElevationSpotResponse { Elevation = Common.Consts.NullDouble, CalcResult = DesignProfilerRequestResult.UnknownError};
       }
     }
   }
