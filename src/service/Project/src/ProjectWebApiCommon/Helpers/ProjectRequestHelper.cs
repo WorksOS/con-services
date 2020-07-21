@@ -39,10 +39,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///  Includes all projects, regardless of archived state and user role
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetProjectListForCustomer(Guid customerUid, Guid? userUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, CwsProjectType? projectType, ProjectStatus? status, bool onlyAdmin, IHeaderDictionary customHeaders)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, CwsProjectType? projectType, 
+      ProjectStatus? status, bool onlyAdmin, bool includeBoundaries, IHeaderDictionary customHeaders)
     {
       log.LogDebug($"{nameof(GetProjectListForCustomer)} customerUid {customerUid}, userUid {userUid}");
-      var projects = await cwsProjectClient.GetProjectsForCustomer(customerUid, userUid, true, projectType, status, onlyAdmin, customHeaders);
+      var projects = await cwsProjectClient.GetProjectsForCustomer(customerUid, userUid, includeBoundaries, projectType, status, onlyAdmin, customHeaders);
 
       var projectDatabaseModelList = new List<ProjectDatabaseModel>();
       if (projects.Projects != null)
@@ -202,7 +203,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       // get projects for customer using application token i.e. no user
       // todo what are the rules e.g. active, for manual import? 
       var projectDatabaseModelList = (await GetProjectListForCustomer(new Guid(customerUid), null,
-          log, serviceExceptionHandler, cwsProjectClient, CwsProjectType.AcceptsTagFiles, ProjectStatus.Active, false, customHeaders))
+          log, serviceExceptionHandler, cwsProjectClient, CwsProjectType.AcceptsTagFiles, ProjectStatus.Active, false, true, customHeaders))
         .Where(p => string.IsNullOrEmpty(projectUid) || !p.IsArchived);
 
       // return a list at this stage to be used for logging in TFA, but other potential use in future.
@@ -224,7 +225,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       // todo what are the rules e.g. active, for manual import?
 
       var projectDatabaseModelList = (await GetProjectListForCustomer(customerUid, userUid,
-          log, serviceExceptionHandler, cwsProjectClient, CwsProjectType.AcceptsTagFiles, ProjectStatus.Active, false, customHeaders))
+          log, serviceExceptionHandler, cwsProjectClient, CwsProjectType.AcceptsTagFiles, ProjectStatus.Active, false, true, customHeaders))
         .Where(p => !p.IsArchived && p.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles) &&
                     (projectUid == null || string.Compare(p.ProjectUID.ToString(), projectUid.ToString(), StringComparison.OrdinalIgnoreCase) != 0));
 

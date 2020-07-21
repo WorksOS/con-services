@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
   public class AlignmentDesignStationRangeComputeFunc : BaseComputeFunc, IComputeFunc<DesignSubGridRequestArgumentBase, AlignmentDesignStationRangeResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<AlignmentDesignStationRangeComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AlignmentDesignStationRangeComputeFunc>();
 
     public AlignmentDesignStationRangeResponse Invoke(DesignSubGridRequestArgumentBase args)
     {
@@ -36,8 +36,8 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Failed to compute alignment design station range. Site Model ID: {args.ProjectID} design ID: {args.ReferenceDesign.DesignID}");
-        return null;
+        _log.LogError(e, $"Failed to compute alignment design station range. Site Model ID: {args.ProjectID} design ID: {args.ReferenceDesign.DesignID}");
+        return new AlignmentDesignStationRangeResponse { RequestResult = DesignProfilerRequestResult.UnknownError };
       }
     }
   }

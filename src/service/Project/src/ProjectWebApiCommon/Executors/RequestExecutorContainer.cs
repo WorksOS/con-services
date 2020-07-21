@@ -233,7 +233,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     public async Task ValidateProjectWithCustomer(string customerUid, string projectUid)
     {
-      var project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, null, null, false, customHeaders).ConfigureAwait(false))
+      var project = (await ProjectRequestHelper.GetProjectListForCustomer(new Guid(customerUid), new Guid(userId), log, serviceExceptionHandler, cwsProjectClient, null, null, false, false, customHeaders).ConfigureAwait(false))
           .FirstOrDefault(prj => string.Equals(prj.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)

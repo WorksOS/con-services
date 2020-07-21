@@ -22,7 +22,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="coverlet.msbuild" Version="2.8.1" />
-    <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
@@ -33,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\CoreX.Wrapper\src\CoreX\CoreX.Wrapper.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\src\gateway\VSS.TRex.Gateway.Common\VSS.TRex.Gateway.Common.csproj" />
     <ProjectReference Include="..\..\..\src\gateway\VSS.TRex.Gateway.WebApi\VSS.TRex.Gateway.WebApi.csproj" />
@@ -112,12 +112,17 @@
     <Compile Remove="TestData\**" />
     <EmbeddedResource Remove="TestData\**" />
     <None Remove="TestData\**" />
+    <Compile Remove="Geodata\**" />
+    <EmbeddedResource Remove="Geodata\**" />
+    <None Remove="Geodata\**" />
   </ItemGroup>
   <ItemGroup>
     <TestData Include="./TestData/**" />
+    <GeodataTestData Include="./TestData/Geodata/**" />
   </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(GeodataTestData)" DestinationFolder="$(OutputPath)/Geodata" SkipUnchangedFiles="true" />
   </Target>
   <!-- End bulk copy. -->
 

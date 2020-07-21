@@ -6,6 +6,11 @@ namespace CoreX.Interfaces
   public interface IConvertCoordinates
   {
     /// <summary>
+    /// Returns the filepath to the geodetic database files; defined by the TGL_GEODATA_PATH environment variable.
+    /// </summary>
+    string GeodeticDatabasePath { get; }
+
+    /// <summary>
     /// Provides a null conversion between the 2D coordinates in a WGS84 LL point and a XYZ NEE point.
     /// Only the 2D coordinates are used, and directly copied from the LL point to the XY point, maintaining the
     /// X == Longitude and Y == Latitude sense of the relative coordinates
