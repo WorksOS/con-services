@@ -237,18 +237,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       foreach (var impFileUid in importedFileUid)
       {
-        var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, impFileUid, OperationType.Profiling);
+        try
+        {
+          var designDescriptor = await GetAndValidateDesignDescriptor(projectUid, impFileUid, OperationType.Profiling);
+          var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
+              .ProjectId(projectId.Result)
+              .ProjectUid(projectUid)
+              .Headers(CustomHeaders)
+              .ProjectSettings(settings.Result)
+              .Filter(filter.Result)
+              .DesignDescriptor(designDescriptor))
+            .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
 
-        var profileRequest = requestFactory.Create<DesignProfileRequestHelper>(r => r
-            .ProjectId(projectId.Result)
-            .ProjectUid(projectUid)
-            .Headers(CustomHeaders)
-            .ProjectSettings(settings.Result)
-            .Filter(filter.Result)
-            .DesignDescriptor(designDescriptor))
-          .CreateDesignProfileRequest(startLatDegrees, startLonDegrees, endLatDegrees, endLonDegrees);
-
-        profileRequest.Validate();
+          profileRequest.Validate();
 
           var slicerDesignResult = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
             .Build<CompactionDesignProfileExecutor>(LoggerFactory,
@@ -258,9 +259,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
             .ProcessAsync(profileRequest)
         );
-        results.Add(impFileUid, (CompactionProfileResult<CompactionProfileVertex>) slicerDesignResult);
+          results.Add(impFileUid, (CompactionProfileResult<CompactionProfileVertex>)slicerDesignResult);
+        }
+        catch (ServiceException)
+        {
+          Log.LogDebug($"File {impFileUid} doesn't support operation {OperationType.Profiling} or is not found");
+        }
       }
-
       var transformedResult = profileResultHelper.ConvertProfileResult(results);
       profileResultHelper.AddSlicerEndPoints(transformedResult);
 
