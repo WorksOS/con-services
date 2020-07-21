@@ -1,0 +1,6 @@
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex:TGLDatabase as tgl-geodata
+
+# Bundle the TGL geodetic database files into a bare bones image for later COPYing into the TRex runtime image.
+FROM scratch as publish-image
+
+COPY --from=tgl-geodata /tgl_geodata/ /tgl_geodata/
