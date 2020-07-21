@@ -60,7 +60,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception requesting a TTM saurface");
+        _log.LogError(e, "Exception requesting a TTM surface");
         return new TINSurfaceResult { ResultStatus = Types.RequestErrorStatus.Exception };
       }
       finally

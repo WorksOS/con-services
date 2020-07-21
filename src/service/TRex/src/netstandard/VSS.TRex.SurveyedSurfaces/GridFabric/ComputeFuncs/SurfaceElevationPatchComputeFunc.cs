@@ -43,8 +43,8 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"{nameof(SurfaceElevationPatchComputeFunc)}.Invoke: Exception:");
-        return null;
+        _log.LogError(e, "Exception requesting surveyed surface elevation patch");
+        return new SerialisedByteArrayWrapper(null);
       }
     }
   }

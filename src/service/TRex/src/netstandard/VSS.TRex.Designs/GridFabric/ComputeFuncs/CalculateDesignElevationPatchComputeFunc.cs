@@ -34,7 +34,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       catch (Exception e)
       {
         _log.LogError(e, "Exception calculating design elevation patch");
-        return null; // Returning null here is OK, otherwise we return a large structure contianing null heights
+        return new CalculateDesignElevationPatchResponse { Heights = null, CalcResult = Models.DesignProfilerRequestResult.UnknownError }; 
       }
     }
   }

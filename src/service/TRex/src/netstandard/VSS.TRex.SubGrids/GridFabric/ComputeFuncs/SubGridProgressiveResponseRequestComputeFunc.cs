@@ -35,7 +35,7 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"Unhandled exception in {nameof(Invoke)}");
+        _log.LogError(e, "Exception in progressive sub grid response compute func");
         return false;
       }
     }
