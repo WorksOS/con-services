@@ -16,6 +16,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
 {
@@ -28,17 +29,15 @@ namespace VSS.MasterData.Proxies
     private static readonly AsyncDuplicateLock _memCacheLock = new AsyncDuplicateLock();
     protected readonly IConfigurationStore configurationStore;
     protected readonly ILogger log;
-    protected readonly ILoggerFactory logger;
 
     private const int DEFAULT_LOG_MAX_CHAR = 1000;
     protected readonly int _logMaxChar;
 
-    private readonly GracefulWebRequest _gracefulWebRequest;
+    private readonly IWebRequest _gracefulWebRequest;
 
     protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IHttpClientFactory clientFactory = null)
     {
       log = logger.CreateLogger<BaseProxy>();
-      this.logger = logger;
 
       this.configurationStore = configurationStore;
       _dataCache = dataCache;
@@ -53,7 +52,6 @@ namespace VSS.MasterData.Proxies
     protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger)
     {
       log = logger.CreateLogger<BaseProxy>();
-      this.logger = logger;
       this.configurationStore = configurationStore;
       _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DEFAULT_LOG_MAX_CHAR);
     }
