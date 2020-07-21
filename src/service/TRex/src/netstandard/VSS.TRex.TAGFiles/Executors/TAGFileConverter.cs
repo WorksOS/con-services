@@ -139,10 +139,6 @@ namespace VSS.TRex.TAGFiles.Executors
     /// Execute the conversion operation on the TAG file, returning a boolean success result.
     /// Sets up local state detailing the pre-scan fields retried from the ATG file
     /// </summary>
-    /// <param name="tagData"></param>
-    /// <param name="assetUid"></param>
-    /// <param name="isJohnDoe"></param>
-    /// <returns></returns>
     public bool Execute(Stream tagData, Guid assetUid, bool isJohnDoe)
     {
       ReadResult = TAGReadResult.NoError;
@@ -152,18 +148,44 @@ namespace VSS.TRex.TAGFiles.Executors
         Processor?.Dispose();
 
         // Locate the machine in the local set of machines, adding one if necessary
-        Machine = Machines.Locate(assetUid, isJohnDoe) ?? Machines.CreateNew("", "", MachineType.Unknown, DeviceTypeEnum.MANUALDEVICE, isJohnDoe, assetUid);
-        if (Machine.MachineType == MachineType.Unknown)
+        Machine = Machines.Locate(assetUid, isJohnDoe);
+
+        var machineType = MachineType.Unknown;
+        var machineHardwareId = string.Empty;
+        var machineId = string.Empty;
+
+        if (Machine == null || Machine.MachineType == MachineType.Unknown)
         {
           // Unknown machine. Prescan to determine machinetype for swather creation
           var tagFilePreScan = new TAGFilePreScan();
           tagFilePreScan.Execute(tagData);
           tagData.Position = 0; // reset
           if (tagFilePreScan.ReadResult == TAGReadResult.NoError)
-            Machine.MachineType = tagFilePreScan.MachineType;
+          {
+            machineType = tagFilePreScan.MachineType;
+            machineHardwareId = tagFilePreScan.HardwareID;
+            machineId = tagFilePreScan.MachineID;
+          }
           else
             return false;
         }
+
+        if (Machine == null)
+        {
+          // Now we know more about the machine have another go finding it
+          Machine = Machines.Locate(assetUid, machineId, isJohnDoe);
+        }
+
+        if (Machine == null)
+        {
+          Log.LogDebug($"Creating new machine in common converter for AssetUid = {assetUid}, JohnDoe = {isJohnDoe}, machineId = {machineId}, machineHardwareId = {machineHardwareId}");
+
+          Machine = Machines.CreateNew(machineId, machineHardwareId, machineType, DeviceTypeEnum.MANUALDEVICE, isJohnDoe, assetUid);
+        }
+
+        if (Machine.MachineType == MachineType.Unknown && machineType != MachineType.Unknown)
+          Machine.MachineType = machineType;
+
         var holdMachineType = Machine.MachineType;
 
         // Locate the aggregator, adding one if necessary
@@ -186,7 +208,7 @@ namespace VSS.TRex.TAGFiles.Executors
           Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
 
           SetPublishedState(Processor);
-          Machine.MachineType = holdMachineType; 
+          Machine.MachineType = holdMachineType;
 
           if (ReadResult != TAGReadResult.NoError)
             return false;

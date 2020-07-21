@@ -257,6 +257,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         if (machineFromDatamodel == null)
         {
+          _log.LogInformation($"Creating new machine: Name={machineFromTask.Name}, MachineHardwareID={machineFromTask.MachineHardwareID}, MachineType={machineFromTask.MachineType} DeviceType={machineFromTask.DeviceType} IsJohnDoe ?:{machineFromTask.IsJohnDoeMachine}, ID: {machineFromTask.ID}");
+
           machineFromDatamodel = siteModelFromDatamodel.Machines.CreateNew(machineFromTask.Name,
             machineFromTask.MachineHardwareID,
             machineFromTask.MachineType,
@@ -295,7 +297,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Perform machine event integration outside of the SiteModel write access interlock as the
       // individual event lists have independent exclusive locks event integration uses.
 
-      _log.LogDebug("Aggregation Task Process --> Integrating machine events into the live site model");
+      _log.LogDebug($"Aggregation Task Process --> Integrating machine events into the live site model for {task.IntermediaryTargetMachines.Count} intermediary machines");
 
       // Iterate over all the machine events collected in the task
       foreach (var machineFromTask in task.IntermediaryTargetMachines)

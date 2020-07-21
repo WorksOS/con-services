@@ -716,6 +716,8 @@ Result = false;
 }
 */
 
+        _log.LogDebug($"SaveToPersistentStoreForTAGFileIngest: Machine:{machines?.Count ?? 0}, siteProofingRuns:{siteProofingRuns?.Count ?? 0}, siteModelMachineDesigns: {siteModelMachineDesigns?.Count ?? 0}, _siteModelDesigns: {_siteModelDesigns?.Count ?? 0}");
+
         machines?.SaveToPersistentStore(storageProxy);
         siteProofingRuns?.SaveToPersistentStore(storageProxy);
         siteModelMachineDesigns?.SaveToPersistentStore(storageProxy);
