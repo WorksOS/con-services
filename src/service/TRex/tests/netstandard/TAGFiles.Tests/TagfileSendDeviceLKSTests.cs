@@ -72,7 +72,8 @@ namespace TAGFiles.Tests
       Assert.NotNull(tagFilePreScan);
       Assert.Equal("0523J019SW", tagFilePreScan.HardwareID);
 
-      SubmitTAGFileExecutor.SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
+      var executor = new SubmitTAGFileExecutor();
+      executor.SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
     }
    
     private void SetupDIDeviceGateay(bool enableDeviceGateway = true)
