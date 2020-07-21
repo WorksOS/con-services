@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.TRex.Common;
-using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 using Xunit;
 
-namespace VSS.TRex.Tests
+namespace TAGFiles.Tests
 {
   public class TAGProcessorStateBaseTests : IClassFixture<DILoggingFixture>
   {
@@ -389,7 +390,7 @@ namespace VSS.TRex.Tests
     {
       var state = new TAGProcessorStateBase();
 
-      Assert.True(state.DoEpochStateEvent(TRex.TAGFiles.Types.EpochStateEvent.Unknown), "Base function failed - it is not supposed to be implemented!");
+      Assert.True(state.DoEpochStateEvent(VSS.TRex.TAGFiles.Types.EpochStateEvent.Unknown), "Base function failed - it is not supposed to be implemented!");
     }
 
     [Fact()]
@@ -436,11 +437,28 @@ namespace VSS.TRex.Tests
 
 
     [Fact()]
-    public void Test_TAGProcessorStateBase_MachineControlTypeValid()
+    public void Test_TAGProcessorStateBase_MachineControlType_CB460_Valid()
     {
       var state = new TAGProcessorStateBase();
       state.HardwareID = "2432J011SW";
-      state.GetPlatformType().Should().Be(MachineControlPlatformType.CB460);
+      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.CB460);
+    }
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlType_EC520_Valid()
+    {
+      var state = new TAGProcessorStateBase();
+      state.HardwareID = "2432J011YU";
+      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.EC520W);
+    }
+
+    [Fact()]
+    public void Test_TAGProcessorStateBase_MachineControlType_Marine_Valid()
+    {
+      var state = new TAGProcessorStateBase();
+      state.HardwareID = Guid.NewGuid().ToString();
+      state.MachineType = MachineType.CutterSuctionDredge;
+      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.CB450);
     }
   }
 }

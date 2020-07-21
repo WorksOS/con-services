@@ -48,8 +48,6 @@ namespace VSS.TRex.Gateway.Common.Proxy
           return ServiceNameConstants.TREX_SERVICE_IMMUTABLE;
         case GatewayType.Mutable:
           return ServiceNameConstants.TREX_SERVICE_MUTABLE;
-        case GatewayType.ConnectedSite:
-          return ServiceNameConstants.TREX_SERVICE_CONNECTEDSITE;
         default:
           throw new ArgumentOutOfRangeException("Trex", Gateway, null);
       }

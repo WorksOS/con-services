@@ -8,8 +8,6 @@ namespace VSS.TRex.Profiling.Interfaces
   {
     bool Aborted { get; set; }
 
-    double GridDistanceBetweenProfilePoints { get; set; }
-
     Task<bool> Build(XYZ[] nEECoords, List<T> profileCells);
   }
 }

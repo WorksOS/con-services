@@ -27,10 +27,15 @@ namespace MockProjectWebApi.Controllers
       return new AlignmentGeometryResult
       (
         0,
-        alignmentUid,
-        new[] { new[] { new double[] { 1, 2, 3 } } },
-        new[] { new AlignmentGeometryResultArc(0, 1, 2, 3, 4, 5, 6, 7, 8, true) },
-        new[] { new AlignmentGeometryResultLabel(0, 1, 2, 3), }); ;
+        new AlignmentGeometry
+        (
+          alignmentUid,
+          "Test.svl",
+          new[] { new[] { new double[] { 1, 2, 3 } } },
+          new[] { new AlignmentGeometryResultArc(0, 1, 2, 3, 4, 5, 6, 7, 8, true) },
+          new[] { new AlignmentGeometryResultLabel(0, 1, 2, 3), }
+        )
+      );
     }
 
     /// <summary>

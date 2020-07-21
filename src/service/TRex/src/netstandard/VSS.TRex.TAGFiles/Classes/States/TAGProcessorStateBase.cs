@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
@@ -267,9 +268,15 @@ namespace VSS.TRex.TAGFiles.Classes.States
       return MachineDirection.Unknown;
     }
 
-    public MachineControlPlatformType GetPlatformType()
+    public CWSDeviceTypeEnum GetPlatformType()
     {
-      return MachineSerialUtilities.MapSerialToModel(HardwareID);
+      var type = MachineSerialUtilities.MapSerialToModel(HardwareID);
+
+      // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
+      if ( type == CWSDeviceTypeEnum.Unknown && 
+            (MachineType == MachineType.CutterSuctionDredge || MachineType == MachineType.BargeMountedExcavator))
+         type = CWSDeviceTypeEnum.CB450;
+      return type;
     }
 
     public virtual void SetResearchData(bool value) => _ResearchData = value;

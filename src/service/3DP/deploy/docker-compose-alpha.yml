@@ -14,7 +14,6 @@ services:
      - project_service=http://project.alpha.eks.ccss.cloud
      - filter_service=http://filter.alpha.eks.ccss.cloud
      - tagfileauth_service=http://tagfileauth.alpha.eks.ccss.cloud
-     - trex_service_connectedsite=http://connectedsite.alpha.eks.ccss.cloud
      - trex_service_immutable=http://trex.immutable.alpha.eks.ccss.cloud
      - trex_service_mutable=http://trex.mutable.alpha.eks.ccss.cloud
      - ASSETMGMT_CACHE_LIFE=00:15:00

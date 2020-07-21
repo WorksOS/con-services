@@ -42,8 +42,8 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
 
     /// <summary>
     /// deviceName
-    ///     "AssetType"-"serialNumber"
-    ///     e.g. "TABLET-12345YU" 
+    ///     "PlatformType"-"serialNumber"
+    ///     e.g. "TABLET-1234545" "EC520-12345YU" 
     /// </summary>
     [JsonProperty("deviceName")]
     public string DeviceName { get; set; }

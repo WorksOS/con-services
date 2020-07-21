@@ -18,27 +18,27 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// <summary>
     /// The ID of the SiteModel to execute the request against
     /// </summary>
-    public Guid SiteModelID { get; private set; }
+    public Guid SiteModelID { get; set; }
 
     /// <summary>
     /// The bottom left on-the-ground cell origin X location for the patch of elevations to be computed from
     /// </summary>
-    public int OTGCellBottomLeftX { get; private set; }
+    public int OTGCellBottomLeftX { get; set; }
 
     /// <summary>
     /// The bottom left on-the-ground cell origin Y location for the patch of elevations to be computed from
     /// </summary>
-    public int OTGCellBottomLeftY { get; private set; }
+    public int OTGCellBottomLeftY { get; set; }
 
     /// <summary>
     /// The cell stepping size to move between points in the patch being interpolated
     /// </summary>
-    public double CellSize { get; private set; }
+    public double CellSize { get; set; }
 
     /// <summary>
     /// Determines which surface information should be extracted: Earliest, Latest or Composite
     /// </summary>
-    public SurveyedSurfacePatchType SurveyedSurfacePatchType { get; private set; }
+    public SurveyedSurfacePatchType SurveyedSurfacePatchType { get; set; }
 
     /// <summary>
     /// A map of the cells within the sub grid patch to be computed
@@ -54,13 +54,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// <summary>
     /// Constructor taking the full state of the surface patch computation operation
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="oTGCellBottomLeftX"></param>
-    /// <param name="oTGCellBottomLeftY"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="surveyedSurfacePatchType"></param>
-    /// <param name="processingMap"></param>
-    /// <param name="includedSurveyedSurfaces"></param>
     public SurfaceElevationPatchArgument(Guid siteModelID,
       int oTGCellBottomLeftX,
       int oTGCellBottomLeftY,
@@ -89,8 +82,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// Sets the location of the surveyed surface sub grid to be requested without modifying any other aspect
     /// of the request
     /// </summary>
-    /// <param name="oTGCellBottomLeftX"></param>
-    /// <param name="oTGCellBottomLeftY"></param>
     public void SetOTGBottomLeftLocation(int oTGCellBottomLeftX, int oTGCellBottomLeftY)
     {
       OTGCellBottomLeftX = oTGCellBottomLeftX;
@@ -100,7 +91,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// <summary>
     /// Overloaded ToString to add argument properties
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return base.ToString() + $" -> SiteModel:{SiteModelID}, OTGOriginBL:{OTGCellBottomLeftX}/{OTGCellBottomLeftY}, CellSize:{CellSize}, SurfacePatchType:{SurveyedSurfacePatchType}";
@@ -112,7 +102,6 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// even though the core engine returns HeightAndTime results. This allows HeightAndTime and
     /// SurveyedSurfaceHeightAndTime results to cohabit in the same cache
     /// </summary>
-    /// <returns></returns>
     public string CacheFingerprint()
     {
       return SpatialCacheFingerprint.ConstructFingerprint(SiteModelID, GridDataType.SurveyedSurfaceHeightAndTime, null, IncludedSurveyedSurfaces);

@@ -7,7 +7,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Affinity;
@@ -388,13 +387,15 @@ namespace VSS.TRex.SubGrids.Executors
       //Log.LogInformation("Sending {0} sub grids to caller for processing", count);
       //Log.LogInformation($"Requester list contains {Requestors.Length} items");
 
-      var clientGridTasks = new Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[]>[addressCount];
+      var clientGridResults = new List<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[]>(addressCount);
 
       // Execute a client grid request for each requester and create an array of the results
-      addressList.ForEach((x, i) => clientGridTasks[i] = PerformSubGridRequest(requestors, x));
-      await Task.WhenAll(clientGridTasks);
+      foreach (var address in addressList)
+      {
+        clientGridResults.Add(await PerformSubGridRequest(requestors, address));
+      }
 
-      var clientGrids = clientGridTasks.Select(c => c.Result.Select(x => x.requestResult == ServerRequestResult.NoError ? x.clientGrid : null).ToArray()).ToArray();
+      var clientGrids = clientGridResults.Select(c => c.Select(x => x.requestResult == ServerRequestResult.NoError ? x.clientGrid : null).ToArray()).ToArray();
 
       try
       {
@@ -443,7 +444,6 @@ namespace VSS.TRex.SubGrids.Executors
       ICombinedFilter Filter, 
       ISurveyedSurfaces FilteredSurveyedSurfaces, 
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
-      ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       ITRexSpatialMemoryCacheContext[] CacheContexts)[] _requestorIntermediaries;
 
     /// <summary>

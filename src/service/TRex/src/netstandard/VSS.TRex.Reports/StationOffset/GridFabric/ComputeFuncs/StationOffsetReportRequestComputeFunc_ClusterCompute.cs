@@ -16,11 +16,11 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
   /// </summary>
   public class StationOffsetReportRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute, StationOffsetReportRequestResponse_ClusterCompute> 
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<StationOffsetReportRequestComputeFunc_ClusterCompute>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<StationOffsetReportRequestComputeFunc_ClusterCompute>();
 
     public StationOffsetReportRequestResponse_ClusterCompute Invoke(StationOffsetReportRequestArgument_ClusterCompute arg)
     {
-      Log.LogInformation($"Start {nameof(StationOffsetReportRequestResponse_ClusterCompute)}");
+      _log.LogInformation($"Start {nameof(StationOffsetReportRequestResponse_ClusterCompute)}");
       try
       {
         var executor = new ComputeStationOffsetReportExecutor_ClusterCompute(arg);
@@ -28,12 +28,12 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"{nameof(StationOffsetReportRequestResponse_ClusterCompute)}: Unexpected exception.");
+        _log.LogError(e, $"{nameof(StationOffsetReportRequestResponse_ClusterCompute)}: Unexpected exception.");
         return new StationOffsetReportRequestResponse_ClusterCompute{ResultStatus = RequestErrorStatus.Unknown, ReturnCode = ReportReturnCode.UnknownError};
       }
       finally
       {
-        Log.LogInformation($"End {nameof(StationOffsetReportRequestResponse_ClusterCompute)}");
+        _log.LogInformation($"End {nameof(StationOffsetReportRequestResponse_ClusterCompute)}");
       }
     }
   }

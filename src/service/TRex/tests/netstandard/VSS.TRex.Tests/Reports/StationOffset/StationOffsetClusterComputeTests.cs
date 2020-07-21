@@ -25,7 +25,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Reports.StationOffset
 {
-  public class StationOffsetClusterComputeTests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
+  public class StationOffsetClusterComputeTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     [Fact]
     public async Task CalculateFromTAGFileDerivedModel()

@@ -1,19 +1,22 @@
-﻿namespace VSS.Productivity3D.Models.ResultHandling.Profiling
+﻿using Newtonsoft.Json;
+
+namespace VSS.Productivity3D.Models.ResultHandling.Profiling
 {
   public class SummaryVolumesProfileCell
   {
+    [JsonProperty]
     public double Station { get; private set; }
-  
+    [JsonProperty]
     public double InterceptLength { get; private set; }
-
+    [JsonProperty]
     public int OTGCellX { get; private set; }
-
+    [JsonProperty]
     public int OTGCellY { get; private set; }
-
+    [JsonProperty]
     public float DesignElev { get; private set; }
-
+    [JsonProperty]
     public float LastCellPassElevation1 { get; private set; }
-
+    [JsonProperty]
     public float LastCellPassElevation2 { get; private set; }
 
     // Default public constructor.

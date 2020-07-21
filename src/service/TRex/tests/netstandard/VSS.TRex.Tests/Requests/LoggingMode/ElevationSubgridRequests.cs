@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
   /// then querying elevation information from those cell passes to verify expected selection of cell passes based on
   /// the recorded elevation mapping mode
   /// </summary>
-  public class ElevationSubGridRequests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
+  public class ElevationSubGridRequests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     private readonly DateTime BASE_TIME = DateTime.UtcNow;
 

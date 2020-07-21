@@ -11,6 +11,7 @@ using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
+using VSS.TRex.GridFabric;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.ComputeFuncs;
 using VSS.TRex.Rendering.GridFabric.Responses;
@@ -22,6 +23,8 @@ using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 
@@ -38,8 +41,13 @@ namespace VSS.TRex.Tests.Rendering.Requests
       IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
-    protected void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
-      <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
+    protected void AddDesignProfilerGridRouting()
+    {
+      IgniteMock.Immutable.AddApplicationGridRouting
+        <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
+      IgniteMock.Immutable.AddApplicationGridRouting
+        <SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
+    }
 
     protected TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null, CellPassAttributeFilter attributeFilter = null)
     {

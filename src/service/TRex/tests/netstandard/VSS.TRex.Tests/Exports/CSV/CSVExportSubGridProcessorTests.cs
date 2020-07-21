@@ -24,7 +24,7 @@ using GPSAccuracy = VSS.TRex.Types.GPSAccuracy;
 
 namespace VSS.TRex.Tests.Exports.CSV
 {
-  public class CSVExportSubGridProcessorTests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
+  public class CSVExportSubGridProcessorTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     public CSVExportSubGridProcessorTests()
     {

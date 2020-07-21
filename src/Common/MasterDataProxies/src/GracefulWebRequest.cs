@@ -210,7 +210,8 @@ namespace VSS.MasterData.Proxies
           }
 
           _log.LogDebug($"Request returned {contents.Truncate(_logMaxChar)} with status {result.StatusCode}");
-          if (typeof(T) == typeof(string)) return (T)Convert.ChangeType(contents, typeof(T));
+          if (typeof(T) == typeof(string))
+            return (T)Convert.ChangeType(contents, typeof(T));
           return JsonConvert.DeserializeObject<T>(contents);
         });
 

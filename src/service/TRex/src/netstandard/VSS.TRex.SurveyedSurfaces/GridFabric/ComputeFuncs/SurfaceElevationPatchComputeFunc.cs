@@ -12,24 +12,21 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 {
   public class SurfaceElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SurfaceElevationPatchComputeFunc>();
 
     /// <summary>
     /// Invokes the surface elevation patch computation function on the server nodes the request has been sent to
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public ISerialisedByteArrayWrapper Invoke(ISurfaceElevationPatchArgument arg)
     {
-      byte[] resultAsBytes = null;
-
       try
       {
-        Log.LogDebug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
+        _log.LogDebug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
-        var Executor = new CalculateSurfaceElevationPatch(arg);
-        var result = Executor.Execute();
+        var executor = new CalculateSurfaceElevationPatch(arg);
+        var result = executor.Execute();
 
+        byte[] resultAsBytes = null;
         if (result != null)
         {
           try
@@ -41,13 +38,14 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
             DIContext.Obtain<IClientLeafSubGridFactory>().ReturnClientSubGrid(ref result);
           }
         }
-      }
-      catch (Exception E)
-      {
-        Log.LogError(E, $"{nameof(SurfaceElevationPatchComputeFunc)}.Invoke: Exception:");
-      }
 
-      return new SerialisedByteArrayWrapper(resultAsBytes);
+        return new SerialisedByteArrayWrapper(resultAsBytes);
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception requesting surveyed surface elevation patch");
+        return new SerialisedByteArrayWrapper(null);
+      }
     }
   }
 }

@@ -31,7 +31,7 @@ namespace MockProjectWebApi.Controllers
           DeviceTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
           AssetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
           Latitude = 89.9, Longitude = 34.6,
-          AssetType = CWSDeviceTypeEnum.EC520,
+          AssetType = "Grader",
           DeviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
           ProjectName = "DimensionsProject",
           LastReportedUtc = DateTime.UtcNow.AddDays(-1)
@@ -52,7 +52,7 @@ namespace MockProjectWebApi.Controllers
           DeviceTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
           AssetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
           Latitude = 89.9, Longitude = 34.6,
-          AssetType = CWSDeviceTypeEnum.EC520,
+          AssetType = "Excavator",
           DeviceName = $"{CWSDeviceTypeEnum.EC520}-{ConstantsUtil.DIMENSIONS_SERIAL}",
           ProjectName = "DimensionsProject",
           LastReportedUtc = DateTime.UtcNow.AddDays(-1)

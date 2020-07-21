@@ -4,6 +4,7 @@ using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.Extensions;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 
 namespace CoreX.Wrapper
 {
@@ -14,19 +15,21 @@ namespace CoreX.Wrapper
   /// <remarks>
   /// While these methods can be called directly, it's recommended to utilize the static ConvertCoordinates helper.
   /// </remarks>
-  public class ConvertCoordinates : IConvertCoordinates
+  public class ConvertCoordinates : IConvertCoordinates, IDisposable
   {
     private readonly CoreX _coreX;
     private readonly ILogger _log;
 
-    public ConvertCoordinates(ILoggerFactory loggerFactory)
+    public ConvertCoordinates(ILoggerFactory loggerFactory, IConfigurationStore configStore)
     {
-      _log = loggerFactory.CreateLogger(GetType().Name);
-      _coreX = new CoreX();
+      _log = loggerFactory.CreateLogger<ConvertCoordinates>();
+      _coreX = new CoreX(loggerFactory, configStore);
     }
 
     public ConvertCoordinates()
     { }
+
+    public string GeodeticDatabasePath => _coreX.GeodeticDatabasePath;
 
     /// <inheritdoc />
     public XYZ NullWGSLLToXY(WGS84Point wgsPoint) => new XYZ(wgsPoint.Lon, wgsPoint.Lat);
@@ -298,9 +301,9 @@ namespace CoreX.Wrapper
 
       var neeCoords = _coreX
         .TransformLLHToNEE(
-          csib, 
-          wgs84Points.ToLLH(inputAs), 
-          fromType: CoordinateTypes.ReferenceGlobalLLH, 
+          csib,
+          wgs84Points.ToLLH(inputAs),
+          fromType: CoordinateTypes.ReferenceGlobalLLH,
           toType: CoordinateTypes.OrientatedNEE);
 
       var responseArray = new XYZ[neeCoords.Length];
@@ -323,9 +326,28 @@ namespace CoreX.Wrapper
     }
 
     /// <inheritdoc cref="CoreX.GetCSIBFromDCFile"/>
-    public string DCFileToCSIB(string filePath) => CoreX.GetCSIBFromDCFile(filePath);
+    public string DCFileToCSIB(string filePath) => _coreX.GetCSIBFromDCFile(filePath);
 
     /// <inheritdoc/>
-    public string GetCSIBFromDCFileContent(string fileContent) => CoreX.GetCSIBFromDCFileContent(fileContent);
+    public string GetCSIBFromDCFileContent(string fileContent) => _coreX.GetCSIBFromDCFileContent(fileContent);
+
+    private bool _disposed = false;
+
+    public void Dispose() => Dispose(true);
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (_disposed)
+      {
+        return;
+      }
+
+      if (disposing)
+      {
+        _coreX?.Dispose();
+      }
+
+      _disposed = true;
+    }
   }
 }

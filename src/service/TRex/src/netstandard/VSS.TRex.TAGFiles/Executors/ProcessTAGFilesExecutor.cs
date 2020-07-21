@@ -187,7 +187,7 @@ namespace VSS.TRex.TAGFiles.Executors
               });
 
               _log.LogInformation(
-                $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId} machinetype {commonConverter.Machine.MachineType} with result {commonConverter.ReadResult}");
+                $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId} machinetype {commonConverter.Machine?.MachineType.ToString() ?? "null"} with result {commonConverter.ReadResult}");
             }
             catch (Exception e)
             {

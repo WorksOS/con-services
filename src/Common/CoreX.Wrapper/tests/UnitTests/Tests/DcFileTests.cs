@@ -1,4 +1,5 @@
-﻿﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
@@ -8,28 +9,44 @@ using Xunit;
 
 namespace CoreX.Wrapper.UnitTests.Tests
 {
+  [Category("Slow")]
   public class DcFileTests : IClassFixture<UnitTestBaseFixture>
   {
     private readonly IConvertCoordinates _convertCoordinates;
-
     private const double LL_CM_TOLERANCE = 0.00000001;
+    private const double GRID_CM_TOLERANCE = 0.01;
 
     public DcFileTests(UnitTestBaseFixture testFixture)
     {
       _convertCoordinates = testFixture.ConvertCoordinates;
     }
 
-    public string GetCSIBFromDC(string dcFilename) =>
-      _convertCoordinates.DCFileToCSIB(DCFile.GetFilePath(dcFilename));
+    public string GetCSIBFromDC(string dcFilename) => _convertCoordinates.DCFileToCSIB(DCFile.GetFilePath(dcFilename));
 
-    [Category("Slow")]
+    [Fact]
+    [Description("Tests that CoreX aborts when the geodetic data file defined in the CS geoid field cannot be located.")]
+    public void Should_throw_when_geodetic_datafile_not_found()
+    {
+      var exObj = Record.Exception(() => GetCSIBFromDC(DCFile.NN2000_NORWAY18A));
+
+      exObj.Should().NotBeNull("Expected InvalidOperationException when geodetic data file isn't found during CSIB extraction.");
+      exObj.GetType().Should().Be<InvalidOperationException>();
+      exObj.Message.Should().Be("GetCSIBFromDCFileContent: Get CSIB from file content failed, error cecGRID_FILE_OPEN_ERROR");
+    }
+
+    [Theory]
+    [InlineData("Húsavík.dc")]
+    [InlineData("水島.dc")]
+    [InlineData("鵜川ダム2018年原石山.dc")]
+    public void Should_load_CS_files_with_multibyte_character_filenames(string dcFilename) => GetCSIBFromDC(dcFilename).Should().NotBeNullOrEmpty();
+
     [Theory]
     [Description("Sanity tests validating only height varies when VERT_ADJUST is present.")]
     [InlineData(36.21730699569774, -115.0372771786517, 608.9999852774359, ReturnAs.Degrees, DCFile.DIMENSIONS_2012_DC_FILE_WITHOUT_VERT_ADJUST)]
     [InlineData(0.63211125328050133, -2.007779249296807, 608.99998527743593, ReturnAs.Radians, DCFile.DIMENSIONS_2012_DC_FILE_WITHOUT_VERT_ADJUST)]
     [InlineData(36.21730699569774, -115.0372771786517, 550.8719470044193, ReturnAs.Degrees, DCFile.DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST)]
     [InlineData(0.63211125328050133, -2.007779249296807, 550.87194700441933, ReturnAs.Radians, DCFile.DIMENSIONS_2012_DC_FILE_WITH_VERT_ADJUST)]
-    public void CoordinateService_SimpleXYZNEEToLLH(double lat, double lon, double height, ReturnAs returnAs, string dcFilename)
+    public void Should_see_Height_values_differ_when_comparing_CS_files_with_VERT_ADJUST(double lat, double lon, double height, ReturnAs returnAs, string dcFilename)
     {
       var csib = GetCSIBFromDC(dcFilename);
 
@@ -39,6 +56,22 @@ namespace CoreX.Wrapper.UnitTests.Tests
       xyz.X.Should().BeApproximately(lon, LL_CM_TOLERANCE);
       xyz.Y.Should().BeApproximately(lat, LL_CM_TOLERANCE);
       xyz.Z.Should().BeApproximately(height, LL_CM_TOLERANCE);
+    }
+
+    [Theory]
+    [InlineData(52.2132598, 5.27894, 0, 469468.38343383482, 147600.70669055654, -43.151662645574675, InputAs.Degrees, DCFile.NETHERLANDS_DE_MIN)]
+    [InlineData(0.911293297, 0.092134884, 0, 469468.38343383482, 147600.70669055654, -43.151662645574675, InputAs.Radians, DCFile.NETHERLANDS_DE_MIN)]
+    [InlineData(0.8596496002217967, 0.14732153048180185, 0, 5457618.2482351921, 3459373.8527301643, -50.623720502480865, InputAs.Radians, DCFile.PHILIPSBURG)]
+    public void Should_use_geodata_file_when_CS_defines_geoid(double lat, double lon, double height, double northing, double easting, double elevation, InputAs inputAs, string dcFilename)
+    {
+      var csib = GetCSIBFromDC(dcFilename);
+
+      var nee = _convertCoordinates.LLHToNEE(csib, new LLH { Latitude = lat, Longitude = lon, Height = height }, inputAs);
+
+      nee.Should().NotBeNull();
+      nee.North.Should().BeApproximately(northing, GRID_CM_TOLERANCE);
+      nee.East.Should().BeApproximately(easting, GRID_CM_TOLERANCE);
+      nee.Elevation.Should().BeApproximately(elevation, GRID_CM_TOLERANCE);
     }
   }
 }

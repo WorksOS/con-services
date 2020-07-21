@@ -5,30 +5,41 @@ using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.Extensions;
 using CoreX.Wrapper.Types;
+using Microsoft.Extensions.Logging;
 using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
+using VSS.Common.Abstractions.Configuration;
 
 namespace CoreX.Wrapper
 {
   public class CoreX : IDisposable
   {
-    static CoreX()
+    public string GeodeticDatabasePath;
+
+    private static readonly object _lock = new object();
+    private readonly ILogger _log;
+
+    public CoreX(ILoggerFactory loggerFactory, IConfigurationStore configStore)
     {
-      // CoreX library appears to not be thread safe. If you attempt this from the default constructor you'll hit C++ 
-      // memory errors in the CsdManagementPINVOKE() call.
-      SetupTGL();
+      _log = loggerFactory.CreateLogger<CoreX>();
+
+      lock (_lock)
+      {
+        GeodeticDatabasePath = configStore.GetValueString("TGL_GEODATA_PATH", "GeoData");
+        _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
+
+        SetupTGL();
+      }
+
+      CoreXGeodataLogger.DumpGeodataFiles(_log, GeodeticDatabasePath);
     }
 
     /// <summary>
     /// Setup the underlying CoreXDotNet singleton management classes.
     /// </summary>
-    private static void SetupTGL()
+    private void SetupTGL()
     {
-      const string ROOT_DATA_FOLDER = "Data";
-      const string DATABASE_PATH = "TGL_CsdDatabase";
-
-      var geodataPath = Path.Combine(ROOT_DATA_FOLDER, "GeoData");
-      var xmlFilePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), ROOT_DATA_FOLDER, DATABASE_PATH, "CoordSystemDatabase.xml");
+      var xmlFilePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "CoordSystemDatabase.xml");
 
       if (!File.Exists(xmlFilePath))
       {
@@ -44,37 +55,58 @@ namespace CoreX.Wrapper
         throw new Exception($"Error '{resultCode}' attempting to load coordinate system database '{xmlFilePath}'");
       }
 
-      CsdManagementPINVOKE.csmSetGeodataPath(geodataPath);
-      GeodeticX.geoSetGeodataPath(geodataPath);
+      _log.LogInformation($"CoreX {nameof(SetupTGL)}: GeodeticDatabasePath='{GeodeticDatabasePath}'");
+
+      if (string.IsNullOrEmpty(GeodeticDatabasePath))
+      {
+        throw new Exception("Environment variable TGL_GEODATA_PATH must be set to the Geodetic data folder.");
+      }
+      if (!Directory.Exists(GeodeticDatabasePath))
+      {
+        throw new Exception($"Failed to find directory '{GeodeticDatabasePath}' defined by environment variable TGL_GEODATA_PATH.");
+      }
+
+      // CoreX static classes aren't thread safe singletons.
+      CsdManagementPINVOKE.csmSetGeodataPath(GeodeticDatabasePath);
+      GeodeticX.geoSetGeodataPath(GeodeticDatabasePath);
     }
 
     /// <summary>
     /// Returns the CSIB from a DC file string.
     /// </summary>
-    public static string GetCSIBFromDCFileContent(string fileContent)
+    public string GetCSIBFromDCFileContent(string fileContent)
     {
       // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
       fileContent = fileContent.DecodeFromBase64();
 
-      var csmCsibBlobContainer = new CSMCsibBlobContainer();
+      using var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      // Slow, takes 2.5 seconds, need to speed up somehow?
-      var result = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(fileContent, false, CppFileListCallback.getCPtr(Utils.FileListCallBack), CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback), CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
-
-      if (result != (int)csmErrorCode.cecSuccess)
+      // CsdManagementPINVOKE isn't a thread safe singleton.
+      lock (_lock)
       {
-        throw new Exception($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
+        // Slow, takes 2.5 seconds, need to speed up somehow?
+        var result = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(
+          fileContent,
+          false,
+          CppFileListCallback.getCPtr(Utils.FileListCallBack),
+          CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback),
+          CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
+
+        if (result != (int)csmErrorCode.cecSuccess)
+        {
+          throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
+        }
+
+        var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);
+
+        return Convert.ToBase64String(Array.ConvertAll(bytes, sb => unchecked((byte)sb)));
       }
-
-      var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);
-
-      return Convert.ToBase64String(Array.ConvertAll(bytes, sb => unchecked((byte)sb)));
     }
 
     /// <summary>
     /// Returns the CSIB from a DC file given it's filepath.
     /// </summary>
-    public static string GetCSIBFromDCFile(string filePath)
+    public string GetCSIBFromDCFile(string filePath)
     {
       using var streamReader = new StreamReader(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8);
       var dcStr = streamReader.ReadToEnd();
@@ -90,7 +122,7 @@ namespace CoreX.Wrapper
     /// <returns>Returns LLH object in radians.</returns>
     public LLH TransformNEEToLLH(string csib, NEE nee, CoordinateTypes fromType, CoordinateTypes toType)
     {
-      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+      using var transformer = GeodeticXTransformer(csib);
 
       transformer.Transform(
         (geoCoordinateTypes)fromType,
@@ -117,7 +149,7 @@ namespace CoreX.Wrapper
     {
       var llhCoordinates = new LLH[coordinates.Length];
 
-      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+      using var transformer = GeodeticXTransformer(csib);
 
       for (var i = 0; i < coordinates.Length; i++)
       {
@@ -149,7 +181,7 @@ namespace CoreX.Wrapper
     /// <returns>A NEE point of the LLH provided coordinates in radians.</returns>
     public NEE TransformLLHToNEE(string csib, LLH coordinates, CoordinateTypes fromType, CoordinateTypes toType)
     {
-      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+      using var transformer = GeodeticXTransformer(csib);
 
       transformer.Transform(
         (geoCoordinateTypes)fromType,
@@ -175,7 +207,7 @@ namespace CoreX.Wrapper
     {
       var neeCoordinates = new NEE[coordinates.Length];
 
-      using var transformer = GeodeticXTransformer(CreateCsibBlobContainer(csib)).get();
+      using var transformer = GeodeticXTransformer(csib);
 
       for (var i = 0; i < coordinates.Length; i++)
       {
@@ -218,9 +250,11 @@ namespace CoreX.Wrapper
       return geoCsibBlobContainer;
     }
 
-    private PointerPointer_IGeodeticXTransformer GeodeticXTransformer(GEOCsibBlobContainer geoCsibBlobContainer)
+    private IGeodeticXTransformer GeodeticXTransformer(string csib)
     {
-      var transformer = new PointerPointer_IGeodeticXTransformer();
+      using var geoCsibBlobContainer = CreateCsibBlobContainer(csib);
+      using var transformer = new PointerPointer_IGeodeticXTransformer();
+
       var result = GeodeticX.geoCreateTransformer(geoCsibBlobContainer, transformer);
 
       if (result != geoErrorCode.gecSuccess)
@@ -228,24 +262,24 @@ namespace CoreX.Wrapper
         throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
       }
 
-      return transformer;
+      return transformer.get();
     }
 
     private static bool ValidateCsib(string csib)
     {
       var sb = new StringBuilder();
-      byte[] bytes = Encoding.ASCII.GetBytes(csib);
+      var bytes = Encoding.ASCII.GetBytes(csib);
 
       for (var i = 0; i < bytes.Length; i++)
       {
         sb.Append(bytes[i] + " ");
       }
 
-      string[] blocks = sb.ToString().TrimEnd().Split(' ');
-      sbyte[] data = new sbyte[blocks.Length];
+      var blocks = sb.ToString().TrimEnd().Split(' ');
+      var data = new sbyte[blocks.Length];
 
-      int index = 0;
-      foreach (string b in blocks)
+      var index = 0;
+      foreach (var b in blocks)
       {
         data[index++] = (sbyte)Convert.ToByte(b);
       }

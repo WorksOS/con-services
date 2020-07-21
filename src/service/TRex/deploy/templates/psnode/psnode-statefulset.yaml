@@ -61,6 +61,8 @@ spec:
           value: "/trex/"
         - name: ENABLE_TFA_SERVICE
           value: "true"
+        - name: ENABLE_DEVICE_GATEWAY
+          value: "false"
         - name: TFA_SERVICE_BASEURL
           value: "http://tagfileauth.alpha.eks.ccss.cloud/"
         - name: IS_KUBERNETES

@@ -1,7 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
@@ -14,17 +13,16 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
   /// </summary>
   public class CalculateDesignProfileComputeFunc : BaseComputeFunc, IComputeFunc<CalculateDesignProfileArgument, CalculateDesignProfileResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignProfileComputeFunc>();
 
     public CalculateDesignProfileResponse Invoke(CalculateDesignProfileArgument arg)
     {
       var startDate = DateTime.UtcNow;
       try
       {
-        Log.LogInformation($"In: {nameof(CalculateDesignProfileComputeFunc)}: Arg = {arg}");
+        _log.LogInformation($"In: {nameof(CalculateDesignProfileComputeFunc)}: Arg = {arg}");
 
-        CalculateDesignProfile Executor = new CalculateDesignProfile();
-
+        var Executor = new CalculateDesignProfile();
         var profile = Executor.Execute(arg, out var calcResult);
 
         var result = new CalculateDesignProfileResponse
@@ -33,17 +31,17 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
           RequestResult = calcResult
         };
 
-        Log.LogInformation($"Profile result: {result.Profile?.Count ?? -1} vertices");
+        _log.LogInformation($"Profile result: {result.Profile?.Count ?? -1} vertices");
         return result;
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception:");
-        return null;
+        _log.LogError(e, "Exception calculating design profile");
+        return new CalculateDesignProfileResponse { RequestResult = Models.DesignProfilerRequestResult.UnknownError};
       }
       finally
       {
-        Log.LogInformation($"Out: CalculateDesignProfileComputeFunc in {DateTime.UtcNow - startDate}, Arg = {arg}");
+        _log.LogInformation($"Out: CalculateDesignProfileComputeFunc in {DateTime.UtcNow - startDate}, Arg = {arg}");
       }
     }
   }

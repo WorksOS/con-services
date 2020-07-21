@@ -349,6 +349,36 @@ namespace VSS.TRex.Gateway.Tests.Controllers
     }
 
     [Fact]
+    public void MapFilterResultHasDesignFilterToCombinedFilter()
+    {
+
+      var design = new DesignDescriptor(42l, FileDescriptor.CreateFileDescriptor("x", "y", "z"), 0, Guid.NewGuid());
+      var filter = FilterResult.CreateFilterObsolete(designFile: design);
+
+      var combinedFilter = AutoMapperUtility.Automapper.Map<FilterResult, CombinedFilter>(filter);
+      combinedFilter.Should().NotBeNull();
+      combinedFilter.SpatialFilter.IsDesignMask.Should().BeTrue();
+      combinedFilter.SpatialFilter.SurfaceDesignMaskDesignUid.Should().Be(design.FileUid.Value);
+      combinedFilter.SpatialFilter.IsAlignmentMask.Should().BeFalse();
+      combinedFilter.SpatialFilter.AlignmentDesignMaskDesignUID.Should().Be(Guid.Empty);
+    }
+
+    [Fact]
+    public void MapFilterResultHasAlignmentFilterToCombinedFilter()
+    {
+
+      var alignment = new DesignDescriptor(42l, FileDescriptor.CreateFileDescriptor("x", "y", "z"), 0, Guid.NewGuid());
+      var filter = FilterResult.CreateFilterObsolete(alignmentFile: alignment);
+
+      var combinedFilter = AutoMapperUtility.Automapper.Map<FilterResult, CombinedFilter>(filter);
+      combinedFilter.Should().NotBeNull();
+      combinedFilter.SpatialFilter.IsDesignMask.Should().BeFalse();
+      combinedFilter.SpatialFilter.SurfaceDesignMaskDesignUid.Should().Be(Guid.Empty);
+      combinedFilter.SpatialFilter.IsAlignmentMask.Should().BeTrue();
+      combinedFilter.SpatialFilter.AlignmentDesignMaskDesignUID.Should().Be(alignment.FileUid.Value);
+    }
+
+    [Fact]
     public void Map3DPFilterToTRexCombinedFilter()
     {
       var filter = new FilterResult();

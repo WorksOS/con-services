@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -78,6 +79,7 @@ namespace VSS.TRex.Profiling.Executors
 
         var request = new ProfileRequest_ClusterCompute<T>();
         var profileResponse = await request.ExecuteAsync(arg2);
+        profileResponse.GridDistanceBetweenProfilePoints = MathUtilities.Hypot(arg2.NEECoords[1].X - arg2.NEECoords[0].X, arg2.NEECoords[1].Y - arg2.NEECoords[0].Y);
 
         //... and then sort them to get the final result, as well as removing initial and duplicate null values
         // Remove null cells in the profiles list. Null cells are defined by cells with null CellLastHeight.

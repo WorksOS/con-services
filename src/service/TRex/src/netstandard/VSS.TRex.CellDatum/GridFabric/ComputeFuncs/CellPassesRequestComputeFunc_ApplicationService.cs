@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.CellDatum.Executors;
@@ -31,11 +32,15 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
         return request.ExecuteAsync(arg).WaitAndUnwrapException();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception in cell passes application service compute func");
+        return new CellPassesResponse { ReturnCode = Productivity3D.Models.ResultHandling.CellPassesReturnCode.Error };
+      }
       finally
       {
         _log.LogInformation($"Exiting {nameof(CellPassesRequestComputeFunc_ApplicationService)}.Invoke()");
-      } 
-
+      }
     }
   }
 }

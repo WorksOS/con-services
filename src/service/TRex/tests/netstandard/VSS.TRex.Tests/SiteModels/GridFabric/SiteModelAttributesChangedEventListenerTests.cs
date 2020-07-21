@@ -58,7 +58,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
     {
       var message = new SiteModelAttributesChangedEvent();
       var listener = new SiteModelAttributesChangedEventListener();
-      listener.Invoke(Guid.Empty, message).Should().BeFalse();
+      listener.Invoke(Guid.NewGuid(), message).Should().BeFalse();
     }
 
     [Fact]
@@ -77,9 +77,13 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
     [Fact]
     public void Invoke_WithSiteModels()
     {
-      var message = new SiteModelAttributesChangedEvent();
+      var message = new SiteModelAttributesChangedEvent
+      {
+        SiteModelID = Guid.NewGuid()
+      };
+
       var listener = new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName());
-      listener.Invoke(Guid.Empty, message).Should().BeTrue();
+      listener.Invoke(Guid.NewGuid(), message).Should().BeTrue();
     }
 
     [Fact]
