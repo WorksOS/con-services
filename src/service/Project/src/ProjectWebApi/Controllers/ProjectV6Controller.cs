@@ -54,10 +54,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v4/project")] // temporary kludge until ccssscon-219 
     [Route("api/v6/project")]
     [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6([FromQuery]CwsProjectType? projectType, [FromQuery] ProjectStatus projectStatus = ProjectStatus.Active, [FromQuery] bool onlyAdmin = true)
+    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6([FromQuery]CwsProjectType? projectType, [FromQuery] ProjectStatus projectStatus = ProjectStatus.Active, [FromQuery] bool onlyAdmin = true, [FromQuery ]bool includeBoundaries = false)
     {
       Logger.LogInformation($"{nameof(GetProjectsV6)}");
-      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, projectType, projectStatus, onlyAdmin, true, customHeaders);
+      var projects = await ProjectRequestHelper.GetProjectListForCustomer(new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, projectType, projectStatus, onlyAdmin, includeBoundaries, customHeaders);
 
       return new ProjectV6DescriptorsListResult
       {
