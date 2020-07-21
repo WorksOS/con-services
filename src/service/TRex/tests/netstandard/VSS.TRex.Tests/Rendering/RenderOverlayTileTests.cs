@@ -18,12 +18,34 @@ using VSS.TRex.Cells;
 using VSS.TRex.Types;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
+using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
+using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.Designs.GridFabric.ComputeFuncs;
+using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.GridFabric;
 
 namespace VSS.TRex.Tests.Rendering
 {
   public class RenderOverlayTileTests : IClassFixture<DIRenderingFixture>
   {
     private const float HEIGHT_INCREMENT_0_5 = 0.5f;
+
+    protected void AddClusterComputeGridRouting()
+    {
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+    }
+
+    protected void AddDesignProfilerGridRouting()
+    {
+      IgniteMock.Immutable.AddApplicationGridRouting<CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
+      IgniteMock.Immutable.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
+    }
 
     [Fact]
     public void Test_RenderOverlayTile_Creation()
@@ -82,6 +104,9 @@ int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeC
     [Fact]
     public async Task Test_RenderOverlayTile_SurveyedSurface_ElevationOnly_Rotated()
     {
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
       // Render a surveyed surface area of 100x100 meters in a tile 150x150 meters with a single cell with 
       // production data placed at the origin
 
@@ -107,7 +132,7 @@ int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeC
                                          true, // CoordsAreGrid
                                          100, //PixelsX
                                          100, // PixelsY
-                                         null, //new FilterSet( new CombinedFilter() ),
+                                         new FilterSet( new CombinedFilter() ),
                                          new DesignOffset(),
                                          palette,
                                          Color.Black,
