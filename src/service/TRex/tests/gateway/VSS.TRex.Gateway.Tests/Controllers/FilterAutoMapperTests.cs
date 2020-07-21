@@ -373,7 +373,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       var combinedFilter = AutoMapperUtility.Automapper.Map<FilterResult, CombinedFilter>(filter);
       combinedFilter.Should().NotBeNull();
       combinedFilter.SpatialFilter.IsDesignMask.Should().BeFalse();
-      combinedFilter.SpatialFilter.AlignmentDesignMaskDesignUID.Should().Be(Guid.Empty);
+      combinedFilter.SpatialFilter.SurfaceDesignMaskDesignUid.Should().Be(Guid.Empty);
       combinedFilter.SpatialFilter.IsAlignmentMask.Should().BeTrue();
       combinedFilter.SpatialFilter.AlignmentDesignMaskDesignUID.Should().Be(alignment.FileUid.Value);
     }
