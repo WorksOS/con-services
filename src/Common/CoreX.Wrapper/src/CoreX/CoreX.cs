@@ -26,6 +26,8 @@ namespace CoreX.Wrapper
       {
         SetupTGL();
       }
+
+      CoreXGeodataLogger.DumpGeodataFiles(_log, GeodeticDatabasePath);
     }
 
     /// <summary>
