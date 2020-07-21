@@ -12,6 +12,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
+using VSS.Productivity3D.Entitlements.Proxy;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -66,7 +68,8 @@ namespace VSS.Productivity3D.Now3D
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
-      
+      services.AddTransient<IEntitlementProxy, EntitlementProxy>(); // required for license validation
+
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

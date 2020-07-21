@@ -40,10 +40,8 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 #endif
     private readonly ILogger _log;
     private readonly ILoggerFactory _logger;
-    private readonly ITransferProxyFactory _transferProxyFactory;
     private readonly IConfigurationStore _configStore;
     private readonly ITRexTagFileProxy _tRexTagFileProxy;
-    private readonly ITRexConnectedSiteProxy _tRexConnectedSiteProxy;
     private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
@@ -54,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       IASNodeClient raptorClient, 
       ITagProcessor tagProcessor, 
 #endif
-      ILoggerFactory logger, ITransferProxyFactory transferProxyFactory, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, IConfigurationStore configStore)
+      ILoggerFactory logger,ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore)
     {
 #if RAPTOR
       _raptorClient = raptorClient;
@@ -62,9 +60,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 #endif
       _logger = logger;
       _log = logger.CreateLogger<TagFileController>();
-      _transferProxyFactory = transferProxyFactory;
       _tRexTagFileProxy = tRexTagFileProxy;
-      _tRexConnectedSiteProxy = tRexConnectedSiteProxy;
       _configStore = configStore;
     }
 
@@ -126,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           _raptorClient, 
           _tagProcessor, 
 #endif
-          _configStore, transferProxyFactory:_transferProxyFactory, tRexTagFileProxy:_tRexTagFileProxy, tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
+          _configStore, tRexTagFileProxy:_tRexTagFileProxy, customHeaders: CustomHeaders)
         .ProcessAsync(requestExt);
 
       // when we disable Raptor, allowing Trex response to return to harvester,
@@ -162,7 +158,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           _raptorClient, 
           _tagProcessor, 
 #endif
-          _configStore, transferProxyFactory:_transferProxyFactory,tRexTagFileProxy:_tRexTagFileProxy,tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
+          _configStore, tRexTagFileProxy:_tRexTagFileProxy, customHeaders: CustomHeaders)
         .ProcessAsync(request) as TagFileDirectSubmissionResult;
 
       if (result?.Code == 0)

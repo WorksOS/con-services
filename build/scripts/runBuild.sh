@@ -193,7 +193,7 @@ fi
 if [ "$SERVICE" = "trex" ]; then
     echo "Building TRex Runtime containers"
 
-    for COMPONENT in ApplicationServer ConnectedSiteGateway DesignElevation MutableData PSNode QMesh TileRendering TINSurfaceExport Reports Gateway MutableGateway Webtools Utils 
+    for COMPONENT in ApplicationServer DesignElevation MutableData PSNode QMesh TileRendering TINSurfaceExport Reports Gateway MutableGateway Webtools Utils 
     do
         echo "Build TRex: $COMPONENT"
         TAG=$CONTAINER_NAME.$COMPONENT

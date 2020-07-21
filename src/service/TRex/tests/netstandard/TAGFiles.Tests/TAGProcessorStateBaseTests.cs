@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Geometry;
@@ -440,7 +441,7 @@ namespace TAGFiles.Tests
     {
       var state = new TAGProcessorStateBase();
       state.HardwareID = "2432J011SW";
-      state.GetPlatformType().Should().Be(MachineControlPlatformType.CB460);
+      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.CB460);
     }
 
     [Fact()]
@@ -448,7 +449,7 @@ namespace TAGFiles.Tests
     {
       var state = new TAGProcessorStateBase();
       state.HardwareID = "2432J011YU";
-      state.GetPlatformType().Should().Be(MachineControlPlatformType.EC520);
+      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.EC520W);
     }
 
     [Fact()]
@@ -457,7 +458,7 @@ namespace TAGFiles.Tests
       var state = new TAGProcessorStateBase();
       state.HardwareID = Guid.NewGuid().ToString();
       state.MachineType = MachineType.CutterSuctionDredge;
-      state.GetPlatformType().Should().Be(MachineControlPlatformType.CB450);
+      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.CB450);
     }
   }
 }
