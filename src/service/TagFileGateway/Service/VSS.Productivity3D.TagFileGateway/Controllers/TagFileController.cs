@@ -29,23 +29,24 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
     [Route("api/v2/tagfiles/direct")]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostTagFileNonDirectSubmission([FromBody] CompactionTagFileRequest request, 
-      [FromServices] ILoggerFactory loggerFactory, 
-      [FromServices] IConfigurationStore configStore, 
-      [FromServices] IDataCache dataCache, 
+    public async Task<ContractExecutionResult> PostTagFileNonDirectSubmission([FromBody] CompactionTagFileRequest request,
+      [FromServices] ILoggerFactory loggerFactory,
+      [FromServices] IConfigurationStore configStore,
+      [FromServices] IDataCache dataCache,
       [FromServices] ITagFileForwarder tagFileForwarder,
       [FromServices] ITransferProxyFactory transferProxyFactory,
       [FromServices] IWebRequest webRequest)
     {
       var isDirect = Request.Path.Value.Contains("/direct");
       _logger.LogInformation($"Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
-      var result = await RequestExecutorContainer
-        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest, true)
-        .ProcessAsync(request);
+      var executor = RequestExecutorContainer
+        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest);
+      executor.ArchiveOnInternalError = true;
+      var result = await executor.ProcessAsync(request);
 
       _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
 
-      
+
       // If we uploaded, return a successful result
       // (as the tag file may not have been processed for legitimate reasons)
       // We don't want the machine sending tag files over and over again in this instance
@@ -71,11 +72,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
         return BadRequest();
 
       var result = await RequestExecutorContainer.Build<TagFileSnsProcessExecutor>(loggerFactory,
-          configStore,
-          dataCache,
-          tagFileForwarder,
-          transferProxyFactory,
-          webRequest, true)
+          configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest)
         .ProcessAsync(payload);
 
         if(result != null)

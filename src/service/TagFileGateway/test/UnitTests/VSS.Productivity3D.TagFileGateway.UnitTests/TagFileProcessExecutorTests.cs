@@ -29,7 +29,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     [Fact]
     public void ShouldBeCorrectType()
     {
-      var e = CreateExecutor<TagFileProcessExecutor>(true);
+      var e = CreateExecutor<TagFileProcessExecutor>();
+      e.ArchiveOnInternalError = true;
 
       e.Should().NotBeNull();
       e.Should().BeOfType<TagFileProcessExecutor>();
@@ -38,7 +39,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     [Fact]
     public void ShouldFailOnIncorrectArg()
     {
-      var e = CreateExecutor<TagFileProcessExecutor>(true);
+      var e = CreateExecutor<TagFileProcessExecutor>();
+      e.ArchiveOnInternalError = true;
 
       var result = e.ProcessAsync(new object()).Result;
 
@@ -51,7 +53,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     {
       // This simulates a situation when TagFileForwarder cant connect to TRex
       // We want to upload the tag file to S3, but return an error to the caller
-      var executor = CreateExecutor<TagFileProcessExecutor>(true);
+      var executor = CreateExecutor<TagFileProcessExecutor>();
+      executor.ArchiveOnInternalError = true;
 
       var key = TagFileProcessExecutor.GetS3Key(MockRequest.FileName);
       var expectedS3Path = $"{TagFileProcessExecutor.CONNECTION_ERROR_FOLDER}/{key}";
@@ -89,7 +92,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     [Fact]
     public void ShouldUploadWhenTagFileForwarderFails()
     {
-      var executor = CreateExecutor<TagFileProcessExecutor>(true);
+      var executor = CreateExecutor<TagFileProcessExecutor>();
+      executor.ArchiveOnInternalError = true;
 
       var key = TagFileProcessExecutor.GetS3Key(MockRequest.FileName);
       var expectedS3Path = $"{key}";
@@ -127,7 +131,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     [Fact]
     public void ShouldUploadWhenTagFileForwarderPasses()
     {
-      var executor = CreateExecutor<TagFileProcessExecutor>(true);
+      var executor = CreateExecutor<TagFileProcessExecutor>();
+      executor.ArchiveOnInternalError = true;
 
       var key = TagFileProcessExecutor.GetS3Key(MockRequest.FileName);
       var expectedS3Path = $"{key}";

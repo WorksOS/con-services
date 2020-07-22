@@ -23,7 +23,6 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
         protected ITagFileForwarder TagFileForwarder { get; private set; }
         protected ITransferProxyFactory TransferProxyFactory { get; private set; }
         protected IWebRequest WebRequest { get; private set; }
-        protected bool ArchiveOnInternalError { get; private set; }
 
         protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
@@ -41,8 +40,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
           IDataCache dataCache,
           ITagFileForwarder tagFileForwarder,
           ITransferProxyFactory transferProxyFactory,
-          IWebRequest webRequest,
-          bool archiveOnInternalError = false)
+          IWebRequest webRequest)
           where TExecutor : RequestExecutorContainer, new()
         {
             var executor = new TExecutor()
@@ -52,8 +50,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
                 DataCache = dataCache,
                 TagFileForwarder = tagFileForwarder,
                 TransferProxyFactory = transferProxyFactory,
-                WebRequest = webRequest,
-                ArchiveOnInternalError = archiveOnInternalError};
+                WebRequest = webRequest};
             return executor;
         }
 
