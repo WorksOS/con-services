@@ -53,7 +53,7 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Computes a geometric profile across the design given a series of vertices describing the path to be profiled.
     /// </summary>
-    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, XYZ[] profilePath, double cellSize, double offset)
+    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, WGS84Point startPoint, WGS84Point endPoint, double cellSize, double offset, bool arePositionsGrid)
     {
       // Query the DesignProfiler service to get the patch of elevations calculated
       try
