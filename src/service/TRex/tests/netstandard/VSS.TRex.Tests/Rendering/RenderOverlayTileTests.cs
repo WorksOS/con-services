@@ -28,6 +28,16 @@ using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.GridFabric;
+using VSS.TRex.Rendering.Abstractions;
+using System.IO;
+using VSS.TRex.DI;
+using VSS.TRex.Rendering.GridFabric.Responses;
+using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
+using VSS.TRex.Common.Utilities;
+using Moq;
+using CoreX.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using CoreX.Models;
 
 namespace VSS.TRex.Tests.Rendering
 {
@@ -47,13 +57,57 @@ namespace VSS.TRex.Tests.Rendering
       IgniteMock.Immutable.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
     }
 
+    protected void CheckSimpleRenderTileResponse(IBitmap bitmap, string fileName = "", string compareToFile = "")
+    {
+
+      // Get the rendering factory from the DI context
+      var renderingFactory = DIContext.Obtain<IRenderingFactory>();
+      var response = renderingFactory.CreateTileRenderResponse(bitmap?.GetBitmap()) as TileRenderResponse;
+
+      var bmp = Image.FromStream(new MemoryStream(((TileRenderResponse_Core2)response).TileBitmapData)) as Bitmap;
+
+      // Convert the response into a bitmap
+      bmp.Should().NotBeNull();
+      bmp.Height.Should().Be(256);
+      bmp.Width.Should().Be(256);
+
+      if (!string.IsNullOrEmpty(fileName))
+      {
+        bmp.Save(fileName);
+      }
+      else
+      {
+        // If the comparison file does not exist then create it to provide a base comparison moving forward.
+        if (!string.IsNullOrEmpty(compareToFile) && !File.Exists(compareToFile))
+        {
+          bmp.Save(compareToFile);
+        }
+      }
+
+      if (!string.IsNullOrEmpty(compareToFile))
+      {
+        var goodBmp = Image.FromStream(new FileStream(compareToFile, FileMode.Open, FileAccess.Read, FileShare.Read)) as Bitmap;
+        goodBmp.Height.Should().Be(bmp.Height);
+        goodBmp.Width.Should().Be(bmp.Width);
+        goodBmp.Size.Should().Be(bmp.Size);
+
+        for (var i = 0; i <= bmp.Width - 1; i++)
+        {
+          for (var j = 0; j < bmp.Height - 1; j++)
+          {
+            goodBmp.GetPixel(i, j).Should().Be(bmp.GetPixel(i, j));
+          }
+        }
+      }
+    }
+
     [Fact]
     public void Test_RenderOverlayTile_Creation()
     {
       var render = new RenderOverlayTile(Guid.NewGuid(),
         DisplayMode.Height,
-        new XYZ(0, 0),
-        new XYZ(100, 100),
+        new TRex.Geometry.XYZ(0, 0),
+        new TRex.Geometry.XYZ(100, 100),
         true, // CoordsAreGrid
         100, //PixelsX
         100, // PixelsY
@@ -67,8 +121,7 @@ namespace VSS.TRex.Tests.Rendering
       render.Should().NotBeNull();
     }
 
-    protected ISiteModel BuildModelForSingleCellTileRender(float heightIncrement,
-int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeConsts.DefaultIndexOriginOffset)
+    protected ISiteModel BuildModelForSingleCellTileRender(float heightIncrement, int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeConsts.DefaultIndexOriginOffset)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
@@ -101,8 +154,22 @@ int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeC
       return siteModel;
     }
 
-    [Fact]
-    public async Task Test_RenderOverlayTile_SurveyedSurface_ElevationOnly_Rotated()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(5)]
+    [InlineData(10)]
+    [InlineData(15)]
+    [InlineData(20)]
+    [InlineData(25)]
+    [InlineData(30)]
+    [InlineData(35)]
+    [InlineData(45)]
+    [InlineData(50)]
+    [InlineData(55)]
+    [InlineData(60)]
+    public async Task Test_RenderOverlayTile_SurveyedSurface_ElevationOnly_Rotated(int rotationDegrees)
     {
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
@@ -125,14 +192,35 @@ int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeC
         new BoundingWorldExtent3D(0, 0, 100, 100), 100, DateTime.UtcNow);
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
 
+      // Rotate the 'top right'/rotatedPoint by x degress
+      var rot = MathUtilities.DegreesToRadians(rotationDegrees);
+      GeometryHelper.RotatePointAbout(rot, 0, 0, out var rotatedBottomLeftPointX, out var rotatedBottomLeftPointY, 0, 0);
+      GeometryHelper.RotatePointAbout(rot, 150, 150, out var rotatedTopRightPointX, out var rotatedTopRightPointY, 0, 0);
+      GeometryHelper.RotatePointAbout(rot, 0, 150, out var rotatedTopLeftPointX, out var rotatedTopLeftPointY, 0, 0);
+      GeometryHelper.RotatePointAbout(rot, 150, 0, out var rotatedBottomRightPointX, out var rotatedBottomRightPointY, 0, 0);
+
+      var mockConvertCoordinates = new Mock<IConvertCoordinates>();
+      mockConvertCoordinates.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<LLH[]>(), It.IsAny<CoreX.Types.InputAs>())).Returns(new NEE[] {
+        new NEE { East = rotatedBottomLeftPointX, North = rotatedBottomLeftPointY, Elevation = 0.0 },
+        new NEE { East = rotatedTopRightPointX, North = rotatedTopRightPointY, Elevation =0.0 },
+        new NEE { East = rotatedTopLeftPointX, North = rotatedTopLeftPointY, Elevation =0.0 },
+        new NEE { East = rotatedBottomRightPointX, North = rotatedBottomRightPointX, Elevation = 0.0 }
+      }
+      );
+
+      DIBuilder
+      .Continue()
+      .Add(x => x.AddSingleton<IConvertCoordinates>(mockConvertCoordinates.Object))
+      .Complete();
+
       var render = new RenderOverlayTile(siteModel.ID,
                                          DisplayMode.Height,
-                                         new XYZ(0, 0),
-                                         new XYZ(150, 150),
-                                         true, // CoordsAreGrid
-                                         100, //PixelsX
-                                         100, // PixelsY
-                                         new FilterSet( new CombinedFilter() ),
+                                         new TRex.Geometry.XYZ(0, 0),
+                                         new TRex.Geometry.XYZ(150, 150),
+                                         false, // Corods are LLH - the mocked conversion above will return the true rotated grid coordinates
+                                         256, //PixelsX
+                                         256, // PixelsY
+                                         new FilterSet(new CombinedFilter()),
                                          new DesignOffset(),
                                          palette,
                                          Color.Black,
@@ -142,23 +230,10 @@ int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeC
       var result = await render.ExecuteAsync();
       result.Should().NotBeNull();
 
-
-
-      /*
-
-      var request = new TileRenderRequest();
-      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.Height, palette);
-      arg.Extents = new TRex.Geometry.BoundingWorldExtent3D(0, 0, 150, 150);
-
-      var response = await request.ExecuteAsync(arg);
-
-      const string FILE_NAME = "SimpleSurveyedSurface.bmp";
-      var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
-
-      var saveFileName = @$"c:\temp\{FILE_NAME}";
-
-      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
-      */
+      var filename = $"RotatedOverlayTileWithSurveyedSurface({rotationDegrees} degrees).bmp";
+      var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", filename);
+      var saveFileName = @$"c:\temp\{filename}";
+      CheckSimpleRenderTileResponse(result, saveFileName, path);
     }
   }
 }
