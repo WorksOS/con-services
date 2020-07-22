@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     public Mock<ITransferProxyFactory> TransferProxyFactory { get; }
     public Mock<IWebRequest> WebRequest { get; }
 
-    public T CreateExecutor<T>() where T : RequestExecutorContainer, new()
+    public T CreateExecutor<T>(bool archiveOnInternalError = false) where T : RequestExecutorContainer, new()
     {
         ConfigStore.Reset();
         DataCache.Reset();
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         TagFileForwarder.Reset();
         TransferProxy.Reset();
         WebRequest.Reset();
-        return RequestExecutorContainer.Build<T>(LoggerFactory, ConfigStore.Object, DataCache.Object, TagFileForwarder.Object, TransferProxyFactory.Object, WebRequest.Object);
+        return RequestExecutorContainer.Build<T>(LoggerFactory, ConfigStore.Object, DataCache.Object, TagFileForwarder.Object, TransferProxyFactory.Object, WebRequest.Object, archiveOnInternalError);
     }
 
     public ExecutorBaseFixture()

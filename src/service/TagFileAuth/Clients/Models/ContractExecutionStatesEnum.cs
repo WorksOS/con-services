@@ -32,8 +32,8 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Unable to locate device by serialNumber in cws", 100);
       DynamicAddwithOffset("Unable to locate any account for the device in cws", 102);
       DynamicAddwithOffset("There is >1 active account for the device in cws", 103);
-      DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 104);
       DynamicAddwithOffset("Unable to locate projects for device in cws", 105);
+      DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 124);
     }
 
     /// <summary>

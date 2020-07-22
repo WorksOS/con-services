@@ -136,9 +136,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///            49 "Auto Import: More than 1 project meets the location requirements"
     ///            53 "Manual Import: cannot import to a project which doesn't accept tag files"
     /// 
-    ///           100 "Unable to locate device by serialNumber in cws"
+    ///           100 "Unable to locate device by serialNumber in cws" (3100 in TFG)
     ///           102 "Unable to locate any account for the device in cws"
     ///           103 "There is >1 active account for the device in cws"
+    ///           105 "Unable to locate projects for device in cws"
     ///           124 "A problem occurred at the {0} endpoint. Exception: {1}" // this comes from ProjectSvc
     ///     
     /// </returns>

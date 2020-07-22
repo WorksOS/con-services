@@ -6,12 +6,12 @@ using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Executors;
@@ -102,18 +102,20 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         var snsPayload = JsonConvert.DeserializeObject<SnsPayload>(m.Body);
         if (snsPayload == null)
         {
-          // I don't think we will get these kinds of messages - not sure exactly how to solve just yet.
-          // If we delete them, we may miss tag files
-          // But if we don't delete, we may fill up the queue with bad messages
-          // Will monitor during testing
-          Logger.LogWarning($"Failed to parse SQS Message. MessageID: {m.MessageId}, Body: {m.Body}");
+          // Can occur with badly formed Json.
+          // Delete, so they don't just fill up the que
+          var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);
+          var deleteResponse = await _awSqsClient.DeleteMessageAsync(deleteMessage);
+          Logger.LogWarning($"Failed to parse SQS Message. MessageID: {m.MessageId}, Body: {m.Body} Delete SQS Message Response Code: {deleteResponse.HttpStatusCode}");
           continue;
         }
 
         Logger.LogInformation($"Processing SQS Message ID: {m.MessageId}.");
 
         var result = await executor.ProcessAsync(snsPayload);
-        if (result != null)
+
+        // internalErrors are retry-able, so leave them on the que to be picked up again.
+        if (result.Code != ContractExecutionStatesEnum.InternalProcessingError)
         {
           // Mark as processed
           var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);

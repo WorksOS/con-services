@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.TagFileGateway.Common.Executors
@@ -26,16 +27,30 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
             Logger.LogInformation($"Received Tag File with filename: {request.FileName}. TCC Org: {request.OrgId}. Data Length: {request.Data.Length}");
 
             var result = ContractExecutionResult.ErrorResult("Not processed");
-            var failedToConnect = false;
+            var internalProcessingError = false;
             try
             {
               result = await TagFileForwarder.SendTagFileDirect(request);
             }
             catch (Exception e)
             {
-              Logger.LogError(e, $"Failed to process tag file {request.FileName}");
-              failedToConnect = true;
+              Logger.LogError(e, $"Failed to connect to TRex. Tag file {request.FileName}");
+              internalProcessingError = true;
             }
+
+            // internalErrors can occur at any stage e.g. connecting to Trex/TFA/Project/CWS or internal to TRex
+            //   todo keep an eye on any of these which may never succeed. Potential retryAttemptCount in S3 metadata
+            if (!internalProcessingError
+                && (result.Code == ContractExecutionStatesEnum.InternalProcessingError // unable to connect to TRex
+                          // other internal e.g. TRex unable to connect to TFA/ProjectSvc/cws 
+                    || result.Code == (int) TRexTagFileResultCode.TRexUnknownException
+                    || result.Code == (int) TRexTagFileResultCode.TRexTfaException
+                    || result.Code == (int) TRexTagFileResultCode.TRexQueueSubmissionError
+                    || result.Code == (int) TRexTagFileResultCode.TFAInternalServiceAccess
+                    || result.Code == (int) TRexTagFileResultCode.CWSEndpointException
+                ))
+                internalProcessingError = true;
+
 
             // If we failed to connect to trex, we want to put the tag file in a separate folder for reprocessing
             // If the tag file was accepted, and not processed for a real reason (e.g seed position outside boundary, or no subscription)
@@ -45,15 +60,26 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
                 Logger.LogInformation($"Uploading Tag File {request.FileName}");
                 var path = GetS3Key(request.FileName);
 
-                if (failedToConnect)
+                if (internalProcessingError) 
                     path = $"{CONNECTION_ERROR_FOLDER}/{path}";
 
-                TransferProxyFactory.NewProxy(TransferProxyType.TagFileGatewayArchive).Upload(data, path);
-                Logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
+                if (!internalProcessingError || ArchiveOnInternalError)
+                {
+                  TransferProxyFactory.NewProxy(TransferProxyType.TagFileGatewayArchive).Upload(data, path);
+                  Logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
+                }
+                else
+                {
+                  Logger.LogInformation($"No S3 upload as NoArchiveOnInternalError set. Tag File {request.FileName}");
+                }
             }
 
-            if(failedToConnect) 
+            if (internalProcessingError)
+            {
+              Logger.LogError($"{nameof(TagFileProcessExecutor)} InternalProcessingError {result.Code} {request.FileName} archiveFlag: {ArchiveOnInternalError}");
               return ContractExecutionResult.ErrorResult("Failed to connect to backend");
+            }
+
             return result;
         }
 

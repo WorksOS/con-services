@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       var isDirect = Request.Path.Value.Contains("/direct");
       _logger.LogInformation($"Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
       var result = await RequestExecutorContainer
-        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest)
+        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest, true)
         .ProcessAsync(request);
 
       _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
           dataCache,
           tagFileForwarder,
           transferProxyFactory,
-          webRequest)
+          webRequest, true)
         .ProcessAsync(payload);
 
         if(result != null)
