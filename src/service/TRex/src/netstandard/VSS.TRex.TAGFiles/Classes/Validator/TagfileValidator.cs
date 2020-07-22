@@ -17,7 +17,6 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Models;
-using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {

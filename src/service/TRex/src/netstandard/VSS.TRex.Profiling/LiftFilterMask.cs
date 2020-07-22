@@ -19,7 +19,7 @@ namespace VSS.TRex.Profiling
   public static class LiftFilterMask<T> where T : class, IProfileCellBase
   {
     // ReSharper disable once StaticMemberInGenericType
-    private static readonly ILogger Log = Logging.Logger.CreateLogger("LiftFilterMask");
+    private static readonly ILogger _log = Logging.Logger.CreateLogger("LiftFilterMask");
 
     private static void ConstructSubGridSpatialAndPositionalMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, 
@@ -90,10 +90,19 @@ namespace VSS.TRex.Profiling
         var getFilterMaskResult = await SurfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
 
         if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
-          mask.AndWith(getFilterMaskResult.filterMask);
+        {
+          if (getFilterMaskResult.filterMask == null)
+          {
+            _log.LogError("FilterMask null in response from surfaceDesignMaskDesign.GetFilterMask, ignoring it's contribution to filter mask");
+          }
+          else
+          {
+            mask.AndWith(getFilterMaskResult.filterMask);
+          }
+        }
         else
         {
-          Log.LogError($"Call (B2) to {nameof(ConstructSubGridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          _log.LogError($"Call (B2) to {nameof(ConstructSubGridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
           return false;
         }
       }
@@ -119,10 +128,10 @@ namespace VSS.TRex.Profiling
         if (result.filterDesignErrorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
         {
           if (result.filterDesignErrorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-            Log.LogInformation(
+            _log.LogInformation(
               "Lift filter by design. Call to RequestDesignElevationPatch failed due to no elevations in requested patch.");
           else
-            Log.LogWarning(
+            _log.LogWarning(
               $"Lift filter by design. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {result.filterDesignErrorCode}.");
           return result;
         }

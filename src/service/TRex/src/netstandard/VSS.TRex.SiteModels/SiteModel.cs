@@ -698,9 +698,12 @@ versionMap = null;
       {
         if (!SaveMetadataToPersistentStore(storageProxy, false))
         {
-          _log.LogError($"Failed to save metadata for site model {ID} to persistent store");
+          _log.LogError($"Failed to save site model {ID} to persistent store");
           result = false;
         }
+
+        _log.LogInformation(
+          $"Site model metadata save (ID:{ID}) succeeded. Proxy ID: {storageProxy.ProxyID}, Extents: {SiteModelExtent}, CellSize: {CellSize}, MarkedForDeletion?: {IsMarkedForDeletion}");
 
         if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
         {
@@ -750,7 +753,7 @@ Result = false;
 
           if (Result == FileSystemErrorStatus.OK)
             _log.LogInformation(
-              $"Site model read (ID:{ID}) succeeded. Extents: {SiteModelExtent}, CellSize: {CellSize}");
+              $"Site model read (ID:{ID}) succeeded. Proxy ID: {PrimaryStorageProxy.ProxyID}, Extents: {SiteModelExtent}, CellSize: {CellSize}, MarkedForDeletion?: {IsMarkedForDeletion}");
           else
             _log.LogWarning($"Site model ID read ({ID}) failed with error {Result}");
         }
