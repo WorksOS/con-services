@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.Common.Utilities;
@@ -399,10 +400,9 @@ namespace VSS.TRex.Rendering.Executors
       TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
 
       RotatedTileBoundingExtents.SetInverted();
-      foreach (var xyz in NEECoords)
-        RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
+      NEECoords.ForEach(xyz => RotatedTileBoundingExtents.Include(xyz.X, xyz.Y));
 
-      _log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}] " +
+      _log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}, {MathUtilities.RadiansToDegrees(TileRotation)} degrees] " +
         $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
         $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
         $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}");

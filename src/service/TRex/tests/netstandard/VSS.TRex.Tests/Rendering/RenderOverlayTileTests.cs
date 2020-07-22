@@ -37,7 +37,6 @@ using VSS.TRex.Common.Utilities;
 using Moq;
 using CoreX.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using CoreX.Models;
 
 namespace VSS.TRex.Tests.Rendering
 {
@@ -155,21 +154,22 @@ namespace VSS.TRex.Tests.Rendering
     }
 
     [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(5)]
-    [InlineData(10)]
-    [InlineData(15)]
-    [InlineData(20)]
-    [InlineData(25)]
-    [InlineData(30)]
-    [InlineData(35)]
-    [InlineData(45)]
-    [InlineData(50)]
-    [InlineData(55)]
-    [InlineData(60)]
-    public async Task Test_RenderOverlayTile_SurveyedSurface_ElevationOnly_Rotated(int rotationDegrees)
+    [InlineData(0, false)]
+    [InlineData(0, true)]
+    [InlineData(1, true)]
+    [InlineData(2, true)]
+    [InlineData(5, true)]
+    [InlineData(10, true)]
+    [InlineData(15, true)]
+    [InlineData(20, true)]
+    [InlineData(25, true)]
+    [InlineData(30, true)]
+    [InlineData(35, true)]
+    [InlineData(45, true)]
+    [InlineData(50, true)]
+    [InlineData(55, true)]
+    [InlineData(60, true)]
+    public async Task Test_RenderOverlayTile_SurveyedSurface_ElevationOnly_Rotated(int rotationDegrees, bool applyRotation)
     {
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
@@ -200,24 +200,21 @@ namespace VSS.TRex.Tests.Rendering
       GeometryHelper.RotatePointAbout(rot, 150, 0, out var rotatedBottomRightPointX, out var rotatedBottomRightPointY, 0, 0);
 
       var mockConvertCoordinates = new Mock<IConvertCoordinates>();
-      mockConvertCoordinates.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<LLH[]>(), It.IsAny<CoreX.Types.InputAs>())).Returns(new NEE[] {
-        new NEE { East = rotatedBottomLeftPointX, North = rotatedBottomLeftPointY, Elevation = 0.0 },
-        new NEE { East = rotatedTopRightPointX, North = rotatedTopRightPointY, Elevation =0.0 },
-        new NEE { East = rotatedTopLeftPointX, North = rotatedTopLeftPointY, Elevation =0.0 },
-        new NEE { East = rotatedBottomRightPointX, North = rotatedBottomRightPointX, Elevation = 0.0 }
+      mockConvertCoordinates.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>())).Returns(new CoreX.Models.XYZ[] {
+        new CoreX.Models.XYZ(rotatedBottomLeftPointX, rotatedBottomLeftPointY,  0.0),
+        new CoreX.Models.XYZ(rotatedTopRightPointX, rotatedTopRightPointY, 0.0),
+        new CoreX.Models.XYZ(rotatedTopLeftPointX, rotatedTopLeftPointY, 0.0),
+        new CoreX.Models.XYZ(rotatedBottomRightPointX, rotatedBottomRightPointY, 0.0)
       }
       );
 
-      DIBuilder
-      .Continue()
-      .Add(x => x.AddSingleton<IConvertCoordinates>(mockConvertCoordinates.Object))
-      .Complete();
+      DIBuilder.Continue().Add(x => x.AddSingleton<IConvertCoordinates>(mockConvertCoordinates.Object)).Complete();
 
       var render = new RenderOverlayTile(siteModel.ID,
                                          DisplayMode.Height,
                                          new TRex.Geometry.XYZ(0, 0),
                                          new TRex.Geometry.XYZ(150, 150),
-                                         false, // Corods are LLH - the mocked conversion above will return the true rotated grid coordinates
+                                         !applyRotation, // Coords are LLH for rotated, grid otherwise - the mocked conversion above will return the true rotated grid coordinates
                                          256, //PixelsX
                                          256, // PixelsY
                                          new FilterSet(new CombinedFilter()),
@@ -230,7 +227,7 @@ namespace VSS.TRex.Tests.Rendering
       var result = await render.ExecuteAsync();
       result.Should().NotBeNull();
 
-      var filename = $"RotatedOverlayTileWithSurveyedSurface({rotationDegrees} degrees).bmp";
+      var filename = $"RotatedOverlayTileWithSurveyedSurface({rotationDegrees} degrees, apply rotation {applyRotation}).bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", filename);
       var saveFileName = @$"c:\temp\{filename}";
       CheckSimpleRenderTileResponse(result, saveFileName, path);
