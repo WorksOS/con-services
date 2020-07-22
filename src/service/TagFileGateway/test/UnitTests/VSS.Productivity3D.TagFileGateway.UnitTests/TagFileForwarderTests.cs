@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
           It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders)), "/tagfiles"))
         .Returns(Task.FromResult(new ContractExecutionResult(0)));
 
-      var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
+      var result = forwarder.Object.SendTagFile(request, _customHeaders).Result;
 
       result.Should().NotBeNull();
       result.Code.Should().Be(0);
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         .Returns(() => { return Task.FromResult(new ContractExecutionResult(1)); });
 
       // Test
-      var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
+      var result = forwarder.Object.SendTagFile(request, _customHeaders).Result;
 
       // Validate - should be ok
       result.Should().NotBeNull();
@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var exception = false;
       try
       {
-        var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
+        var result = forwarder.Object.SendTagFile(request, _customHeaders).Result;
 
       }
       catch (Exception e)

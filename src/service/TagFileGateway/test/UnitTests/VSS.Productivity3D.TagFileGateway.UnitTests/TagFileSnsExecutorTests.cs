@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Ensure the tag file will be upload and save the response
       TRexTagFileProxy
-        .Setup(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
         .Returns(Task.FromResult(new ContractExecutionResult()));
@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         Times.Once);
 
       TRexTagFileProxy
-        .Verify(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Once);
       
@@ -156,7 +156,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Ensure the tag file will be upload and save the response
       TRexTagFileProxy
-        .Setup(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
         .Returns(Task.FromResult(new ContractExecutionResult()));
@@ -168,7 +168,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Validate
       TRexTagFileProxy
-        .Verify(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Once);
       
@@ -207,7 +207,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var expectedErrorCode = 3124; // Executor should forward on the error code and in this case, not archive this internal error
       // Setup a failed connection
       TRexTagFileProxy
-        .Setup(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(new ContractExecutionResult(expectedErrorCode)));
 
@@ -219,7 +219,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Validate we tried to upload
       TRexTagFileProxy
-        .Verify(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 
@@ -254,7 +254,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Ensure the tag file will be upload and save the response
       TRexTagFileProxy
-        .Setup(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => { })
         .Returns(Task.FromResult(new ContractExecutionResult()));
@@ -267,7 +267,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Validate we tried to upload
       TRexTagFileProxy
-        .Verify(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 

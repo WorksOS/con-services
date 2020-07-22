@@ -142,7 +142,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         }
         else
         {
-          Logger.LogWarning($"{nameof(ProcessSingleMessage)} No response for Message ID: {m.MessageId}.");
+          Logger.LogWarning($"{nameof(ProcessSingleMessage)} Tag file failed to process due to internal error, leave it on que to be re-processed: {m.MessageId}.");
         }
       }
       catch (Exception e)

@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Setup a failed connection
       TRexTagFileProxy
-        .Setup(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Throws<HttpRequestException>();
 
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Validate we tried to upload
       TRexTagFileProxy
-        .Verify(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var expectedErrorCode = 55; // Executor should forward on the error code when tag file forwarder returns an error
       // Setup a failed connection
       TRexTagFileProxy
-        .Setup(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(new ContractExecutionResult(expectedErrorCode)));
 
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Validate we tried to upload
       TRexTagFileProxy
-        .Verify(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 
@@ -140,7 +140,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Setup a failed connection
       TRexTagFileProxy
-        .Setup(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(new ContractExecutionResult(0)));
 
@@ -153,7 +153,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       // Validate we tried to upload
       TRexTagFileProxy
-        .Verify(m => m.SendTagFileNonDirect(It.IsAny<CompactionTagFileRequest>(),
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 

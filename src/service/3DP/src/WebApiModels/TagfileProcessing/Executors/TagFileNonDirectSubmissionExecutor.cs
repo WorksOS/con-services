@@ -1,23 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-#if RAPTOR
-using TAGProcServiceDecls;
-using VLPDDecls;
-#endif
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
-using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {
@@ -35,117 +21,20 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     }
 
     protected sealed override void ProcessErrorCodes()
-    {
-#if RAPTOR
-      RaptorResult.AddTagProcessorErrorMessages(ContractExecutionStates);
-#endif
-    }
+    { }
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<CompactionTagFileRequestExtended>(item);
-      var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
-#if RAPTOR
-      if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_TAGFILE") ?? false)
-      {
-#endif
-        request.Validate();
-        result = await CallTRexEndpoint(request);
-        
-#if RAPTOR
-      }
 
-      if (configStore.GetValueBool("ENABLE_RAPTOR_GATEWAY_TAGFILE") ?? false)
-      {
-        // legacyProjectId must have been retrieved by here else GetLegacyProjectId() would have thrown exception
-        var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data,
-          request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
-          request.Boundary,
-          VelociraptorConstants.NO_MACHINE_ID, false, false, request.OrgId);
+      request.Validate();
+      var returnResult = await TagFileHelper.SendTagFileToTRex(request, tRexTagFileProxy, log, customHeaders);
 
-        tagFileRequest.Validate();
-
-        if (tagFileRequest.ProjectId != VelociraptorConstants.NO_PROJECT_ID && tagFileRequest.Boundary == null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Failed to process tagfile with error: Manual tag file submissions must include a boundary fence."));
-        }
-
-        if (tagFileRequest.ProjectId == VelociraptorConstants.NO_PROJECT_ID && tagFileRequest.Boundary != null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Failed to process tagfile with error: Automatic tag file submissions cannot include boundary fence."));
-        }
-
-        return CallRaptorEndpoint(tagFileRequest);
-
-      }
-#endif
-      return result;
-    }
-
-    private async Task<ContractExecutionResult> CallTRexEndpoint(CompactionTagFileRequest request)
-    {
-      var returnResult = await TagFileHelper.SendTagFileToTRex(request,
-        tRexTagFileProxy, log, customHeaders, false);
-
-      log.LogInformation($"{nameof(CallTRexEndpoint)} completed: filename {request.FileName}  result {JsonConvert.SerializeObject(returnResult)}");
+      log.LogInformation($"{nameof(TagFileNonDirectSubmissionExecutor)} completed: filename {request.FileName}  result {JsonConvert.SerializeObject(returnResult)}");
       if (returnResult.Code != 0)
-        log.LogDebug($"{nameof(CallTRexEndpoint)}: Failed to import tagfile '{request.FileName}', {returnResult.Message}");
-  
-      // should the return be split as in CallRaptorEndpoint()
-      //     Valid = TagFilePostResult
-      //     tpsprOnChooseMachineInvalidSubscriptions (etal) ContractExecutionResult
-      //     else exception
+        log.LogDebug($"{nameof(TagFileNonDirectSubmissionExecutor)}: Failed to import tagfile '{request.FileName}', {returnResult.Message}");
+      
       return returnResult;
     }
-
-#if RAPTOR
-    private ContractExecutionResult CallRaptorEndpoint(TagFileRequestLegacy tfRequest)
-    {
-      try
-      {
-        var resultCode = tagProcessor.ProjectDataServerTAGProcessorClient()
-          .SubmitTAGFileToTAGFileProcessor
-          (tfRequest.FileName,
-            new MemoryStream(tfRequest.Data),
-            tfRequest.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, 0, 0, tfRequest.MachineId ?? -1,
-            tfRequest.Boundary != null
-              ? RaptorConverters.ConvertWGS84Fence(tfRequest.Boundary)
-              : TWGS84FenceContainer.Null(), tfRequest.TccOrgId);
-
-        log.LogInformation($"{nameof(CallRaptorEndpoint)} completed: filename '{tfRequest.FileName}' result {resultCode} {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
-
-        if (resultCode == TTAGProcServerProcessResult.tpsprOK)
-        {
-          return TagFilePostResult.Create();
-        }
-        else
-        {
-          if (resultCode == TTAGProcServerProcessResult.tpsprOnChooseMachineInvalidSubscriptions)
-          {
-            var result = new ContractExecutionResult(
-              ContractExecutionStates.GetErrorNumberwithOffset((int)resultCode),
-              $"Failed to process tagfile '{tfRequest.FileName}', with error: {ContractExecutionStates.FirstNameWithOffset((int)resultCode)}");
-
-            log.LogInformation($"{nameof(CallRaptorEndpoint)}: result {JsonConvert.SerializeObject(result)}");
-            return result;
-          }
-
-          var errorMessage =
-            $"{nameof(CallRaptorEndpoint)}: Failed to process tagfile '{tfRequest.FileName}', {ContractExecutionStates.FirstNameWithOffset((int) resultCode)}";
-          log.LogError(errorMessage);
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStates.GetErrorNumberwithOffset((int) resultCode), errorMessage));
-        }
-      }
-      finally
-      {
-        ContractExecutionStates.ClearDynamic();
-      }
-    }
-#endif
   }
 }
