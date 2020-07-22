@@ -25,13 +25,11 @@ namespace CoreX.Wrapper
 
       lock (_lock)
       {
-        GeodeticDatabasePath = configStore.GetValueString("TGL_GEODATA_PATH", "GeoData");
+        GeodeticDatabasePath = configStore.GetValueString("TGL_GEODATA_PATH", "Geodata");
         _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
 
         SetupTGL();
       }
-
-      CoreXGeodataLogger.DumpGeodataFiles(_log, GeodeticDatabasePath);
     }
 
     /// <summary>
@@ -63,7 +61,11 @@ namespace CoreX.Wrapper
       }
       if (!Directory.Exists(GeodeticDatabasePath))
       {
-        throw new Exception($"Failed to find directory '{GeodeticDatabasePath}' defined by environment variable TGL_GEODATA_PATH.");
+        _log.LogInformation($"Failed to find directory '{GeodeticDatabasePath}' defined by environment variable TGL_GEODATA_PATH.");
+      }
+      else
+      {
+        CoreXGeodataLogger.DumpGeodataFiles(_log, GeodeticDatabasePath);
       }
 
       // CoreX static classes aren't thread safe singletons.

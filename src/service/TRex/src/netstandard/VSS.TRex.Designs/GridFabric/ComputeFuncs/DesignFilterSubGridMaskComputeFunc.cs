@@ -27,7 +27,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         if (patch == null)
         {
-          _log.LogWarning($"Request for design elevation pathc that does not exist: Project: {args.ProjectID}, design {args.ReferenceDesign}, location {args.OriginX}:{args.OriginY}, calcResult: {calcResult}");
+          _log.LogWarning($"Request for design elevation patch that does not exist: Project: {args.ProjectID}, design {args.ReferenceDesign}, location {args.OriginX}:{args.OriginY}, calcResult: {calcResult}");
 
           result.Bits = null; // Requestors should not ask for sub grids that don't exist in the design.
           result.RequestResult = calcResult;

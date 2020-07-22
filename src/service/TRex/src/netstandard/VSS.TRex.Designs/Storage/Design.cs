@@ -23,7 +23,6 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Binary serialization logic
     /// </summary>
-    /// <param name="writer"></param>
     public void Write(BinaryWriter writer)
     {
       writer.Write(ID.ToByteArray());
@@ -34,7 +33,6 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Binary deserialization logic
     /// </summary>
-    /// <param name="reader"></param>
     public void Read(BinaryReader reader)
     {
       ID = reader.ReadGuid();
@@ -55,15 +53,8 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Computes a geometric profile across the design given a series of vertices describing the path to be profiled.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="profilePath"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="offset"></param>
-    /// <returns></returns>
-    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, WGS84Point startPoint, WGS84Point endPoint, double cellSize, double offset, bool arePositionsGrid)
+    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, XYZ[] profilePath, double cellSize, double offset)
     {
-      (List<XYZS> profile, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
-
       // Query the DesignProfiler service to get the patch of elevations calculated
       try
       {
@@ -79,20 +70,13 @@ namespace VSS.TRex.Designs.Storage
         arg.ReferenceDesign.DesignID = DesignDescriptor.DesignID;
         arg.ReferenceDesign.Offset = offset;
 
-
-        var profile = await profileRequest.ExecuteAsync(arg);
-
-
-        result.profile = profile.Profile;
-
-        return result;
+        var profileResult = await profileRequest.ExecuteAsync(arg);
+        return (profileResult.Profile, profileResult.RequestResult);
       }
       catch
       {
-        result.errorCode = DesignProfilerRequestResult.UnknownError;
+        return (null, DesignProfilerRequestResult.UnknownError );
       }
-
-      return result;
     }
 
     /// <summary>
@@ -129,7 +113,6 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Produces a deep clone of the design
     /// </summary>
-    /// <returns></returns>
     public IDesign Clone() => new Design(ID, DesignDescriptor, new BoundingWorldExtent3D(Extents));
 
     /// <summary>
@@ -175,8 +158,6 @@ namespace VSS.TRex.Designs.Storage
       double cellSize)
     {
       // Query the DesignProfiler service to get the patch of elevations calculated
-      (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
-
       var elevPatchRequest = new DesignElevationPatchRequest();
 
       var response = await elevPatchRequest.ExecuteAsync(new CalculateDesignElevationPatchArgument
@@ -188,10 +169,7 @@ namespace VSS.TRex.Designs.Storage
         ProjectID = siteModelId
       });
 
-      result.designHeights = response.Heights;
-      result.errorCode = response.CalcResult;
-
-      return result;
+      return (response.Heights, response.CalcResult);
     }
 
     /// <summary>
@@ -203,9 +181,7 @@ namespace VSS.TRex.Designs.Storage
       double cellSize)
     {
       // Query the DesignProfiler service to get the requested filter mask
-      (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
-
-      var filterMaskRequest = new DesignFilterSubGridMaskRequest(); 
+      var filterMaskRequest = new DesignFilterSubGridMaskRequest();
 
       var maskResponse = await filterMaskRequest.ExecuteAsync(new DesignSubGridFilterMaskArgument
       {
@@ -216,9 +192,7 @@ namespace VSS.TRex.Designs.Storage
         ProjectID = siteModelId
       });
 
-      result.filterMask = maskResponse?.Bits;
-
-      return result;
+      return (maskResponse?.Bits, maskResponse.RequestResult);
     }
   }
 }
