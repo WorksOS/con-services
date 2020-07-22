@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
   public class DesignFilterSubGridMaskComputeFunc : BaseComputeFunc, IComputeFunc<DesignSubGridFilterMaskArgument, DesignFilterSubGridMaskResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationPatchComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationPatchComputeFunc>();
 
     public DesignFilterSubGridMaskResponse Invoke(DesignSubGridFilterMaskArgument args)
     {
@@ -27,7 +27,9 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         if (patch == null)
         {
-          result.Bits = null; // Requestors should not ask for sub grids that son;t exist in the design..
+          _log.LogWarning($"Request for design elevation pathc that does not exist: Project: {args.ProjectID}, design {args.ReferenceDesign}, location {args.OriginX}:{args.OriginY}, calcResult: {calcResult}");
+
+          result.Bits = null; // Requestors should not ask for sub grids that don't exist in the design.
           result.RequestResult = calcResult;
           return result;
         }
@@ -46,7 +48,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception calculating design filter sub grid mask");
+        _log.LogError(e, "Exception calculating design filter sub grid mask");
         return new DesignFilterSubGridMaskResponse { Bits = null, RequestResult = Models.DesignProfilerRequestResult.UnknownError };
       }
     }

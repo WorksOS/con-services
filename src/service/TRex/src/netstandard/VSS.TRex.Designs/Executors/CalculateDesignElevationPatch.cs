@@ -87,8 +87,6 @@ namespace VSS.TRex.Designs.Executors
         /// <returns></returns>
         public IClientHeightLeafSubGrid Execute(Guid projectUid, DesignOffset referenceDesign, double cellSize, int originX, int originY, out DesignProfilerRequestResult calcResult)
         {
-            calcResult = DesignProfilerRequestResult.UnknownError;
-
             // Perform the design elevation patch calculation
             try
             {
