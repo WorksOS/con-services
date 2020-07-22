@@ -355,8 +355,8 @@ namespace VSS.TRex.Tests.Rendering.Requests
       // Create the site model containing a single cell and add the surveyed surface to it 
       var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
 
-      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructFlatSurveyedSurfaceEncompassingExtent(ref siteModel,
-        new TRex.Geometry.BoundingWorldExtent3D(0, 0, 100, 100), 100, DateTime.UtcNow);
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSurveyedSurfaceEncompassingExtent(ref siteModel,
+        new TRex.Geometry.BoundingWorldExtent3D(0, 0, 100, 100), DateTime.UtcNow, new[] { 100.0, 100.0, 100.0, 100.0 });
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
 
       var request = new TileRenderRequest();

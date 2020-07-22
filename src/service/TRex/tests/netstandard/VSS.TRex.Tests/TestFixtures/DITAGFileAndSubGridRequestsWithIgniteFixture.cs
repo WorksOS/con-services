@@ -396,20 +396,20 @@ namespace VSS.TRex.Tests.TestFixtures
       return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
     }
 
-    private static TrimbleTINModel Construct2TriangleSurfaceOverExtent(BoundingWorldExtent3D extent, double elevation)
+    private static TrimbleTINModel Construct2TriangleSurfaceOverExtent(BoundingWorldExtent3D extent, double[] vertexElevations)
     {
       var tin = new TrimbleTINModel();
       tin.Vertices.InitPointSearch(extent.MinX - 100, extent.MinY - 100, extent.MaxX + 100, extent.MaxX + 100, 6);
 
       tin.Triangles.AddTriangle(
-        tin.Vertices.AddPoint(extent.MinX, extent.MinY, elevation),
-        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, elevation),
-        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, elevation));
+        tin.Vertices.AddPoint(extent.MinX, extent.MinY, vertexElevations[0]),
+        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, vertexElevations[1]),
+        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, vertexElevations[2]));
 
       tin.Triangles.AddTriangle(
-        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, elevation),
-        tin.Vertices.AddPoint(extent.MaxX, extent.MaxY, elevation),
-        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, elevation));
+        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, vertexElevations[1]),
+        tin.Vertices.AddPoint(extent.MaxX, extent.MaxY, vertexElevations[3]),
+        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, vertexElevations[2]));
 
       return tin;
     }
@@ -420,7 +420,7 @@ namespace VSS.TRex.Tests.TestFixtures
     public static Guid ConstructFlatTTMDesignEncompassingSiteModel(ref ISiteModel siteModel, float elevation)
     {
       // Make a mutable TIN containing two as below and register it to the site model
-      var tin = Construct2TriangleSurfaceOverExtent(siteModel.SiteModelExtent, elevation);
+      var tin = Construct2TriangleSurfaceOverExtent(siteModel.SiteModelExtent, new double[] { elevation, elevation, elevation, elevation });
 
       var tempFileName = Path.GetTempFileName() + ".ttm";
       tin.SaveToFile(tempFileName, true);
@@ -434,7 +434,7 @@ namespace VSS.TRex.Tests.TestFixtures
     public static Guid ConstructFlatSurveyedSurfaceEncompassingSiteModel(ref ISiteModel siteModel, float elevation, DateTime asAtDate)
     {
       // Make a mutable TIN containing two as below and register it to the site model
-      var tin = Construct2TriangleSurfaceOverExtent(siteModel.SiteModelExtent, elevation);
+      var tin = Construct2TriangleSurfaceOverExtent(siteModel.SiteModelExtent, new double[] { elevation, elevation, elevation, elevation });
 
       var tempFileName = Path.GetTempFileName() + ".ttm";
       tin.SaveToFile(tempFileName, true);
@@ -445,10 +445,11 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <summary>
     /// Constructs a flat surveyed surface comprising two triangles covering the given exents.
     /// </summary>
-    public static Guid ConstructFlatSurveyedSurfaceEncompassingExtent(ref ISiteModel siteModel, BoundingWorldExtent3D extents, float elevation, DateTime asAtDate)
+    public static Guid ConstructSurveyedSurfaceEncompassingExtent(ref ISiteModel siteModel, BoundingWorldExtent3D extents, DateTime asAtDate,
+      double[] vertexElevations)
     {
       // Make a mutable TIN containing two as below and register it to the site model
-      var tin = Construct2TriangleSurfaceOverExtent(extents, elevation);
+      var tin = Construct2TriangleSurfaceOverExtent(extents, vertexElevations);
 
       var tempFileName = Path.GetTempFileName() + ".ttm";
       tin.SaveToFile(tempFileName, true);
