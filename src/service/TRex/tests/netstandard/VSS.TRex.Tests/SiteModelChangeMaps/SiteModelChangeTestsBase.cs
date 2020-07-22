@@ -14,6 +14,12 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 {
   public class SiteModelChangeTestsBase : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    public SiteModelChangeTestsBase(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
+    {
+      fixture.ClearDynamicFixtureContent();
+      fixture.SetupFixture();
+    }
+
     private void AddChangeMapQueueCacheToDI()
     {
       var transactedProxy = new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>
