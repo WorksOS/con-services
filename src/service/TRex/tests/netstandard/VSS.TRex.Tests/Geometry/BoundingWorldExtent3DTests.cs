@@ -181,6 +181,47 @@ namespace VSS.TRex.Tests.Geometry
       Check();
     }
 
+    [Theory]
+    [InlineData(0, 0, 100, 100, 0, 0, 100, 100, true)]
+    [InlineData(50, 50, 150, 150, 50, 50, 100, 100, true)]
+    [InlineData(-50, -50, 50, 50, 0, 0, 50, 50, true)]
+    [InlineData(0, 0, 50, 100, 0, 0, 50, 100, true)]
+    [InlineData(99, 99, 101, 101, 99, 99, 100, 100, true)]
+    [InlineData(0, 99, 1, 101, 0, 99, 1, 100, true)]
+    [InlineData(-1, -1, 1, 1, 0, 0, 1, 1, true)]
+    [InlineData(99, 0, 101, 1, 99, 0, 100, 1, true)]
+    [InlineData(-1, -1, -1, -1, 0, 0, 100, 100, false)]
+    [InlineData(1000, 1000, 2000, 2000, 0, 0, 100, 100, false)]
+    public void Intersects_BoundingExtent(double minX, double minY, double maxX, double maxY, double r_minX, double r_minY, double r_maxX, double r_maxY, bool valid)
+    {
+      BoundingWorldExtent3D bound = new BoundingWorldExtent3D(0, 0, 100, 100);
+
+      void Check()
+      {
+        if (valid)
+        {
+          bound.MinX.Should().Be(r_minX);
+          bound.MinY.Should().Be(r_minY);
+          bound.MaxX.Should().Be(r_maxX);
+          bound.MaxY.Should().Be(r_maxY);
+        }
+      }
+
+      // Check variant #1
+      var bound2 = new BoundingWorldExtent3D(minX, minY, maxX, maxY);
+
+      bound.Intersects(bound2).Should().Be(valid);
+
+      Check();
+
+      // Check variant #2
+      bound = new BoundingWorldExtent3D(0, 0, 100, 100);
+
+      bound.Intersects(minX, minY, maxX, maxY).Should().Be(valid);
+
+      Check();
+    }
+
     [Fact]
     public void Test_Equals()
     {
