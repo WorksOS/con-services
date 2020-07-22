@@ -10,6 +10,7 @@
         NoIgniteGroupProjection,
         NoIgniteMessagingProjection,
         NotImplemented,
-        Unknown
+        Unknown,
+        Exception
     }
 }

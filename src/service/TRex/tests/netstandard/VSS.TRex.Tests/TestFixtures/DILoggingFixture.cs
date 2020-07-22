@@ -90,7 +90,11 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(Consts.kMinTagFileLengthDefault);
           config.Setup(c => c.GetValueBool("ENABLE_TFA_SERVICE", It.IsAny<bool>())).Returns(Consts.ENABLE_TFA_SERVICE);
+          config.Setup(c => c.GetValueBool("ENABLE_DEVICE_GATEWAY", It.IsAny<bool>())).Returns(Consts.ENABLE_DEVICE_GATEWAY);
           config.Setup(c => c.GetValueString("TAGFILE_ARCHIVE_FOLDER", It.IsAny<string>())).Returns("");
+
+          config.Setup(c => c.GetValueBool("ENABLE_DEVICE_GATEWAY")).Returns(false);
+          config.Setup(c => c.GetValueBool("ENABLE_DEVICE_GATEWAY", It.IsAny<bool>())).Returns(false);
 
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("UnitTestAWSBucketKey");
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME", It.IsAny<string>())).Returns("UnitTestAWSBucketKey");
@@ -120,6 +124,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS")).Returns(1000);
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", It.IsAny<int>())).Returns(1000);
+
+          config.Setup(c => c.GetValueString("TGL_GEODATA_PATH", It.IsAny<string>())).Returns("Geodata");
 
           return config;
         }))

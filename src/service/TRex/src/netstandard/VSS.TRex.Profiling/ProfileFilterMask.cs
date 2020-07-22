@@ -16,7 +16,7 @@ namespace VSS.TRex.Profiling
   /// </summary>
   public static class ProfileFilterMask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger("ProfileFilterMask");
+    private static readonly ILogger _log = Logging.Logger.CreateLogger("ProfileFilterMask");
 
     /// <summary>
     /// Constructs a mask using polygonal and positional spatial filtering aspects of a filter.
@@ -113,10 +113,19 @@ namespace VSS.TRex.Profiling
         var getFilterMaskResult = await surfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
 
         if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
-          mask.AndWith(getFilterMaskResult.filterMask);
+        {
+          if (getFilterMaskResult.filterMask == null)
+          {
+            _log.LogError("FilterMask null in response from surfaceDesignMaskDesign.GetFilterMask, ignoring it's contribution to filter mask");
+          }
+          else
+          {
+            mask.AndWith(getFilterMaskResult.filterMask);
+          }
+        }
         else
         {
-          Log.LogError($"Call (A2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          _log.LogError($"Call (A2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
           return false;
         }
       }

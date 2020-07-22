@@ -7,7 +7,6 @@
     /// </summary>
     None,
     Immutable,
-    Mutable,
-    ConnectedSite
+    Mutable
   }
 }

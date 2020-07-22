@@ -36,15 +36,15 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
     /// </summary>
     [JsonProperty("assetSerialNumber")] 
     public string AssetSerialNumber { get; set; }
+
     /// <summary>
-    /// The type of device running the earthworks software
-    ///    e.g. TABLET EC520 etc
-    ///    this is not the 'asset' type i.e. excavator
-    ///       nor the radio type e.g. Torch
+    /// The type of asset the device is running on
+    ///    e.g. Tablet or for EC/CB then grader; excavator
+    ///    this is not the platformType e.g. EC520 or radio type e.g. Torch
+    ///    see Trex  enum MachineType for those included in tagFiles
     /// </summary>
     [JsonProperty("assetType")]
-    [JsonConverter(typeof(NullableEnumStringConverter), CWSDeviceTypeEnum.Unknown)]
-    public CWSDeviceTypeEnum AssetType { get; set; }
+    public string AssetType { get; set; }
 
     [JsonProperty("assetNickname")]
     public string AssetNickname { get; set; }
@@ -99,7 +99,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus
     public string OsVersion { get; set; }
 
     [JsonProperty("appName")]
-    [DefaultValue("GCS900")]
     public string AppName { get; set; }
     [JsonProperty("appVersion")]
     public string AppVersion { get; set; }

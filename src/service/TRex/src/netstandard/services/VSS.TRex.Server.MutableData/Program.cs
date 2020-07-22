@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CCSS.CWS.Client;
 using CoreX.Interfaces;
 using CoreX.Wrapper;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Common.ServiceDiscovery;
@@ -47,6 +49,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.TAGFiles.Models;
+using VSS.WebApi.Common;
 
 namespace VSS.TRex.Server.MutableData
 {
@@ -73,7 +76,12 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Build()
         .Add(x => x.AddServiceDiscovery())
+        
         .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>())
+        .Add(x => x.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>())
+        .Add(x => x.AddTransient<ITPaasProxy, TPaasProxy>())
+        .Add(x => x.AddSingleton<ICwsDeviceGatewayClient, CwsDeviceGatewayClient>())
+
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))

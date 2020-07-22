@@ -1,6 +1,10 @@
 ARG FROM_IMAGE
 FROM ${FROM_IMAGE} as build_container
 
+# Scratch image with just the TGL geodata geodetic files.
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex:TGLDatabase as tgl-geodata
+
+# Runtime image.
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-runtime
 
 # Not optional, must be passed in from the Azure build configuration. Repeat for each service.
@@ -15,6 +19,9 @@ COPY --from=build_container ${SOURCE_PATH} /trex/
 COPY --from=build_container /root/.nuget/packages/apache.ignite/2.8.1/build/output/libs/ /trex/libs/
 COPY --from=build_container build/service/TRex/build/ignite-kubernetes-2.8.1.jar /trex/libs/
 COPY --from=build_container build/service/TRex/build/control-scripts /trex/bin
+
+# Copy the static TGL geodetic database files into the target runtime.
+COPY --from=tgl-geodata /tgl_geodata/ /trex/TGL_GeoData/
 
 WORKDIR /trex/libs/
 

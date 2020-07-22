@@ -78,7 +78,6 @@ jobs:
               "PSNode",
               "MutableData",
               "DesignElevation",
-              "ConnectedSiteGateway",
               "ApplicationServer",
             ]
 

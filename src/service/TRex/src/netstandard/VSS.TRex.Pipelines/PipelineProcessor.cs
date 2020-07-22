@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
@@ -206,6 +207,12 @@ namespace VSS.TRex.Pipelines
         Task.PipeLine = Pipeline;
 
         (Pipeline as ISubGridPipelineBase<TSubGridsRequestArgument>).CustomArgumentInitializer = CustomArgumentInitializer;
+
+        if ((Filters?.Filters?.Length ?? 0) == 0)
+        {
+          _log.LogError($"Filters supplied to pipeline processor is null or empty, replacing with single default filter");
+          Filters = new FilterSet(new CombinedFilter());
+        }
 
         // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
         foreach (var filter in Filters.Filters)

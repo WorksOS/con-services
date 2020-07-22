@@ -5,6 +5,7 @@ using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
@@ -48,9 +49,13 @@ namespace TAGFiles.Tests
       var mockTagFileBufferQueue = new Mock<ITAGFileBufferQueue>();
       mockTagFileBufferQueue.Setup(x => x.Add(It.IsAny<ITAGFileBufferQueueKey>(), It.IsAny<TAGFileBufferQueueItem>())).Returns(result);
 
+      var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
+      moqConfiguration.Setup(x => x.GetValueBool("ENABLE_DEVICE_GATEWAY", It.IsAny<bool>())).Returns(false);
+      
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<Func<ITAGFileBufferQueue>>(factory => () => mockTagFileBufferQueue.Object))
+        .Add(x => x.AddSingleton<IConfigurationStore>(moqConfiguration.Object))
         .Complete();
 
       IgniteMock.Mutable.AddApplicationGridRouting<IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>, SubmitTAGFileRequestArgument, SubmitTAGFileResponse>();

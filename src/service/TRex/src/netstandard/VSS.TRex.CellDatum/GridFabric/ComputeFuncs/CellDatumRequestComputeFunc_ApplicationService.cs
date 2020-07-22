@@ -1,7 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.Executors;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Responses;
@@ -15,7 +16,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
   /// </summary>
   public class CellDatumRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<CellDatumRequestArgument_ApplicationService, CellDatumResponse_ApplicationService>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CellDatumRequestComputeFunc_ApplicationService>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CellDatumRequestComputeFunc_ApplicationService>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -26,20 +27,25 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
     public CellDatumResponse_ApplicationService Invoke(CellDatumRequestArgument_ApplicationService arg)
     {
-      Log.LogInformation("In CellDatumRequestComputeFunc_ApplicationService.Invoke()");
+      _log.LogInformation("In CellDatumRequestComputeFunc_ApplicationService.Invoke()");
 
       try
       {
         var request = new CellDatumComputeFuncExecutor_ApplicationService();
 
-        Log.LogInformation("Executing CellDatumRequestComputeFunc_ApplicationService.ExecuteAsync()");
+        _log.LogInformation("Executing CellDatumRequestComputeFunc_ApplicationService.ExecuteAsync()");
 
         return request.ExecuteAsync(arg).WaitAndUnwrapException();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception in cell datum application service compute func");
+        return new CellDatumResponse_ApplicationService { ReturnCode = CellDatumReturnCode.UnexpectedError };
+      }
       finally
       {
-        Log.LogInformation("Exiting CellDatumRequestComputeFunc_ApplicationService.Invoke()");
-      }
+        _log.LogInformation("Exiting CellDatumRequestComputeFunc_ApplicationService.Invoke()");
+      } 
     }
   }
 }

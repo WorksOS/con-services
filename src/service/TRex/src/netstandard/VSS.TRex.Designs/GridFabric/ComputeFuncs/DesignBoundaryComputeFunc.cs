@@ -14,7 +14,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
   /// </summary>
   public class DesignBoundaryComputeFunc : BaseComputeFunc, IComputeFunc<DesignBoundaryArgument, DesignBoundaryResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignBoundaryComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<DesignBoundaryComputeFunc>();
 
     public DesignBoundaryResponse Invoke(DesignBoundaryArgument arg)
     {
@@ -38,8 +38,8 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Failed to compute design boundary. Site Model ID: {arg.ProjectID} design ID: {arg.ReferenceDesign.DesignID}");
-        return null;
+        _log.LogError(e, $"Failed to compute design boundary. Site Model ID: {arg.ProjectID} design ID: {arg.ReferenceDesign.DesignID}");
+        return new DesignBoundaryResponse { RequestResult = DesignProfilerRequestResult.UnknownError};
       }
     }
   }

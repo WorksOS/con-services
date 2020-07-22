@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -10,7 +11,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 {
   public class ProgressiveVolumesRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesRequestComputeFunc_ApplicationService>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ProgressiveVolumesRequestComputeFunc_ApplicationService>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -22,20 +23,23 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// <summary>
     /// Invokes the progressive volumes request with the given progressive volumes request argument
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public ProgressiveVolumesResponse Invoke(ProgressiveVolumesRequestArgument arg)
     {
-      Log.LogInformation($"In {nameof(Invoke)}");
+      _log.LogInformation($"In {nameof(Invoke)}");
 
       try
       {
         var executor = new ProgressiveVolumesExecutor();
         return executor.ExecuteAsync(arg).WaitAndUnwrapException();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception requesting progressive volume at application layer");
+        return new ProgressiveVolumesResponse { ResultStatus = Types.RequestErrorStatus.Exception, Volumes = null };
+      }
       finally
       {
-        Log.LogInformation($"Exiting {nameof(Invoke)}");
+        _log.LogInformation($"Exiting {nameof(Invoke)}");
       }
     }
   }

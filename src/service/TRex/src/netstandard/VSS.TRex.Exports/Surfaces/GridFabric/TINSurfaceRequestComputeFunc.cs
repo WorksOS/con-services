@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System;
 using System.Reflection;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
   /// </summary>
   public class TINSurfaceRequestComputeFunc : BaseComputeFunc, IComputeFunc<TINSurfaceRequestArgument, TINSurfaceResult>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -29,7 +29,7 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
 
     public TINSurfaceResult Invoke(TINSurfaceRequestArgument arg)
     {
-      Log.LogInformation("In TINSurfaceRequestComputeFunc.Invoke()");
+      _log.LogInformation("In TINSurfaceRequestComputeFunc.Invoke()");
 
       try
       {
@@ -37,14 +37,14 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
         // subgrid results to it.
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
 
-        Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
+        _log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
         var request = new TINSurfaceExportExecutor(arg.ProjectID, arg.Filters, arg.Tolerance, arg.TRexNodeID, arg.LiftParams);
 
-        Log.LogInformation("Executing request.ExecuteAsync()");
+        _log.LogInformation("Executing request.ExecuteAsync()");
 
         if (!request.ExecuteAsync().WaitAndUnwrapException())
-          Log.LogError("Request execution failed");
+          _log.LogError("Request execution failed");
 
         TINSurfaceResult result = new TINSurfaceResult();
         using (var ms = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
@@ -58,9 +58,14 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
 
         return result;
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception requesting a TTM surface");
+        return new TINSurfaceResult { ResultStatus = Types.RequestErrorStatus.Exception };
+      }
       finally
       {
-        Log.LogInformation("Exiting TINSurfaceRequestComputeFunc.Invoke()");
+        _log.LogInformation("Exiting TINSurfaceRequestComputeFunc.Invoke()");
       }
     }
   }

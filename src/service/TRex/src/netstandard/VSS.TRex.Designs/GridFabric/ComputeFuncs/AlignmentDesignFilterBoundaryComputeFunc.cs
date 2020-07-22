@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
   public class AlignmentDesignFilterBoundaryComputeFunc : BaseComputeFunc, IComputeFunc<AlignmentDesignFilterBoundaryArgument, AlignmentDesignFilterBoundaryResponse>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<AlignmentDesignFilterBoundaryComputeFunc>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AlignmentDesignFilterBoundaryComputeFunc>();
 
     public AlignmentDesignFilterBoundaryResponse Invoke(AlignmentDesignFilterBoundaryArgument args)
     {
@@ -24,10 +24,12 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
         var fence = Executor.Execute(args.ProjectID, args.ReferenceDesign.DesignID, args.StartStation, args.EndStation, args.LeftOffset, args.RightOffset);
 
         if (fence == null || !fence.HasVertices)
+        {
           return new AlignmentDesignFilterBoundaryResponse
           {
             RequestResult = DesignProfilerRequestResult.FailedToComputeAlignmentVertices
           };
+        }
 
         return new AlignmentDesignFilterBoundaryResponse
         {
@@ -35,10 +37,10 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
           Boundary = fence
         };
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception: ");
-        return null;
+        _log.LogError(e, "Exception obtaining alignment design filter boundary");
+        return new AlignmentDesignFilterBoundaryResponse { Boundary = null, RequestResult = DesignProfilerRequestResult.UnknownError};
       }
     }
   }
