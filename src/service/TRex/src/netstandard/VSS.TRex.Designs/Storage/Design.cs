@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -59,7 +60,7 @@ namespace VSS.TRex.Designs.Storage
     /// <param name="cellSize"></param>
     /// <param name="offset"></param>
     /// <returns></returns>
-    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, XYZ[] profilePath, double cellSize, double offset)
+    public async Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, WGS84Point startPoint, WGS84Point endPoint, double cellSize, double offset, bool arePositionsGrid)
     {
       (List<XYZS> profile, DesignProfilerRequestResult errorCode) result = (null, DesignProfilerRequestResult.OK);
 
@@ -67,8 +68,20 @@ namespace VSS.TRex.Designs.Storage
       try
       {
         var profileRequest = new DesignProfileRequest();
+        var arg = new CalculateDesignProfileArgument
+        {
+          ProjectID = projectUid,
+          CellSize = cellSize,
+          StartPoint = startPoint,
+          EndPoint = endPoint,
+          PositionsAreGrid = arePositionsGrid
+        };
+        arg.ReferenceDesign.DesignID = DesignDescriptor.DesignID;
+        arg.ReferenceDesign.Offset = offset;
 
-        var profile = await profileRequest.ExecuteAsync(new CalculateDesignProfileArgument(projectUid, cellSize, DesignDescriptor.DesignID, offset, profilePath));
+
+        var profile = await profileRequest.ExecuteAsync(arg);
+
 
         result.profile = profile.Profile;
 
