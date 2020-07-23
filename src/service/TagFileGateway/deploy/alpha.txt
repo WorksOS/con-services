@@ -1,4 +1,4 @@
 JAEGER_SERVICE_NAME: Tagfile Gateway Service
 AWS_ALL_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-tagfile-archive
-AWS_SQS_TAG_FILE_CONCURRENT_COUNT: "30"
+AWS_SQS_TAG_FILE_CONCURRENT_COUNT: "10"
 AWS_SQS_TAG_FILE_URL: https://sqs.us-west-2.amazonaws.com/940327799086/PDXA-RPD-TagFileIngressQueue
