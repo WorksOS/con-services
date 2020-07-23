@@ -62,7 +62,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
       siteModel.MachinesTargetValues[bulldozerMachineIndex].VibrationStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].GPSAccuracyAndToleranceStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, new GPSAccuracyAndTolerance(GPSAccuracy.Fine, 20));
-
+      
       var cellPasses = Enumerable.Range(1, count).Select(x =>
         new CellPass
         {
@@ -75,6 +75,11 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
           MDP = (short)(20 + 20 * x),
           MaterialTemperature =(ushort)(1000 + x)
         }).ToArray();
+
+      for (var i=0; i<cellPasses.Length; i++)
+      {
+        siteModel.MachinesTargetValues[bulldozerMachineIndex].LayerIDStateEvents.PutValueAtDate(cellPasses[i].Time, (ushort)(i%5));
+      }
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
@@ -130,6 +135,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         var expectedCcv = (short) (10 + 10 * mockModifier);
         var expectedMachineSpeed = (ushort) (650 + mockModifier);
         var expectedMdp = (short) (20 + 20 * mockModifier);
+        var expectedLayerID = (ushort) (idx%5);
 
         var cellPass = response.CellPasses[idx];
         cellPass.LastPassValidCCV.Should().Be(expectedCcv);
@@ -137,6 +143,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         cellPass.Height.Should().Be(expectedHeight);
         cellPass.MachineSpeed.Should().Be(expectedMachineSpeed);
         cellPass.LastPassValidMDP.Should().Be(expectedMdp);
+        cellPass.LayerID.Should().Be(expectedLayerID);
 
         cellPass.GPSAccuracy.Should().Be(GPSAccuracy.Fine);
         cellPass.GPSTolerance.Should().Be(20);
