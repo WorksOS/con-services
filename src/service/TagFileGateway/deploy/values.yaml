@@ -7,7 +7,7 @@ rootDomain: eks.ccss.cloud
 
 globalConfig: 3dapp-prod
 
-replicaCount: 2
+replicaCount: 3
 
 serviceName: tagfilegateway-service
 
