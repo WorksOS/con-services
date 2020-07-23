@@ -874,15 +874,10 @@ double BorderSize)
                     return;
                 }
 
-                //rotate_point(x - Epsilon, y - Epsilon, out rx1, out ry1);
-                //rotate_point(x - Epsilon, y + h + Epsilon, out rx2, out ry2);
-                //rotate_point(x + w + Epsilon, y + h + Epsilon, out rx3, out ry3);
-                //rotate_point(x + w + Epsilon, y - Epsilon, out rx4, out ry4);
-
-                Rotate_point(x, y, out double rx1, out double ry1);
-                Rotate_point(x, y + h, out double rx2, out double ry2);
-                Rotate_point(x + w, y + h, out double rx3, out double ry3);
-                Rotate_point(x + w, y, out double rx4, out double ry4);
+                Rotate_point(x, y, out var rx1, out var ry1);
+                Rotate_point(x, y + h, out var rx2, out var ry2);
+                Rotate_point(x + w, y + h, out var rx3, out var ry3);
+                Rotate_point(x + w, y, out var rx4, out var ry4);
 
                 //The coordinates are in world units. We must first transform them to pixel coordinates.
                 DrawRectPoints[0].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX);
@@ -893,20 +888,6 @@ double BorderSize)
                 DrawRectPoints[2].Y = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry3 - OriginY) * DQMScaleY);
                 DrawRectPoints[3].X = XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx4 - OriginX) * DQMScaleX);
                 DrawRectPoints[3].Y = YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry4 - OriginY) * DQMScaleY);
-
-                /*
-                                Point[] Points = new Point[4]
-                                {
-                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx1 - OriginX) * DQMScaleX),
-                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry1 - OriginY) * DQMScaleY)),
-                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx2 - OriginX) * DQMScaleX),
-                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry2 - OriginY) * DQMScaleY)),
-                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx3 - OriginX) * DQMScaleX),
-                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry3 - OriginY) * DQMScaleY)),
-                                  new Point(XAxisAdjust + XAxesDirection * (int)Math.Truncate((rx4 - OriginX) * DQMScaleX),
-                                            YAxisAdjust - YAxesDirection * (int)Math.Truncate((ry4 - OriginY) * DQMScaleY))
-                                };
-                */
 
                 if (Fill)
                 {
@@ -1166,6 +1147,32 @@ double BorderSize)
 //    Procedure RecordRepaint;
 
     public double Scale { get => GetScale(); set => SetScale(value); }
+
+
+    /// <summary>
+    /// This will take an array of pixels matching the extent of the canvas and
+    /// draw the content of those pixels onto the canvas. This is a destructive process
+    /// - any conten existing in the canvas will be overwritten by a new canvas
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="pixels"></param>
+    public void DrawFromPixelArray(int width, int height, int[] pixels)
+    {
+      if (width != BitmapCanvas.Width || height != BitmapCanvas.Height)
+      {
+        throw new ArgumentException("Extents of target canvas are not the same as the extents being drawn");
+      }
+
+      var oldBitmapCanvas = BitmapCanvas;
+      BitmapCanvas = DrawCanvas.DrawFromPixelArray(BitmapCanvas.Width, BitmapCanvas.Height, pixels);
+  
+      var oldDrawCanvas = DrawCanvas;
+      DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
+
+      oldBitmapCanvas?.Dispose();
+      oldDrawCanvas?.Dispose();
+    }
 
     #region IDisposable Support
     private bool disposedValue; // To detect redundant calls
