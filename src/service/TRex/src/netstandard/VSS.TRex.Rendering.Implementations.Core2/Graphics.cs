@@ -1,12 +1,13 @@
 ﻿using System;
 using Draw = System.Drawing;
 using VSS.TRex.Rendering.Abstractions;
+using System.Drawing.Imaging;
 
 namespace VSS.TRex.Rendering.Implementations.Core2
 {
-  public class Graphics : IGraphics, IDisposable
+  public class Graphics : IGraphics
   {
-    private readonly Draw.Graphics container;
+    private Draw.Graphics container;
 
     internal Graphics(Draw.Graphics graphics)
     {
@@ -51,6 +52,29 @@ namespace VSS.TRex.Rendering.Implementations.Core2
     public void Clear(Draw.Color penColor)
     {
       container.Clear(penColor);
+    }
+
+    /// <summary>
+    /// Draws a 2D array of pixel colours on top of the current draw canvas where the 2D array is expressed as a simple vector
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="pixels">Contains an array of ARGB integers representing the pixels</param>
+    public unsafe IBitmap DrawFromPixelArray(int width, int height, int[] pixels)
+    {
+      if (width * height != pixels.Length)
+        throw new ArgumentException($"Dimensions of bitmap do not agree with size of pizel array: {width}x{height} vs {pixels.Length} pixels");
+
+      var buffer = new byte[pixels.Length * 4];
+      Buffer.BlockCopy(pixels, 0, buffer, 0, buffer.Length);
+
+      fixed (byte* p = buffer)
+      {
+        var scan0 = (IntPtr)p;
+        return new Bitmap(width, height, 4 * width, PixelFormat.Format32bppArgb, scan0);
+
+        // (bmp.UnderlyingBitmap as System.Drawing.Bitmap).Save(@"c:\temp\TheBitmap.bmp");
+      }
     }
   }
 }
