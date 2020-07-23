@@ -32,6 +32,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
 
     public int TotalWholePasses{get; set;}
 
+    public ushort LayerID { get; set; }
     public int LayersCount{get; set;}
     public short LastPassValidCCV{get; set;}
     public short TargetCCV{get; set;}
@@ -77,6 +78,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       GPSAccuracy = GPSAccuracy.Unknown;
       TargetPassCount = CellPassConsts.NullPassCountValue;
       TotalWholePasses = 0;
+      LayerID = CellPassConsts.NullLayerID;
       LayersCount = 0;
       LastPassValidCCV = CellPassConsts.NullCCV;
       TargetCCV = CellPassConsts.NullCCV;
@@ -120,6 +122,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       GPSAccuracy = (GPSAccuracy) reader.ReadByte();
       TargetPassCount = reader.ReadInt32();
       TotalWholePasses = reader.ReadInt32();
+      LayerID = reader.ReadUInt16();
       LayersCount = reader.ReadInt32();
       LastPassValidCCV = reader.ReadInt16();
       TargetCCV = reader.ReadInt16();
@@ -156,6 +159,7 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       writer.Write((byte)GPSAccuracy);
       writer.Write(TargetPassCount);
       writer.Write(TotalWholePasses);
+      writer.Write(LayerID);
       writer.Write(LayersCount);
       writer.Write(LastPassValidCCV);
       writer.Write(TargetCCV);

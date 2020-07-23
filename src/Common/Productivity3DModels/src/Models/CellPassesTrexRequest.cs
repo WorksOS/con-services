@@ -26,8 +26,8 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Flag to indicate if using grid coordinates or latitude/longitude
     /// </summary>
-    [JsonIgnore]
-    public bool CoordsAreGrid { get; }
+    [JsonProperty]
+    public bool CoordsAreGrid { get; private set; }
 
     public CellPassesTRexRequest()
     {
