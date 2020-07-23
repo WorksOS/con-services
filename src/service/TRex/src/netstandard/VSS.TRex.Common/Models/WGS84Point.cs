@@ -44,5 +44,10 @@ namespace VSS.TRex.Common.Models
       Lon = reader.ReadDouble();
       Height = reader.ReadDouble();
     }
+
+    public override string ToString()
+    {
+      return base.ToString() + $"Lat {Lat}, Lon {Lon}, Height {Height}";
+    }
   }
 }
