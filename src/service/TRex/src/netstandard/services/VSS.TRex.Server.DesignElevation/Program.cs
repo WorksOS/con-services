@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -41,6 +43,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
         .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
+        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
