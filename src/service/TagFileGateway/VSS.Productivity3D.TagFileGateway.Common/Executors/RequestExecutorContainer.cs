@@ -23,6 +23,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
         protected ITagFileForwarder TagFileForwarder { get; private set; }
         protected ITransferProxyFactory TransferProxyFactory { get; private set; }
         protected IWebRequest WebRequest { get; private set; }
+
         protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
         /// <summary> </summary>
@@ -49,8 +50,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
                 DataCache = dataCache,
                 TagFileForwarder = tagFileForwarder,
                 TransferProxyFactory = transferProxyFactory,
-                WebRequest = webRequest
-            };
+                WebRequest = webRequest};
             return executor;
         }
 

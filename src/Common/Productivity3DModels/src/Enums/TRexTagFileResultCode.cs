@@ -73,8 +73,10 @@
     CWSGetAccountForDeviceNotFound = 3102,
            // "Unable to locate any account for the device in cws"
     CWSGetAccountForDeviceFoundMultiple = 3103,
-           // "There is >1 active account for the device in cws"
-    CWSEndpointException = 3104, // retry-able
+          // "There is >1 active account for the device in cws"
+    CWSNoProjectsFoundForDevice = 3105,
+          // "Unable to locate projects for device in cws"
+    CWSEndpointException = 3124, // retry-able
            // "A problem occurred at the {0} endpoint. Exception: {1}" // this comes from within ProjectSvc
   }
 }

@@ -7,12 +7,12 @@ using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Executors;
@@ -107,16 +107,27 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
     {
       try
       {
-        var snsPayload = JsonConvert.DeserializeObject<SnsPayload>(m.Body);
+        SnsPayload snsPayload;
+        try
+        {
+          snsPayload = JsonConvert.DeserializeObject<SnsPayload>(m.Body);
+        }
+        catch (Exception e)
+        {
+          Logger.LogError(e, $"Failed to deserialize message with ID {m.MessageId}");
+          snsPayload = null;
+        }
+
         if (snsPayload == null)
         {
-          // I don't think we will get these kinds of messages - not sure exactly how to solve just yet.
-          // If we delete them, we may miss tag files
-          // But if we don't delete, we may fill up the queue with bad messages
-          // Will monitor during testing
-          Logger.LogWarning($"Failed to parse SQS Message. MessageID: {m.MessageId}, Body: {m.Body}");
+          // Either exception or null deserialization can occur with badly formed Json.
+          // Delete, so they don't just fill up the que
+          var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);
+          var deleteResponse = await _awSqsClient.DeleteMessageAsync(deleteMessage);
+          Logger.LogWarning($"Failed to parse SQS Message. MessageID: {m.MessageId}, Body: {m.Body} Delete SQS Message Response Code: {deleteResponse.HttpStatusCode}");
           return;
         }
+
 
         Logger.LogInformation($"Processing SQS Message ID: {m.MessageId}.");
         // We need to create a scope, as a hosted service is a singleton, but some of the services are transient, we can't inject them.
@@ -131,7 +142,9 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
           serviceScope.ServiceProvider.GetService<IWebRequest>());
 
         var result = await executor.ProcessAsync(snsPayload);
-        if (result != null)
+
+        // internalErrors are retry-able, so leave them on the que to be picked up again.
+        if (result != null && result.Code != ContractExecutionStatesEnum.InternalProcessingError)
         {
           // Mark as processed
           var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);
@@ -140,7 +153,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         }
         else
         {
-          Logger.LogWarning($"No response for Message ID: {m.MessageId}.");
+          Logger.LogWarning($"Tag file failed to process due to internal error, leave it on que to be re-processed: {m.MessageId}.");
         }
       }
       catch (Exception e)

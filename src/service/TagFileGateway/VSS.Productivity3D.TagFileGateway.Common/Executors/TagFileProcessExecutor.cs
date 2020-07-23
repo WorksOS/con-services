@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.TagFileGateway.Common.Executors
@@ -12,6 +13,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
     {
         public const string CONNECTION_ERROR_FOLDER = ".Backend Connection Error";
         public const string INVALID_TAG_FILE_FOLDER = ".Invalid Tag File Name";
+        public bool ArchiveOnInternalError = false;
 
         protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
         {
@@ -26,34 +28,48 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
             Logger.LogInformation($"Received Tag File with filename: {request.FileName}. TCC Org: {request.OrgId}. Data Length: {request.Data.Length}");
 
             var result = ContractExecutionResult.ErrorResult("Not processed");
-            var failedToConnect = false;
+            var internalProcessingError = false;
             try
             {
               result = await TagFileForwarder.SendTagFileDirect(request);
             }
             catch (Exception e)
             {
-              Logger.LogError(e, $"Failed to process tag file {request.FileName}");
-              failedToConnect = true;
+              Logger.LogError(e, $"Failed to connect to TRex. Tag file {request.FileName}");
+              internalProcessingError = true;
             }
 
-            // If we failed to connect to trex, we want to put the tag file in a separate folder for reprocessing
-            // If the tag file was accepted, and not processed for a real reason (e.g seed position outside boundary, or no subscription)
-            // Then we can to archive it, as it was successfully processed with no change to the datamodel
+            internalProcessingError = IsInternalError(internalProcessingError, result.Code);
+      
+            // If we failed to connect to trex (or other retry-able error),
+            //     we want to either put  it separate folder or not delete from SQS que
+            // If the tag file was accepted, and not processed for a real reason (e.g no project found at seed position)
+            //   then we can to archive it, as it was successfully processed with no change to the datamodel
             await using (var data = new MemoryStream(request.Data))
             {
                 Logger.LogInformation($"Uploading Tag File {request.FileName}");
                 var path = GetS3Key(request.FileName);
 
-                if (failedToConnect)
+                if (internalProcessingError) 
                     path = $"{CONNECTION_ERROR_FOLDER}/{path}";
 
-                TransferProxyFactory.NewProxy(TransferProxyType.TagFileGatewayArchive).Upload(data, path);
-                Logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
+                if (!internalProcessingError || ArchiveOnInternalError)
+                {
+                  TransferProxyFactory.NewProxy(TransferProxyType.TagFileGatewayArchive).Upload(data, path);
+                  Logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
+                }
+                else
+                {
+                  Logger.LogInformation($"No S3 upload as NoArchiveOnInternalError set. Tag File {request.FileName}");
+                }
             }
 
-            if(failedToConnect) 
+            if (internalProcessingError)
+            {
+              Logger.LogError($"{nameof(TagFileProcessExecutor)} InternalProcessingError {result.Code} {request.FileName} archiveFlag: {ArchiveOnInternalError}");
               return ContractExecutionResult.ErrorResult("Failed to connect to backend");
+            }
+
             return result;
         }
 
@@ -72,6 +88,25 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
             var nameWithoutTime = tagFileName.Substring(0, tagFileName.Length - 10);
             //TCC org ID is not provided with direct submission from machines
             return $"{parts[0]}{separator}{parts[1]}/{nameWithoutTime}/{tagFileName}";
+        }
+
+        private bool IsInternalError(bool internalProcessingError, int resultCode)
+        {
+          // internalErrors can occur at any stage e.g. connecting to Trex/TFA/Project/CWS or internal to TRex
+          //   todo keep an eye on any of these which may never succeed. Potential retryAttemptCount in S3 metadata
+          if (
+                // unable to connect to TRex
+              internalProcessingError ||
+              resultCode == ContractExecutionStatesEnum.InternalProcessingError || 
+                // other internal e.g. TRex unable to connect to TFA/ProjectSvc/cws 
+              resultCode == (int) TRexTagFileResultCode.TRexUnknownException ||
+              resultCode == (int) TRexTagFileResultCode.TRexTfaException     || 
+              resultCode == (int) TRexTagFileResultCode.TRexQueueSubmissionError ||
+              resultCode == (int) TRexTagFileResultCode.TFAInternalServiceAccess || 
+              resultCode == (int) TRexTagFileResultCode.CWSEndpointException  
+             )
+            return true;
+          return false;
         }
     }
 }

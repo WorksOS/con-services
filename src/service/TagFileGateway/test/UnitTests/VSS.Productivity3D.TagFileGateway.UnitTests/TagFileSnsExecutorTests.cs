@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -8,7 +7,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.TagFileGateway.Common.Executors;
@@ -182,7 +180,102 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       receivedTagFile.Should().NotBeNull();
       receivedTagFile.Data.Should().BeEquivalentTo(MockRequest.Data);
       receivedTagFile.FileName.Should().Be("test-filename-no-download");
+    }
 
+    [Fact]
+    public void ShouldNotUploadWhenTagFileForwarderReturnsInternalProcessingErrorType()
+    {
+      var e = CreateExecutor<TagFileSnsProcessExecutor>();
+      var theFileName = "test-filename-no-download";
+
+      var payLoad = new SnsPayload()
+      {
+        Type = SnsPayload.NotificationType,
+        TopicArn = "TestArn",
+        Message = JsonConvert.SerializeObject(new SnsTagFile()
+        {
+          Data = MockRequest.Data,
+          FileName = theFileName,
+          FileSize = MockRequest.Data.Length
+        })
+      };
+
+      var key = TagFileProcessExecutor.GetS3Key(theFileName);
+      var expectedS3PathOnFailure = $"{TagFileProcessExecutor.CONNECTION_ERROR_FOLDER}/{key}";
+      var expectedS3Path = $"{key}";
+
+      var expectedErrorCode = 3124; // Executor should forward on the error code and in this case, not archive this internal error
+      // Setup a failed connection
+      TagFileForwarder
+        .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+          It.IsAny<IHeaderDictionary>()))
+        .Returns(Task.FromResult(new ContractExecutionResult(expectedErrorCode)));
+
+      // Handle the upload
+      TransferProxy.Setup(m => m.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
+
+      // Run the test
+      var result = e.ProcessAsync(payLoad).Result;
+
+      // Validate we tried to upload
+      TagFileForwarder
+        .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+            It.IsAny<IHeaderDictionary>()),
+          Times.Exactly(1));
+
+      // Validate that the file was not saved anywhere
+      TransferProxy.Verify(m => m.Upload(It.IsAny<MemoryStream>(), It.Is<string>(s => s == expectedS3Path)), Times.Never);
+      TransferProxy.Verify(m => m.Upload(It.IsAny<MemoryStream>(), It.Is<string>(s => s == expectedS3PathOnFailure)), Times.Never);
+
+      // Validate we got a non-zero result
+      result.Code.Should().Be(ContractExecutionStatesEnum.InternalProcessingError);
+    }
+
+    [Fact]
+    public void ShouldUploadWhenTagFileForwarderPasses()
+    {
+      var e = CreateExecutor<TagFileSnsProcessExecutor>();
+      var theFileName = "test-filename-no-download";
+
+      var payLoad = new SnsPayload()
+      {
+        Type = SnsPayload.NotificationType,
+        TopicArn = "TestArn",
+        Message = JsonConvert.SerializeObject(new SnsTagFile()
+        {
+          Data = MockRequest.Data,
+          FileName = theFileName,
+          FileSize = MockRequest.Data.Length
+        })
+      };
+
+      var key = TagFileProcessExecutor.GetS3Key(theFileName);
+      var expectedS3Path = $"{key}";
+
+      // Ensure the tag file will be upload and save the response
+      TagFileForwarder
+        .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+          It.IsAny<IHeaderDictionary>()))
+        .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => { })
+        .Returns(Task.FromResult(new ContractExecutionResult()));
+
+      // Handle the upload
+      TransferProxy.Setup(m => m.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
+
+      // Run the test
+      var result = e.ProcessAsync(payLoad).Result;
+
+      // Validate we tried to upload
+      TagFileForwarder
+        .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+            It.IsAny<IHeaderDictionary>()),
+          Times.Exactly(1));
+
+      // Validate that the path was correct (we check the data separately)
+      TransferProxy.Verify(m => m.Upload(It.IsAny<MemoryStream>(), It.Is<string>(s => s == expectedS3Path)), Times.Once);
+
+      // Validate we got a non-zero result
+      result.Code.Should().Be(0);
     }
   }
 }
