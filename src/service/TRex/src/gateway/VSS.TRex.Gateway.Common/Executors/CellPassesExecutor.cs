@@ -123,7 +123,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           EventOnGroundState = OnGroundStateType.Unknown, // Not present in cell pass
           GpsAccuracy = ConvertGpsAccuracy(cellPass.GPSAccuracy),
           GpsTolerance = cellPass.GPSTolerance,
-          LayerId = CellPassConsts.NullLayerID, // Not present in cell pass
+          LayerId = cellPass.LayerID,
           MapResetDesignNameId = CellPassConsts.NullEventMapResetDesignNameId, // Not present in cell pass
           MapResetPriorDate = CellPassConsts.NullTime, // Not present in cell pass
           PositioningTech = PositioningTechType.Unknown // Not present in cell pass

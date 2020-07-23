@@ -6,6 +6,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.Common.Models;
 
 namespace VSS.TRex.Designs.Interfaces
 {
@@ -83,6 +84,6 @@ namespace VSS.TRex.Designs.Interfaces
 
     DesignDescriptor DesignDescriptor { get; }
 
-    Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUID, XYZ[] profilePath, double cellSize, double offset);
+    Task<(List<XYZS> profile, DesignProfilerRequestResult errorCode)> ComputeProfile(Guid projectUid, WGS84Point startPoint, WGS84Point endPoint, double cellSize, double offset, bool arePositionsGrid);
   }
 }

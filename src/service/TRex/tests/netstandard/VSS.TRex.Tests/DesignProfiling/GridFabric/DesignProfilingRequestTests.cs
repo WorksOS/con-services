@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -61,8 +62,10 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
         CellSize = SubGridTreeConsts.DefaultCellSize,
         ReferenceDesign = referenceDesign,
         Filters = new FilterSet(new CombinedFilter()),
-        ProfilePath = new [] { new XYZ(startX, startY), new XYZ(endX, endY) },
-        TRexNodeID = "UnitTest_TRexNodeID"
+        StartPoint = new WGS84Point(startX, startY),
+        EndPoint = new WGS84Point(endX, endY),
+        TRexNodeID = "UnitTest_TRexNodeID",
+        PositionsAreGrid = true        
       });
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);

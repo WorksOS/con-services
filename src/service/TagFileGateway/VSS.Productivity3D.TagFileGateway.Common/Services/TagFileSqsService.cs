@@ -107,10 +107,20 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
     {
       try
       {
-        var snsPayload = JsonConvert.DeserializeObject<SnsPayload>(m.Body);
+        SnsPayload snsPayload;
+        try
+        {
+          snsPayload = JsonConvert.DeserializeObject<SnsPayload>(m.Body);
+        }
+        catch (Exception e)
+        {
+          Logger.LogError(e, $"{nameof(ProcessSingleMessage)} Failed to deserialize message with ID {m.MessageId}");
+          snsPayload = null;
+        }
+
         if (snsPayload == null)
         {
-          // Can occur with badly formed Json.
+          // Either exception or null deserialization can occur with badly formed Json.
           // Delete, so they don't just fill up the que
           var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);
           var deleteResponse = await _awSqsClient.DeleteMessageAsync(deleteMessage);
@@ -133,7 +143,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         var result = await executor.ProcessAsync(snsPayload);
 
         // internalErrors are retry-able, so leave them on the que to be picked up again.
-        if (result.Code != ContractExecutionStatesEnum.InternalProcessingError)
+        if (result != null && result.Code != ContractExecutionStatesEnum.InternalProcessingError)
         {
           // Mark as processed
           var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);
@@ -142,7 +152,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         }
         else
         {
-          Logger.LogWarning($"{nameof(ProcessSingleMessage)} No response for Message ID: {m.MessageId}.");
+          Logger.LogWarning($"{nameof(ProcessSingleMessage)} Tag file failed to process due to internal error, leave it on que to be re-processed: {m.MessageId}.");
         }
       }
       catch (Exception e)

@@ -171,7 +171,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         return StatusCode((int)HttpStatusCode.OK, alignmentGeometries.ToArray());        
       }
 
-      log.LogInformation($"Project {projectUid} doe not have any alignment data.");
+      log.LogInformation($"Project {projectUid} does not have any alignment data.");
 
       return NoContent();
     }
