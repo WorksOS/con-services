@@ -112,8 +112,9 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         {
           snsPayload = JsonConvert.DeserializeObject<SnsPayload>(m.Body);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+          Logger.LogError(e, $"Failed to deserialize message with ID {m.MessageId}");
           snsPayload = null;
         }
 
