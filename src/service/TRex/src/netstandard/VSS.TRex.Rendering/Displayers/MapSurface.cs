@@ -213,6 +213,12 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void Rotate_point(double fromX, double fromY, out double toX, out double toY)
         {
+            toX = centerX - (fromX - centerX) * CosOfRotation + (fromY - centerY) * SinOfRotation;
+            toY = centerY - (fromY - centerY) * CosOfRotation - (fromX - centerX) * SinOfRotation;
+        }
+
+        public void Un_rotate_point(double fromX, double fromY, out double toX, out double toY)
+        {
             toX = centerX + (fromX - centerX) * CosOfRotation - (fromY - centerY) * SinOfRotation;
             toY = centerY + (fromY - centerY) * CosOfRotation + (fromX - centerX) * SinOfRotation;
         }
@@ -221,6 +227,12 @@ namespace VSS.TRex.Rendering.Displayers
         {
             toX = CX + (fromX - CX) * CosOfRotation - (fromY - CY) * SinOfRotation;
             toY = CY + (fromY - CY) * CosOfRotation + (fromX - CX) * SinOfRotation;
+        }
+
+        public void Un_rotate_point_about(double fromX, double fromY, out double toX, out double toY, double CX, double CY)
+        {
+            toX = CX - (fromX - CX) * CosOfRotation + (fromY - CY) * SinOfRotation;
+            toY = CY - (fromY - CY) * CosOfRotation - (fromX - CX) * SinOfRotation;
         }
 
         public void Rotate_point_no_origin(double fromX, double fromY, out double toX, out double toY)
