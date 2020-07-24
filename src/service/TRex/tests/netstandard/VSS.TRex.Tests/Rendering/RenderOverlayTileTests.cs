@@ -105,8 +105,8 @@ namespace VSS.TRex.Tests.Rendering
     {
       var render = new RenderOverlayTile(Guid.NewGuid(),
         DisplayMode.Height,
-        new TRex.Geometry.XYZ(0, 0),
-        new TRex.Geometry.XYZ(100, 100),
+        new XYZ(0, 0),
+        new XYZ(100, 100),
         true, // CoordsAreGrid
         100, //PixelsX
         100, // PixelsY
@@ -154,10 +154,12 @@ namespace VSS.TRex.Tests.Rendering
     }
 
     [Theory]
-//    [InlineData(0, 0, 5)]
-//    [InlineData(50.0, 50.0, 5)]
-    [InlineData(50.0, 50.0, 360)]
-    public async Task Test_RenderOverlayTile_SurveyedSurface_ElevationOnly_Rotated(double rotateAboutX, double rotateAboutY, int rotationIncrement)
+    [InlineData(360, 360, 5, 0, 0, 50)]
+    [InlineData(0, 360, 5, 0, 0, 256)]
+    [InlineData(0, 360, 5, 50.0, 50.0, 256)]
+    [InlineData(0, 360, 5, 0, 0, 50)]
+    [InlineData(0, 360, 5, 50.0, 50.0, 50)]
+    public async Task Test_RenderOverlayTile_SurveyedSurface_ElevationOnly_Rotated(int initialRotation, int maxRotation, int rotationIncrement, double rotateAboutX, double rotateAboutY, ushort imagePixelSize)
     {
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
@@ -180,9 +182,9 @@ namespace VSS.TRex.Tests.Rendering
         new BoundingWorldExtent3D(0, 0, 100, 100), DateTime.UtcNow, new double[] { 100, 101, 102, 103 });
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
 
-      var rotationDegrees = 0;
+      var rotationDegrees = initialRotation;
 
-      while (rotationDegrees <= 360)
+      while (rotationDegrees <= maxRotation)
       {
         // Rotate the 'top right'/rotatedPoint by x degress
         var rot = MathUtilities.DegreesToRadians(rotationDegrees);
@@ -192,22 +194,23 @@ namespace VSS.TRex.Tests.Rendering
         GeometryHelper.RotatePointAbout(rot, 100, 0, out var rotatedBottomRightPointX, out var rotatedBottomRightPointY, rotateAboutX, rotateAboutY);
 
         var mockConvertCoordinates = new Mock<IConvertCoordinates>();
-        mockConvertCoordinates.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>())).Returns(new CoreX.Models.XYZ[] {
-        new CoreX.Models.XYZ(rotatedBottomLeftPointX, rotatedBottomLeftPointY,  0.0),
-        new CoreX.Models.XYZ(rotatedTopRightPointX, rotatedTopRightPointY, 0.0),
-        new CoreX.Models.XYZ(rotatedTopLeftPointX, rotatedTopLeftPointY, 0.0),
-        new CoreX.Models.XYZ(rotatedBottomRightPointX, rotatedBottomRightPointY, 0.0)
-      }
+        mockConvertCoordinates.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>())).Returns(new CoreX.Models.XYZ[]
+        {
+          new CoreX.Models.XYZ(rotatedBottomLeftPointX, rotatedBottomLeftPointY,  0.0),
+          new CoreX.Models.XYZ(rotatedTopRightPointX, rotatedTopRightPointY, 0.0),
+          new CoreX.Models.XYZ(rotatedTopLeftPointX, rotatedTopLeftPointY, 0.0),
+          new CoreX.Models.XYZ(rotatedBottomRightPointX, rotatedBottomRightPointY, 0.0)
+        }
         );
 
-        DIBuilder.Continue().Add(x => x.AddSingleton<IConvertCoordinates>(mockConvertCoordinates.Object)).Complete();
+        DIBuilder.Continue().Add(x => x.AddSingleton(mockConvertCoordinates.Object)).Complete();
         var render = new RenderOverlayTile(siteModel.ID,
                                            DisplayMode.Height,
                                            new XYZ(0, 0),
                                            new XYZ(100, 100),
                                            false, // Coords are LLH for rotated, grid otherwise - the mocked conversion above will return the true rotated grid coordinates
-                                           256, //PixelsX
-                                           256, // PixelsY
+                                           imagePixelSize, //PixelsX
+                                           imagePixelSize, // PixelsY
                                            new FilterSet(new CombinedFilter()),
                                            new DesignOffset(),
                                            palette,
@@ -218,37 +221,13 @@ namespace VSS.TRex.Tests.Rendering
         var result = await render.ExecuteAsync();
         result.Should().NotBeNull();
 
-        var filename = $"RotatedOverlayTileWithSurveyedSurface(rotate about {rotateAboutX},{rotateAboutY} by {rotationDegrees} degrees).bmp";
+        var filename = $"RotatedOverlayTileWithSurveyedSurface({imagePixelSize} pixels, rotate about {rotateAboutX},{rotateAboutY} by {rotationDegrees} degrees).bmp";
         var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", filename);
         var saveFileName = @$"c:\temp\{filename}";
         CheckSimpleRenderTileResponse(result, saveFileName, "");
 
         rotationDegrees += rotationIncrement;
       }
-
-      /*
-      var render2 = new RenderOverlayTile(siteModel.ID,
-                                   DisplayMode.Height,
-                                   new XYZ(-50, -50),
-                                   new XYZ(150, 150),
-                                   !applyRotation, // Coords are LLH for rotated, grid otherwise - the mocked conversion above will return the true rotated grid coordinates
-                                   256, //PixelsX
-                                   256, // PixelsY
-                                   new FilterSet(new CombinedFilter()),
-                                   new DesignOffset(),
-                                   palette,
-                                   Color.Black,
-                                   string.Empty,
-                                   new LiftParameters());
-
-      var result2 = await render.ExecuteAsync();
-      result.Should().NotBeNull();
-
-      var filename2 = $"RotatedOverlayTileWithSurveyedSurface-View2({rotationDegrees} degrees, apply rotation {applyRotation}, about {rotateAboutX},{rotateAboutY}).bmp";
-      var path2 = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", filename2);
-      var saveFileName2 = @$"c:\temp\{filename2}";
-      CheckSimpleRenderTileResponse(result2, saveFileName2, "");
-      */
     }
   }
 }
