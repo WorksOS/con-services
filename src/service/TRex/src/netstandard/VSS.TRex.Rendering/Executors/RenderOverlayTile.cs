@@ -268,8 +268,10 @@ namespace VSS.TRex.Rendering.Executors
     {
       using (var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/))
       {
-        using (var mapView = new MapSurface { SquareAspect = false, Rotation = -TileRotation + Math.PI / 2 })
+        using (var mapView = new MapSurface { SquareAspect = false })
         {
+          mapView.SetRotation(-TileRotation + Math.PI / 2);
+
           RepresentationalDisplay.MapView = mapView;
 
           RepresentationalDisplay.MapView.SetBounds(NPixelsX, NPixelsY);

@@ -43,7 +43,7 @@ namespace VSS.TRex.Rendering.Displayers
         // double WLastPtY;
 
         private bool Rotating;
-        public double Rotation;
+        private double Rotation;
 
         private double CosOfRotation = 1.0;
         private double SinOfRotation; //= 0.0;
@@ -348,6 +348,8 @@ namespace VSS.TRex.Rendering.Displayers
             WidthY = 1000;
             LimitX = 1000;
             LimitY = 1000;
+            centerX = 500;
+            centerY = 500;
             OriginX = 0;
             OriginY = 0;
 
@@ -436,12 +438,16 @@ namespace VSS.TRex.Rendering.Displayers
 
         double GetScale() => WidthX;
 
+        /// <summary>
+        /// Sets the rotation of the map view with the rotation specified in radians
+        /// </summary>
+        /// <param name="rotation"></param>
         public void SetRotation(double rotation)
         {
-            Rotation = MathUtilities.DegreesToRadians(rotation);
+            Rotation = rotation;
 
-            SinOfRotation = Math.Sin(rotation);
-            CosOfRotation = Math.Cos(rotation);
+            SinOfRotation = Math.Sin(Rotation);
+            CosOfRotation = Math.Cos(Rotation);
 
             Rotating = Rotation != 0.0;
         }
@@ -1178,7 +1184,7 @@ double BorderSize)
 
       var oldBitmapCanvas = BitmapCanvas;
       BitmapCanvas = DrawCanvas.DrawFromPixelArray(BitmapCanvas.Width, BitmapCanvas.Height, pixels);
-  
+
       var oldDrawCanvas = DrawCanvas;
       DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
 
