@@ -264,7 +264,6 @@ namespace VSS.TRex.Rendering.Executors
     /// Renders all sub grids in a representational style that indicates where there is data, but nothing else. This is used for large scale displays
     /// (zoomed out a lot) where meaningful detail cannot be drawn on the tile
     /// </summary>
-    /// <returns></returns>
     private IBitmap RenderTileAsRepresentationalDueToScale(ISubGridTreeBitMask overallExistenceMap)
     {
       using (var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/))
@@ -405,7 +404,7 @@ namespace VSS.TRex.Rendering.Executors
       _log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}, {MathUtilities.RadiansToDegrees(TileRotation)} degrees] " +
         $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
         $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
-        $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}");
+        $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}, Rotated bounding extents: {RotatedTileBoundingExtents}");
 
       // Construct the renderer, configure it, and set it on its way
       //  WorkingColorPalette = Nil;
@@ -472,7 +471,7 @@ namespace VSS.TRex.Rendering.Executors
 
           // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
           // a final restriction of the spatial extent used to govern data requests
-          processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
+          processor.OverrideSpatialExtents.Assign(RotatedTileBoundingExtents);
 
           // Prepare the processor
           if (!await processor.BuildAsync())
@@ -504,8 +503,6 @@ namespace VSS.TRex.Rendering.Executors
           Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
           Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);
           Renderer.TileRotation = TileRotation;
-          Renderer.WorldTileWidth = WorldTileWidth;
-          Renderer.WorldTileHeight = WorldTileHeight;
 
           ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
 

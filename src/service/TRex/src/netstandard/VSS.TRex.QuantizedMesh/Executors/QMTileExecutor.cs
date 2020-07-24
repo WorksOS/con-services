@@ -405,7 +405,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
       // a final restriction of the spatial extent used to govern data requests
-      processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
+      processor.OverrideSpatialExtents.Assign(RotatedTileBoundingExtents);
 
       // Setup new grid array for results 
       GriddedElevDataArray = new GriddedElevDataRow[TileGridSize, TileGridSize];

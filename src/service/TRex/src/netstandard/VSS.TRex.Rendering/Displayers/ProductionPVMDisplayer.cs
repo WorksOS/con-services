@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Drawing;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
   public abstract class ProductionPVMDisplayer: IDisposable
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ProductionPVMDisplayer>();
+
     public MapSurface MapView;
 
     // Various quantities useful when iterating across cells and drawing them
@@ -61,7 +64,7 @@ namespace VSS.TRex.Rendering.Displayers
       if (_accumulatingScanLine && _cellStripColour != Color.Empty)
       {
         MapView.DrawRect(_cellStripStartX,
-          currentNorth, 
+          currentNorth,
           (_cellStripEndX - _cellStripStartX) + cellSizeX,
           cellSizeY,
           true,
@@ -108,24 +111,15 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// Enables a display context to advertise is it capable of rendering cell information in strips.
     /// </summary>
-    /// <returns></returns>
     protected virtual bool SupportsCellStripRendering() => true;
 
     /// <summary>
     /// Performs iteration across a region of a single 2D array of values
     /// </summary>
-    /// <param name="valueStoreCellSizeY"></param>
-    /// <param name="valueStoreCellSizeX"></param>
-    /// <param name="worldOriginX"></param>
-    /// <param name="worldOriginY"></param>
-    /// <param name="worldWidth"></param>
-    /// <param name="worldHeight"></param>
-    /// <param name="originX"></param>
-    /// <param name="originY"></param>
-    /// <param name="limitX"></param>
-    /// <param name="limitY"></param>
     protected void DoIterate(double valueStoreCellSizeX, double valueStoreCellSizeY, double worldOriginX, double worldOriginY, double worldWidth, double worldHeight, int originX, int originY, int limitX, int limitY)
     {
+      _log.LogDebug($"Performing render iteration: valueStoreCellSizeX:{valueStoreCellSizeX}, valueStoreCellSizeY:{valueStoreCellSizeY}, worldOriginX:{worldOriginX}, worldOriginY:{worldOriginY}, worldWidth:{worldWidth}, worldHeight:{worldHeight}, originX:{originX}, originY:{originY}, limitX:{limitX}, limitY:{limitY}");
+
       var drawCellStrips = SupportsCellStripRendering();
 
       cellSizeX = valueStoreCellSizeX;
@@ -183,20 +177,10 @@ namespace VSS.TRex.Rendering.Displayers
       }
     }
 
-    // Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~ProductionPVMDisplayerBase()
-    // {
-    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-    //   Dispose(false);
-    // }
-
     // This code added to correctly implement the disposable pattern.
     public void Dispose()
     {
-      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
       Dispose(true);
-      // Uncomment the following line if the finalizer is overridden above.
-      // GC.SuppressFinalize(this);
     }
     #endregion
   }

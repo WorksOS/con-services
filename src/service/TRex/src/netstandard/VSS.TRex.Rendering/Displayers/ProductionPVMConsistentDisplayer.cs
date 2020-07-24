@@ -106,9 +106,6 @@ namespace VSS.TRex.Rendering.Displayers
       {
         for (int j = 0, limit_j = MapView.BitmapCanvas.Width; j < limit_j; j++)
         {
-        //  east_col = j;
-        /// / north_row = i;
-
           MapView.Un_rotate_point(MapView.OriginX + j * MapView.XPixelSize, MapView.OriginY + i * MapView.YPixelSize, out var ptx, out var pty);
 
           east_col = (int)Math.Truncate((ptx - _taskAccumulator.OriginX) / _taskAccumulator.ValueStoreCellSizeX);
