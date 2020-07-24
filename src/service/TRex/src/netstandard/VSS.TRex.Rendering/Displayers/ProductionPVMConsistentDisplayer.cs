@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Runtime.CompilerServices;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes.Interfaces;
@@ -16,21 +19,19 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// A palette set accessor for use when a palette is only known by its IPlanViewPalette interface
     /// </summary>
-    /// <param name="palette"></param>
     public override void SetPalette(IPlanViewPalette palette)
     {
       Palette = palette as TP;
     }
 
     /// <summary>
-    /// Copy of value store provided to render from 
+    /// Copy of value store provided to render from
     /// </summary>
     public TC[,] ValueStore;
 
     /// <summary>
     /// A palette get accessor for use when only the IPlanViewPalette is knowable in the accessing context
     /// </summary>
-    /// <returns></returns>
     public override IPlanViewPalette GetPalette() => Palette;
 
     /// <summary>
@@ -48,7 +49,6 @@ namespace VSS.TRex.Rendering.Displayers
     /// <param name="worldX">The world coordinate width of the area covered by the value store</param>
     /// <param name="worldY">The world coordinate width of the area covered by the value store</param>
     /// <param name="sourceCellSize">The (square) size of the cells data elements are extracted from in the source data set</param>
-    /// <returns></returns>
     public IPVMTaskAccumulator GetPVMTaskAccumulator(double valueStoreCellSizeX, double valueStoreCellSizeY,
       int cellsWidth, int cellsHeight,
       double originX, double originY, double worldX, double worldY, double sourceCellSize
@@ -68,7 +68,6 @@ namespace VSS.TRex.Rendering.Displayers
     /// such against the MapView.
     /// This function should be called just once to render the entire set of data for a tile
     /// </summary>
-    /// <returns></returns>
     public bool PerformConsistentRender()
     {
       if (_taskAccumulator == null)
@@ -97,11 +96,45 @@ namespace VSS.TRex.Rendering.Displayers
 
       var insetSize = DataSmoother?.AdditionalBorderSize ?? 0;
 
+      // Directly construct the required pixel array by iterating across the pixels in the target
+      // image and mapping them to the locations in the accumulator array
+
+      var pixels = new int[MapView.BitmapCanvas.Width * MapView.BitmapCanvas.Height];
+      var index = 0;
+
+      for (int i = 0, limit_i = MapView.BitmapCanvas.Height; i < limit_i; i++)
+      {
+        for (int j = 0, limit_j = MapView.BitmapCanvas.Width; j < limit_j; j++)
+        {
+        //  east_col = j;
+        /// / north_row = i;
+
+          MapView.Un_rotate_point(MapView.OriginX + j * MapView.XPixelSize, MapView.OriginY + i * MapView.YPixelSize, out var ptx, out var pty);
+
+          east_col = (int)Math.Truncate((ptx - _taskAccumulator.OriginX) / _taskAccumulator.ValueStoreCellSizeX);
+          north_row = (int)Math.Truncate((pty - _taskAccumulator.OriginY) / _taskAccumulator.ValueStoreCellSizeY);
+
+          if (east_col >= 0 && east_col < _taskAccumulator.CellsWidth &&
+              north_row >= 0 && north_row < _taskAccumulator.CellsHeight)
+          {
+            pixels[index++] = DoGetDisplayColour().ToArgb();
+          }
+          else
+          {
+            pixels[index++] = 0; // Is 0 valid here?
+          }
+        }
+      }
+
+      MapView.DrawFromPixelArray(MapView.BitmapCanvas.Width, MapView.BitmapCanvas.Height, pixels);
+
+    /*  
       DoIterate(_taskAccumulator.ValueStoreCellSizeX, _taskAccumulator.ValueStoreCellSizeY,
         _taskAccumulator.OriginX, _taskAccumulator.OriginY,
         _taskAccumulator.WorldX, _taskAccumulator.WorldY,
         insetSize, insetSize,
         ValueStore.GetLength(0) - insetSize - 1, ValueStore.GetLength(1) - insetSize - 1);
+      */
 
       return true;
     }
