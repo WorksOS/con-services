@@ -270,7 +270,7 @@ namespace VSS.TRex.Rendering.Executors
       {
         using (var mapView = new MapSurface { SquareAspect = false })
         {
-          mapView.SetRotation(-TileRotation + Math.PI / 2);
+          mapView.SetRotation(TileRotation);
 
           RepresentationalDisplay.MapView = mapView;
 
@@ -398,7 +398,8 @@ namespace VSS.TRex.Rendering.Executors
       var dx = NEECoords[2].X - NEECoords[0].X;
       var dy = NEECoords[2].Y - NEECoords[0].Y;
 
-      TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
+      // This deliberately reverses the noral order of the dx and dy arguments to get an angle in survey sense
+      TileRotation = Math.Atan2(dx, dy);
 
       RotatedTileBoundingExtents.SetInverted();
       NEECoords.ForEach(xyz => RotatedTileBoundingExtents.Include(xyz.X, xyz.Y));

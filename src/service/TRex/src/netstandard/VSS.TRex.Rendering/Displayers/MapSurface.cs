@@ -27,23 +27,11 @@ namespace VSS.TRex.Rendering.Displayers
         public int XAxesDirection = 1;
         public int YAxesDirection = 1;
 
-        //    FRePaintCount : LongWord; // Count of number of RePaints for this map
-
-        //    FDisplayer : TMapDisplayBase;
-
         private int XAxisAdjust;
         private int YAxisAdjust;
 
-        //    RePaintEntityCount : Integer;
-        //    EntityDisplayCount : Integer;
-
-        // int LastPtX = 0; // Updated by move_to, line_to, move_by etc 
-        // int LastPtY = 0;
-        // double WLastPtX; // World coordinate versions of lastptx/y 
-        // double WLastPtY;
-
         private bool Rotating;
-        private double Rotation;
+        private double Rotation; // = 0.0
 
         private double CosOfRotation = 1.0;
         private double SinOfRotation; //= 0.0;
@@ -51,25 +39,11 @@ namespace VSS.TRex.Rendering.Displayers
         public double XPixelSize = Consts.NullDouble;
         public double YPixelSize = Consts.NullDouble;
 
-        //    FOnScaleChanged : TOnScaleChangedEvent;
-
-        //    FInBulkUpdate : Boolean;
-        //    FSavedInBulkUpdate : Boolean;
-        //    FInForegroundUpdate : Boolean;
-
-        //    FLastUpdateTime : TDateTime;
-
         // PenMode : TPenMode;
-
-        //    FTextRotation : Word; { Angle in tenths of degrees }
-
-        //    FPrintScaleFactor : Float;
 
         //        int DotSymbolSize = 0; // Number of pixels square a 'dot' should be.
         //        int HalfDotSymbolSize1 = 0;
         //        int HalfDotSymbolSize2 = 0;
-
-        //    FForceRepaint : Boolean;
 
         // If HoldOriginOnResize true, then the origin coordinate will remain at the
         // bottom lefthand corner of the view when the view is resize. If false,
@@ -78,9 +52,6 @@ namespace VSS.TRex.Rendering.Displayers
         public bool HoldOriginOnResize = false;
 
         private int MinPenWidth = 1;
-
-        //    FPrintingDisplay        :Boolean;
-        //    FPrintTextReportSection :Boolean;
 
         private Color DrawCanvasPenColor = Color.Black; // Cached pen color for the DrawCanvas
         private IPen DrawCanvasPen;
@@ -94,20 +65,10 @@ namespace VSS.TRex.Rendering.Displayers
 
         //FTriangleDrawingData : Array[1..3] of TPoint;
 
-        //    fControlDisplayedDetecter: TControlDisplayedDetecter;
-
-        //    procedure OnObservedControlDisplayedChanged(Sender: TObject);
-
-        //procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
-
         protected double DQMScaleX = Consts.NullDouble; // Scale used in world to screen transform 
         protected double DQMScaleY = Consts.NullDouble; // Scale used in world to screen transform 
         protected int XOffset;
         protected int YOffset;
-
-        //    FZoomList : Contnrs.TObjectList;
-
-        //    procedure SetParent(AParent: TWinControl); override;
 
         private bool Clip_edge(ref double out_a, ref double out_b, //Point on edge of window.
                                double bdy_a,      // Boundary value.         
@@ -213,26 +174,26 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void Rotate_point(double fromX, double fromY, out double toX, out double toY)
         {
-            toX = centerX - (fromX - centerX) * CosOfRotation + (fromY - centerY) * SinOfRotation;
-            toY = centerY - (fromY - centerY) * CosOfRotation - (fromX - centerX) * SinOfRotation;
+            toX = centerX - (fromX - centerX) * SinOfRotation + (fromY - centerY) * CosOfRotation;
+            toY = centerY - (fromY - centerY) * SinOfRotation - (fromX - centerX) * CosOfRotation;
         }
 
         public void Un_rotate_point(double fromX, double fromY, out double toX, out double toY)
-        {
-            toX = centerX + (fromX - centerX) * CosOfRotation - (fromY - centerY) * SinOfRotation;
-            toY = centerY + (fromY - centerY) * CosOfRotation + (fromX - centerX) * SinOfRotation;
+        {    
+            toX = centerX + (fromX - centerX) * SinOfRotation - (fromY - centerY) * CosOfRotation;
+            toY = centerY + (fromY - centerY) * SinOfRotation + (fromX - centerX) * CosOfRotation;
         }
 
         public void Rotate_point_about(double fromX, double fromY, out double toX, out double toY, double CX, double CY)
         {
-            toX = CX + (fromX - CX) * CosOfRotation - (fromY - CY) * SinOfRotation;
-            toY = CY + (fromY - CY) * CosOfRotation + (fromX - CX) * SinOfRotation;
+            toX = CX + (fromX - CX) * SinOfRotation - (fromY - CY) * CosOfRotation;
+            toY = CY + (fromY - CY) * SinOfRotation + (fromX - CX) * CosOfRotation;
         }
 
         public void Un_rotate_point_about(double fromX, double fromY, out double toX, out double toY, double CX, double CY)
         {
-            toX = CX - (fromX - CX) * CosOfRotation + (fromY - CY) * SinOfRotation;
-            toY = CY - (fromY - CY) * CosOfRotation - (fromX - CX) * SinOfRotation;
+            toX = CX - (fromX - CX) * SinOfRotation + (fromY - CY) * CosOfRotation;
+            toY = CY - (fromY - CY) * SinOfRotation - (fromX - CX) * CosOfRotation;
         }
 
         public void Rotate_point_no_origin(double fromX, double fromY, out double toX, out double toY)
@@ -240,8 +201,8 @@ namespace VSS.TRex.Rendering.Displayers
             double mid_E = WidthX / 2;
             double mid_N = WidthY / 2;
 
-            toX = mid_E + (fromX - mid_E) * CosOfRotation - (fromY - mid_N) * SinOfRotation;
-            toY = mid_N + (fromY - mid_N) * CosOfRotation + (fromX - mid_E) * SinOfRotation;
+            toX = mid_E + (fromX - mid_E) * SinOfRotation - (fromY - mid_N) * CosOfRotation;
+            toY = mid_N + (fromY - mid_N) * SinOfRotation + (fromX - mid_E) * CosOfRotation;
         }
 
         //    procedure rotate_rectangle(const x1, y1, x2, y2 : FLOAT;
@@ -270,9 +231,6 @@ namespace VSS.TRex.Rendering.Displayers
         //    procedure Paint {(Sender : TObject)}; override;// Not override on purpose
 
         //  public
-        //DisplaySurface : TPaintBox;
-        //DrawCanvas : TCanvas; { The canvas being displayed on, screen or printer }
-
         public IBitmap BitmapCanvas;
         public IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
         public IGraphics DrawCanvas;
@@ -312,33 +270,17 @@ namespace VSS.TRex.Rendering.Displayers
             DrawCanvas.DrawRectangle(DrawCanvasPen, new Rectangle(x1, x2, x2 - x1, y2 - y1));
         }
 
-        //procedure Repaint; override;
-
-        //    property PrintScaleFactor: Float read FPrintScaleFactor;
-
         public double CenterX => centerX;
         public double CenterY => centerY;
-
-        //    Property RePaintCount : LongWord read FRePaintCount;
-        //    Property Displayer : TMapDisplayBase read FDisplayer write FDisplayer;
 
         double PixelSize => XPixelSize;
         //    property XPixelSize : FLOAT read FXPixelSize;
         //    property YPixelSize : FLOAT read FYPixelSize;
 
-        //    property OnScaleChanged : TOnScaleChangedEvent read FOnScaleChanged write FOnScaleChanged;
-
         public int PenWidth { get { return GetPenWidth(); } set { SetPenWidth(value); } }
         //    property PenMode : TPenMode read FPenMode;
 
-        //    property InBulkUpdate : Boolean read FInBulkUpdate;
-        //    property InForeGroundUpdate : Boolean read FInForeGroundUpdate;
-
         //    property Color : TColor read GetColor write SetColor;
-
-        //    property PrintingDisplay        :Boolean read FPrintingDisplay;
-        //    property PrintTextReportSection :Boolean read FPrintTextReportSection write FPrintTextReportSection;
-
         public MapSurface()
         {
             ClipWidth = 100;
@@ -356,7 +298,6 @@ namespace VSS.TRex.Rendering.Displayers
             XPixelSize = WidthX / (ClipWidth + 1);
             YPixelSize = WidthY / (ClipHeight + 1);
 
-            // FTextRotation:= 0;
             // FPenMode:= pmCopy;
 
             ScaleBarRHSIndent = 0;
@@ -395,29 +336,10 @@ namespace VSS.TRex.Rendering.Displayers
           }
         }
 
-        //        procedure DisplaySurfacePaint(Sender : TObject);
-
-        //Procedure ForcePaint;
-
-        //procedure BeginBulkUpdate;
-        //procedure EndBulkUpdate(display_in_progress : boolean);
-
-        //procedure BeginForegroundUpdate;
-        //procedure EndForegroundUpdate;
-
-        //Procedure ShiftDrawing(const x, y : Integer);
         public void Clear()
         {
             DrawCanvas.Clear(DrawCanvasPenColor);
         }
-
-        //procedure Move(const NewLeft, NewTop : Integer);
-        //procedure ChangeSize(const NewWidth, NewHeight : Integer);
-
-        //Procedure RecordZoom;
-        //Procedure PerformMooz;
-        //Procedure ClearZoomlist;
-        //Function ViewIsZoomed : Boolean;
 
         void SetScale(double scale)
         {
@@ -439,12 +361,16 @@ namespace VSS.TRex.Rendering.Displayers
         double GetScale() => WidthX;
 
         /// <summary>
-        /// Sets the rotation of the map view with the rotation specified in radians
+        /// Sets the rotation of the map view with the rotation specified in radians. The rotation sense
+        /// is a survey rotation in that 0 is north and it increases clockwise. This is transformed
+        /// internally into a mathematical sense rotation where 0 is east and increases counter clockwise.
+        /// Note: The action of the rotation is a turned angle, not an orientation, so the magnitude and direction
+        /// is all that is needed, so the given survey rotation is simply inverted.
         /// </summary>
         /// <param name="rotation"></param>
         public void SetRotation(double rotation)
         {
-            Rotation = rotation;
+            Rotation = /*(Math.PI / 2)*/ -rotation;
 
             SinOfRotation = Math.Sin(Rotation);
             CosOfRotation = Math.Cos(Rotation);
@@ -667,11 +593,6 @@ double BorderSize)
         public void SetBrushColor(Color BrushColor) => DrawCanvasBrush.Color = BrushColor;
         //procedure SetBrushStyle(const BrushStyle : TBrushStyle);
         //procedure SetFontColor(FontColor : TColor);
-
-        //procedure move_to(x, y : FLOAT);
-        //procedure move_by(x, y : FLOAT);
-        //procedure line_to(x, y : FLOAT);
-        //procedure draw_by(x, y : FLOAT);
 
         //Function clip_line_to_view(VAR from_x, from_y, to_x, to_y : FLOAT) : boolean;
         //    function Clip_Line(var from_X, From_Y, To_X, To_Y : FLOAT ) : boolean;
@@ -1067,7 +988,6 @@ double BorderSize)
         //    Function GetPenDrawStyle : TPenStyle;
         //    Procedure ResetPenDrawStyle;
 
-        //Function GetGreekSize : FLOAT;
         //    Function BitMapXCharSize : FLOAT; { Size in world units of standard 8bit text }
         //    Function BitMapYCharSize : FLOAT; { Size in world units of standard 8bit text }
 
@@ -1079,12 +999,6 @@ double BorderSize)
         // Function will normalise the given rectangle.
         //    Function RectangleInView(const x1, y1, x2, y2 : FLOAT;
         //Normalised : Boolean = True) : Boolean;
-
-        //    Procedure SetEntityRePaintCount(NewCount : Integer);
-
-        //Procedure BeginPrinting;
-        //Procedure AbortPrinting;
-        //Procedure EndPrinting;
 
         public void SetBounds(int AWidth, int AHeight)
         {
@@ -1135,34 +1049,11 @@ double BorderSize)
                         SetWorldBounds(OriginX, OriginY,
                                        OriginX + WidthX,
                                        OriginY + WidthY, 0);
-                    }                    
+                    }                  
                 }
             }
             CalculateXYOffsets();
-        } 
-
-//    Function GreekingNecessary : Boolean;
-
-//    PROCEDURE draw_mouse_tool_box(x0, y0, x1, y1 : float);
-
-// Procedure DoDrawScale;
-// Procedure DoDrawWaterMark(const WaterMark :String);
-//    Procedure DoDrawTotalArea(const TotalArea :Double);
-
-// Procedure PointToPixel(x, y : float; var PixelX, PixelY : Float );
-
-//    Procedure DoPaint;
-
-//function MillimetersToPixels(MM: Double): Double;
-
-    // SaveToThumbNail saves the bitmap representing the view to the given
-    // FileName. The widest dimension of the thumnail bitmap controlled by
-    // WidestDimension (the bitmap is scaled to this size).
-
-//    Procedure SaveToThumbNail(FileName : TFileName;
-//WidestDimension : Integer);
-
-//    Procedure RecordRepaint;
+        }
 
     public double Scale { get => GetScale(); set => SetScale(value); }
 
@@ -1215,20 +1106,9 @@ double BorderSize)
       }
     }
 
-    // Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~MapSurface()
-    // {
-    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-    //   Dispose(false);
-    // }
-
-    // This code added to correctly implement the disposable pattern.
     public void Dispose()
     {
-      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
       Dispose(true);
-      // Uncomment the following line if the finalizer is overridden above.
-      // GC.SuppressFinalize(this);
     }
     #endregion
   }

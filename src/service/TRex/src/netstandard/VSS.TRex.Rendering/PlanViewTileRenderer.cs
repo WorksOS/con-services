@@ -214,7 +214,7 @@ namespace VSS.TRex.Rendering
       ((IProductionPVMConsistentDisplayer) Displayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode);
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
-      view.SetRotation(-TileRotation + (Math.PI / 2));
+      view.SetRotation(TileRotation);
 
       ConstructPVMTaskAccumulator(processor);
 
