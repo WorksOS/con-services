@@ -88,14 +88,6 @@ namespace VSS.TRex.Rendering.Displayers
 
       ValueStore = (DataSmoother as IArrayDataSmoother<TC>)?.Smooth(ValueStore) ?? ValueStore;
 
-      // Draw the cells in the grid in stripes, starting from the southern most
-      // row in the grid and progressing from the western end to the eastern end
-      // (ie: bottom to top, left to right)
-      // If data smoothing has occured, inset the range of values to be drawn by the additional border size 
-      // requirement of the supplied data smoother
-
-      var insetSize = DataSmoother?.AdditionalBorderSize ?? 0;
-
       // Directly construct the required pixel array by iterating across the pixels in the target
       // image and mapping them to the locations in the accumulator array
 
@@ -125,7 +117,15 @@ namespace VSS.TRex.Rendering.Displayers
 
       MapView.DrawFromPixelArray(MapView.BitmapCanvas.Width, MapView.BitmapCanvas.Height, pixels);
 
-    /*  
+      // Draw the cells in the grid in stripes, starting from the southern most
+      // row in the grid and progressing from the western end to the eastern end
+      // (ie: bottom to top, left to right)
+      // If data smoothing has occured, inset the range of values to be drawn by the additional border size 
+      // requirement of the supplied data smoother
+
+      /*
+      var insetSize = DataSmoother?.AdditionalBorderSize ?? 0;
+
       DoIterate(_taskAccumulator.ValueStoreCellSizeX, _taskAccumulator.ValueStoreCellSizeY,
         _taskAccumulator.OriginX, _taskAccumulator.OriginY,
         _taskAccumulator.WorldX, _taskAccumulator.WorldY,
