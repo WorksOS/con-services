@@ -306,7 +306,7 @@ namespace VSS.TRex.Geometry
     public bool Intersects(double AMinX, double AMinY, double AMaxX, double AMaxY)
     {
       var minX = (AMinX > MinX) ? AMinX : MinX;
-      var minY = (AMinY > MinX) ? AMinX : MinX;
+      var minY = (AMinY > MinY) ? AMinY : MinY;
       var maxX = (AMaxX < MaxX) ? AMaxX : MaxX;
       var maxY = (AMaxY < MaxY) ? AMaxY : MaxY;
 

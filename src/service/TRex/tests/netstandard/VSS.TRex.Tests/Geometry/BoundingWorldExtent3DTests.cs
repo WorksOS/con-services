@@ -196,30 +196,15 @@ namespace VSS.TRex.Tests.Geometry
     {
       BoundingWorldExtent3D bound = new BoundingWorldExtent3D(0, 0, 100, 100);
 
-      void Check()
-      {
-        if (valid)
-        {
-          bound.MinX.Should().Be(r_minX);
-          bound.MinY.Should().Be(r_minY);
-          bound.MaxX.Should().Be(r_maxX);
-          bound.MaxY.Should().Be(r_maxY);
-        }
-      }
-
       // Check variant #1
       var bound2 = new BoundingWorldExtent3D(minX, minY, maxX, maxY);
 
       bound.Intersects(bound2).Should().Be(valid);
 
-      Check();
-
       // Check variant #2
       bound = new BoundingWorldExtent3D(0, 0, 100, 100);
 
       bound.Intersects(minX, minY, maxX, maxY).Should().Be(valid);
-
-      Check();
     }
 
     [Fact]
