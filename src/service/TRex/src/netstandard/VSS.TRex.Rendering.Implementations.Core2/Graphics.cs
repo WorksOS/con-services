@@ -70,10 +70,7 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
       fixed (byte* p = buffer)
       {
-        var scan0 = (IntPtr)p;
-        return new Bitmap(width, height, 4 * width, PixelFormat.Format32bppArgb, scan0);
-
-        // (bmp.UnderlyingBitmap as System.Drawing.Bitmap).Save(@"c:\temp\TheBitmap.bmp");
+        return new Bitmap(width, height, 4 * width, PixelFormat.Format32bppArgb, (IntPtr)p);
       }
     }
   }

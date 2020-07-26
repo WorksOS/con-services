@@ -123,7 +123,7 @@ namespace VSS.TRex.Rendering.Displayers
       // If data smoothing has occured, inset the range of values to be drawn by the additional border size 
       // requirement of the supplied data smoother
 
-      /*
+      /* The following comment out code is the previous implementation for reference. It may go away soon...
       var insetSize = DataSmoother?.AdditionalBorderSize ?? 0;
 
       DoIterate(_taskAccumulator.ValueStoreCellSizeX, _taskAccumulator.ValueStoreCellSizeY,
