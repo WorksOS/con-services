@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +40,39 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("serialNumber", serialNumber)};
       var expectedUrl = $"{baseUrl}{route}?serialNumber={serialNumber}";
+      mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
+        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, queryParameters)).Returns(Task.FromResult(expectedUrl));
+
+      MockUtilities.TestRequestSendsCorrectJson("Get device by serial number", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceResponseModel, async () =>
+      {
+        var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
+        var result = await client.GetDeviceBySerialNumber(serialNumber);
+
+        Assert.NotNull(result);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Id);
+        Assert.Equal(expectedDeviceType, result.DeviceType);
+        Assert.Equal(expectedDeviceName, result.DeviceName);
+        Assert.Equal(expectedSerialNumber, result.SerialNumber);
+        return true;
+      });
+    }
+
+    [Fact]
+    public void GetDeviceBySerialNumberTest_UpperLower()
+    {
+      var serialNumber = (Guid.NewGuid().ToString()).ToLower();
+      const string expectedDeviceId = "trn::profilex:us-west-2:device:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
+      const string expectedDeviceType = "CB460";
+      const string expectedDeviceName = "The device Name";
+      var expectedSerialNumber = serialNumber.ToUpper();
+
+      var deviceResponseModel = new DeviceResponseModel()
+        { TRN = expectedDeviceId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, SerialNumber = expectedSerialNumber };
+
+      var route = $"/devices/getDeviceWithSerialNumber";
+      var queryParameters = new List<KeyValuePair<string, string>>{
+        new KeyValuePair<string, string>("serialNumber", serialNumber.ToUpper())};
+      var expectedUrl = $"{baseUrl}{route}?serialNumber={serialNumber.ToUpper()}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, queryParameters)).Returns(Task.FromResult(expectedUrl));
 
