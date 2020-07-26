@@ -153,8 +153,8 @@ namespace VSS.TRex.Tests.Rendering
       return siteModel;
     }
 
-    [Theory]
-    [InlineData(360, 360, 5, 0, 0, 50)]
+    [Trait("Development unit tests", "Tiling")]
+    [Theory(Skip = "Development unit tests")]
     [InlineData(0, 360, 5, 0, 0, 256)]
     [InlineData(0, 360, 5, 50.0, 50.0, 256)]
     [InlineData(0, 360, 5, 0, 0, 50)]
@@ -179,15 +179,15 @@ namespace VSS.TRex.Tests.Rendering
       var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
 
       DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSurveyedSurfaceEncompassingExtent(ref siteModel,
-        new BoundingWorldExtent3D(0, 0, 100, 100), DateTime.UtcNow, new double[] { 100, 101, 102, 103 });
+        new BoundingWorldExtent3D(0, 0, 100, 100), DateTime.UtcNow, new double[] { 100, 100, 105, 105 });
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
 
       var rotationDegrees = initialRotation;
 
       while (rotationDegrees <= maxRotation)
       {
-        // Rotate the 'top right'/rotatedPoint by x degress
-        var rot = MathUtilities.DegreesToRadians(rotationDegrees);
+        // Rotate the 'top right'/rotatedPoint by x degrees/ Negate the rotation so the RotatePointAbout method match survey angle convention
+        var rot = MathUtilities.DegreesToRadians(-rotationDegrees);
         GeometryHelper.RotatePointAbout(rot, 0, 0, out var rotatedBottomLeftPointX, out var rotatedBottomLeftPointY, rotateAboutX, rotateAboutY);
         GeometryHelper.RotatePointAbout(rot, 100, 100, out var rotatedTopRightPointX, out var rotatedTopRightPointY, rotateAboutX, rotateAboutY);
         GeometryHelper.RotatePointAbout(rot, 0, 100, out var rotatedTopLeftPointX, out var rotatedTopLeftPointY, rotateAboutX, rotateAboutY);
