@@ -32,7 +32,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(GetDeviceBySerialNumber)}: serialNumber {serialNumber}");
 
-      // todo Upper-casing serial number is a temporary kludge until the Jira US () is resolved
+      // todo Upper-casing serial number is a temporary kludge until the Jira US (CCSSSCON-1055) is resolved
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("serialNumber", serialNumber.ToUpper())};
       var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/getDeviceWithSerialNumber", null, null, queryParameters, customHeaders);
