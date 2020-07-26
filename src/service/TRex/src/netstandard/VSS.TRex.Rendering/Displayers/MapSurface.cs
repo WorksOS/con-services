@@ -36,6 +36,9 @@ namespace VSS.TRex.Rendering.Displayers
         private double CosOfRotation = 1.0;
         private double SinOfRotation; //= 0.0;
 
+        private double CosOfUnRotation = 1.0;
+        private double SinOfUnRotation; //= 0.0;
+
         public double XPixelSize = Consts.NullDouble;
         public double YPixelSize = Consts.NullDouble;
 
@@ -174,35 +177,29 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void Rotate_point(double fromX, double fromY, out double toX, out double toY)
         {
-            toX = centerX - (fromX - centerX) * SinOfRotation + (fromY - centerY) * CosOfRotation;
-            toY = centerY - (fromY - centerY) * SinOfRotation - (fromX - centerX) * CosOfRotation;
+            toX = centerX + (fromX - centerX) * CosOfRotation - (fromY - centerY) * SinOfRotation;
+            toY = centerY + (fromX - centerX) * SinOfRotation + (fromY - centerY) * CosOfRotation;
         }
 
         public void Un_rotate_point(double fromX, double fromY, out double toX, out double toY)
-        {    
-            toX = centerX + (fromX - centerX) * SinOfRotation - (fromY - centerY) * CosOfRotation;
-            toY = centerY + (fromY - centerY) * SinOfRotation + (fromX - centerX) * CosOfRotation;
+        {
+            toX = centerX + (fromX - centerX) * CosOfUnRotation - (fromY - centerY) * SinOfUnRotation;
+            toY = centerY + (fromX - centerX) * SinOfUnRotation + (fromY - centerY) * CosOfUnRotation;
         }
 
         public void Rotate_point_about(double fromX, double fromY, out double toX, out double toY, double CX, double CY)
         {
-            toX = CX + (fromX - CX) * SinOfRotation - (fromY - CY) * CosOfRotation;
-            toY = CY + (fromY - CY) * SinOfRotation + (fromX - CX) * CosOfRotation;
-        }
-
-        public void Un_rotate_point_about(double fromX, double fromY, out double toX, out double toY, double CX, double CY)
-        {
-            toX = CX - (fromX - CX) * SinOfRotation + (fromY - CY) * CosOfRotation;
-            toY = CY - (fromY - CY) * SinOfRotation - (fromX - CX) * CosOfRotation;
+            toX = CX + (fromX - CX) * CosOfRotation - (fromY - CY) * SinOfRotation;
+            toY = CY + (fromX - CX) * SinOfRotation + (fromY - CY) * CosOfRotation;
         }
 
         public void Rotate_point_no_origin(double fromX, double fromY, out double toX, out double toY)
         {
-            double mid_E = WidthX / 2;
-            double mid_N = WidthY / 2;
+            var mid_E = WidthX / 2;
+            var mid_N = WidthY / 2;
 
-            toX = mid_E + (fromX - mid_E) * SinOfRotation - (fromY - mid_N) * CosOfRotation;
-            toY = mid_N + (fromY - mid_N) * SinOfRotation + (fromX - mid_E) * CosOfRotation;
+            toX = mid_E + (fromX - mid_E) * CosOfRotation - (fromY - mid_N) * SinOfRotation;
+            toY = mid_N + (fromX - mid_E) * SinOfRotation + (fromY - mid_N) * CosOfRotation;
         }
 
         //    procedure rotate_rectangle(const x1, y1, x2, y2 : FLOAT;
@@ -370,10 +367,13 @@ namespace VSS.TRex.Rendering.Displayers
         /// <param name="rotation"></param>
         public void SetRotation(double rotation)
         {
-            Rotation = /*(Math.PI / 2)*/ -rotation;
+            Rotation = -rotation;
 
             SinOfRotation = Math.Sin(Rotation);
             CosOfRotation = Math.Cos(Rotation);
+
+            SinOfUnRotation = Math.Sin(-Rotation);
+            CosOfUnRotation = Math.Cos(-Rotation);
 
             Rotating = Rotation != 0.0;
         }

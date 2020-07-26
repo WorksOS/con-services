@@ -93,12 +93,12 @@ namespace VSS.TRex.Rendering.Displayers
 
       var pixels = new int[MapView.BitmapCanvas.Width * MapView.BitmapCanvas.Height];
       var index = 0;
-
+      var blankColor = Color.Empty.ToArgb();
       for (int i = 0, limit_i = MapView.BitmapCanvas.Height; i < limit_i; i++)
       {
         for (int j = 0, limit_j = MapView.BitmapCanvas.Width; j < limit_j; j++)
         {
-          MapView.Un_rotate_point(MapView.OriginX + j * MapView.XPixelSize, MapView.OriginY + i * MapView.YPixelSize, out var ptx, out var pty);
+          MapView.Rotate_point(MapView.OriginX + j * MapView.XPixelSize, MapView.OriginY + (MapView.BitmapCanvas.Height - i - 1) * MapView.YPixelSize, out var ptx, out var pty);
 
           east_col = (int)Math.Truncate((ptx - _taskAccumulator.OriginX) / _taskAccumulator.ValueStoreCellSizeX);
           north_row = (int)Math.Truncate((pty - _taskAccumulator.OriginY) / _taskAccumulator.ValueStoreCellSizeY);
@@ -110,7 +110,7 @@ namespace VSS.TRex.Rendering.Displayers
           }
           else
           {
-            pixels[index++] = 0; // Is 0 valid here?
+            pixels[index++] = blankColor;
           }
         }
       }

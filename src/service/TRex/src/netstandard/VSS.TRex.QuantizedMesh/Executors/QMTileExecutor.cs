@@ -347,8 +347,12 @@ namespace VSS.TRex.QuantizedMesh.Executors
       double dy = NEECoords[2].Y - NEECoords[0].Y;
       CenterY = NEECoords[0].Y + dy / 2;
 
-      // This deliberately reverses the noral order of the dx and dy arguments to get an angle in survey sense
-      TileRotation = Math.Atan2(dx, dy);
+      // Calculate the tile rotation as the mathematical angle turned from 0 (due east) to the vector defined by dy/dx
+      TileRotation = Math.Atan2(dy, dx);
+
+      // Convert TileRotation to represent the angular deviation rather than a bearing
+      TileRotation = (Math.PI / 2) - TileRotation;
+
       SetRotation(TileRotation);
 
       _log.LogDebug($"QMTile render executing across tile: [Rotation:{ MathUtilities.RadiansToDegrees(TileRotation)}] " +

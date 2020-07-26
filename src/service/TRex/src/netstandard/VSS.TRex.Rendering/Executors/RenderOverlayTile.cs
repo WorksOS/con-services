@@ -398,8 +398,11 @@ namespace VSS.TRex.Rendering.Executors
       var dx = NEECoords[2].X - NEECoords[0].X;
       var dy = NEECoords[2].Y - NEECoords[0].Y;
 
-      // This deliberately reverses the noral order of the dx and dy arguments to get an angle in survey sense
-      TileRotation = Math.Atan2(dx, dy);
+      // Calculate the tile rotation as the mathematical angle turned from 0 (due east) to the vector defined by dy/dx
+      TileRotation = Math.Atan2(dy, dx);
+
+      // Convert TileRotation to represent the angular deviation rather than a bearing
+      TileRotation = (Math.PI / 2) - TileRotation;
 
       RotatedTileBoundingExtents.SetInverted();
       NEECoords.ForEach(xyz => RotatedTileBoundingExtents.Include(xyz.X, xyz.Y));

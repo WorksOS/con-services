@@ -403,13 +403,13 @@ namespace VSS.TRex.Tests.TestFixtures
 
       tin.Triangles.AddTriangle(
         tin.Vertices.AddPoint(extent.MinX, extent.MinY, vertexElevations[0]),
-        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, vertexElevations[1]),
-        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, vertexElevations[2]));
+        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, vertexElevations[2]),
+        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, vertexElevations[1]));
 
       tin.Triangles.AddTriangle(
-        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, vertexElevations[1]),
+        tin.Vertices.AddPoint(extent.MinX, extent.MaxY, vertexElevations[2]),
         tin.Vertices.AddPoint(extent.MaxX, extent.MaxY, vertexElevations[3]),
-        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, vertexElevations[2]));
+        tin.Vertices.AddPoint(extent.MaxX, extent.MinY, vertexElevations[1]));
 
       return tin;
     }
