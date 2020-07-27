@@ -69,10 +69,10 @@ namespace TAGFiles.Tests
         }
 
         [Fact]
-        public void Test_TAGProcessor_ProcessEpochContext_WithoutValidPosition()
+        public void Test_TAGProcessor_ProcessEpochContext_WithoutValidTimestamp()
         {
             var SiteModel = new SiteModel(StorageMutability.Immutable);
-            SiteModel.IgnoreInvalidPositions = true;
+            SiteModel.IgnoreInvalidPositions = false;
         
             var Machine = new Machine();
             var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
@@ -85,13 +85,10 @@ namespace TAGFiles.Tests
         
             Fence interpolationFence = new Fence();
             interpolationFence.SetRectangleFence(0, 0, 1, 1);
-        
-            DateTime StartTime = DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Utc);
             processor.DataLeft = new XYZ(0, 0, 5);
             processor.DataRight = new XYZ(1, 0, 5);
-            processor.DataTime = StartTime;
         
-            Assert.False(processor.ProcessEpochContext(), "ProcessEpochContext returned true in default TAGProcessor state (1)");
+            Assert.False(processor.ProcessEpochContext(), "ProcessEpochContext returned true without a valid epoch timestamp");
         }
 
         [Fact]
