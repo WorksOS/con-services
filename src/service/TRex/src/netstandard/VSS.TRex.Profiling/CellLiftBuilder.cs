@@ -657,7 +657,7 @@ namespace VSS.TRex.Profiling
       int currentPassIdx = 0;
       bool prevHalfPass = false;
 
-      for (int passIndex = passStartIdx; passIndex < endPassIdx; passIndex++)
+      for (int passIndex = passStartIdx; passIndex <= endPassIdx; passIndex++)
       {
 
         if (Cell.FilteredPassFlags[passIndex]) // if marked as non filtered pass (good pass)
