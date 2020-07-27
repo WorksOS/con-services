@@ -43,7 +43,7 @@ namespace VSS.TRex.Types
         case DisplayMode.CMVChange: return GridDataType.CCVPercentChangeIgnoredTopNullValue;
         case DisplayMode.CCA: return GridDataType.CCA;
         case DisplayMode.CCASummary: return GridDataType.CCA;
-        case DisplayMode.TemperatureDetail: return GridDataType.TemperatureDetail;
+        case DisplayMode.TemperatureDetail: return GridDataType.Temperature;
         case DisplayMode.Terrain3D: return GridDataType.Height;
         case DisplayMode.Design3D: return GridDataType.DesignHeight;
 
