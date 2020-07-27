@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -29,9 +30,20 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
       if (payload.IsNotification)
       {
         // Got a tag file
-        var tagFile = JsonConvert.DeserializeObject<SnsTagFile>(payload.Message);
+        SnsTagFile tagFile;
+        try
+        {
+          tagFile = JsonConvert.DeserializeObject<SnsTagFile>(payload.Message);
+        }
+        catch (Exception e)
+        {
+          Logger.LogError(e, $"{nameof(TagFileSnsProcessExecutor)} Failed to deserialize SnsTagFile {payload.MessageId}");
+          tagFile = null;
+        }
+
         if (tagFile == null)
         {
+          // this will cause payload to be deleted from the SQS que
           Logger.LogWarning($"{nameof(TagFileSnsProcessExecutor)} Could not convert to Tag File Model. JSON: {payload.Message}");
           return new ContractExecutionResult(1, "Failed to parse tag file model");
         }

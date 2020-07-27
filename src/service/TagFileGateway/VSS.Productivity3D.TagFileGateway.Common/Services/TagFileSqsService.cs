@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         }
         catch (Exception e)
         {
-          Logger.LogError(e, $"{nameof(ProcessSingleMessage)} Failed to deserialize message with ID {m.MessageId}");
+          Logger.LogError(e, $"{nameof(ProcessSingleMessage)} Failed to deserialize snsPayload with ID {m.MessageId}");
           snsPayload = null;
         }
 
