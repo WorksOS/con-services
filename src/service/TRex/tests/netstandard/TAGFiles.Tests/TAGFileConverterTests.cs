@@ -87,27 +87,15 @@ namespace TAGFiles.Tests
     }
 
     /// <summary>
-    /// This test ensures a TAG file that produces a 'Sink Finishing Failure', is correctly processed in terms of the cell and cell
-    /// passes in the TAG file.
+    /// This test ensures a TAG file that contains epochs with Valid_Positions set to No, does not produce a 'Sink Finishing Failure'
     /// </summary>
     [Fact()]
-    public void Test_TAGFileConverter_Execute_SinkError()
+    public void Test_TAGFileConverter_Execute_NotSinkError()
     {
-      var converter = DITagFileFixture.ReadTAGFile("DimensionsSinkError.tag", Guid.NewGuid(), false);
-
-      converter.ReadResult.Should().Be(TAGReadResult.SinkFinishingFailure);
+      var converter = DITagFileFixture.ReadTAGFile("DimensionsNotSinkError.tag", Guid.NewGuid(), false);
+      converter.ReadResult.Should().Be(TAGReadResult.NoError);
       converter.ProcessedCellPassCount.Should().Be(52);
       converter.ProcessedEpochCount.Should().Be(65);
-
-      //Assert.True(converter.Machine != null, "converter.Machine == null");
-      //Assert.True(converter.MachineTargetValueChangesAggregator != null,
-      //  "converter.MachineTargetValueChangesAggregator");
-      //Assert.True(converter.ReadResult == TAGReadResult.NoError,
-      //  $"converter.ReadResult == TAGReadResult.NoError [= {converter.ReadResult}");
-      //Assert.True(converter.ProcessedCellPassCount == 16525,
-      //  $"converter.ProcessedCellPassCount != 16525 [={converter.ProcessedCellPassCount}]");
-      //Assert.True(converter.ProcessedEpochCount == 1478, $"converter.ProcessedEpochCount != 1478, [= {converter.ProcessedEpochCount}]");
-      //Assert.True(converter.SiteModelGridAggregator != null, "converter.SiteModelGridAggregator == null");
     }
   }
 }

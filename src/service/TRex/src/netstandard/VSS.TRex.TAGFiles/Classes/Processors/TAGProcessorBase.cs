@@ -402,13 +402,16 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     // then we continue and process the epoch as if the position information
                     // within it is 'valid'.
 
-                  if (IgnoreInvalidPositions()) return false; // // Don't process this interval...
+                  if (IgnoreInvalidPositions()) return true; // Don't process this interval...Returns True to avoid been seen as a stink read error
                 }
 
                 if (!_HaveFirstEpoch)
                 {
-                    // We do not have a viable processing context yet. Set up the first
-                    // epoch and leave...
+                    if (_DataTime == DateTime.MinValue) // Timestamp is compulsory 
+                      return false;
+
+                    // We do not have a viable processing context yet. Set up the first epoch and leave...
+
                     _HaveFirstEpoch = true;
                     PrevEpochTime = _DataTime;
 
