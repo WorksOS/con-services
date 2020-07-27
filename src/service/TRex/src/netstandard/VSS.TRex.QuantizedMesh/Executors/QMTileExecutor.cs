@@ -346,7 +346,13 @@ namespace VSS.TRex.QuantizedMesh.Executors
       CenterX = NEECoords[2].X + dx / 2;
       double dy = NEECoords[2].Y - NEECoords[0].Y;
       CenterY = NEECoords[0].Y + dy / 2;
-      TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
+
+      // Calculate the tile rotation as the mathematical angle turned from 0 (due east) to the vector defined by dy/dx
+      TileRotation = Math.Atan2(dy, dx);
+
+      // Convert TileRotation to represent the angular deviation rather than a bearing
+      TileRotation = (Math.PI / 2) - TileRotation;
+
       SetRotation(TileRotation);
 
       _log.LogDebug($"QMTile render executing across tile: [Rotation:{ MathUtilities.RadiansToDegrees(TileRotation)}] " +
@@ -405,7 +411,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
       // a final restriction of the spatial extent used to govern data requests
-      processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
+      processor.OverrideSpatialExtents.Assign(RotatedTileBoundingExtents);
 
       // Setup new grid array for results 
       GriddedElevDataArray = new GriddedElevDataRow[TileGridSize, TileGridSize];

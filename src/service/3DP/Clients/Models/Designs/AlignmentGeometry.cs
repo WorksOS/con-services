@@ -51,8 +51,8 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
       DesignUid = designUid;
       FileName = fileName;
       Vertices = vertices;
-      Arcs = arcs;
-      Labels = labels;
+      Arcs = arcs != null ? arcs : new AlignmentGeometryResultArc[0];
+      Labels = labels != null ? labels : new AlignmentGeometryResultLabel[0];
     }
   }
 }

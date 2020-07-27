@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGridTrees;
@@ -18,10 +17,10 @@ namespace VSS.TRex.Pipelines
   /// </summary>
   public class RequestAnalyser : IRequestAnalyser
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<RequestAnalyser>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<RequestAnalyser>();
 
     private IExistenceMaps existenceMaps;
-    private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
+    private IExistenceMaps GetExistenceMaps() => existenceMaps ??= DIContext.Obtain<IExistenceMaps>();
 
     /// <summary>
     /// The pipeline that has initiated this request analysis
@@ -89,10 +88,7 @@ namespace VSS.TRex.Pipelines
     /// Constructor accepting the pipeline (analyzer client) and the bounding world coordinate extents within which sub grids
     /// are being requested
     /// </summary>
-    /// <param name="pipeline"></param>
-    /// <param name="worldExtents"></param>
-    public RequestAnalyser(ISubGridPipelineBase pipeline,
-      BoundingWorldExtent3D worldExtents) : this()
+    public RequestAnalyser(ISubGridPipelineBase pipeline, BoundingWorldExtent3D worldExtents) : this()
     {
       Pipeline = pipeline;
       WorldExtents = worldExtents;
@@ -121,17 +117,17 @@ namespace VSS.TRex.Pipelines
       // the filter set supplied with the request.
       foreach (var filter in Pipeline.FilterSet.Filters)
       {
-          if (filter != null && filter.SpatialFilter.IsDesignMask)
-          {
-            Log.LogDebug($"Has Design {filter.SpatialFilter.SurfaceDesignMaskDesignUid}, ANDing with OverallExistMap");
+        if (filter != null && filter.SpatialFilter.IsDesignMask)
+        {
+          _log.LogDebug($"Has Design {filter.SpatialFilter.SurfaceDesignMaskDesignUid}, ANDing with OverallExistMap");
 
-            var mask = GetExistenceMaps().GetSingleExistenceMap(Pipeline.DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.SpatialFilter.SurfaceDesignMaskDesignUid);
+          var mask = GetExistenceMaps().GetSingleExistenceMap(Pipeline.DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
-            if (mask != null)
-              Pipeline.OverallExistenceMap.SetOp_AND(mask);
-            else
-              throw new Exception($"{nameof(RequestAnalyser)}: Failed to get existence map for surface design ID:{filter.SpatialFilter.SurfaceDesignMaskDesignUid}");
-          }
+          if (mask != null)
+            Pipeline.OverallExistenceMap.SetOp_AND(mask);
+          else
+            throw new Exception($"{nameof(RequestAnalyser)}: Failed to get existence map for surface design ID:{filter.SpatialFilter.SurfaceDesignMaskDesignUid}");
+        }
       }
 
       ScanningFullWorldExtent = !WorldExtents.IsValidPlanExtent || WorldExtents.IsMaximalPlanConverage;
@@ -145,7 +141,6 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// The executor method for the analyzer
     /// </summary>
-    /// <returns></returns>
     public bool Execute()
     {
       if (Pipeline == null)
@@ -165,8 +160,6 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Performs scanning operations across sub grids, determining if they should be included in the request
     /// </summary>
-    /// <param name="SubGrid"></param>
-    /// <returns></returns>
     protected bool SubGridEvent(ISubGrid SubGrid)
     {
       // The given sub grid is a leaf sub grid containing a bit mask recording sub grid inclusion in the overall sub grid map 
@@ -180,7 +173,7 @@ namespace VSS.TRex.Pipelines
       var ProdDataSubGrid = Pipeline.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as SubGridTreeLeafBitmapSubGrid;
 
       byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
-      double OTGCellSize = SubGrid.Owner.CellSize / SubGridTreeConsts.SubGridTreeDimension;
+      var OTGCellSize = SubGrid.Owner.CellSize / SubGridTreeConsts.SubGridTreeDimension;
       var CastSubGrid = (SubGridTreeLeafBitmapSubGrid) SubGrid;
 
       if (ScanningFullWorldExtent)
@@ -204,10 +197,10 @@ namespace VSS.TRex.Pipelines
 
         SubGrid.Owner.CalculateIndexOfCellContainingPosition(WorldExtents.MinX - OTGCellSize,
           WorldExtents.MinY - OTGCellSize,
-          out int ScanMinX, out int ScanMinY);
+          out var ScanMinX, out var ScanMinY);
         SubGrid.Owner.CalculateIndexOfCellContainingPosition(WorldExtents.MaxX + OTGCellSize,
           WorldExtents.MaxY + OTGCellSize,
-          out int ScanMaxX, out int ScanMaxY);
+          out var ScanMaxX, out var ScanMaxY);
 
         ScanMinX = Math.Max(CastSubGrid.OriginX, ScanMinX);
         ScanMinY = Math.Max(CastSubGrid.OriginY, ScanMinY);
@@ -243,7 +236,7 @@ namespace VSS.TRex.Pipelines
 
             // If there is a spatial filter in play then determine if the sub grid about to be requested intersects the spatial filter extent
 
-            bool SubGridSatisfiesFilter = true;
+            var SubGridSatisfiesFilter = true;
             foreach (var filter in Pipeline.FilterSet.Filters)
             {
               if (filter != null)
@@ -261,7 +254,7 @@ namespace VSS.TRex.Pipelines
                   if (spatialFilter.IsPositional)
                   {
                     CastSubGrid.Owner.GetCellCenterPosition(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J,
-                      out double centerX, out double centerY);
+                      out var centerX, out var centerY);
 
                     SubGridSatisfiesFilter = MathUtilities.Hypot(spatialFilter.PositionX - centerX, spatialFilter.PositionY - centerY) <
                                              spatialFilter.PositionRadius + (Math.Sqrt(2) * CastSubGrid.Owner.CellSize) / 2;
@@ -297,7 +290,7 @@ namespace VSS.TRex.Pipelines
                 continue;
 
               // Set the ProdDataMask for the production data
-              if (ProdDataSubGrid != null && ProdDataSubGrid.Bits.BitSet(I, J))
+              if (ProdDataSubGrid?.Bits.BitSet(I, J) == true)
               {
                 ProdDataMask.SetCell(CastSubGrid.OriginX + I, CastSubGrid.OriginY + J, true);
               }
@@ -319,7 +312,6 @@ namespace VSS.TRex.Pipelines
     /// Counts the number of sub grids that will be submitted to the processing engine given the request parameters
     /// supplied to the request analyzer.
     /// </summary>
-    /// <returns></returns>
     public long CountOfSubGridsThatWillBeSubmitted()
     {
       try

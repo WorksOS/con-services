@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// The start X.
     /// </value>
     [JsonProperty(Required = Required.Default)]
-    public double? StartX { get; private set; }
+    public double StartX { get; private set; }
 
     /// <summary>
     /// Sets the StartY location of the profile line in meters
@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// The StartY.
     /// </value>
     [JsonProperty(Required = Required.Default)]
-    public double? StartY { get; private set; }
+    public double StartY { get; private set; }
 
     /// <summary>
     /// Sets the EndX location of the profile line in meters
@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// The end X.
     /// </value>
     [JsonProperty(Required = Required.Default)]
-    public double? EndX { get; private set; }
+    public double EndX { get; private set; }
 
     /// <summary>
     /// Sets the StartY location of the profile line in meters
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.Models.Models.Profiling
     /// The EndY.
     /// </value>
     [JsonProperty(Required = Required.Default)]
-    public double? EndY { get; private set; }
+    public double EndY { get; private set; }
 
     /// <summary>
     /// Prevents a default instance of the <see cref="DesignProfileRequest"/> class from being created.
