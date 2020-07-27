@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
     <ProjectReference Include="..\..\..\VSS.Productivity3D.TagFileGateway.Common\VSS.Productivity3D.TagFileGateway.Common.csproj" />
   </ItemGroup>
 

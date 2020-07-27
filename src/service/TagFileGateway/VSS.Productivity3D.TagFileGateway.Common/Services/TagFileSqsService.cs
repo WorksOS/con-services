@@ -14,9 +14,9 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Executors;
 using VSS.Productivity3D.TagFileGateway.Common.Models.Sns;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileGateway.Common.Services
@@ -37,23 +37,23 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
       if(string.IsNullOrEmpty(_url))
         throw new ArgumentException($"No URL Provided for SQS. Configuration Key: {CONFIG_KEY}");
       else
-        Logger.LogInformation($"Tag File SQS URL: {_url}");
+        Logger.LogInformation($"{nameof(TagFileSqsService)} Tag File SQS URL: {_url}");
 
 
       var awsProfile = configurationStore.GetValueString("AWS_PROFILE", null);
       if (string.IsNullOrEmpty(awsProfile))
       {
-        Logger.LogInformation("AWS Using Assumed Roles for SQS");
+        Logger.LogInformation($"{nameof(TagFileSqsService)} AWS Using Assumed Roles for SQS");
         _awSqsClient = new AmazonSQSClient(RegionEndpoint.USWest2);
       }
       else
       {
-        Logger.LogInformation($"Using AWS Profile: {awsProfile}");
+        Logger.LogInformation($"{nameof(TagFileSqsService)} Using AWS Profile: {awsProfile}");
         _awSqsClient = new AmazonSQSClient(new StoredProfileAWSCredentials(awsProfile), RegionEndpoint.USWest2);
       }
 
       _concurrentCount = configurationStore.GetValueInt(CONCURRENT_KEY, 10);
-      Logger.LogInformation($"Processing {_concurrentCount} Concurrent SQS Tag File Entries");
+      Logger.LogInformation($"{nameof(TagFileSqsService)} Processing {_concurrentCount} Concurrent SQS Tag File Entries");
     }
 
     
@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
     {
       if (string.IsNullOrEmpty(_url))
       {
-        Logger.LogError("No SQS Url Provided - exiting");
+        Logger.LogError($"{nameof(ExecuteAsync)} No SQS Url Provided - exiting");
         return;
       }
 
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         catch (Exception e)
         {
           // Could be AWS outage, or our service outage
-          Logger.LogError(e, "Failed to process messages");
+          Logger.LogError(e, $"{nameof(ExecuteAsync)} Failed to process messages");
           await Task.Delay(60 * 1000, cancellationToken);
         }
       }
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
         }
         catch (Exception e)
         {
-          Logger.LogError(e, $"Failed to deserialize message with ID {m.MessageId}");
+          Logger.LogError(e, $"{nameof(ProcessSingleMessage)} Failed to deserialize message with ID {m.MessageId}");
           snsPayload = null;
         }
 
@@ -124,12 +124,11 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
           // Delete, so they don't just fill up the que
           var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);
           var deleteResponse = await _awSqsClient.DeleteMessageAsync(deleteMessage);
-          Logger.LogWarning($"Failed to parse SQS Message. MessageID: {m.MessageId}, Body: {m.Body} Delete SQS Message Response Code: {deleteResponse.HttpStatusCode}");
+          Logger.LogWarning($"{nameof(ProcessSingleMessage)} Failed to parse SQS Message. MessageID: {m.MessageId}, Body: {m.Body} Delete SQS Message Response Code: {deleteResponse.HttpStatusCode}");
           return;
         }
 
-
-        Logger.LogInformation($"Processing SQS Message ID: {m.MessageId}.");
+        Logger.LogInformation($"{nameof(ProcessSingleMessage)} Processing SQS Message ID: {m.MessageId}.");
         // We need to create a scope, as a hosted service is a singleton, but some of the services are transient, we can't inject them.
         // Instead we create a scope for 'our' work
         using var serviceScope = ScopeFactory.CreateScope();
@@ -137,7 +136,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
           serviceScope.ServiceProvider.GetService<ILoggerFactory>(),
           serviceScope.ServiceProvider.GetService<IConfigurationStore>(),
           serviceScope.ServiceProvider.GetService<IDataCache>(),
-          serviceScope.ServiceProvider.GetService<ITagFileForwarder>(),
+          serviceScope.ServiceProvider.GetService<ITRexTagFileProxy>(),
           serviceScope.ServiceProvider.GetService<ITransferProxyFactory>(),
           serviceScope.ServiceProvider.GetService<IWebRequest>());
 
@@ -149,16 +148,16 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Services
           // Mark as processed
           var deleteMessage = new DeleteMessageRequest(_url, m.ReceiptHandle);
           var deleteResponse = await _awSqsClient.DeleteMessageAsync(deleteMessage);
-          Logger.LogInformation($"Delete SQS Message Response Code: {deleteResponse.HttpStatusCode}");
+          Logger.LogInformation($"{nameof(ProcessSingleMessage)} Delete SQS Message Response Code: {deleteResponse.HttpStatusCode}");
         }
         else
         {
-          Logger.LogWarning($"Tag file failed to process due to internal error, leave it on que to be re-processed: {m.MessageId}.");
+          Logger.LogWarning($"{nameof(ProcessSingleMessage)} Tag file failed to process due to internal error, leave it on que to be re-processed: {m.MessageId}.");
         }
       }
       catch (Exception e)
       {
-        Logger.LogError(e, $"Failed to process message with ID {m.MessageId} - not deleted from the queue");
+        Logger.LogError(e, $"{nameof(ProcessSingleMessage)} Failed to process message with ID {m.MessageId} - not deleted from the queue");
       }
     }
   }

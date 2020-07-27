@@ -48,7 +48,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       log.LogDebug($"{nameof(SendTagFileDirect)}: Filename: {compactionTagFileRequest.FileName}");
       Gateway = GatewayType.Mutable;
-      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, "/tagfiles/direct");
+      return await SendTagFileRequest(compactionTagFileRequest, customHeaders,"/tagfiles/direct");
     }
 
     public async Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest,
@@ -56,15 +56,15 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       log.LogDebug($"{nameof(SendTagFileNonDirect)}: Filename: {compactionTagFileRequest.FileName}");
       Gateway = GatewayType.Mutable;
-      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, "/tagfiles");
+      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, "/tagfiles");
     }
 
-    private async Task<ContractExecutionResult> SendTagFileRequest(CompactionTagFileRequest compactionTagFileRequest,
-      IHeaderDictionary customHeaders, HttpMethod method, string route)
+    public virtual async Task<ContractExecutionResult> SendTagFileRequest(CompactionTagFileRequest compactionTagFileRequest,
+      IHeaderDictionary customHeaders,string route)
     {
       var jsonData = JsonConvert.SerializeObject(compactionTagFileRequest);
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return await MasterDataItemServiceDiscoveryNoCache<ContractExecutionResult>(route, customHeaders, method, payload: payload);
+        return await MasterDataItemServiceDiscoveryNoCache<ContractExecutionResult>(route, customHeaders, HttpMethod.Post, payload: payload);
     }
   }
 }
