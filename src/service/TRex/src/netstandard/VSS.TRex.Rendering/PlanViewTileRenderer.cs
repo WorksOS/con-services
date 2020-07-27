@@ -135,12 +135,16 @@ namespace VSS.TRex.Rendering
       var valueStoreCellSizeY = view.YPixelSize > processor.SiteModel.CellSize ? view.YPixelSize : processor.SiteModel.CellSize;
 
       // Compute the origin of the cell in the value store that encloses the origin of the map view.
-      var valueStoreOriginX = Math.Truncate(view.OriginX / valueStoreCellSizeX) * valueStoreCellSizeX;
-      var valueStoreOriginY = Math.Truncate(view.OriginY / valueStoreCellSizeY) * valueStoreCellSizeY;
+      // In the case of tile rendering, OverrideSpatialExtents represents the enclosing rotated bounding box for the tile and 
+      // is the bounding extent of the data should be requested
+      var valueStoreOriginX = Math.Truncate(processor.OverrideSpatialExtents.MinX / valueStoreCellSizeX) * valueStoreCellSizeX;
+      var valueStoreOriginY = Math.Truncate(processor.OverrideSpatialExtents.MinY / valueStoreCellSizeY) * valueStoreCellSizeY;
 
       // Compute the limit of the cell in the value store that encloses the limit of the map view.
-      var valueStoreLimitX = Math.Truncate((view.LimitX + valueStoreCellSizeX) / valueStoreCellSizeX) * valueStoreCellSizeX;
-      var valueStoreLimitY = Math.Truncate((view.LimitY + valueStoreCellSizeY) / valueStoreCellSizeY) * valueStoreCellSizeY;
+      // In the case of tile rendering, OverrideSpatialExtents represents the enclosing rotated bounding box for the tile and 
+      // is the bounding extent of the data should be requested
+      var valueStoreLimitX = Math.Truncate((processor.OverrideSpatialExtents.MaxX + valueStoreCellSizeX) / valueStoreCellSizeX) * valueStoreCellSizeX;
+      var valueStoreLimitY = Math.Truncate((processor.OverrideSpatialExtents.MaxY + valueStoreCellSizeY) / valueStoreCellSizeY) * valueStoreCellSizeY;
 
       var valueStoreCellsX = (int)Math.Round((valueStoreLimitX - valueStoreOriginX) / valueStoreCellSizeX);
       var valueStoreCellsY = (int)Math.Round((valueStoreLimitY - valueStoreOriginY) / valueStoreCellSizeY);

@@ -367,8 +367,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // Intersect the site model extents with the extents requested by the caller
       _log.LogDebug($"Tile.({TileX},{TileY}) Calculating intersection of bounding box and site model {DataModelUid}:{siteModelExtent}");
-      RotatedTileBoundingExtents.Intersect(siteModelExtent);
-      if (!RotatedTileBoundingExtents.IsValidPlanExtent)
+      var dataSelectionExtent = new BoundingWorldExtent3D(RotatedTileBoundingExtents);
+      dataSelectionExtent.Intersect(siteModelExtent);
+      if (!dataSelectionExtent.IsValidPlanExtent)
       {
         ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
         _log.LogInformation($"Tile.({TileX},{TileY}) Site model extents {siteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
@@ -378,11 +379,11 @@ namespace VSS.TRex.QuantizedMesh.Executors
       // Compute the override cell boundary to be used when processing cells in the sub grids
       // selected as a part of this pipeline
       // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
-      SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-        RotatedTileBoundingExtents.MinY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+      SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MinX,
+        dataSelectionExtent.MinY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
         out var CellExtents_MinX, out var CellExtents_MinY);
-      SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-        RotatedTileBoundingExtents.MaxY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+      SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MaxX,
+        dataSelectionExtent.MaxY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
         out var CellExtents_MaxX, out var CellExtents_MaxY);
       var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
       CellExtents.Expand(1);

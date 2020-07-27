@@ -179,7 +179,8 @@ namespace VSS.TRex.Tests.Rendering
       var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
 
       DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSurveyedSurfaceEncompassingExtent(ref siteModel,
-        new BoundingWorldExtent3D(0, 0, 100, 100), DateTime.UtcNow, new double[] { 100, 100, 105, 105 });
+        new BoundingWorldExtent3D(-100, -100, 200, 200), DateTime.UtcNow, new double[] { 100, 100, 105, 105 });
+
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
 
       var rotationDegrees = initialRotation;
