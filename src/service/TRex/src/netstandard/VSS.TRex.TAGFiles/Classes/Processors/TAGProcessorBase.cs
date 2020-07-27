@@ -410,8 +410,6 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     if (_DataTime == DateTime.MinValue) // Timestamp is compulsory 
                       return false;
 
-                    // We do not have a viable processing context yet. Set up the first epoch and leave...
-
                     _HaveFirstEpoch = true;
                     PrevEpochTime = _DataTime;
 
