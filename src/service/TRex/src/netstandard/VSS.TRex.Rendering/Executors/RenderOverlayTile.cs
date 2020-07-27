@@ -507,7 +507,11 @@ namespace VSS.TRex.Rendering.Executors
           // Renderer.WorkingPalette = WorkingColorPalette;
 
           Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
-          Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);
+
+          Renderer.SetBounds(RotatedTileBoundingExtents.CenterX - WorldTileWidth / 2,
+                             RotatedTileBoundingExtents.CenterY - WorldTileHeight / 2,
+                             WorldTileWidth, WorldTileHeight,
+                             NPixelsX, NPixelsY);
           Renderer.TileRotation = TileRotation;
 
           ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
