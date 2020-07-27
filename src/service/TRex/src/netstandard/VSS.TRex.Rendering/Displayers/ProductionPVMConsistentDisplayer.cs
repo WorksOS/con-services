@@ -94,11 +94,26 @@ namespace VSS.TRex.Rendering.Displayers
       var pixels = new int[MapView.BitmapCanvas.Width * MapView.BitmapCanvas.Height];
       var index = 0;
       var blankColor = Color.Empty.ToArgb();
-      for (int i = 0, limit_i = MapView.BitmapCanvas.Height; i < limit_i; i++)
+
+      var mapViewOriginX = MapView.OriginX;
+      var mapViewOriginY = MapView.OriginY;
+      var mapViewXPixelSize = MapView.XPixelSize;
+      var mapViewYPixelSize = MapView.YPixelSize;
+      var xPixelSizeOver2 = MapView.XPixelSize / 2;
+      var yPixelSizeOver2 = MapView.YPixelSize / 2;
+      var mapViewOriginXPlusPixelSizeOverTwo = mapViewOriginX + xPixelSizeOver2;
+      var mapViewOriginYPlusPixelSizeOverTwo = mapViewOriginY + yPixelSizeOver2;
+
+      var canvasWidth = MapView.BitmapCanvas.Width;
+      var canvasHeight = MapView.BitmapCanvas.Height;
+
+      for (int i = 0; i < canvasHeight; i++)
       {
-        for (int j = 0, limit_j = MapView.BitmapCanvas.Width; j < limit_j; j++)
+        for (int j = 0; j < canvasWidth; j++)
         {
-          MapView.Rotate_point(MapView.OriginX + j * MapView.XPixelSize, MapView.OriginY + (MapView.BitmapCanvas.Height - i - 1) * MapView.YPixelSize, out var ptx, out var pty);
+          MapView.Un_rotate_point(mapViewOriginXPlusPixelSizeOverTwo + j * mapViewXPixelSize,
+                               mapViewOriginYPlusPixelSizeOverTwo + (canvasHeight - i - 1) * mapViewYPixelSize,
+                               out var ptx, out var pty);
 
           east_col = (int)Math.Truncate((ptx - _taskAccumulator.OriginX) / _taskAccumulator.ValueStoreCellSizeX);
           north_row = (int)Math.Truncate((pty - _taskAccumulator.OriginY) / _taskAccumulator.ValueStoreCellSizeY);
