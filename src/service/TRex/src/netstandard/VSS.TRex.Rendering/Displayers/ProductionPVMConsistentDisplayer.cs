@@ -111,7 +111,7 @@ namespace VSS.TRex.Rendering.Displayers
       {
         for (int j = 0; j < canvasWidth; j++)
         {
-          MapView.Un_rotate_point(mapViewOriginXPlusPixelSizeOverTwo + j * mapViewXPixelSize,
+          MapView.Rotate_point(mapViewOriginXPlusPixelSizeOverTwo + j * mapViewXPixelSize,
                                mapViewOriginYPlusPixelSizeOverTwo + (canvasHeight - i - 1) * mapViewYPixelSize,
                                out var ptx, out var pty);
 
