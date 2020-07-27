@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </returns>
     [Route("internal/v4/project/getUidsEarthWorks")]
     [HttpPost]
-    public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndDeviceUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
+    public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndDeviceUidsEarthWorks([FromBody]GetProjectAndAssetUidsBaseRequest request)
     {
       Logger.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();

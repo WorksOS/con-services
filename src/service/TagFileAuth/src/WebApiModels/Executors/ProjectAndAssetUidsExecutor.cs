@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       // Radio serial -> Asset/Project override
-      if (CustomRadioSerialMapper.LocateAsset(request.RadioSerial, request.DeviceType, out var id))
+      if (CustomRadioSerialMapper.LocateAsset(request.ObsoleteRadioSerial, request.ObsoleteDeviceType, out var id))
       {
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: LocateAsset id {JsonConvert.SerializeObject(id)}");
         return GetProjectAndAssetUidsResult.FormatResult(id.ProjectUid.ToString(), id.AssetUid.ToString());
@@ -56,11 +56,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //   This comes into play when a user chooses a MachineName in a filter.
       // For manual, if we don't know the device, that's ok it will be stored within TRex as a JohnDoe.
       DeviceData device = null;
-      if (!string.IsNullOrEmpty(request.RadioSerial))
+      if (!string.IsNullOrEmpty(request.ObsoleteRadioSerial))
       {
-        device = await dataRepository.GetDevice(request.RadioSerial);
+        device = await dataRepository.GetDevice(request.ObsoleteRadioSerial);
         var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.ObsoleteRadioSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
       if ((device == null || device.Code != 0 || device.DeviceUID == null) && !string.IsNullOrEmpty(request.Ec520Serial))

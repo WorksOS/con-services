@@ -18,7 +18,7 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       var projectAndAssetUidsEarthWorksRequest =
-        new GetProjectAndAssetUidsEarthWorksRequest (ec520Serial, radioSerial, latitude, longitude, timeOfPosition);
+        new GetProjectAndAssetUidsBaseRequest (ec520Serial, radioSerial, latitude, longitude, timeOfPosition);
 
       var ex = Assert.ThrowsException<ServiceException>(() => projectAndAssetUidsEarthWorksRequest.Validate());
 
@@ -34,7 +34,7 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       var projectAndAssetUidsEarthWorksRequest =
-        new GetProjectAndAssetUidsEarthWorksRequest(ec520Serial, radioSerial, latitude, longitude, timeOfPosition);
+        new GetProjectAndAssetUidsBaseRequest(ec520Serial, radioSerial, latitude, longitude, timeOfPosition);
       projectAndAssetUidsEarthWorksRequest.Validate();
     }
   }

@@ -26,7 +26,7 @@ namespace WebApiTests.Executors
     private DateTime _timeOfLocation;
     private string _deviceCustomerUid;
 
-    private GetProjectAndAssetUidsEarthWorksRequest _projectAndAssetUidsEarthWorksRequest;
+    private GetProjectAndAssetUidsBaseRequest _projectAndAssetUidsEarthWorksRequest;
     private string radioSerial = "radSer45";
     private string ec520Serial = "ecSer";
     private DeviceData deviceData;
@@ -40,7 +40,7 @@ namespace WebApiTests.Executors
       _deviceUid = Guid.NewGuid().ToString();
       _timeOfLocation = DateTime.UtcNow;
       _deviceCustomerUid = Guid.NewGuid().ToString();
-      _projectAndAssetUidsEarthWorksRequest = new GetProjectAndAssetUidsEarthWorksRequest(string.Empty, radioSerial, 15, 180, _timeOfLocation);
+      _projectAndAssetUidsEarthWorksRequest = new GetProjectAndAssetUidsBaseRequest(string.Empty, radioSerial, 15, 180, _timeOfLocation);
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
       deviceData = new DeviceData { CustomerUID = _deviceCustomerUid, DeviceUID = _deviceUid };
     }
@@ -51,7 +51,7 @@ namespace WebApiTests.Executors
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         authorization.Object, projectProxy.Object, deviceProxy.Object, tRexCompactionDataProxy.Object, requestCustomHeaders);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsEarthWorksRequest)null));
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsBaseRequest)null));
 
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual(-3, ex.GetResult.Code);
@@ -77,7 +77,7 @@ namespace WebApiTests.Executors
     public async Task ProjectUidExecutor_NoCBorEC520DeviceFound()
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsEarthWorksRequest.RadioSerial = radioSerial;
+      _projectAndAssetUidsEarthWorksRequest.ObsoleteRadioSerial = radioSerial;
       _projectAndAssetUidsEarthWorksRequest.Validate();
 
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync((DeviceData)null);
