@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     }
 
     [TestMethod]
-    public async Task NonDirectTagFileSubmitter_TRex_Successful()
+    public async Task TagFileSubmitter_TRex_Successful()
     {
       var projectUid = Guid.NewGuid();
       var resolvedLegacyProjectId = 544;
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
-        .Build<TagFileNonDirectSubmissionExecutor>(_logger,
+        .Build<TagFileSubmissionExecutor>(_logger,
           mockConfigStore.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
       var result = await submitter.ProcessAsync(request);
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     }
 
     [TestMethod]
-    public async Task NonDirectTagFileSubmitter_TRex_UnSuccessful()
+    public async Task TagFileSubmitter_TRex_UnSuccessful()
     {
       var projectUid = Guid.NewGuid();
       var resolvedLegacyProjectId = 544;
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         .ReturnsAsync(trexGatewayResult);
 
       var submitter = RequestExecutorContainerFactory
-        .Build<TagFileNonDirectSubmissionExecutor>(_logger,
+        .Build<TagFileSubmissionExecutor>(_logger,
           mockConfigStore.Object, tRexTagFileProxy: mockTRexTagFileProxy.Object, customHeaders: _customHeaders);
 
       var result = await submitter.ProcessAsync(request);

@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 {
   /// <summary>
   /// For handling manual import of Tag files from the UI.
-  ///    Tag files from other sources e.g. GCS900 (TCC) and Direct (earthworks or Marine) go via SQS and the TagFileGateway service
+  ///    Tag files from other sources e.g. GCS900 (TCC) and Direct (earthworks or Marine) go via SQS to the TagFileGateway service
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class TagFileController : Controller
@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var requestExt = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended(request, null);
 
       var responseObj = await RequestExecutorContainerFactory
-        .Build<TagFileNonDirectSubmissionExecutor>(_logger,
+        .Build<TagFileSubmissionExecutor>(_logger,
           _configStore, tRexTagFileProxy: _tRexTagFileProxy, customHeaders: CustomHeaders).ProcessAsync(requestExt);
 
       return responseObj.Code == 0
