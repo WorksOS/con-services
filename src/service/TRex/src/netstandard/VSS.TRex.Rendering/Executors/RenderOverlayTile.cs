@@ -424,8 +424,9 @@ namespace VSS.TRex.Rendering.Executors
 
           _log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{adjustedSiteModelExtents}");
 
-          RotatedTileBoundingExtents.Intersect(adjustedSiteModelExtents);
-          if (!RotatedTileBoundingExtents.IsValidPlanExtent)
+          var dataSelectionExtent = new BoundingWorldExtent3D(RotatedTileBoundingExtents);
+          dataSelectionExtent.Intersect(adjustedSiteModelExtents);
+          if (!dataSelectionExtent.IsValidPlanExtent)
           {
             ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
             _log.LogInformation($"Site model extents {adjustedSiteModelExtents}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
@@ -444,11 +445,11 @@ namespace VSS.TRex.Rendering.Executors
           // selected as a part of this pipeline
           // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
 
-          SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-            RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+          SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MinX,
+            dataSelectionExtent.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
             out var CellExtents_MinX, out var CellExtents_MinY);
-          SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-            RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+          SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MaxX,
+            dataSelectionExtent.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
             out var CellExtents_MaxX, out var CellExtents_MaxY);
 
           var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
