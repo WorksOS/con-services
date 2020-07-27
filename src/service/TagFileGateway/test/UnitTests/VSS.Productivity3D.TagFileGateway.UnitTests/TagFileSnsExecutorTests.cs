@@ -183,7 +183,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     }
 
     [Fact]
-    public void ShouldNotUploadWhenTagFileForwarderReturnsInternalProcessingErrorType()
+    public void ShouldNotUploadWhenTrexProxyReturnsInternalProcessingErrorType()
     {
       var e = CreateExecutor<TagFileSnsProcessExecutor>();
       var theFileName = "test-filename-no-download";
@@ -232,7 +232,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     }
 
     [Fact]
-    public void ShouldUploadWhenTagFileForwarderPasses()
+    public void ShouldUploadWhenTrexProxyPasses()
     {
       var e = CreateExecutor<TagFileSnsProcessExecutor>();
       var theFileName = "test-filename-no-download";
