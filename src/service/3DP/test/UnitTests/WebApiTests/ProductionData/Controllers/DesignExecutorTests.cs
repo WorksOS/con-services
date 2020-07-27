@@ -102,9 +102,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       result.Should().NotBeNull();
       result.DesignBoundaries.Should().NotBeNull();
-      result.DesignBoundaries.Length.Should().Be(1);
+      result.DesignBoundaries.Count.Should().Be(1);
 
-      var geoJSon = result.DesignBoundaries[0].ToObject<GeoJson>();
+      var geoJSon = result.DesignBoundaries[0];
 
       geoJSon.Features.Count.Should().Be(1);
       geoJSon.Features.Count.Should().Be(expectedResult.GeoJSON.Features.Count);
