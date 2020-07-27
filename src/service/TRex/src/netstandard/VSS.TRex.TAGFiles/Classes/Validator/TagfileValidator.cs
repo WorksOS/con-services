@@ -162,10 +162,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     public static async Task<ContractExecutionResult> ValidSubmission(TagFileDetail tagDetail, TAGFilePreScan tagFilePreScan)
     {
 
-      var TMPtfaServiceEnabled = true;
-
       // TAG file contents are OK so proceed
-      if (!TMPtfaServiceEnabled) // allows us to bypass a TFA service
+      if (!tfaServiceEnabled) // allows us to bypass a TFA service
       {
         if (WarnOnTFAServiceDisabled)
           Log.LogWarning("SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
