@@ -26,8 +26,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     public TRexCompactionDataV1Proxy(IWebRequest webRequest, IConfigurationStore configurationStore,
       ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
-    {
-    }
+    { }
 
     public override bool IsInsideAuthBoundary => true;
 
@@ -44,7 +43,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <summary>
     /// Sends a request to get/save data from/to the TRex immutable/mutable database.
     /// </summary>
-    public async Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route,
+    public Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route,
       IHeaderDictionary customHeaders = null, bool mutableGateway = false)
       where TResponse : ContractExecutionResult
     {
@@ -52,8 +51,8 @@ namespace VSS.TRex.Gateway.Common.Proxy
       var jsonData = JsonConvert.SerializeObject(dataRequest);
       log.LogDebug($"{nameof(SendDataPostRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
-      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
+      using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
+      return MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
     }
 
     /// <summary>
@@ -78,7 +77,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <summary>
     /// Sends a request to delete data to the TRex immutable/mutable database.
     /// </summary>
-    public async Task<TResponse> SendDataDeleteRequest<TResponse, TRequest>(TRequest dataRequest, string route,
+    public Task<TResponse> SendDataDeleteRequest<TResponse, TRequest>(TRequest dataRequest, string route,
       IHeaderDictionary customHeaders = null, bool mutableGateway = false)
       where TResponse : ContractExecutionResult
     {
@@ -86,20 +85,21 @@ namespace VSS.TRex.Gateway.Common.Proxy
       var jsonData = JsonConvert.SerializeObject(dataRequest);
       log.LogDebug($"{nameof(SendDataDeleteRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
-      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);
+      using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
+      return MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);
     }
 
     /// <summary>
     /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
-    public async Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
+    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
       IHeaderDictionary customHeaders = null, IList<KeyValuePair<string, string>> queryParameters = null)
       where TResponse : class, IMasterDataModel
     {
       Gateway = GatewayType.Immutable;
       log.LogDebug($"{nameof(SendDataGetRequest)}: Sending the get data request for site model ID: {siteModelId}");
-      return await GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, queryParameters);
+
+      return GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, queryParameters);
     }
   }
 }

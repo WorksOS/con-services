@@ -9,11 +9,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using Serilog;
-#if RAPTOR
-using DesignProfiler.ComputeDesignBoundary.RPC;
-using DesignProfilerDecls;
-using VLPDDecls;
-#endif
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -129,73 +124,5 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         coordinate[1].Should().Be(resultCoordinate[1]);
       }
     }
-
-#if RAPTOR
-    [TestMethod]
-    public void DesignExecutor_Raptor_Success()
-    {
-      var request = new DesignBoundariesRequest(PROJECT_ID, Guid.NewGuid(), TOLERANCE);
-
-      var expectedResultStream = new MemoryStream();
-
-      var writer = new StreamWriter(expectedResultStream);
-      try
-      {
-        writer.Write(joString);
-        writer.Flush();
-        expectedResultStream.Position = 0;
-
-        var expectedResult = TDesignProfilerRequestResult.dppiOK;
-
-        var configStore = new Mock<IConfigurationStore>();
-        configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY")).Returns(false);
-        configStore.Setup(x => x.GetValueString("TCCFILESPACEID")).Returns(Guid.NewGuid().ToString());
-        configStore.Setup(x => x.GetValueString("TCCFILESPACENAME")).Returns("Test-Dev");
-
-        var raptorClient = new Mock<IASNodeClient>();
-        raptorClient
-          .Setup(x => x.GetDesignBoundary(It.IsAny<TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args>(),
-            out expectedResultStream,
-            out expectedResult)
-          ).Returns(true);
-
-        var executor = RequestExecutorContainerFactory
-          .Build<DesignExecutor>(logger, raptorClient.Object, configStore: configStore.Object,
-            fileList: new List<FileData> { new FileData() }, customHeaders: _customHeaders);
-
-        var result = executor.ProcessAsync(request).Result as DesignResult;
-
-        result.Should().NotBeNull();
-        result.DesignBoundaries.Should().NotBeNull();
-        result.DesignBoundaries.Length.Should().Be(1);
-
-        var geoJSon = result.DesignBoundaries[0].ToObject<GeoJson>();
-        var expectedGeoJSon = JsonConvert.DeserializeObject<GeoJson>(joString);
-
-        geoJSon.Features.Count.Should().Be(1);
-        geoJSon.Features.Count.Should().Be(expectedGeoJSon.Features.Count);
-
-        geoJSon.Features[0].Geometry.Coordinates.Count.Should().Be(1);
-        geoJSon.Features[0].Geometry.Coordinates.Count.Should().Be(expectedGeoJSon.Features[0].Geometry.Coordinates.Count);
-
-        geoJSon.Features[0].Geometry.Coordinates[0].Count.Should().Be(NUMBER_OF_COORDINATES);
-        geoJSon.Features[0].Geometry.Coordinates[0].Count.Should().Be(expectedGeoJSon.Features[0].Geometry.Coordinates[0].Count);
-        
-        for (var i = 0; i < geoJSon.Features[0].Geometry.Coordinates[0].Count; i++)
-        {
-          var coordinate = geoJSon.Features[0].Geometry.Coordinates[0][i];
-          var resultCoordinate = expectedGeoJSon.Features[0].Geometry.Coordinates[0][i];
-
-          coordinate[0].Should().Be(resultCoordinate[0]);
-          coordinate[1].Should().Be(resultCoordinate[1]);
-        }
-      }
-      finally
-      {
-        writer.Dispose();
-        expectedResultStream.Dispose();
-      }
-    }
-#endif
   }
 }
