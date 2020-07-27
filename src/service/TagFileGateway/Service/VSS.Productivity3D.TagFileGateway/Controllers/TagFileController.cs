@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
     [Route("api/v2/tagfiles/direct")]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostTagFileNonDirectSubmission([FromBody] CompactionTagFileRequest request,
+    public async Task<ContractExecutionResult> PostTagFile([FromBody] CompactionTagFileRequest request,
       [FromServices] ILoggerFactory loggerFactory,
       [FromServices] IConfigurationStore configStore,
       [FromServices] IDataCache dataCache,
@@ -37,13 +37,13 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       [FromServices] IWebRequest webRequest)
     {
       var isDirect = Request.Path.Value.Contains("/direct");
-      _logger.LogInformation($"{nameof(PostTagFileNonDirectSubmission)} Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
+      _logger.LogInformation($"{nameof(PostTagFile)} Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
       var executor = RequestExecutorContainer
         .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, trexTagFileProxy, transferProxyFactory, webRequest);
       executor.ArchiveOnInternalError = true;
       var result = await executor.ProcessAsync(request);
 
-      _logger.LogInformation($"{nameof(PostTagFileNonDirectSubmission)} Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
+      _logger.LogInformation($"{nameof(PostTagFile)} Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
 
 
       // If we uploaded, return a successful result

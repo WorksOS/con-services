@@ -85,11 +85,6 @@ namespace VSS.TRex.TAGFiles.Executors
           };
 
           // Validate tag file submission
-
-          //var tagFilePreScan = new TAGFilePreScan();
-          //await using (var stream = new MemoryStream(td.tagFileContent))
-          //  tagFilePreScan.Execute(stream);
-
           ContractExecutionResult result;
           result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
           

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,21 +39,10 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     public override string CacheLifeKey => "TREX_TAGFILE_CACHE_LIFE"; // not used
 
-    /// <summary>
-    /// Sends a tag file to TRex for ingest
-    /// </summary>   
-    public async Task<ContractExecutionResult> SendTagFileDirect(CompactionTagFileRequest compactionTagFileRequest,
+    public async Task<ContractExecutionResult> SendTagFile(CompactionTagFileRequest compactionTagFileRequest,
       IHeaderDictionary customHeaders = null)
     {
-      log.LogDebug($"{nameof(SendTagFileDirect)}: Filename: {compactionTagFileRequest.FileName}");
-      Gateway = GatewayType.Mutable;
-      return await SendTagFileRequest(compactionTagFileRequest, customHeaders,"/tagfiles/direct");
-    }
-
-    public async Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest,
-      IHeaderDictionary customHeaders = null)
-    {
-      log.LogDebug($"{nameof(SendTagFileNonDirect)}: Filename: {compactionTagFileRequest.FileName}");
+      log.LogDebug($"{nameof(SendTagFile)}: Filename: {compactionTagFileRequest.FileName}");
       Gateway = GatewayType.Mutable;
       return await SendTagFileRequest(compactionTagFileRequest, customHeaders, "/tagfiles");
     }

@@ -61,18 +61,18 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     public void TestNonDirectSuccess()
     {
       // Setup a single tag file send
-      var forwarder = new Mock<TRexTagFileV2Proxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object) {CallBase = true};
-      forwarder.Setup(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
+      var trexProxy = new Mock<TRexTagFileV2Proxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object) {CallBase = true};
+      trexProxy.Setup(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
           It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders)), "/tagfiles"))
         .Returns(Task.FromResult(new ContractExecutionResult(0)));
 
-      var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
+      var result = trexProxy.Object.SendTagFile(request, _customHeaders).Result;
 
       result.Should().NotBeNull();
       result.Code.Should().Be(0);
 
       // Validate we only tried to send the file once - with the correct values
-      forwarder.Verify(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
+      trexProxy.Verify(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
         It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders)), "/tagfiles"), Times.Once);
     }
 
@@ -81,20 +81,20 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     {
       var callCount = 0;
       // Setup a non zero result for first try, which should be returned
-      var forwarder = new Mock<TRexTagFileV2Proxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object) {CallBase = true};
-      forwarder.Setup(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
+      var trexProxy = new Mock<TRexTagFileV2Proxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object) {CallBase = true};
+      trexProxy.Setup(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
           It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders)), "/tagfiles"))
         .Callback(() => callCount++)
         .Returns(() => { return Task.FromResult(new ContractExecutionResult(1)); });
 
       // Test
-      var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
+      var result = trexProxy.Object.SendTagFile(request, _customHeaders).Result;
 
       // Validate - should be ok
       result.Should().NotBeNull();
       result.Code.Should().Be(1);
 
-      forwarder.Verify(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
+      trexProxy.Verify(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
         It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders)), "/tagfiles"), Times.Exactly(1));
     }
 
@@ -102,15 +102,15 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     public void TestExceptionFailure()
     {
       // Setup a non zero result for first try, then success on second try
-      var forwarder = new Mock<TRexTagFileV2Proxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object) {CallBase = true};
-      forwarder.Setup(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
+      var trexProxy = new Mock<TRexTagFileV2Proxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object) {CallBase = true};
+      trexProxy.Setup(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
           It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders)), "/tagfiles"))
         .Returns(() => { throw new Exception("mock-message"); });
 
       var exception = false;
       try
       {
-        var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
+        var result = trexProxy.Object.SendTagFile(request, _customHeaders).Result;
 
       }
       catch (Exception e)
@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       exception.Should().BeTrue();
 
-      forwarder.Verify(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
+      trexProxy.Verify(m => m.SendTagFileRequest(It.Is<CompactionTagFileRequest>(r => r == request),
         It.Is<IHeaderDictionary>(d => Equals(d, _customHeaders)), "/tagfiles"), Times.Exactly(1));
     }
   }

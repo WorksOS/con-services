@@ -7,7 +7,6 @@ namespace VSS.TRex.Gateway.Common.Abstractions
 {
   public interface ITRexTagFileProxy
   {
-    Task<ContractExecutionResult> SendTagFileDirect(CompactionTagFileRequest compactionTagFileRequest, IHeaderDictionary customHeaders = null);
-    Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest, IHeaderDictionary customHeaders = null);
+    Task<ContractExecutionResult> SendTagFile(CompactionTagFileRequest compactionTagFileRequest, IHeaderDictionary customHeaders = null);
   }
 }

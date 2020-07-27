@@ -40,38 +40,20 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     }
 
     /// <summary>
-    /// For accepting and loading manually or automatically submitted tag files.
+    /// For accepting and loading all tag files
+    ///    manual come via 3dp and auto & direct come via tagFileGateway
     /// </summary>
     // [PostRequestVerifier]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostTagNonDirectFile([FromBody]CompactionTagFileRequest request)
+    public Task<ContractExecutionResult> PostTagFile([FromBody]CompactionTagFileRequest request)
     {
       var serializedRequest = ConvertObjectForLogging.SerializeObjectIgnoringProperties(request, "Data");
       Log.LogInformation("PostTagFile: " + serializedRequest);
-      return await ExecuteRequest(request);
-    }
-
-    /// <summary>
-    /// For the direct submission of tag files from GNSS capable machines.
-    /// </summary>
-   // [PostRequestVerifier]
-    [Route("api/v2/tagfiles/direct")]
-    [HttpPost]
-    public Task<ContractExecutionResult> PostTagFileDirectSubmission([FromBody]CompactionTagFileRequest request)
-    {
-
-      var serializedRequest = ConvertObjectForLogging.SerializeObjectIgnoringProperties(request, "Data");
-      Log.LogInformation("PostTagFile (Direct): " + serializedRequest);
-      return ExecuteRequest(request);
-    }
-
-    private Task<ContractExecutionResult> ExecuteRequest(CompactionTagFileRequest tfRequest)
-    {
 
       return WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainer
-                                                     .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-                                                     .ProcessAsync(tfRequest));
+        .Build<TagFileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+        .ProcessAsync(request));
     }
   }
 }

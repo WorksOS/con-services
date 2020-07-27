@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
       var internalProcessingError = false;
       try
       {
-        result = await TRexTagFileProxy.SendTagFileNonDirect(request);
+        result = await TRexTagFileProxy.SendTagFile(request);
       }
       catch (Exception e)
       {
