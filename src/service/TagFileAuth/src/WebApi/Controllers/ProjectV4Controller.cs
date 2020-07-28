@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   /// <summary>
   /// Project controller.
   /// </summary>
+  [Obsolete("todoJeannie remove")]
   public class ProjectV4Controller : BaseController<ProjectV4Controller>
   {
     /// <summary>

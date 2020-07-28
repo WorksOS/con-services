@@ -7,8 +7,8 @@ namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
 {
   public interface ITagFileAuthProjectV5Proxy
   {
-    Task<GetProjectAndAssetUidsResult> GetProjectUids(GetProjectUidsRequest request, IHeaderDictionary customHeaders = null);
+    Task<GetProjectUidsResult> GetProjectUids(GetProjectUidsRequest request, IHeaderDictionary customHeaders = null);
 
-    Task<GetProjectAndAssetUidsResult> GetProjectUidsEarthWorks(GetProjectUidsBaseRequest request,  IHeaderDictionary customHeaders = null);
+    Task<GetProjectUidsResult> GetProjectUidsEarthWorks(GetProjectUidsBaseRequest request,  IHeaderDictionary customHeaders = null);
   }
 }

@@ -34,9 +34,9 @@ namespace MockProjectWebApi.Controllers
 
       // this SNM940 exists on `VSS-TagFileAuth-Alpha` with a valid 3d sub (it's not on Dev)
       if (request.RadioSerial == "5051593854")
-       return new GetProjectAndAssetUidsResult(ConstantsUtil.DIMENSIONS_PROJECT_UID, "039c1ee8-1f21-e311-9ee2-00505688274d", ConstantsUtil.DIMENSIONS_CUSTOMER_UID);
+       return new GetProjectAndAssetUidsResult(ConstantsUtil.DIMENSIONS_PROJECT_UID, "039c1ee8-1f21-e311-9ee2-00505688274d");
 
-      return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, string.Empty, 41, "Manual Import: no intersecting projects found");
+      return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, 41, "Manual Import: no intersecting projects found");
     }
   }
 }

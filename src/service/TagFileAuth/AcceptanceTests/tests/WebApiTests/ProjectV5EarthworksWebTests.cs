@@ -16,18 +16,18 @@ namespace WebApiTests
 
       var request = new GetProjectUidsBaseRequest(platformSerial, latitude, longitude);
       request.Validate();
-      var expectedResult = new GetProjectAndAssetUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
+      var expectedResult = new GetProjectUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
 
       var result = await tagFileAuthProjectV5Proxy.GetProjectUidsEarthWorks(request);
 
       ValidateResult(result, expectedResult);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedResult)
+    private void ValidateResult(GetProjectUidsResult actualResult, GetProjectUidsResult expectedResult)
     {
       Assert.NotNull(actualResult);
       Assert.Equal(expectedResult.ProjectUid, actualResult.ProjectUid);
-      Assert.Equal(expectedResult.AssetUid, actualResult.AssetUid);
+      Assert.Equal(expectedResult.DeviceUid, actualResult.DeviceUid);
       Assert.Equal(expectedResult.CustomerUid, actualResult.CustomerUid);
       Assert.Equal(expectedResult.Code, actualResult.Code);
       Assert.Equal(expectedResult.Message, actualResult.Message);

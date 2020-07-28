@@ -21,7 +21,7 @@ namespace WebApiTests
 
       var request = new GetProjectUidsRequest(string.Empty, platformSerial, latitude, longitude);
       request.Validate();
-      var expectedResult = new GetProjectAndAssetUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
+      var expectedResult = new GetProjectUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
 
       var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
@@ -37,7 +37,7 @@ namespace WebApiTests
 
       var request = new GetProjectUidsRequest(string.Empty, platformSerial, 0, 0, northing, easting);
       request.Validate();
-      var expectedResult = new GetProjectAndAssetUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
+      var expectedResult = new GetProjectUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
 
       var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
@@ -54,11 +54,11 @@ namespace WebApiTests
 
       var request = new GetProjectUidsRequest(projectUid, platformSerial, latitude, longitude);
       request.Validate();
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, string.Empty, 3038, "Manual Import: Unable to find the Project requested");
+      var expectedResult = new GetProjectUidsResult(string.Empty, string.Empty, string.Empty, 3038, "Manual Import: Unable to find the Project requested");
 
       var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
-      ValidateResult(result, expectedGetProjectAndAssetUidsResult);
+      ValidateResult(result, expectedResult);
     }
 
     [Fact]
@@ -70,21 +70,21 @@ namespace WebApiTests
 
       var request = new GetProjectUidsRequest(string.Empty, platformSerial, latitude, longitude);
       request.Validate();
-      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, string.Empty, uniqueCode: 3100, "Unable to locate device by serialNumber in cws");
+      var expectedResult = new GetProjectUidsResult(string.Empty, string.Empty, string.Empty, uniqueCode: 3100, "Unable to locate device by serialNumber in cws");
 
       var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
       ValidateResult(result, expectedResult);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult)
+    private void ValidateResult(GetProjectUidsResult actualResult, GetProjectUidsResult expectedResult)
     {
       Assert.NotNull(actualResult);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.AssetUid, actualResult.AssetUid);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.CustomerUid, actualResult.CustomerUid);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.Code, actualResult.Code);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.Message, actualResult.Message);
+      Assert.Equal(expectedResult.ProjectUid, actualResult.ProjectUid);
+      Assert.Equal(expectedResult.DeviceUid, actualResult.DeviceUid);
+      Assert.Equal(expectedResult.CustomerUid, actualResult.CustomerUid);
+      Assert.Equal(expectedResult.Code, actualResult.Code);
+      Assert.Equal(expectedResult.Message, actualResult.Message);
     }
   }
 }

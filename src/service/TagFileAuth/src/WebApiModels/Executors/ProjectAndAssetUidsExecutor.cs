@@ -88,21 +88,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug($"{nameof(HandleManualImport)}: Loaded project? {(project == null ? "project not found" : JsonConvert.SerializeObject(project))}");
 
       if (project == null)
-        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, customerUid: customerUid, uniqueCode: 38);
+        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, uniqueCode: 38);
 
       if (!project.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles))
-        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, customerUid: customerUid, uniqueCode: 53);
+        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, uniqueCode: 53);
 
       // New requirement for WorksOS.
       if (project.IsArchived)
-        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, customerUid: customerUid, uniqueCode: 43);
+        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, uniqueCode: 43);
 
       // we need to retain ability to identify specific error codes 38, 43, 41, 53
       if (!request.HasLatLong && request.HasNE && request.Northing != null && request.Easting != null)
       {
         var convertedLL = await dataRepository.ConvertNEtoLL(request.ProjectUid, request.Northing.Value, request.Easting.Value);
         if (convertedLL == null)
-          return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, customerUid: customerUid, uniqueCode: 18);
+          return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, uniqueCode: 18);
         request.Longitude = convertedLL.ConversionCoordinates[0].X;
         request.Latitude = convertedLL.ConversionCoordinates[0].Y;
       }
@@ -111,9 +111,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug($"{nameof(HandleManualImport)}: la/long is with project?: {intersects}");
 
       if (!intersects)
-        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, customerUid: customerUid, uniqueCode: 41);
+        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: deviceUid, uniqueCode: 41);
 
-      return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUID, deviceUid, customerUid);
+      return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUID, deviceUid);
     }
 
     private GetProjectAndAssetUidsResult HandleAutoImport(GetProjectAndAssetUidsRequest request, DeviceData device)
@@ -128,12 +128,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug($"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.ProjectDescriptors.Any())
-        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: errorCode);
+        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: device.DeviceUID, uniqueCode: errorCode);
 
       if (potentialProjects.ProjectDescriptors.Count > 1)
-        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: 49);
+        return GetProjectAndAssetUidsResult.FormatResult(deviceUid: device.DeviceUID, uniqueCode: 49);
 
-      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID, device.CustomerUID);
+      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

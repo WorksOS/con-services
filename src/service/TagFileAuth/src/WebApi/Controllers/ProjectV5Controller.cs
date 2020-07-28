@@ -39,13 +39,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </summary>
     [Route("internal/v5/project/getUidsEarthWorks")]
     [HttpPost]
-    public async Task<GetProjectAndAssetUidsResult> GetProjectUidsEarthWorks([FromBody]GetProjectUidsBaseRequest request)
+    public async Task<GetProjectUidsResult> GetProjectUidsEarthWorks([FromBody]GetProjectUidsBaseRequest request)
     {
       Logger.LogDebug($"{nameof(GetProjectUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
       var executor = RequestExecutorContainer.Build<ProjectUidsExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
-      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(request) as GetProjectUidsResult;
 
       Logger.LogResult(nameof(GetProjectUidsEarthWorks), request, result);
       return result;
@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </returns>
     [Route("internal/v5/project/getUids")]
     [HttpPost]
-    public async Task<GetProjectAndAssetUidsResult> GetProjectUids(
+    public async Task<GetProjectUidsResult> GetProjectUids(
       [FromBody]GetProjectUidsRequest request,
       [FromServices] ICustomRadioSerialProjectMap customRadioSerialProjectMap)
     {
@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 
       var executor = RequestExecutorContainer.Build<ProjectUidsExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
 
-      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(request) as GetProjectUidsResult;
 
       Logger.LogResult(nameof(GetProjectUids), request, result);
       return result;

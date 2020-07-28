@@ -36,25 +36,25 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
 
     public override string CacheLifeKey => "TAGFILEAUTH_CACHE_LIFE"; // not used
 
-    public async Task<GetProjectAndAssetUidsResult> GetProjectUids(GetProjectUidsRequest request,
+    public async Task<GetProjectUidsResult> GetProjectUids(GetProjectUidsRequest request,
       IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       log.LogDebug($"{nameof(GetProjectUids)}  request: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>("project/getUids", customHeaders, HttpMethod.Post, payload: payload);
+        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectUidsResult>("project/getUids", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
 
-    public async Task<GetProjectAndAssetUidsResult> GetProjectUidsEarthWorks(GetProjectUidsBaseRequest request,
+    public async Task<GetProjectUidsResult> GetProjectUidsEarthWorks(GetProjectUidsBaseRequest request,
       IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
       log.LogDebug($"{nameof(GetProjectUidsEarthWorks)}  request: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>("project/getUidsEarthWorks", customHeaders, HttpMethod.Post, payload: payload);
+        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectUidsResult>("project/getUidsEarthWorks", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
   }

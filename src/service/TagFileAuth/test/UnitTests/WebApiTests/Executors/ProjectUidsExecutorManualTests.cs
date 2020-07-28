@@ -53,13 +53,13 @@ namespace WebApiTests.Executors
       var platformSerialDevice = new DeviceData { CustomerUID = platformSerialAccountUid, DeviceUID = platformSerialDeviceUid };
       var projectListForPlatformSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, platformSerialDeviceUid, platformSerialAccountUid);
+      var expectedResult = new GetProjectUidsResult(string.Empty, platformSerialDeviceUid, platformSerialAccountUid);
 
       await ExecuteManual
         (getProjectUidsRequest, projectForProjectUid,
         platformSerialDevice, projectListForPlatformSerial,
           null,
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3038, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(38)
+        expectedResult, expectedCode: 3038, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(38)
         );
     }
 
@@ -84,13 +84,13 @@ namespace WebApiTests.Executors
       var platformSerialDevice = new DeviceData { CustomerUID = platformSerialAccountUid, DeviceUID = platformSerialDeviceUid };
       var projectListForPlatformSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, platformSerialDeviceUid, platformSerialAccountUid);
+      var expectedResult = new GetProjectUidsResult(string.Empty, platformSerialDeviceUid, platformSerialAccountUid);
 
       await ExecuteManual
         (getProjectUidsRequest, projectForProjectUid,
          platformSerialDevice, projectListForPlatformSerial,
-          null, 
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3043, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(43)
+          null,
+         expectedResult, expectedCode: 3043, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(43)
         );
     }
 
@@ -116,13 +116,13 @@ namespace WebApiTests.Executors
       var platformSerialAccountUid = Guid.NewGuid().ToString();
       var platformSerialDevice = new DeviceData { CustomerUID = platformSerialAccountUid, DeviceUID = platformSerialDeviceUid };
       var projectListForPlatformSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, platformSerialDeviceUid, platformSerialAccountUid);
+      var expectedResult = new GetProjectUidsResult(string.Empty, platformSerialDeviceUid, platformSerialAccountUid);
 
       await ExecuteManual
         (getProjectUidsRequest, projectForProjectUid,
          platformSerialDevice, projectListForPlatformSerial,
-          null, 
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3041, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(41)
+          null,
+         expectedResult, expectedCode: 3041, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(41)
         );
     }
 
@@ -148,13 +148,13 @@ namespace WebApiTests.Executors
       var platformSerialDevice = new DeviceData { CustomerUID = platformSerialAccountUid, DeviceUID = platformSerialDeviceUid };
       var projectListForPlatformSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, platformSerialDeviceUid, platformSerialAccountUid);
+      var expectedResult = new GetProjectUidsResult(projectUid, platformSerialDeviceUid, platformSerialAccountUid);
 
       await ExecuteManual
       (getProjectUidsRequest, projectForProjectUid,
         platformSerialDevice, projectListForPlatformSerial,
-        null, 
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        null,
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -180,13 +180,13 @@ namespace WebApiTests.Executors
       var platformSerialDevice = (DeviceData)null;
       var projectListForPlatformSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty, string.Empty);
+      var expectedResult = new GetProjectUidsResult(projectUid, string.Empty, string.Empty);
 
       await ExecuteManual
       (getProjectUidsRequest, projectForProjectUid,
         platformSerialDevice, projectListForPlatformSerial,
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -218,13 +218,13 @@ namespace WebApiTests.Executors
       var platformSerialDevice = (DeviceData)null;
       var projectListForplatformSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty, string.Empty);
+      var expectedResult = new GetProjectUidsResult(projectUid, string.Empty, string.Empty);
 
       await ExecuteManual
       (getProjectUidsRequest, projectForProjectUid,
         platformSerialDevice, projectListForplatformSerial,
         coordinateConversionResult,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -254,13 +254,13 @@ namespace WebApiTests.Executors
       var platformSerialDevice = (DeviceData)null;
       var projectListForPlatformSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, string.Empty);
+      var expectedResult = new GetProjectUidsResult(string.Empty, string.Empty, string.Empty);
 
       await ExecuteManual
       (getProjectUidsRequest, projectForProjectUid,
         platformSerialDevice, projectListForPlatformSerial,
         coordinateConversionResult,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 3018, expectedMessage: "Manual Import: Unable to determine lat/long from northing/easting position"
+        expectedResult, expectedCode: 3018, expectedMessage: "Manual Import: Unable to determine lat/long from northing/easting position"
       );
     }
 
@@ -283,7 +283,7 @@ namespace WebApiTests.Executors
     private async Task ExecuteManual(GetProjectUidsRequest request, ProjectData projectForProjectUid,
       DeviceData platformDevice, ProjectDataResult projectListForPlatform,
       CoordinateConversionResult coordinateConversionResult,
-      GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
+      GetProjectUidsResult expectedResult, int expectedCode, string expectedMessage
   )
     {
       projectProxy.Setup(p => p.GetProject(request.ProjectUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectForProjectUid);
@@ -302,18 +302,18 @@ namespace WebApiTests.Executors
       var executor = RequestExecutorContainer.Build<ProjectUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectUidsExecutorManualTests>(), ConfigStore, authorization.Object,
          projectProxy.Object, deviceProxy.Object, tRexCompactionDataProxy.Object, requestCustomHeaders);
-      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(request) as GetProjectUidsResult;
 
-      ValidateResult(result, expectedGetProjectAndAssetUidsResult, expectedCode, expectedMessage);
+      ValidateResult(result, expectedResult, expectedCode, expectedMessage);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult,
+    private void ValidateResult(GetProjectUidsResult actualResult, GetProjectUidsResult expectedResult,
       int resultCode, string resultMessage)
     {
       Assert.IsNotNull(actualResult, "executor returned nothing");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.AssetUid, actualResult.AssetUid, "executor returned incorrect AssetUid");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.CustomerUid, actualResult.CustomerUid, "executor returned incorrect CustomerUid");
+      Assert.AreEqual(expectedResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(expectedResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
+      Assert.AreEqual(expectedResult.CustomerUid, actualResult.CustomerUid, "executor returned incorrect CustomerUid");
       Assert.AreEqual(resultCode, actualResult.Code, "executor returned incorrect result code");
       Assert.AreEqual(resultMessage, actualResult.Message, "executor returned incorrect result message");
     }
