@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <summary>
     /// Sends a request to get/save data from/to the TRex immutable/mutable database.
     /// </summary>
-    public Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route,
+    public async Task<TResponse> SendDataPostRequest<TResponse, TRequest>(TRequest dataRequest, string route,
       IHeaderDictionary customHeaders = null, bool mutableGateway = false)
       where TResponse : ContractExecutionResult
     {
@@ -52,7 +52,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
       log.LogDebug($"{nameof(SendDataPostRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
       using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
-      return MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
+      return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     /// <summary>
     /// Sends a request to delete data to the TRex immutable/mutable database.
     /// </summary>
-    public Task<TResponse> SendDataDeleteRequest<TResponse, TRequest>(TRequest dataRequest, string route,
+    public async Task<TResponse> SendDataDeleteRequest<TResponse, TRequest>(TRequest dataRequest, string route,
       IHeaderDictionary customHeaders = null, bool mutableGateway = false)
       where TResponse : ContractExecutionResult
     {
@@ -86,20 +86,20 @@ namespace VSS.TRex.Gateway.Common.Proxy
       log.LogDebug($"{nameof(SendDataDeleteRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
       using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
-      return MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);
+      return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);
     }
 
     /// <summary>
     /// Sends a request to get site model data from the TRex immutable database.
     /// </summary>
-    public Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
+    public async Task<TResponse> SendDataGetRequest<TResponse>(string siteModelId, string route,
       IHeaderDictionary customHeaders = null, IList<KeyValuePair<string, string>> queryParameters = null)
       where TResponse : class, IMasterDataModel
     {
       Gateway = GatewayType.Immutable;
       log.LogDebug($"{nameof(SendDataGetRequest)}: Sending the get data request for site model ID: {siteModelId}");
 
-      return GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, queryParameters);
+      return await GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, queryParameters);
     }
   }
 }
