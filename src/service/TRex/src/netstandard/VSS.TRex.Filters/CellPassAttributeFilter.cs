@@ -1418,8 +1418,6 @@ namespace VSS.TRex.Filters
           return passValue.Amplitude != CellPassConsts.NullAmplitude;
         case GridDataType.Temperature:
           return passValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
-        case GridDataType.TemperatureDetail:
-          return passValue.MaterialTemperature != CellPassConsts.NullMaterialTemperatureValue;
         case GridDataType.GPSMode:
           return passValue.gpsMode != CellPassConsts.NullGPSMode;
         default:
