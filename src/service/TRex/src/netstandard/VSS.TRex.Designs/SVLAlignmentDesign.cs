@@ -209,9 +209,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads the content of an SVL file into a memory model for use
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="saveIndexFiles"></param>
-    /// <returns></returns>
     public override DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true)
     {
       DesignLoadResult result;
@@ -219,7 +216,7 @@ namespace VSS.TRex.Designs
 
       try
       {
-        result = DesignLoadResult.NoAlignmentsFound;
+        result = nffFile.GuidanceAlignments.Count > 0 ? DesignLoadResult.NoAlignmentsFound : DesignLoadResult.NoMasterAlignmentsFound;
 
         for (var i = 0; i < nffFile.GuidanceAlignments.Count; i++)
         {
@@ -237,6 +234,16 @@ namespace VSS.TRex.Designs
 
             break;
           }
+        }
+
+        if (result == DesignLoadResult.NoAlignmentsFound)
+        {
+          _log.LogDebug($"SVL file {fileName} contains no guidance alignments");
+        }
+
+        if (result == DesignLoadResult.NoMasterAlignmentsFound)
+        {
+          _log.LogDebug($"SVL file {fileName} contains {nffFile.GuidanceAlignments.Count} alignments, none of which are master alignments");
         }
       }
       catch (Exception e)

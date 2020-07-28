@@ -142,7 +142,7 @@ end;
 
         if (!File.Exists(design.FileName))
         {
-          _log.LogDebug($"Loading design UID {designUid}, filename = {design.FileName}");
+          _log.LogDebug($"Getting design UID {designUid}, filename = {design.FileName} from persistent store (S3)");
 
           loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).WaitAndUnwrapException();
           if (loadResult != DesignLoadResult.Success)
@@ -153,10 +153,12 @@ end;
           }
         }
 
+        _log.LogDebug($"Loading design UID {designUid}, filename = {design.FileName}");
+
         loadResult = design.LoadFromFile(design.FileName);
         if (loadResult != DesignLoadResult.Success)
         {
-          _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from local storage for site model with ID {dataModelId}");
+          _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from local storage for site model with ID {dataModelId}, with error {loadResult}");
           _designs.Remove(designUid);
           return null;
         }
