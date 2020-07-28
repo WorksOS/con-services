@@ -18,9 +18,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// TagFileExecutor
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="exceptionHandler"></param>
     public TagFileExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
@@ -36,9 +33,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Process tagfile request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as CompactionTagFileRequest;
@@ -60,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           TagFileContent = request.Data,
           TCCOrgID = request.OrgId,
           SubmissionFlags = TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive,
-          OriginSource = TAGFiles.Models.TAGFileOriginSource.LegacyTAGFileSource // Only legacy TAG files support via this end point for now
+          OriginSource = TAGFiles.Models.TAGFileOriginSource.LegacyTAGFileSource // Only legacy TAG files supported via this end point for now
         };
 
         var res = await submitRequest.ExecuteAsync(arg);
@@ -69,16 +63,15 @@ namespace VSS.TRex.Gateway.Common.Executors
           result = TagFileResult.Create(0, ContractExecutionResult.DefaultMessage);
         else
           result = TagFileResult.Create(res.Code, res.Message);
-
       }
       finally
       {
         if (request != null)
           log.LogInformation($"#Out# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUid}, Submission Code: {result.Code}, Message:{result.Message}");
         else
-          log.LogInformation($"#Out# TagFileExecutor. Invalid request");
-
+          log.LogInformation("#Out# TagFileExecutor. Invalid request");
       }
+
       return result;
     }
 
