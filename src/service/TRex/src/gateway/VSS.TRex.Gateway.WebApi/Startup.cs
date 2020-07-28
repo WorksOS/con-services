@@ -29,6 +29,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.WebApi.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.CoordinateSystems;
+using System;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -90,6 +91,12 @@ namespace VSS.TRex.Gateway.WebApi
       DIBuilder.Continue()
         .Add(x => x.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
         .Complete();
+    }
+
+    protected override void StartServices(IServiceProvider serviceProvider)
+    {
+      // Start listening to site model change notifications
+      serviceProvider.GetRequiredService<ISiteModelAttributesChangedEventListener>().StartListening();
     }
 
     /// <inheritdoc/>

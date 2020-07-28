@@ -1,4 +1,5 @@
-﻿using CoreX.Interfaces;
+﻿using System;
+using CoreX.Interfaces;
 using CoreX.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -88,6 +89,12 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
         .Continue()
         .Add(x => x.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT)))
         .Complete();
+    }
+
+    protected override void StartServices(IServiceProvider serviceProvider)
+    {
+      // Start listening to site model change notifications
+      serviceProvider.GetRequiredService<ISiteModelAttributesChangedEventListener>().StartListening();
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
