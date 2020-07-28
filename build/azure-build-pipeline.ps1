@@ -19,7 +19,7 @@ PARAM (
 )
 
 # Load component scripts.
-. /scripts/aws-docker-login.ps1
+. ../scripts/aws-docker-login.ps1
 
 enum ReturnCode {
     SUCCESS
