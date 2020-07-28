@@ -8,7 +8,8 @@ using Assert = Xunit.Assert;
 
 namespace WebApiTests
 {
-  public class ProjectV4TrexWebTests : ExecutorTestData
+  [Collection("Service collection")]
+  public class ProjectV4TrexWebTests 
   {
     public ProjectV4TrexWebTests()
     { }
@@ -17,7 +18,7 @@ namespace WebApiTests
     public async Task NoProjectProvided_Auto_Happy_DeviceAndSingleProjectFound()
     {
       var cbRadioType = TagFileDeviceTypeEnum.SNM940;
-      var cbRadioSerial = dimensionsSerial;
+      var cbRadioSerial = ExecutorTestFixture.dimensionsSerial;
       var ec50Serial = string.Empty;
       var latitude = 15.0;
       var longitude = 180.0;
@@ -26,9 +27,9 @@ namespace WebApiTests
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)cbRadioType, cbRadioSerial,
         ec50Serial, latitude, longitude, tagFileTimestamp);
       getProjectAndAssetUidsRequest.Validate();
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, 0, "success");
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(ExecutorTestFixture.dimensionsProjectUid, ExecutorTestFixture.dimensionsSerialDeviceUid, 0, "success");
 
-      var result = await tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
+      var result = await ExecutorTestFixture.tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
 
       ValidateResult(result, expectedGetProjectAndAssetUidsResult);
     }
@@ -37,7 +38,7 @@ namespace WebApiTests
     public async Task NoProjectProvided_Auto_Happy_DeviceAndSingleProjectFound_UsingNE()
     {
       var cbRadioType = TagFileDeviceTypeEnum.SNM940;
-      var cbRadioSerial = dimensionsSerial;
+      var cbRadioSerial = ExecutorTestFixture.dimensionsSerial;
       var ec50Serial = string.Empty;
       var northing = 2300.77;
       var easting = 1650.66;
@@ -46,9 +47,9 @@ namespace WebApiTests
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)cbRadioType, cbRadioSerial,
         ec50Serial, 0, 0, tagFileTimestamp, northing, easting);
       getProjectAndAssetUidsRequest.Validate();
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, 0, "success");
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(ExecutorTestFixture.dimensionsProjectUid, ExecutorTestFixture.dimensionsSerialDeviceUid, 0, "success");
 
-      var result = await tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
+      var result = await ExecutorTestFixture.tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
 
       ValidateResult(result, expectedGetProjectAndAssetUidsResult);
     }
@@ -58,7 +59,7 @@ namespace WebApiTests
     {
       var projectUid = Guid.NewGuid().ToString();
       var cbRadioType = TagFileDeviceTypeEnum.SNM940;
-      var cbRadioSerial = dimensionsSerial;
+      var cbRadioSerial = ExecutorTestFixture.dimensionsSerial;
       var ec50Serial = string.Empty;
       var latitude = 89.0;
       var longitude = 130.0;
@@ -67,9 +68,9 @@ namespace WebApiTests
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)cbRadioType, cbRadioSerial,
         ec50Serial, latitude, longitude, tagFileTimestamp);
       getProjectAndAssetUidsRequest.Validate();
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, dimensionsSerialDeviceUid, 3038, "Manual Import: Unable to find the Project requested");
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, ExecutorTestFixture.dimensionsSerialDeviceUid, 3038, "Manual Import: Unable to find the Project requested");
 
-      var result = await tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
+      var result = await ExecutorTestFixture.tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
 
       ValidateResult(result, expectedGetProjectAndAssetUidsResult);
     }
@@ -89,7 +90,7 @@ namespace WebApiTests
       getProjectAndAssetUidsRequest.Validate();
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, uniqueCode: 3100, "Unable to locate device by serialNumber in cws");
 
-      var result = await tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
+      var result = await ExecutorTestFixture.tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
 
       ValidateResult(result, expectedGetProjectAndAssetUidsResult);
     }

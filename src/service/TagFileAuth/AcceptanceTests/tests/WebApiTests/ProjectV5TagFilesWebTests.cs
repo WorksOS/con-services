@@ -7,7 +7,8 @@ using Assert = Xunit.Assert;
 
 namespace WebApiTests
 {
-  public class ProjectV5TagFilesWebTests : ExecutorTestData
+  [Collection("Service collection")]
+  public class ProjectV5TagFilesWebTests 
   {
     public ProjectV5TagFilesWebTests()
     { }
@@ -15,15 +16,15 @@ namespace WebApiTests
     [Fact]
     public async Task NoProjectProvided_Auto_Happy_DeviceAndSingleProjectFound()
     {
-      var platformSerial = dimensionsSerial;
+      var platformSerial = ExecutorTestFixture.dimensionsSerial;
       var latitude = 15.0;
       var longitude = 180.0;
 
       var request = new GetProjectUidsRequest(string.Empty, platformSerial, latitude, longitude);
       request.Validate();
-      var expectedResult = new GetProjectUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
+      var expectedResult = new GetProjectUidsResult(ExecutorTestFixture.dimensionsProjectUid, ExecutorTestFixture.dimensionsSerialDeviceUid, ExecutorTestFixture.dimensionsCustomerUID, 0, "success");
 
-      var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
+      var result = await ExecutorTestFixture.tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
       ValidateResult(result, expectedResult);
     }
@@ -31,15 +32,15 @@ namespace WebApiTests
     [Fact]
     public async Task NoProjectProvided_Auto_Happy_DeviceAndSingleProjectFound_UsingNE()
     {
-      var platformSerial = dimensionsSerial;
+      var platformSerial = ExecutorTestFixture.dimensionsSerial;
       var northing = 2300.77;
       var easting = 1650.66;
 
       var request = new GetProjectUidsRequest(string.Empty, platformSerial, 0, 0, northing, easting);
       request.Validate();
-      var expectedResult = new GetProjectUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
+      var expectedResult = new GetProjectUidsResult(ExecutorTestFixture.dimensionsProjectUid, ExecutorTestFixture.dimensionsSerialDeviceUid, ExecutorTestFixture.dimensionsCustomerUID, 0, "success");
 
-      var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
+      var result = await ExecutorTestFixture.tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
       ValidateResult(result, expectedResult);
     }
@@ -48,15 +49,15 @@ namespace WebApiTests
     public async Task ProjectProvided_Manual_Sad_ProjectNotFound()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var platformSerial = dimensionsSerial;
+      var platformSerial = ExecutorTestFixture.dimensionsSerial;
       var latitude = 89.0;
       var longitude = 130.0;
 
       var request = new GetProjectUidsRequest(projectUid, platformSerial, latitude, longitude);
       request.Validate();
-      var expectedResult = new GetProjectUidsResult(string.Empty, dimensionsSerialDeviceUid, dimensionsCustomerUID, 3038, "Manual Import: Unable to find the Project requested");
+      var expectedResult = new GetProjectUidsResult(string.Empty, ExecutorTestFixture.dimensionsSerialDeviceUid, ExecutorTestFixture.dimensionsCustomerUID, 3038, "Manual Import: Unable to find the Project requested");
 
-      var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
+      var result = await ExecutorTestFixture.tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
       ValidateResult(result, expectedResult);
     }
@@ -72,7 +73,7 @@ namespace WebApiTests
       request.Validate();
       var expectedResult = new GetProjectUidsResult(string.Empty, string.Empty, string.Empty, uniqueCode: 3100, "Unable to locate device by serialNumber in cws");
 
-      var result = await tagFileAuthProjectV5Proxy.GetProjectUids(request);
+      var result = await ExecutorTestFixture.tagFileAuthProjectV5Proxy.GetProjectUids(request);
 
       ValidateResult(result, expectedResult);
     }

@@ -14,31 +14,32 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.Serilog.Extensions;
+using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace WebApiTests
 {
-  public class ExecutorTestData
+  public class ExecutorTestFixture : IDisposable
   {
     protected IServiceProvider serviceProvider;
     protected ILogger logger;
     protected IConfigurationStore configStore;
 
-    protected ITagFileAuthProjectProxy tagFileAuthProjectProxy;
-    protected ITagFileAuthProjectV5Proxy tagFileAuthProjectV5Proxy;
+    public static ITagFileAuthProjectProxy tagFileAuthProjectProxy;
+    public static ITagFileAuthProjectV5Proxy tagFileAuthProjectV5Proxy;
 
     //// this SNM940 exists on `VSS-TagFileAuth-Alpha` with a valid 3d sub (it's not on Dev)
     //// Dims project and customer are on alpha tfa
     //if (request.RadioSerial == "5051593854")
     //  return new GetProjectAndAssetUidsEarthWorksResult(ConstantsUtil.DIMENSIONS_PROJECT_UID, "039c1ee8-1f21-e311-9ee2-00505688274d", ConstantsUtil.DIMENSIONS_CUSTOMER_UID, true);
 
-    protected string dimensionsSerial = "5051593854";
-    protected string dimensionsSerialDeviceUid = "039c1ee8-1f21-e311-9ee2-00505688274d";
-    protected string dimensionsProjectUid = "ff91dd40-1569-4765-a2bc-014321f76ace";
-    protected int dimensionsShortRaptorProjectId = 1001158;
-    protected string dimensionsCustomerUID = "87bdf851-44c5-e311-aa77-00505688274d";
+    public static string dimensionsSerial = "5051593854";
+    public static string dimensionsSerialDeviceUid = "039c1ee8-1f21-e311-9ee2-00505688274d";
+    public static string dimensionsProjectUid = "ff91dd40-1569-4765-a2bc-014321f76ace";
+    public static int dimensionsShortRaptorProjectId = 1001158;
+    public static string dimensionsCustomerUID = "87bdf851-44c5-e311-aa77-00505688274d";
 
-    public ExecutorTestData()
+    public ExecutorTestFixture()
     {
       serviceProvider = new ServiceCollection()
                         .AddLogging()
@@ -56,11 +57,25 @@ namespace WebApiTests
                         .AddTransient<ITagFileAuthProjectV5Proxy, TagFileAuthProjectV5Proxy>()
                         .BuildServiceProvider();
 
-      logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ExecutorTestData>();
+      logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ExecutorTestFixture>();
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       tagFileAuthProjectProxy = serviceProvider.GetRequiredService<ITagFileAuthProjectProxy>();
       tagFileAuthProjectV5Proxy = serviceProvider.GetRequiredService<ITagFileAuthProjectV5Proxy>();
+
+      logger.LogDebug($"{nameof(ExecutorTestFixture)} tagFileAuthProjectProxy null? {tagFileAuthProjectProxy}");
     }
 
+    public void Dispose()
+    {
+     // do nothing
+    }
+  }
+
+  [CollectionDefinition("Service collection")]
+  public class DatabaseCollection : ICollectionFixture<ExecutorTestFixture>
+  {
+    // This class has no code, and is never created. Its purpose is simply
+    // to be the place to apply [CollectionDefinition] and all the
+    // ICollectionFixture<> interfaces.
   }
 }

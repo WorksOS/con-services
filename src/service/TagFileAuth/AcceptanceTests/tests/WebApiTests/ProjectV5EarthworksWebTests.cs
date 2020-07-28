@@ -5,20 +5,21 @@ using Xunit;
 
 namespace WebApiTests
 {
-  public class ProjectV5EarthworksWebTests : ExecutorTestData
+  [Collection("Service collection")]
+  public class ProjectV5EarthworksWebTests 
   {
     [Fact]
     public async Task NoProjectProvided_Happy_DeviceAndSingleProjectFound()
     {
-      var platformSerial = dimensionsSerial;
+      var platformSerial = ExecutorTestFixture.dimensionsSerial;
       double latitude = 15;
       double longitude = 180;
 
       var request = new GetProjectUidsBaseRequest(platformSerial, latitude, longitude);
       request.Validate();
-      var expectedResult = new GetProjectUidsResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, 0, "success");
+      var expectedResult = new GetProjectUidsResult(ExecutorTestFixture.dimensionsProjectUid, ExecutorTestFixture.dimensionsSerialDeviceUid, ExecutorTestFixture.dimensionsCustomerUID, 0, "success");
 
-      var result = await tagFileAuthProjectV5Proxy.GetProjectUidsEarthWorks(request);
+      var result = await ExecutorTestFixture.tagFileAuthProjectV5Proxy.GetProjectUidsEarthWorks(request);
 
       ValidateResult(result, expectedResult);
     }
