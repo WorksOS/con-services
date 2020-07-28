@@ -55,8 +55,9 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
     /// <param name="treatAsJohnDoe">The TAG file will be processed as if it were a john doe machine is projectId is also specified</param>
     /// <param name="tagFileSubmissionFlags">A flag set controlling how certain aspects of managing a submitted TAG file should be managed</param>
-    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, 
-      string tccOrgId, bool treatAsJohnDoe, TAGFileSubmissionFlags tagFileSubmissionFlags)
+    /// <param name="originSource">Indictaes the system of origin this file came from</param>
+    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent,
+      string tccOrgId, bool treatAsJohnDoe, TAGFileSubmissionFlags tagFileSubmissionFlags, TAGFileOriginSource originSource)
     {
       if (OutputInformationalRequestLogging)
         _log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
@@ -102,7 +103,9 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tag file
-            if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive))
+            if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive)
+              // For now, GCS900/Earthworks style TAg files are the only ones archived
+              && originSource == TAGFileOriginSource.LegacyTAGFileSource)
             {
               _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
               if (! await TagFileRepository.ArchiveTagfileS3(td))
@@ -128,7 +131,8 @@ namespace VSS.TRex.TAGFiles.Executors
               FileName = tagFileName,
               Content = tagFileContent,
               IsJohnDoe = td.IsJohnDoe,
-              SubmissionFlags = tagFileSubmissionFlags
+              SubmissionFlags = tagFileSubmissionFlags,
+              OriginSource = originSource
             };
 
             if (_queue == null)

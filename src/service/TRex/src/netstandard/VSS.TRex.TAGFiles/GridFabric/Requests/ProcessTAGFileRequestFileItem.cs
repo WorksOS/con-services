@@ -12,8 +12,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// </summary>
     public class ProcessTAGFileRequestFileItem : IFromToBinary
     {
-        private const byte VERSION_NUMBER = 2;
-        private static byte[] VERSION_NUMBERS = {1, 2};
+        private const byte VERSION_NUMBER = 3;
+        private static byte[] VERSION_NUMBERS = {1, 2, 3};
 
         public string FileName { get; set; }
 
@@ -27,6 +27,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         /// States if the TAG fie should be added to the TAG file archive during processing
         /// </summary>
         public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
+    
+        /// <summary>
+        /// The orign source that produced the TAG file, such as GCS900, Eathworjs etc
+        /// </summary>
+        public TAGFileOriginSource OriginSource { get; set; } = TAGFileOriginSource.LegacyTAGFileSource;
 
         /// <summary>
         /// Default no-arg constructor
@@ -52,7 +57,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         writer.WriteBoolean(IsJohnDoe);
         writer.WriteByteArray(TagFileContent);
         writer.WriteInt((int)SubmissionFlags);
-      }
+        writer.WriteInt((int)OriginSource);
+    }
 
       public void FromBinary(IBinaryRawReader reader)
       {
@@ -70,6 +76,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         else
         {
           SubmissionFlags = TAGFileSubmissionFlags.AddToArchive;
+        }
+
+        if (messageVersion >= 3)
+        {
+          OriginSource = (TAGFileOriginSource)reader.ReadInt();
         }
     }
   }

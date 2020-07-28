@@ -14,7 +14,6 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
-using VSS.TRex.TAGFiles.Classes.States;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Types;
 
@@ -139,7 +138,16 @@ namespace VSS.TRex.TAGFiles.Executors
     /// Execute the conversion operation on the TAG file, returning a boolean success result.
     /// Sets up local state detailing the pre-scan fields retried from the ATG file
     /// </summary>
-    public bool Execute(Stream tagData, Guid assetUid, bool isJohnDoe)
+    public bool ExecuteVolvoEarthworksCSVFile(string fileName, Stream tagData, Guid assetUid, bool isJohnDoe)
+    {
+      return false;
+    }
+
+    /// <summary>
+    /// Execute the conversion operation on the TAG file, returning a boolean success result.
+    /// Sets up local state detailing the pre-scan fields retried from the ATG file
+    /// </summary>
+    public bool ExecuteLegacyTAGFile(string filename, Stream tagData, Guid assetUid, bool isJohnDoe)
     {
       ReadResult = TAGReadResult.NoError;
 

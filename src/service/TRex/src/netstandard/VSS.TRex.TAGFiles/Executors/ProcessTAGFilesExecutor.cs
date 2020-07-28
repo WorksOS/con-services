@@ -175,7 +175,14 @@ namespace VSS.TRex.TAGFiles.Executors
             using var fs = new MemoryStream(tagFile.TagFileContent);
             try
             {
-              var readResult = commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
+              bool readResult = tagFile.OriginSource switch
+              {
+                TAGFileOriginSource.VolvoMachineAssistEarthworksCSV => commonConverter.ExecuteVolvoEarthworksCSVFile(tagFile.FileName, fs, tagFile.AssetId, tagFile.IsJohnDoe),
+                TAGFileOriginSource.VolvoMachineAssistCompactionCSV => false,
+                TAGFileOriginSource.LegacyTAGFileSource => commonConverter.ExecuteLegacyTAGFile(tagFile.FileName, fs, tagFile.AssetId, tagFile.IsJohnDoe),
+                _ => throw new NotImplementedException("Unsupported commonConverter origin source"),
+              };
+
               response.Results.Add(new ProcessTAGFileResponseItem
               {
                 FileName = tagFile.FileName,
