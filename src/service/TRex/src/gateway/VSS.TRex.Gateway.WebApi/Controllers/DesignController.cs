@@ -33,8 +33,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <inheritdoc />
     public DesignController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<DesignController>(), serviceExceptionHandler, configStore)
-    {
-    }
+    { }
 
     /// <summary>
     /// Returns surface, alignment and surveyed surface designs
