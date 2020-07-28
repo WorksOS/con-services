@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -45,7 +46,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       request.Validate();
   
       var executor = RequestExecutorContainer.Build<ProjectUidsExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
-      var result = await executor.ProcessAsync(request) as GetProjectUidsResult;
+      var getProjectUidsRequest = new GetProjectUidsRequest(string.Empty, request.PlatformSerial, request.Latitude, request.Longitude);
+      var result = await executor.ProcessAsync(getProjectUidsRequest) as GetProjectUidsResult;
 
       Logger.LogResult(nameof(GetProjectUidsEarthWorks), request, result);
       return result;

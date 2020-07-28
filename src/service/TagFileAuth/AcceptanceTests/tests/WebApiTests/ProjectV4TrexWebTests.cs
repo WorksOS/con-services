@@ -67,7 +67,7 @@ namespace WebApiTests
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)cbRadioType, cbRadioSerial,
         ec50Serial, latitude, longitude, tagFileTimestamp);
       getProjectAndAssetUidsRequest.Validate();
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, 3038, "Manual Import: Unable to find the Project requested");
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, dimensionsSerialDeviceUid, 3038, "Manual Import: Unable to find the Project requested");
 
       var result = await tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
 

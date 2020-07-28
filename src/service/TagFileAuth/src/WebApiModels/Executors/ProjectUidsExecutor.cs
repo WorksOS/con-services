@@ -44,8 +44,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       var device = await dataRepository.GetDevice(request.PlatformSerial);
-        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by PlatformSerial?: {request.PlatformSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
+      var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: {contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+      log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by PlatformSerial?: {request.PlatformSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, device);
