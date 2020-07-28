@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -53,21 +54,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       return tfaResult;
     }
 
-    private static string GetEC520SerialID(this string sValue)
-    {
-      const string EC520_SUFFIX = "YU";
-
-      //Check if the value is a valid EC520 Serial ID else make field empty
-      string EC520Serial = String.Empty;
-      if (!string.IsNullOrEmpty(sValue))
-      {
-        if (sValue.Length > 2 && sValue.Substring(sValue.Length - 2, 2) == EC520_SUFFIX)
-          EC520Serial = sValue;
-      }
-      return EC520Serial;
-    }
-
-
     /// <summary>
     /// this needs to be public, only for unit tests
     /// </summary>
@@ -87,7 +73,11 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       This is not a typical submission but is handy for testing and in a situation where a known third party source other than NG could determine the AssetId and Project. Typical NG users could not submit via this method thus avoiding our license check. 
       */
 
-      var ec520SerialId = GetEC520SerialID(preScanState.HardwareID);
+      var platformSerialNumber = string.Empty;
+      // [CCSSSCON-885] will include new Marine platform type
+      if (preScanState.PlatformType >= CWSDeviceTypeEnum.EC520 && preScanState.PlatformType <= CWSDeviceTypeEnum.CB460)
+        platformSerialNumber = preScanState.HardwareID;
+
 
       // Type C. Do we have what we need already (Most likely test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
@@ -97,10 +87,10 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Business rule for device type conversion
       var radioType = preScanState.RadioType == "torch" ? DeviceTypeEnum.SNM940 : DeviceTypeEnum.MANUALDEVICE; // torch device set to type 6
 
-      if (preScanState.RadioSerial == string.Empty && tagDetail.projectId == Guid.Empty && ec520SerialId == string.Empty)
+      if (string.IsNullOrEmpty(preScanState.RadioSerial) && (tagDetail.projectId == null || tagDetail.projectId == Guid.Empty) && string.IsNullOrEmpty(platformSerialNumber))
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
-        var message = "#Progress# CheckFileIsProcessable. Must have either a valid RadioSerialNum or EC520SerialNum or ProjectUID";
+        var message = "#Progress# CheckFileIsProcessable. Must have either a valid RadioSerialNum or platformSerialNumber or ProjectUID";
         Log.LogWarning(message);
         return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), (int) TRexTagFileResultCode.TRexMissingProjectIDRadioSerialAndEcmSerial, message);
       }
@@ -119,7 +109,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        (int)radioType, preScanState.RadioSerial, ec520SerialId, 
+        (int)radioType, preScanState.RadioSerial, platformSerialNumber, 
         seedLatitude, seedLongitude,
         preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC,
         preScanState.SeedNorthing, preScanState.SeedEasting);
@@ -171,6 +161,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// </summary>
     public static async Task<ContractExecutionResult> ValidSubmission(TagFileDetail tagDetail, TAGFilePreScan tagFilePreScan)
     {
+
       // TAG file contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service
       {
