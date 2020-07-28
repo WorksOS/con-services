@@ -101,7 +101,7 @@ end;
 
           if (descriptor != null)
           {
-            _log.LogDebug($"Surveyed surface design UID {designUid}, filename = {design.FileName} needs to be loaded");
+            _log.LogDebug($"Surveyed surface design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
           }
 
           if (descriptor == null)
@@ -112,7 +112,7 @@ end;
 
           if (descriptor != null)
           {
-            _log.LogDebug($"Alignment design UID {designUid}, filename = {design.FileName} needs to be loaded");
+            _log.LogDebug($"Alignment design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
           }
 
           if (descriptor == null)
