@@ -25,7 +25,7 @@ namespace VSS.Serilog.Extensions
       const string outputTemplateConsole = "{Timestamp:yyyy-MM-dd HH:mm:ss,fff} [{ThreadId}] {Level:u3} [{SourceContext}]{RequestID} {Message} {EscapedException}{NewLine}";
 
       var logger = new LoggerConfiguration()
-                   .MinimumLevel.Debug()
+                   .MinimumLevel.Verbose()
                    .MinimumLevel.Override("System", LogEventLevel.Information)
                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                    .MinimumLevel.Override("OpenTracing", LogEventLevel.Warning)
