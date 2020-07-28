@@ -122,7 +122,7 @@ end;
             return null;
           }
 
-          _log.LogDebug($"Creating entry for design UID {designUid}, filename = {design.FileName} within the in-memory cache");
+          _log.LogDebug($"Creating entry for design UID {designUid}, filename = {descriptor.FileName} within the in-memory cache");
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
           design = DIContext.Obtain<IDesignClassFactory>().NewInstance(Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelId), descriptor.FileName), cellSize, dataModelId);
