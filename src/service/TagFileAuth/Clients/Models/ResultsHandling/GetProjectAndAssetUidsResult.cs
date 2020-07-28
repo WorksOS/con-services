@@ -14,7 +14,12 @@ namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
     /// <summary>
     /// The Uid of the asset. Currently Trex thinks this is an AssetUid
     /// </summary>
-    public string DeviceUid { get; set; }
+    public string AssetUid { get; set; }
+
+    /// <summary>
+    /// The Uid of the customer if match by asset or tccOrgUid
+    /// </summary>
+    public string CustomerUid { get; set; }
 
     /// <summary>
     /// Create instance of GetProjectAndAssetUidsResult
@@ -23,18 +28,19 @@ namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
     ///    For TFA, these are 3k based 
     ///    Message is the english version of any error
     /// </summary>
-    public GetProjectAndAssetUidsResult(string projectUid, string deviceUid, int uniqueCode = 0, string messageDetail = "success")
+    public GetProjectAndAssetUidsResult(string projectUid, string assetUid, string customerUid, int uniqueCode = 0, string messageDetail = "success")
     {
       ProjectUid = projectUid;
-      DeviceUid = deviceUid;
+      AssetUid = assetUid;
+      CustomerUid = customerUid;
       Code = uniqueCode;
       Message = messageDetail;
     }
 
-    public static GetProjectAndAssetUidsResult FormatResult(string projectUid = "", string assetUid = "", int uniqueCode = 0)
+    public static GetProjectAndAssetUidsResult FormatResult(string projectUid = "", string deviceUid = "", string customerUid = "", int uniqueCode = 0)
     {
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      return new GetProjectAndAssetUidsResult(projectUid, assetUid,
+      return new GetProjectAndAssetUidsResult(projectUid, deviceUid, customerUid,
         uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode),
         uniqueCode == 0 ? DefaultMessage :
           uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)));

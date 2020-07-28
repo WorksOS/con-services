@@ -25,6 +25,7 @@ namespace WebApiTests
     protected IConfigurationStore configStore;
 
     protected ITagFileAuthProjectProxy tagFileAuthProjectProxy;
+    protected ITagFileAuthProjectV5Proxy tagFileAuthProjectV5Proxy;
 
     //// this SNM940 exists on `VSS-TagFileAuth-Alpha` with a valid 3d sub (it's not on Dev)
     //// Dims project and customer are on alpha tfa
@@ -52,11 +53,13 @@ namespace WebApiTests
                         .AddSingleton<IDataCache, InMemoryDataCache>()
 
                         .AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>()
+                        .AddTransient<ITagFileAuthProjectV5Proxy, TagFileAuthProjectV5Proxy>()
                         .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ExecutorTestData>();
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
       tagFileAuthProjectProxy = serviceProvider.GetRequiredService<ITagFileAuthProjectProxy>();
+      tagFileAuthProjectV5Proxy = serviceProvider.GetRequiredService<ITagFileAuthProjectV5Proxy>();
     }
 
   }

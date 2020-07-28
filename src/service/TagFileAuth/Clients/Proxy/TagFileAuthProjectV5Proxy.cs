@@ -17,9 +17,9 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.TagFileAuth.Proxy
 {
-  public class TagFileAuthProjectV4Proxy : BaseServiceDiscoveryProxy, ITagFileAuthProjectProxy
+  public class TagFileAuthProjectV5Proxy : BaseServiceDiscoveryProxy, ITagFileAuthProjectV5Proxy
   {
-    public TagFileAuthProjectV4Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
+    public TagFileAuthProjectV5Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
@@ -30,28 +30,28 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
 
     public override string ExternalServiceName => null;
 
-    public override ApiVersion Version => ApiVersion.V4;
+    public override ApiVersion Version => ApiVersion.V5;
 
     public override ApiType Type => ApiType.Private;
 
     public override string CacheLifeKey => "TAGFILEAUTH_CACHE_LIFE"; // not used
 
-    public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids(GetProjectAndAssetUidsRequest request,
+    public async Task<GetProjectAndAssetUidsResult> GetProjectUids(GetProjectUidsRequest request,
       IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
-      log.LogDebug($"{nameof(GetProjectAndAssetUids)}  getProjectAndAssetUidsRequest: {jsonData}");
+      log.LogDebug($"{nameof(GetProjectUids)}  request: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
         return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>("project/getUids", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
 
-    public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsEarthWorksRequest request,
+    public async Task<GetProjectAndAssetUidsResult> GetProjectUidsEarthWorks(GetProjectUidsBaseRequest request,
       IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
-      log.LogDebug($"{nameof(GetProjectAndAssetUidsEarthWorks)}  getProjectAndAssetUidsEarthWorksRequest: {jsonData}");
+      log.LogDebug($"{nameof(GetProjectUidsEarthWorks)}  request: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
         return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>("project/getUidsEarthWorks", customHeaders, HttpMethod.Post, payload: payload);

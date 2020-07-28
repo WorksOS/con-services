@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
     Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest,
       IHeaderDictionary customHeaders = null);
 
-    Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsBaseRequest getProjectAndAssetUidsEarthWorksRequest,
+    Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsEarthWorksRequest getProjectAndAssetUidsBaseRequest,
       IHeaderDictionary customHeaders = null);
   }
 }

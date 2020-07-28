@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net;
@@ -24,6 +25,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   ///                      else production data AND SS is provided
   ///      don't know what it would be for landfills and civil project using a TCCOrgId
   /// </summary>
+  [Obsolete("todoJeannie remove")]
   public class ProjectAndAssetUidsEarthWorksExecutor : RequestExecutorContainer
   {
     ///  <summary>
@@ -32,7 +34,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as GetProjectAndAssetUidsBaseRequest;
+      var request = item as GetProjectAndAssetUidsEarthWorksRequest;
       if (request == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
           GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: TagFileAuth.Models.ContractExecutionStatesEnum.SerializationError));
@@ -40,9 +42,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // a CB will have a RadioSerial, whose suffix defines the type.
       //    however we probably don't need this as cws has a lookup by serialNumber only,
       //    and due to suffixes, these should be unique over CB/EC
-      var device = await dataRepository.GetDevice(request.ObsoleteRadioSerial);
+      var device = await dataRepository.GetDevice(request.RadioSerial);
       var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
-      log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.ObsoleteRadioSerial} device: { JsonConvert.SerializeObject(device)} {deviceStatus}");
+      log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: { JsonConvert.SerializeObject(device)} {deviceStatus}");
 
       if (device == null || device.Code != 0 || device.DeviceUID == null)
       {
@@ -60,12 +62,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     /// EarthWorks cut/fill doesn't REQUIRE a subscription.
     /// </summary>
-    private async Task<GetProjectAndAssetUidsEarthWorksResult> HandleCutFillExport(GetProjectAndAssetUidsBaseRequest request,
+    private async Task<GetProjectAndAssetUidsEarthWorksResult> HandleCutFillExport(GetProjectAndAssetUidsEarthWorksRequest request,
       DeviceData device)
     {
       var errorCode = 0;
-      var NonEarthWorksRequest = new GetProjectAndAssetUidsRequest() {Longitude = request.Longitude, Latitude = request.Latitude};
-      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(NonEarthWorksRequest, device, out errorCode);
+      var getProjectUidsRequest = new GetProjectUidsRequest() { Longitude = request.Longitude, Latitude = request.Latitude };
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(getProjectUidsRequest, device, out errorCode);
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 

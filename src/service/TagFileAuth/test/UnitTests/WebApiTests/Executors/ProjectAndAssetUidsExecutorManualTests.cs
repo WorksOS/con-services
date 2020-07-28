@@ -22,6 +22,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 namespace WebApiTests.Executors
 {
   [TestClass]
+  [Obsolete("todoJeannie remove")]
   public class ProjectAndAssetUidsExecutorManualTests : ExecutorBaseTests
   {
     private ILoggerFactory _loggerFactory;
@@ -55,7 +56,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid, radioSerialAccountUid);
 
       await ExecuteManual
         (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -88,7 +89,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid, radioSerialAccountUid);
 
       await ExecuteManual
         (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -122,7 +123,7 @@ namespace WebApiTests.Executors
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid, radioSerialAccountUid);
 
       await ExecuteManual
         (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -156,7 +157,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid, radioSerialAccountUid);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -190,7 +191,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = (DeviceData)null;
       var projectListForRadioSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, String.Empty);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty, string.Empty);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -230,7 +231,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = (DeviceData)null;
       var projectListForRadioSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, String.Empty);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty, string.Empty);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -268,7 +269,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = (DeviceData)null;
       var projectListForRadioSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, String.Empty);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, string.Empty);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -306,7 +307,7 @@ namespace WebApiTests.Executors
     {
       projectProxy.Setup(p => p.GetProject(request.ProjectUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectForProjectUid);
 
-      deviceProxy.Setup(d => d.GetDevice(request.ObsoleteRadioSerial, It.IsAny<HeaderDictionary>())).ReturnsAsync(radioSerialDevice);
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, It.IsAny<HeaderDictionary>())).ReturnsAsync(radioSerialDevice);
       if (radioSerialDevice != null)
         deviceProxy.Setup(d => d.GetProjectsForDevice(radioSerialDevice.DeviceUID, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectListForRadioSerial);
 
@@ -335,7 +336,7 @@ namespace WebApiTests.Executors
     {
       Assert.IsNotNull(actualResult, "executor returned nothing");
       Assert.AreEqual(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
+      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.AssetUid, actualResult.AssetUid, "executor returned incorrect AssetUid");
       Assert.AreEqual(resultCode, actualResult.Code, "executor returned incorrect result code");
       Assert.AreEqual(resultMessage, actualResult.Message, "executor returned incorrect result message");
     }

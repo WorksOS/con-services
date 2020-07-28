@@ -6,26 +6,28 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 namespace VSS.Productivity3D.TagFileAuth.Models
 {
   /// <summary>
-  /// Endpoint called by 3dp GetSubGridPatches service to identify device and potentially project
+  /// TFA v2 endpoint to retrieve ProjectUid and/or DeviceUid and subscription indicator for a tagfile.
+  ///      this is used by the 3dp GetSubGridPatches endpoint used by EarthWorks for cut-fill maps.
   /// </summary>
-  public class GetProjectAndAssetUidsBaseRequest 
+  public class GetProjectAndAssetUidsEarthWorksRequest
   {
     /// <summary>
-    /// The serial number of platform operating on the device.
-    ///     Should == the HardwareId or Serial from a tag file.
-    ///     Actually this could be an EC520; EC520W; CBnnn or Marine platform
-    ///        this is why the above 'DeviceType' is now obsolete
+    /// The EC520 serial number of the machine from the tagfile.
     /// </summary>
     [JsonProperty(PropertyName = "ec520Serial", Required = Required.Default)]
     public string Ec520Serial { get; set; }
 
     /// <summary>
-    /// The SNM94n radio serial number of the radio on the device.
-    ///      This is optional and probably never required 
-    ///      May be a SNM or non-trimble, we don't really care.
+    /// The SNM94n radio serial number of the machine from the tagfile.
     /// </summary>
     [JsonProperty(PropertyName = "radioSerial", Required = Required.Default)]
-    public string ObsoleteRadioSerial { get; set; }
+    public string RadioSerial { get; set; }
+
+    /// <summary>
+    /// Date and time the asset was at the given location. 
+    /// </summary>
+    [JsonProperty(PropertyName = "tccOrgUid", Required = Required.Default)]
+    public string ObsoleteTccOrgUid { get; set; }
 
     /// <summary>
     /// WGS84 latitude in decimal degrees. 
@@ -43,39 +45,39 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     /// Date and time the asset was at the given location. 
     /// </summary>
     [JsonProperty(PropertyName = "timeOfPosition", Required = Required.Always)]
-    public DateTime ObsoleteTimeOfPosition { get; set; }
-
-    [JsonIgnore]
-    public bool HasLatLong => Math.Abs(Latitude) > 0.0 && Math.Abs(Longitude) > 0.0;
-
-    public GetProjectAndAssetUidsBaseRequest() { }
-
+    public DateTime TimeOfPosition { get; set; }
 
     /// <summary>
-    /// Create instance of GetProjectAndAssetUidsBaseRequest
+    /// Private constructor
     /// </summary>
-    public GetProjectAndAssetUidsBaseRequest
+    private GetProjectAndAssetUidsEarthWorksRequest()
+    { }
+
+    /// <summary>
+    /// Create instance of GetProjectAndAssetUidsEarthWorksRequest
+    /// </summary>
+    public GetProjectAndAssetUidsEarthWorksRequest
     (string ec520Serial, string radioSerial, double latitude, double longitude, DateTime timeOfPosition)
     {
       Ec520Serial = ec520Serial;
-      ObsoleteRadioSerial = radioSerial;
+      RadioSerial = radioSerial;
       Latitude = latitude;
       Longitude = longitude;
-      ObsoleteTimeOfPosition = timeOfPosition;
+      TimeOfPosition = timeOfPosition;
     }
 
     public void Validate()
     {
       if (string.IsNullOrEmpty(Ec520Serial))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 51));
-      
+
       if (Latitude < -90 || Latitude > 90)
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 21));
 
       if (Longitude < -180 || Longitude > 180)
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 22));
 
-      if (!(ObsoleteTimeOfPosition > DateTime.UtcNow.AddYears(-50) && ObsoleteTimeOfPosition <= DateTime.UtcNow.AddDays(2)))
+      if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(2)))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 23));
     }
   }

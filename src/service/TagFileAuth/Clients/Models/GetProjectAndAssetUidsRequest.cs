@@ -8,10 +8,9 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 namespace VSS.Productivity3D.TagFileAuth.Models
 {
   /// <summary>
-  /// Endpoint called by TRex to validate tagFile data and identify device and potentially project
-  /// todoJeannie investigate these obsolete members as I don't think we need them
+  /// TFA v4 endpoint to retrieve ProjectUid and/or DeviceUid for a tagfile
   /// </summary>
-  public class GetProjectAndAssetUidsRequest : GetProjectAndAssetUidsBaseRequest
+  public class GetProjectAndAssetUidsRequest
   {
     /// <summary>
     /// if ProjectUid is supplied, this is a 'manual update'
@@ -21,67 +20,106 @@ namespace VSS.Productivity3D.TagFileAuth.Models
 
     /// <summary>
     /// The device type of the machine. Valid values any, but normally 6=SNM940 (torch machines).
-    ///     For the 
-    ///     For the 3d earthworks patches endpoint we don't use this atm.  
     /// </summary>
     [JsonProperty(PropertyName = "deviceType", Required = Required.Always)]
-    public int ObsoleteDeviceType { get; set; }
+    public int DeviceType { get; set; }
 
     /// <summary>
-    /// Grid position NEE.
-    ///     For the 3d earthworks patched endpoint we don't use this atm. 
+    /// The SNM94n radio serial number of the machine from the tagfile.
+    ///  todoFromThis we can determine CB type
+    /// </summary>
+    [JsonProperty(PropertyName = "radioSerial", Required = Required.Default)]
+    public string RadioSerial { get; set; }
+
+    /// <summary>
+    /// The EC520 serial number of the machine from the tagfile.
+    /// </summary>
+    [JsonProperty(PropertyName = "ec520Serial", Required = Required.Default)]
+    public string Ec520Serial { get; set; }
+
+    /// <summary>
+    /// WGS84 latitude in decimal degrees. 
+    /// </summary>
+    [JsonProperty(PropertyName = "latitude", Required = Required.Always)]
+    public double Latitude { get; set; }
+
+    /// <summary>
+    /// WGS84 longitude in decimal degrees. 
+    /// </summary>    
+    [JsonProperty(PropertyName = "longitude", Required = Required.Always)]
+    public double Longitude { get; set; }
+
+    /// <summary>
+    /// Date and time the device was at the given location. 
+    /// </summary>
+    [JsonProperty(PropertyName = "timeOfPosition", Required = Required.Always)]
+    public DateTime TimeOfPosition { get; set; }
+
+    /// <summary>
+    /// Grid position NEE. 
     /// </summary>
     [JsonProperty(PropertyName = "northing", Required = Required.Default)]
     public double? Northing { get; set; }
 
     /// <summary>
-    /// Grid position NEE.
-    ///     For the 3d earthworks patched endpoint we don't use this atm.  
+    /// Grid position NEE.  
     /// </summary>    
     [JsonProperty(PropertyName = "easting", Required = Required.Default)]
     public double? Easting { get; set; }
 
     [JsonIgnore]
+    public bool HasLatLong => Math.Abs(Latitude) > 0.0 && Math.Abs(Longitude) > 0.0;
+
+    [JsonIgnore]
     public bool HasNE => Northing.HasValue && Easting.HasValue;
 
-    public GetProjectAndAssetUidsRequest() { }
 
+    public GetProjectAndAssetUidsRequest()
+    { }
 
     public GetProjectAndAssetUidsRequest
-      (string projectUid, int deviceType, string radioSerial, string ec520Serial,
-        double latitude, double longitude, DateTime timeOfPosition,
-        double? northing = null, double? easting = null) 
-      : base(ec520Serial, radioSerial, latitude, longitude, timeOfPosition)
+    (string projectUid, int deviceType, string radioSerial, string ec520Serial,
+      double latitude, double longitude, DateTime timeOfPosition,
+      double? northing = null, double? easting = null)
     {
       ProjectUid = projectUid;
-      ObsoleteDeviceType = deviceType;
+      DeviceType = deviceType;
+      RadioSerial = radioSerial;
+      Ec520Serial = ec520Serial;
+      Latitude = latitude;
+      Longitude = longitude;
+      TimeOfPosition = timeOfPosition;
       Northing = northing;
       Easting = easting;
     }
 
-    public new void Validate()
+    public void Validate()
     {
-      base.Validate();
-
       // if it has a projectUid, then it's a manual import and must have either assetUid or radio/dt  
       if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParseExact(ProjectUid, "D", out var projectUid))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(ProjectUid, uniqueCode: 36));
 
       var allowedDeviceTypes = new List<int>() { (int)TagFileDeviceTypeEnum.ManualImport, (int)TagFileDeviceTypeEnum.SNM940, (int)TagFileDeviceTypeEnum.SNM941, (int)TagFileDeviceTypeEnum.EC520 };
-      var isDeviceTypeValid = allowedDeviceTypes.Contains(ObsoleteDeviceType);
+      var isDeviceTypeValid = allowedDeviceTypes.Contains(DeviceType);
 
       if (!isDeviceTypeValid)
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 30));
 
-      if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(ObsoleteRadioSerial) && string.IsNullOrEmpty(Ec520Serial))
+      if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(Ec520Serial))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 37));
 
       if (!HasLatLong && !HasNE)
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 54));
-      
+
+      if (HasLatLong && (Latitude < -90 || Latitude > 90))
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 21));
+
+      if (HasLatLong && (Longitude < -180 || Longitude > 180))
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 22));
+
       // NE can be negative and zero
 
-      if (!(ObsoleteTimeOfPosition > DateTime.UtcNow.AddYears(-50) && ObsoleteTimeOfPosition <= DateTime.UtcNow.AddDays(2)))
+      if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(2)))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 23));
     }
   }
