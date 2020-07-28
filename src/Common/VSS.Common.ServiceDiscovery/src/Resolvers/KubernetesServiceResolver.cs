@@ -66,11 +66,12 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
       // We must use our Namespace as there could more than one of the service in our cluster, across namespaces
       // E.g Alpha and Dev pods are hosted in the same cluster
       V1ServiceList list = null;
+      logger.LogDebug($"{nameof(ResolveService)} Kubernetes todoJeannie before getList");
       try
       {
         list = kubernetesClient.ListNamespacedService(kubernetesNamespace, labelSelector: labelFilter);
       }
-      catch (HttpOperationException e)
+      catch (Exception e)
       {
         // If we don't have access to query the namespace (e.g default), we will get a forbidden exception
         logger.LogWarning($"Failed to query cluster for service {serviceName} due to error. Returning empty result. Error: {e.Message}");
