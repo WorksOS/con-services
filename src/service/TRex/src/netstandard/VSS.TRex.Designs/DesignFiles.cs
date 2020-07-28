@@ -7,6 +7,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModels.Interfaces;
+using Nito.AsyncEx.Synchronous;
 
 namespace VSS.TRex.Designs
 {
@@ -38,7 +39,8 @@ end;
 
   public class DesignFiles : IDesignFiles
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignFiles>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<DesignFiles>();
+
     private readonly Dictionary<Guid, IDesignBase> _designs = new Dictionary<Guid, IDesignBase>();
 
     /// <summary>
@@ -46,6 +48,8 @@ end;
     /// </summary>
     public bool RemoveDesignFromCache(Guid designUid, IDesignBase design, Guid siteModelUid, bool deleteFile)
     {
+      _log.LogDebug($"Removing design UID {designUid}, filename = '{design.FileName}'");
+
       if (deleteFile)
         design.RemoveFromStorage(siteModelUid, Path.GetFileName(design.FileName));
 
@@ -66,26 +70,38 @@ end;
 
       lock (_designs)
       {
-        _designs.TryGetValue(designUid, out design);
-
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
         if (siteModel == null)
         {
-          Log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");
+          _log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");
           loadResult = DesignLoadResult.SiteModelNotFound;
           return null;
         }
 
+        _designs.TryGetValue(designUid, out design);
+
         if (design == null)
         {
+          _log.LogDebug($"Design UID {designUid} not present in cached designs for site model {dataModelId}");
+
           // Verify the design does exist in either the designs, surveyed surface or alignment lists for the site model
           var designRef = siteModel.Designs.Locate(designUid);
           var descriptor = designRef?.DesignDescriptor;
+
+          if (descriptor != null)
+          {
+            _log.LogDebug($"Surface design UID {designUid}, filename = {design.FileName} needs to be loaded");
+          }
 
           if (descriptor == null)
           {
             var surveyedSurfaceRef = siteModel.SurveyedSurfaces?.Locate(designUid);
             descriptor = surveyedSurfaceRef?.DesignDescriptor;
+          }
+
+          if (descriptor != null)
+          {
+            _log.LogDebug($"Surveyed surface design UID {designUid}, filename = {design.FileName} needs to be loaded");
           }
 
           if (descriptor == null)
@@ -94,12 +110,19 @@ end;
             descriptor = alignmentDesignRef?.DesignDescriptor;
           }
 
+          if (descriptor != null)
+          {
+            _log.LogDebug($"Alignment design UID {designUid}, filename = {design.FileName} needs to be loaded");
+          }
+
           if (descriptor == null)
           {
-            Log.LogWarning($"Failed to locate design {designUid} for site model with ID {dataModelId}");
+            _log.LogWarning($"Failed to locate design {designUid} for site model with ID {dataModelId}");
             loadResult = DesignLoadResult.DesignDoesNotExist;
             return null;
           }
+
+          _log.LogDebug($"Creating entry for design UID {designUid}, filename = {design.FileName} within the in-memory cache");
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
           design = DIContext.Obtain<IDesignClassFactory>().NewInstance(Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelId), descriptor.FileName), cellSize, dataModelId);
@@ -119,11 +142,12 @@ end;
 
         if (!File.Exists(design.FileName))
         {
-          // TODO we need to take away this async code from the lock
-          loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).Result;
+          _log.LogDebug($"Loading design UID {designUid}, filename = {design.FileName}");
+
+          loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).WaitAndUnwrapException();
           if (loadResult != DesignLoadResult.Success)
           {
-            Log.LogWarning($"Failed to load design {designUid} from storage for site model with ID {dataModelId}");
+            _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from persistent storage for site model with ID {dataModelId}");
             _designs.Remove(designUid);
             return null;
           }
@@ -132,7 +156,7 @@ end;
         loadResult = design.LoadFromFile(design.FileName);
         if (loadResult != DesignLoadResult.Success)
         {
-          Log.LogWarning($"Failed to load design {designUid} from file {design.FileName} for site model with ID {dataModelId}");
+          _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from local storage for site model with ID {dataModelId}");
           _designs.Remove(designUid);
           return null;
         }
