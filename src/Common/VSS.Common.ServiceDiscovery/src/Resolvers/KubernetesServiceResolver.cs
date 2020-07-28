@@ -5,6 +5,7 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
@@ -55,6 +56,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     public Task<string> ResolveService(string serviceName)
     {
       var labelFilter = $"{LABEL_FILTER_NAME}={serviceName}";
+      logger.LogDebug($"{nameof(ResolveService)} Kubernetes todoJeannie labelFilter  {labelFilter} kubernetesNamespace {kubernetesNamespace} kubernetesClient{kubernetesClient}");
 
       // Are we configured? if not we won't have setup the client 
       if (string.IsNullOrEmpty(kubernetesNamespace) || kubernetesClient == null)
@@ -74,7 +76,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
         logger.LogWarning($"Failed to query cluster for service {serviceName} due to error. Returning empty result. Error: {e.Message}");
         return Task.FromResult<string>(null);
       }
-
+      logger.LogDebug($"{nameof(ResolveService)} Kubernetes todoJeannie list  {JsonConvert.SerializeObject(list)}");
       if (list?.Items == null || list.Items.Count == 0)
         return Task.FromResult<string>(null);
 
@@ -87,6 +89,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
           .Spec
           .Ports
           .FirstOrDefault(p => p.Port == PORT_NUMBER);
+        logger.LogDebug($"{nameof(ResolveService)} Kubernetes todoJeannie item  {JsonConvert.SerializeObject(item)}");
 
         if (httpPort == null)
         {
