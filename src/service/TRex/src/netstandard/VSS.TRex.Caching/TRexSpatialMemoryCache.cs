@@ -161,22 +161,25 @@ namespace VSS.TRex.Caching
     /// </summary>
     public bool Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-      if (context.MarkedForRemoval)
-        context.Reanimate();
-
-      var result = context.Add(element);
-
-      if (result)
+      lock (_contexts)
       {
-        // Perform some house keeping to keep the cache size in bounds
-        ItemAddedToContext(element.IndicativeSizeInBytes());
-        while (_currentSizeInBytes > MaxSizeInBytes && !MRUList.IsEmpty())
-        {
-          MRUList.EvictOneLRUItemWithLock();
-        }
-      }
+        if (context.MarkedForRemoval)
+          context.Reanimate();
 
-      return result;
+        var result = context.Add(element);
+
+        if (result == CacheContextAdditionResult.Added)
+        {
+          // Perform some house keeping to keep the cache size in bounds
+          ItemAddedToContext(element.IndicativeSizeInBytes());
+          while (_currentSizeInBytes > MaxSizeInBytes && !MRUList.IsEmpty())
+          {
+            MRUList.EvictOneLRUItem();
+          }
+        }
+
+        return result == CacheContextAdditionResult.Added;
+      }
     }
 
     /// <summary>
@@ -221,7 +224,10 @@ namespace VSS.TRex.Caching
     /// <param name="originY">The origin (bottom left) cell of the spatial data sub grid</param>
     public ITRexMemoryCacheItem Get(ITRexSpatialMemoryCacheContext context, int originX, int originY)
     {
-      return context.Get(originX, originY);
+      lock (_contexts)
+      {
+        return context.Get(originX, originY);
+      }
     }
 
     /// <summary>
@@ -230,37 +236,34 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask)
     {
-      List<ITRexSpatialMemoryCacheContext> projectContexts;
-
-      // Obtain the list of contexts for this project
-      lock (_contexts)
-      {
-        if (_projectContexts.TryGetValue(projectUid, out projectContexts))
-        {
-          // Make a clone of this list so facilitate working through the evictions without holding
-          // a long term lock on the global set of contexts
-          projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
-        }
-      }
-
-      if (projectContexts == null || projectContexts.Count <= 0)
-        return;
-
       var numInvalidatedSubGrids = 0;
       var numScannedSubGrids = 0;
       var startTime = DateTime.UtcNow;
+      var contextCount = 0;
 
-      // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
-      // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
-      // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
-      foreach (var context in projectContexts)
+      lock (_contexts)
       {
-        // Empty contexts are ignored
-        if (context.TokenCount > 0)
+        if (_projectContexts.TryGetValue(projectUid, out var projectContexts))
         {
-          // If the context in question is not sensitive to production data ingest then ignore it
-          if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) != 0)
+
+          if (projectContexts == null || projectContexts.Count == 0)
+            return;
+
+          contextCount = projectContexts.Count;
+
+          // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
+          // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
+          // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
+          foreach (var context in projectContexts)
           {
+            // Empty contexts are ignored
+            if (context.TokenCount == 0)
+              return;
+
+            // If the context in question is not sensitive to production data ingest then ignore it
+            if (!context.Sensitivity.HasFlag(TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest))
+              return;
+
             // Iterate across all elements in the mask:
             // 1. Locate the cache entry
             // 2. Mark it as dirty
@@ -276,7 +279,7 @@ namespace VSS.TRex.Caching
         }
       }
 
-      _log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts.Count} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
+      _log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {contextCount} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
     }
 
     /// <summary>
@@ -330,32 +333,26 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void InvalidateDueToDesignChange(Guid projectUid, Guid designUid)
     {
-      List<ITRexSpatialMemoryCacheContext> projectContexts;
+      var numInvalidatedContexts = 0;
 
-      // Obtain the list of contexts for this project
       lock (_contexts)
       {
-        if (_projectContexts.TryGetValue(projectUid, out projectContexts))
+        if (_projectContexts.TryGetValue(projectUid, out var projectContexts))
         {
-          // Make a clone of this list to facilitate working through the evictions without holding
-          // a long term lock on the global set of contexts
-          projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
-        }
-      }
+          if (projectContexts == null || projectContexts.Count == 0)
+            return;
 
-      if (projectContexts == null || projectContexts.Count == 0)
-        return;
-
-      var numInvalidatedContexts = 0;
-      // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
-      // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
-      // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
-      foreach (var context in projectContexts)
-      {
-        if (context.FingerPrint.Contains(designUid.ToString()))
-        {
-          context.InvalidateAllSubGrids();
-          numInvalidatedContexts++;
+          // Walk through contexts for the project evicting all relevant element per the supplied mask
+          // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
+          // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
+          foreach (var context in projectContexts)
+          {
+            if (context.FingerPrint.Contains(designUid.ToString()))
+            {
+              context.InvalidateAllSubGrids();
+              numInvalidatedContexts++;
+            }
+          }
         }
       }
 

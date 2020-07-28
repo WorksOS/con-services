@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -79,7 +80,6 @@ namespace VSS.TRex.Caching
       TimeSpan cacheDurationTime, string fingerPrint, GridDataType gridDataType, Guid projectUid)
     {
       ContextTokens = new GenericSubGridTree_Int(SubGridTreeConsts.SubGridTreeLevels - 1, 1);
-      ContextTokens.InitialiseReaderWriterLocking();
 
       MRUList = mruList;
       CacheDurationTime = cacheDurationTime;
@@ -94,36 +94,29 @@ namespace VSS.TRex.Caching
     /// memory cache instance prior to use. This operation is thread safe - all operations are concurrency locked within the
     /// confines of the context.
     /// </summary>
-    public bool Add(ITRexMemoryCacheItem element)
+    public CacheContextAdditionResult Add(ITRexMemoryCacheItem element)
     {
       var x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      lock (FingerPrint)
+      // Add the element to storage and obtain its index in that storage, inserting it into the context
+      // Note: The index is added as a 1-based index to the ContextTokens to differentiate it from the null value
+      // of 0 used as the null value in integer based sub grid trees
+      if (ContextTokens[x, y] != 0)
       {
-        ContextTokens.ReaderWriterLock.EnterWriteLock();
-        try
-        {
-          // Add the element to storage and obtain its index in that storage, inserting it into the context
-          // Note: The index is added as a 1-based index to the ContextTokens to differentiate it from the null value
-          // of 0 used as the null value in integer based sub grid trees
-          if (ContextTokens[x, y] != 0)
-          {
-            // This cache element in the context already contains an item.
-            // Do not overwrite the present element with the one provided
-            return false;
-          }
-
-          ContextTokens[x, y] = MRUList.Add(element, this) + 1;
-        }
-        finally
-        {
-          ContextTokens.ReaderWriterLock.ExitWriteLock();
-        }
-
-        _tokenCount++;
-        return true;
+        // This cache element in the context already contains an item.
+        // Do not overwrite the present element with the one provided
+        return CacheContextAdditionResult.AlreadyExisting;
       }
+
+      var MRUIndex = MRUList.Add(element, this);
+      if (MRUIndex == -1)
+        return CacheContextAdditionResult.MRUListFull;
+
+      ContextTokens[x, y] = MRUIndex + 1;
+      Interlocked.Increment(ref _tokenCount);
+
+      return CacheContextAdditionResult.Added;
     }
 
     /// <summary>
@@ -136,39 +129,13 @@ namespace VSS.TRex.Caching
       var x = element.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = element.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      lock (FingerPrint)
-      {
-        RemoveNoLock(x, y);
-      }
-    }
+      MRUList.Remove(ContextTokens[x, y] - 1);
+      ContextTokens[x, y] = 0;
 
-    /// <summary>
-    /// Removes an item from a context within the overall memory cache of these items. The context must be obtained from the
-    /// memory cache instance prior to use. This operation is thread safe - all operations are concurrency locked within the
-    /// confines of the context.
-    /// </summary>
-    private void RemoveNoLock(int x, int y)
-    {
-      ContextTokens.ReaderWriterLock.EnterWriteLock();
-      try
+      // If the context has been emptied by the removal of this item then mark as a candidate for removal
+      if (Interlocked.Decrement(ref _tokenCount) == 0)
       {
-        // Locate the index for the element in the context token tree and remove it from storage,
-        // null out the entry in the context token tree.
-        // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Remove
-        MRUList.Remove(ContextTokens[x, y] - 1);
-        ContextTokens[x, y] = 0;
-
-        _tokenCount--;
-
-        // If the context has been emptied by the removal of this item them marked as a candidate for removal
-        if (_tokenCount == 0)
-        {
-          MarkForRemoval(DateTime.UtcNow);
-        }
-      }
-      finally
-      {
-        ContextTokens.ReaderWriterLock.ExitWriteLock();
+        MarkForRemoval(DateTime.UtcNow);
       }
     }
 
@@ -180,20 +147,15 @@ namespace VSS.TRex.Caching
       var x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      lock (FingerPrint)
-      {
-        int index;
-        ContextTokens.ReaderWriterLock.EnterReadLock();
-        try
-        {
-          index = ContextTokens[x, y];
-        }
-        finally
-        {
-          ContextTokens.ReaderWriterLock.ExitReadLock();
-        }
+      var index = ContextTokens[x, y];
 
-        return index == 0 ? null : MRUList.Get(index - 1);
+      if (index == 0)
+      {
+        return null;
+      }
+      else
+      {
+        return MRUList.Get(index - 1);
       }
     }
 
@@ -202,36 +164,28 @@ namespace VSS.TRex.Caching
     /// elements that are being removed from the MRUList in response to adding new items to the cache.
     /// Note: This operations executes within a WriteLock obtained from the owning SubGridTree in an ancestor calling context
     /// </summary>
-    public void RemoveFromContextTokensOnlyNoLock(ITRexMemoryCacheItem item)
+    public void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item)
     {
       var x = item.CacheOriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = item.CacheOriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
       ContextTokens[x, y] = 0;
+      Interlocked.Decrement(ref _tokenCount);
+
       OwnerMemoryCache.ItemRemovedFromContext(item.IndicativeSizeInBytes());
-      _tokenCount--;
     }
 
     /// <summary>
     /// Invalidates the cached item within this context at the specified origin location 
     /// </summary>
-    public void InvalidateSubGridNoLock(int originX, int originY, out bool subGridPresentForInvalidation)
+    public void InvalidateSubGrid(int originX, int originY, out bool subGridPresentForInvalidation)
     {
       subGridPresentForInvalidation = false;
 
       var x = originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
       var y = originY >> SubGridTreeConsts.SubGridIndexBitsPerLevel;
 
-      int contextToken;
-      ContextTokens.ReaderWriterLock.EnterReadLock();
-      try
-      {
-        contextToken = ContextTokens[x, y];
-      }
-      finally
-      {
-        ContextTokens.ReaderWriterLock.ExitReadLock();
-      }
+      var contextToken = ContextTokens[x, y];
 
       if (contextToken != 0)
       {
@@ -242,57 +196,27 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Invalidates the cached item within this context at the specified origin location 
-    /// </summary>
-    public void InvalidateSubGrid(int originX, int originY, out bool subGridPresentForInvalidation)
-    {
-      lock (FingerPrint)
-      {
-        InvalidateSubGridNoLock(originX, originY, out subGridPresentForInvalidation);
-      }
-    }
-
-    /// <summary>
-    /// Invalidates all sub grids for context
-    /// </summary>
-    public void InvalidateAllSubGridsNoLock()
-    {
-      // Empty contexts are ignored
-      if (TokenCount > 0)
-      {
-        ContextTokens.ReaderWriterLock.EnterWriteLock();
-        try
-        {
-          ContextTokens.ScanAllSubGrids(leaf =>
-          {
-            SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
-            {
-              var contextToken = ((IGenericLeafSubGrid<int>) leaf).Items[x, y];
-              if (contextToken != 0)
-              {
-                // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
-                MRUList.Invalidate(contextToken - 1);
-              }
-            });
-            return true;
-          });
-        }
-        finally
-        {
-          ContextTokens.ReaderWriterLock.ExitWriteLock();
-        }
-      }
-    }
-
-    /// <summary>
     /// Invalidates all sub grids for context
     /// </summary>
     public void InvalidateAllSubGrids()
     {
-      lock (FingerPrint)
+      // Empty contexts are ignored
+      if (_tokenCount == 0)
+        return;
+
+      ContextTokens.ScanAllSubGrids(leaf =>
       {
-        InvalidateAllSubGridsNoLock();
-      }
+        SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+        {
+          var contextToken = ((IGenericLeafSubGrid<int>)leaf).Items[x, y];
+          if (contextToken != 0)
+          {
+              // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
+              MRUList.Invalidate(contextToken - 1);
+          }
+        });
+        return true;
+      });
     }
 
     /// <summary>
@@ -312,11 +236,8 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Reanimate()
     {
-      lock (FingerPrint)
-      {
-        MarkedForRemovalAtUtc = Consts.MIN_DATETIME_AS_UTC;
-        MarkedForRemoval = false;
-      }
+      MarkedForRemovalAtUtc = Consts.MIN_DATETIME_AS_UTC;
+      MarkedForRemoval = false;
     }
 
     public void Dispose()
