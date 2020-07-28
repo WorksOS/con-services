@@ -150,7 +150,7 @@ namespace VSS.TRex.TAGFiles.Executors
         Processor?.Dispose();
 
         // Locate the machine in the local set of machines, adding one if necessary
-        Machine = Machines.Locate(assetUid, isJohnDoe);
+        Machine = Machines.Locate(assetUid, true /*isJohnDoe - hard code Volvo machines to be John Does for POC*/);
 
         var machineType = MachineType.Unknown;
         var machineHardwareId = fileDescriptor.MachineID;
@@ -175,30 +175,26 @@ namespace VSS.TRex.TAGFiles.Executors
 
         Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, machineTargetValueChangesAggregator);
         var sink = new TAGValueSink(Processor);
-        using (var reader = new TAGReader(tagData))
-        {
-          var tagFile = new TAGFile();
+        var reader = new VolvoEarthworksCSVReader(tagData);
 
-          ReadResult = tagFile.Read(reader, sink);
+        ReadResult = reader.Read(sink);
 
-          // Notify the processor that all reading operations have completed for the file
-          Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
+        // Notify the processor that all reading operations have completed for the file
+        Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
 
-          SetPublishedState(Processor);
-          Machine.MachineType = holdMachineType;
+        SetPublishedState(Processor);
+        Machine.MachineType = holdMachineType;
 
-          if (ReadResult != TAGReadResult.NoError)
-            return false;
-        }
+        if (ReadResult != TAGReadResult.NoError)
+          return false;
       }
       catch (Exception e) // make sure any exception is trapped to return correct response to caller
       {
-        Log.LogError(e, "Exception occurred while converting a TAG file");
+        Log.LogError(e, "Exception occurred while converting a Volvo CSV file");
         return false;
       }
 
       return true;
-
     }
 
     /// <summary>
