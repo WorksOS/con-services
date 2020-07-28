@@ -38,8 +38,6 @@ namespace VSS.AWS.TransferProxy
 
       awsLinkExpiry = configStore.GetValueTimeSpan("AWS_PRESIGNED_URL_EXPIRY") ??
                       TimeSpan.FromDays(MAXIMUM_EXPIRY_DAYS_FOR_PRESIGNED_URL);
-
-      logger.LogInformation("AWS S3 Now using Assumed Roles");
     }
 
     private TransferUtility GetTransferUtility()

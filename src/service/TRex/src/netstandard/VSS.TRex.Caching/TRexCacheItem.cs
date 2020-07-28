@@ -88,9 +88,9 @@ namespace VSS.TRex.Caching
     /// held in the sub grid tree to 0
     /// Note: This call operates within a write lock obtained from the sub grid tree in an ancestor calling context
     /// </summary>
-    public void RemoveFromContextNoLock()
+    public void RemoveFromContext()
     {
-      Context?.RemoveFromContextTokensOnlyNoLock(Item);
+      Context?.RemoveFromContextTokensOnly(Item);
     }
 
     /// <summary>

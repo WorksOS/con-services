@@ -38,7 +38,7 @@ namespace VSS.TRex.Volumes
         /// DI'ed context for access to ExistenceMaps functionality
         /// </summary>
         private IExistenceMaps _existenceMaps = null;
-        private IExistenceMaps GetExistenceMaps() => _existenceMaps ?? (_existenceMaps = DIContext.Obtain<IExistenceMaps>());
+        private IExistenceMaps GetExistenceMaps() => _existenceMaps ??= DIContext.Obtain<IExistenceMaps>();
 
         /// <summary>
         /// The Aggregator to use for calculating volumes statistics

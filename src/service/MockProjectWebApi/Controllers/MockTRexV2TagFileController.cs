@@ -14,18 +14,9 @@ namespace MockProjectWebApi.Controllers
     [Route("api/v2")]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public ContractExecutionResult SendTagFileNonDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
+    public ContractExecutionResult SendTagFile([FromBody] CompactionTagFileRequest compactionTagFileRequest)
     {
-      Logger.LogInformation($"SendTagFileNonDirect: CompactionTagFileRequest {JsonConvert.SerializeObject(compactionTagFileRequest)}");
-      return new ContractExecutionResult();
-    }
-
-    [Route("api/v2/direct")]
-    [Route("api/v2/tagfiles/direct")]
-    [HttpPost]
-    public ContractExecutionResult SendTagFileDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
-    {
-      Logger.LogInformation($"SendTagFileDirect: CompactionTagFileRequest {JsonConvert.SerializeObject(compactionTagFileRequest)}");
+      Logger.LogInformation($"{nameof(SendTagFile)}: CompactionTagFileRequest {JsonConvert.SerializeObject(compactionTagFileRequest)}");
       return new ContractExecutionResult();
     }
   }

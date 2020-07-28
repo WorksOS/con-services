@@ -161,7 +161,6 @@ namespace VSS.TRex.SubGrids
           cellPass.CCA = _globalLatestCells.ReadCCA(x, y);
           break;
         case GridDataType.Temperature:
-        case GridDataType.TemperatureDetail:
           cellPass.MaterialTemperature = _globalLatestCells.ReadTemperature(x, y);
           break;
         default:
@@ -187,7 +186,6 @@ namespace VSS.TRex.SubGrids
         case GridDataType.GPSMode: return _globalLatestCells.GPSModeValuesAreFromLatestCellPass.BitSet(stripeIndex, j);
         case GridDataType.MDP: return _globalLatestCells.MDPValuesAreFromLastPass.BitSet(stripeIndex, j);
         case GridDataType.CCA: return _globalLatestCells.CCAValuesAreFromLastPass.BitSet(stripeIndex, j);
-        case GridDataType.TemperatureDetail: return _globalLatestCells.TemperatureValuesAreFromLastPass.BitSet(stripeIndex, j);
         case GridDataType.CCVPercentChange:
         case GridDataType.CCVPercentChangeIgnoredTopNullValue:
         case GridDataType.MachineSpeedTarget:
@@ -214,7 +212,6 @@ namespace VSS.TRex.SubGrids
         case GridDataType.MDP: return _globalLatestCells.ReadMDP(stripeIndex, j) == CellPassConsts.NullMDP;
         case GridDataType.CCA: return _globalLatestCells.ReadCCA(stripeIndex, j) == CellPassConsts.NullCCA;
         case GridDataType.Temperature: return _globalLatestCells.ReadTemperature(stripeIndex, j) == CellPassConsts.NullMaterialTemperatureValue;
-        case GridDataType.TemperatureDetail: return _globalLatestCells.ReadTemperature(stripeIndex, j) == CellPassConsts.NullMaterialTemperatureValue;
         case GridDataType.CCVPercentChange: return _globalLatestCells.ReadCCV(stripeIndex, j) == CellPassConsts.NullCCV;
         case GridDataType.CCVPercentChangeIgnoredTopNullValue: return _globalLatestCells.ReadCCV(stripeIndex, j) == CellPassConsts.NullCCV;
       }
@@ -244,7 +241,6 @@ namespace VSS.TRex.SubGrids
         case GridDataType.Temperature: return !_globalLatestCells.HasTemperatureData();
         case GridDataType.MDP: return !_globalLatestCells.HasMDPData();
         case GridDataType.CCA: return !_globalLatestCells.HasCCAData();
-        case GridDataType.TemperatureDetail: return !_globalLatestCells.HasTemperatureData();
         default: return false;
       }
     }

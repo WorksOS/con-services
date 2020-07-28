@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +10,9 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Executors;
 using VSS.Productivity3D.TagFileGateway.Common.Models.Sns;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.TagFileGateway.Controllers
 {
@@ -29,22 +28,22 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
     [Route("api/v2/tagfiles/direct")]
     [Route("api/v2/tagfiles")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostTagFileNonDirectSubmission([FromBody] CompactionTagFileRequest request,
+    public async Task<ContractExecutionResult> PostTagFile([FromBody] CompactionTagFileRequest request,
       [FromServices] ILoggerFactory loggerFactory,
       [FromServices] IConfigurationStore configStore,
       [FromServices] IDataCache dataCache,
-      [FromServices] ITagFileForwarder tagFileForwarder,
+      [FromServices] ITRexTagFileProxy trexTagFileProxy,
       [FromServices] ITransferProxyFactory transferProxyFactory,
       [FromServices] IWebRequest webRequest)
     {
       var isDirect = Request.Path.Value.Contains("/direct");
-      _logger.LogInformation($"Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
+      _logger.LogInformation($"{nameof(PostTagFile)} Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
       var executor = RequestExecutorContainer
-        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest);
+        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, trexTagFileProxy, transferProxyFactory, webRequest);
       executor.ArchiveOnInternalError = true;
       var result = await executor.ProcessAsync(request);
 
-      _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
+      _logger.LogInformation($"{nameof(PostTagFile)} Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
 
 
       // If we uploaded, return a successful result
@@ -54,12 +53,12 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
     }
 
     [Route("api/v2/tagfiles/sns")]
-    public async Task<IActionResult> PostSnsTagFile(  
+    public async Task<IActionResult> PostSnsTagFile(
       [FromServices] IWebRequest webRequest,
-      [FromServices] ILoggerFactory loggerFactory, 
-      [FromServices] IConfigurationStore configStore, 
-      [FromServices] IDataCache dataCache, 
-      [FromServices] ITagFileForwarder tagFileForwarder,
+      [FromServices] ILoggerFactory loggerFactory,
+      [FromServices] IConfigurationStore configStore,
+      [FromServices] IDataCache dataCache,
+      [FromServices] ITRexTagFileProxy trexTagFileProxy,
       [FromServices] ITransferProxyFactory transferProxyFactory)
     {
       // https://forums.aws.amazon.com/thread.jspa?threadID=69413
@@ -72,13 +71,13 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
         return BadRequest();
 
       var result = await RequestExecutorContainer.Build<TagFileSnsProcessExecutor>(loggerFactory,
-          configStore, dataCache, tagFileForwarder, transferProxyFactory, webRequest)
+          configStore, dataCache, trexTagFileProxy, transferProxyFactory, webRequest)
         .ProcessAsync(payload);
 
-        if(result != null)
-          return Ok();
-        // Note sure if we return bad request or not on failed processing - will updated if needed
-        return BadRequest();
+      if (result != null)
+        return Ok();
+      // Note sure if we return bad request or not on failed processing - will updated if needed
+      return BadRequest();
     }
   }
 }

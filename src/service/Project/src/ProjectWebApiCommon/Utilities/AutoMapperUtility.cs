@@ -144,7 +144,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimeZone, opt => opt.Ignore())
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore())
-            .ForMember(dest => dest.ProjectType, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
             ;
 

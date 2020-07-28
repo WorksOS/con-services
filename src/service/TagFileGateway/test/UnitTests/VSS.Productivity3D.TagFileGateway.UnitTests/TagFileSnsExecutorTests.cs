@@ -98,8 +98,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         .Returns(Task.FromResult<HttpContent>(new ByteArrayContent(MockRequest.Data.ToArray())));
 
       // Ensure the tag file will be upload and save the response
-      TagFileForwarder
-        .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      TRexTagFileProxy
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
         .Returns(Task.FromResult(new ContractExecutionResult()));
@@ -119,8 +119,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
           It.IsAny<bool>()), 
         Times.Once);
 
-      TagFileForwarder
-        .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      TRexTagFileProxy
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Once);
       
@@ -154,9 +154,9 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         })
       };
 
-    // Ensure the tag file will be upload and save the response
-      TagFileForwarder
-        .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      // Ensure the tag file will be upload and save the response
+      TRexTagFileProxy
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => receivedTagFile = tagFileRequest)
         .Returns(Task.FromResult(new ContractExecutionResult()));
@@ -167,8 +167,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var result = e.ProcessAsync(payLoad).Result;
 
       // Validate
-      TagFileForwarder
-        .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      TRexTagFileProxy
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Once);
       
@@ -183,7 +183,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     }
 
     [Fact]
-    public void ShouldNotUploadWhenTagFileForwarderReturnsInternalProcessingErrorType()
+    public void ShouldNotUploadWhenTrexProxyReturnsInternalProcessingErrorType()
     {
       var e = CreateExecutor<TagFileSnsProcessExecutor>();
       var theFileName = "test-filename-no-download";
@@ -206,8 +206,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
 
       var expectedErrorCode = 3124; // Executor should forward on the error code and in this case, not archive this internal error
       // Setup a failed connection
-      TagFileForwarder
-        .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      TRexTagFileProxy
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Returns(Task.FromResult(new ContractExecutionResult(expectedErrorCode)));
 
@@ -218,8 +218,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var result = e.ProcessAsync(payLoad).Result;
 
       // Validate we tried to upload
-      TagFileForwarder
-        .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      TRexTagFileProxy
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 
@@ -232,7 +232,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     }
 
     [Fact]
-    public void ShouldUploadWhenTagFileForwarderPasses()
+    public void ShouldUploadWhenTrexProxyPasses()
     {
       var e = CreateExecutor<TagFileSnsProcessExecutor>();
       var theFileName = "test-filename-no-download";
@@ -253,8 +253,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var expectedS3Path = $"{key}";
 
       // Ensure the tag file will be upload and save the response
-      TagFileForwarder
-        .Setup(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      TRexTagFileProxy
+        .Setup(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
           It.IsAny<IHeaderDictionary>()))
         .Callback<CompactionTagFileRequest, IHeaderDictionary>((tagFileRequest, _) => { })
         .Returns(Task.FromResult(new ContractExecutionResult()));
@@ -266,8 +266,8 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var result = e.ProcessAsync(payLoad).Result;
 
       // Validate we tried to upload
-      TagFileForwarder
-        .Verify(m => m.SendTagFileDirect(It.IsAny<CompactionTagFileRequest>(),
+      TRexTagFileProxy
+        .Verify(m => m.SendTagFile(It.IsAny<CompactionTagFileRequest>(),
             It.IsAny<IHeaderDictionary>()),
           Times.Exactly(1));
 

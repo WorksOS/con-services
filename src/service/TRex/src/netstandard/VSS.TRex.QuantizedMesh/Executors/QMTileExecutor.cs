@@ -346,7 +346,13 @@ namespace VSS.TRex.QuantizedMesh.Executors
       CenterX = NEECoords[2].X + dx / 2;
       double dy = NEECoords[2].Y - NEECoords[0].Y;
       CenterY = NEECoords[0].Y + dy / 2;
-      TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
+
+      // Calculate the tile rotation as the mathematical angle turned from 0 (due east) to the vector defined by dy/dx
+      TileRotation = Math.Atan2(dy, dx);
+
+      // Convert TileRotation to represent the angular deviation rather than a bearing
+      TileRotation = (Math.PI / 2) - TileRotation;
+
       SetRotation(TileRotation);
 
       _log.LogDebug($"QMTile render executing across tile: [Rotation:{ MathUtilities.RadiansToDegrees(TileRotation)}] " +
@@ -361,8 +367,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // Intersect the site model extents with the extents requested by the caller
       _log.LogDebug($"Tile.({TileX},{TileY}) Calculating intersection of bounding box and site model {DataModelUid}:{siteModelExtent}");
-      RotatedTileBoundingExtents.Intersect(siteModelExtent);
-      if (!RotatedTileBoundingExtents.IsValidPlanExtent)
+      var dataSelectionExtent = new BoundingWorldExtent3D(RotatedTileBoundingExtents);
+      dataSelectionExtent.Intersect(siteModelExtent);
+      if (!dataSelectionExtent.IsValidPlanExtent)
       {
         ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
         _log.LogInformation($"Tile.({TileX},{TileY}) Site model extents {siteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
@@ -372,11 +379,11 @@ namespace VSS.TRex.QuantizedMesh.Executors
       // Compute the override cell boundary to be used when processing cells in the sub grids
       // selected as a part of this pipeline
       // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
-      SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-        RotatedTileBoundingExtents.MinY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+      SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MinX,
+        dataSelectionExtent.MinY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
         out var CellExtents_MinX, out var CellExtents_MinY);
-      SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-        RotatedTileBoundingExtents.MaxY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+      SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MaxX,
+        dataSelectionExtent.MaxY, cellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
         out var CellExtents_MaxX, out var CellExtents_MaxY);
       var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
       CellExtents.Expand(1);
@@ -405,7 +412,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
       // a final restriction of the spatial extent used to govern data requests
-      processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
+      processor.OverrideSpatialExtents.Assign(RotatedTileBoundingExtents);
 
       // Setup new grid array for results 
       GriddedElevDataArray = new GriddedElevDataRow[TileGridSize, TileGridSize];

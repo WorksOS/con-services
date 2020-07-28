@@ -59,7 +59,7 @@ namespace VSS.TRex.Caching
     /// Evicts a single item from the LRU list (the oldest) and joins it to the free list
     /// Note: This method does not independently lock the list, the caller is responsible for required locking.
     /// </summary>
-    private void EvictOneLRUItemNoLock()
+    public void EvictOneLRUItem()
     {
       if (MRUHead == -1)
         return;
@@ -92,18 +92,10 @@ namespace VSS.TRex.Caching
       _freeListHead = lruHead;
 
       // Set the index in the context to the element just evicted to zero
-      _items[_freeListHead].RemoveFromContextNoLock();
+      _items[_freeListHead].RemoveFromContext();
 
       // Adjust the token count in the MRU list
       _tokenCount--;
-    }
-
-    public void EvictOneLRUItemWithLock()
-    {
-      lock (_items)
-      {
-        EvictOneLRUItemNoLock();
-      }
     }
 
     /// <summary>
@@ -112,17 +104,14 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Invalidate(int index)
     {
-      lock (_items)
-      {
-        var previousValid = _items[index].Invalidate();
+      var previousValid = _items[index].Invalidate();
 
-        if (previousValid)
-          return;
+      if (previousValid)
+        return;
 
-        // As it is already invalid, to prevent recurring invalidation again and again, remove it
-        RemoveNoLock(index);
-        _items[index].RemoveFromContextNoLock();
-      }
+      // As it is already invalid, to prevent recurring invalidation again and again, remove it
+      Remove(index);
+      _items[index].RemoveFromContext();
     }
 
     /// <summary>
@@ -131,45 +120,42 @@ namespace VSS.TRex.Caching
     /// <returns>The index of the newly added item</returns>
     public int Add(T element, ITRexSpatialMemoryCacheContext context)
     {
-      lock (_items)
+      var token = NextToken();
+
+      // Obtain item from free list
+      if (_freeListHead == -1)
       {
-        var token = NextToken();
-
-        // Obtain item from free list
-        if (_freeListHead == -1)
-        {
-          // There are no free entries, victimize one to store it
-          EvictOneLRUItemNoLock();
-        }
-
-        var index = _freeListHead;
-
-        _freeListHead = _items[index].Next;
-
-        // Set the parameters for the new item, setting it's prev pointer to point to the oldest member of the MRUList
-        if (MRUHead == -1)
-        {
-          _items[index].Set(element, context, token, index, MRUHead);
-        }
-        else
-        {
-          _items[index].Set(element, context, token, _items[MRUHead].Prev, MRUHead);
-          _items[MRUHead].Prev = index;
-        }
-
-        MRUHead = index;
-
-        _tokenCount++;
-
-        // Return the token to the caller
-        return index;
+        // There are no free entries, victimize one to store it
+        EvictOneLRUItem();
       }
+
+      var index = _freeListHead;
+
+      _freeListHead = _items[index].Next;
+
+      // Set the parameters for the new item, setting it's prev pointer to point to the oldest member of the MRUList
+      if (MRUHead == -1)
+      {
+        _items[index].Set(element, context, token, index, MRUHead);
+      }
+      else
+      {
+        _items[index].Set(element, context, token, _items[MRUHead].Prev, MRUHead);
+        _items[MRUHead].Prev = index;
+      }
+
+      MRUHead = index;
+
+      _tokenCount++;
+
+      // Return the token to the caller
+      return index;
     }
 
     /// <summary>
     /// Removes an item from storage given its index
     /// </summary>
-    private void RemoveNoLock(int index)
+    public void Remove(int index)
     {
       _items[index].GetPrevAndNext(out var prev, out var next);
 
@@ -186,23 +172,12 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Removes an item from storage given its index
-    /// </summary>
-    public void Remove(int index)
-    {
-      lock (_items)
-      {
-        RemoveNoLock(index);
-      }
-    }
-
-    /// <summary>
     /// Moves the element at the index location in the element storage so that it is now the most recently
     /// used element in the cache. This is done by modifying the Prev and Next references in the doubly linked list.
     /// Note: The location of the item in the list is not moved as a result of this, so all external indexes relating
     /// to it continue to be valid.
     /// </summary>
-    private void TouchItemNoLock(int index)
+    private void TouchItem(int index)
     {
       // Save the indexes of the previous and next items
       _items[index].GetPrevAndNext(out var prev, out var next);
@@ -228,37 +203,31 @@ namespace VSS.TRex.Caching
     /// </summary>
     public T Get(int index)
     {
-      lock (_items)
+      var cacheItem = _items[index];
+
+      if (cacheItem.Expired || !cacheItem.Valid)
       {
-        var cacheItem = _items[index];
-
-        if (cacheItem.Expired || !cacheItem.Valid)
-        {
-          RemoveNoLock(index);
-          cacheItem.RemoveFromContextNoLock();
-          return default;
-        }
-
-        if (_currentToken - _items[index].MRUEpochToken > _maxMruEpochTokenAge)
-        {
-          TouchItemNoLock(index);
-
-          // Advance the current token so all elements 'age' by one
-          NextToken();
-        }
-
-        return cacheItem.Item;
+        Remove(index);
+        cacheItem.RemoveFromContext();
+        return default;
       }
+
+      if (_currentToken - _items[index].MRUEpochToken > _maxMruEpochTokenAge)
+      {
+        TouchItem(index);
+
+        // Advance the current token so all elements 'age' by one
+        NextToken();
+      }
+
+      return cacheItem.Item;
     }
 
     public bool IsEmpty() => MRUHead == -1;
 
     public bool IsValid(int index)
     {
-      lock (_items)
-      {
-        return _items[index].Valid;
-      }
+      return _items[index].Valid;
     }
   }
 }

@@ -261,7 +261,7 @@ namespace VSS.ConfigurationStore
 
     public string GetValueString(string key, string defaultValue)
     {
-      return GetValue(key, defaultValue);
+      return GetValue(key, defaultValue, false);
     }
 
     public int GetValueInt(string key)
@@ -354,13 +354,14 @@ namespace VSS.ConfigurationStore
       return GetSection("Logging");
     }
 
-    private T GetValue<T>(string key, T defaultValue)
+    private T GetValue<T>(string key, T defaultValue, bool logKeyNotFound = true)
     {
       var value = defaultValue;
 
       if (configuration[key] == null)
-      {
-        log.LogWarning($"Missing configuration key {key}");
+      { 
+        if(logKeyNotFound)
+          log.LogWarning($"Missing configuration key {key}");
       }
       else
       {

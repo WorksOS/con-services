@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.Common.Utilities;
@@ -263,13 +264,14 @@ namespace VSS.TRex.Rendering.Executors
     /// Renders all sub grids in a representational style that indicates where there is data, but nothing else. This is used for large scale displays
     /// (zoomed out a lot) where meaningful detail cannot be drawn on the tile
     /// </summary>
-    /// <returns></returns>
     private IBitmap RenderTileAsRepresentationalDueToScale(ISubGridTreeBitMask overallExistenceMap)
     {
       using (var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/))
       {
-        using (var mapView = new MapSurface { SquareAspect = false, Rotation = -TileRotation + Math.PI / 2 })
+        using (var mapView = new MapSurface { SquareAspect = false })
         {
+          mapView.SetRotation(TileRotation);
+
           RepresentationalDisplay.MapView = mapView;
 
           RepresentationalDisplay.MapView.SetBounds(NPixelsX, NPixelsY);
@@ -396,16 +398,19 @@ namespace VSS.TRex.Rendering.Executors
       var dx = NEECoords[2].X - NEECoords[0].X;
       var dy = NEECoords[2].Y - NEECoords[0].Y;
 
-      TileRotation = Math.PI / 2 - Math.Atan2(dy, dx);
+      // Calculate the tile rotation as the mathematical angle turned from 0 (due east) to the vector defined by dy/dx
+      TileRotation = Math.Atan2(dy, dx);
+
+      // Convert TileRotation to represent the angular deviation rather than a bearing
+      TileRotation = (Math.PI / 2) - TileRotation;
 
       RotatedTileBoundingExtents.SetInverted();
-      foreach (var xyz in NEECoords)
-        RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
+      NEECoords.ForEach(xyz => RotatedTileBoundingExtents.Include(xyz.X, xyz.Y));
 
-      _log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}] " +
+      _log.LogInformation($"Tile render executing across tile: [Rotation:{TileRotation}, {MathUtilities.RadiansToDegrees(TileRotation)} degrees] " +
         $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
         $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
-        $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}");
+        $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}, Rotated bounding extents: {RotatedTileBoundingExtents}");
 
       // Construct the renderer, configure it, and set it on its way
       //  WorkingColorPalette = Nil;
@@ -419,8 +424,9 @@ namespace VSS.TRex.Rendering.Executors
 
           _log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{adjustedSiteModelExtents}");
 
-          RotatedTileBoundingExtents.Intersect(adjustedSiteModelExtents);
-          if (!RotatedTileBoundingExtents.IsValidPlanExtent)
+          var dataSelectionExtent = new BoundingWorldExtent3D(RotatedTileBoundingExtents);
+          dataSelectionExtent.Intersect(adjustedSiteModelExtents);
+          if (!dataSelectionExtent.IsValidPlanExtent)
           {
             ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
             _log.LogInformation($"Site model extents {adjustedSiteModelExtents}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
@@ -439,11 +445,11 @@ namespace VSS.TRex.Rendering.Executors
           // selected as a part of this pipeline
           // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
 
-          SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-            RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+          SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MinX,
+            dataSelectionExtent.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
             out var CellExtents_MinX, out var CellExtents_MinY);
-          SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-            RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+          SubGridTree.CalculateIndexOfCellContainingPosition(dataSelectionExtent.MaxX,
+            dataSelectionExtent.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
             out var CellExtents_MaxX, out var CellExtents_MaxY);
 
           var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
@@ -472,7 +478,7 @@ namespace VSS.TRex.Rendering.Executors
 
           // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
           // a final restriction of the spatial extent used to govern data requests
-          processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
+          processor.OverrideSpatialExtents.Assign(RotatedTileBoundingExtents);
 
           // Prepare the processor
           if (!await processor.BuildAsync())
@@ -502,10 +508,12 @@ namespace VSS.TRex.Rendering.Executors
           // Renderer.WorkingPalette = WorkingColorPalette;
 
           Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
-          Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);
+
+          Renderer.SetBounds(RotatedTileBoundingExtents.CenterX - WorldTileWidth / 2,
+                             RotatedTileBoundingExtents.CenterY - WorldTileHeight / 2,
+                             WorldTileWidth, WorldTileHeight,
+                             NPixelsX, NPixelsY);
           Renderer.TileRotation = TileRotation;
-          Renderer.WorldTileWidth = WorldTileWidth;
-          Renderer.WorldTileHeight = WorldTileHeight;
 
           ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
 

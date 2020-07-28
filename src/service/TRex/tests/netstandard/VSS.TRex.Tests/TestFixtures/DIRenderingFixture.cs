@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return key switch
       {
         DisplayMode.Height => new ElevationArraySmoother(new ConvolutionTools<float>(), smootherMaskSize, smootherNullInfillMode),
-        DisplayMode.CutFill => new ElevationArraySmoother(new ConvolutionTools<float>(), smootherMaskSize, smootherNullInfillMode),
+        // DisplayMode.CutFill => new ElevationArraySmoother(new ConvolutionTools<float>(), smootherMaskSize, smootherNullInfillMode),
         _ => null
       };
     }
