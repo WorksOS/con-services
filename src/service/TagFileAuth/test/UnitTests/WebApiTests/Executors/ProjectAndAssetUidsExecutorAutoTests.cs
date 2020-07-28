@@ -390,7 +390,7 @@ namespace WebApiTests.Executors
     {
       Assert.IsNotNull(actualResult, "executor returned nothing");
       Assert.AreEqual(expectedResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(expectedResult.AssetUid, actualResult.AssetUid, "executor returned incorrect AssetUid");
+      Assert.AreEqual(expectedResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
       Assert.AreEqual(resultCode, actualResult.Code, "executor returned incorrect result code");
       Assert.AreEqual(resultMessage, actualResult.Message, "executor returned incorrect result message");
     }

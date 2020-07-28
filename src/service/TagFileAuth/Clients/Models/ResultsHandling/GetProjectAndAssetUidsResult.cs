@@ -14,9 +14,8 @@ namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
     /// <summary>
     /// The Uid of the asset. Currently Trex thinks this is an AssetUid
     /// </summary>
-    public string AssetUid { get; set; }
+    public string DeviceUid { get; set; }
 
-    
     /// <summary>
     /// Create instance of GetProjectAndAssetUidsResult
     ///    The Code is the unique code (or 0 for success) code to use for translations.
@@ -24,10 +23,10 @@ namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
     ///    For TFA, these are 3k based 
     ///    Message is the english version of any error
     /// </summary>
-    public GetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0, string messageDetail = "success")
+    public GetProjectAndAssetUidsResult(string projectUid, string deviceUid, int uniqueCode = 0, string messageDetail = "success")
     {
       ProjectUid = projectUid;
-      AssetUid = assetUid;
+      DeviceUid = deviceUid;
       Code = uniqueCode;
       Message = messageDetail;
     }
@@ -38,7 +37,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
       return new GetProjectAndAssetUidsResult(projectUid, deviceUid,
         uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode),
         uniqueCode == 0 ? DefaultMessage :
-          uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)));
+        uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)));
     }
 
     public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>() { ProjectUid };

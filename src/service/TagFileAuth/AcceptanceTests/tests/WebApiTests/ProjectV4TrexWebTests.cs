@@ -98,7 +98,7 @@ namespace WebApiTests
     {
       Assert.NotNull(actualResult);
       Assert.Equal(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.AssetUid, actualResult.AssetUid);
+      Assert.Equal(expectedGetProjectAndAssetUidsResult.DeviceUid, actualResult.DeviceUid);
       Assert.Equal(expectedGetProjectAndAssetUidsResult.Code, actualResult.Code);
       Assert.Equal(expectedGetProjectAndAssetUidsResult.Message, actualResult.Message);
     }
