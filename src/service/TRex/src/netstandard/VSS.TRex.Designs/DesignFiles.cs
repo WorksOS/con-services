@@ -90,7 +90,7 @@ end;
 
           if (descriptor != null)
           {
-            _log.LogDebug($"Surface design UID {designUid}, filename = {design.FileName} needs to be loaded");
+            _log.LogDebug($"Surface design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
           }
 
           if (descriptor == null)
