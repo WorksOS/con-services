@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
       }
     }
 
-    public async Task<GetProjectUidsResult> GetProjectUidsEarthWorks(GetProjectUidsBaseRequest request,
+    public async Task<GetProjectUidsResult> GetProjectUidsEarthWorks(GetProjectUidsEarthWorksRequest request,
       IHeaderDictionary customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);

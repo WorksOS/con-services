@@ -9,6 +9,6 @@ namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
   {
     Task<GetProjectUidsResult> GetProjectUids(GetProjectUidsRequest request, IHeaderDictionary customHeaders = null);
 
-    Task<GetProjectUidsResult> GetProjectUidsEarthWorks(GetProjectUidsBaseRequest request,  IHeaderDictionary customHeaders = null);
+    Task<GetProjectUidsResult> GetProjectUidsEarthWorks(GetProjectUidsEarthWorksRequest request,  IHeaderDictionary customHeaders = null);
   }
 }

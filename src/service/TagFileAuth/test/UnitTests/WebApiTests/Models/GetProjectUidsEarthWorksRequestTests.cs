@@ -6,7 +6,7 @@ using VSS.Productivity3D.TagFileAuth.Models;
 namespace WebApiTests.Models
 {
   [TestClass]
-  public class ProjectUidsBaseRequestTests : ModelBaseTests
+  public class GetProjectUidsEarthWorksRequestTests : ModelBaseTests
   {
     [TestMethod]
     [DataRow( "ec520Serial", 91, 179, 3021)] // invalid lat
@@ -16,7 +16,7 @@ namespace WebApiTests.Models
      string platformSerial, double latitude, double longitude, int errorCode)
     {
       var projectAndAssetUidsEarthWorksRequest =
-        new GetProjectUidsBaseRequest(platformSerial, latitude, longitude);
+        new GetProjectUidsEarthWorksRequest(platformSerial, latitude, longitude);
 
       var ex = Assert.ThrowsException<ServiceException>(() => projectAndAssetUidsEarthWorksRequest.Validate());
 
@@ -30,7 +30,7 @@ namespace WebApiTests.Models
     (string platformSerial, double latitude, double longitude, int errorCode)
     {
       var projectAndAssetUidsEarthWorksRequest =
-        new GetProjectUidsBaseRequest(platformSerial, latitude, longitude);
+        new GetProjectUidsEarthWorksRequest(platformSerial, latitude, longitude);
       projectAndAssetUidsEarthWorksRequest.Validate();
     }
   }

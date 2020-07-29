@@ -15,7 +15,7 @@ namespace WebApiTests
       double latitude = 15;
       double longitude = 180;
 
-      var request = new GetProjectUidsBaseRequest(platformSerial, latitude, longitude);
+      var request = new GetProjectUidsEarthWorksRequest(platformSerial, latitude, longitude);
       request.Validate();
       var expectedResult = new GetProjectUidsResult(ExecutorTestFixture.dimensionsProjectUid, ExecutorTestFixture.dimensionsSerialDeviceUid, ExecutorTestFixture.dimensionsCustomerUID, 0, "success");
 
