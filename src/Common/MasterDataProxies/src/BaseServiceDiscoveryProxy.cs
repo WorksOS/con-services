@@ -216,10 +216,8 @@ namespace VSS.MasterData.Proxies
     private async Task<TResult> RequestAndReturnData<TResult>(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 0) where TResult : class
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
-      log.LogDebug($"{nameof(RequestAndReturnData)} todoJeannie url {url} retries {retries} IsInsideAuthBoundary {IsInsideAuthBoundary} customHeaders {customHeaders}");
       // If we are calling to our own services, keep the JWT assertion
       var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
-      log.LogDebug($"{nameof(RequestAndReturnData)} todoJeannie strippedHeaders {strippedHeaders} ");
       var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: strippedHeaders, method: method, retries: retries);
       log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
 

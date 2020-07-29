@@ -6,11 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Cache.Models;
 using VSS.Common.Abstractions.Enums;
-using VSS.Common.Abstractions.ServiceDiscovery;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Exceptions;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
@@ -59,9 +57,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           continue;
         try
         {
-          logger.LogDebug($"{nameof(ResolveService)} todoJeannie serviceResolver  {JsonConvert.SerializeObject(serviceResolver)}");
           var endPoint = await serviceResolver.ResolveService(serviceName);
-          logger.LogDebug($"{nameof(ResolveService)} todoJeannie endPoint  {JsonConvert.SerializeObject(endPoint)}");
           if (!string.IsNullOrEmpty(endPoint))
           {
             return new ServiceResult
@@ -155,7 +151,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     {
       // Cache the service endpoint for a given service name
       var cacheKey = $"{nameof(InternalServiceResolver)}-{GetServiceConfigurationName(serviceName, apiType, version)}";
-      logger.LogDebug($"{nameof(ResolveRemoteServiceEndpoint)} todoJeannie cacheKey {cacheKey}");
       var url = await cache.GetOrCreate(cacheKey, async entry =>
       {
         entry.SetOptions(new MemoryCacheEntryOptions()
@@ -164,7 +159,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         });
 
         var result = await GetUrl(serviceName, apiType, version);
-        logger.LogDebug($"{nameof(ResolveRemoteServiceEndpoint)} todoJeannie after GetUrl() result {result}");
 
         var cacheItem = new CacheItem<string>(result, new List<string>
         {
@@ -205,7 +199,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         sb.Append($"{WebUtility.UrlEncode(parameter.Key)}={WebUtility.UrlEncode(parameter.Value)}");
         first = false;
       }
-      logger.LogDebug($"{nameof(ResolveRemoteServiceEndpoint)} todoJeannie sb {sb}");
       return sb.ToString();
     }
 
@@ -215,7 +208,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
 
       // We will see if we have an explicit service defined for this version of the service
       // If not we will attempt to build it from the base url
-      logger.LogDebug($"{nameof(GetUrl)} todoJeannie serviceName {serviceName} apiType{apiType} version {version}");
 
       var service = await ResolveService(GetServiceConfigurationName(serviceName, apiType, version));
       if (service != null && service.Type != ServiceResultType.Unknown)
@@ -233,7 +225,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         var endpoint = service.Endpoint.TrimEnd(URL_ROUTE_PATH_SEPARATOR.ToCharArray());
 
         url = $"{endpoint}{URL_ROUTE_PATH_SEPARATOR}{apiComponent}{URL_ROUTE_PATH_SEPARATOR}{versionComponent}";
-        logger.LogDebug($"{nameof(GetUrl)} todoJeannie url {url}");
       }
 
       return url;
