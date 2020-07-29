@@ -1,13 +1,16 @@
 ﻿using System.Linq;
+using System;
 using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
+using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Kubernetes.Interfaces;
+using VSS.ConfigurationStore;
 
 namespace VSS.Common.ServiceDiscovery.Resolvers
 {

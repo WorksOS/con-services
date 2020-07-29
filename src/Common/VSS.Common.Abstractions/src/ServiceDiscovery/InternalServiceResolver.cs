@@ -159,7 +159,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         });
 
         var result = await GetUrl(serviceName, apiType, version);
-
         var cacheItem = new CacheItem<string>(result, new List<string>
         {
           serviceName
@@ -199,6 +198,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         sb.Append($"{WebUtility.UrlEncode(parameter.Key)}={WebUtility.UrlEncode(parameter.Value)}");
         first = false;
       }
+
       return sb.ToString();
     }
 
@@ -208,7 +208,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
 
       // We will see if we have an explicit service defined for this version of the service
       // If not we will attempt to build it from the base url
-
       var service = await ResolveService(GetServiceConfigurationName(serviceName, apiType, version));
       if (service != null && service.Type != ServiceResultType.Unknown)
       {
