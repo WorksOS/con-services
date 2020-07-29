@@ -174,7 +174,6 @@ namespace VSS.TRex.TAGFiles.Executors
         }
 
         Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, machineTargetValueChangesAggregator);
-        Processor.OriginSource = TAGFileOriginSource.VolvoMachineAssistEarthworksCSV;
 
         var sink = new TAGValueSink(Processor);
         var reader = new VolvoEarthworksCSVReader(tagData);
