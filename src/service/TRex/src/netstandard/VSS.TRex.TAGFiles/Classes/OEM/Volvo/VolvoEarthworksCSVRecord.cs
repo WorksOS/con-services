@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 {
@@ -62,6 +64,26 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       LastTemp_f = int.Parse(GetField("LastTemp_f", headerLocations, parts));
       LastCMV = double.Parse(GetField("LastCMV", headerLocations, parts));
       ICMVType = int.Parse(GetField("ICMVType", headerLocations, parts));
+    }
+
+    // Converts the machine type name from the CSV file into a revognised machine type
+    public static MachineType MachineTypeFromString(string machineType)
+    {
+      return machineType switch
+      {
+        "SD115B" => TRex.Types.MachineType.SoilCompactor,
+        _ => TRex.Types.MachineType.Unknown
+      };
+    }
+
+    public static MachineGear MachineGearFromString(string machinegear)
+    {
+      return machinegear switch
+      {
+        "Forward" => TRex.Types.MachineGear.Forward,
+        "Reverse" => TRex.Types.MachineGear.Reverse,
+        _ => TRex.Types.MachineGear.Null
+      };
     }
   }
 }
