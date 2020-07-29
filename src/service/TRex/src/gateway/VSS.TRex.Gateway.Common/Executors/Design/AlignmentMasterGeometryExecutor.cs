@@ -44,7 +44,9 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       var geometryResponse = await geometryRequest.ExecuteAsync(new AlignmentDesignGeometryArgument
       {
         ProjectID = siteModel.ID,
-        AlignmentDesignID = request.DesignUid
+        AlignmentDesignID = request.DesignUid,
+        ArcChordTolerance = request.ArcChordTolerance,
+        ConvertArcsToPolyLines = request.ConvertArcsToChords
       });
 
       if (geometryResponse != null && geometryResponse.RequestResult == DesignProfilerRequestResult.OK)
