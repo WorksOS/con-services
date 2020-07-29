@@ -100,7 +100,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
 
     private static void AddPoint(double x, double y, List<double[]> fencePoints)
     {
-      const int DECIMALS = 6;
+      const int DECIMALS = 10;
 
       var point = new[]
       {
