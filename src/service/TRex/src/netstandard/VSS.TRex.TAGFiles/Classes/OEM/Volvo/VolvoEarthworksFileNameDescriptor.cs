@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 {
@@ -13,7 +14,7 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 
     private void DecodeFromFileName(string fileName)
     {
-      var parts = fileName.Split('_');
+      var parts = Path.GetFileNameWithoutExtension(fileName).Split('_');
       Lift = parts[0];
       DesignName = parts[1];
       Counter = int.Parse(parts[2]);
@@ -21,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 
       var dateParts = parts[4].Split(' ');
       var dayParts = dateParts[0].Split('-');
-      var timeParts = dateParts[0].Split('-');
+      var timeParts = dateParts[1].Split('-');
       Date = new DateTime(int.Parse(dayParts[0]), int.Parse(dayParts[1]), int.Parse(dayParts[2]), int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
 
       MachineID = parts[5];

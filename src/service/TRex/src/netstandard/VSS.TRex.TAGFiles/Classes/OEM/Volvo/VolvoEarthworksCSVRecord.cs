@@ -20,13 +20,13 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
     public int TargetPassCount;
     public bool ValidPos;
     public int Lift;
-    public int LastEDV;
+    public double LastEDV;
     public int LastFreq_Hz;
     public double LastAmp_mm;
     public double TargThickness_FT;
     public string MachineGear;
     public string VibeState;
-    public int LastTemp_f;
+    public double LastTemp_f;
     public double LastCMV;
     public int ICMVType;
 
@@ -41,27 +41,31 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       return hasValue ? parts[partsIndex] : string.Empty;
     }
 
+    public VolvoEarthworksCSVRecord()
+    {
+    }
+
     public VolvoEarthworksCSVRecord(string line, Dictionary<string, int> headerLocations)
     {
       var parts = line.Split(',');
 
       Time = DateTime.Parse(GetField("Time", headerLocations, parts));
       CellN_m = double.Parse(GetField("CellN_m", headerLocations, parts));
-      CellN_m = double.Parse(GetField("CellE_m", headerLocations, parts));
+      CellE_m = double.Parse(GetField("CellE_m", headerLocations, parts));
       PassNumber = int.Parse(GetField("PassNumber", headerLocations, parts));
       DesignName = GetField("DesignName", headerLocations, parts);
       Machine = GetField("Machine", headerLocations, parts);
       Speed_mph = double.Parse(GetField("Speed_mph", headerLocations, parts));
-      TargetPassCount = int.Parse(GetField("TargetPassCount", headerLocations, parts));
+      TargetPassCount = int.Parse(GetField("TargPassCount", headerLocations, parts));
       ValidPos = GetField("ValidPos", headerLocations, parts) == "Yes";
       Lift = int.Parse(GetField("Lift", headerLocations, parts));
-      LastEDV = int.Parse(GetField("LastEDV", headerLocations, parts));
+      LastEDV = double.Parse(GetField("LastEDV", headerLocations, parts));
       LastFreq_Hz = int.Parse(GetField("LastFreq_Hz", headerLocations, parts));
       LastAmp_mm = double.Parse(GetField("LastAmp_mm", headerLocations, parts));
       TargThickness_FT = double.Parse(GetField("TargThickness_FT", headerLocations, parts));
       MachineGear = GetField("MachineGear", headerLocations, parts);
       VibeState = GetField("VibeState", headerLocations, parts);
-      LastTemp_f = int.Parse(GetField("LastTemp_f", headerLocations, parts));
+      LastTemp_f = double.Parse(GetField("LastTemp_f", headerLocations, parts));
       LastCMV = double.Parse(GetField("LastCMV", headerLocations, parts));
       ICMVType = int.Parse(GetField("ICMVType", headerLocations, parts));
     }
