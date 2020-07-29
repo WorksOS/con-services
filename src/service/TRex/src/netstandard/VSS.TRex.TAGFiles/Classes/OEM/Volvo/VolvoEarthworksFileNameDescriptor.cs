@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 {
@@ -11,7 +9,7 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
     public int Counter { get; set; }
     public string CSName { get; set; }
     public DateTime Date { get; set; }
-    public string MachineID { get; set; }
+    public string MachineID { get; set; } // ??? Is this machine hardware ID instead
 
     private void DecodeFromFileName(string fileName)
     {
@@ -26,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       var timeParts = dateParts[0].Split('-');
       Date = new DateTime(int.Parse(dayParts[0]), int.Parse(dayParts[1]), int.Parse(dayParts[2]), int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
 
-      MachineHardwareID = parts[5];
+      MachineID = parts[5];
     }
 
     public VolvoEarthworksFileNameDescriptor(string fileName)

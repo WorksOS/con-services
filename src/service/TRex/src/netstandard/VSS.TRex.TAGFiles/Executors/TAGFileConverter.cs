@@ -174,10 +174,12 @@ namespace VSS.TRex.TAGFiles.Executors
         }
 
         Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, machineTargetValueChangesAggregator);
+        Processor.OriginSource = TAGFileOriginSource.VolvoMachineAssistEarthworksCSV;
+
         var sink = new TAGValueSink(Processor);
         var reader = new VolvoEarthworksCSVReader(tagData);
 
-        ReadResult = reader.Read(sink);
+        ReadResult = reader.Read(sink, Processor);
 
         // Notify the processor that all reading operations have completed for the file
         Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
