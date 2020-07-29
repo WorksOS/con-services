@@ -129,7 +129,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
         "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
         "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
-        "--illegal-access=permit"
+        "--illegal-access=permit",
+        "--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED"
       };
 
 
