@@ -48,7 +48,7 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
     /// Reads the context of a Volvo earthworks CSV file using the provided sink to send data to
     /// Note: LastEDV value is not handled as it has no corresponding value in TRex
     /// </summary>
-    public TAGReadResult Read(TAGValueSinkBase sink, TAGProcessor Processor)
+    public TAGReadResult Read(TAGValueSinkBase sink, TAGProcessor processor)
     {
       using var streamReader = new StreamReader(_stream, Encoding.ASCII);
 
@@ -59,13 +59,13 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       // Read all remaining lines into an array for easy access
       var lines = ReadLines(streamReader).ToList();
 
-      var swather = new VolvoEarthworksCSVGridSwather(Processor,
-                                                      Processor.MachineTargetValueChangesAggregator,
-                                                      Processor.SiteModel,
-                                                      Processor.SiteModelGridAggregator,
+      var swather = new VolvoEarthworksCSVGridSwather(processor,
+                                                      processor.MachineTargetValueChangesAggregator,
+                                                      processor.SiteModel,
+                                                      processor.SiteModelGridAggregator,
                                                       null)
       {
-        ProcessedEpochNumber = lines.Count
+        ProcessedEpochNumber = processor.ProcessedEpochCount
       };
 
       var currentTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
@@ -75,59 +75,61 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       {
         var cellPass = ParseLine(line);
 
-        Processor.DataTime = cellPass.Time;
+        processor.DataTime = DateTime.SpecifyKind(cellPass.Time, DateTimeKind.Utc);
 
         // There si no RMV in the CSV file - set on ground to be grou all the time.
-        Processor.SetOnGround(TRex.Types.OnGroundState.YesLegacy);
+        processor.SetOnGround(OnGroundState.YesLegacy);
 
         // Default Volvo machine to MC024 sensor returning CMV values
         // TODO: understand if this is a special sensor for Volvo
         // TODO: understand meaning of the ICMVType field
-        Processor.ICSensorType = TRex.Types.CompactionSensorType.MC024;
+        processor.ICSensorType = CompactionSensorType.MC024;
 
         // TODO: Understand the relationship of Volvo CMV value to internal CMV value 
-        Processor.SetICCCVValue((short)Math.Round(cellPass.LastCMV));
+        processor.SetICCCVValue((short)Math.Round(cellPass.LastCMV));
 
-        Processor.MachineType = VolvoEarthworksCSVRecord.MachineTypeFromString(cellPass.Machine);
+        processor.MachineType = VolvoEarthworksCSVRecord.MachineTypeFromString(cellPass.Machine);
 
-        if (Processor.MachineType == MachineType.Unknown)
+        if (processor.MachineType == MachineType.Unknown)
         {
           _log.LogDebug($"Machine type name {cellPass.Machine} generated an unknown machine type");
         }
 
         // Add the events for this line
-        if (currentTime < cellPass.Time)
+        if (currentTime < processor.DataTime)
         {
           // Fill in the machine avents for this epoch
-          Processor.Design = cellPass.DesignName;
+          processor.Design = cellPass.DesignName;
         }
 
         // Convert mph to cs/s
         var speedInCentimetersPerSecond = (int)Math.Round(cellPass.Speed_mph * 1.60934 * 3600 * 100);
-        Processor.SetICMachineSpeedValue(speedInCentimetersPerSecond);
+        processor.SetICMachineSpeedValue(speedInCentimetersPerSecond);
 
-        Processor.ICPassTargetValue = (ushort)cellPass.TargetPassCount;
-        Processor.ValidPosition = cellPass.ValidPos ? (byte)1 : (byte)0;
+        processor.ICPassTargetValue = (ushort)cellPass.TargetPassCount;
+        processor.ValidPosition = cellPass.ValidPos ? (byte)1 : (byte)0;
 
-        Processor.ICLayerIDValue = (ushort)cellPass.Lift;
+        processor.ICLayerIDValue = (ushort)cellPass.Lift;
 
-        Processor.SetICFrequency((ushort)cellPass.LastFreq_Hz);
-        Processor.SetICAmplitude(cellPass.LastAmp_mm == -1000 ? CellPassConsts.NullAmplitude : (ushort)Math.Round(cellPass.LastAmp_mm * 100));
+        processor.SetICFrequency((ushort)cellPass.LastFreq_Hz);
+        processor.SetICAmplitude(cellPass.LastAmp_mm == -1000 ? CellPassConsts.NullAmplitude : (ushort)Math.Round(cellPass.LastAmp_mm * 100));
 
-        Processor.ICTargetLiftThickness = (float)(cellPass.TargThickness_FT / 3.048);
-        Processor.ICGear = VolvoEarthworksCSVRecord.MachineGearFromString(cellPass.MachineGear);
+        processor.ICTargetLiftThickness = (float)(cellPass.TargThickness_FT / 3.048);
+        processor.ICGear = VolvoEarthworksCSVRecord.MachineGearFromString(cellPass.MachineGear);
 
-        if (Processor.ICGear == MachineGear.Null)
+        if (processor.ICGear == MachineGear.Null)
         {
           _log.LogDebug($"Machine gear name {cellPass.MachineGear} generated a null machine gear");
         }
 
-        Processor.SetICTemperatureValue((ushort)cellPass.LastTemp_f);
-        Processor.ICMode = (byte)((cellPass.VibeState == "On" ? 1 : 0) << ICModeFlags.IC_TEMPERATURE_VIBRATION_STATE_SHIFT);
+        processor.SetICTemperatureValue((ushort)cellPass.LastTemp_f);
+        processor.ICMode = (byte)((cellPass.VibeState == "On" ? 1 : 0) << ICModeFlags.IC_TEMPERATURE_VIBRATION_STATE_SHIFT);
 
         // Add the cell pass for this line.
         // Note: Half pass is hardwired to false, and pass type is hardwired to front drum/blade
         swather.SwathSingleCell(false, PassType.Front, cellPass.CellE_m, cellPass.CellN_m, VOLVO_EARTHWORKS_GRID_CELL_SIZE, cellPass);
+
+        processor.ProcessedEpochCount = swather.ProcessedEpochNumber;
       });
 
       return TAGReadResult.NoError;

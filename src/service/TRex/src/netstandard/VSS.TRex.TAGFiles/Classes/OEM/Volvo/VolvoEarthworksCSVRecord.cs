@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Types;
 
