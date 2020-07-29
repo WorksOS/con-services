@@ -60,8 +60,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         PositionsAreGrid = request.PositionsAreGrid,
         Filters = new FilterSet(baseFilter),
         ReferenceDesign = referenceDesign,
-        StartPoint = new WGS84Point(request.StartX, request.StartY),
-        EndPoint = new WGS84Point(request.EndX, request.EndY),
+        StartPoint = new WGS84Point(request.StartX, request.StartY, 0 ),
+        EndPoint = new WGS84Point(request.EndX, request.EndY, 0),
         ReturnAllPassesAndLayers = true,
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
         LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
