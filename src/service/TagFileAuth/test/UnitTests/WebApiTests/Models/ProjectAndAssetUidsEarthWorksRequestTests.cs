@@ -7,6 +7,7 @@ using VSS.Productivity3D.TagFileAuth.Models;
 namespace WebApiTests.Models
 {
   [TestClass]
+  [Obsolete("todoJeannie remove")]
   public class ProjectAndAssetUidsEarthWorksRequestTests : ModelBaseTests
   {
     [TestMethod]

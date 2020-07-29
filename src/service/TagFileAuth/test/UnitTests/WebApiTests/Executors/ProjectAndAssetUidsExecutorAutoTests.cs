@@ -20,6 +20,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 namespace WebApiTests.Executors
 {
   [TestClass]
+  [Obsolete("todoJeannie remove")]
   public class ProjectAndAssetUidsExecutorAutoTests : ExecutorBaseTests
   {
     private ILoggerFactory _loggerFactory;
@@ -52,7 +53,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
+      var expectedResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
 
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
@@ -60,7 +61,7 @@ namespace WebApiTests.Executors
         null, null,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -68,7 +69,7 @@ namespace WebApiTests.Executors
     public async Task TRexExecutor_Auto_Happy_RadioSerialMapOverride()
     {
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "123", string.Empty, 0, 0, DateTime.MinValue);
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult("896c7a36-e079-4b67-a79c-b209398f01ca", "b00c62b3-4eee-472e-9814-c31379e94bd5");
+      var expectedResult = new GetProjectAndAssetUidsResult("896c7a36-e079-4b67-a79c-b209398f01ca", "b00c62b3-4eee-472e-9814-c31379e94bd5");
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore, authorization.Object,
@@ -77,7 +78,7 @@ namespace WebApiTests.Executors
 
       var result = await executor.ProcessAsync(getProjectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
 
-      ValidateResult(result, expectedGetProjectAndAssetUidsResult, 0, "success");
+      ValidateResult(result, expectedResult, 0, "success");
     }
 
     [TestMethod]
@@ -105,7 +106,7 @@ namespace WebApiTests.Executors
       var ec520Device = new DeviceData { CustomerUID = ec520AccountUid, DeviceUID = ec520Uid };
       var projectListForEC520 = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
+      var expectedResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
 
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
@@ -113,7 +114,7 @@ namespace WebApiTests.Executors
         ec520Device, projectListForEC520,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -147,7 +148,7 @@ namespace WebApiTests.Executors
       var ec520Device = new DeviceData { CustomerUID = ec520AccountUid, DeviceUID = ec520Uid };
       var projectListForEC520 = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
+      var expectedResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
 
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
@@ -155,7 +156,7 @@ namespace WebApiTests.Executors
         ec520Device, projectListForEC520,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         coordinateConversionResult,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -187,7 +188,7 @@ namespace WebApiTests.Executors
       var ec520Device = new DeviceData { CustomerUID = ec520AccountUid, DeviceUID = ec520Uid };
       var projectListForEC520 = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, ec520Uid);
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, ec520Uid);
 
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
@@ -195,7 +196,7 @@ namespace WebApiTests.Executors
         ec520Device, projectListForEC520,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         coordinateConversionResult,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 3044, expectedMessage: "Auto Import: No projects found at the location provided"
+        expectedResult, expectedCode: 3044, expectedMessage: "No projects found at the location provided"
       );
     }
 
@@ -224,7 +225,7 @@ namespace WebApiTests.Executors
       var ec520Device = (DeviceData)null;
       var projectListForEC520 = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
 
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
@@ -232,7 +233,7 @@ namespace WebApiTests.Executors
         ec520Device, projectListForEC520,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 3100, expectedMessage: "Unable to locate device by serialNumber in cws"
+        expectedResult, expectedCode: 3100, expectedMessage: "Unable to locate device by serialNumber in cws"
       );
     }
 
@@ -255,7 +256,7 @@ namespace WebApiTests.Executors
       var ec520Device = (DeviceData)null;
       var projectListForEC520 = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
@@ -263,7 +264,7 @@ namespace WebApiTests.Executors
         ec520Device, projectListForEC520,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 3048, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(48)
+        expectedResult, expectedCode: 3048, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(48)
       );
     }
 
@@ -293,7 +294,7 @@ namespace WebApiTests.Executors
       var ec520Device = (DeviceData)null;
       var projectListForEC520 = new ProjectDataResult();
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
@@ -301,7 +302,7 @@ namespace WebApiTests.Executors
         ec520Device, projectListForEC520,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 3044, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(44)
+        expectedResult, expectedCode: 3044, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(44)
       );
     }
 
@@ -339,16 +340,15 @@ namespace WebApiTests.Executors
       var ec520Device = (DeviceData)null;
       var projectListForEC520 = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
-
-
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
+      
       await ExecuteAuto
       (getProjectAndAssetUidsRequest,
         radioSerialDeviceUid, radioSerialDevice, projectListForRadioSerial,
         ec520Device, projectListForEC520,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 3049, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(49)
+        expectedResult, expectedCode: 3049, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(49)
       );
     }
 
@@ -357,7 +357,7 @@ namespace WebApiTests.Executors
       DeviceData ec520Device, ProjectDataResult projectListForEC520,
       ICustomRadioSerialProjectMap customRadioSerialMapper,
       CoordinateConversionResult coordinateConversionResult,
-      GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
+      GetProjectAndAssetUidsResult expectedResult, int expectedCode, string expectedMessage
     )
     {
       deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, It.IsAny<HeaderDictionary>())).ReturnsAsync(radioSerialDevice);
@@ -382,15 +382,15 @@ namespace WebApiTests.Executors
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
-      ValidateResult(result, expectedGetProjectAndAssetUidsResult, expectedCode, expectedMessage);
+      ValidateResult(result, expectedResult, expectedCode, expectedMessage);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult,
+    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedResult,
       int resultCode, string resultMessage)
     {
       Assert.IsNotNull(actualResult, "executor returned nothing");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
+      Assert.AreEqual(expectedResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(expectedResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
       Assert.AreEqual(resultCode, actualResult.Code, "executor returned incorrect result code");
       Assert.AreEqual(resultMessage, actualResult.Message, "executor returned incorrect result message");
     }
