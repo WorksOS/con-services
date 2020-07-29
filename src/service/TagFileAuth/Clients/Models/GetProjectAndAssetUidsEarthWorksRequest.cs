@@ -9,7 +9,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
   /// TFA v2 endpoint to retrieve ProjectUid and/or DeviceUid and subscription indicator for a tagfile.
   ///      this is used by the 3dp GetSubGridPatches endpoint used by EarthWorks for cut-fill maps.
   /// </summary>
-  public class GetProjectAndAssetUidsEarthWorksRequest 
+  public class GetProjectAndAssetUidsEarthWorksRequest
   {
     /// <summary>
     /// The EC520 serial number of the machine from the tagfile.

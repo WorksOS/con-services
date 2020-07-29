@@ -295,6 +295,26 @@ namespace VSS.TRex.Geometry
         MaxY = AMaxY;
     }
 
+    /// <summary>
+    /// Compute the 3D bounding box that result from intersecting this bounding box with the one provided in Extent.
+    /// </summary>
+    public bool Intersects(BoundingWorldExtent3D Extent) => Intersects(Extent.MinX, Extent.MinY, Extent.MaxX, Extent.MaxY);
+
+    /// <summary>
+    /// Compute the 3D bounding box that result from intersecting this bounding box with the one described by the min/max X, Y and Z coordinates.
+    /// </summary>
+    public bool Intersects(double AMinX, double AMinY, double AMaxX, double AMaxY)
+    {
+      var minX = (AMinX > MinX) ? AMinX : MinX;
+      var minY = (AMinY > MinY) ? AMinY : MinY;
+      var maxX = (AMaxX < MaxX) ? AMaxX : MaxX;
+      var maxY = (AMaxY < MaxY) ? AMaxY : MaxY;
+
+      return (maxX != Consts.NullDouble) && (minX != Consts.NullDouble) &&
+             (maxY != Consts.NullDouble) && (minY != Consts.NullDouble) &&
+             (maxX >= minX) && (maxY >= minY);
+    }
+
     /* Intersection of a filter boundary is not implemented in the C# version from the Delphi version below. 
      * Instead, perform a direct intersection from the min/maz x/y coordinates as is done below
     function T3DBoundingWorldExtent.Intersect(const Fence: TObject): T3DBoundingWorldExtent;

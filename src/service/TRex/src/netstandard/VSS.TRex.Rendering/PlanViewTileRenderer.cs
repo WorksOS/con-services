@@ -39,12 +39,7 @@ namespace VSS.TRex.Rendering
 
     // The rotation of tile in the grid coordinate space due to any defined
     // rotation on the coordinate system.
-    public double TileRotation { get; set; }
-
-    // WorldTileWidth, WorldTileHeight and contain the world size of tile being rendered
-    // once any rotation of the tile has been removed
-    public double WorldTileWidth = 0.0;
-    public double WorldTileHeight = 0.0;
+    public double TileRotation;
 
     // IsWhollyInTermsOfGridProjection determines if we can use a fixed square
     // aspect view and adjust the world coordinate bounds of the viewport to
@@ -52,7 +47,7 @@ namespace VSS.TRex.Rendering
     // if the source is in terms of WGS84 lat/long where scaling and rotation
     // in the Lat/Long geodetic transform to grid coordinates needs to be
     // taken into account (Value=False)
-    public bool IsWhollyInTermsOfGridProjection = false;
+    public bool IsWhollyInTermsOfGridProjection;
 
     // function GetWorkingPalette: TICDisplayPaletteBase;
     // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
@@ -125,7 +120,6 @@ namespace VSS.TRex.Rendering
     /// will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
     /// of cells to the map view grid of pixels
     /// </summary>
-    /// <param name="processor"></param>
     private void ConstructPVMTaskAccumulator(IPipelineProcessor processor)
     {
       // Construct the PVM task accumulator for the PVM rendering task to contain the values to be rendered
@@ -135,17 +129,22 @@ namespace VSS.TRex.Rendering
       // of cells to the map view grid of pixels
 
       var smoother = (Displayer as IProductionPVMConsistentDisplayer)?.DataSmoother;
+      var view = Displayer.MapView;
 
-      var valueStoreCellSizeX = Displayer.MapView.XPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.XPixelSize : processor.SiteModel.CellSize;
-      var valueStoreCellSizeY = Displayer.MapView.YPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.YPixelSize : processor.SiteModel.CellSize;
+      var valueStoreCellSizeX = view.XPixelSize > processor.SiteModel.CellSize ? view.XPixelSize : processor.SiteModel.CellSize;
+      var valueStoreCellSizeY = view.YPixelSize > processor.SiteModel.CellSize ? view.YPixelSize : processor.SiteModel.CellSize;
 
       // Compute the origin of the cell in the value store that encloses the origin of the map view.
-      var valueStoreOriginX = Math.Truncate(Displayer.MapView.OriginX / valueStoreCellSizeX) * valueStoreCellSizeX;
-      var valueStoreOriginY = Math.Truncate(Displayer.MapView.OriginY / valueStoreCellSizeY) * valueStoreCellSizeY;
+      // In the case of tile rendering, OverrideSpatialExtents represents the enclosing rotated bounding box for the tile and 
+      // is the bounding extent of the data should be requested
+      var valueStoreOriginX = Math.Truncate(processor.OverrideSpatialExtents.MinX / valueStoreCellSizeX) * valueStoreCellSizeX;
+      var valueStoreOriginY = Math.Truncate(processor.OverrideSpatialExtents.MinY / valueStoreCellSizeY) * valueStoreCellSizeY;
 
       // Compute the limit of the cell in the value store that encloses the limit of the map view.
-      var valueStoreLimitX = Math.Truncate((Displayer.MapView.LimitX + valueStoreCellSizeX) / valueStoreCellSizeX) * valueStoreCellSizeX;
-      var valueStoreLimitY = Math.Truncate((Displayer.MapView.LimitY + valueStoreCellSizeY) / valueStoreCellSizeY) * valueStoreCellSizeY;
+      // In the case of tile rendering, OverrideSpatialExtents represents the enclosing rotated bounding box for the tile and 
+      // is the bounding extent of the data should be requested
+      var valueStoreLimitX = Math.Truncate((processor.OverrideSpatialExtents.MaxX + valueStoreCellSizeX) / valueStoreCellSizeX) * valueStoreCellSizeX;
+      var valueStoreLimitY = Math.Truncate((processor.OverrideSpatialExtents.MaxY + valueStoreCellSizeY) / valueStoreCellSizeY) * valueStoreCellSizeY;
 
       var valueStoreCellsX = (int)Math.Round((valueStoreLimitX - valueStoreOriginX) / valueStoreCellSizeX);
       var valueStoreCellsY = (int)Math.Round((valueStoreLimitY - valueStoreOriginY) / valueStoreCellSizeY);
@@ -205,20 +204,21 @@ namespace VSS.TRex.Rendering
         SquareAspect = IsWhollyInTermsOfGridProjection
       };
 
+      var view = Displayer.MapView;
+
       // Set the world coordinate bounds of the display surface to be rendered on
-      Displayer.MapView.SetBounds(NPixelsX, NPixelsY);
+      view.SetBounds(NPixelsX, NPixelsY);
 
       if (IsWhollyInTermsOfGridProjection)
-        Displayer.MapView.FitAndSetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
+        view.FitAndSetWorldBounds(OriginX, OriginY, OriginX + Width, OriginY + Height, 0);
       else
-        Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
+        view.SetWorldBounds(OriginX, OriginY, OriginX + Width, OriginY + Height, 0);
 
       // Provide data smoothing support to the displayer for the rendering operation being performed
       ((IProductionPVMConsistentDisplayer) Displayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode);
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
-      // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
-      Displayer.MapView.SetRotation(-TileRotation /* + (Math.PI / 2) */);
+      view.SetRotation(TileRotation);
 
       ConstructPVMTaskAccumulator(processor);
 
@@ -229,12 +229,11 @@ namespace VSS.TRex.Rendering
       // size to matching the skip-stepping the PVM accumulator will use when transcribing cell data from sub grids into
       // the accumulator. Note that the area control set is not configured with a rotation - this is taken into account
       // through the mapview rotation configured above
-      processor.Pipeline.AreaControlSet = new AreaControlSet(false, 
-        Displayer.MapView.XPixelSize, Displayer.MapView.YPixelSize,
-        Displayer.MapView.XPixelSize / 2.0, Displayer.MapView.YPixelSize / 2.0,
+      processor.Pipeline.AreaControlSet = new AreaControlSet(false,
+        view.XPixelSize, view.YPixelSize,
+        view.XPixelSize / 2.0, view.YPixelSize / 2.0,
         0.0);
 
-      // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
       processor.Pipeline.LiftParams = liftParams;
       // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
@@ -251,13 +250,13 @@ namespace VSS.TRex.Rendering
         if (DebugDrawDiagonalCrossOnRenderedTilesDefault)
         {
           // Draw diagonal cross and top left corner indicators
-          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.OriginY, Displayer.MapView.LimitX, Displayer.MapView.LimitY, Color.Red);
-          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.LimitX, Displayer.MapView.OriginY, Color.Red);
+          view.DrawLine(view.OriginX, view.OriginY, view.LimitX, view.LimitY, Color.Red);
+          view.DrawLine(view.OriginX, view.LimitY, view.LimitX, view.OriginY, Color.Red);
 
           // Draw the horizontal line a little below the world coordinate 'top' of the tile to encourage the line
           // drawing algorithm not to clip it
-          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY, Displayer.MapView.OriginX, Displayer.MapView.CenterY, Color.Red);
-          Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.LimitY - 0.01, Displayer.MapView.CenterX, Displayer.MapView.LimitY - 0.01, Color.Red);
+          view.DrawLine(view.OriginX, view.LimitY, view.OriginX, view.CenterY, Color.Red);
+          view.DrawLine(view.OriginX, view.LimitY - 0.01, view.CenterX, view.LimitY - 0.01, Color.Red);
         }
       }
 
@@ -269,12 +268,6 @@ namespace VSS.TRex.Rendering
     /// origin, its real world coordinate width and height and the number of pixels for the width and height
     /// of the resulting rendered tile.
     /// </summary>
-    /// <param name="originX"></param>
-    /// <param name="originY"></param>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="nPixelsX"></param>
-    /// <param name="nPixelsY"></param>
     public void SetBounds(double originX, double originY,
       double width, double height,
       ushort nPixelsX, ushort nPixelsY)

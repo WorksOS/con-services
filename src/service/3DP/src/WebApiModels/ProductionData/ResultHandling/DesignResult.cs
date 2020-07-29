@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Collections.Generic;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
@@ -9,24 +10,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// Array of design boundaries in GeoJson format.
     /// </summary>
     /// 
-    public JObject[] DesignBoundaries { get; private set; }
-
-    /// <summary>
-    /// Private constructor.
-    /// </summary>
-    /// 
-    private DesignResult()
-    {
-      // ...
-    }
+    public List<GeoJson> DesignBoundaries { get; private set; }
 
     /// <summary>
     /// Creates an instance of the DesignResult class.
     /// </summary>
-    /// <param name="designBoundaries">Array of design boundaries in GeoJson format.</param>
-    /// <returns>A created instance of the SurveyedSurfaceResult class.</returns>
-    /// 
-    public DesignResult (JObject[] designBoundaries)
+    public DesignResult (List<GeoJson> designBoundaries)
     {
       DesignBoundaries = designBoundaries;
     }

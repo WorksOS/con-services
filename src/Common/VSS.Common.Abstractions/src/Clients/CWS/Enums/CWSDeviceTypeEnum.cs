@@ -9,18 +9,22 @@ namespace VSS.Common.Abstractions.Clients.CWS.Enums
 
   public enum CWSDeviceTypeEnum
   {
-    [EnumMember(Value = null)] Unknown = 0, // null
+    [EnumMember(Value = "Unknown")] Unknown = 0, 
 
     [EnumMember(Value = "EC520")] EC520,     // Earthworks serialNumber ends YU
-                                             // e.g. 1234J501YU = EC520 (Non Wi-Fi version)
+                                             // e.g. 1234J501YU = EC520 the digit after the J will be 5 or greater
 
-    [EnumMember(Value = "EC520-W")] EC520W,  // Earthworks EC520-W serialNumber ends YU
-                                             // the digit after the J will be 5 or greater for a non wi-fi version
-                                             // e.g. 1234J001YU = EC520-W (Wi-Fi version)
+    [EnumMember(Value = "EC520-W")] EC520W,  // Earthworks EC520-W (wi-fi version) serialNumber ends YU 
+                                             // e.g. 1234J001YU = EC520-W the digit after the J will be <5
 
     [EnumMember(Value = "CB430")] CB430,     // GCS900 serialNumber ends SM
 
     [EnumMember(Value = "CB450")] CB450,     // GCS900 serialNumber ends SV
+                                             // For the July 2020 1st release,
+                                             // Marine dredgers: CutterSuctionDredge = 70, BargeMountedExcavator = 71
+                                             //      will be configured in TCC/cws as CB450s.
+                                             //   This is to get around the issue where cws doesn't support queries on non CB/EC serialNumbers (used by TFA)
+                                             //   [CCSSSCON-885] is for a future sprint perhaps a new PlatformType (TMC?) which supports marine devices.
 
     [EnumMember(Value = "CB460")] CB460,     // GCS900 serialNumber ends SW
 

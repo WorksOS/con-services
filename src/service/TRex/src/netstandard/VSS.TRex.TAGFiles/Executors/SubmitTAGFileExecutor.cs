@@ -4,14 +4,15 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Enums;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
@@ -19,6 +20,7 @@ using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Validator;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Types;
 using VSS.WebApi.Common;
 
 namespace VSS.TRex.TAGFiles.Executors
@@ -83,11 +85,6 @@ namespace VSS.TRex.TAGFiles.Executors
           };
 
           // Validate tag file submission
-
-          //var tagFilePreScan = new TAGFilePreScan();
-          //await using (var stream = new MemoryStream(td.tagFileContent))
-          //  tagFilePreScan.Execute(stream);
-
           ContractExecutionResult result;
           result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
           
@@ -183,9 +180,10 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
     {
-      // Marine devices will come through as CB450s
-      if (tagFilePreScan.PlatformType == MachineControlPlatformType.EC520 ||
-           tagFilePreScan.PlatformType == MachineControlPlatformType.UNKNOWN)
+      // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
+      if (tagFilePreScan.PlatformType == CWSDeviceTypeEnum.EC520 ||
+          tagFilePreScan.PlatformType == CWSDeviceTypeEnum.EC520W ||
+           tagFilePreScan.PlatformType == CWSDeviceTypeEnum.Unknown)
         _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Not an applicable DeviceType: {tagFilePreScan.PlatformType}");
       else
       {
@@ -211,14 +209,17 @@ namespace VSS.TRex.TAGFiles.Executors
             Height = tagFilePreScan.SeedHeight,
             AssetSerialNumber = tagFilePreScan.HardwareID,
             AssetNickname = tagFilePreScan.MachineID,
+
+            // [CCSSSCON-885] temporary what should Marine AppName be?
+            AppName = (tagFilePreScan.MachineType == MachineType.CutterSuctionDredge || tagFilePreScan.MachineType == MachineType.BargeMountedExcavator)
+                      ? "TMC" : "GCS900",
             AppVersion = tagFilePreScan.ApplicationVersion,
             DesignName = tagFilePreScan.DesignName,
 
 
             // PlatformType is only passed as part of DeviceName {platformType}-{assetSerialNumber}
-            // As at 2020_07-1 Marine dredgers: CutterSuctionDredge = 70, BargeMountedExcavator = 71
-            //                 are configured in cws as CBs
-            AssetType = tagFilePreScan.MachineType.ToString(),
+            // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
+            AssetType = tagFilePreScan.MachineType.GetEnumMemberValue().ToString(),
         
             Devices = string.IsNullOrWhiteSpace(tagFilePreScan.RadioSerial) ? null :
               new List<ConnectedDevice>
@@ -230,10 +231,12 @@ namespace VSS.TRex.TAGFiles.Executors
                 }
               }
           };
+          _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Posting deviceLks to cws deviceGateway: {JsonConvert.SerializeObject(deviceLksModel)}");
+
           var cwsDeviceGatewayClient = DIContext.Obtain<ICwsDeviceGatewayClient>();
           var customHeaders = _tPaaSApplicationAuthentication.CustomHeaders();
 
-          _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Posting deviceLks to cws deviceGateway: {JsonConvert.SerializeObject(deviceLksModel)}");
+          _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Got customHeaders");
 
           // don't await this call, should be fire and forget
           cwsDeviceGatewayClient.CreateDeviceLKS($"{deviceLksModel.AssetType}-{deviceLksModel.AssetSerialNumber}", deviceLksModel, customHeaders)
@@ -245,6 +248,7 @@ namespace VSS.TRex.TAGFiles.Executors
               }
             }, TaskContinuationOptions.OnlyOnFaulted);
         }
+        _log.LogInformation($"#Progress# {nameof(SendDeviceStatusToDeviceGateway)} Post to ces deviceGateway completed");
       }
     }
   }

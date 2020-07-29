@@ -17,67 +17,62 @@ using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
-using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
-using VSS.Productivity3D.TagFileGateway.Common.Proxy;
 using VSS.Productivity3D.TagFileGateway.Common.Services;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileGateway
 {
+  /// <summary>
+  /// VSS.Productivity3D.TagFileGateway application startup.
+  /// </summary>
+  public class Startup : BaseStartup
+  {
+    /// <inheritdoc />
+    public override string ServiceName => "Tag File Gateway API";
+
+    /// <inheritdoc />
+    public override string ServiceDescription => "A service to Accept TAG Files";
+
+    /// <inheritdoc />
+    public override string ServiceVersion => "v1";
+
     /// <summary>
-    /// VSS.Productivity3D.TagFileGateway application startup.
+    /// Configures services and the application request pipeline.
     /// </summary>
-    public class Startup : BaseStartup
+    public Startup()
     {
-        /// <inheritdoc />
-        public override string ServiceName => "Tag File Gateway API";
-
-        /// <inheritdoc />
-        public override string ServiceDescription => "A service to Accept TAG Files";
-
-        /// <inheritdoc />
-        public override string ServiceVersion => "v1";
-
-        /// <summary>
-        /// Configures services and the application request pipeline.
-        /// </summary>
-        public Startup()
-        { }
-
-        /// <inheritdoc />
-        protected override void ConfigureAdditionalServices(IServiceCollection services)
-        {
-
-            // Required for authentication
-            services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
-            services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-            services.AddTransient<IWebRequest, GracefulWebRequest>();
-
-            services.AddServiceDiscovery();
-            services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-            services.AddScoped<IErrorCodesProvider, TagFileGatewayExecutionStates>();
-            services.AddTransient<ITagFileForwarder, TagFileForwarderProxy>();
-            services.AddScoped<ITransferProxyFactory, TransferProxyFactory>();
-
-            services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
-            services.AddSingleton<CacheInvalidationService>();
-
-            services.AddHostedService<TagFileSqsService>();
-
-            services.AddOpenTracing(builder =>
-            {
-              builder.ConfigureAspNetCore(options =>
-              {
-                options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-              });
-            });
-        }
-
-        /// <inheritdoc />
-        protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
-        {
-        }
     }
+
+    /// <inheritdoc />
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
+    {
+
+      // Required for authentication
+      services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+
+      services.AddServiceDiscovery();
+      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddScoped<IErrorCodesProvider, TagFileGatewayExecutionStates>();
+      services.AddScoped<ITRexTagFileProxy, TRexTagFileV2Proxy>();
+      services.AddScoped<ITransferProxyFactory, TransferProxyFactory>();
+
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddSingleton<CacheInvalidationService>();
+
+      services.AddHostedService<TagFileSqsService>();
+
+      services.AddOpenTracing(builder => { builder.ConfigureAspNetCore(options => { options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping"); }); });
+    }
+
+    /// <inheritdoc />
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
+    {
+    }
+  }
 }
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net;
@@ -24,6 +25,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   ///                      else production data AND SS is provided
   ///      don't know what it would be for landfills and civil project using a TCCOrgId
   /// </summary>
+  [Obsolete("todoJeannie remove")]
   public class ProjectAndAssetUidsEarthWorksExecutor : RequestExecutorContainer
   {
     ///  <summary>
@@ -64,8 +66,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       DeviceData device)
     {
       var errorCode = 0;
-      var NonEarthWorksRequest = new GetProjectAndAssetUidsRequest() {Longitude = request.Longitude, Latitude = request.Latitude};
-      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(NonEarthWorksRequest, device, out errorCode);
+      var getProjectUidsRequest = new GetProjectUidsRequest() { Longitude = request.Longitude, Latitude = request.Latitude };
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(getProjectUidsRequest, device, out errorCode);
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 

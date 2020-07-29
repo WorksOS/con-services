@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.Proxy.Interfaces;
+using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 
 namespace VSS.TRex.Gateway.Common.Proxy
 {
@@ -29,33 +26,16 @@ namespace VSS.TRex.Gateway.Common.Proxy
       _serviceResolution = serviceResolution;
     }
 
-    #region Properties
-
     /// <summary>
     /// The Type of gateway this service is for, so the service-name includes it e.g. trex-gateway; trex-mutable-gateway; trex-connectedSite-gateway
     /// </summary>
     protected GatewayType Gateway { get; set; } = GatewayType.None;
 
-    #endregion
-
-    #region Protected Methods
-
-    protected override string GetServiceName()
+    protected override string GetServiceName() => Gateway switch
     {
-      switch (Gateway)
-      {
-        case GatewayType.Immutable:
-          return ServiceNameConstants.TREX_SERVICE_IMMUTABLE;
-        case GatewayType.Mutable:
-          return ServiceNameConstants.TREX_SERVICE_MUTABLE;
-        case GatewayType.ConnectedSite:
-          return ServiceNameConstants.TREX_SERVICE_CONNECTEDSITE;
-        default:
-          throw new ArgumentOutOfRangeException("Trex", Gateway, null);
-      }
-    }
-
-    #endregion
-
+      GatewayType.Immutable => ServiceNameConstants.TREX_SERVICE_IMMUTABLE,
+      GatewayType.Mutable => ServiceNameConstants.TREX_SERVICE_MUTABLE,
+      _ => throw new ArgumentOutOfRangeException("Trex", Gateway, null)
+    };
   }
 }

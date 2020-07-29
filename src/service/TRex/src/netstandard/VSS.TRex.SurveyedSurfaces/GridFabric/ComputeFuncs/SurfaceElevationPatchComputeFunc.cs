@@ -21,7 +21,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     {
       try
       {
-        _log.LogDebug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
+        // _log.LogDebug($"SurfaceElevationPatchComputeFunc: Arg = {arg}");
 
         var executor = new CalculateSurfaceElevationPatch(arg);
         var result = executor.Execute();

@@ -12,7 +12,6 @@ services:
      - project_service=http://project.prod.prod-eks.services.myvisionlink.com
      - filter_service=http://filter.prod.prod-eks.services.myvisionlink.com
      - tagfileauth_service=http://tagfileauth.prod.prod-eks.services.myvisionlink.com
-     - trex_service_connectedsite=http://connectedsite.prod.prod-eks.services.myvisionlink.com
      - trex_service_immutable=http://trex.immutable.dev.k8s.vspengg.com
      - trex_service_mutable=http://trex.mutable.dev.k8s.vspengg.com
      - ASSETMGMT_CACHE_LIFE=00:15:00
@@ -22,7 +21,6 @@ services:
      - DEFAULT_CONNECTION_LIMIT=64
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
      - ENABLE_CONNECTED_SITE_GATEWAY=true
-     - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
      - ENABLE_TREX_GATEWAY_CCA=false
      - ENABLE_TREX_GATEWAY_CELL_DATUM=false
      - ENABLE_TREX_GATEWAY_DESIGNIMPORT=false
@@ -38,7 +36,6 @@ services:
      - ENABLE_TREX_GATEWAY_SPEED=false     
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_SURFACE=false
-     - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_TILES=false
      - ENABLE_TREX_GATEWAY_VETA=false
      - FILTER_CACHE_LIFE=00:15:00

@@ -14,7 +14,6 @@ services:
      - project_service=http://project.alpha.eks.ccss.cloud
      - filter_service=http://filter.alpha.eks.ccss.cloud
      - tagfileauth_service=http://tagfileauth.alpha.eks.ccss.cloud
-     - trex_service_connectedsite=http://connectedsite.alpha.eks.ccss.cloud
      - trex_service_immutable=http://trex.immutable.alpha.eks.ccss.cloud
      - trex_service_mutable=http://trex.mutable.alpha.eks.ccss.cloud
      - ASSETMGMT_CACHE_LIFE=00:15:00
@@ -24,7 +23,6 @@ services:
      - DEFAULT_CONNECTION_LIMIT=64
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
      - ENABLE_CONNECTED_SITE_GATEWAY=true
-     - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
      - ENABLE_TREX_GATEWAY_CELL_DATUM=false
      - ENABLE_TREX_GATEWAY_DESIGNIMPORT=false
      - ENABLE_TREX_GATEWAY_ELEVATION=false
@@ -37,7 +35,6 @@ services:
      - ENABLE_TREX_GATEWAY_PROJECTSTATISTICS=false
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_SURFACE=false
-     - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_TILES=false
      - ENABLE_TREX_GATEWAY_VETA=false
      - FILTER_CACHE_LIFE=00:15:00

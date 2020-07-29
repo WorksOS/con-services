@@ -22,7 +22,7 @@ namespace VSS.TRex.Storage
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<StorageProxy_Ignite_Transactional>();
 
-    private static readonly bool _useAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
+    private readonly bool _useAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
       .GetValueBool("USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", true);
 
     /// <summary>

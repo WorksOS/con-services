@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

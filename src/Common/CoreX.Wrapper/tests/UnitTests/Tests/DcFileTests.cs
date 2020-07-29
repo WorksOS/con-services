@@ -31,7 +31,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       exObj.Should().NotBeNull("Expected InvalidOperationException when geodetic data file isn't found during CSIB extraction.");
       exObj.GetType().Should().Be<InvalidOperationException>();
-      exObj.Message.Should().Be("GetCSIBFromDCFileContent: Get CSIB from file content failed, error cecGRID_FILE_OPEN_ERROR");
+      exObj.Message.Should().Be("GetCSIBFromDCFileContent: Geodata file not found for geoid model 'NN2000 (Norway18A)'");
     }
 
     [Theory]
@@ -62,6 +62,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
     [InlineData(52.2132598, 5.27894, 0, 469468.38343383482, 147600.70669055654, -43.151662645574675, InputAs.Degrees, DCFile.NETHERLANDS_DE_MIN)]
     [InlineData(0.911293297, 0.092134884, 0, 469468.38343383482, 147600.70669055654, -43.151662645574675, InputAs.Radians, DCFile.NETHERLANDS_DE_MIN)]
     [InlineData(0.8596496002217967, 0.14732153048180185, 0, 5457618.2482351921, 3459373.8527301643, -50.623720502480865, InputAs.Radians, DCFile.PHILIPSBURG)]
+    [InlineData(-15.202778, 130.309167, 0, 8318824.308952088, 640622.3420586593, -39.303228628288906, InputAs.Degrees, "JRAC Bradshaw Jun07.cal")]
     public void Should_use_geodata_file_when_CS_defines_geoid(double lat, double lon, double height, double northing, double easting, double elevation, InputAs inputAs, string dcFilename)
     {
       var csib = GetCSIBFromDC(dcFilename);

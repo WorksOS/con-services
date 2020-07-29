@@ -44,7 +44,9 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       var geometryResponse = await geometryRequest.ExecuteAsync(new AlignmentDesignGeometryArgument
       {
         ProjectID = siteModel.ID,
-        AlignmentDesignID = request.DesignUid
+        AlignmentDesignID = request.DesignUid,
+        ArcChordTolerance = request.ArcChordTolerance,
+        ConvertArcsToPolyLines = request.ConvertArcsToChords
       });
 
       if (geometryResponse != null && geometryResponse.RequestResult == DesignProfilerRequestResult.OK)
@@ -60,12 +62,12 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
             request.FileName,
             geometryResponse.Vertices.Select(x =>
             x.Select(v => new[] { v[0], v[1], v[2] }).ToArray()).ToArray(),
-            geometryResponse.Arcs.Select(x =>
+            geometryResponse.Arcs?.Select(x =>
               new AlignmentGeometryResultArc
               (x.Y1, x.X1, x.Z1,
                 x.Y2, x.X2, x.Z2,
                 x.YC, x.XC, x.ZC, x.CW)).ToArray(),
-            geometryResponse.Labels.Select(x =>
+            geometryResponse.Labels?.Select(x =>
               new AlignmentGeometryResultLabel(x.Station, x.Y, x.X, x.Rotation)).ToArray()));
       }
 

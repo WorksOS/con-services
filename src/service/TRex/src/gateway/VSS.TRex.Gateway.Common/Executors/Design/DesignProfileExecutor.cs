@@ -9,6 +9,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
@@ -53,7 +54,8 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,
         CellSize = siteModel.CellSize,
-        ProfilePath = new [] {new XYZ(request.StartX.Value, request.StartY.Value), new XYZ (request.EndX.Value, request.EndY.Value)}
+        StartPoint = new WGS84Point(request.StartX, request.StartY),
+        EndPoint = new WGS84Point(request.EndX, request.EndY),
       });
 
       if (designProfileResponse != null)

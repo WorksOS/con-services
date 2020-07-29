@@ -203,7 +203,7 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
-    public void InvalidateSubGridNoLock()
+    public void InvalidateSubGrid()
     {
       ITRexSpatialMemoryCacheContext context =
         new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),

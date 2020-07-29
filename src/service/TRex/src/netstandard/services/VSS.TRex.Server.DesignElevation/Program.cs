@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -22,7 +24,9 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels;
+using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -41,6 +45,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
         .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
+        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -64,6 +69,10 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
+
+        // Register the listener for site model attribute change notifications
+        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+
         .Complete();
     }
 
@@ -97,7 +106,12 @@ namespace VSS.TRex.Server.DesignElevation
 
     private static void DoServiceInitialisation()
     {
+      // Start listening to site model change notifications
+      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+
+      // Start listening to design state change notifications
       DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));

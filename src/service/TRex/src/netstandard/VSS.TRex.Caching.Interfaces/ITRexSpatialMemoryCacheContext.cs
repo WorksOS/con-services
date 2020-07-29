@@ -28,13 +28,13 @@ namespace VSS.TRex.Caching.Interfaces
 
     TRexSpatialMemoryCacheInvalidationSensitivity Sensitivity { get; }
 
-    bool Add(ITRexMemoryCacheItem element);
+    CacheContextAdditionResult Add(ITRexMemoryCacheItem element);
 
     void Remove(ITRexMemoryCacheItem element);
 
     ITRexMemoryCacheItem Get(int originX, int originY);
 
-    void RemoveFromContextTokensOnlyNoLock(ITRexMemoryCacheItem item);
+    void RemoveFromContextTokensOnly(ITRexMemoryCacheItem item);
 
     void InvalidateSubGrid(int originX, int originY, out bool subGridPresentForInvalidation);
 

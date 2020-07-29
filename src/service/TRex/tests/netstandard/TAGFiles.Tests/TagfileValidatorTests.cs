@@ -158,6 +158,45 @@ namespace TAGFiles.Tests
       Assert.Equal("success", result.Message);
     }
 
+
+    [Fact]
+    public async Task Test_PlatformSerialNoValidationOk()
+    {
+      // This test ensures platformSerialNumber (serial/deviceid) is extracted and used in validation. Note this Tagfile has no Radio Serial id. Only Serial id. 
+      var projectUid = Guid.NewGuid();
+      var timeOfPosition = DateTime.UtcNow;
+      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
+      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), null, (int)DeviceTypeEnum.MANUALDEVICE, "success");
+      SetupDITfa(true, moqRequest, moqResult);
+
+      byte[] tagContent;
+      using (var tagFileStream =
+        new FileStream(Path.Combine("TestData", "TAGFiles", "2415J078SW-Serial-Test.tag"), FileMode.Open, FileAccess.Read))
+      {
+        tagContent = new byte[tagFileStream.Length];
+        tagFileStream.Read(tagContent, 0, (int)tagFileStream.Length);
+      }
+
+      var td = new TagFileDetail()
+      {
+        assetId = null,
+        projectId = null, // force validation on serial id
+        tagFileName = "2415J078SW-Serial-Test.tag",
+        tagFileContent = tagContent,
+        tccOrgId = "",
+        IsJohnDoe = false
+      };
+
+      var tagFilePreScan = new TAGFilePreScan();
+      await using (var stream = new MemoryStream(td.tagFileContent))
+        tagFilePreScan.Execute(stream);
+      var result = await TagfileValidator.ValidSubmission(td, tagFilePreScan).ConfigureAwait(false);
+      Assert.True(result.Code == (int)TRexTagFileResultCode.Valid, "Failed to return a Valid request");
+      Assert.True(td.projectId != null, "Failed to return a Valid projectID");
+      Assert.Equal("success", result.Message);
+    }
+
+
     [Fact]
     public async Task Test_UsingNEE_ValidateOk()
     {

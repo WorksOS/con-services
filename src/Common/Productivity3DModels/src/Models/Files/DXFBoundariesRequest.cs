@@ -8,27 +8,19 @@ namespace VSS.Productivity3D.Models.Models.Files
 {
   public class DXFBoundariesRequest
   {
-    [JsonProperty(PropertyName = "csibFileData", Required = Required.Always)]
+    [JsonIgnore]
     public string CSIBFileData { get; set; }
 
-    [JsonProperty(PropertyName = "fileType", Required = Required.Always)]
     public ImportedFileType FileType { get; set; }
 
-    [JsonProperty(PropertyName = "dxfFileData", Required = Required.Always)]
+    [JsonIgnore]
     public string DXFFileData { get; set; }
 
-    [JsonProperty(PropertyName = "fileUnits", Required = Required.Always)]
     public DxfUnitsType FileUnits { get; set; }
 
-    [JsonProperty(PropertyName = "maxBoundaries", Required = Required.Always)]
     public uint MaxBoundaries { get; set; }
 
-    [JsonProperty(PropertyName = "convertLineStringCoordsToPolygon", Required = Required.Default)]
     public bool ConvertLineStringCoordsToPolygon { get; set; }
-
-    private DXFBoundariesRequest()
-    {
-    }
 
     public DXFBoundariesRequest(string csibFileData, ImportedFileType fileType, string dxfFileData, DxfUnitsType fileUnits, uint maxBoundaries, bool convertLineStringCoordsToPolygon)
     {

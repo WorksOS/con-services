@@ -1,9 +1,8 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Geometry;
+using VSS.TRex.Common.Models;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.ExtensionMethods;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
@@ -14,7 +13,10 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// The path along which the profile will be calculated
     /// </summary>
-    public XYZ[] ProfilePath { get; set; } = new XYZ[0];
+    public WGS84Point StartPoint { get; set; } = new WGS84Point();
+    public WGS84Point EndPoint { get; set; } = new WGS84Point();
+
+    public bool PositionsAreGrid { get; set; }
 
     /// <summary>
     /// The cell stepping size to move between points in the patch being interpolated
@@ -41,13 +43,17 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
                                           double cellSize,
                                           Guid designUid,
                                           double offset,
-                                          XYZ[] profilePath) : this()
+                                          WGS84Point startPoint,
+                                          WGS84Point endPoint,
+                                          bool positionsAreGrid = false) : this()
     {
       ProjectID = projectUid;
       CellSize = cellSize;
       ReferenceDesign.DesignID = designUid;
       ReferenceDesign.Offset = offset;
-      ProfilePath = profilePath;
+      StartPoint = startPoint;
+      EndPoint = endPoint;
+      PositionsAreGrid = positionsAreGrid;
     }
 
     /// <summary>
@@ -56,7 +62,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <returns></returns>
     public override string ToString()
     {
-      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{ReferenceDesign?.DesignID}, Offset: {ReferenceDesign?.Offset}, {ProfilePath.Length} vertices, ProfilePath: {ProfilePath}";
+      return base.ToString() + $" -> ProjectUID:{ProjectID}, CellSize:{CellSize}, Design:{ReferenceDesign?.DesignID}, Offset: {ReferenceDesign?.Offset}, StartPoint: {StartPoint}, EndPoint {EndPoint}";
     }
 
     /// <summary>
@@ -71,11 +77,14 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       writer.WriteDouble(CellSize);
 
-      writer.WriteInt(ProfilePath.Length);
-      foreach (var pt in ProfilePath)
-      {
-        pt.ToBinaryUnversioned(writer);
-      }
+      writer.WriteBoolean(StartPoint != null);
+      StartPoint?.ToBinary(writer);
+
+      writer.WriteBoolean(EndPoint != null);
+      EndPoint?.ToBinary(writer);
+
+      writer.WriteBoolean(PositionsAreGrid);
+
     }
 
     /// <summary>
@@ -90,13 +99,16 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
 
       CellSize = reader.ReadDouble();
 
-      var count = reader.ReadInt();
+      StartPoint = new WGS84Point();
+      if (reader.ReadBoolean())
+        StartPoint.FromBinary(reader);
 
-      ProfilePath = new XYZ[count];
-      for (int i = 0; i < count; i++)
-      {       
-        ProfilePath[i] = ProfilePath[i].FromBinaryUnversioned(reader);
-      }
+      EndPoint = new WGS84Point();
+      if (reader.ReadBoolean())
+        EndPoint.FromBinary(reader);
+
+      PositionsAreGrid = reader.ReadBoolean();
+
     }
   }
 }

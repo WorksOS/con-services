@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
@@ -22,7 +23,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
         ProjectID = Guid.NewGuid(),
         ReferenceDesign = new DesignOffset(),
         CellSize = 1.0,
-        ProfilePath = new [] {new XYZ(0, 0), new XYZ(100, 100)}
+        StartPoint = new WGS84Point(0,0),
+        EndPoint = new WGS84Point(100,100)
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom CalculateDesignProfileArgument not same after round trip serialisation");

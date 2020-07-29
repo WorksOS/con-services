@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -17,26 +16,18 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     /// </summary>
     public static async Task<ContractExecutionResult> SendTagFileToTRex(CompactionTagFileRequest compactionTagFileRequest,
       ITRexTagFileProxy tagFileProxy,
-      ILogger log, IHeaderDictionary customHeaders,
-      bool isDirectSubmission = true)
+      ILogger log, IHeaderDictionary customHeaders)
     {
-      var tRexResult = new ContractExecutionResult();
-
       try
       {
-        if (isDirectSubmission)
-          tRexResult = await tagFileProxy.SendTagFileDirect(compactionTagFileRequest, customHeaders);
-        else
-          tRexResult = await tagFileProxy.SendTagFileNonDirect(compactionTagFileRequest, customHeaders);
-
-        return tRexResult;
+        return await tagFileProxy.SendTagFile(compactionTagFileRequest, customHeaders);
       }
       catch (Exception e)
       {
-        log.LogError(e, $"SendTagFileToTRex: returned exception");
+        log.LogError(e, $"{nameof(SendTagFileToTRex)}: returned exception");
       }
 
-      return new ContractExecutionResult((int)TAGProcServerProcessResultCode.Unknown);
+      return new ContractExecutionResult((int)TRexTagFileResultCode.TRexUnknownException);
     }
   }
 }

@@ -8,6 +8,7 @@ using CoreX.Wrapper.Types;
 using Microsoft.Extensions.Logging;
 using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
+using VSS.Common.Abstractions.Configuration;
 
 namespace CoreX.Wrapper
 {
@@ -18,16 +19,17 @@ namespace CoreX.Wrapper
     private static readonly object _lock = new object();
     private readonly ILogger _log;
 
-    public CoreX(ILoggerFactory loggerFactory)
+    public CoreX(ILoggerFactory loggerFactory, IConfigurationStore configStore)
     {
       _log = loggerFactory.CreateLogger<CoreX>();
 
       lock (_lock)
       {
+        GeodeticDatabasePath = configStore.GetValueString("TGL_GEODATA_PATH", "Geodata");
+        _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
+
         SetupTGL();
       }
-
-      CoreXGeodataLogger.DumpGeodataFiles(_log, GeodeticDatabasePath);
     }
 
     /// <summary>
@@ -51,14 +53,6 @@ namespace CoreX.Wrapper
         throw new Exception($"Error '{resultCode}' attempting to load coordinate system database '{xmlFilePath}'");
       }
 
-      GeodeticDatabasePath = Environment.GetEnvironmentVariable("TGL_GEODATA_PATH");
-      _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
-
-      if (string.IsNullOrEmpty(GeodeticDatabasePath))
-      {
-        GeodeticDatabasePath = "Geodata";
-      }
-
       _log.LogInformation($"CoreX {nameof(SetupTGL)}: GeodeticDatabasePath='{GeodeticDatabasePath}'");
 
       if (string.IsNullOrEmpty(GeodeticDatabasePath))
@@ -67,7 +61,11 @@ namespace CoreX.Wrapper
       }
       if (!Directory.Exists(GeodeticDatabasePath))
       {
-        throw new Exception($"Failed to find directory '{GeodeticDatabasePath}' defined by environment variable TGL_GEODATA_PATH.");
+        _log.LogInformation($"Failed to find directory '{GeodeticDatabasePath}' defined by environment variable TGL_GEODATA_PATH.");
+      }
+      else
+      {
+        CoreXGeodataLogger.DumpGeodataFiles(_log, GeodeticDatabasePath);
       }
 
       // CoreX static classes aren't thread safe singletons.
@@ -98,7 +96,19 @@ namespace CoreX.Wrapper
 
         if (result != (int)csmErrorCode.cecSuccess)
         {
-          throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
+          switch ($"{result}")
+          {
+            case "cecGRID_FILE_OPEN_ERROR":
+              {
+                var geoidModelName = CalibrationFileHelper.GetGeoidModelName(Encoding.UTF8.GetBytes(fileContent));
+                throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Geodata file not found for geoid model '{geoidModelName}'");
+              }
+            default:
+              {
+                throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
+
+              }
+          }
         }
 
         var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);

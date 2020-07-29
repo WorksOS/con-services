@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
@@ -267,18 +268,14 @@ namespace VSS.TRex.TAGFiles.Classes.States
       return MachineDirection.Unknown;
     }
 
-    public MachineControlPlatformType GetPlatformType()
+    public CWSDeviceTypeEnum GetPlatformType()
     {
       var type = MachineSerialUtilities.MapSerialToModel(HardwareID);
 
-      // For the July 2020 1st release,
-      //     Marine assets will be configured in TCC/cws as CB450s.
-      //     This is to get around the issue where cws doesn't support queries on non CB/EC serialNumbers (used by TFA)
-      //     There is a Jira ticket in a future sprint for new PlatformType (TMC?) which supports marine devices.
-      if ( type == MachineControlPlatformType.UNKNOWN && 
-           ( MachineType == MachineType.CutterSuctionDredge || MachineType == MachineType.BargeMountedExcavator)
-        )
-         type = MachineControlPlatformType.CB450;
+      // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
+      if ( type == CWSDeviceTypeEnum.Unknown && 
+            (MachineType == MachineType.CutterSuctionDredge || MachineType == MachineType.BargeMountedExcavator))
+         type = CWSDeviceTypeEnum.CB450;
       return type;
     }
 

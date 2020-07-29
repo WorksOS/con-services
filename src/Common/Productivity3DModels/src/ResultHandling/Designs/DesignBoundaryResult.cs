@@ -18,7 +18,6 @@ namespace VSS.Productivity3D.Models.ResultHandling.Designs
     /// <summary>
     /// Override constructor with parameters.
     /// </summary>
-    /// <param name="geoJSONStr"></param>
     public DesignBoundaryResult(GeoJson geoJSON)
     {
       GeoJSON = geoJSON;

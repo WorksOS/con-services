@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
 {
+  [Obsolete("todoJeannie remove")]
   public class GetProjectAndAssetUidsEarthWorksResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>

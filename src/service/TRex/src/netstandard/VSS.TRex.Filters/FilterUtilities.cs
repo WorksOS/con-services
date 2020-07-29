@@ -20,7 +20,7 @@ namespace VSS.TRex.Filters
 
     /*
     private IExistenceMaps existenceMaps = null;
-    private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
+    private IExistenceMaps GetExistenceMaps() => existenceMaps ??= DIContext.Obtain<IExistenceMaps>());
     */
 
     /// <summary>

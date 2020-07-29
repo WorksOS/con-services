@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     public void Validate()
     {
       // if it has a projectUid, then it's a manual import and must have either assetUid or radio/dt  
-      if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParseExact(ProjectUid, "D", out var projectUid))
+      if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParse(ProjectUid, out var projectUid))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(ProjectUid, uniqueCode: 36));
 
       var allowedDeviceTypes = new List<int>() { (int)TagFileDeviceTypeEnum.ManualImport, (int)TagFileDeviceTypeEnum.SNM940, (int)TagFileDeviceTypeEnum.SNM941, (int)TagFileDeviceTypeEnum.EC520 };

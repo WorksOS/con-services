@@ -129,6 +129,7 @@ namespace VSS.TRex.SubGridTrees.Client
           Cells[cellX, cellY].CellPasses[j].TempWarningLevelMax = cellProfileFromContext.Passes.FilteredPassData[j].TargetValues.TempWarningLevelMax;
           Cells[cellX, cellY].CellPasses[j].Height = cellProfileFromContext.Passes.FilteredPassData[j].FilteredPass.Height;
           Cells[cellX, cellY].CellPasses[j].HalfPass = cellProfileFromContext.Passes.FilteredPassData[j].FilteredPass.HalfPass;
+          Cells[cellX, cellY].CellPasses[j].LayerID = cellProfileFromContext.Passes.FilteredPassData[j].EventValues.LayerID;
         }
       }
     }

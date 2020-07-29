@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\src\CoreX\CoreX.Wrapper.csproj" />
     <ProjectReference Include="..\..\src\Models\CoreX.Models.csproj" />
   </ItemGroup>
@@ -31,6 +32,11 @@
   </ItemGroup>
   <ItemGroup>
     <TestData Include="./TestData/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/%(RecursiveDir)" SkipUnchangedFiles="true" />

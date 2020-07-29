@@ -43,7 +43,7 @@
     TFABadRequestInvalidProjectUid = 3036,
             // "ProjectUid is present, but invalid"
     TFABadRequestMissingRadioSerialAndEcmSerial = 3037,
-    // "Auto Import: Either Radio Serial or ec520 Serial must be provided"
+            // "Platform serial number must be provided"
 
     // TFA Functional errors (via TRex) HttpStatusCode.OK   Response Code:
     TFAInternalServiceAccess = 3017, // retry-able
@@ -57,13 +57,13 @@
     TFAManualProjectIsArchived = 3043,
             // "Manual Import: cannot import to an archived project"
     TFAAutoNoProjectsFoundAtLocation = 3044,
-           // "Auto Import: No projects found at the location provided"
+           // "No projects found at the location provided"
     TFAAutoNoDeviceFound = 3047,
-           // "Auto Import: unable to identify the device by this serialNumber"
+           // "Unable to identify the device by this serialNumber"
     TFAAutoDeviceFoundButNoProject = 3048,
-           // "Auto Import: No projects found for this device"
+           // "No projects found for this device"
     TFAAutoMultipleProjectsMatchCriteria = 3049,
-            // "Auto Import: More than 1 project meets the location requirements"
+            // "More than 1 project meets the location requirements"
     TFAManualProjectNotCorrectType = 3053,
             // "Manual Import: cannot import to a project which doesn't accept tag files"
 
@@ -73,8 +73,10 @@
     CWSGetAccountForDeviceNotFound = 3102,
            // "Unable to locate any account for the device in cws"
     CWSGetAccountForDeviceFoundMultiple = 3103,
-           // "There is >1 active account for the device in cws"
-    CWSEndpointException = 3104, // retry-able
+          // "There is >1 active account for the device in cws"
+    CWSNoProjectsFoundForDevice = 3105,
+          // "Unable to locate projects for device in cws"
+    CWSEndpointException = 3124, // retry-able
            // "A problem occurred at the {0} endpoint. Exception: {1}" // this comes from within ProjectSvc
   }
 }

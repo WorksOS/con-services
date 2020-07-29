@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.DI;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -12,7 +13,10 @@ namespace VSS.TRex.Tests.CoordinateSystem
     [Fact]
     public void Geodetic_database_folder_should_contain_TGL_content()
     {
-      var geodeticDirectory = new CoreX.Wrapper.CoreX(DIContext.Obtain<ILoggerFactory>()).GeodeticDatabasePath;
+      var geodeticDirectory = new CoreX.Wrapper.CoreX(
+        DIContext.Obtain<ILoggerFactory>(),
+        DIContext.Obtain<IConfigurationStore>()
+        ).GeodeticDatabasePath;
 
       if (Directory.Exists(geodeticDirectory))
       {

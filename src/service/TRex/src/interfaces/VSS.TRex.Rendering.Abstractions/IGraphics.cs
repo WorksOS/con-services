@@ -12,5 +12,7 @@ namespace VSS.TRex.Rendering.Abstractions
     void FillPolygon(IBrush brush, Point[] points);
     void DrawPolygon(IPen brush, Point[] points);
     void Clear(Color penColor);
+
+    IBitmap DrawFromPixelArray(int width, int height, int[] pixels);
   }
 }

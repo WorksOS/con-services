@@ -243,6 +243,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].TempWarningLevelMin = lastPass.TargetValues.TempWarningLevelMin;
       Cells[cellX, cellY].TempWarningLevelMax = lastPass.TargetValues.TempWarningLevelMax;
       Cells[cellX, cellY].Height = lastPass.FilteredPass.Height;
+      Cells[cellX, cellY].LayerID = lastPass.EventValues.LayerID;
 
       CalculateCmvChange(cellProfileFromContext);
       Cells[cellX, cellY].CCVChange = 0;

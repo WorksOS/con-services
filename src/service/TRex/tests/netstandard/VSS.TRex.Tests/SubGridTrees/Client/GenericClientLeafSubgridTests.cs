@@ -19,8 +19,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
     static readonly int GridDataTypeCount = GetGridDataTypeCount();
 
-    private const int kGridDataTypeCount_Expected = 17;
-    private const int kGridDataTypeCount = 30;
+    private const int kGridDataTypeCount_Expected = 16;
+    private const int kGridDataTypeCount = 29;
 
     /// <summary>
     /// Which grid data types have implementations that should be tested?
@@ -39,7 +39,6 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
              gridDataType == GridDataType.MachineSpeed ||
              gridDataType == GridDataType.MachineSpeedTarget ||
              gridDataType == GridDataType.Temperature ||
-             gridDataType == GridDataType.TemperatureDetail ||
              gridDataType == GridDataType.PassCount ||
              gridDataType == GridDataType.CellProfile ||
              gridDataType == GridDataType.CellPasses ||

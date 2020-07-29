@@ -350,120 +350,75 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// Gets a list of polygons representing the design surface boundary. 
     /// The boundary may consist of a number of polygons.
     /// </summary>
-    /// <param name="project"></param>
-    /// <param name="designDescriptor">The design to get the boundary of</param>
-    /// <param name="customHeaders"></param>
     /// <returns>A list of latitude/longitude points in degrees</returns>
     public async Task<List<List<WGSPoint>>> GetDesignBoundaryPolygons(ProjectData project,
       DesignDescriptor designDescriptor, IHeaderDictionary customHeaders)
     {
       var polygons = new List<List<WGSPoint>>();
       var description = TileServiceUtils.DesignDescriptionForLogging(designDescriptor);
+      
       log.LogDebug($"{nameof(GetDesignBoundaryPolygons)}: projectUid={project.ProjectUID}, projectId={project.ShortRaptorProjectId}, design={description}");
-      if (designDescriptor == null) return polygons;
+      
+      if (designDescriptor == null)
+      {
+        return polygons;
+      }
+
       var geoJson = await GetDesignBoundary(project, designDescriptor, customHeaders);
+
       log.LogDebug($"{nameof(GetDesignBoundaryPolygons)}: geoJson={geoJson}");
-      if (string.IsNullOrEmpty(geoJson)) return polygons;
+      
+      if (string.IsNullOrEmpty(geoJson))
+      {
+        return polygons;
+      }
+
       var root = JsonConvert.DeserializeObject<GeoJson>(geoJson);
+      
       foreach (var feature in root.Features)
       {
         var points = new List<WGSPoint>();
+
         foreach (var coordList in feature.Geometry.Coordinates)
         {
           foreach (var coordPair in coordList)
           {
-            points.Add(new WGSPoint(coordPair[1].LatDegreesToRadians(),
+            points.Add(new WGSPoint(
+              coordPair[1].LatDegreesToRadians(),
               coordPair[0].LonDegreesToRadians())); //GeoJSON is lng/lat
           }
         }
         polygons.Add(points);
       }
+
       return polygons;
     }
 
     /// <summary>
-    /// Gets the boundary of the design surface as GeoJson
+    /// Gets the boundary of the design surface as GeoJson.
     /// </summary>
-    /// <param name="project">The project data</param>
-    /// <param name="designDescriptor">The design to get the boundary for</param>
-    /// <param name="customHeaders"></param>
-    /// <returns>A GeoJSON representation of the design boundary</returns>
     private async Task<string> GetDesignBoundary(ProjectData project, DesignDescriptor designDescriptor, IHeaderDictionary customHeaders)
-    {
-#if RAPTOR
-      if (UseTRexGateway("ENABLE_TREX_GATEWAY_DESIGN_BOUNDARY"))
-#endif
-      return await ProcessWithTRex(project.ProjectUID, designDescriptor, customHeaders);
-#if RAPTOR
-      return ProcessWithRaptor(project.LegacyProjectId, designDescriptor);
-#endif
-    }
-
-    private async Task<string> ProcessWithTRex(string projectUid, DesignDescriptor designDescriptor, IHeaderDictionary customHeaders)
     {
       var queryParams = new List<KeyValuePair<string, string>>
       {
-        new KeyValuePair<string, string>( "projectUid", projectUid ),
-        new KeyValuePair<string, string>("designUid", designDescriptor?.FileUid.ToString() ),
+        new KeyValuePair<string, string>( "projectUid", project.ProjectUID ),
+        new KeyValuePair<string, string>( "designUid", designDescriptor?.FileUid.ToString() ),
         new KeyValuePair<string, string>( "fileName", designDescriptor?.File?.FileName ),
         new KeyValuePair<string, string>( "tolerance", DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL.ToString(CultureInfo.CurrentCulture) )
       };
 
-      var returnedResult = await tRexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(projectUid, "/design/boundaries", customHeaders, queryParams);
+      var returnedResult = await tRexCompactionDataProxy.SendDataGetRequest<DesignBoundaryResult>(project.ProjectUID, "/design/boundaries", customHeaders, queryParams);
 
       if (returnedResult != null && returnedResult.GeoJSON != null)
+      {
         return returnedResult.GeoJSON.ToString();
+      }
 
       throw new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           $"Failed to get design boundary for file: {designDescriptor.File.FileName}"));
     }
 
-#if RAPTOR
-    private string ProcessWithRaptor(long projectId, DesignDescriptor designDescriptor)
-    {
-      MemoryStream memoryStream = null;
-      try
-      {
-        var success = raptorClient.GetDesignBoundary(
-          DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
-            projectId,
-            RaptorConverters.DesignDescriptor(designDescriptor),
-            DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtJson,
-            DesignBoundariesRequest.BOUNDARY_POINTS_INTERVAL,
-            TVLPDDistanceUnits.vduMeters,
-            0),
-          out memoryStream,
-          out var designProfilerResult);
-
-        if (success)
-        {
-          if (designProfilerResult == TDesignProfilerRequestResult.dppiOK && memoryStream != null &&
-              memoryStream.Length > 0)
-          {
-            memoryStream.Position = 0;
-            using (StreamReader sr = new StreamReader(memoryStream))
-            {
-              var resultPolygon = sr.ReadToEnd();
-              log.LogDebug($"Design file {JsonConvert.SerializeObject(designDescriptor)} generated bounary {resultPolygon}");
-              return resultPolygon;
-            }
-          }
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              $"Failed to get design boundary for file: {designDescriptor.File.FileName}"));
-        }
-        return null;
-      }
-      finally
-      {
-        memoryStream?.Close();
-      }
-    }
-#endif
     /// <summary>
     /// Gets the list of points making up the alignment boundary. 
     /// If the start & end station and left & right offsets are zero,

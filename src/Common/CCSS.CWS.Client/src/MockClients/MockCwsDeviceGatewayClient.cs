@@ -10,6 +10,7 @@ using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models.DeviceStatus;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -29,14 +30,14 @@ namespace CCSS.CWS.Client.MockClients
     {
       log.LogDebug($"{nameof(GetDeviceLKS)} Mock: serialNumber {deviceName}");
 
-      var serialNumber = "12456YU";
+      var serialNumberEC520 = "1234J56YU";
       var deviceLksResponseModel = new DeviceLKSResponseModel()
       {
         DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-        Latitude = 89.3, Longitude = 189.1,
-        AssetType = "grader",
-        AssetSerialNumber = serialNumber,
-        DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+        Latitude = 89.3, Longitude = 179.1,
+        AssetType = "Excavator",
+        AssetSerialNumber = serialNumberEC520,
+        DeviceName = $"{CWSDeviceTypeEnum.EC520}-{serialNumberEC520}",
         LastReportedUtc = DateTime.UtcNow.AddDays(-1),
       };
       log.LogDebug($"{nameof(GetDeviceLKS)} Mock: deviceLKSResponseModel {JsonConvert.SerializeObject(deviceLksResponseModel)}");
@@ -47,17 +48,37 @@ namespace CCSS.CWS.Client.MockClients
     {
       log.LogDebug($"{nameof(GetDevicesLKSForProject)} Mock: projectUid {projectUid} earliestOfInterestUtc {earliestOfInterestUtc}");
 
-      var serialNumber = "12456YU";
+      var serialNumberEC520 = "1234J56YU";
+      var serialNumberEC520W = "1234J06YU";
+      var serialNumberTablet = Guid.NewGuid().ToString();
       var devices = new List<DeviceLKSResponseModel>()
         {
           new DeviceLKSResponseModel()
           {
             DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
-            Latitude = 89.3, Longitude = 189.1,
-            AssetType = "excavator",
-            AssetSerialNumber = serialNumber,
-            DeviceName = $"{CWSDeviceTypeEnum.EC520}{serialNumber}",
+            Latitude = 89.3, Longitude = 179.1,
+            AssetType = "Excavator",
+            AssetSerialNumber = serialNumberEC520,
+            DeviceName = $"{CWSDeviceTypeEnum.EC520}-{serialNumberEC520}",
             LastReportedUtc = DateTime.UtcNow.AddDays(-1),
+          },
+          new DeviceLKSResponseModel()
+          {
+            DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
+            Latitude = 22.5, Longitude = -150.21,
+            AssetType = "Unknown",
+            AssetSerialNumber = serialNumberEC520W,
+            DeviceName = $"{CWSDeviceTypeEnum.EC520W.GetEnumMemberValue()}-{serialNumberEC520W}",
+            LastReportedUtc = DateTime.UtcNow.AddDays(-2),
+          },
+          new DeviceLKSResponseModel()
+          {
+            DeviceTrn = TRNHelper.MakeTRN(Guid.NewGuid().ToString(), TRNHelper.TRN_DEVICE),
+            Latitude = 16.5, Longitude = 168.21,
+            AssetType = "Tablet",
+            AssetSerialNumber = serialNumberTablet,
+            DeviceName = $"{CWSDeviceTypeEnum.Tablet}-{serialNumberTablet}",
+            LastReportedUtc = DateTime.UtcNow.AddDays(-1.5),
           }
       };
 

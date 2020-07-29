@@ -17,13 +17,13 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("TimeOfPosition must have occurred between 50 years ago and the next 2 days", 23);
       DynamicAddwithOffset("DeviceType is invalid", 30);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
-      DynamicAddwithOffset("Auto Import: Either Radio Serial or ec520 Serial must be provided", 37);
+      DynamicAddwithOffset("Platform serial number must be provided", 37);
       DynamicAddwithOffset("Manual Import: Unable to find the Project requested", 38);
       DynamicAddwithOffset("Manual Import: project does not intersect the location provided", 41);
       DynamicAddwithOffset("Manual Import: cannot import to an archived project", 43);
-      DynamicAddwithOffset("Auto Import: No projects found at the location provided", 44);
-      DynamicAddwithOffset("Auto Import: unable to identify the device by this serialNumber", 47);
-      DynamicAddwithOffset("Auto Import: No projects found for this device", 48);
+      DynamicAddwithOffset("No projects found at the location provided", 44);
+      DynamicAddwithOffset("Unable to identify the device by this serialNumber", 47);
+      DynamicAddwithOffset("No projects found for this device", 48);
       DynamicAddwithOffset("More than 1 project meets the location requirements", 49);
       DynamicAddwithOffset("Must contain a EC520 serial number", 51); // earthworks only
       DynamicAddwithOffset("Manual Import: cannot import to a project which doesn't accept tag files", 53);
@@ -32,8 +32,8 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Unable to locate device by serialNumber in cws", 100);
       DynamicAddwithOffset("Unable to locate any account for the device in cws", 102);
       DynamicAddwithOffset("There is >1 active account for the device in cws", 103);
-      DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 104);
       DynamicAddwithOffset("Unable to locate projects for device in cws", 105);
+      DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 124);
     }
 
     /// <summary>

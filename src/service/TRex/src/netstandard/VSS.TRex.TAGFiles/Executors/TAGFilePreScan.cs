@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
-using VSS.TRex.Common.Types;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
@@ -42,7 +42,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
     public string DesignName { get; set; } = string.Empty;
 
-    public MachineControlPlatformType PlatformType { get; set; }
+    public CWSDeviceTypeEnum PlatformType { get; set; }
 
 
     public TAGReadResult ReadResult { get; set; } = TAGReadResult.NoError;
