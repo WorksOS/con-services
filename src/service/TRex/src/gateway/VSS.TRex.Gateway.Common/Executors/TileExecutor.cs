@@ -276,9 +276,11 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       if (request.Mode != DisplayMode.Height &&
           request.Mode != DisplayMode.CCVPercentSummary &&
+          request.Mode != DisplayMode.CCV &&
           request.Mode != DisplayMode.PassCountSummary && 
           request.Mode != DisplayMode.CCASummary &&
           request.Mode != DisplayMode.MDPPercentSummary &&
+          request.Mode != DisplayMode.MDP &&
           request.Mode != DisplayMode.TargetSpeedSummary &&
           request.Mode != DisplayMode.TemperatureSummary)
       {
