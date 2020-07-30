@@ -22,6 +22,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 namespace WebApiTests.Executors
 {
   [TestClass]
+  [Obsolete("todoJeannie remove")]
   public class ProjectAndAssetUidsExecutorManualTests : ExecutorBaseTests
   {
     private ILoggerFactory _loggerFactory;
@@ -55,7 +56,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
       await ExecuteManual
         (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -63,7 +64,7 @@ namespace WebApiTests.Executors
           null, null,
           ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
           null,
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3038, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(38)
+          expectedResult, expectedCode: 3038, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(38)
         );
     }
 
@@ -88,15 +89,15 @@ namespace WebApiTests.Executors
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
       await ExecuteManual
         (getProjectAndAssetUidsRequest, projectForProjectUid,
           radioSerialDevice, projectListForRadioSerial,
           null, null,
           ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
-          null, 
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3043, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(43)
+          null,
+          expectedResult, expectedCode: 3043, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(43)
         );
     }
 
@@ -112,7 +113,6 @@ namespace WebApiTests.Executors
         CustomerUID = projectAccountUid,
         IsArchived = false,
         ProjectGeofenceWKT = projectBoundary
-
       };
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, outsideLat, insideLong, DateTime.UtcNow.AddDays(-3));
@@ -122,15 +122,16 @@ namespace WebApiTests.Executors
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
+
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
       await ExecuteManual
         (getProjectAndAssetUidsRequest, projectForProjectUid,
           radioSerialDevice, projectListForRadioSerial,
           null, null,
           ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
-          null, 
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3041, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(41)
+          null,
+          expectedResult, expectedCode: 3041, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(41)
         );
     }
 
@@ -156,15 +157,15 @@ namespace WebApiTests.Executors
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
       var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
+      var expectedResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
         radioSerialDevice, projectListForRadioSerial,
         null, null,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
-        null, 
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        null,
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -190,7 +191,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = (DeviceData)null;
       var projectListForRadioSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, String.Empty);
+      var expectedResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -198,7 +199,7 @@ namespace WebApiTests.Executors
         null, null,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         null,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -230,7 +231,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = (DeviceData)null;
       var projectListForRadioSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, String.Empty);
+      var expectedResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -238,7 +239,7 @@ namespace WebApiTests.Executors
         null, null,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         coordinateConversionResult,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        expectedResult, expectedCode: 0, expectedMessage: "success"
       );
     }
 
@@ -268,7 +269,7 @@ namespace WebApiTests.Executors
       var radioSerialDevice = (DeviceData)null;
       var projectListForRadioSerial = (ProjectDataResult)null;
 
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, String.Empty);
+      var expectedResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
 
       await ExecuteManual
       (getProjectAndAssetUidsRequest, projectForProjectUid,
@@ -276,7 +277,7 @@ namespace WebApiTests.Executors
         null, null,
         ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
         coordinateConversionResult,
-        expectedGetProjectAndAssetUidsResult, expectedCode: 3018, expectedMessage: "Manual Import: Unable to determine lat/long from northing/easting position"
+        expectedResult, expectedCode: 3018, expectedMessage: "Manual Import: Unable to determine lat/long from northing/easting position"
       );
     }
 
@@ -289,7 +290,7 @@ namespace WebApiTests.Executors
          projectProxy.Object, deviceProxy.Object, tRexCompactionDataProxy.Object, requestCustomHeaders);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() =>
-        executor.ProcessAsync((GetProjectAndAssetUidsRequest)null));
+        executor.ProcessAsync((GetProjectUidsRequest)null));
 
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual(-3, ex.GetResult.Code);
@@ -301,7 +302,7 @@ namespace WebApiTests.Executors
       DeviceData ec520Device, ProjectDataResult projectListForEC520,
       ICustomRadioSerialProjectMap customRadioSerialProjectMap,
       CoordinateConversionResult coordinateConversionResult,
-      GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
+      GetProjectAndAssetUidsResult expectedResult, int expectedCode, string expectedMessage
   )
     {
       projectProxy.Setup(p => p.GetProject(request.ProjectUid, It.IsAny<HeaderDictionary>())).ReturnsAsync(projectForProjectUid);
@@ -327,15 +328,15 @@ namespace WebApiTests.Executors
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
-      ValidateResult(result, expectedGetProjectAndAssetUidsResult, expectedCode, expectedMessage);
+      ValidateResult(result, expectedResult, expectedCode, expectedMessage);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult,
+    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedResult,
       int resultCode, string resultMessage)
     {
       Assert.IsNotNull(actualResult, "executor returned nothing");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
+      Assert.AreEqual(expectedResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(expectedResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
       Assert.AreEqual(resultCode, actualResult.Code, "executor returned incorrect result code");
       Assert.AreEqual(resultMessage, actualResult.Message, "executor returned incorrect result message");
     }

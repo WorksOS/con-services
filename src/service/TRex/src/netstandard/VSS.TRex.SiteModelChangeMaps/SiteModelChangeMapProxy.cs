@@ -63,6 +63,5 @@ namespace VSS.TRex.SiteModelChangeMaps
     {
       return _proxyStorageCache.Lock(key);
     }
-
   }
 }

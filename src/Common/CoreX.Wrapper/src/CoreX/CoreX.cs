@@ -96,7 +96,19 @@ namespace CoreX.Wrapper
 
         if (result != (int)csmErrorCode.cecSuccess)
         {
-          throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
+          switch ($"{result}")
+          {
+            case "cecGRID_FILE_OPEN_ERROR":
+              {
+                var geoidModelName = CalibrationFileHelper.GetGeoidModelName(Encoding.UTF8.GetBytes(fileContent));
+                throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Geodata file not found for geoid model '{geoidModelName}'");
+              }
+            default:
+              {
+                throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
+
+              }
+          }
         }
 
         var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);

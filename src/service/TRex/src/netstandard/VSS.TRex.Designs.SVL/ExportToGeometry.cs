@@ -149,7 +149,7 @@ namespace VSS.TRex.Designs.SVL
         Labels.Add(new AlignmentGeometryResponseLabel(CurrentStation, X1, Y1, Math.PI / 2 - textOrientation));
 
         if (CurrentStation + StationIncrement <= alignment.EndStation)
-          CurrentStation = CurrentStation + StationIncrement;
+          CurrentStation += StationIncrement;
         else if (CurrentStation > alignment.EndStation - 0.001)
           break;
         else

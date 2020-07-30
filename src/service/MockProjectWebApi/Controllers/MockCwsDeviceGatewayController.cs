@@ -29,6 +29,7 @@ namespace MockProjectWebApi.Controllers
         result.Add(new DeviceLKSResponseModel()
         {
           DeviceTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
+          AccountTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_CUSTOMER_UID, TRNHelper.TRN_ACCOUNT),
           AssetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
           Latitude = 89.9, Longitude = 34.6,
           AssetType = "Grader",
@@ -50,6 +51,7 @@ namespace MockProjectWebApi.Controllers
         return new DeviceLKSResponseModel()
         {
           DeviceTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, TRNHelper.TRN_DEVICE),
+          AccountTrn = TRNHelper.MakeTRN(ConstantsUtil.DIMENSIONS_CUSTOMER_UID, TRNHelper.TRN_ACCOUNT),
           AssetSerialNumber = ConstantsUtil.DIMENSIONS_SERIAL,
           Latitude = 89.9, Longitude = 34.6,
           AssetType = "Excavator",

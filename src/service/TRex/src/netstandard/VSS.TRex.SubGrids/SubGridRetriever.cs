@@ -410,6 +410,15 @@ namespace VSS.TRex.SubGrids
       // is not assigned to the result set to be passed back to the client as it effectively
       // does not exist given this situation.
 
+      if (_filter.AttributeFilter.HasPassCountRangeFilter)
+      {
+        // because we stripped cell passes from a cell the overall pass count has been altered. This restores the value to its original value.
+        if (_assignmentContext.FilteredValue.PassCount > 0)
+        {
+          _assignmentContext.FilteredValue.PassCount += _filter.AttributeFilter.PassCountRangeMin - 1;
+        }
+      }
+
       if (_cellProfile == null)
       {
         _clientGrid.AssignFilteredValue(stripeIndex, j, _assignmentContext);

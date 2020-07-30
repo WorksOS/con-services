@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     // Need to obtain 1 polygon which this device (DeviceTRN) lat/long lies within
-    public ProjectDataResult GetIntersectingProjectsForDevice(GetProjectAndAssetUidsRequest request, DeviceData device, out int errorCode)
+    public ProjectDataResult GetIntersectingProjectsForDevice(GetProjectUidsRequest request, DeviceData device, out int errorCode)
     {
       errorCode = 0;
       var deviceProjects = new ProjectDataResult();
@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
           if (project.ProjectType.HasFlag(CwsProjectType.AcceptsTagFiles)
               && !project.IsArchived)
           {
-            if (!request.HasLatLong && request.HasNE)
+            if (!request.HasLatLong && request.HasNE && request.Northing != null && request.Easting != null)
             {
               var convertedLL = this.ConvertNEtoLL(project.ProjectUID, request.Northing.Value, request.Easting.Value).Result;
               if (convertedLL != null)

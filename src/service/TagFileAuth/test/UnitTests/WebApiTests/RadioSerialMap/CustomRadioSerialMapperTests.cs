@@ -8,6 +8,7 @@ using WebApiTests.Executors;
 namespace WebApiTests.RadioSerialMap
 {
   [TestClass]
+  [Obsolete("todoJeannie remove")]
   public class CustomRadioSerialMapTests : ExecutorBaseTests
   {
     private string testRadioSerial = "123";

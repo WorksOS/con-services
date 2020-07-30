@@ -8,6 +8,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 namespace WebApiTests.Models
 {
   [TestClass]
+  [Obsolete("todoJeannie remove")]
   public class ProjectAndAssetUidsRequestTests : ModelBaseTests
   {
     [TestMethod]

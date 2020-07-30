@@ -31,13 +31,13 @@ namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
       Message = messageDetail;
     }
 
-    public static GetProjectAndAssetUidsResult FormatResult(string projectUid = "", string assetUid = "", int uniqueCode = 0)
+    public static GetProjectAndAssetUidsResult FormatResult(string projectUid = "", string deviceUid = "", int uniqueCode = 0)
     {
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      return new GetProjectAndAssetUidsResult(projectUid, assetUid,
+      return new GetProjectAndAssetUidsResult(projectUid, deviceUid,
         uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode),
         uniqueCode == 0 ? DefaultMessage :
-          uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)));
+        uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)));
     }
 
     public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>() { ProjectUid };
