@@ -5,6 +5,7 @@
     UnknownFailure, 
     Success,
     NoAlignmentsFound,
+    NoMasterAlignmentsFound,
     UnableToLoadSubGridIndex,
     UnableToLoadSpatialIndex,
     DesignDoesNotExist,

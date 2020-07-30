@@ -7,7 +7,7 @@
     T Get(int index);
     int TokenCount { get; }
     bool HasFreeSpace();
-    void EvictOneLRUItemWithLock();
+    void EvictOneLRUItem();
     void Invalidate(int index);
     bool IsEmpty();
     bool IsValid(int index);

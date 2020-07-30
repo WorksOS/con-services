@@ -77,7 +77,7 @@ namespace VSS.TRex.Server.MutableData
         .Build()
         .Add(x => x.AddServiceDiscovery())
         
-        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>())
+        .Add(x => x.AddSingleton<ITagFileAuthProjectV5Proxy, TagFileAuthProjectV5Proxy>())
         .Add(x => x.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>())
         .Add(x => x.AddTransient<ITPaasProxy, TPaasProxy>())
         .Add(x => x.AddSingleton<ICwsDeviceGatewayClient, CwsDeviceGatewayClient>())

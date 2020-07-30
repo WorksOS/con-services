@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Printing;
-using System.Runtime.CompilerServices;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes.Interfaces;
@@ -107,9 +105,9 @@ namespace VSS.TRex.Rendering.Displayers
       var canvasWidth = MapView.BitmapCanvas.Width;
       var canvasHeight = MapView.BitmapCanvas.Height;
 
-      for (int i = 0; i < canvasHeight; i++)
+      for (var i = 0; i < canvasHeight; i++)
       {
-        for (int j = 0; j < canvasWidth; j++)
+        for (var j = 0; j < canvasWidth; j++)
         {
           MapView.Rotate_point(mapViewOriginXPlusPixelSizeOverTwo + j * mapViewXPixelSize,
                                mapViewOriginYPlusPixelSizeOverTwo + (canvasHeight - i - 1) * mapViewYPixelSize,

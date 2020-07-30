@@ -402,7 +402,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
                     // then we continue and process the epoch as if the position information
                     // within it is 'valid'.
 
-                  if (IgnoreInvalidPositions()) return true; // Don't process this interval...Returns True to avoid been seen as a stink read error
+                  if (IgnoreInvalidPositions()) return true; // Don't process this interval...Returns True to avoid been seen as a sink read error
                 }
 
                 if (!_HaveFirstEpoch)

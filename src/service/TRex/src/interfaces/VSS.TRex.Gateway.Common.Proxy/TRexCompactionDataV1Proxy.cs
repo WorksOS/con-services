@@ -26,8 +26,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     public TRexCompactionDataV1Proxy(IWebRequest webRequest, IConfigurationStore configurationStore,
       ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
-    {
-    }
+    { }
 
     public override bool IsInsideAuthBoundary => true;
 
@@ -52,8 +51,8 @@ namespace VSS.TRex.Gateway.Common.Proxy
       var jsonData = JsonConvert.SerializeObject(dataRequest);
       log.LogDebug($"{nameof(SendDataPostRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
-      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
+      using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
+      return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
     }
 
     /// <summary>
@@ -86,8 +85,8 @@ namespace VSS.TRex.Gateway.Common.Proxy
       var jsonData = JsonConvert.SerializeObject(dataRequest);
       log.LogDebug($"{nameof(SendDataDeleteRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
 
-      using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
-        return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);
+      using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
+      return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);
     }
 
     /// <summary>
@@ -99,6 +98,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       Gateway = GatewayType.Immutable;
       log.LogDebug($"{nameof(SendDataGetRequest)}: Sending the get data request for site model ID: {siteModelId}");
+
       return await GetMasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, queryParameters);
     }
   }

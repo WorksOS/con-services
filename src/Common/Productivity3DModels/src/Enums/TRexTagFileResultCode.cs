@@ -25,11 +25,10 @@
             //  "SubmitTAGFileResponse. Failed to submit tag file to processing queue. Request already exists"
     TRexTagFileReaderError = 6, 
             // message includes TAGReadResult e.g. InvalidDictionary
-    TRexTagFileSubmissionQueueNotAvailable = 7, // retry-able
     TRexInvalidLatLong = 8,
-            // $"#Progress# CheckFileIsProcessable. Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
-    TRexMissingProjectIDRadioSerialAndEcmSerial = 9,
-            // "#Progress# CheckFileIsProcessable. Must have either a valid RadioSerialNum or EC520SerialNum or ProjectUID"
+            //# Progress# CheckFileIsProcessable. Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {platformSerialNumber} filename {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
+    TRexMissingProjectUidAndPlatformSerial = 9,
+            // "#Progress# CheckFileIsProcessable. Must have either a valid Platform SerialNum or ProjectUID"
 
     // TFA errors (via TRex) Validation errors  HttpStatusCode.BadRequest:
     TFABadRequestInvalidLatitude = 3021,
@@ -43,7 +42,7 @@
     TFABadRequestInvalidProjectUid = 3036,
             // "ProjectUid is present, but invalid"
     TFABadRequestMissingRadioSerialAndEcmSerial = 3037,
-    // "Auto Import: Either Radio Serial or ec520 Serial must be provided"
+            // "Platform serial number must be provided"
 
     // TFA Functional errors (via TRex) HttpStatusCode.OK   Response Code:
     TFAInternalServiceAccess = 3017, // retry-able
@@ -57,13 +56,13 @@
     TFAManualProjectIsArchived = 3043,
             // "Manual Import: cannot import to an archived project"
     TFAAutoNoProjectsFoundAtLocation = 3044,
-           // "Auto Import: No projects found at the location provided"
+           // "No projects found at the location provided"
     TFAAutoNoDeviceFound = 3047,
-           // "Auto Import: unable to identify the device by this serialNumber"
+           // "Unable to identify the device by this serialNumber"
     TFAAutoDeviceFoundButNoProject = 3048,
-           // "Auto Import: No projects found for this device"
+           // "No projects found for this device"
     TFAAutoMultipleProjectsMatchCriteria = 3049,
-            // "Auto Import: More than 1 project meets the location requirements"
+            // "More than 1 project meets the location requirements"
     TFAManualProjectNotCorrectType = 3053,
             // "Manual Import: cannot import to a project which doesn't accept tag files"
 

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   /// <summary>
   /// Project controller.
   /// </summary>
+  [Obsolete("todoJeannie remove")]
   public class ProjectV4Controller : BaseController<ProjectV4Controller>
   {
     /// <summary>
@@ -75,7 +77,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     {
       Logger.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
-  
+
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(Logger, ConfigStore, Authorization, ProjectProxy, DeviceProxy, TRexCompactionDataProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 

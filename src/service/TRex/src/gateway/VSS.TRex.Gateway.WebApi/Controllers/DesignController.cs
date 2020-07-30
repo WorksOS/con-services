@@ -33,8 +33,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <inheritdoc />
     public DesignController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<DesignController>(), serviceExceptionHandler, configStore)
-    {
-    }
+    { }
 
     /// <summary>
     /// Returns surface, alignment and surveyed surface designs
@@ -190,16 +189,13 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     ///  Gets a model describing the geometry and station labeling for the master alignment in an alignment design
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="designUid"></param>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
     [HttpGet("alignment/master/geometry")]
-    public Task<ContractExecutionResult> GetAlignmentGeometryForRendering([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] string fileName)
+    public Task<ContractExecutionResult> GetAlignmentGeometryForRendering([FromQuery] Guid projectUid, [FromQuery] Guid designUid, [FromQuery] string fileName,
+      [FromQuery] bool convertArcsToChords, [FromQuery] double arcChordTolerance)
     {
       Log.LogInformation($"{nameof(GetAlignmentGeometryForRendering)}: projectUid:{projectUid}, designUid:{designUid}, fileName:{fileName}");
 
-      var alignmentMasterGeometryRequest = new AlignmentDesignGeometryRequest(projectUid, designUid, fileName);
+      var alignmentMasterGeometryRequest = new AlignmentDesignGeometryRequest(projectUid, designUid, fileName, convertArcsToChords, arcChordTolerance);
 
       alignmentMasterGeometryRequest.Validate();
 

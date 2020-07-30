@@ -33,9 +33,8 @@
     CCVPercentChangeIgnoredTopNullValue = 0x00000016,
     CCA = 0x00000017,
     CCAPercent = 0x00000018,
-    TemperatureDetail = 0x00000019,
-    CutFill = 0x0000001A,
-    DesignHeight = 0x0000001B,
+    CutFill = 0x00000019,
+    DesignHeight = 0x0000001A,
 
     /// <summary>
     /// SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
@@ -43,8 +42,8 @@
     /// general sub grid result cache along with HeightAndTime results that are derived from production data
     /// and SurveyedSurfaceHeightAndTime results
     /// </summary>
-    SurveyedSurfaceHeightAndTime = 0x0000001C,
+    SurveyedSurfaceHeightAndTime = 0x0000001B,
 
-    ProgressiveVolumes = 0x0000001D
+    ProgressiveVolumes = 0x0000001C
   }
 }

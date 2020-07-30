@@ -108,7 +108,7 @@ namespace VSS.TRex.SubGrids
             _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
             break;
           }
-          else if (_gridDataType == GridDataType.Temperature || _gridDataType == GridDataType.TemperatureDetail)
+          else if (_gridDataType == GridDataType.Temperature)
           {
             var materialTemperature = _currentPass.FilteredPass.MaterialTemperature;
             if (materialTemperature != CellPassConsts.NullMaterialTemperatureValue)
@@ -190,7 +190,7 @@ namespace VSS.TRex.SubGrids
 
         if (_filter.AttributeFilter.FilterPass(ref _currentPass, _filterAnnex))
         {
-          if (_gridDataType == GridDataType.Temperature || _gridDataType == GridDataType.TemperatureDetail)
+          if (_gridDataType == GridDataType.Temperature)
           {
             // make sure we have a valid temperature pass
             var materialTemperature = _currentPass.FilteredPass.MaterialTemperature;

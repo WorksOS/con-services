@@ -25,8 +25,11 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     // Needed for the out parameter on the Lock function
     delegate IDesignBase GobbleDesignFilesLockReturns(Guid designUid, Guid datamodelUid, double cellSize, out DesignLoadResult result);      
 
-    public AlignmentDesignGeometryRequestTests()
+    public AlignmentDesignGeometryRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
+      fixture.ClearDynamicFixtureContent();
+      fixture.SetupFixture();
+
       // Fresh the DesignFiles DI for each test as some tests mock it specially
       DIBuilder.
         Continue()
@@ -85,7 +88,9 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       var response = await request.ExecuteAsync(new AlignmentDesignGeometryArgument
       {
         ProjectID = siteModel.ID,
-        AlignmentDesignID = alignmentGuid
+        AlignmentDesignID = alignmentGuid,
+        ConvertArcsToPolyLines = false,
+        ArcChordTolerance = 0.0
       });
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
@@ -161,7 +166,9 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       var response = await request.ExecuteAsync(new AlignmentDesignGeometryArgument
       {
         ProjectID = siteModel.ID,
-        AlignmentDesignID = alignmentGuid
+        AlignmentDesignID = alignmentGuid,
+        ConvertArcsToPolyLines = false,
+        ArcChordTolerance = 0.0
       });
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
@@ -203,13 +210,13 @@ namespace VSS.TRex.Tests.Designs.GridFabric
         ProjectID = siteModel.ID,
         AlignmentDesignID = alignmentGuid,
         ConvertArcsToPolyLines = true,
-        ArcChordTolerance = 0.1
+        ArcChordTolerance = 0.01
       });
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
       response.Vertices.Should().NotBeNullOrEmpty();
       response.Vertices.Length.Should().Be(1);
-      response.Vertices[0].Length.Should().Be(3);
+      response.Vertices[0].Length.Should().Be(7);
 
       response.Labels.Length.Should().Be(2);
 
@@ -226,7 +233,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public async Task Geometry_FromFile()
+    public async Task Geometry_FromFile_NoArcConversion()
     {
       AddDesignProfilerGridRouting();
 
@@ -237,7 +244,9 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       var response = await request.ExecuteAsync(new AlignmentDesignGeometryArgument
       {
         ProjectID = siteModel.ID,
-        AlignmentDesignID = designUid
+        AlignmentDesignID = designUid,
+        ConvertArcsToPolyLines = false,
+        ArcChordTolerance = 0.0
       });
 
       response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
@@ -250,5 +259,34 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       response.Labels.Should().NotBeNull();
       response.Labels.Length.Should().Be(21);
     }
+
+    [Fact]
+    public async Task Geometry_FromFile_WithArcConversion()
+    {
+      AddDesignProfilerGridRouting();
+
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl");
+
+      var request = new AlignmentDesignGeometryRequest();
+      var response = await request.ExecuteAsync(new AlignmentDesignGeometryArgument
+      {
+        ProjectID = siteModel.ID,
+        AlignmentDesignID = designUid,
+        ConvertArcsToPolyLines = true,
+        ArcChordTolerance = 0.1
+      });
+
+      response.RequestResult.Should().Be(DesignProfilerRequestResult.OK);
+      response.Vertices.Should().NotBeNull();
+      response.Vertices.Length.Should().Be(1);
+
+      response.Arcs.Should().NotBeNull();
+      response.Arcs.Length.Should().Be(0);
+
+      response.Labels.Should().NotBeNull();
+      response.Labels.Length.Should().Be(21);
+    }
+
   }
 }

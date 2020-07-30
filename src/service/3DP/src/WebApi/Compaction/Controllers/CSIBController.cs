@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 
@@ -30,9 +29,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await GetLegacyProjectId(projectUid);
 
       var result = await RequestExecutorContainerFactory.Build<CSIBExecutor>(LoggerFactory,
-#if RAPTOR
-          RaptorClient,
-#endif
           configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(new ProjectID(projectId, projectUid));
 
       return result.Code == 0

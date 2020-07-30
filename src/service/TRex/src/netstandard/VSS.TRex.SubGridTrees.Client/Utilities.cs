@@ -30,8 +30,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       return baseType == derivedType ||
              baseType == GridDataType.Height && derivedType == GridDataType.HeightAndTime ||
-             baseType == GridDataType.CutFill && (derivedType == GridDataType.HeightAndTime || derivedType == GridDataType.Height) ||
-             baseType == GridDataType.TemperatureDetail && derivedType == GridDataType.Temperature;
+             baseType == GridDataType.CutFill && (derivedType == GridDataType.HeightAndTime || derivedType == GridDataType.Height);
     }
   }
 }

@@ -93,17 +93,16 @@ namespace VSS.TRex.SubGridTrees.Client
       true, // CCVPercentChangeIgnoredTopNullValue = $0000016
       true, // CCA = $0000017
       true, // CCAPercent = $0000018
-      true, // Temperature details = $0000019
-      true, // CutFill = 0x0000001A,
-      true, // DesignHeight = 0x0000001B,
+      true, // CutFill = 0x00000019,
+      true, // DesignHeight = 0x0000001A,
 
       // SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
       // used to construct this data. Differentiating the grid types allows coherent caching in a single spatial
       // general sub grid result cache along with HeightAndTime results that are derived from production data
       // and SurveyedSurfaceHeightAndTime results
-      true, // SurveyedSurfaceHeightAndTime = 0x0000001C
+      true, // SurveyedSurfaceHeightAndTime = 0x0000001B
 
-      false // Progressive volumes = = 0x0000001D
+      false // Progressive volumes = = 0x0000001C
     };
 
     public virtual bool SupportsAssignationFrom(GridDataType gridDataType)

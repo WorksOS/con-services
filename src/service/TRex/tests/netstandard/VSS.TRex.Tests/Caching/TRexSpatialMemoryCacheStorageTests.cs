@@ -317,11 +317,11 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
-    public void Test_TRexSpatialMemoryCacheStorageTests_EvictOneLRUItemWithLock_EmptyCache()
+    public void Test_TRexSpatialMemoryCacheStorageTests_EvictOneLRUItem_EmptyCache()
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
 
-      storage.EvictOneLRUItemWithLock();
+      storage.EvictOneLRUItem();
     }
   }
 }
