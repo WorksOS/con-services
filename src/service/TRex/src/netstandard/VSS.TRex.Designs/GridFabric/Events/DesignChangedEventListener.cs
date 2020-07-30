@@ -26,11 +26,6 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
     public const string DESIGN_CHANGED_EVENTS_TOPIC_NAME = "DesignStateChangedEvents";
 
-    /// <summary>
-    ///  Message group the listener has been added to
-    /// </summary>
-    private IMessaging MsgGroup;
-
     public string MessageTopicName { get; set; } = DESIGN_CHANGED_EVENTS_TOPIC_NAME;
 
     public string GridName { get; private set; }
@@ -123,7 +118,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
       // Create a messaging group the cluster can use to send messages back to and establish a local listener
       // All nodes (client and server) want to know about design state change
-      MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
+      var MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
 
       if (MsgGroup != null)
         MsgGroup.LocalListen(this, MessageTopicName);
@@ -134,8 +129,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
     public void StopListening()
     {
       // Un-register the listener from the message group
-      MsgGroup?.StopLocalListen(this, MessageTopicName);
-      MsgGroup = null;
+      DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging()?.StopLocalListen(this, MessageTopicName);
     }
 
     public void Dispose()
