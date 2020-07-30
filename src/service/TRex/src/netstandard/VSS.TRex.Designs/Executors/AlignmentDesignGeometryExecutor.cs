@@ -16,7 +16,6 @@ namespace VSS.TRex.Designs.Executors
     /// <summary>
     /// Performs execution business logic for this executor
     /// </summary>
-    /// <returns></returns>
     public ExportToGeometry Execute(Guid projectUid, Guid alignmentDesignUid, bool convertArcsToPolyLines, double arcChordTolerance)
     {
       try
@@ -31,7 +30,7 @@ namespace VSS.TRex.Designs.Executors
 
         if (convertArcsToPolyLines && arcChordTolerance < 0.001)
         {
-          Log.LogError($"Arc chord tolerance too small, must be >= 0.001 meters");
+          Log.LogError("Arc chord tolerance too small, must be >= 0.001 meters");
           return null;
         }
 

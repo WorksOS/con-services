@@ -567,7 +567,7 @@ Huzzah!
       // Decompose an arc from start point[Xstart, Ystart] to end point[Xend, Yend]
       // with centre point[Xcenter, Ycentre]
       //  These are world units.
-      //  Angle is in the mathematical sense - +ve for anti-clockwise.and is in RADIANS 
+      //  Angle is in the mathematical sense - +ve for anti-clockwise, and is in RADIANS 
 
       var relX = x0 - cX; // Position, relative to cX, cY 
       var relY = y0 - cY;

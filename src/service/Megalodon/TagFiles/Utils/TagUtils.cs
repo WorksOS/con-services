@@ -58,10 +58,59 @@ namespace TagFiles.Utils
     public static byte ConvertToMachineType(string value)
     {
       var upperValue = value.ToUpper();
+
+      /*
+        Unknown = 0,
+        Dozer = 23,
+        Grader = 24,
+        Excavator = 25,
+        MotorScraper = 26,
+        TowedScraper = 27,
+        CarryAllScraper = 28,
+        RubberTyreDozer = 29,
+        WheelLoader = 30,
+        WheelTractor = 31,
+        SoilCompactor = 32,
+        ForemansTruck = 33,
+        Generic = 34,
+        MillerPlaner = 36,
+        BackhoeLoader = 37,
+        AsphaltCompactor = 39,
+        KerbandGutter = 41,
+        AsphaltPaver = 42,
+        FourDrumLandfillCompactor = 43,
+        Trimmer = 44,
+        ConcretePaver = 45,
+        CutterSuctionDredge = 70,
+        BargeMountedExcavator = 71        
+       */
+
+
       switch (upperValue)
       {
+        case "DOZ": return 23;
+        case "GRD": return 24;
+        case "LHX": return 25;
+        case "MSC": return 26;
+        case "TSC": return 27;
+        case "CSC": return 28;
+        case "RTD": return 29;
+        case "WLD": return 30;
+        case "WTR": return 31;
+        case "COM": return 32;
+        case "TRK": return 33;
+        case "GEN": return 34;
+        case "MPL": return 36;
+        case "BLD": return 37;
+        case "ACM": return 39;
+        case "KBG": return 41;
+        case "APV": return 42;
+        case "4CM": return 43;
+        case "TRM": return 44;
+        case "CPV": return 45;
         case "CSD": return 70;
         case "HEX": return 71;
+
         default:
           {
             throw new System.ArgumentException($"Unknown machine type supplied. value:{value}");
