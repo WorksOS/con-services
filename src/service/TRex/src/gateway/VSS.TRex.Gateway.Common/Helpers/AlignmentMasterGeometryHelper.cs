@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CoreX.Interfaces;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.DI;
@@ -18,12 +17,15 @@ namespace VSS.TRex.Gateway.Common.Helpers
     public static void ConvertNEEToLLHCoords(string csib, AlignmentDesignGeometryResponse geometryResponse)
     {
       var coords = new List<XYZ>();
+
       if ((geometryResponse.Vertices?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[1], x[0], x[2])).ToArray()).ToList());
+        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[1], x[0], 0.0))));
+
       if ((geometryResponse.Arcs?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, x.Z1), new XYZ(x.Y2, x.X2, x.Z2), new XYZ(x.YC, x.XC, x.ZC) }).ToList());
+        coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, 0.0), new XYZ(x.Y2, x.X2, 0.0), new XYZ(x.YC, x.XC, 0.0) }));
+
       if ((geometryResponse.Labels?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.Y, x.X, 0.0)).ToList());
+        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.Y, x.X, 0.0)));
 
       var convertedCoords = DIContext.Obtain<IConvertCoordinates>()
         .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ(), CoreX.Types.ReturnAs.Degrees)
@@ -38,8 +40,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
         {
           for (var j = 0; j < geometryResponse.Vertices[i].Length; j++)
           {
-            geometryResponse.Vertices[i][j][0] = convertedCoords[index].X;
-            geometryResponse.Vertices[i][j][1] = convertedCoords[index].Y;
+            geometryResponse.Vertices[i][j] = new [] { convertedCoords[index].X, convertedCoords[index].Y, convertedCoords[index].Z };
             index++;
           }
         }
@@ -73,8 +74,6 @@ namespace VSS.TRex.Gateway.Common.Helpers
           index++;
         }
       }
-
-
     }
   }
 }
