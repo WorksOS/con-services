@@ -32,7 +32,7 @@ namespace IntegrationTests.WebApiTests
       Assert.NotNull(deviceList);
       Assert.Single(deviceList);
       Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, deviceList[0].DeviceUid);
-      // todoJeannie Assert.Equal(DIMENSIONS_CUSTOMER_UID, deviceList[0].AccountUid);
+      Assert.Equal(DIMENSIONS_CUSTOMER_UID, deviceList[0].AccountUid);
       Assert.Equal(DIMENSIONS_SERIAL, deviceList[0].AssetSerialNumber);
       Assert.Equal(89.9, deviceList[0].Latitude);
       Assert.Equal(34.6, deviceList[0].Longitude);
@@ -73,7 +73,7 @@ namespace IntegrationTests.WebApiTests
 
       Assert.NotNull(device);
       Assert.Equal(DIMENSIONS_SERIAL_DEVICEUID, device.DeviceUid);
-      // todoJeannie Assert.Equal(DIMENSIONS_CUSTOMER_UID, device.AccountUid);
+      Assert.Equal(DIMENSIONS_CUSTOMER_UID, device.AccountUid);
       Assert.Equal(DIMENSIONS_SERIAL, device.AssetSerialNumber);
       Assert.Equal(89.9, device.Latitude);
       Assert.Equal(34.6, device.Longitude);
