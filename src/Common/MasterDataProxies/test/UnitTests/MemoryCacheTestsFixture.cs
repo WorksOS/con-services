@@ -6,6 +6,7 @@ using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Serilog.Extensions;
+using Microsoft.AspNetCore.TestHost;
 
 namespace VSS.MasterData.Proxies.UnitTests
 {

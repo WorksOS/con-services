@@ -1,41 +1,33 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Newtonsoft.Json;
-using uhttpsharp;
-using uhttpsharp.Handlers;
-using uhttpsharp.Headers;
-using uhttpsharp.Listeners;
-using uhttpsharp.Logging;
-using uhttpsharp.RequestProviders;
 using VSS.Common.Abstractions.Http;
 using Xunit;
 
 namespace VSS.MasterData.Proxies.UnitTests
 {
+  public class MockStartup
+  {
+    public void ConfigureServices(IServiceCollection services)
+    { }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    { }
+  }
+
   public class GracefulWebRequestTests : IClassFixture<MemoryCacheTestsFixture>
   {
-    public class EmptyHandler : IHttpRequestHandler
-    {
-      public Task Handle(IHttpContext context, Func<Task> next)
-      {
-        context.Response = uhttpsharp.HttpResponse.CreateWithMessage(HttpResponseCode.Ok, "Empty Response", context.Request.Headers.KeepAliveConnection());
-
-        return Task.Factory.GetCompleted();
-      }
-    }
-
     public class TestClass
     {
       public string String { get; set; }
@@ -81,50 +73,12 @@ namespace VSS.MasterData.Proxies.UnitTests
       _serviceProvider = testFixture.serviceProvider;
     }
 
-    private int GetPortForWebServer()
-    {
-      const int minPort = 50000;
-      const int maxPort = 51000;
-      const int maxRetries = 10;
-
-      var ipProperties = IPGlobalProperties.GetIPGlobalProperties();
-      var ipEndPoints = ipProperties.GetActiveTcpListeners();
-
-      var retry = 0;
-      while (retry++ < maxRetries)
-      {
-        var port = _random.Next(minPort, maxPort);
-        if (ipEndPoints.Any(endPoint => endPoint.Port == port))
-          continue;
-
-        return port;
-      }
-
-      throw new TestCanceledException($"No available ports for WebServer after {maxRetries} - Failing test");
-    }
-
-    /// <summary>
-    /// Creates an empty Test HTTP Server, than response with Ok on a request to /
-    /// And takes a validate request function which is called for each request
-    /// </summary>
-    private HttpServer CreateServer(int port, Func<IHttpContext, bool> validateRequestFunc)
-    {
-      // The default implementation of the LogProviders depend on various console libraries which are not available in unit tests
-      // And we don't really care about the internal logging of the server...
-      LogProvider.LogProviderResolvers.Clear();
-      var httpServer = new HttpServer(new HttpRequestProvider());
-      httpServer.Use(new TcpListenerAdapter(new TcpListener(IPAddress.Loopback, port)));
-
-      // Request handling : 
-      httpServer.Use((context, next) =>
-      {
-        Assert.True(validateRequestFunc(context));
-        return next();
-      });
-      httpServer.Use(new HttpRouter().With(string.Empty, new EmptyHandler())); // make sure we return an OK Response
-      httpServer.Start();
-      return httpServer;
-    }
+    private IWebHostBuilder CreateTestServer(Func<HttpContext, bool> validateRequestFunc) => new WebHostBuilder()
+      .UseEnvironment("Testing")
+      .ConfigureTestServices(services =>
+      { })
+      .UseTestServer()
+      .UseStartup<MockStartup>();
 
     /// <summary>
     /// Helper method to calculate MD5 sum of a stream
@@ -142,45 +96,58 @@ namespace VSS.MasterData.Proxies.UnitTests
     /// <summary>
     /// Execute a post request, and validate the contents of the body
     /// </summary>
-    private bool ExecutePostRequest(MemoryStream data, string contentType, Func<MemoryStream, bool> validateBodyFunc)
+    private async Task ExecutePostRequest(Stream data, string contentType, Func<Stream, bool> validateBodyFunc)
     {
-      var port = GetPortForWebServer();
-
       var gracefulWebRequest = ActivatorUtilities.CreateInstance(_serviceProvider, typeof(GracefulWebRequest)) as GracefulWebRequest;
       Assert.NotNull(gracefulWebRequest);
 
       var requestPassed = false;
 
-      bool ValidatePostedData(IHttpContext c)
+      bool ValidatePostedData(HttpContext c)
       {
-        var requestStream = new MemoryStream(c.Request.Post.Raw);
-        requestPassed = validateBodyFunc(requestStream);
+        requestPassed = validateBodyFunc(c.Request.Body);
         // Validate the content type passed, this should not be modified
-        if (!string.Equals(c.Request.Headers.GetByName(HeaderNames.ContentType), contentType,
+        if (!string.Equals(c.Request.Headers[HeaderNames.ContentType], contentType,
               StringComparison.CurrentCultureIgnoreCase))
         {
-          Console.WriteLine($"Execpted Content Type : '{contentType}' but got '{c.Request.Headers.GetByName(HeaderNames.ContentType)}' - Failed!");
+          Console.WriteLine($"Execpted Content Type : '{contentType}' but got '{c.Request.Headers[HeaderNames.ContentType]}' - Failed!");
           return false;
         }
         return requestPassed;
       }
 
-      using (CreateServer(port, ValidatePostedData))
-      {
-        var headers = new HeaderDictionary
-        {
-          [HeaderNames.ContentType] = contentType
-        };
-        var url = $"http://localhost:{port}";
-        data.Seek(0, SeekOrigin.Begin);
-        gracefulWebRequest.ExecuteRequest(url, data, headers, HttpMethod.Post, null, 0, true).Wait();
-      }
+      var testServer = CreateTestServer(null);
 
-      return requestPassed;
+      var host = testServer.Start();
+
+      var server = host.GetTestServer();
+      server.BaseAddress = new Uri($"http://localhost:{new Random().Next(50000, 51000)}");
+
+      var context = await server.SendAsync(c =>
+      {
+        c.Request.Method = HttpMethods.Post;
+        data.Seek(0, SeekOrigin.Begin);
+        c.Request.Body = data;
+      });
+
+      Assert.Equal("POST", context.Request.Method);
+      Assert.NotNull(context.Request.Body);
+      Assert.NotNull(context.Request.Headers);
+      Assert.NotNull(context.Response.Headers);
+      Assert.NotNull(context.Response.Body);
+
+      ValidatePostedData(context);
+    }
+
+    public static byte[] ReadFully(Stream input)
+    {
+      using var ms = new MemoryStream();
+      input.CopyTo(ms);
+      return ms.ToArray();
     }
 
     [Fact]
-    public void TestPostBinaryDataWithNoContentType()
+    public async Task TestPostBinaryDataWithNoContentType()
     {
       const string BinaryTestFilename = "TestFiles/TestBinary.ttm";
 
@@ -194,7 +161,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       Assert.True(string.Compare(md5, correctMd5, StringComparison.InvariantCultureIgnoreCase) == 0, "Invalid test data file");
 
       var requestPassed = false;
-      var validatePostedData = new Func<MemoryStream, bool>((stream) =>
+      var validatePostedData = new Func<Stream, bool>((stream) =>
       {
         var requestMd5 = CalculateMD5(stream);
         Console.WriteLine($"Request md5, Got '{requestMd5}', expected '{correctMd5}'. " +
@@ -205,13 +172,11 @@ namespace VSS.MasterData.Proxies.UnitTests
         return requestPassed;
       });
 
-      Assert.True(ExecutePostRequest(memoryStream, expectedContentType, validatePostedData));
-
-      Assert.True(requestPassed);
+      await ExecutePostRequest(memoryStream, expectedContentType, validatePostedData);
     }
 
     [Fact]
-    public void TestGetJsonData()
+    public async Task TestGetJsonData()
     {
       var testModel = new TestClass()
       {
@@ -248,21 +213,20 @@ namespace VSS.MasterData.Proxies.UnitTests
       Console.WriteLine($"Sending JSON: {jsonTestModel}");
       var jsonTestMemoryStream = new MemoryStream(Encoding.UTF8.GetBytes(jsonTestModel));
 
-      var validateData = new Func<MemoryStream, bool>((stream) =>
+      var validateData = new Func<Stream, bool>((stream) =>
       {
-        var data = Encoding.UTF8.GetString(stream.ToArray());
+        var data = Encoding.UTF8.GetString(ReadFully(stream));
         Console.WriteLine($"Got Response Model JSON: {data}");
         resultModel = JsonConvert.DeserializeObject<TestClass>(data);
 
         return true;
       });
 
-      Assert.True(ExecutePostRequest(jsonTestMemoryStream, ContentTypeConstants.ApplicationJson, validateData));
+      await ExecutePostRequest(jsonTestMemoryStream, ContentTypeConstants.ApplicationJson, validateData);
 
       Assert.NotNull(resultModel);
       Assert.Equal(jsonTestModel, JsonConvert.SerializeObject(resultModel));
       Assert.True(testModel.Equals(resultModel));
     }
-
   }
 }
