@@ -25,11 +25,10 @@
             //  "SubmitTAGFileResponse. Failed to submit tag file to processing queue. Request already exists"
     TRexTagFileReaderError = 6, 
             // message includes TAGReadResult e.g. InvalidDictionary
-    TRexTagFileSubmissionQueueNotAvailable = 7, // retry-able
     TRexInvalidLatLong = 8,
-            // $"#Progress# CheckFileIsProcessable. Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
-    TRexMissingProjectIDRadioSerialAndEcmSerial = 9,
-            // "#Progress# CheckFileIsProcessable. Must have either a valid RadioSerialNum or EC520SerialNum or ProjectUID"
+            //# Progress# CheckFileIsProcessable. Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {platformSerialNumber} filename {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
+    TRexMissingProjectUidAndPlatformSerial = 9,
+            // "#Progress# CheckFileIsProcessable. Must have either a valid Platform SerialNum or ProjectUID"
 
     // TFA errors (via TRex) Validation errors  HttpStatusCode.BadRequest:
     TFABadRequestInvalidLatitude = 3021,
