@@ -40,19 +40,13 @@ namespace VSS.Productivity3D.Productivity3D.Models.Designs
     /// <summary>
     /// Constructs an alignment master geometry result from supplied vertices and labels
     /// </summary>
-    /// <param name="code"></param>
-    /// <param name="designUid"></param>
-    /// <param name="vertices"></param>
-    /// <param name="arcs"></param>
-    /// <param name="labels"></param>
-    /// <param name="message"></param>
     public AlignmentGeometry(Guid designUid, string fileName, double[][][] vertices, AlignmentGeometryResultArc[] arcs, AlignmentGeometryResultLabel[] labels)
     {
       DesignUid = designUid;
       FileName = fileName;
       Vertices = vertices;
-      Arcs = arcs != null ? arcs : new AlignmentGeometryResultArc[0];
-      Labels = labels != null ? labels : new AlignmentGeometryResultLabel[0];
+      Arcs = arcs ?? (new AlignmentGeometryResultArc[0]);
+      Labels = labels ?? (new AlignmentGeometryResultLabel[0]);
     }
   }
 }
