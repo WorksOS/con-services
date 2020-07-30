@@ -185,6 +185,7 @@ namespace VSS.TRex.SubGrids.Executors
                   throw new TRexSubGridProcessingException("SimpleVolumeOverlay not implemented");
 
                 case GridDataType.Height:
+                case GridDataType.CutFill:
                   newClientGrids[I] = (subGridResult.requestResult,
                                        ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.CellSize, siteModel.Grid.NumLevels,
                                                                              subGridResult.clientGrid.OriginX, subGridResult.clientGrid.OriginY));
@@ -194,11 +195,6 @@ namespace VSS.TRex.SubGrids.Executors
                   //    Debug.Assert(SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubGridResultArray[I].GetType().Name}/{SubGridResultArray[I]}");
 
                   (newClientGrids[I].clientGrid as ClientHeightLeafSubGrid)?.Assign(subGridResult.clientGrid as ClientHeightAndTimeLeafSubGrid);
-                  break;
-
-                case GridDataType.CutFill: // Just copy the height sub grid to new sub grid list
-                  newClientGrids[I] = subGridResult;
-                  subGridResultArray[I].clientGrid = null;
                   break;
               }
             }

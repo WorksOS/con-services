@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Client
         // SimpleVolumeOverlay not supported yet in TRex
         // GridDataType.SimpleVolumeOverlay => IncludeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height;
 
-        GridDataType.CutFill => GridDataType.Height,
+        GridDataType.CutFill => includeSurveyedSurfacesInResult ? GridDataType.HeightAndTime : GridDataType.Height,
 
         _ => dataType
       };
@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       return baseType == derivedType ||
              baseType == GridDataType.Height && derivedType == GridDataType.HeightAndTime ||
-             baseType == GridDataType.CutFill && derivedType == GridDataType.Height ||
+             baseType == GridDataType.CutFill && (derivedType == GridDataType.HeightAndTime || derivedType == GridDataType.Height) ||
              baseType == GridDataType.TemperatureDetail && derivedType == GridDataType.Temperature;
     }
   }
