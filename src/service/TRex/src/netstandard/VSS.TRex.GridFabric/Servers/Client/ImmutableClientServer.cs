@@ -99,7 +99,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
               Serializer = new BinarizableSerializer()
             },
 
-            // Add the TRex progressive request request custom thread pool
+            // Add the TRex progressive request custom thread pool
             ExecutorConfiguration = new List<ExecutorConfiguration>
             {
               new ExecutorConfiguration
