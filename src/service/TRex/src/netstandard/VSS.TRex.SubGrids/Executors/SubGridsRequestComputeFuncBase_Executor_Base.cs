@@ -186,15 +186,25 @@ namespace VSS.TRex.SubGrids.Executors
 
                 case GridDataType.Height:
                 case GridDataType.CutFill:
-                  newClientGrids[I] = (subGridResult.requestResult,
-                                       ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.CellSize, siteModel.Grid.NumLevels,
-                                                                             subGridResult.clientGrid.OriginX, subGridResult.clientGrid.OriginY));
+                  //Height requested but up to here if we have used HeightAndTime sub grids for using surveyed surfaces so now time to return Height sub grids
+                  if (subGridResult.clientGrid.GridDataType == GridDataType.HeightAndTime)
+                  {
+                    newClientGrids[I] = (subGridResult.requestResult,
+                      ClientLeafSubGridFactory.GetSubGridEx(GridDataType.Height, siteModel.CellSize, siteModel.Grid.NumLevels,
+                        subGridResult.clientGrid.OriginX, subGridResult.clientGrid.OriginY));
 
-                  // Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
-                  // if (!(SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid))
-                  //    Debug.Assert(SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubGridResultArray[I].GetType().Name}/{SubGridResultArray[I]}");
+                    // Debug.Assert(NewClientGrids[I] is ClientHeightLeafSubGrid, $"NewClientGrids[I] is ClientHeightLeafSubGrid failed, is actually {NewClientGrids[I].GetType().Name}/{NewClientGrids[I]}");
+                    // if (!(SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid))
+                    //    Debug.Assert(SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid, $"SubGridResultArray[I] is ClientHeightAndTimeLeafSubGrid failed, is actually {SubGridResultArray[I].GetType().Name}/{SubGridResultArray[I]}");
 
-                  (newClientGrids[I].clientGrid as ClientHeightLeafSubGrid)?.Assign(subGridResult.clientGrid as ClientHeightAndTimeLeafSubGrid);
+                    (newClientGrids[I].clientGrid as ClientHeightLeafSubGrid)?.Assign(subGridResult.clientGrid as ClientHeightAndTimeLeafSubGrid);
+                  }
+                  else
+                  {
+                    newClientGrids[I] = subGridResult;
+                    subGridResultArray[I].clientGrid = null;
+                  }
+
                   break;
               }
             }
