@@ -33,12 +33,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Constructor taking the full state of the elevation patch computation operation
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="designUid"></param>
-    /// <param name="offset"></param>
-    /// <param name="profilePath"></param>
-    // /// <param name="processingMap"></param>
     public CalculateDesignProfileArgument(Guid projectUid,
                                           double cellSize,
                                           Guid designUid,

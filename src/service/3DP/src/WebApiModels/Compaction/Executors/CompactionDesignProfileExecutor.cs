@@ -121,9 +121,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private async Task<CompactionProfileResult<CompactionProfileVertex>> PerformProductionDataProfilePostWithTRexGateway(CompactionProfileDesignRequest request)
     {
-      ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out WGSPoint startPt, out var endPt);
+      ProfilesHelper.ConvertProfileEndPositions(request.GridPoints, request.WGS84Points, out WGSPoint startPt, out var endPt, out bool positionsAreGrid);
 
-      var designProfileRequest = new DesignProfileRequest(request.ProjectUid ?? Guid.Empty, request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0, startPt.Lon, startPt.Lat, endPt.Lon, endPt.Lat);
+      var designProfileRequest = new DesignProfileRequest(request.ProjectUid ?? Guid.Empty, request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0, startPt.Lon, startPt.Lat, endPt.Lon, endPt.Lat, positionsAreGrid);
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<DesignProfileResult, DesignProfileRequest>(designProfileRequest, "/profile/design", customHeaders);
 
