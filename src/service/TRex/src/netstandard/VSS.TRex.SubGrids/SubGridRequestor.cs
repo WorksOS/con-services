@@ -387,7 +387,7 @@ namespace VSS.TRex.SubGrids
 
     private ServerRequestResult ComputeSpatialFilterMaskAndClientProdDataMap()
     {
-      if (!_haveComputedSpatialFilterMaskAndClientProdDataMap)
+      if (_haveComputedSpatialFilterMaskAndClientProdDataMap)
       {
         return ServerRequestResult.NoError;
       }
