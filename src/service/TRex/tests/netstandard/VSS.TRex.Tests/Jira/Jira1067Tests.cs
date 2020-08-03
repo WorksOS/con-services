@@ -70,8 +70,7 @@ namespace VSS.TRex.Tests.Jira
     }
 
     [Trait("Dev Only", "")]
-    //[Fact(Skip ="Dev Only")]
-    [Fact]
+    [Fact(Skip ="Dev Only")]
     public async Task FilterToFilter_TwoFilters()
     {
       AddApplicationGridRouting();
@@ -93,8 +92,7 @@ namespace VSS.TRex.Tests.Jira
     }
 
     [Trait("Dev Only", "")]
-    //[Fact(Skip ="Dev Only")]
-    [Fact]
+    [Fact(Skip ="Dev Only")]
     public async Task FilterToFilter_TwoFilters_WithIntermediary()
     {
       AddApplicationGridRouting();
@@ -133,6 +131,75 @@ namespace VSS.TRex.Tests.Jira
         TopDesign = new DesignOffset(),
         CutTolerance = 0.001,
         FillTolerance = 0.001
+      };
+
+      var response = await request.ExecuteAsync(arg);
+
+      _log.LogInformation($"Volume result = Cut:{response.Cut} CutArea:{response.CutArea} Fill:{response.Fill} FillArea:{response.FillArea}, TotalArea:{response.TotalCoverageArea}");
+
+      // Volume result = Cut:574.2604204345703 CutArea: 10261.9276 Fill: 1016.5434415893552 FillArea: 12337.410000000002, TotalArea: 35233.3772
+
+      //CheckDefaultFilterToFilterSingleTAGFileResponse(response);
+    }
+
+
+    [Trait("Dev Only", "")]
+    [Fact(Skip ="Dev Only")]
+    public async Task FilterToFilter_TwoFilters_WithIntermediary_SingleCellFromDataWithTwoPasses()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      const double CENTERX = 534043.612;
+      const double CENTERY = 6746939.126;
+      const double DELTA = 0.2d;
+
+      var tagFiles = Directory.GetDirectories(@"C:\Temp\Tonsasenfiles").Where(x => x.Contains("2005")).SelectMany(Directory.GetFiles).Take(500).ToArray();
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+
+      var arg = new SimpleVolumesRequestArgument
+      {
+        ProjectID = siteModel.ID,
+        VolumeType = VolumeComputationType.Between2Filters,
+        BaseFilter = new CombinedFilter
+        {
+          AttributeFilter =
+          {
+            ReturnEarliestFilteredCellPass = false,
+            HasTimeFilter = true,
+            StartTime = Consts.MIN_DATETIME_AS_UTC,
+            EndTime = DateTime.SpecifyKind(new DateTime(2020, 5, 3, 0, 0, 0), DateTimeKind.Utc)
+          },
+          SpatialFilter =
+          {
+            CoordsAreGrid = true,
+            IsSpatial = true,
+            Fence = new TRex.Geometry.Fence(CENTERX - DELTA, CENTERY - DELTA, CENTERX + DELTA, CENTERY + DELTA)
+          }
+        },
+        TopFilter = new CombinedFilter
+        {
+          AttributeFilter =
+          {
+            ReturnEarliestFilteredCellPass = false,
+            HasTimeFilter = true,
+            StartTime = DateTime.SpecifyKind(new DateTime(2020, 5, 3, 0, 0, 0), DateTimeKind.Utc),
+            EndTime = DateTime.SpecifyKind(new DateTime(2020, 5, 9, 23, 59, 59), DateTimeKind.Utc)
+          },
+          SpatialFilter =
+          {
+            CoordsAreGrid = true,
+            IsSpatial = true,
+            Fence = new TRex.Geometry.Fence(CENTERX - DELTA, CENTERY - DELTA, CENTERX + DELTA, CENTERY + DELTA)
+          }
+        },
+        BaseDesign = new DesignOffset(),
+        TopDesign = new DesignOffset(),
+        CutTolerance = 0.001,
+        FillTolerance = 0.001,
+        
       };
 
       var response = await request.ExecuteAsync(arg);
