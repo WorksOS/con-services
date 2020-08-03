@@ -13,7 +13,6 @@ using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Geometry;
 using XYZS = VSS.Productivity3D.Models.ResultHandling.XYZS;
 
 
@@ -47,7 +46,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       var siteModel = GetSiteModel(request.ProjectUid);
 
       var designProfileRequest = new VSS.TRex.Designs.GridFabric.Requests.DesignProfileRequest();
-      var referenceDesign = new DesignOffset(request.DesignUid ?? Guid.Empty, request.Offset ?? 0);
+      var referenceDesign = new DesignOffset(request.DesignUid, request.Offset);
 
       var designProfileResponse = await designProfileRequest.ExecuteAsync(new CalculateDesignProfileArgument
       {
@@ -56,6 +55,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         CellSize = siteModel.CellSize,
         StartPoint = new WGS84Point(request.StartX, request.StartY),
         EndPoint = new WGS84Point(request.EndX, request.EndY),
+        PositionsAreGrid = request.PositionsAreGrid
       });
 
       if (designProfileResponse != null)
