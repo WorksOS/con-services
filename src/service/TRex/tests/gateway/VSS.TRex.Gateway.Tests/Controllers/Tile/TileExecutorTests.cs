@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -90,5 +91,66 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
       result?.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result?.TileData.Should().NotBeNull();
     }
+
+
+    /// <summary>
+    /// Actually only checking for serialization and deserilization exceptions
+    /// </summary>
+    private async Task<bool> ExecuteTileRequest(TRexTileRequest request)
+    {
+      var executor = RequestExecutorContainer
+        .Build<TileExecutor>(DIContext.Obtain<IConfigurationStore>(),
+          DIContext.Obtain<ILoggerFactory>(),
+          DIContext.Obtain<IServiceExceptionHandler>());
+      var result = await executor.ProcessAsync(request) as TileResult;
+      result?.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+      return true; 
+    }
+
+    private TRexTileRequest MakeTileRequest(Guid sMId, DisplayMode dm)
+    {
+      return new TRexTileRequest
+      (
+        sMId,
+        dm,
+        null, 
+        null, 
+        new FilterResult(),
+        new FilterResult(),
+        null, 
+        new BoundingBox2DGrid(0, 0, 100, 100),
+        256,
+        256,
+        null,
+        null);
+    }
+
+    [Fact]
+    public async Task TileExecutor_TestPaletteSerilizationAndDeserilization()
+    {
+      AddRoutings();
+      AddRenderingFactoryToDI();
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var request = MakeTileRequest(siteModel.ID, DisplayMode.Height);
+      request.Validate();
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CCVPercentSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CMVChange);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.PassCountSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CCASummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CCV);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.MDP);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.TargetSpeedSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.TemperatureSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+    }
+
   }
 }
