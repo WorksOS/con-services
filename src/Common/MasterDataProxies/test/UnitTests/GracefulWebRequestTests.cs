@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
+using Moq;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Http;
 using Xunit;
@@ -28,6 +30,9 @@ namespace VSS.MasterData.Proxies.UnitTests
 
   public class GracefulWebRequestTests : IClassFixture<MemoryCacheTestsFixture>
   {
+    private readonly IServiceProvider _serviceProvider;
+    private Func<HttpContext, Task<bool>> _testFunc;
+
     public class TestClass
     {
       public string String { get; set; }
@@ -35,10 +40,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       public byte[] Binary { get; set; }
       public string Unicode { get; set; }
 
-      public override bool Equals(object obj)
-      {
-        return Equals(obj as TestClass);
-      }
+      public override bool Equals(object obj) => Equals(obj as TestClass);
 
       protected bool Equals(TestClass other)
       {
@@ -65,20 +67,28 @@ namespace VSS.MasterData.Proxies.UnitTests
       }
     }
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly Random _random = new Random();
-
     public GracefulWebRequestTests(MemoryCacheTestsFixture testFixture)
     {
-      _serviceProvider = testFixture.serviceProvider;
-    }
+      var host = new HostBuilder()
+      .ConfigureWebHost(webBuilder =>
+      {
+        webBuilder
+        .UseTestServer()
+        .ConfigureServices(services =>
+        { })
+        .Configure(app =>
+        {
+          app.Run(async context => await _testFunc(context));
+        });
+      }).Start();
 
-    private IWebHostBuilder CreateTestServer(Func<HttpContext, bool> validateRequestFunc) => new WebHostBuilder()
-      .UseEnvironment("Testing")
-      .ConfigureTestServices(services =>
-      { })
-      .UseTestServer()
-      .UseStartup<MockStartup>();
+      var mockFactory = new Mock<IHttpClientFactory>();
+      mockFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(host.GetTestClient());
+
+      _serviceProvider = testFixture.serviceCollection
+        .AddSingleton<IHttpClientFactory>(mockFactory.Object)
+        .BuildServiceProvider();
+    }
 
     /// <summary>
     /// Helper method to calculate MD5 sum of a stream
@@ -86,93 +96,78 @@ namespace VSS.MasterData.Proxies.UnitTests
     private static string CalculateMD5(Stream stream)
     {
       using var md5 = MD5.Create();
-      stream.Seek(0, SeekOrigin.Begin);
-      var hash = md5.ComputeHash(stream);
-      stream.Seek(0, SeekOrigin.Begin);
 
-      return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+      stream.Position = 0;
+      var md5Hash = md5.ComputeHash(stream);
+
+      return BitConverter.ToString(md5Hash).Replace("-", "").ToLowerInvariant();
     }
 
     /// <summary>
     /// Execute a post request, and validate the contents of the body
     /// </summary>
-    private async Task ExecutePostRequest(Stream data, string contentType, Func<Stream, bool> validateBodyFunc)
+    private async Task ExecutePostRequest(Stream data, string contentType, Func<Stream, Task<bool>> validateBodyFunc)
     {
       var gracefulWebRequest = ActivatorUtilities.CreateInstance(_serviceProvider, typeof(GracefulWebRequest)) as GracefulWebRequest;
       Assert.NotNull(gracefulWebRequest);
 
       var requestPassed = false;
 
-      bool ValidatePostedData(HttpContext c)
+      _testFunc = async httpContext =>
       {
-        requestPassed = validateBodyFunc(c.Request.Body);
-        // Validate the content type passed, this should not be modified
-        if (!string.Equals(c.Request.Headers[HeaderNames.ContentType], contentType,
-              StringComparison.CurrentCultureIgnoreCase))
+        using (var ms = new MemoryStream())
         {
-          Console.WriteLine($"Execpted Content Type : '{contentType}' but got '{c.Request.Headers[HeaderNames.ContentType]}' - Failed!");
+          await httpContext.Request.Body.CopyToAsync(ms);
+          requestPassed = await validateBodyFunc(ms);
+        }
+
+        // Validate the content type passed, this should not be modified
+        if (!string.Equals(httpContext.Request.Headers[HeaderNames.ContentType], contentType, StringComparison.CurrentCultureIgnoreCase))
+        {
+          Console.WriteLine($"Expected Content Type : '{contentType}' but got '{httpContext.Request.Headers[HeaderNames.ContentType]}' - Failed!");
           return false;
         }
         return requestPassed;
-      }
+      };
 
-      var testServer = CreateTestServer(null);
-
-      var host = testServer.Start();
-
-      var server = host.GetTestServer();
-      server.BaseAddress = new Uri($"http://localhost:{new Random().Next(50000, 51000)}");
-
-      var context = await server.SendAsync(c =>
+      var headers = new HeaderDictionary
       {
-        c.Request.Method = HttpMethods.Post;
-        data.Seek(0, SeekOrigin.Begin);
-        c.Request.Body = data;
-      });
+        [HeaderNames.ContentType] = contentType
+      };
 
-      Assert.Equal("POST", context.Request.Method);
-      Assert.NotNull(context.Request.Body);
-      Assert.NotNull(context.Request.Headers);
-      Assert.NotNull(context.Response.Headers);
-      Assert.NotNull(context.Response.Body);
-
-      ValidatePostedData(context);
-    }
-
-    public static byte[] ReadFully(Stream input)
-    {
-      using var ms = new MemoryStream();
-      input.CopyTo(ms);
-      return ms.ToArray();
+      await gracefulWebRequest.ExecuteRequest("http://localhost:51000", data, headers, HttpMethod.Post, null, 0, true);
     }
 
     [Fact]
     public async Task TestPostBinaryDataWithNoContentType()
     {
-      const string BinaryTestFilename = "TestFiles/TestBinary.ttm";
+      const string BINARY_TEST_FILENAME = "TestFiles/TestBinary.ttm";
+      const string CORRECT_MD5 = "36dd727b3ac476d39ee98daf465a0658"; // calculated manually
+      const string EXPECTED_CONTENT_TYPE = ContentTypeConstants.ApplicationOctetStream;
 
-      const string correctMd5 = "36dd727b3ac476d39ee98daf465a0658"; // calculated manually
-      const string expectedContentType = ContentTypeConstants.ApplicationOctetStream;
-      Assert.True(File.Exists(BinaryTestFilename), $"Test file '{BinaryTestFilename}' doesn't exist");
+      Assert.True(File.Exists(BINARY_TEST_FILENAME), $"Test file '{BINARY_TEST_FILENAME}' doesn't exist");
 
-      var memoryStream = new MemoryStream(File.ReadAllBytes(BinaryTestFilename));
+      var memoryStream = new MemoryStream(File.ReadAllBytes(BINARY_TEST_FILENAME));
       var md5 = CalculateMD5(memoryStream);
       Console.WriteLine($"File MD5: {md5}");
-      Assert.True(string.Compare(md5, correctMd5, StringComparison.InvariantCultureIgnoreCase) == 0, "Invalid test data file");
+      Assert.True(string.Compare(md5, CORRECT_MD5, StringComparison.InvariantCultureIgnoreCase) == 0, "Invalid test data file");
 
       var requestPassed = false;
-      var validatePostedData = new Func<Stream, bool>((stream) =>
+
+      var validatePostedData = new Func<Stream, Task<bool>>((stream) =>
       {
         var requestMd5 = CalculateMD5(stream);
-        Console.WriteLine($"Request md5, Got '{requestMd5}', expected '{correctMd5}'. " +
+        Console.WriteLine($"Request md5, Got '{requestMd5}', expected '{CORRECT_MD5}'. " +
                           $"Got length : {stream.Length}, expected length: {memoryStream.Length}");
 
-        requestPassed = string.Compare(requestMd5, correctMd5, StringComparison.InvariantCultureIgnoreCase) == 0;
+        requestPassed = string.Compare(requestMd5, CORRECT_MD5, StringComparison.InvariantCultureIgnoreCase) == 0;
 
-        return requestPassed;
+        return Task.FromResult(requestPassed);
       });
 
-      await ExecutePostRequest(memoryStream, expectedContentType, validatePostedData);
+      await ExecutePostRequest(memoryStream, EXPECTED_CONTENT_TYPE, validatePostedData);
+
+      Assert.True(requestPassed);
     }
 
     [Fact]
@@ -213,9 +208,12 @@ namespace VSS.MasterData.Proxies.UnitTests
       Console.WriteLine($"Sending JSON: {jsonTestModel}");
       var jsonTestMemoryStream = new MemoryStream(Encoding.UTF8.GetBytes(jsonTestModel));
 
-      var validateData = new Func<Stream, bool>((stream) =>
+      var validateData = new Func<Stream, Task<bool>>(async (stream) =>
       {
-        var data = Encoding.UTF8.GetString(ReadFully(stream));
+        stream.Position = 0;
+
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+        var data = await reader.ReadToEndAsync();
         Console.WriteLine($"Got Response Model JSON: {data}");
         resultModel = JsonConvert.DeserializeObject<TestClass>(data);
 

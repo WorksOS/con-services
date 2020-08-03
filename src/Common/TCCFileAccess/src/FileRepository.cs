@@ -40,6 +40,7 @@ namespace VSS.TCCFileAccess
     private readonly ILogger<FileRepository> Log;
     private readonly ILoggerFactory logFactory;
     private readonly IConfigurationStore configStore;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     private static string ticket = string.Empty;
     private static readonly object ticketLockObj = new object();
@@ -85,7 +86,7 @@ namespace VSS.TCCFileAccess
       }
     }
 
-    public FileRepository(IConfigurationStore configuration, ILoggerFactory logger)
+    public FileRepository(IConfigurationStore configuration, ILoggerFactory logger, IHttpClientFactory httpClientFactory)
     {
       tccBaseUrl = configuration.GetValueString("TCCBASEURL");
       tccUserName = configuration.GetValueString("TCCUSERNAME");
@@ -104,6 +105,7 @@ namespace VSS.TCCFileAccess
       Log = logger.CreateLogger<FileRepository>();
       configStore = configuration;
       Log.LogInformation($"TCCBASEURL={tccBaseUrl}");
+      _httpClientFactory = httpClientFactory;
     }
 
     public async Task<List<Organization>> ListOrganizations()
@@ -195,7 +197,7 @@ namespace VSS.TCCFileAccess
       if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
-      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore, _httpClientFactory);
       var (requestString, headers) = FormRequest(sendFileParams, "PutFile");
 
       headers.Add("X-File-Name", WebUtility.UrlEncode(filename));
@@ -270,7 +272,7 @@ namespace VSS.TCCFileAccess
         throw new Exception("Configuration Error - no TCC url specified");
       }
 
-      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore, _httpClientFactory);
       var (requestString, headers) = FormRequest(getFileParams, "GetFile");
 
       try
@@ -703,7 +705,7 @@ namespace VSS.TCCFileAccess
       if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
-      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore, _httpClientFactory);
       var (requestString, headers) = FormRequest(requestData, contractPath, token);
 
       headers.Add("Content-Type", ContentTypeConstants.ApplicationJson);
@@ -736,7 +738,7 @@ namespace VSS.TCCFileAccess
       if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
 
-      var gracefulClient = new GracefulWebRequest(logFactory, configStore);
+      var gracefulClient = new GracefulWebRequest(logFactory, configStore, _httpClientFactory);
       var (requestString, headers) = FormRequest(requestData, contractPath, token);
 
       headers.Add("Content-Type", ContentTypeConstants.ApplicationJson);
