@@ -126,7 +126,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
     }
 
     [Fact]
-    public async Task TileExecutor_TestPalletSerilizationAndDeserilization()
+    public async Task TileExecutor_TestPaletteSerilizationAndDeserilization()
     {
       AddRoutings();
       AddRenderingFactoryToDI();
