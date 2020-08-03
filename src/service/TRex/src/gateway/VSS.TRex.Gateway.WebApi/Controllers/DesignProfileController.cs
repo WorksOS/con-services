@@ -50,14 +50,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get the design profile between a pair of points across a design surface
     /// </summary>
-    /// <param name="projectUID"></param>
-    /// <param name="designUID"></param>
-    /// <param name="offset"></param>
-    /// <param name="startX"></param>
-    /// <param name="startY"></param>
-    /// <param name="endX"></param>
-    /// <param name="endY"></param>
-    /// <returns></returns>
     [Route("api/v1/profile/design")]
     [HttpGet]
     public Task<ContractExecutionResult> GetDesignProfile(
@@ -67,9 +59,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       [FromQuery] double startX,
       [FromQuery] double startY,
       [FromQuery] double endX,
-      [FromQuery] double endY)
+      [FromQuery] double endY,
+      [FromQuery] bool positionsAreGrid)
     {
-      return PostDesignProfile(new DesignProfileRequest(projectUID, designUID, offset, startX, startY, endX, endY));
+      return PostDesignProfile(new DesignProfileRequest(projectUID, designUID, offset, startX, startY, endX, endY, positionsAreGrid));
     }
   }
 }

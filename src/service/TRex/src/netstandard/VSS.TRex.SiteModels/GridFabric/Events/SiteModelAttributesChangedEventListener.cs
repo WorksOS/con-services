@@ -8,6 +8,8 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using System.Threading.Tasks;
+using Nito.AsyncEx.Synchronous;
 
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
@@ -21,11 +23,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     private const byte VERSION_NUMBER = 1;
 
     public const string SITE_MODEL_ATTRIBUTES_CHANGED_EVENTS_TOPIC_NAME = "SiteModelAttributesChangedEvents";
-
-    /// <summary>
-    ///  Message group the listener has been added to
-    /// </summary>
-    private IMessaging MsgGroup;
 
     public string MessageTopicName { get; set; } = SITE_MODEL_ATTRIBUTES_CHANGED_EVENTS_TOPIC_NAME;
 
@@ -82,7 +79,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
       // Create a messaging group the cluster can use to send messages back to and establish a local listener
       // All nodes (client and server) want to know about site model attribute changes
-      MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
+      var MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
 
       if (MsgGroup != null)
         MsgGroup.LocalListen(this, MessageTopicName);
@@ -93,9 +90,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     public void StopListening()
     {
       // Un-register the listener from the message group
-      MsgGroup?.StopLocalListen(this, MessageTopicName);
-
-      MsgGroup = null;
+      DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging()?.StopLocalListen(this, MessageTopicName);
     }
 
     public void Dispose()

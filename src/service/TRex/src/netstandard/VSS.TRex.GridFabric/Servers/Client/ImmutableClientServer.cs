@@ -90,6 +90,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
 
             PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE),
+            SystemThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_SYSTEM_THREAD_POOL_SIZE, DEFAULT_IGNITE_SYSTEM_THREAD_POOL_SIZE),
 
             PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.CurrentAppDomain,
 
@@ -98,7 +99,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
               Serializer = new BinarizableSerializer()
             },
 
-            // Add the TRex progressive request request custom thread pool
+            // Add the TRex progressive request custom thread pool
             ExecutorConfiguration = new List<ExecutorConfiguration>
             {
               new ExecutorConfiguration

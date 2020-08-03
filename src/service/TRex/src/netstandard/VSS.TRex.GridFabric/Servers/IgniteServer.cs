@@ -15,6 +15,9 @@ namespace VSS.TRex.GridFabric.Servers
         public const string IGNITE_PUBLIC_THREAD_POOL_SIZE = "IGNITE_PUBLIC_THREAD_POOL_SIZE";
         public const int DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
 
+        public const string IGNITE_SYSTEM_THREAD_POOL_SIZE = "IGNITE_SYSTEM_THREAD_POOL_SIZE";
+        public const int DEFAULT_IGNITE_SYSTEM_THREAD_POOL_SIZE = 500;
+
         public const string IGNITE_JVM_MAX_HEAP_SIZE_MB = "IGNITE_JVM_MAX_HEAP_SIZE_MB";
         public const int DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB = 1 * 1024;
 

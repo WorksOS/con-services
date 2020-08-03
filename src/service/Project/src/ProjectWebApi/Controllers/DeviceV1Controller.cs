@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -35,11 +36,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} projectUid {projectUid} earliestOfInterestUtc {earliestOfInterestUtc}");
       DeviceDataValidator.ValidateProjectUid(projectUid);
       DeviceDataValidator.ValidateEarliestOfInterestUtc(earliestOfInterestUtc);
-
+      
       earliestOfInterestUtc ??= DateTime.UtcNow.AddDays(-30);
-      var devices = await CwsDeviceGatewayClient.GetDevicesLKSForProject(projectUid, earliestOfInterestUtc, customHeaders);
+      var devices = 
+        (await CwsDeviceGatewayClient.GetDevicesLKSForProject(projectUid, earliestOfInterestUtc, customHeaders))
+        .Where(d=> string.Compare(d.AccountUid, CustomerUid, StringComparison.OrdinalIgnoreCase) == 0);
+      Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} completed. deviceCount to return {devices.Count()}");
 
-      Logger.LogInformation($"{nameof(GetDevicesLKSForProject)} completed. devices {(devices == null ? null : JsonConvert.SerializeObject(devices))}");
       return Ok(devices);
     }
 

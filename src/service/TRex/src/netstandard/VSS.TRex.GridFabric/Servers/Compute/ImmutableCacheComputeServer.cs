@@ -118,6 +118,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10); // TODO: This needs to be added to configuration
 
       cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE);
+      cfg.SystemThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_SYSTEM_THREAD_POOL_SIZE, DEFAULT_IGNITE_SYSTEM_THREAD_POOL_SIZE);
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.CurrentAppDomain;
 

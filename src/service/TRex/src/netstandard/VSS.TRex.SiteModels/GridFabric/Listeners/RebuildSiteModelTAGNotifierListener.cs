@@ -23,11 +23,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
 
     public const string SITE_MODEL_REBUILDER_TAG_FILE_PROCESSED_EVENT_TOPIC_NAME = "RebuilderTAGNotifierEvent";
 
-    /// <summary>
-    ///  Message group the listener has been added to
-    /// </summary>
-    private IMessaging MsgGroup;
-
     public string MessageTopicName { get; set; } = SITE_MODEL_REBUILDER_TAG_FILE_PROCESSED_EVENT_TOPIC_NAME;
 
     public bool Invoke(Guid nodeId, IRebuildSiteModelTAGNotifierEvent message)
@@ -77,7 +72,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
 
       // Create a messaging group the cluster can use to send messages back to and establish a local listener
       // All nodes (client and server) want to know about TAG file processing notifications
-      MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(Storage.Models.StorageMutability.Mutable)?.GetCluster().GetMessaging();
+      var MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(Storage.Models.StorageMutability.Mutable)?.GetCluster().GetMessaging();
 
       if (MsgGroup != null)
         MsgGroup.LocalListen(this, MessageTopicName);
@@ -88,9 +83,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
     public void StopListening()
     {
       // Un-register the listener from the message group
-      MsgGroup?.StopLocalListen(this, MessageTopicName);
-
-      MsgGroup = null;
+      DIContext.Obtain<ITRexGridFactory>()?.Grid(Storage.Models.StorageMutability.Mutable)?.GetCluster().GetMessaging()?.StopLocalListen(this, MessageTopicName);
     }
 
     public void Dispose()

@@ -280,5 +280,60 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       passCountDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(totalArea, 0.000001);
       passCountDetailResult.IsTargetPassCountConstant.Should().BeTrue();
     }
+
+    [Theory]
+    [InlineData(0, 0, 20.036264732547597, 79.9637352674524, 0.0, 255.01360000000005)]
+    public async Task Test_DetailedPassCountStatistics_WithPassCountRangeFilter
+     (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove, double totalArea)
+    {
+      AddClusterComputeGridRouting();
+      AddApplicationGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var operation = new PassCountStatisticsOperation();
+
+      var arg = SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget);
+      arg.Filters = new FilterSet(new CombinedFilter(new CellPassAttributeFilter{PassCountRangeMin = 2, PassCountRangeMax = 3, HasPassCountRangeFilter = true}, new CellSpatialFilter()));
+      arg.PassCountDetailValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+      var passCountDetailResult = await operation.ExecuteAsync(arg);
+
+      passCountDetailResult.Should().NotBeNull();
+
+      // Checks counts and percentages
+      long[] expectedCounts = { 0, 442, 1764, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+      long expectedCountsSum = 0;
+      for (int i = 0; i < expectedCounts.Length; i++)
+        expectedCountsSum += (i + 1) * expectedCounts[i];
+
+      // Is sum of counts the same?
+      long passCountDetailResultSum = 0;
+      for (int i = 0; i < passCountDetailResult.Counts.Length; i++)
+        passCountDetailResultSum += (i + 1) * passCountDetailResult.Counts[i];
+
+      passCountDetailResultSum.Should().Be(expectedCountsSum);
+
+      // Are all counts the same and do percentages match?
+
+      long totalCount = passCountDetailResult.Counts.Sum();
+      for (int i = 0; i < expectedCounts.Length; i++)
+      {
+        expectedCounts[i].Should().Be(passCountDetailResult.Counts[i]);
+        passCountDetailResult.Percents[i].Should().BeApproximately(100.0 * expectedCounts[i] / (1.0 * totalCount), 0.001);
+      }
+
+      // Check summary related fields are zero
+      passCountDetailResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      passCountDetailResult.ReturnCode.Should().Be(MissingTargetDataResultType.NoResult);
+      passCountDetailResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
+      passCountDetailResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
+      passCountDetailResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
+      passCountDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(totalArea, 0.000001);
+      passCountDetailResult.IsTargetPassCountConstant.Should().BeTrue();
+    }
   }
 }

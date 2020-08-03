@@ -126,9 +126,8 @@ namespace TAGFiles.Tests
     public async Task Test_ValidateOk()
     {
       var projectUid = Guid.NewGuid();
-      var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), null, (int)DeviceTypeEnum.MANUALDEVICE, "success");
+      var moqRequest = new GetProjectUidsRequest(projectUid.ToString(), string.Empty, 40, 50);
+      var moqResult = new GetProjectUidsResult(projectUid.ToString(), null, null, 0, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -164,9 +163,8 @@ namespace TAGFiles.Tests
     {
       // This test ensures platformSerialNumber (serial/deviceid) is extracted and used in validation. Note this Tagfile has no Radio Serial id. Only Serial id. 
       var projectUid = Guid.NewGuid();
-      var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 40, 50, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), null, (int)DeviceTypeEnum.MANUALDEVICE, "success");
+      var moqRequest = new GetProjectUidsRequest(projectUid.ToString(), string.Empty, 40, 50);
+      var moqResult = new GetProjectUidsResult(projectUid.ToString(), null, null, 0, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -201,9 +199,8 @@ namespace TAGFiles.Tests
     public async Task Test_UsingNEE_ValidateOk()
     {
       var projectUid = Guid.NewGuid();
-      var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, "5850F00892", "1639J101YU", 0, 0, timeOfPosition, 5876814.5384829007, 7562822.7801738745);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int)DeviceTypeEnum.MANUALDEVICE, "success");
+      var moqRequest = new GetProjectUidsRequest(projectUid.ToString(), "1639J101YU", 0, 0, 5876814.5384829007, 7562822.7801738745);
+      var moqResult = new GetProjectUidsResult(projectUid.ToString(), string.Empty, string.Empty, 0, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -237,9 +234,8 @@ namespace TAGFiles.Tests
     public async Task Test_ValidateFailed_InvalidManualProjectType()
     {
       var projectUid = Guid.NewGuid();
-      var timeOfPosition = DateTime.UtcNow;
-      var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, 0, 0, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, 3044, "Manual Import: cannot import to a Civil type project");
+      var moqRequest = new GetProjectUidsRequest(projectUid.ToString(), string.Empty, 0, 0);
+      var moqResult = new GetProjectUidsResult(string.Empty, string.Empty, string.Empty, 3044, "Manual Import: cannot import to a Civil type project");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -324,7 +320,7 @@ namespace TAGFiles.Tests
       Assert.False(TagFileRepository.ArchiveTagfileS3(td).Result, "Failed to validate null data archive");
     }
 
-    private void SetupDITfa(bool enableTfaService = true, GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest = null, GetProjectAndAssetUidsResult getProjectAndAssetUidsResult = null)
+    private void SetupDITfa(bool enableTfaService = true, GetProjectUidsRequest getProjectUidsRequest = null, GetProjectUidsResult getProjectUidsResult = null)
     {
       // this setup includes the DITagFileFixture. Done here to try to avoid random test failures.
 
@@ -371,9 +367,9 @@ namespace TAGFiles.Tests
       moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH", It.IsAny<int>())).Returns(moqMinTagFileLength);
       moqConfiguration.Setup(x => x.GetValueInt("MIN_TAGFILE_LENGTH")).Returns(moqMinTagFileLength);
 
-      var moqTfaProxy = new Mock<ITagFileAuthProjectProxy>();
-      if (enableTfaService && getProjectAndAssetUidsRequest != null)
-        moqTfaProxy.Setup(x => x.GetProjectAndAssetUids(It.IsAny<GetProjectAndAssetUidsRequest>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(getProjectAndAssetUidsResult);
+      var moqTfaProxy = new Mock<ITagFileAuthProjectV5Proxy>();
+      if (enableTfaService && getProjectUidsRequest != null)
+        moqTfaProxy.Setup(x => x.GetProjectUids(It.IsAny<GetProjectUidsRequest>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(getProjectUidsResult);
 
       DIBuilder
         .Continue()

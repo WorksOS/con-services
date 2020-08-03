@@ -73,16 +73,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #endif
 
       public static void ConvertProfileEndPositions(ProfileGridPoints gridPoints, ProfileLLPoints lLPoints,
-      out WGSPoint startPt, out WGSPoint endPt)
+      out WGSPoint startPt, out WGSPoint endPt, out bool positionsAreGrid)
     {
       if (gridPoints != null)
       {
+        positionsAreGrid = true;
         startPt = new WGSPoint(gridPoints.y1, gridPoints.x1);
         endPt = new WGSPoint(gridPoints.y2, gridPoints.x2);
       }
       else
       if (lLPoints != null)
       {
+        positionsAreGrid = false;
         startPt = new WGSPoint(lLPoints.lat1, lLPoints.lon1);
         endPt = new WGSPoint(lLPoints.lat2, lLPoints.lon2);
       }

@@ -372,5 +372,44 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
+
+    [Fact]
+    public async Task Test_TileRenderRequest_TAGFile_And_SurveyedSurface_ElevationOnly()
+    {
+      // Render a surveyed surface across a processd TAG file extent
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var extents = siteModel.SiteModelExtent;
+      extents.Expand(5, 5);
+
+      var (startDate, _) = siteModel.GetDateRange();
+
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSurveyedSurfaceEncompassingExtent(ref siteModel,
+        extents, startDate, new[] { extents.MinZ - 1.0, extents.MinZ - 1.0, extents.MaxZ + 1.0, extents.MaxZ + 1.0 });
+      var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.Height, siteModel.SiteModelExtent);
+
+      var request = new TileRenderRequest();
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.Height, palette);
+
+      extents.Expand(1, 1);
+      arg.Extents = extents;
+
+      var response = await request.ExecuteAsync(arg);
+
+      const string FILE_NAME = "SimpleSurveyedSurfaceWithTAGFile.bmp";
+      var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
+
+      var saveFileName = ""; //@$"c:\temp\{FILE_NAME}";
+
+      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
+    }
   }
 }

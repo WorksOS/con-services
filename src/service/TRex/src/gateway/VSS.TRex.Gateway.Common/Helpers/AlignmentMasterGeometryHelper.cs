@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CoreX.Interfaces;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -10,6 +10,8 @@ namespace VSS.TRex.Gateway.Common.Helpers
 {
   public static class AlignmentMasterGeometryHelper
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger("AlignmentMasterGeometryHelper");
+
     /// <summary>
     /// Takes the response computed for the alignment, extracts all coordinates into a single list,
     /// converts all coordinates with a call to the coordinate conversion service and inserts the
@@ -18,16 +20,23 @@ namespace VSS.TRex.Gateway.Common.Helpers
     public static void ConvertNEEToLLHCoords(string csib, AlignmentDesignGeometryResponse geometryResponse)
     {
       var coords = new List<XYZ>();
+
       if ((geometryResponse.Vertices?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[1], x[0], x[2])).ToArray()).ToList());
+        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[1], x[0], 0.0))));
+
       if ((geometryResponse.Arcs?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, x.Z1), new XYZ(x.Y2, x.X2, x.Z2), new XYZ(x.YC, x.XC, x.ZC) }).ToList());
+        coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, 0.0), new XYZ(x.Y2, x.X2, 0.0), new XYZ(x.YC, x.XC, 0.0) }));
+
       if ((geometryResponse.Labels?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.Y, x.X, 0.0)).ToList());
+        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.Y, x.X, 0.0)));
+
+      _log.LogDebug($"Assembled vertex & label coordinates before conversion to lat/lon: {string.Join(", ", coords)}");
 
       var convertedCoords = DIContext.Obtain<IConvertCoordinates>()
         .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ(), CoreX.Types.ReturnAs.Degrees)
         .ToTRex_XYZ();
+
+      _log.LogDebug($"Assembled vertex & label coordinates after conversion to lat/lon: {string.Join(", ", convertedCoords)}");
 
       // Copy the converted coordinates to the geometry response ready for inclusion in the request result
       var index = 0;
@@ -38,8 +47,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
         {
           for (var j = 0; j < geometryResponse.Vertices[i].Length; j++)
           {
-            geometryResponse.Vertices[i][j][0] = convertedCoords[index].X;
-            geometryResponse.Vertices[i][j][1] = convertedCoords[index].Y;
+            geometryResponse.Vertices[i][j] = new [] { convertedCoords[index].X, convertedCoords[index].Y, convertedCoords[index].Z };
             index++;
           }
         }
@@ -73,8 +81,6 @@ namespace VSS.TRex.Gateway.Common.Helpers
           index++;
         }
       }
-
-
     }
   }
 }

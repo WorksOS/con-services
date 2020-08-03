@@ -288,14 +288,11 @@ namespace VSS.TRex.Pipelines
               return false;
             }
 
-            if (filter.AttributeFilter.AnyFilterSelections)
+            Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
+            if (Response.ResultStatus != RequestErrorStatus.OK)
             {
-              Response.ResultStatus = FilterUtilities.PrepareFilterForUse(filter, DataModelID);
-              if (Response.ResultStatus != RequestErrorStatus.OK)
-              {
-                _log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
-                return false;
-              }
+              _log.LogInformation($"PrepareFilterForUse failed: Datamodel={DataModelID}");
+              return false;
             }
           }
         }

@@ -35,20 +35,20 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     ///    to validates licensing etc
     ///      and lookup assetId and projectId 
     /// </summary>
-    private static async Task<GetProjectAndAssetUidsResult> ValidateWithTfa(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest)
+    private static async Task<GetProjectUidsResult> ValidateWithTfa(GetProjectUidsRequest getProjectUidsRequest)
     {
-      Log.LogInformation($"#Progress# ValidateWithTFA. Calling TFA service to validate tagfile permissions:{JsonConvert.SerializeObject(getProjectAndAssetUidsRequest)}");
-      var tfa = DIContext.Obtain<ITagFileAuthProjectProxy>();
+      Log.LogInformation($"#Progress# ValidateWithTFA. Calling TFA service to identify potential project: {JsonConvert.SerializeObject(getProjectUidsRequest)}");
+      var tfa = DIContext.Obtain<ITagFileAuthProjectV5Proxy>();
 
-      GetProjectAndAssetUidsResult tfaResult;
+      GetProjectUidsResult tfaResult;
       try
       {
         var customHeaders = new HeaderDictionary();
-        tfaResult = await tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest, customHeaders).ConfigureAwait(false);
+        tfaResult = await tfa.GetProjectUids(getProjectUidsRequest, customHeaders).ConfigureAwait(false);
       }
       catch (Exception e)
       {
-        return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, (int)TRexTagFileResultCode.TRexTfaException, e.Message);
+        return new GetProjectUidsResult(string.Empty, string.Empty, string.Empty, (int)TRexTagFileResultCode.TRexTfaException, e.Message);
       }
 
       return tfaResult;
@@ -57,7 +57,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     /// <summary>
     /// this needs to be public, only for unit tests
     /// </summary>
-    public static async Task<GetProjectAndAssetUidsResult> CheckFileIsProcessable(TagFileDetail tagDetail, TAGFilePreScan preScanState)
+    public static async Task<GetProjectUidsResult> CheckFileIsProcessable(TagFileDetail tagDetail, TAGFilePreScan preScanState)
     {
       /*
       Three different types of tagfile submission
@@ -82,17 +82,14 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Type C. Do we have what we need already (Most likely test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
-          return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
-
-      // Business rule for device type conversion
-      var radioType = preScanState.RadioType == "torch" ? DeviceTypeEnum.SNM940 : DeviceTypeEnum.MANUALDEVICE; // torch device set to type 6
-
-      if (string.IsNullOrEmpty(preScanState.RadioSerial) && (tagDetail.projectId == null || tagDetail.projectId == Guid.Empty) && string.IsNullOrEmpty(platformSerialNumber))
+          return new GetProjectUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), string.Empty, 0, "success");
+      
+      if ((tagDetail.projectId == null || tagDetail.projectId == Guid.Empty) && string.IsNullOrEmpty(platformSerialNumber))
       {
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
-        var message = "#Progress# CheckFileIsProcessable. Must have either a valid RadioSerialNum or platformSerialNumber or ProjectUID";
+        var message = "#Progress# CheckFileIsProcessable. Must have either a valid platformSerialNumber or ProjectUID";
         Log.LogWarning(message);
-        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), (int) TRexTagFileResultCode.TRexMissingProjectIDRadioSerialAndEcmSerial, message);
+        return new GetProjectUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), string.Empty, (int) TRexTagFileResultCode.TRexMissingProjectUidAndPlatformSerial, message);
       }
 
       var seedLatitude = MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0.0);
@@ -102,22 +99,21 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       if (Math.Abs(seedLatitude) < Consts.TOLERANCE_DECIMAL_DEGREE && Math.Abs(seedLongitude) < Consts.TOLERANCE_DECIMAL_DEGREE && (seedNorthing == null || seedEasting == null))
       {
         // This check is also done as a pre-check as the scenario is very frequent, to avoid the TFA API call overhead.
-        var message = $"#Progress# CheckFileIsProcessable. Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
+        var message = $"#Progress# CheckFileIsProcessable. Unable to determine a tag file seed position. projectID {tagDetail.projectId} serialNumber {platformSerialNumber} filename {tagDetail.tagFileName} Lat {preScanState.SeedLatitude} Long {preScanState.SeedLongitude} northing {preScanState.SeedNorthing} easting {preScanState.SeedNorthing}";
         Log.LogWarning(message);
-        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), (int) TRexTagFileResultCode.TRexInvalidLatLong, message);
+        return new GetProjectUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), string.Empty, (int) TRexTagFileResultCode.TRexInvalidLatLong, message);
       }
 
-      var tfaRequest = new GetProjectAndAssetUidsRequest(
+      var tfaRequest = new GetProjectUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        (int)radioType, preScanState.RadioSerial, platformSerialNumber, 
+        platformSerialNumber, 
         seedLatitude, seedLongitude,
-        preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC,
         preScanState.SeedNorthing, preScanState.SeedEasting);
       Log.LogInformation($"#Progress# CheckFileIsProcessable. tfaRequest {JsonConvert.SerializeObject(tfaRequest)}");
 
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
-      Log.LogInformation($"#Progress# CheckFileIsProcessable. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
+      Log.LogInformation($"#Progress# CheckFileIsProcessable. TFA validate returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
       if (tfaResult?.Code == (int)TRexTagFileResultCode.Valid)
       {
         // if not overriding take TFA projectid

@@ -40,7 +40,7 @@
       return true;
     }
 
-    public bool Init(XYZ p, XYZ q, XYZ r) => Init(p.X, p.Y, p.Z, q.X, q.Y, q.Z, r.Z, r.Y, r.Z);
+    public bool Init(XYZ p, XYZ q, XYZ r) => Init(p.X, p.Y, p.Z, q.X, q.Y, q.Z, r.X, r.Y, r.Z);
 
     public double Evaluate(int x, int y) => a * x + b * y + c;
 
