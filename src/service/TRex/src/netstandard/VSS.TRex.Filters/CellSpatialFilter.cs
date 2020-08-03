@@ -186,7 +186,7 @@ namespace VSS.TRex.Filters
         Fence.Assign(source.Fence);
       }
 
-      if (AlignmentFence != null)
+      if (source.AlignmentFence != null)
       {
         AlignmentFence = new Fence(); // contains alignment boundary to help speed up filtering on alignment files
         AlignmentFence.Assign(source.AlignmentFence);

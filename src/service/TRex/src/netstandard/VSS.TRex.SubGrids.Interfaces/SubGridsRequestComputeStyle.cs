@@ -9,7 +9,7 @@
 
     /// <summary>
     /// The sub grids are being requested to satisfy 'simple volumes' requests where two origin filters have been 
-    /// augmented with a thiird 'interemediary' filter to completely capture the origin surface.
+    /// augmented with a third 'intermediary' filter to completely capture the origin surface.
     /// </summary>
     SimpleVolumeThreeWayCoalescing
   }

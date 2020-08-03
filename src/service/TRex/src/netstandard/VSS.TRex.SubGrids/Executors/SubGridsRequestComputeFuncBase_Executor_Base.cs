@@ -134,14 +134,14 @@ namespace VSS.TRex.SubGrids.Executors
         // need to be merged into a single height and time sub grid before any secondary conversion of intermediary
         // results in the logic below.
 
-        if (SubGridsRequestComputeStyle == SubGridsRequestComputeStyle.SimpleVolumeThreeWayCoalescing)
+        if (SubGridsRequestComputeStyle == SubGridsRequestComputeStyle.SimpleVolumeThreeWayCoalescing && subGridResultArray.Length == 3)
         {
+          // Three filters in play - check the two results we care about here
           var clientGrid1 = subGridResultArray[0].clientGrid;
           var clientGrid2 = subGridResultArray[1].clientGrid;
 
-          if (subGridResultArray.Length == 3 // Three filters in play - check the two results we care about here
-              && (clientGrid1.GridDataType == GridDataType.HeightAndTime || clientGrid1.GridDataType == GridDataType.Height)
-              && (clientGrid2.GridDataType == GridDataType.HeightAndTime || clientGrid2.GridDataType == GridDataType.Height))
+          if ((clientGrid1.GridDataType == GridDataType.HeightAndTime || clientGrid1.GridDataType == GridDataType.Height) &&
+              (clientGrid2.GridDataType == GridDataType.HeightAndTime || clientGrid2.GridDataType == GridDataType.Height))
           {
             var heights1 = clientGrid1.GridDataType == GridDataType.HeightAndTime ? ((ClientHeightAndTimeLeafSubGrid)clientGrid1).Cells : ((ClientHeightLeafSubGrid)clientGrid1).Cells;
             var heights2 = clientGrid1.GridDataType == GridDataType.HeightAndTime ? ((ClientHeightAndTimeLeafSubGrid)clientGrid2).Cells : ((ClientHeightLeafSubGrid)clientGrid2).Cells;
@@ -151,11 +151,11 @@ namespace VSS.TRex.SubGrids.Executors
             // Subgrid1 is 'latest @ first filter', sub grid 2 is earliest @ second filter
             SubGridUtilities.SubGridDimensionalIterator((i, j) =>
             {
-            // Check if there is a non null candidate in the earlier @ second filter
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (heights1[i, j] == Consts.NullHeight &&
+              // Check if there is a non null candidate in the earlier @ second filter
+              // ReSharper disable once CompareOfFloatsByEqualityOperator
+              if (heights1[i, j] == Consts.NullHeight &&
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                heights2[i, j] != Consts.NullHeight)
+                  heights2[i, j] != Consts.NullHeight)
               {
                 heights1[i, j] = heights2[i, j];
               }

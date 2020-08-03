@@ -389,15 +389,17 @@ namespace VSS.TRex.SubGrids
     {
       if (!_haveComputedSpatialFilterMaskAndClientProdDataMap)
       {
-        if (!SubGridFilterMasks.ConstructSubGridCellFilterMask(_clientGrid, _siteModel, _filter, CellOverrideMask,
-            _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction, _clientGrid.ProdDataMap, _clientGrid.FilterMap))
-        {
-          return ServerRequestResult.FailedToComputeDesignFilterPatch;
-        }
-
-        ModifyFilterMapBasedOnAdditionalSpatialFiltering();
-        _haveComputedSpatialFilterMaskAndClientProdDataMap = true;
+        return ServerRequestResult.NoError;
       }
+
+      if (!SubGridFilterMasks.ConstructSubGridCellFilterMask(_clientGrid, _siteModel, _filter, CellOverrideMask,
+          _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction, _clientGrid.ProdDataMap, _clientGrid.FilterMap))
+      {
+        return ServerRequestResult.FailedToComputeDesignFilterPatch;
+      }
+
+      ModifyFilterMapBasedOnAdditionalSpatialFiltering();
+      _haveComputedSpatialFilterMaskAndClientProdDataMap = true;
 
       return ServerRequestResult.NoError;
     }
