@@ -13,7 +13,6 @@ namespace VSS.TRex.Filters.Interfaces
     /// <summary>
     /// Return a formatted string indicating the state of the filter flags
     /// </summary>
-    /// <returns></returns>
     string ActiveFiltersString();
 
     /// <summary>
@@ -45,36 +44,28 @@ namespace VSS.TRex.Filters.Interfaces
     /// Determines if the filter contains sufficient information to adequately describe an active alignment
     /// spatial filter
     /// </summary>
-    /// <returns></returns>
     bool HasAlignmentDesignMask();
 
     /// <summary>
     /// Determines if the filter contains sufficient information to adequately describe an active design mask spatial filter
     /// </summary>
-    /// <returns></returns>
     bool HasSurfaceDesignMask();
 
     /// <summary>
     /// Determines if a cell given by it's central location is included in the spatial filter
     /// </summary>
-    /// <param name="CellCenterX"></param>
-    /// <param name="CellCenterY"></param>
-    /// <returns></returns>
     bool IsCellInSelection(double CellCenterX, double CellCenterY);
 
     /// <summary>
     /// Determines if an arbitrary location is included in the spatial filter.
     /// </summary>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <returns></returns>
     bool IsPositionInSelection(double X, double Y);
 
     /// <summary>
     /// Calculate a bounding extent of this spatial filter with a given external bounding extent
     /// </summary>
-    /// <param name="Extents"></param>
-    /// <returns></returns>
     void CalculateIntersectionWithExtents(BoundingWorldExtent3D Extents);
+
+    void Assign(ICellSpatialFilter source);
   }
 }

@@ -46,7 +46,6 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// Return a formatted string indicating the state of the filter flags
         /// </summary>
-        /// <returns></returns>
         public string ActiveFiltersString()
         {
             return $"Spatial:{IsSpatial}, Positional:{IsPositional}, DesignMask:{IsDesignMask}, AlignmentMask:{IsAlignmentMask}";
@@ -115,7 +114,6 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// Determines if the filter contains sufficient information to adequately describe an active alignment mask spatial filter
         /// </summary>
-        /// <returns></returns>
         public bool HasAlignmentDesignMask()
         {
             return AlignmentDesignMaskDesignUID != Guid.Empty && 
@@ -126,7 +124,6 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// Determines if the filter contains sufficient information to adequately describe an active design mask spatial filter
         /// </summary>
-        /// <returns></returns>
         public bool HasSurfaceDesignMask() => SurfaceDesignMaskDesignUid != Guid.Empty;
 
         /// <summary>
@@ -137,9 +134,6 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// Determines if a cell given by it's central location is included in the spatial filter
         /// </summary>
-        /// <param name="CellCenterX"></param>
-        /// <param name="CellCenterY"></param>
-        /// <returns></returns>
         public bool IsCellInSelection(double CellCenterX, double CellCenterY)
         {
           bool result = false;
@@ -160,16 +154,11 @@ namespace VSS.TRex.Filters
         /// <summary>
         /// Determines if an arbitrary location is included in the spatial filter.
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <returns></returns>
         public bool IsPositionInSelection(double X, double Y) => IsCellInSelection(X, Y);
 
         /// <summary>
         /// Calculate a bounding extent of this spatial filter with a given external bounding extent
         /// </summary>
-        /// <param name="Extents"></param>
-        /// <returns></returns>
         public void CalculateIntersectionWithExtents(BoundingWorldExtent3D Extents)
         {
             if (IsSpatial) // Just a polygonal fence
@@ -188,5 +177,37 @@ namespace VSS.TRex.Filters
 
             // no spatial restriction in the filter
         }
+
+    public void Assign(ICellSpatialFilter source)
+    {
+      if (source.Fence != null)
+      {
+        Fence = new Fence();
+        Fence.Assign(source.Fence);
+      }
+
+      if (AlignmentFence != null)
+      {
+        AlignmentFence = new Fence(); // contains alignment boundary to help speed up filtering on alignment files
+        AlignmentFence.Assign(source.AlignmentFence);
+      }
+
+      PositionX = source.PositionX;
+      PositionY = source.PositionY;
+      PositionRadius = source.PositionRadius;
+      IsSquare = source.IsSquare;
+      OverrideSpatialCellRestriction = new BoundingIntegerExtent2D(source.OverrideSpatialCellRestriction);
+      StartStation = source.StartStation;
+      EndStation = source.EndStation;
+      LeftOffset = source.LeftOffset;
+      RightOffset = source.RightOffset;
+      CoordsAreGrid = source.CoordsAreGrid;
+      IsSpatial = source.IsSpatial;
+      IsPositional = source.IsPositional;
+      IsDesignMask = source.IsDesignMask;
+      SurfaceDesignMaskDesignUid = source.SurfaceDesignMaskDesignUid;
+      IsAlignmentMask = source.IsAlignmentMask;
+      AlignmentDesignMaskDesignUID = source.AlignmentDesignMaskDesignUID;
+    }
   }
 }

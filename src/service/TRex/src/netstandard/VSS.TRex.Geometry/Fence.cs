@@ -419,12 +419,14 @@ namespace VSS.TRex.Geometry
     public void UpdateExtents() => UpdateMaxMins();
 
     /// <summary>
-    /// Assigned (copies) the vertices from another fence to this fence
+    /// Assign (copies) the vertices from another fence to this fence
     /// </summary>
     /// <param name="source"></param>
     public void Assign(Fence source)
     {
       Points = source.Points.Select(pt => new FencePoint(pt)).ToList();
+      IsRectangle = source.IsRectangle;
+      UpdateMaxMins();
     }
 
     /// <summary>
