@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -39,6 +41,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     protected IConfigurationStore ConfigStore;
+
+    /// <summary>
+    /// Cached contract resolvers for selective serialization of JSON request objects.
+    /// </summary>
+    protected static Dictionary<string, JsonSerializerSettings> ResolverCache = new Dictionary<string, JsonSerializerSettings>();
 
     /// <summary>
     /// Default constructor.
