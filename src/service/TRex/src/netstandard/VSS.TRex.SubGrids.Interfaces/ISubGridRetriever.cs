@@ -1,4 +1,5 @@
-﻿using VSS.TRex.SubGridTrees;
+﻿using System;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
@@ -8,6 +9,7 @@ namespace VSS.TRex.SubGrids.Interfaces
   {
     ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask,
-      out bool sieveFilterInUse);
+      out bool sieveFilterInUse,
+      Func<ServerRequestResult> computeSpatialFilterMaskAndClientProdDataMap);
   }
 }

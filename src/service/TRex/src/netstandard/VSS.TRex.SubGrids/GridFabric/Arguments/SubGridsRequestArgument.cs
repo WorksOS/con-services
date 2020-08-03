@@ -42,6 +42,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
 
     public AreaControlSet AreaControlSet { get; set; } = AreaControlSet.CreateAreaControlSet();
 
+    public SubGridsRequestComputeStyle SubGridsRequestComputeStyle { get; set; } = SubGridsRequestComputeStyle.Normal;
 
     /// <summary>
     /// Default no-arg constructor
@@ -69,6 +70,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
       writer.WriteBoolean(IncludeSurveyedSurfaceInformation);
 
       AreaControlSet.ToBinary(writer);
+
+      writer.WriteInt((int)SubGridsRequestComputeStyle);
     }
 
     /// <summary>
@@ -91,6 +94,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
 
       AreaControlSet = new AreaControlSet();
       AreaControlSet.FromBinary(reader);
+
+      SubGridsRequestComputeStyle = (SubGridsRequestComputeStyle)reader.ReadInt();
     }
   }
 }

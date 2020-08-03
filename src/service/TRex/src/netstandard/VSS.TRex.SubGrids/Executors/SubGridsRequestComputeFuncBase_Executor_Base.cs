@@ -47,6 +47,11 @@ namespace VSS.TRex.SubGrids.Executors
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     /// <summary>
+    /// Denotses the request 'style' in use. 
+    /// </summary>
+    public SubGridsRequestComputeStyle SubGridsRequestComputeStyle { get; set; } = SubGridsRequestComputeStyle.Normal;
+
+    /// <summary>
     /// Local reference to the client sub grid factory
     /// </summary>
     private IClientLeafSubGridFactory _clientLeafSubGridFactory;
@@ -127,40 +132,44 @@ namespace VSS.TRex.SubGrids.Executors
         // If performing simple volume calculations, there may be an intermediary filter in play. If this is
         // the case then the first two sub grid results will be HeightAndTime elevation sub grids and will
         // need to be merged into a single height and time sub grid before any secondary conversion of intermediary
-        //  results in the logic below.
+        // results in the logic below.
 
-        if (subGridResultArray.Length == 3 // Three filters in play
-            && subGridResultArray[0].clientGrid.GridDataType == GridDataType.HeightAndTime // Height and time sub grids
-            && subGridResultArray[1].clientGrid.GridDataType == GridDataType.HeightAndTime
-            && subGridResultArray[2].clientGrid.GridDataType == GridDataType.HeightAndTime
-        )
+        if (SubGridsRequestComputeStyle == SubGridsRequestComputeStyle.SimpleVolumeThreeWayCoalescing)
         {
-          var subGrid1 = (ClientHeightAndTimeLeafSubGrid) subGridResultArray[0].clientGrid;
-          var subGrid2 = (ClientHeightAndTimeLeafSubGrid) subGridResultArray[1].clientGrid;
+          var clientGrid1 = subGridResultArray[0].clientGrid;
+          var clientGrid2 = subGridResultArray[1].clientGrid;
 
-          // Merge the first two results then swap the second and third items so later processing
-          // uses the correct two result, and the the third is correctly recycled
-          // Subgrid1 is 'latest @ first filter', sub grid 2 is earliest @ second filter
-          SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+          if (subGridResultArray.Length == 3 // Three filters in play - check the two results we care about here
+              && (clientGrid1.GridDataType == GridDataType.HeightAndTime || clientGrid1.GridDataType == GridDataType.Height)
+              && (clientGrid2.GridDataType == GridDataType.HeightAndTime || clientGrid2.GridDataType == GridDataType.Height))
           {
+            var heights1 = clientGrid1.GridDataType == GridDataType.HeightAndTime ? ((ClientHeightAndTimeLeafSubGrid)clientGrid1).Cells : ((ClientHeightLeafSubGrid)clientGrid1).Cells;
+            var heights2 = clientGrid1.GridDataType == GridDataType.HeightAndTime ? ((ClientHeightAndTimeLeafSubGrid)clientGrid2).Cells : ((ClientHeightLeafSubGrid)clientGrid2).Cells;
+
+            // Merge the first two results then swap the second and third items so later processing
+            // uses the correct two result, and the the third is correctly recycled
+            // Subgrid1 is 'latest @ first filter', sub grid 2 is earliest @ second filter
+            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            {
             // Check if there is a non null candidate in the earlier @ second filter
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (subGrid1.Cells[i, j] == Consts.NullHeight &&
+            if (heights1[i, j] == Consts.NullHeight &&
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                subGrid2.Cells[i, j] != Consts.NullHeight)
-            {
-              subGrid1.Cells[i, j] = subGrid2.Cells[i, j];
-            }
-          });
+                heights2[i, j] != Consts.NullHeight)
+              {
+                heights1[i, j] = heights2[i, j];
+              }
+            });
 
-          // Return the intermediary result to the factory - it is no longer needed
-          ClientLeafSubGridFactory.ReturnClientSubGrid(ref subGridResultArray[1].clientGrid);
+            // Return the intermediary result to the factory - it is no longer needed
+            ClientLeafSubGridFactory.ReturnClientSubGrid(ref subGridResultArray[1].clientGrid);
 
-          // Promote the 'top' sub grid into the correct place (where the intermediary grid was located)
-          MinMax.Swap(ref subGridResultArray[1], ref subGridResultArray[2]);
+            // Promote the 'top' sub grid into the correct place (where the intermediary grid was located)
+            MinMax.Swap(ref subGridResultArray[1], ref subGridResultArray[2]);
 
-          // Create the newClientGrids array here to exclude the null result at the end of the subGridResults array
-          newClientGrids = new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[2];
+            // Create the newClientGrids array here to exclude the null result at the end of the subGridResults array
+            newClientGrids = new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[2];
+          }
         }
 
         newClientGrids ??= new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[subGridResultArray.Length];
@@ -262,6 +271,8 @@ namespace VSS.TRex.SubGrids.Executors
 
       Overrides = arg.Overrides;
       LiftParams = arg.LiftParams;
+
+      SubGridsRequestComputeStyle = arg.SubGridsRequestComputeStyle;
     }
 
     /// <summary>
