@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using CoreX.Interfaces;
 using CoreX.Wrapper;
 using FluentAssertions;
+using Google.Protobuf.Collections;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.MasterData.Models.Models;
@@ -12,6 +14,7 @@ using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs.Interfaces;
@@ -38,6 +41,7 @@ using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes.Integrator;
+using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Types;
 using Consts = VSS.TRex.Common.Consts;
 
@@ -120,10 +124,9 @@ namespace VSS.TRex.Tests.TestFixtures
       bool convertToImmutableRepresentation = true,
       bool treatAsJohnDoeMachines = false)
     {
-      var _tagFiles = tagFiles.ToList();
+      ProcessedTasks = null;
 
-      // Convert TAG files using TAGFileConverters into mini-site models
-      var converters = _tagFiles.Select(x => ReadTAGFileFullPath(x, treatAsJohnDoeMachines)).ToArray();
+      var _tagFiles = tagFiles.ToList();
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(NewSiteModelGuid, true);
@@ -139,35 +142,55 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
+      var pageNumber = 0;
+      var pageSize = 25;
+      var taskCount = 0;
+      TAGFileConverter[] converters = null;
 
-      var currentMachineName = string.Empty;
-      for (var i=0; i < converters.Length; i++)
+      do
       {
-        //One converter per tag file. See if machine changed if using real tag files.
-        var parts = _tagFiles[i].Split("--");
-        var tagMachineName = parts.Length == 3 ? parts[1] : "Test Machine";
-        if (string.Compare(currentMachineName, tagMachineName, StringComparison.OrdinalIgnoreCase) != 0)
+        // Convert TAG files using TAGFileConverters into mini-site models
+        converters = _tagFiles.Skip(pageNumber * pageSize).Take(pageSize).Select(x => ReadTAGFileFullPath(x, treatAsJohnDoeMachines)).ToArray();
+
+        var currentMachineName = string.Empty;
+        for (var i = 0; i < converters.Length; i++)
         {
-          currentMachineName = tagMachineName;
-          targetMachine = targetSiteModel.Machines.CreateNew(currentMachineName, "", MachineType.Dozer, DeviceTypeEnum.SNM940, treatAsJohnDoeMachines, Guid.NewGuid());
+          //One converter per tag file. See if machine changed if using real tag files.
+          var parts = _tagFiles[i].Split("--");
+          var tagMachineName = parts.Length == 3 ? parts[1] : "Test Machine";
+          if (!string.Equals(currentMachineName, tagMachineName, StringComparison.OrdinalIgnoreCase))
+          {
+            currentMachineName = tagMachineName;
+            targetMachine = targetSiteModel.Machines.CreateNew(currentMachineName, "", MachineType.Dozer, DeviceTypeEnum.SNM940, treatAsJohnDoeMachines, Guid.NewGuid());
+          }
+          converters[i].Machine.ID = targetMachine.ID;
+          integrator.AddTaskToProcessList(converters[i].SiteModel, targetSiteModel.ID, converters[i].Machines,
+            converters[i].SiteModelGridAggregator, converters[i].ProcessedCellPassCount, converters[i].MachinesTargetValueChangesAggregator);
+
+          if ((i + 1) % 10 == 0 || i == converters.Length - 1)
+          {
+            // Construct an integration worker and ask it to perform the integration
+            ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+            var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
+            {
+              MaxMappedTagFilesToProcessPerAggregationEpoch = _tagFiles.Count
+            };
+            worker.ProcessTask(ProcessedTasks, _tagFiles.Count);
+
+            taskCount += ProcessedTasks.Count;
+          }
         }
-        converters[i].Machine.ID = targetMachine.ID;
-        integrator.AddTaskToProcessList(converters[i].SiteModel, targetSiteModel.ID, converters[i].Machines,
-          converters[i].SiteModelGridAggregator, converters[i].ProcessedCellPassCount, converters[i].MachinesTargetValueChangesAggregator);
-      }
 
-      // Construct an integration worker and ask it to perform the integration
-      ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
-      {
-        MaxMappedTagFilesToProcessPerAggregationEpoch = _tagFiles.Count
-      };
-      worker.ProcessTask(ProcessedTasks, _tagFiles.Count);
+        pageNumber++;
+        converters.ForEach(x => x.Dispose());
+      } while (converters.Length > 0);
 
-      ProcessedTasks.Count.Should().Be(_tagFiles.Count);
 
       if (callTaskProcessingComplete)
-        worker.CompleteTaskProcessing();
+        new AggregatedDataIntegratorWorker(null, targetSiteModel.ID).CompleteTaskProcessing();
+
+      // Construct an integration worker and ask it to perform the integration
+      taskCount.Should().Be(_tagFiles.Count);
 
       // Reacquire the target site model to ensure any notification based changes to the site model are observed
       targetSiteModel.SiteModelExtent.IsValidPlanExtent.Should().BeTrue();

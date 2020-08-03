@@ -39,6 +39,17 @@ namespace VSS.TRex.Geometry
     }
 
     /// <summary>
+    /// Construct a 2D bounding extent from the supplied parameters
+    /// </summary>
+    public BoundingIntegerExtent2D(BoundingIntegerExtent2D bound)
+    {
+      MinX = bound.MinX;
+      MinY = bound.MinY;
+      MaxX = bound.MaxX;
+      MaxY = bound.MaxY;
+    }
+
+    /// <summary>
     /// Determine is this bounding extent encloses the extent provided as a parameter
     /// </summary>
     public bool Encloses(BoundingIntegerExtent2D AExtent)

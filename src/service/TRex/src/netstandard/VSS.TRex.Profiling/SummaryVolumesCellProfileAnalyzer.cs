@@ -93,6 +93,7 @@ namespace VSS.TRex.Profiling
           var IntermediaryFilter = new CombinedFilter();
           IntermediaryFilter.AttributeFilter.Assign(TopFilter.AttributeFilter);
           IntermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
+          IntermediaryFilter.SpatialFilter.Assign(TopFilter.SpatialFilter);
 
           return new FilterSet(new[] {FilterSet.Filters[0], IntermediaryFilter, FilterSet.Filters[1]});
         }

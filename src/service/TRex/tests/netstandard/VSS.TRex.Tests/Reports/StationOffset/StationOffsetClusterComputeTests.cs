@@ -31,7 +31,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     public async Task CalculateFromTAGFileDerivedModel()
     {
       var tagFiles = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", "ElevationMappingMode-KettlewellDrive"), "*.tag").ToArray();
-      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var processedTasks);
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out var _);
 
       // For test purposes, create an imaginary 'road' that passes through at least 100 of the
       //  on-null cells in the site model, which also have passCount data

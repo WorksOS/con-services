@@ -1207,13 +1207,13 @@ namespace VSS.TRex.Filters
     {
       var sb = new StringBuilder();
 
-      // TIme
+      // Time
       if (HasTimeFilter)
-        sb.Append($"TF:{StartTime.Ticks}-{EndTime.Ticks}");
+        sb.Append("TF:").Append(StartTime.Ticks).Append('-').Append(EndTime.Ticks);
 
       // Designs
       if (HasDesignFilter)
-        sb.Append($"DF:{DesignNameID}");
+        sb.Append("DF:").Append(DesignNameID);
 
       // Machines
       if (HasMachineFilter)
@@ -1221,30 +1221,32 @@ namespace VSS.TRex.Filters
         sb.Append("MF:");
 
         var machineIdBitArray = GetMachineIDsSet();
-        for (var i = 0; i <  MachineIDSet.Length; i++)
+        for (var i = 0; i < MachineIDSet.Length; i++)
+        {
           if (machineIdBitArray[i])
-            sb.Append($"-{i}");
+            sb.Append('-').Append(i);
+        }
       }
 
       // Machine direction filter
       if (HasMachineDirectionFilter)
-        sb.Append($"MD:{MachineDirection}");
+        sb.Append("MD:").Append(MachineDirection);
 
       // Pass Type filter
       if (HasPassTypeFilter)
-        sb.Append($"PT:{PassTypeSet}");
+        sb.Append("PT:").Append(PassTypeSet);
 
       // Vibe state filter
       if (HasVibeStateFilter)
-        sb.Append($"VS:{VibeState}");
+        sb.Append("VS:").Append(VibeState);
 
       // Min elev mapping
       if (HasElevationMappingModeFilter)
-        sb.Append($"EMM:{(int)ElevationMappingMode}");
+        sb.Append("EMM:").Append((int)ElevationMappingMode);
 
       // Elevation type
       if (HasElevationTypeFilter)
-        sb.Append($"ET:{ElevationType}");
+        sb.Append("ET:").Append(ElevationType);
 
       // Exclusion of surveyed surfaces from query
       if (ExcludeSurveyedSurfaces())
@@ -1252,33 +1254,33 @@ namespace VSS.TRex.Filters
 
       // GCS Guidance mode
       if (HasGCSGuidanceModeFilter)
-        sb.Append($"GM:{GCSGuidanceMode}");
+        sb.Append("GM:").Append(GCSGuidanceMode);
 
       // GPS Accuracy
       if (HasGPSAccuracyFilter)
-        sb.Append($"GA:{(GPSAccuracyIsInclusive?1:0)}-{GPSAccuracy}");
+        sb.Append("GA:").Append(GPSAccuracyIsInclusive ? 1 : 0).Append('-').Append(GPSAccuracy);
 
       // GPS Tolerance
       if (HasGPSToleranceFilter)
-        sb.Append($"GT:{(GPSToleranceIsGreaterThan?1:0)}-{GPSTolerance}");
+        sb.Append("GT:").Append(GPSToleranceIsGreaterThan ? 1 : 0).Append('-').Append(GPSTolerance);
 
       // Positioning Tech
       if (HasPositioningTechFilter)
-        sb.Append($"PT:{PositioningTech}");
+        sb.Append("PT:").Append(PositioningTech);
 
       // Elevation Range
       if (HasElevationRangeFilter && ElevationRangeDesign != null)
       {
         // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
         if (ElevationRangeDesign.DesignID != Guid.Empty)
-          sb.Append($"ER:{ElevationRangeDesign.DesignID}-{ElevationRangeDesign.Offset}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+          sb.Append("ER:").Append(ElevationRangeDesign.DesignID).Append('-').Append(ElevationRangeDesign.Offset).Append('-').AppendFormat("{0:F3}", ElevationRangeOffset).Append('-').AppendFormat("{0:F3}", ElevationRangeThickness);
         else
-          sb.Append($"ER:{ElevationRangeLevel:F3}-{ElevationRangeOffset:F3}-{ElevationRangeThickness:F3}");
+          sb.Append("ER:").AppendFormat("{0:F3}", ElevationRangeLevel).Append('-').AppendFormat("{0:F3}", ElevationRangeOffset).Append('-').AppendFormat("{0:F3}", ElevationRangeThickness);
       }
 
       // Layer state filter
       if (HasLayerStateFilter)
-        sb.Append($"LS:{LayerState}");
+        sb.Append("LS:").Append(LayerState);
 
       // Compaction machines only
       if (HasCompactionMachinesOnlyFilter)
@@ -1286,19 +1288,18 @@ namespace VSS.TRex.Filters
 
       // Layer ID filter
       if (HasLayerIDFilter)
-        sb.Append($"LID:{LayerID}");
+        sb.Append("LID:").Append(LayerID);
 
       // TemperatureRangeFilter
       if (HasTemperatureRangeFilter)
-        sb.Append($"TR:{MaterialTemperatureMin}-{MaterialTemperatureMax}-{(FilterTemperatureByLastPass?1:0)}");
+        sb.Append("TR:").Append(MaterialTemperatureMin).Append('-').Append(MaterialTemperatureMax).Append('-').Append((FilterTemperatureByLastPass ? 1 : 0));
 
       // PassCountRangeFilter
       if (HasPassCountRangeFilter)
-        sb.Append($"PC:{PassCountRangeMin}-{PassCountRangeMax}");
+        sb.Append("PC:").Append(PassCountRangeMin).Append('-').Append(PassCountRangeMax);
 
       // ReSharper disable once StringLiteralTypo
-      if (ReturnEarliestFilteredCellPass)
-        sb.Append("REFCP:1");
+      sb.Append("REFCP:").Append(ReturnEarliestFilteredCellPass ? 1 : 0);
 
       return sb.ToString();
     }

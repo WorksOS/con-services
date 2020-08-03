@@ -295,7 +295,8 @@ namespace VSS.TRex.SubGrids
     /// <returns></returns>
     public virtual ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask,
-      out bool sieveFilterInUse)
+      out bool sieveFilterInUse,
+      Func<ServerRequestResult> computeSpatialFilterMaskAndClientProdDataMap)
     {
       sieveFilterInUse = false;
 
@@ -419,6 +420,14 @@ namespace VSS.TRex.SubGrids
           : GridRotationUtilities.ComputeSieveBitmaskFloat(subGridWorldOriginX, subGridWorldOriginY, _areaControlSet, _siteModel.CellSize, _assignmentContext, out _sieveBitmask);
 
         //if (Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {clientGrid.OriginX}x{clientGrid.OriginY}");
+
+        if (computeSpatialFilterMaskAndClientProdDataMap != null)
+        {
+          _clientGrid.ProdDataMap.Assign(_subGridAsLeaf.Directory.GlobalLatestCells.PassDataExistenceMap);
+          var innerResult = computeSpatialFilterMaskAndClientProdDataMap();
+          if (innerResult != ServerRequestResult.NoError)
+            return innerResult;
+        }
 
         // Before iterating over stripes of this sub grid, compute a scan map detailing to the best of our current
         // knowledge, which cells need to be visited so that only cells the filter wants and which are actually
