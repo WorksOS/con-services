@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-config-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ .Release.Name }}-config-{{ .Values.environment }}
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
-    release: "{{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}"
+    app: {{ .Release.Name }}-{{ .Values.environment }}
+    release: "{{ .Release.Name }}-{{ .Values.environment }}"
 data:
   {{ range .Files.Lines $filename }}
   {{ . }}{{ end }}
