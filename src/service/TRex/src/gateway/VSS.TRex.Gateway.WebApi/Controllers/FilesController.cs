@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Files;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Executors.Files;
+using VSS.TRex.Gateway.Common.Requests;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
@@ -18,6 +19,17 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
   /// </summary>
   public class FilesController : BaseController
   {
+    static FilesController()
+    {
+      ResolverCache.Add(
+        nameof(DXFBoundariesRequest),
+        new JsonSerializerSettings()
+        {
+          ContractResolver = new IgnorePropertiesResolver(
+            new[] { nameof(DXFBoundariesRequest.CSIBFileData), nameof(DXFBoundariesRequest.DXFFileData) })
+        });
+    }
+
     /// <inheritdoc />
     public FilesController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<DesignController>(), serviceExceptionHandler, configStore)
@@ -29,7 +41,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("api/v1/files/dxf/boundaries")]
     public async Task<IActionResult> ExtractBoundariesFromDXF([FromBody] DXFBoundariesRequest request)
     {
-      Log.LogInformation($"{nameof(ExtractBoundariesFromDXF)}: {JsonConvert.SerializeObject(request)}");
+      Log.LogInformation($"{nameof(ExtractBoundariesFromDXF)}: {JsonConvert.SerializeObject(request, ResolverCache[nameof(DXFBoundariesRequest)])}");
       request.Validate();
 
       if (request.FileType == ImportedFileType.Linework || request.FileType == ImportedFileType.SiteBoundary)
