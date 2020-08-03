@@ -100,21 +100,6 @@ namespace VSS.TRex.Filters
                     CX += cellSize; // Move to next column
                 }
             }
-
-      /*
-            // Handle the case when the passed in sub grid is a server leaf sub grid. In this case, construct the PDMask so that
-            // it denotes the production data cells (only) that were selected by the spatial filter. If this is not a server leaf
-            // subgrid set the PDmask to Fill()'ed to allow subsequent filtering operations to produce the correct result
-            bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is IServerLeafSubGrid;
-            if (SubGridAsLeaf_is_TICServerSubGridTreeLeaf)
-            {
-                PDMask.SetAndOf(FilterMask, ((IServerLeafSubGrid)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistenceMap);
-            }
-            else
-            {
-                PDMask.Fill();
-            }
-      */
         }
 
         public static bool ConstructSubGridCellFilterMask(ILeafSubGrid SubGridAsLeaf,
