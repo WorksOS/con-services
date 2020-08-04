@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
       if (areaSqMeters > MAX_BOUNDARY_SQUARE_METERS)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(3019, $"Invalid bounding box sqM: {areaSqMeters}. Must be {MAX_BOUNDARY_SQUARE_METERS}m2 or less."));
+          new ContractExecutionResult(3019, $"Invalid bounding box sqM: {Math.Round(areaSqMeters, 4)}. Must be {MAX_BOUNDARY_SQUARE_METERS}m2 or less."));
       }
     }
   }
