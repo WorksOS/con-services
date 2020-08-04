@@ -85,16 +85,26 @@ namespace VSS.TRex.TAGFiles.Executors
             IsJohnDoe = treatAsJohnDoe
           };
 
-          // Validate tag file submission
           ContractExecutionResult result;
-          result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
-          
-          if (result.Code == (int) TRexTagFileResultCode.Valid)
-          {
-            if (_isDeviceGatewayEnabled)
-              SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
 
-            result = await TagfileValidator.ValidSubmission(td, tagFilePreScan);
+          if (originSource == TAGFileOriginSource.LegacyTAGFileSource)
+          {
+            // Validate tag file submission
+            result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
+
+            if (result.Code == (int)TRexTagFileResultCode.Valid)
+            {
+              if (_isDeviceGatewayEnabled)
+                SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
+
+              result = await TagfileValidator.ValidSubmission(td, tagFilePreScan);
+            }
+          }
+          else
+          {
+            // For non legacy origins where we have no overt validation rules or need for device status notifications
+            // note the presented file as valid for processing
+            result = new ContractExecutionResult((int)TRexTagFileResultCode.Valid, "Success");
           }
 
           response.Code = result.Code;
@@ -104,7 +114,7 @@ namespace VSS.TRex.TAGFiles.Executors
           {
             // First archive the tag file
             if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive)
-              // For now, GCS900/Earthworks style TAg files are the only ones archived
+              // For now, GCS900/Earthworks style TAG files are the only ones archived
               && originSource == TAGFileOriginSource.LegacyTAGFileSource)
             {
               _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");

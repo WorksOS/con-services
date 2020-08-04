@@ -39,8 +39,8 @@ namespace TAGFiles.Tests.OEM.Volvo
 
       file.Read(null, processor);
 
-      // No traditional epochs are processed for Volvo CSV files
-      processor.ProcessedEpochCount.Should().Be(0);
+      processor.ProcessedEpochCount.Should().Be(19325);
+      siteModelGridAggregator.CountLeafSubGridsInMemory().Should().Be(11);
     }
   }
 }
