@@ -74,8 +74,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       */
 
       var platformSerialNumber = string.Empty;
-      // [CCSSSCON-885] will include new Marine platform type
-      if (preScanState.PlatformType >= CWSDeviceTypeEnum.EC520 && preScanState.PlatformType <= CWSDeviceTypeEnum.CB460)
+      if (preScanState.PlatformType >= CWSDeviceTypeEnum.EC520 && preScanState.PlatformType <= CWSDeviceTypeEnum.TMC)
         platformSerialNumber = preScanState.HardwareID;
 
 

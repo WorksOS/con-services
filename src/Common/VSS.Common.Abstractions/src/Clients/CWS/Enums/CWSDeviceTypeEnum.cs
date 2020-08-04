@@ -20,13 +20,11 @@ namespace VSS.Common.Abstractions.Clients.CWS.Enums
     [EnumMember(Value = "CB430")] CB430,     // GCS900 serialNumber ends SM
 
     [EnumMember(Value = "CB450")] CB450,     // GCS900 serialNumber ends SV
-                                             // For the July 2020 1st release,
-                                             // Marine dredgers: CutterSuctionDredge = 70, BargeMountedExcavator = 71
-                                             //      will be configured in TCC/cws as CB450s.
-                                             //   This is to get around the issue where cws doesn't support queries on non CB/EC serialNumbers (used by TFA)
-                                             //   [CCSSSCON-885] is for a future sprint perhaps a new PlatformType (TMC?) which supports marine devices.
 
     [EnumMember(Value = "CB460")] CB460,     // GCS900 serialNumber ends SW
+
+    [EnumMember(Value = "TMC")] TMC,         // Marine dredgers: CutterSuctionDredge = 70, BargeMountedExcavator = 71
+                                             // serial number is a guid 
 
     [EnumMember(Value = "CD700")] CD700,
 
