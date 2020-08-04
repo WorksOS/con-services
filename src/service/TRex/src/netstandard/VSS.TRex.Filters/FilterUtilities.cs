@@ -118,11 +118,13 @@ namespace VSS.TRex.Filters
           var boundaryResult = boundaryRequest.Execute
           (new AlignmentDesignFilterBoundaryArgument()
           {
+            ProjectID = dataModelId,
             ReferenceDesign = new DesignOffset(filter.SpatialFilter.AlignmentDesignMaskDesignUID, 0),
             StartStation = filter.SpatialFilter.StartStation ?? Common.Consts.NullDouble,
             EndStation = filter.SpatialFilter.EndStation ?? Common.Consts.NullDouble,
             LeftOffset = filter.SpatialFilter.LeftOffset ?? Common.Consts.NullDouble,
-            RightOffset = filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble
+            RightOffset = filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble,
+            Filters = new FilterSet(new CombinedFilter())
           });
 
           if (boundaryResult.RequestResult != DesignProfilerRequestResult.OK)

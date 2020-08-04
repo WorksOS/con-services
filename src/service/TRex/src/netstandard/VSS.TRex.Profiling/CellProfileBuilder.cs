@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -65,7 +66,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// The design to be used as an alignment design surface based 'cookie cutter' selection mask for production data
     /// </summary>
-    protected IDesign AlignmentDesignMaskDesign;
+    protected IAlignment AlignmentDesignMaskDesign;
 
     /// <summary>
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
@@ -98,9 +99,9 @@ namespace VSS.TRex.Profiling
 
       if (CellFilter != null && CellFilter.AlignmentDesignMaskDesignUID != Guid.Empty)
       {
-        AlignmentDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.AlignmentDesignMaskDesignUID);
+        AlignmentDesignMaskDesign = SiteModel.Alignments.Locate(CellFilter.AlignmentDesignMaskDesignUID);
         if (AlignmentDesignMaskDesign == null)
-          throw new ArgumentException($"Design {CellFilter.AlignmentDesignMaskDesignUID} not found in project {SiteModel.ID}");
+          throw new ArgumentException($"Alignment {CellFilter.AlignmentDesignMaskDesignUID} not found in project {SiteModel.ID}");
       }
     }
 

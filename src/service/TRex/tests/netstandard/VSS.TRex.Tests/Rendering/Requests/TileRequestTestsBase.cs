@@ -47,6 +47,8 @@ namespace VSS.TRex.Tests.Rendering.Requests
         <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
       IgniteMock.Immutable.AddApplicationGridRouting
         <SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
+      IgniteMock.Immutable.AddApplicationGridRouting
+        <AlignmentDesignFilterBoundaryComputeFunc, AlignmentDesignFilterBoundaryArgument, AlignmentDesignFilterBoundaryResponse>();
     }
 
     protected TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null, CellPassAttributeFilter attributeFilter = null)
