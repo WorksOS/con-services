@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       <DesignBoundaryComputeFunc, DesignBoundaryArgument, DesignBoundaryResponse>();
 
     [Fact]
-    public void Test_DesignProfileRequest_Creation()
+    public void Test_DesignBoundaryRequest_Creation()
     {
       var request = new DesignBoundaryRequest();
 

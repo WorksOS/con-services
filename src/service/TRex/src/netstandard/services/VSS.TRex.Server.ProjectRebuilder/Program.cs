@@ -168,6 +168,8 @@ namespace VSS.TRex.Server.ProjectRebuilder
           cancelTokenSource.Cancel();
         };
 
+        AppDomain.CurrentDomain.UnhandledException += TRexAppDomainUnhandledExceptionHandler.Handler;
+
         DoServiceInitialisation(log, cancelTokenSource);
 
         await Task.Delay(-1, cancelTokenSource.Token);

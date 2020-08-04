@@ -9,6 +9,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
@@ -230,6 +231,8 @@ namespace VSS.TRex.Server.PSNode
           DIContext.Obtain<ITRexGridFactory>().StopGrids();
           cancelTokenSource.Cancel();
         };
+
+        AppDomain.CurrentDomain.UnhandledException += TRexAppDomainUnhandledExceptionHandler.Handler;
 
         DoServiceInitialisation();
 

@@ -3,7 +3,12 @@
 Expand the name of the chart.
 */}}
 {{- define "projectservice.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- $name := default .Release.Name  -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" $name .Values.environment | lower | replace "_" "-"  | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

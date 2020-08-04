@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Types;
 
@@ -17,18 +19,16 @@ namespace VSS.TRex.Caching
     /// <returns>A string representing the uniqueness of this spatial cache element</returns>
     public static string ConstructFingerprint(Guid projectUid, GridDataType gridDataType, ICombinedFilter filter, Guid[] includedSurveyedSurfaces)
     {
-      var fingerprint = $"{projectUid}-{gridDataType}";
+      var sb = new StringBuilder();
+      sb.Append(projectUid).Append('-').Append(gridDataType);
 
       if (filter != null)
-        fingerprint = $"{fingerprint}-{filter.AttributeFilter.SpatialCacheFingerprint()}";
+        sb.Append('-').Append(filter.AttributeFilter.SpatialCacheFingerprint());
 
-      if (includedSurveyedSurfaces.Length == 0)
-        return fingerprint;
+      if (includedSurveyedSurfaces.Length > 0)
+        includedSurveyedSurfaces.ForEach(x => sb.Append(x));
 
-      foreach (var guid in includedSurveyedSurfaces)
-        fingerprint = $"{fingerprint}-{guid}";
-
-      return fingerprint;
+      return sb.ToString();
     }
   }
 }

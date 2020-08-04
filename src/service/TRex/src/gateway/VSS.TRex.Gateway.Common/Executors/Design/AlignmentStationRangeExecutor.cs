@@ -51,7 +51,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
       });
 
       if (alignmentDesignStationRangeResponse != null &&
-          alignmentDesignStationRangeResponse.RequestResult != DesignProfilerRequestResult.OK)
+          alignmentDesignStationRangeResponse.RequestResult == DesignProfilerRequestResult.OK)
         return new AlignmentStationRangeResult(alignmentDesignStationRangeResponse.StartStation, alignmentDesignStationRangeResponse.EndStation);
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,

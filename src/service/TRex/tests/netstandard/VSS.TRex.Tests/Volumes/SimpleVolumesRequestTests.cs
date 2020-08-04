@@ -232,10 +232,8 @@ namespace VSS.TRex.Tests.Volumes
       JsonConvert.DeserializeObject<SimpleVolumesResponse>(expectedResponseText).Should().BeEquivalentTo(response);
     }
 
-    private SimpleVolumesRequestArgument RequestArgForSimpleRequestsWithIntermediaryFilter(ISiteModel siteModel)
+    private SimpleVolumesRequestArgument RequestArgForSimpleRequestsWithIntermediaryFilter(ISiteModel siteModel, DateTime startUtc, DateTime endUtc)
     {
-      var (startUtc, endUtc) = siteModel.GetDateRange();
-
       return new SimpleVolumesRequestArgument
       {
         ProjectID = siteModel.ID,
@@ -268,7 +266,7 @@ namespace VSS.TRex.Tests.Volumes
     }
 
     [Fact]
-    public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilterWithIntermediary_Execute_SingleCell()
+    public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilterWithIntermediary_Execute_SingleCell_ProjectExtent()
     {
       void CheckVolumesResponse(SimpleVolumesResponse response)
       {
@@ -295,11 +293,47 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel));
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel, startUtc, endUtc));
 
       CheckVolumesResponse(response);
     }
 
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilterWithIntermediary_Execute_SingleCell_IncludingProjectExtents()
+    {
+      void CheckVolumesResponse(SimpleVolumesResponse response)
+      {
+        //Was, response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
+        const double EPSILON = 0.000001;
+        response.Should().NotBeNull();
+        response.Cut.Should().BeApproximately(0.5202, EPSILON);
+        response.Fill.Should().BeApproximately(0.0, EPSILON);
+        response.CutArea.Should().BeApproximately(0.1156, EPSILON);
+        response.FillArea.Should().BeApproximately(0.0, EPSILON);
+        response.TotalCoverageArea.Should().BeApproximately(0.1156, EPSILON);
+
+        response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+        response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+        response.BoundingExtentGrid.MaxX.Should().BeApproximately(0.34, EPSILON);
+        response.BoundingExtentGrid.MaxY.Should().BeApproximately(0.34, EPSILON);
+        response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+        response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+      }
+
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+      startUtc.AddDays(-1);
+      endUtc.AddDays(1);
+      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel, startUtc, endUtc));
+
+      CheckVolumesResponse(response);
+    }
 
     [Fact]
     public async Task Test_SimpleVolumesRequest_ApplicationService_FilterToFilterWithIntermediary_Execute_SingleTAGFile()
@@ -333,7 +367,8 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new SimpleVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel));
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+      var response = await request.ExecuteAsync(RequestArgForSimpleRequestsWithIntermediaryFilter(siteModel, startUtc, endUtc));
 
       CheckVolumesResponse(response);
     }

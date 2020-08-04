@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
@@ -91,6 +92,7 @@ namespace VSS.TRex.Server.Application
         .Build()
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Build()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Immutable)))
@@ -197,6 +199,8 @@ namespace VSS.TRex.Server.Application
           DIContext.Obtain<ITRexGridFactory>().StopGrids();
           cancelTokenSource.Cancel();
         };
+
+        AppDomain.CurrentDomain.UnhandledException += TRexAppDomainUnhandledExceptionHandler.Handler;
 
         DoServiceInitialisation();
 

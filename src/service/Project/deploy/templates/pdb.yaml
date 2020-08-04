@@ -1,0 +1,17 @@
+{{- if .Values.replicaMinAvailable -}}
+{{- if gt (int (toString (.Values.replicaCount))) 1 -}}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "projectservice.name" . }}
+  labels:
+    app: {{ template "projectservice.name" . }}
+    component: {{ template "component.webapi" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "projectservice.name" . }}
+      component: {{ template "component.webapi" . }}
+  minAvailable: {{ .Values.replicaMinAvailable }}
+{{- end -}}
+{{- end -}}

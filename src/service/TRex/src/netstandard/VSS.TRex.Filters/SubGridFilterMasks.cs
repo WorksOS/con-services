@@ -4,7 +4,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Filters
 {
@@ -29,15 +28,15 @@ namespace VSS.TRex.Filters
                 return;
             }
 
-            int originX = SubGridAsLeaf.OriginX;
-            int originY = SubGridAsLeaf.OriginY;
+            var originX = SubGridAsLeaf.OriginX;
+            var originY = SubGridAsLeaf.OriginY;
 
-            double cellSize = SiteModel.CellSize;
+            var cellSize = SiteModel.CellSize;
 
             // Get the world location of the origin position
-            SiteModel.Grid.GetCellCenterPosition(originX, originY, out double OX, out double OY);
+            SiteModel.Grid.GetCellCenterPosition(originX, originY, out var OX, out var OY);
 
-            ICellSpatialFilter SpatialFilter = Filter.SpatialFilter;
+            var SpatialFilter = Filter.SpatialFilter;
 
             // Attempt to satisfy the calculation below on the basis of the sub grid wholly residing in the override and filter spatial restrictions
             if (SpatialFilter.Fence.IncludesExtent(new BoundingWorldExtent3D(OX, OY,
@@ -101,20 +100,7 @@ namespace VSS.TRex.Filters
                     CX += cellSize; // Move to next column
                 }
             }
-
-            // Handle the case when the passed in sub grid is a server leaf sub grid. In this case, construct the PDMask so that
-            // it denotes the production data cells (only) that were selected by the spatial filter.
-            bool SubGridAsLeaf_is_TICServerSubGridTreeLeaf = SubGridAsLeaf is IServerLeafSubGrid;
-            if (SubGridAsLeaf_is_TICServerSubGridTreeLeaf)
-            {
-                PDMask.SetAndOf(FilterMask, ((IServerLeafSubGrid)SubGridAsLeaf).Directory.GlobalLatestCells.PassDataExistenceMap);
-            }
-            else
-            {
-                PDMask.Clear();
-            }
         }
-
 
         public static bool ConstructSubGridCellFilterMask(ILeafSubGrid SubGridAsLeaf,
                                                           ISiteModel SiteModel,
@@ -139,7 +125,7 @@ namespace VSS.TRex.Filters
             {
                 if (Filter.SpatialFilter.AlignmentFence.IsNull()) // Should have been done in ASNode but if not
                     throw new ArgumentException($"Spatial filter does not contained pre-prepared alignment fence for design {Filter.SpatialFilter.AlignmentDesignMaskDesignUID}");
-              
+
                 // Go over set bits and determine if they are in Design fence boundary
                 FilterMask.ForEachSetBit((X, Y) =>
                 {
@@ -150,8 +136,8 @@ namespace VSS.TRex.Filters
                     }
                 });
             }
-          
-            PDMask.AndWith(FilterMask);           
+
+            PDMask.AndWith(FilterMask);
 
             return true;
         }

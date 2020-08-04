@@ -30,6 +30,8 @@ using VSS.WebApi.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using System;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -71,6 +73,7 @@ namespace VSS.TRex.Gateway.WebApi
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
         //Monitor number of notifications from this. If too many, go through ignite to get data rather than directly from the site model.
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build();
 
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required

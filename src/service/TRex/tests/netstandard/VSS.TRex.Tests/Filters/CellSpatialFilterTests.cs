@@ -295,10 +295,41 @@ namespace VSS.TRex.Tests.Filters
         OverrideSpatialCellRestriction = new BoundingIntegerExtent2D(1, 1, 10, 10),
         RightOffset = 12,
         StartStation = 13,
-        SurfaceDesignMaskDesignUid = Guid.NewGuid()
+        SurfaceDesignMaskDesignUid = Guid.NewGuid()        
       };
 
       TestBinarizable_ReaderWriterHelper.RoundTripSerialise(data);
+    }
+
+    [Fact]
+    public void Assign()
+    {
+      var data = new CellSpatialFilter
+      {
+        PositionX = 1,
+        PositionY = 2,
+        PositionRadius = 3,
+        IsAlignmentMask = true,
+        IsPositional = true,
+        Fence = new Fence(0, 0, 100, 100),
+        AlignmentFence = new Fence(0, 0, 100, 100),
+        IsSpatial = true,
+        AlignmentDesignMaskDesignUID = Guid.NewGuid(),
+        CoordsAreGrid = true,
+        EndStation = 10,
+        IsDesignMask = true,
+        IsSquare = true,
+        LeftOffset = 11,
+        OverrideSpatialCellRestriction = new BoundingIntegerExtent2D(1, 1, 10, 10),
+        RightOffset = 12,
+        StartStation = 13,
+        SurfaceDesignMaskDesignUid = Guid.NewGuid()
+      };
+
+      var newData = new CellSpatialFilter();
+      newData.Assign(data);
+
+      newData.Should().BeEquivalentTo(data);
     }
   }
 }

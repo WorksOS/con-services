@@ -8,12 +8,10 @@ namespace VSS.Productivity3D.Models.Models.Files
 {
   public class DXFBoundariesRequest
   {
-    [JsonIgnore]
     public string CSIBFileData { get; set; }
 
     public ImportedFileType FileType { get; set; }
 
-    [JsonIgnore]
     public string DXFFileData { get; set; }
 
     public DxfUnitsType FileUnits { get; set; }
