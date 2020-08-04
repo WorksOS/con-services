@@ -18,13 +18,14 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
+    <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="coverlet.msbuild" Version="1.2.0" />
-    <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,39 +42,25 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\MyTestAvoidanceZone.dxf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestAvoidanceZone.svl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestCalibration.cal">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestCalibration.dc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestControlPoints.cpz">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestControlPoints.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestFeatureCode.fxl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestGcsCalibration.cfg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestGeoid.ggf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestSite.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\MyTestSiteConfiguration.xml">
+  </ItemGroup>
+
+  <!-- Bulk copy static unittest file dependencies. -->
+  <ItemGroup>
+    <Compile Remove="Resources\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resources Include="./Resources/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(Resources)" DestinationFolder="$(OutputPath)/Resources/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <!-- End bulk copy. -->
 
 </Project>
