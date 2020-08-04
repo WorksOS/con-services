@@ -1,24 +1,15 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-#if RAPTOR
-using ASNodeDecls;
-using SVOICVolumeCalculationsDecls;
-#endif
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using System.Collections.Generic;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -34,35 +25,26 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
+      // Note: The numPatches out parameter is ignored in favor of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
         var request = CastRequestObjectTo<PatchRequest>(item);
-#if RAPTOR
-        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES") ?? false)
-        {
-#endif
-          var patchDataRequest = new PatchDataRequest(
-            request.ProjectUid.Value,
-            request.Filter1,
-            request.Filter2,
-            request.Mode,
-            request.PatchNumber,
-            request.PatchSize,
-            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
-            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+        var patchDataRequest = new PatchDataRequest(
+          request.ProjectUid.Value,
+          request.Filter1,
+          request.Filter2,
+          request.Mode,
+          request.PatchNumber,
+          request.PatchSize,
+          AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+          AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
 
-          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
+        var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
 
-          return fileResult.Length > 0
-              ? ConvertPatchResult(fileResult, true)
-              : CreateNullPatchReturnedResult();
-#if RAPTOR
-        }
-
-        return ProcessWithRaptor(request);
-#endif
+        return fileResult.Length > 0
+            ? ConvertPatchResult(fileResult, true)
+            : CreateNullPatchReturnedResult();
       }
       finally
       {
@@ -75,83 +57,39 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
     }
 
-#if RAPTOR
-    private ContractExecutionResult ProcessWithRaptor(PatchRequest request)
-    {
-      var filter1 = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
-      var filter2 = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
-      var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
-
-      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
-      {
-        RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
-      }
-
-      RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
-
-      var raptorResult = raptorClient.RequestDataPatchPageWithTime(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
-          TASNodeCancellationDescriptorType.cdtDataPatches),
-        RaptorConverters.convertDisplayMode(request.Mode),
-        filter1,
-        filter2,
-        RaptorConverters.DesignDescriptor(request.DesignDescriptor),
-        volType,
-        RaptorConverters.convertOptions(null, request.LiftBuildSettings,
-          request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
-        request.PatchNumber,
-        request.PatchSize,
-        out var patch,
-        out _);
-
-      if (raptorResult == TASNodeErrorStatus.asneOK)
-      {
-        return patch != null
-          ? ConvertPatchResult(patch, request.IncludeTimeOffsets)
-          : CreateNullPatchReturnedResult();
-      }
-
-      throw CreateServiceException<CompactionSinglePatchExecutor>((int)raptorResult);
-    }
-#endif
     protected sealed override void ProcessErrorCodes()
-    {
-#if RAPTOR
-      RaptorResult.AddErrorMessages(ContractExecutionStates);
-#endif
-    }
+    { }
 
     private PatchSubgridsProtobufResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
     {
       using (var reader = new BinaryReader(stream))
       {
-        // only set if patchId/patchNumber = 0
-        // else -1
-        var totalPatchesRequired = reader.ReadInt32();  
-        var numSubgridsInPatch = reader.ReadInt32(); // actual count in this patch
-        var numSubgridsInResult = numSubgridsInPatch; // actual count returned
-        double cellSize = reader.ReadDouble();
+        // only set if patchId/patchNumber = 0 ( else -1 )
+        var totalPatchesRequired = reader.ReadInt32();
+        var subGridsInPatch = reader.ReadInt32();    // actual count in this patch
+        var subGridsWithDataToReturn = subGridsInPatch; // sub-grids with data to be returned
+        var cellSize = reader.ReadDouble();
 
         var subgrids = new List<PatchSubgridOriginProtobufResult>();
 
-        for (var i = 0; i < numSubgridsInPatch; i++)
+        for (var i = 0; i < subGridsInPatch; i++)
         {
-          var subgridOriginX = reader.ReadDouble();
-          var subgridOriginY = reader.ReadDouble();
+          var subgridOriginX = reader.ReadInt32();
+          var subgridOriginY = reader.ReadInt32();
           var isNull = reader.ReadBoolean();
 
           if (isNull)
           {
-            --numSubgridsInResult;
+            --subGridsWithDataToReturn;
             continue;
           }
 
-          float elevationOrigin = reader.ReadSingle();
-          byte elevationOffsetSizeInBytes = reader.ReadByte();
+          var elevationOrigin = reader.ReadSingle();
+          var elevationOffsetSizeInBytes = reader.ReadByte();
 
-          uint timeOrigin = reader.ReadUInt32(); // UTC expressed as Unix time in seconds.
-          byte timeOffsetSizeInBytes = reader.ReadByte();
-          
+          var timeOrigin = reader.ReadUInt32(); // UTC expressed as Unix time in seconds.
+          var timeOffsetSizeInBytes = reader.ReadByte();
+
           // Protobuf is limited to single dimension arrays so we cannot use the [32,32] layout used by other patch executors.
           const int arrayLength = 32 * 32;
           var elevationOffsets = new ushort[arrayLength];
@@ -234,14 +172,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             timeOffsets[j] = includeTimeOffsets ? time : uint.MaxValue;
           }
 
-          subgrids.Add(PatchSubgridOriginProtobufResult.Create(Math.Round(subgridOriginX, 5), Math.Round(subgridOriginY, 5), elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, elevationOffsets, timeOffsets));
+          subgrids.Add(PatchSubgridOriginProtobufResult.Create(subgridOriginX, subgridOriginY, elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, elevationOffsets, timeOffsets));
           // test: var doubleArrayResult = (new CompactionSinglePatchPackedResult()).UnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
 
         }
 
-        log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} numSubgridsInPatch: {numSubgridsInPatch} numSubgridsInResult: {numSubgridsInResult} subgridsCount: {subgrids.Count}");
+        log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} subGridsInPatch: {subGridsInPatch} subGridsWithDataToReturn: {subGridsWithDataToReturn} subgridsCount: {subgrids.Count}");
         return PatchSubgridsProtobufResult.Create(cellSize, subgrids.ToArray());
       }
-    }    
+    }
   }
 }

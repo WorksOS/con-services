@@ -96,8 +96,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
       var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(request, device, out var errorCode);
-
-      log.LogDebug($"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
+      log.LogDebug($"{nameof(HandleAutoImport)}: potentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.ProjectDescriptors.Any())
         return GetProjectUidsResult.FormatResult(deviceUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: errorCode);

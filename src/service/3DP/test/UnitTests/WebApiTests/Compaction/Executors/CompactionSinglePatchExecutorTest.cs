@@ -29,6 +29,7 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using Microsoft.AspNetCore.Http;
+using Point = VSS.MasterData.Models.Models.Point;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -62,46 +63,45 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     [DataTestMethod]
-    [DataRow("ec520SerialNumber", "", "", 90, 180, 1, 200, 10, 210)]
-    [DataRow("ec520SerialNumber", "sn941SerialNumber", "", -90, -180, 2000, 200, 2010, 210)]
-    [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 210, 11, 260)]
-    [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 200, 11, 400)]
-    public void SinglePatchRequest_Valid(string ecSerial, string radioSerial,
-      string tccOrgUid,
+    [DataRow("ec520SerialNumber", 90, 180, 1, 200, 10, 210)]
+    [DataRow("ec520SerialNumber", -90, -180, 2000, 200, 2010, 210)]
+    [DataRow("ec520SerialNumber", 90, -180, 1, 210, 11, 260)]
+    [DataRow("ec520SerialNumber", 90, -180, 1, 200, 11, 400)]
+    [DataRow("ec520SerialNumber", 90, -180, 172.706, 43.556, 172.7064, 43.5564)]
+    [DataRow("ec520SerialNumber", 90, -180, 172.706, -43.5564, 172.7064, -43.556)]
+    [DataRow("ec520SerialNumber", 90, -180, 172.706, 43.556, 172.706, 43.556)]
+    public void SinglePatchRequest_Valid(string ecSerial,
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
     {
-      var request = new PatchesRequest(ecSerial, radioSerial,
-        tccOrgUid,
+      var request = new PatchesRequest(ecSerial, string.Empty, string.Empty,
         machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       request.Validate();
     }
-       
 
     [DataTestMethod]
-    [DataRow("", "", "", 90, 180, 1, 200, 10, 210, "ECSerial required")]
-    [DataRow("ec520SerialNumber", "", "", 91, 180, 1, 200, 10, 210, "Invalid Machine Location")]
-    [DataRow("ec520SerialNumber", "", "", 91, -181, 1, 200, 10, 210, "Invalid Machine Location")]
-    [DataRow("ec520SerialNumber", "", "", 0, -1, 1, 200, 10, 210, "Invalid Machine Location")]
-    [DataRow("ec520SerialNumber", "", "", 90, -180, 11, 200, 10, 210, "Invalid bounding box: corners are not bottom left and top right.")]
-    [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 220, 10, 210, "Invalid bounding box: corners are not bottom left and top right.")]
-    [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 200, 11, 401, "Invalid bounding box: Must be 2000m2 or less.")]
-    public void SinglePatchRequest_Invalid(string ecSerial, string radioSerial,
-      string tccOrgUid,
+    [DataRow("", 90, 180, 1, 200, 10, 210, 3037, "Platform serial number must be provided")]
+    [DataRow("ec520SerialNumber", 91, 180, 1, 200, 10, 210, 3021, "Invalid Machine Location")]
+    [DataRow("ec520SerialNumber", 91, -181, 1, 200, 10, 210, 3021, "Invalid Machine Location")]
+    [DataRow("ec520SerialNumber", 0, -1, 1, 200, 10, 210, 3021, "Invalid Machine Location")]
+    [DataRow("ec520SerialNumber", 90, -180, 11, 200, 10, 210, 3020, "Invalid bounding box: corners are not bottom left and top right.")]
+    [DataRow("ec520SerialNumber", 90, -180, 1, 220, 10, 210, 3020, "Invalid bounding box: corners are not bottom left and top right.")]
+    [DataRow("ec520SerialNumber", 90, -180, 1, 2000, 400, 2100, 3019, "Invalid bounding box sqM: 39900. Must be 2000m2 or less.")]
+    public void SinglePatchRequest_Invalid(string ecSerial,
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY,
-      string expectedMessage)
+      int errorResultCode, string expectedMessage)
     {
-      var request = new PatchesRequest(ecSerial, radioSerial,
-        tccOrgUid,
+      var request = new PatchesRequest(ecSerial,
+        string.Empty, string.Empty,
         machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
 
       ex.Should().NotBeNull();
       ex.Code.Should().Be(HttpStatusCode.BadRequest);
-      ex.GetResult.Code.Should().Be(ContractExecutionStatesEnum.ValidationError);
+      ex.GetResult.Code.Should().Be(errorResultCode);
       ex.GetResult.Message.Should().Be(expectedMessage);
     }
 
@@ -116,7 +116,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES")).Returns(true);
 
       var filterResult = new FilterResult();
-      filterResult.SetBoundary(new List<Point>
+      filterResult.SetBoundary(new List<Point>()
       {
         new Point(request.BoundingBox.BottomleftY, request.BoundingBox.BottomLeftX),
         new Point(request.BoundingBox.BottomleftY, request.BoundingBox.TopRightX),
@@ -139,7 +139,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"SinglePatche request failed somehow. ProjectUid: {projectUid}"));
+          $"SinglePatch request failed somehow. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<PatchDataRequest>(), "/patches", It.IsAny<IHeaderDictionary>()))
@@ -187,20 +187,20 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       patchRequest.Validate();
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      
+
       var subgridOriginX = 150;
       var subgridOriginY = 1400;
-      var elevationOrigin = (float) 100.45;
+      var elevationOrigin = (float)100.45;
       var nowTimeOrigin = new DateTimeOffset(DateTime.UtcNow.AddDays(-5).AddMinutes(100));
-      var timeOrigin = (uint) (nowTimeOrigin).ToUnixTimeSeconds();
-      var delta = (uint) 0;
+      var timeOrigin = (uint)(nowTimeOrigin).ToUnixTimeSeconds();
+      var delta = (uint)0;
 
       // elevation offsets are in mm
       var elevationOffsets = new ushort[cellSize * cellSize];
       var timeOffsets = new uint[cellSize * cellSize];
       for (var c = delta; c < (cellSize * cellSize); c++)
       {
-        elevationOffsets[c] = (ushort) (c + 6);
+        elevationOffsets[c] = (ushort)(c + 6);
         timeOffsets[c] = c + 3;
       }
 
@@ -223,24 +223,24 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       result.Subgrids[0].TimeOffsets[0].Should().Be(delta + 3);
 
       var doubleArrayResult = (new CompactionSinglePatchResult()).UnpackSubgrid(cellSize, result.Subgrids[0]);
-      doubleArrayResult[0, 0].easting.Should().Be(subgridOriginX + (cellSize /2));
+      doubleArrayResult[0, 0].easting.Should().Be(subgridOriginX + (cellSize / 2));
       doubleArrayResult[0, 0].northing.Should().Be(subgridOriginY + (cellSize / 2));
-      doubleArrayResult[0, 0].elevation.Should().Be(Math.Round(elevationOrigin + (ushort)(delta + 6)/1000.0, 5));
+      doubleArrayResult[0, 0].elevation.Should().Be(Math.Round(elevationOrigin + (ushort)(delta + 6) / 1000.0, 5));
       var actualDateTime = nowTimeOrigin.AddSeconds(delta + 3).DateTime;
       doubleArrayResult[0, 0].dateTime.Should().Be(new DateTime(actualDateTime.Year, actualDateTime.Month, actualDateTime.Day, actualDateTime.Hour, actualDateTime.Minute, actualDateTime.Second));
     }
 
-    private MemoryStream WriteAsPerTRex(int totalPatchesRequired, int numSubgridsInPatch, 
-      double subgridOriginX, double subgridOriginY, float elevationOrigin, uint timeOrigin, ushort[] elevationOffsets, uint[] timeOffsets)
+    private MemoryStream WriteAsPerTRex(int totalPatchesRequired, int numSubgridsInPatch,
+      int subgridOriginX, int subgridOriginY, float elevationOrigin, uint timeOrigin, ushort[] elevationOffsets, uint[] timeOffsets)
     {
       var resultStream = new MemoryStream();
       var writer = new BinaryWriter(resultStream);
-      writer.Write((int)totalPatchesRequired); 
-      writer.Write((int)numSubgridsInPatch); 
+      writer.Write((int)totalPatchesRequired);
+      writer.Write((int)numSubgridsInPatch);
       writer.Write((double)cellSize);
 
-      writer.Write((double)subgridOriginX);
-      writer.Write((double)subgridOriginY);
+      writer.Write((int)subgridOriginX);
+      writer.Write((int)subgridOriginY);
       writer.Write((Boolean)false); // isValid cells
 
       writer.Write((float)elevationOrigin);

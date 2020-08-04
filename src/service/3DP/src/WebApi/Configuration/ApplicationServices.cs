@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();
       services.AddTransient<ITRexTagFileProxy, TRexTagFileV2Proxy>();
       services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>();
-      services.AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>();
+      services.AddTransient<ITagFileAuthProjectV5Proxy, TagFileAuthProjectV5Proxy>();
     }
   }
 }
