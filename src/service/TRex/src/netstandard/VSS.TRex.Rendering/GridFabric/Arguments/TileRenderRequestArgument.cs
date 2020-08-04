@@ -9,11 +9,14 @@ using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
   public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<TileRenderRequestArgument>();
+
     private const byte VERSION_NUMBER = 1;
 
     public DisplayMode Mode { get; set; } = DisplayMode.Height;
@@ -57,21 +60,28 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      try
+      {
+        base.ToBinary(writer);
 
-      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt((int)Mode);
+        writer.WriteInt((int)Mode);
 
-      writer.WriteBoolean(Palette != null);
-      Palette?.ToBinary(writer);
+        writer.WriteBoolean(Palette != null);
+        Palette?.ToBinary(writer);
 
-      writer.WriteBoolean(Extents != null);
-      Extents.ToBinary(writer);
+        writer.WriteBoolean(Extents != null);
+        Extents.ToBinary(writer);
 
-      writer.WriteBoolean(CoordsAreGrid);
-      writer.WriteInt(PixelsX);
-      writer.WriteInt(PixelsY);
+        writer.WriteBoolean(CoordsAreGrid);
+        writer.WriteInt(PixelsX);
+        writer.WriteInt(PixelsY);
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, $"Exception in {nameof(TileRenderRequestArgument)}.ToBinary()");
+      }
     }
 
     /// <summary>
@@ -80,27 +90,34 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
-
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      Mode = (DisplayMode)reader.ReadInt();
-
-      if (reader.ReadBoolean())
+      try
       {
-        Palette = TileRenderRequestArgumentPaletteFactory.GetPalette(Mode);
-        Palette.FromBinary(reader);
-      }
+        base.FromBinary(reader);
 
-      if (reader.ReadBoolean())
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+        Mode = (DisplayMode)reader.ReadInt();
+
+        if (reader.ReadBoolean())
+        {
+          Palette = TileRenderRequestArgumentPaletteFactory.GetPalette(Mode);
+          Palette.FromBinary(reader);
+        }
+
+        if (reader.ReadBoolean())
+        {
+          Extents = new BoundingWorldExtent3D();
+          Extents.FromBinary(reader);
+        }
+
+        CoordsAreGrid = reader.ReadBoolean();
+        PixelsX = (ushort)reader.ReadInt();
+        PixelsY = (ushort)reader.ReadInt();
+      }
+      catch (Exception e)
       {
-        Extents = new BoundingWorldExtent3D();
-        Extents.FromBinary(reader);
+        _log.LogCritical(e, $"Exception in {nameof(TileRenderRequestArgument)}.FromBinary()");
       }
-
-      CoordsAreGrid = reader.ReadBoolean();
-      PixelsX = (ushort)reader.ReadInt();
-      PixelsY = (ushort)reader.ReadInt();
     }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.Productivity3D.Models.Extensions
 {
@@ -13,14 +14,9 @@ namespace VSS.Productivity3D.Models.Extensions
     /// <returns>An array of bytes</returns>
     public static byte[] BitmapToByteArray(this Bitmap bitmap)
     {
-      byte[] data;
-      using (var bitmapStream = new MemoryStream())
-      {
-        bitmap.Save(bitmapStream, ImageFormat.Png);
-        data = bitmapStream.ToArray();
-        bitmapStream.Close();
-      }
-      return data;
+      using var bitmapStream = new MemoryStream();
+      bitmap.Save(bitmapStream, ImageFormat.Png);
+      return bitmapStream.ToArray();
     }
   }
 }

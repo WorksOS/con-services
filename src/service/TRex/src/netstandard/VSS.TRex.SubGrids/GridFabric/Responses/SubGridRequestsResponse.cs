@@ -1,4 +1,6 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models;
@@ -13,6 +15,8 @@ namespace VSS.TRex.SubGrids.Responses
   /// </summary>
   public class SubGridRequestsResponse : BaseRequestResponse, IAggregateWith<SubGridRequestsResponse>
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridRequestsResponse>();
+
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
@@ -45,7 +49,7 @@ namespace VSS.TRex.SubGrids.Responses
     /// The total number of sub grids containing production data scanned by the processing cluster node. This should match the overall number
     /// of production data sub grids in the request unless ResponseCode indicates a failure.
     /// </summary>
-    public long NumProdDataSubGridsExamined { get; set; } 
+    public long NumProdDataSubGridsExamined { get; set; }
 
     /// <summary>
     /// The number of sub grids containing surveyed surfaces data in the total sub grids request processed by the responding cluster node
@@ -60,48 +64,70 @@ namespace VSS.TRex.SubGrids.Responses
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      try
+      {
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt((int) ResponseCode);
-      writer.WriteString(ClusterNode);
-      writer.WriteLong(NumSubgridsProcessed);
-      writer.WriteLong(NumSubgridsExamined);
-      writer.WriteLong(NumProdDataSubGridsProcessed);
-      writer.WriteLong(NumProdDataSubGridsExamined);
-      writer.WriteLong(NumSurveyedSurfaceSubGridsProcessed);
-      writer.WriteLong(NumSurveyedSurfaceSubGridsExamined);
+        writer.WriteInt((int)ResponseCode);
+        writer.WriteString(ClusterNode);
+        writer.WriteLong(NumSubgridsProcessed);
+        writer.WriteLong(NumSubgridsExamined);
+        writer.WriteLong(NumProdDataSubGridsProcessed);
+        writer.WriteLong(NumProdDataSubGridsExamined);
+        writer.WriteLong(NumSurveyedSurfaceSubGridsProcessed);
+        writer.WriteLong(NumSurveyedSurfaceSubGridsExamined);
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, $"Exception in {nameof(SubGridRequestsResponse)}.ToBinary()");
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      try
+      {
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ResponseCode = (SubGridRequestsResponseResult) reader.ReadInt();
-      ClusterNode = reader.ReadString();
-      NumSubgridsProcessed = reader.ReadLong();
-      NumSubgridsExamined = reader.ReadLong();
-      NumProdDataSubGridsProcessed = reader.ReadLong();
-      NumProdDataSubGridsExamined = reader.ReadLong();
-      NumSurveyedSurfaceSubGridsProcessed = reader.ReadLong();
-      NumSurveyedSurfaceSubGridsExamined = reader.ReadLong();
+        ResponseCode = (SubGridRequestsResponseResult)reader.ReadInt();
+        ClusterNode = reader.ReadString();
+        NumSubgridsProcessed = reader.ReadLong();
+        NumSubgridsExamined = reader.ReadLong();
+        NumProdDataSubGridsProcessed = reader.ReadLong();
+        NumProdDataSubGridsExamined = reader.ReadLong();
+        NumSurveyedSurfaceSubGridsProcessed = reader.ReadLong();
+        NumSurveyedSurfaceSubGridsExamined = reader.ReadLong();
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, $"Exception in {nameof(SubGridRequestsResponse)}.FromBinary()");
+      }
     }
 
     public SubGridRequestsResponse AggregateWith(SubGridRequestsResponse other)
     {
-      // No explicit 'accumulation' logic for response codes apart from prioritizing failure over success results
-      ResponseCode = ResponseCode == SubGridRequestsResponseResult.Unknown ? other.ResponseCode :
+      try
+      {
+        // No explicit 'accumulation' logic for response codes apart from prioritizing failure over success results
+        ResponseCode = ResponseCode == SubGridRequestsResponseResult.Unknown ? other.ResponseCode :
         ResponseCode == SubGridRequestsResponseResult.OK && other.ResponseCode != SubGridRequestsResponseResult.OK ? other.ResponseCode : ResponseCode;
 
-      ClusterNode = other.ClusterNode; // No explicit 'aggregation' logic for response codes
+        ClusterNode = other.ClusterNode; // No explicit 'aggregation' logic for response codes
 
-      NumSubgridsProcessed += other.NumSubgridsProcessed;
-      NumSubgridsExamined += other.NumSubgridsExamined;
-      NumProdDataSubGridsProcessed += other.NumProdDataSubGridsProcessed;
-      NumProdDataSubGridsExamined += other.NumProdDataSubGridsExamined;
-      NumSurveyedSurfaceSubGridsProcessed += other.NumSurveyedSurfaceSubGridsProcessed;
-      NumSurveyedSurfaceSubGridsExamined += other.NumSurveyedSurfaceSubGridsExamined;
+        NumSubgridsProcessed += other.NumSubgridsProcessed;
+        NumSubgridsExamined += other.NumSubgridsExamined;
+        NumProdDataSubGridsProcessed += other.NumProdDataSubGridsProcessed;
+        NumProdDataSubGridsExamined += other.NumProdDataSubGridsExamined;
+        NumSurveyedSurfaceSubGridsProcessed += other.NumSurveyedSurfaceSubGridsProcessed;
+        NumSurveyedSurfaceSubGridsExamined += other.NumSurveyedSurfaceSubGridsExamined;
 
-      return this;
+        return this;
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Exception in {nameof(SubGridRequestsResponse)}.FromBinary()");
+        return new SubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.Exception };
+      }
     }
   }
 }
