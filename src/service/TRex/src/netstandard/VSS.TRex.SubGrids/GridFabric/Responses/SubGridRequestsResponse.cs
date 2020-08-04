@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models;
 
@@ -77,6 +78,11 @@ namespace VSS.TRex.SubGrids.Responses
         writer.WriteLong(NumSurveyedSurfaceSubGridsProcessed);
         writer.WriteLong(NumSurveyedSurfaceSubGridsExamined);
       }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(SubGridRequestsResponse)}.ToBinary()");
+        throw; // Mostly for testing purposes...
+      }
       catch (Exception e)
       {
         _log.LogCritical(e, $"Exception in {nameof(SubGridRequestsResponse)}.ToBinary()");
@@ -97,6 +103,11 @@ namespace VSS.TRex.SubGrids.Responses
         NumProdDataSubGridsExamined = reader.ReadLong();
         NumSurveyedSurfaceSubGridsProcessed = reader.ReadLong();
         NumSurveyedSurfaceSubGridsExamined = reader.ReadLong();
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(SubGridRequestsResponse)}.FromBinary()");
+        throw; // Mostly for testing purposes...
       }
       catch (Exception e)
       {

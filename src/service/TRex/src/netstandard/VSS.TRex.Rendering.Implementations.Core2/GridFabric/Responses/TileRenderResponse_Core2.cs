@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Extensions;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using Draw = System.Drawing;
@@ -43,7 +44,12 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
         VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
         writer.WriteBoolean(TileBitmapData != null);
-        writer.WriteByteArray(TileBitmapData);
+        writer.WriteByteArray(TileBitmapData);    
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderResponse_Core2)}.ToBinary()");
+        throw; // Mostly for testing purposes...
       }
       catch (Exception e)
       {
@@ -65,6 +71,11 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 
         if (reader.ReadBoolean())
           TileBitmapData = reader.ReadByteArray();
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderResponse_Core2)}.FromBinary()");
+        throw; // Mostly for testing purposes...
       }
       catch (Exception e)
       {

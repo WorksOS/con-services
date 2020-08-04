@@ -13,6 +13,7 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.SubGrids.GridFabric.Listeners
 {
@@ -164,6 +165,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       {
         VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
       }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(SubGridListener)}.ToBinary()");
+        throw; // Mostly for testing purposes...
+      }
       catch (Exception e)
       {
         _log.LogCritical(e, $"Exception in {nameof(SubGridListener)}.ToBinary()");
@@ -175,6 +181,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       try
       {
         VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(SubGridListener)}.FromBinary()");
+        throw; // Mostly for testing purposes...
       }
       catch (Exception e)
       {

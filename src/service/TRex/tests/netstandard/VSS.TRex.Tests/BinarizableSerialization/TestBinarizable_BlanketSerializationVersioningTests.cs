@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   /// types quantities that implement
   /// IBinarizable serialization for over-the-wire transmission over the Ignite messaging/compute etc fabrics
   /// </summary>
-  public class TestBinarizable_BlanketSerializationVersioningTests
+  public class TestBinarizable_BlanketSerializationVersioningTests : IClassFixture<VSS.TRex.Tests.TestFixtures.DILoggingFixture>
   {
     private const string VERSION_NUMBER = "VERSION_NUMBER";
     private const string VERSION_NUMBERS = "VERSION_NUMBERS";

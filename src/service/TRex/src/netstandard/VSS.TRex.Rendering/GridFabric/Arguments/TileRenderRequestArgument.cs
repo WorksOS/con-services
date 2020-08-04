@@ -10,6 +10,7 @@ using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
@@ -78,6 +79,11 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         writer.WriteInt(PixelsX);
         writer.WriteInt(PixelsY);
       }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderRequestArgument)}.ToBinary()");
+        throw; // Mostly for testing purposes...
+      }
       catch (Exception e)
       {
         _log.LogCritical(e, $"Exception in {nameof(TileRenderRequestArgument)}.ToBinary()");
@@ -113,6 +119,11 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         CoordsAreGrid = reader.ReadBoolean();
         PixelsX = (ushort)reader.ReadInt();
         PixelsY = (ushort)reader.ReadInt();
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderRequestArgument)}.FromBinary()");
+        throw; // Mostly for testing purposes...
       }
       catch (Exception e)
       {
