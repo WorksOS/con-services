@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.WebApi.Common;
 
@@ -29,6 +30,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       try
       {
         EnsureAssemblyDependenciesAreLoaded();
+
+        AppDomain.CurrentDomain.UnhandledException += TRexAppDomainUnhandledExceptionHandler.Handler;
 
         var webHost = BuildWebHost(args);
 
