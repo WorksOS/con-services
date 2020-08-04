@@ -1,11 +1,12 @@
 {{- $filename := printf "%s.txt" .Values.environment -}}
+{{- $configName := printf "%s-cfg-%s" .Release.Name .Values.environment | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-config-{{ .Values.environment }}
+  name: {{ $configName }}
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}
-    release: "{{ .Release.Name }}-{{ .Values.environment }}"
+    app: {{ template "TagFileGatewayservice.name" . }}
+    release: {{ template "TagFileGatewayservice.name" . }}
 data:
   {{ range .Files.Lines $filename }}
   {{ . }}{{ end }}
