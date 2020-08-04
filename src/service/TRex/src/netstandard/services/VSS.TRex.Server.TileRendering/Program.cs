@@ -43,6 +43,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Designs.GridFabric.Events;
 using CoreX.Interfaces;
 using CoreX.Wrapper;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Server.TileRendering
 {
@@ -208,6 +209,8 @@ namespace VSS.TRex.Server.TileRendering
           DIContext.Obtain<ITRexGridFactory>().StopGrids();
           cancelTokenSource.Cancel();
         };
+
+        AppDomain.CurrentDomain.UnhandledException += TRexAppDomainUnhandledExceptionHandler.Handler;
 
         DoServiceInitialisation();
 
