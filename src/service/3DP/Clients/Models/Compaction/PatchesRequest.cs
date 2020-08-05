@@ -14,14 +14,6 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
     /// <summary>  EC520 serial number  </summary> 
     [JsonProperty(PropertyName = "ecSerial", Required = Required.Always)]
     public string ECSerial { get; private set; }
-
-    /// <summary>  EC520 serial number  </summary> 
-    [JsonProperty(PropertyName = "obsoleteRadioSerial", Required = Required.Default)]
-    public string ObsoleteRadioSerial { get; private set; }
-
-    /// <summary>  TCC OrgId  </summary> 
-    [JsonProperty(PropertyName = "obsoleteTccOrgUid", Required = Required.Default)]
-    public string ObsoleteTccOrgUid { get; set; }
     
     /// <summary>  WGS84 latitude in decimal degrees.  </summary>
     [JsonProperty(PropertyName = "machineLatitude", Required = Required.Always)]
@@ -41,14 +33,11 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
 
     private const double MAX_BOUNDARY_SQUARE_METERS = 2000;
 
-    public PatchesRequest(string ecSerial, string obsoleteRadioSerial,
-      string obsoleteTccOrgUid,
+    public PatchesRequest(string ecSerial, 
       double machineLatitude, double machineLongitude,
       BoundingBox2DGrid boundingBox)
     {
       ECSerial = ecSerial;
-      ObsoleteRadioSerial = obsoleteRadioSerial;
-      ObsoleteTccOrgUid = obsoleteTccOrgUid;
       MachineLatitude = machineLatitude;
       MachineLongitude = machineLongitude;
       BoundingBox = boundingBox;

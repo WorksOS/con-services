@@ -119,6 +119,37 @@ namespace VSS.TRex.Tests.Exports.Patches
       response.SubGrids.ForEach(x => nonNullCellCount += ((ClientHeightAndTimeLeafSubGrid)x).CountNonNullCells());
       nonNullCellCount.Should().Be(3054);
     }
+    
+    [Fact]
+    public async Task Test_PatchRequest_ExecuteAndConvert_SingleTAGFileSiteModel()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      var request = new PatchRequest();
+      var result = await request.ExecuteAndConvertToResult(SimplePatchRequestArgument(siteModel.ID));
+
+      result.Should().NotBeNull();
+      result.Patch.Should().NotBeNull();
+      result.Patch.Length.Should().Be(12);
+      Math.Round(result.Patch[0].CellOriginX, 4).Should().Be(537667.84);
+      Math.Round(result.Patch[0].CellOriginY, 4).Should().Be(5427390.08);
+      Math.Round(result.Patch[0].ElevationOrigin, 4).Should().Be(41.397);
+      result.Patch[0].TimeOrigin.Should().Be(1361929472);
+
+      result.Patch[0].Data[13, 26].ElevationOffset.Should().Be(uint.MaxValue);
+      result.Patch[0].Data[13, 26].TimeOffset.Should().Be(uint.MaxValue);
+      result.Patch[0].Data[13, 27].ElevationOffset.Should().Be(59);
+      result.Patch[0].Data[13, 27].TimeOffset.Should().Be(48000000);
+      result.Patch[0].Data[13, 28].ElevationOffset.Should().Be(63);
+      result.Patch[0].Data[13, 28].TimeOffset.Should().Be(50000000);
+    }
 
     [Fact]
     public async Task Test_PatchRequest_Execute_SingleCellSiteModel()

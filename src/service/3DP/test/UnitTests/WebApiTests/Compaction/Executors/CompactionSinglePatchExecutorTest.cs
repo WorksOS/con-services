@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
     {
-      var request = new PatchesRequest(ecSerial, string.Empty, string.Empty,
+      var request = new PatchesRequest(ecSerial, 
         machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       request.Validate();
@@ -94,7 +94,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       int errorResultCode, string expectedMessage)
     {
       var request = new PatchesRequest(ecSerial,
-        string.Empty, string.Empty,
         machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
@@ -110,7 +109,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var projectId = 999;
       var projectUid = Guid.NewGuid();
-      var request = new PatchesRequest("ec520SerialNumber", string.Empty, string.Empty,
+      var request = new PatchesRequest("ec520SerialNumber",
         90, 180, new BoundingBox2DGrid(1, 200, 10, 210));
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES")).Returns(true);
@@ -159,7 +158,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var projectId = 999;
       var projectUid = Guid.NewGuid();
-      var request = new PatchesRequest("ec520SerialNumber", string.Empty, string.Empty,
+      var request = new PatchesRequest("ec520SerialNumber",
         90, 180, new BoundingBox2DGrid(1, 200, 10, 210));
       var mockConfigStore = new Mock<IConfigurationStore>();
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES")).Returns(true);
@@ -188,8 +187,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
 
-      var subgridOriginX = 150;
-      var subgridOriginY = 1400;
+      var subgridOriginX = 150.45;
+      var subgridOriginY = 1400.677;
       var elevationOrigin = (float)100.45;
       var nowTimeOrigin = new DateTimeOffset(DateTime.UtcNow.AddDays(-5).AddMinutes(100));
       var timeOrigin = (uint)(nowTimeOrigin).ToUnixTimeSeconds();
@@ -231,7 +230,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     private MemoryStream WriteAsPerTRex(int totalPatchesRequired, int numSubgridsInPatch,
-      int subgridOriginX, int subgridOriginY, float elevationOrigin, uint timeOrigin, ushort[] elevationOffsets, uint[] timeOffsets)
+      double subgridOriginX, double subgridOriginY, float elevationOrigin, uint timeOrigin, ushort[] elevationOffsets, uint[] timeOffsets)
     {
       var resultStream = new MemoryStream();
       var writer = new BinaryWriter(resultStream);
@@ -239,8 +238,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       writer.Write((int)numSubgridsInPatch);
       writer.Write((double)cellSize);
 
-      writer.Write((int)subgridOriginX);
-      writer.Write((int)subgridOriginY);
+      writer.Write((double)subgridOriginX);
+      writer.Write((double)subgridOriginY);
       writer.Write((Boolean)false); // isValid cells
 
       writer.Write((float)elevationOrigin);

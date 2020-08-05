@@ -74,8 +74,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         for (var i = 0; i < subGridsInPatch; i++)
         {
-          var subgridOriginX = reader.ReadInt32();
-          var subgridOriginY = reader.ReadInt32();
+          var subgridOriginX = reader.ReadDouble();
+          var subgridOriginY = reader.ReadDouble();
           var isNull = reader.ReadBoolean();
 
           if (isNull)

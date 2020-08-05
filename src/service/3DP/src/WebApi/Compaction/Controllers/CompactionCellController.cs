@@ -98,11 +98,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     ///     See GeneratePatchResultProtoFile unit test for generating .proto file for injest by client.
     /// </remarks>
     [HttpGet("api/v2/device/patches")]
-    public async Task<IActionResult> GetSubGridPatches(string ecSerial, string radioSerial, string tccOrgUid,
+    public async Task<IActionResult> GetSubGridPatches(string ecSerial,
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
     {
-      var patchesRequest = new PatchesRequest(ecSerial, radioSerial, tccOrgUid, machineLatitude, machineLongitude,
+      var patchesRequest = new PatchesRequest(ecSerial, machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       Log.LogInformation($"{nameof(GetSubGridPatches)}: {JsonConvert.SerializeObject(patchesRequest)}");
 
