@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Jaeger.Thrift;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Types;
 using VSS.TRex.Types.CellPasses;
 
@@ -9,6 +11,8 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
   public class VolvoEarthworksCSVRecord
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<VolvoEarthworksCSVRecord>();
+
+    public bool lineParsedOK = false;
 
     public DateTime Time;
     public double CellN_m;
@@ -53,27 +57,37 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 
     public VolvoEarthworksCSVRecord(string line, Dictionary<string, int> headerLocations)
     {
-      var parts = line.Split(',');
+      try
+      {
+        var parts = line.Split(',');
 
-      Time = DateTime.Parse(GetField("Time", headerLocations, parts));
-      CellN_m = double.Parse(GetField("CellN_m", headerLocations, parts));
-      CellE_m = double.Parse(GetField("CellE_m", headerLocations, parts));
-      PassNumber = int.Parse(GetField("PassNumber", headerLocations, parts));
-      DesignName = GetField("DesignName", headerLocations, parts);
-      Machine = GetField("Machine", headerLocations, parts);
-      Speed_mph = GetDouble("Speed_mph", headerLocations, parts, CellPassConsts.NullMachineSpeed);
-      TargetPassCount = int.Parse(GetField("TargPassCount", headerLocations, parts));
-      ValidPos = GetField("ValidPos", headerLocations, parts) == "Yes";
-      Lift = int.Parse(GetField("Lift", headerLocations, parts));
-      LastEDV = GetDouble("LastEDV", headerLocations, parts, 0.0);
-      LastFreq_Hz = int.Parse(GetField("LastFreq_Hz", headerLocations, parts));
-      LastAmp_mm = GetDouble("LastAmp_mm", headerLocations, parts, CellPassConsts.NullAmplitude);
-      TargThickness_FT = double.Parse(GetField("TargThickness_FT", headerLocations, parts));
-      MachineGear = GetField("MachineGear", headerLocations, parts);
-      VibeState = GetField("VibeState", headerLocations, parts);
-      LastTemp_f = GetDouble("LastTemp_f", headerLocations, parts, CellPassConsts.NullMaterialTemperatureValue);
-      LastCMV = GetDouble("LastCMV", headerLocations, parts, CellPassConsts.NullCCV);
-      ICMVType = int.Parse(GetField("ICMVType", headerLocations, parts));
+        Time = DateTime.Parse(GetField("Time", headerLocations, parts));
+        CellN_m = GetDouble("CellN_m", headerLocations, parts, Consts.NullDouble);
+        CellE_m = GetDouble("CellE_m", headerLocations, parts, Consts.NullDouble);
+        PassNumber = int.Parse(GetField("PassNumber", headerLocations, parts));
+        DesignName = GetField("DesignName", headerLocations, parts);
+        Machine = GetField("Machine", headerLocations, parts);
+        Speed_mph = GetDouble("Speed_mph", headerLocations, parts, CellPassConsts.NullMachineSpeed);
+        TargetPassCount = int.Parse(GetField("TargPassCount", headerLocations, parts));
+        ValidPos = GetField("ValidPos", headerLocations, parts) == "Yes";
+        Lift = int.Parse(GetField("Lift", headerLocations, parts));
+        LastEDV = GetDouble("LastEDV", headerLocations, parts, 0.0);
+        LastFreq_Hz = int.Parse(GetField("LastFreq_Hz", headerLocations, parts));
+        LastAmp_mm = GetDouble("LastAmp_mm", headerLocations, parts, CellPassConsts.NullAmplitude);
+        TargThickness_FT = GetDouble("TargThickness_FT", headerLocations, parts, Consts.NullDouble);
+        MachineGear = GetField("MachineGear", headerLocations, parts);
+        VibeState = GetField("VibeState", headerLocations, parts);
+        LastTemp_f = GetDouble("LastTemp_f", headerLocations, parts, CellPassConsts.NullMaterialTemperatureValue);
+        LastCMV = GetDouble("LastCMV", headerLocations, parts, CellPassConsts.NullCCV);
+        ICMVType = int.Parse(GetField("ICMVType", headerLocations, parts));
+
+        lineParsedOK = CellN_m != Consts.NullDouble && CellE_m != Consts.NullDouble;
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Failed to parse line {line}");
+        lineParsedOK = false;
+      }
     }
 
     // Converts the machine type name from the CSV file into a revognised machine type

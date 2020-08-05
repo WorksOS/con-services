@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;
@@ -69,15 +70,21 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       };
 
       var currentTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
-
+      //var firstDataTime = 
       // For each line, locate the TRex cell that fall within the cell and add a cell pass for it
       lines.ForEach(line =>
       {
         var cellPass = ParseLine(line);
 
+        if (!cellPass.lineParsedOK)
+        {
+          // Each cell is parsed independently, so we can short circuit processing if a line did not parse
+          return;
+        }
+
         processor.DataTime = DateTime.SpecifyKind(cellPass.Time, DateTimeKind.Utc);
 
-        // There si no RMV in the CSV file - set on ground to be grou all the time.
+        // There is no RMV in the CSV file - set on ground to be true all the time.
         processor.SetOnGround(OnGroundState.YesLegacy);
 
         // Default Volvo machine to MC024 sensor returning CMV values
@@ -98,7 +105,7 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
         // Add the events for this line
         if (currentTime < processor.DataTime)
         {
-          // Fill in the machine avents for this epoch
+          // Fill in the machine events for this epoch
           processor.Design = cellPass.DesignName;
         }
 
