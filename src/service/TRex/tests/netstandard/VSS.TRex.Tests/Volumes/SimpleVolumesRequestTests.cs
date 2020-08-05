@@ -22,6 +22,7 @@ using VSS.TRex.Volumes.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.GridFabric.Requests;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using Xunit;
+using System.Collections.Generic;
 
 namespace VSS.TRex.Tests.Volumes
 {
@@ -531,6 +532,7 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
       response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
     }
+
     [Fact]
     public async Task Test_SimpleVolumesRequest_ApplicationService_DesignToDefaultFilter_SingleCell()
     {
@@ -565,5 +567,71 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
       response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
     }
+
+    [Fact]
+    public async Task Test_SimpleVolumesRequest_ApplicationService_DesignToDefaultFilter_SingleCell_WithCustomBoundarySpatialFilter()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(-ELEVATION_INCREMENT_0_5);
+
+      var baseDesign = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0);
+
+      var request = new SimpleVolumesRequest_ApplicationService();
+      var arg = SimpleDefaultRequestArg(siteModel.ID);
+      arg.VolumeType = VolumeComputationType.BetweenDesignAndFilter;
+      arg.BaseDesign = new DesignOffset(baseDesign, 0);
+
+      arg.BaseFilter.SpatialFilter = new CellSpatialFilter
+      {
+        CoordsAreGrid = true,
+        IsSpatial = true,
+        Fence = new Fence
+        {
+          Points = new List<FencePoint>
+          {
+            new FencePoint() { X = 0, Y = 0},
+            new FencePoint() { X = 0, Y = 100},
+            new FencePoint() { X = 100, Y = 0}
+          }
+        }
+      };
+
+      arg.TopFilter.SpatialFilter = new CellSpatialFilter
+      {
+        CoordsAreGrid = true,
+        IsSpatial = true,
+        Fence = new Fence
+        {
+          Points = new List<FencePoint>
+          {
+            new FencePoint() { X = 0, Y = 0},
+            new FencePoint() { X = 0, Y = 100},
+            new FencePoint() { X = 100, Y = 0}
+          }
+        }
+      };
+
+      var response = await request.ExecuteAsync(arg);
+
+      const double EPSILON = 0.000001;
+
+      response.Should().NotBeNull();
+      response.Cut.Should().BeApproximately(3.5 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.Fill.Should().BeApproximately(0, EPSILON);
+      response.CutArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.FillArea.Should().BeApproximately(0, EPSILON);
+      response.TotalCoverageArea.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, EPSILON);
+
+      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+    }
   }
 }
+
