@@ -1,6 +1,9 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
+using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Extensions;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using Draw = System.Drawing;
@@ -9,6 +12,8 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
 {
   public class TileRenderResponse_Core2 : TileRenderResponse
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<TileRenderResponse_Core2>();
+
     private static byte VERSION_NUMBER = 1;
 
     public byte[] TileBitmapData { get; set; }
@@ -32,12 +37,24 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      try
+      {
+        base.ToBinary(writer);
 
-      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteBoolean(TileBitmapData != null);
-      writer.WriteByteArray(TileBitmapData);
+        writer.WriteBoolean(TileBitmapData != null);
+        writer.WriteByteArray(TileBitmapData);    
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderResponse_Core2)}.ToBinary()");
+        throw; // Mostly for testing purposes...
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, $"Exception in {nameof(TileRenderResponse_Core2)}.ToBinary()");
+      }
     }
 
     /// <summary>
@@ -46,12 +63,24 @@ namespace VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      try
+      {
+        base.FromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
-        TileBitmapData = reader.ReadByteArray();
+        if (reader.ReadBoolean())
+          TileBitmapData = reader.ReadByteArray();
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderResponse_Core2)}.FromBinary()");
+        throw; // Mostly for testing purposes...
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, $"Exception in {nameof(TileRenderResponse_Core2)}.FromBinary()");
+      }
     }
   }
 }

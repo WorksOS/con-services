@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
@@ -69,11 +70,6 @@ namespace VSS.TRex.Profiling
     /// </summary>
     protected IDesign SurfaceDesignMaskDesign;
 
-    /// <summary>
-    /// The design to be used as an alignment design surface based 'cookie cutter' selection mask for production data
-    /// </summary>
-    protected IDesign AlignmentDesignMaskDesign;
-
     protected IOverrideParameters Overrides;
     protected ILiftParameters LiftParams;
 
@@ -110,13 +106,6 @@ namespace VSS.TRex.Profiling
         SurfaceDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.SurfaceDesignMaskDesignUid);
         if (SurfaceDesignMaskDesign == null)
           throw new ArgumentException($"Design {CellFilter.SurfaceDesignMaskDesignUid} not found in project {SiteModel.ID}");
-      }
-
-      if (CellFilter.AlignmentDesignMaskDesignUID != Guid.Empty)
-      {
-        AlignmentDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.AlignmentDesignMaskDesignUID);
-        if (AlignmentDesignMaskDesign == null)
-          throw new ArgumentException($"Design {CellFilter.AlignmentDesignMaskDesignUID} not found in project {SiteModel.ID}");
       }
 
       if (SiteModel.SurveyedSurfaces?.Count > 0)

@@ -87,6 +87,11 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
       catch (Exception e)
       {
         _log.LogError(e, "Exception occurred in TileRenderRequestComputeFunc.Invoke()");
+
+        // Put in a 5 seconds delay to see if this allows the log forwarder to catch up and shine more light on failure occurring here.
+        // TODO: Remove this once bug is triaged and solved
+        //Task.Delay(5000).WaitAndUnwrapException();
+
         return new TileRenderResponse { ResultStatus = Types.RequestErrorStatus.Exception };
       }
     }

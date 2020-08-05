@@ -6,6 +6,8 @@ namespace VSS.Productivity3D.Models.Extensions
 {
   public static class BitmapExtensions
   {
+    private static object lockObj = new object();
+
     /// <summary>
     /// Converts a bitmap to an array of bytes representing the image
     /// </summary>
@@ -13,14 +15,13 @@ namespace VSS.Productivity3D.Models.Extensions
     /// <returns>An array of bytes</returns>
     public static byte[] BitmapToByteArray(this Bitmap bitmap)
     {
-      byte[] data;
-      using (var bitmapStream = new MemoryStream())
-      {
+      using var bitmapStream = new MemoryStream();
+
+      lock (lockObj) {
         bitmap.Save(bitmapStream, ImageFormat.Png);
-        data = bitmapStream.ToArray();
-        bitmapStream.Close();
       }
-      return data;
+
+      return bitmapStream.ToArray();
     }
   }
 }
