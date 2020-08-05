@@ -12,6 +12,9 @@ using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
+using SkiaSharp;
+using VSS.TRex.IO;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
@@ -72,7 +75,14 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 
           // Get the rendering factory from the DI context
           var renderingFactory = DIContext.Obtain<IRenderingFactory>();
-          var response = renderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+
+          using var image = SKImage.FromBitmap(bmp);
+          using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            // save the data to a stream
+          using var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+          data.SaveTo(stream);
+
+          var response =  renderingFactory.CreateTileRenderResponse(bmp. ?.GetBitmap()) as TileRenderResponse;
 
           if (response != null)
             response.ResultStatus = render.ResultStatus;

@@ -2,6 +2,7 @@
 using Draw = System.Drawing;
 using VSS.TRex.Rendering.Abstractions;
 using System.Drawing.Imaging;
+using SkiaSharp;
 
 namespace VSS.TRex.Rendering.Implementations.Core2
 {

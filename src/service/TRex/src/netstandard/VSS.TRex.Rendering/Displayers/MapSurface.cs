@@ -5,6 +5,7 @@ using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Common.Utilities;
+using SkiaSharp;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -42,12 +43,6 @@ namespace VSS.TRex.Rendering.Displayers
         public double XPixelSize = Consts.NullDouble;
         public double YPixelSize = Consts.NullDouble;
 
-        // PenMode : TPenMode;
-
-        //        int DotSymbolSize = 0; // Number of pixels square a 'dot' should be.
-        //        int HalfDotSymbolSize1 = 0;
-        //        int HalfDotSymbolSize2 = 0;
-
         // If HoldOriginOnResize true, then the origin coordinate will remain at the
         // bottom lefthand corner of the view when the view is resize. If false,
         // the coorindate at the top right hand corner remains the same, and the
@@ -57,16 +52,9 @@ namespace VSS.TRex.Rendering.Displayers
         private int MinPenWidth = 1;
 
         private Color DrawCanvasPenColor = Color.Black; // Cached pen color for the DrawCanvas
-        private IPen DrawCanvasPen;
-        private IBrush DrawCanvasBrush;
 
-        // Polypoints is an array of screen coordinate vertices used for calls to the
-        // WIN32 DC API Polygon() and Polyline() calls. It is defined here in order to
-        // avoid the overhead of allocating such as array for each polyline/polygon
-        // that is drawn
-        //FPolyPoints : array of TPoint;
-
-        //FTriangleDrawingData : Array[1..3] of TPoint;
+        private SKPaint DrawCanvasPen;
+        private SKPaint DrawCanvasBrush;
 
         protected double DQMScaleX = Consts.NullDouble; // Scale used in world to screen transform 
         protected double DQMScaleY = Consts.NullDouble; // Scale used in world to screen transform 
@@ -158,19 +146,12 @@ namespace VSS.TRex.Rendering.Displayers
 
                 if (inside)
                 {
-                    DrawCanvasPen.Color = PenColor;
-
-                    // We used to just draw the line with the given coordinates if part of the line
-                    // was visible (ie we didn't care about the coordinates of the clipped ends of the
-                    // line. However, a bug in either Windows or the device driver meant that lines using
-                    // a pen style other than psSolid did not draw at all if one of their end points was
-                    // outside of the view. So, we now just draw the line to the clipped coordinates...
-
-                    DrawCanvas.DrawLine(DrawCanvasPen,
-                                        XAxisAdjust + XAxesDirection * (int)Math.Truncate(from_x),
-                                        YAxisAdjust - YAxesDirection * (int)Math.Truncate(from_y),
-                                        XAxisAdjust + XAxesDirection * (int)Math.Truncate(to_x),
-                                        YAxisAdjust - YAxesDirection * (int)Math.Truncate(to_y));
+                    DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
+                    DrawCanvas.DrawLine(new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(from_x),
+                                                      YAxisAdjust - YAxesDirection * (int)Math.Truncate(from_y)),
+                                          new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(to_x),
+                                                      YAxisAdjust - YAxesDirection * (int)Math.Truncate(to_y)),
+                                          DrawCanvasPen);
                 }
             }
         }
@@ -202,12 +183,6 @@ namespace VSS.TRex.Rendering.Displayers
             toY = mid_N + (fromX - mid_E) * SinOfRotation + (fromY - mid_N) * CosOfRotation;
         }
 
-        //    procedure rotate_rectangle(const x1, y1, x2, y2 : FLOAT;
-        //                               VAR rx1, ry1, rx2, ry2, rx3, ry3, rx4, ry4 : FLOAT;
-        //                               VAR brx1, bry1, brx2, bry2 : FLOAT);
-
-        //    Function GetPixelSize : Float; // If you don't care about aspect...
-
         public void SetPenWidth(int width)
         {
             if (width < MinPenWidth)
@@ -215,30 +190,21 @@ namespace VSS.TRex.Rendering.Displayers
                 width = MinPenWidth;
             }
 
-            if (DrawCanvasPen.Width != width)
+            if (DrawCanvasPen.StrokeWidth != width)
             {
-                DrawCanvasPen.Width = width;
+               DrawCanvasPen.StrokeWidth = width;
             }
         }
 
-        public int GetPenWidth() => (int)DrawCanvasPen.Width;
+        public int GetPenWidth() => (int)DrawCanvasPen.StrokeWidth;
 
-        //    procedure Loaded; override;
+       // public IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
 
-        //    procedure Paint {(Sender : TObject)}; override;// Not override on purpose
-
-        //  public
-        public IBitmap BitmapCanvas;
-        public IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
-        public IGraphics DrawCanvas;
+        public SKBitmap BitmapCanvas;
+        public SKCanvas DrawCanvas;
 
         public int ClipHeight; // Viewport height
         public int ClipWidth; // Viewport width
-
-        //    { This is the view of the map as seen on the screen }
-
-        //    OffScreenBitmap : TBitmap;
-        //    CompositingBitmap : TBitmap;
 
         /* All drawing takes place on the offscreen bitmap.This is periodically
           drawn on to the display surface */
@@ -255,29 +221,14 @@ namespace VSS.TRex.Rendering.Displayers
         // should be used instead of the direct canvas method calls to ensure they
         // are drawn
 
-        //    Procedure _moveto(const X, Y : Integer);
-        //Procedure _lineto(const X, Y : Integer);
-        //procedure _arc(const a, b, c, d, e, f, g, h : Integer);
-        //Procedure _ellipse(const TLX, TLY, BRX, BRY : Integer);
-        // procedure _textout(const x, y : Integer; const s : string);
-        //    function _TextWidth(const S :String) :Integer;
-
-        public void _rectangle(int x1, int y1, int x2, int y2)
-        {
-            DrawCanvas.DrawRectangle(DrawCanvasPen, new Rectangle(x1, x2, x2 - x1, y2 - y1));
-        }
 
         public double CenterX => centerX;
         public double CenterY => centerY;
 
         double PixelSize => XPixelSize;
-        //    property XPixelSize : FLOAT read FXPixelSize;
-        //    property YPixelSize : FLOAT read FYPixelSize;
 
         public int PenWidth { get { return GetPenWidth(); } set { SetPenWidth(value); } }
-        //    property PenMode : TPenMode read FPenMode;
 
-        //    property Color : TColor read GetColor write SetColor;
         public MapSurface()
         {
             ClipWidth = 100;
@@ -302,11 +253,17 @@ namespace VSS.TRex.Rendering.Displayers
             DrawNonSquareAspectScale = true;
             DrawNonSquareAspectScaleAsVerticalDistanceBar = false;
 
-            DrawCanvasPen = RenderingFactory.CreatePen(Color.Black);
-            DrawCanvasBrush = RenderingFactory.CreateBrush(Color.Black);
+            BitmapCanvas = new SKBitmap();
+            DrawCanvas = new SKCanvas(BitmapCanvas);
+            DrawCanvasPen = new SKPaint
+            {
+              Style = SKPaintStyle.Stroke
+            };
 
-            BitmapCanvas = RenderingFactory.CreateBitmap(100, 100);
-            DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
+            DrawCanvasBrush = new SKPaint
+            {
+              Style = SKPaintStyle.StrokeAndFill
+            };
 
             DrawCanvasPenColor = Color.Black;
 
@@ -319,10 +276,6 @@ namespace VSS.TRex.Rendering.Displayers
         {
           if (DrawCanvas != null)
           {
-            // DotSymbolSize = Math.Round(GetDeviceCaps(DrawCanvas.Handle, LOGPIXELSX) / DotSymbolsPerInch) + 2;
-            // HalfDotSymbolSize1 = DotSymbolSize / 2;
-            // HalfDotSymbolSize2 = DotSymbolSize - DotSymbolSize / 2;
-
             ClipWidth = BitmapCanvas.Width - 1;
             ClipHeight = BitmapCanvas.Height - 1;
 
@@ -335,7 +288,7 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void Clear()
         {
-            DrawCanvas.Clear(DrawCanvasPenColor);
+            DrawCanvas.Clear(new SKColor(DrawCanvasPenColor.R, DrawCanvasPenColor.G, DrawCanvasPenColor.B));
         }
 
         void SetScale(double scale)
@@ -392,12 +345,6 @@ namespace VSS.TRex.Rendering.Displayers
             originX = OriginX;
             originY = OriginY;
         }
-
-        //function GetOriginX : FLOAT;
-        //    function GetOriginY : FLOAT;
-
-        //    function GetLimitX : FLOAT;
-        //    function GetLimitY : FLOAT;
 
         public void SetCenter(double centerX, double centerY)
         {
@@ -589,34 +536,15 @@ double BorderSize)
         }
 
 
-        public void SetPenColor(Color PenColor) => DrawCanvasPen.Color = PenColor;
-        public void SetBrushColor(Color BrushColor) => DrawCanvasBrush.Color = BrushColor;
-        //procedure SetBrushStyle(const BrushStyle : TBrushStyle);
-        //procedure SetFontColor(FontColor : TColor);
+    public void SetPenColor(Color PenColor)
+    {
+      DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
+    }
 
-        //Function clip_line_to_view(VAR from_x, from_y, to_x, to_y : FLOAT) : boolean;
-        //    function Clip_Line(var from_X, From_Y, To_X, To_Y : FLOAT ) : boolean;
-
-        //    procedure DrawRotatedBox(x1, y1, x2, y2, x3, y3, x4, y4 : FLOAT; PenColor : TColor);
-        //    procedure DrawRotatedBoxNoClip(x1, y1, x2, y2, x3, y3, x4, y4 : FLOAT; PenColor : TColor);
-
-        //    procedure DrawArc(Sx, Sy, Ex, Ey, Cx, Cy : FLOAT;
-        //Angle : Float;
-        //                      PenColor : TColor);
-
-        //    procedure DrawCircle(const Cx, Cy : FLOAT;
-        //const Radius : Float;
-        //                         const PenColor : TColor;
-        //                         const Fill : Boolean);
-
-        // DrawCircleWithSquareAspect draws a circle that is drawn as a proper circle about
-        // the center point regardless of the aspect ratio. The radial distance will be correct
-        // on the axis indicated as the reference axis
-        //    procedure DrawCircleWithSquareAspect(const Cx, Cy : FLOAT;
-        //const Radius : Float;
-        //                                         const PenColor : TColor;
-        //                                         const Fill : Boolean;
-        //                                         const ReferenceAxis : TMapRelativeReferenceAxis);
+    public void SetBrushColor(Color BrushColor)
+    {
+      DrawCanvasBrush.Color = new SKColor(BrushColor.R, BrushColor.G, BrushColor.B);
+    }
 
         public void DrawLine(double x1, double y1, double x2, double y2, Color PenColor)
         {
@@ -643,9 +571,6 @@ double BorderSize)
             Clip_and_draw_line(px1, py1, px2, py2, PenColor);
         }
 
-        //    procedure DrawArrowHead(x1, y1, x2, y2, HeadSize : FLOAT; PenColor : TColor);
-        //    procedure DrawArrow(x1, y1, x2, y2, HeadSize : FLOAT; PenColor : TColor);
-        //        procedure DrawLineEx(x1, y1, x2, y2 : FLOAT; PenColor : TColor; First : Boolean);
         public void DrawLineNoClip(double x1, double y1, double x2, double y2, Color PenColor)
         {
             // We are given the start and end coordinates of a line to be drawn.The
@@ -673,9 +598,9 @@ double BorderSize)
 
             // This gives us coordinates in pixel space - we must draw the line
 
-            DrawCanvasPen.Color = PenColor;
-            DrawCanvas.DrawLine(DrawCanvasPen, px1, py1, px2, py2);
-        }
+            DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
+            DrawCanvas.DrawLine(new SKPoint(px1, py1), new SKPoint(px2, py2), DrawCanvasPen);
+    }
 
         public void DrawLineNoOrigin(double x1, double y1, double x2, double y2, Color PenColor)
         {
@@ -710,27 +635,16 @@ double BorderSize)
             py2 = (int)Math.Truncate(y2 * DQMScaleY);
 
             // This gives us coordinates in pixel space -we must draw the line 
-            DrawCanvasPen.Color = PenColor;
-            DrawCanvas.DrawLine(DrawCanvasPen,
-                                XAxisAdjust + XAxesDirection * px1, YAxisAdjust - YAxesDirection * py1,
-                                XAxisAdjust + XAxesDirection * px2, YAxisAdjust - YAxesDirection * py2);
-        }
+            DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
+            DrawCanvas.DrawLine(new SKPoint(XAxisAdjust + XAxesDirection * px1, YAxisAdjust - YAxesDirection * py1), 
+                                  new SKPoint(XAxisAdjust + XAxesDirection * px2, YAxisAdjust - YAxesDirection * py2), DrawCanvasPen);
+         }
 
-    //    procedure DrawPoint(x, y : FLOAT; PenColor : TColor);
-    //    procedure DrawPointNoClip(x, y : FLOAT; PenColor : TColor);
-    //    procedure DrawPointNoOrigin(x, y : FLOAT; PenColor : TColor);
-    //    procedure DrawPointNoOriginNoClip(x, y : FLOAT; PenColor : TColor);
-
-        /// <summary>
-        /// Correct the pixel coordinates from a cartesian coordinate system converted from "bottom left" (0, 0) origin with north east increasing coordinates
-        /// to the bitmap pixel coordinates based on a "top left" (0, 0) origin with south east increasing coordinates
-        /// </summary>
-        /// <param name="includeRightAndBottomBoundary"></param>
-        /// <param name="px1"></param>
-        /// <param name="py1"></param>
-        /// <param name="px2"></param>
-        /// <param name="py2"></param>
-        private void FinaliseViewPortCoords(bool includeRightAndBottomBoundary, ref int px1, ref int py1, ref int px2, ref int py2)
+    /// <summary>
+    /// Correct the pixel coordinates from a cartesian coordinate system converted from "bottom left" (0, 0) origin with north east increasing coordinates
+    /// to the bitmap pixel coordinates based on a "top left" (0, 0) origin with south east increasing coordinates
+    /// </summary>
+    private void FinaliseViewPortCoords(bool includeRightAndBottomBoundary, ref int px1, ref int py1, ref int px2, ref int py2)
         {
             if (includeRightAndBottomBoundary)
             {
@@ -756,12 +670,6 @@ double BorderSize)
         /// <summary>
         /// Draw a filled rectangle given the bottom left and top right coordinates in the world coordinate space
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="w"></param>
-        /// <param name="h"></param>
-        /// <param name="fill"></param>
-        /// <param name="penColor"></param>
         public void DrawNonRotatedRect(double x, double y, double w, double h, bool fill, Color penColor)
         {
             try
@@ -771,25 +679,21 @@ double BorderSize)
                 var px2 = (int)Math.Truncate((x - OriginX + w) * DQMScaleX);
                 var py2 = (int)Math.Truncate((y - OriginY + h) * DQMScaleY);
 
-                SetPenColor(penColor);
-
                 if (fill)
                 {
                     FinaliseViewPortCoords(true, ref px1, ref py1, ref px2, ref py2);
                     SetBrushColor(penColor);
-                    DrawCanvasPen.Brush = DrawCanvasBrush;
 
                     // Use py2 as the 'top' of the filled rectangle to correct for reversal of y coordinates between world and bitmap contexts
-                    DrawCanvas.FillRectangle(DrawCanvasBrush, px1, py2, px2 - px1 + 1, Math.Abs(py2 - py1) + 1);
+                    DrawCanvas.DrawRect(px1, py2, px2 - px1 + 1, Math.Abs(py2 - py1) + 1, DrawCanvasBrush);
                 }
                 else
                 {
                     FinaliseViewPortCoords(true, ref px1, ref py1, ref px2, ref py2);
-                    SetBrushColor(Color.Empty);
-                    DrawCanvasPen.Brush = DrawCanvasBrush;
+                    SetPenColor(penColor);
 
                     // Use py2 as the 'top' of the filled rectangle to correct for reversal of y coordinates between world and bitmap contexts
-                    DrawCanvas.DrawRectangle(DrawCanvasPen, px1, py2, px2 - px1 + 1, Math.Abs(py2 - py1) + 1);
+                    DrawCanvas.DrawRect(px1, py2, px2 - px1 + 1, Math.Abs(py2 - py1) + 1, DrawCanvasPen);
                 }
             }
             catch //Most likely math error on transform above 
@@ -830,17 +734,29 @@ double BorderSize)
 
                 if (Fill)
                 {
-                    DrawCanvasBrush.Color = PenColor;
-                    DrawCanvasPen.Color = PenColor;
-                    DrawCanvasPen.Brush = DrawCanvasBrush;
-                    DrawCanvas.FillPolygon(DrawCanvasBrush, DrawRectPoints);
+                    SetBrushColor(PenColor);
+                    DrawCanvas.DrawPoints(SKPointMode.Polygon,
+                      new SKPoint[]
+                      {
+                        new SKPoint(DrawRectPoints[0].X, DrawRectPoints[0].Y),
+                        new SKPoint(DrawRectPoints[1].X, DrawRectPoints[1].Y),
+                        new SKPoint(DrawRectPoints[2].X, DrawRectPoints[2].Y),
+                        new SKPoint(DrawRectPoints[3].X, DrawRectPoints[3].Y)
+                      },
+                    DrawCanvasPen);
                 }
                 else
                 {
-                    DrawCanvasBrush.Color = Color.Empty;
-                    DrawCanvasPen.Color = PenColor;
-                    DrawCanvasPen.Brush = DrawCanvasBrush;
-                    DrawCanvas.DrawPolygon(DrawCanvasPen, DrawRectPoints);
+                    SetBrushColor(PenColor);
+                    DrawCanvas.DrawPoints(SKPointMode.Polygon,
+                      new SKPoint[]
+                      {
+                        new SKPoint(DrawRectPoints[0].X, DrawRectPoints[0].Y),
+                        new SKPoint(DrawRectPoints[1].X, DrawRectPoints[1].Y),
+                        new SKPoint(DrawRectPoints[2].X, DrawRectPoints[2].Y),
+                        new SKPoint(DrawRectPoints[3].X, DrawRectPoints[3].Y)
+                      },
+                    DrawCanvasBrush);
                 }
             }
             catch
@@ -848,107 +764,6 @@ double BorderSize)
                 // Ignore it 
             }
         }
-
-        //    procedure DrawTriangle(const x1, y1, x2, y2, x3, y3 : Double;
-        //                           const Fill : Boolean;
-        //                           const PenColor : TColor);
-
-        //    procedure DrawOctogon(x0, y0, width, height : double;
-        //const Fill : Boolean;
-        //                          const PenColor : TColor);
-
-        //    procedure DrawPentagon(x0, y0, Radius : double; const Fill : Boolean; const PenColor : TColor);
-
-        //    procedure DrawShadedTriangle(const x1, y1, x2, y2, x3, y3 : Double;
-        //PenColor1, PenColor2, PenColor3 : TColor);
-        //    procedure DrawPolygon(const Vertices: TWorldPointArray;
-        //                          Count : Integer;
-        //                          Color: TColor); overload;
-
-        //procedure DrawPolygon(const Vertices: TWorldPointArray;
-        //                      Count : Integer;
-        //                      Color: TColor;
-        //                      FillPattern: TBrushStyle); overload;
-
-        //procedure DrawPolyline(const Vertices : TWorldPointArray;
-        //                        Count : Integer;
-        //                        PenColor : TColor); overload;
-
-        //procedure DrawPolyline(const Vertices : TWorldPointArray;
-        //                       Start, Count : Integer;
-        //                       PenColor : TColor); overload;
-
-        // procedure DrawCross(const x, y : FLOAT; const PenColor : TColor);
-
-        //    procedure DrawSelectionTag(x, y : FLOAT;
-        //Pencolor : TColor);
-
-        //    procedure DrawDisplayPoint(X, Y : Integer; PenColor : TColor);
-        //    {         ----------------
-        //    Draw a point where X&Y are in display context coordinates.No checking is
-        //    performed, X&Y are assumed to be correct, and have been corrected for
-        //    Y axis orientation.
-        //    }
-
-        //    procedure DrawDisplayLine(const X1, Y1, X2, Y2 : Integer; const PenColor : TColor);
-        /*         ---------------
-        Draw a line where the end points are in display context coordinates.
-        No checking is performed, coordinates are assumed to be correct, and have
-        been corrected for Y axis orientation.
-        */
-
-        /*         ----------
-    Draw the given bitmap into the given world coordinate rectangle specified
-    by X1, Y1 and X2, Y2.
-    */
-        //    procedure DrawBitmap(X1, Y1, X2, Y2 : Integer;
-        //BMP : TBitMap); overload;
-
-
-        //    procedure DrawBitmap(X1, Y1, X2, Y2 : Float;
-        //BMP : TBitMap); overload;
-        /*         ----------
-        Draw the given bitmap into the given world coordinate rectangle specified
-        by X1, Y1 and X2, Y2.
-        */
-
-        /*
-             procedure DrawGrid(MajorGridIntervalX, MinorGridIntervalX : FLOAT;
-        MajorGridIntervalY, MinorGridIntervalY : FLOAT;
-                               GridRotation : FLOAT; {Degrees}
-                               MajorColor, MinorColor : TColor;
-                               PenStyle : TPenStyle;
-                               LabelGrid : Boolean;
-                               GridLabelFormatX : GridLabelFormater;
-                               GridLabelFormatY : GridLabelFormater;
-                               ToMetersXAxisFactor : Float;
-                               ToMetersYAxisFactor : Float;
-                               UseIntervalToSetDPs : Boolean);
-
-            Procedure DrawText(const T : String;
-        const x, y : FLOAT;
-                               const Font : TFont;
-                               const Size : FLOAT; { Meters in world }
-                               const Rotation : FLOAT; {Radians}
-                               const PenColor : TColor);
-
-            Procedure DrawGridLabelText(const T : String;
-        IsYAxis : Boolean;
-                                        GridValue : FLOAT;
-                                        PenColor : TColor);
-
-            Function TextWidth(const T : String;
-        const Font : TFont) : Integer;
-            // Return number of screen pixels wide text will be in given font
-
-            Function TextHeight(const T : String;
-        const Font : TFont) : Integer;
-            // Return number of screen pixels high text will be in given font
-
-            Procedure DrawStandard8BitText(const T : String;
-        const X, Y : FLOAT;
-                                           PenColor : TColor);
-        */
 
         public double GetTransformScale() => DQMScaleX;
 
@@ -979,27 +794,6 @@ double BorderSize)
             Y = OriginY + (YAxisAdjust - DY) / DQMScaleY / YAxesDirection;
         }
 
-        //    Procedure SetPenDrawMode(Mode : TPenMode);
-        //Function GetPenDrawMode : TPenMode;
-        //    Procedure ResetPenDrawMode;
-
-        //Procedure SetPenDrawStyle(PenStyle : TPenStyle;
-        //GapsAreTransparent : Boolean = false);
-        //    Function GetPenDrawStyle : TPenStyle;
-        //    Procedure ResetPenDrawStyle;
-
-        //    Function BitMapXCharSize : FLOAT; { Size in world units of standard 8bit text }
-        //    Function BitMapYCharSize : FLOAT; { Size in world units of standard 8bit text }
-
-        //    Function PointInView(const x, y : FLOAT) : Boolean;
-        //    Function PointInViewWithTolerance(const x, y, tol : FLOAT) : Boolean;
-
-        // RectangleInView will accept non-normalised rectangles (ie: where x1, y1
-        // is not the bottom left corner). If the Normalised parameter is false the
-        // Function will normalise the given rectangle.
-        //    Function RectangleInView(const x1, y1, x2, y2 : FLOAT;
-        //Normalised : Boolean = True) : Boolean;
-
         public void SetBounds(int AWidth, int AHeight)
         {
             // Prevent divisions by zero downstream
@@ -1018,10 +812,10 @@ double BorderSize)
             }
 
             BitmapCanvas?.Dispose();
-            BitmapCanvas = RenderingFactory.CreateBitmap(AWidth, AHeight);
+            BitmapCanvas = new SKBitmap(AWidth, AHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
 
             DrawCanvas?.Dispose();
-            DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
+            DrawCanvas = new SKCanvas(BitmapCanvas);
 
             if (BitmapCanvas != null)
             {
@@ -1061,11 +855,8 @@ double BorderSize)
     /// <summary>
     /// This will take an array of pixels matching the extent of the canvas and
     /// draw the content of those pixels onto the canvas. This is a destructive process
-    /// - any conten existing in the canvas will be overwritten by a new canvas
+    /// - any content existing in the canvas will be overwritten
     /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="pixels"></param>
     public void DrawFromPixelArray(int width, int height, int[] pixels)
     {
       if (width != BitmapCanvas.Width || height != BitmapCanvas.Height)
@@ -1073,14 +864,7 @@ double BorderSize)
         throw new ArgumentException("Extents of target canvas are not the same as the extents being drawn");
       }
 
-      var oldBitmapCanvas = BitmapCanvas;
-      BitmapCanvas = DrawCanvas.DrawFromPixelArray(BitmapCanvas.Width, BitmapCanvas.Height, pixels);
-
-      var oldDrawCanvas = DrawCanvas;
-      DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
-
-      oldBitmapCanvas?.Dispose();
-      oldDrawCanvas?.Dispose();
+      Buffer.BlockCopy(pixels, 0, BitmapCanvas.Pixels, 0, width * height * 4);
     }
 
     #region IDisposable Support
