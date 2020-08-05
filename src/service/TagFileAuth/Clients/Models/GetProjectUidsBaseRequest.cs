@@ -51,15 +51,13 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     public void Validate()
     {
       if (string.IsNullOrEmpty(PlatformSerial))
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 51));
-
-      // todoJeannie remove messages 23; 30; 37 from Contractexe plus the TRexTagFileResultCode in common 
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectUidsResult.FormatResult(uniqueCode: 51));
       
       if (Latitude < -90 || Latitude > 90)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 21));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectUidsResult.FormatResult(uniqueCode: 21));
 
       if (Longitude < -180 || Longitude > 180)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 22));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectUidsResult.FormatResult(uniqueCode: 22));
     }
   }
 }
