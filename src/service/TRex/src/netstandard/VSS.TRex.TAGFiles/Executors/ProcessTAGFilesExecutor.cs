@@ -175,6 +175,8 @@ namespace VSS.TRex.TAGFiles.Executors
             using var fs = new MemoryStream(tagFile.TagFileContent);
             try
             {
+              _log.LogInformation($"About to read file {tagFile.FileName} with origin source {tagFile.OriginSource}");
+
               bool readResult = tagFile.OriginSource switch
               {
                 TAGFileOriginSource.VolvoMachineAssistEarthworksCSV => commonConverter.ExecuteVolvoEarthworksCSVFile(tagFile.FileName, fs, tagFile.AssetId, tagFile.IsJohnDoe),
@@ -189,7 +191,8 @@ namespace VSS.TRex.TAGFiles.Executors
                 AssetUid = tagFile.AssetId,
                 ReadResult = commonConverter.ReadResult,
                 Success = commonConverter.ReadResult == TAGReadResult.NoError && readResult == true,
-                SubmissionFlags = tagFile.SubmissionFlags
+                SubmissionFlags = tagFile.SubmissionFlags,
+                OriginSource = tagFile.OriginSource
               });
 
               _log.LogInformation(
@@ -205,7 +208,8 @@ namespace VSS.TRex.TAGFiles.Executors
                 Success = false,
                 Exception = e.Message,
                 ReadResult = commonConverter.ReadResult,
-                SubmissionFlags = tagFile.SubmissionFlags
+                SubmissionFlags = tagFile.SubmissionFlags,
+                OriginSource = tagFile.OriginSource
               });
             }
           }

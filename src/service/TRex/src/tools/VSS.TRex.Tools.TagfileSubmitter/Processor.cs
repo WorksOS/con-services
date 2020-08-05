@@ -54,7 +54,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           TagFileContent = bytes,
           TAGFileName = Path.GetFileName(fileName),
           TreatAsJohnDoe = treatAsJohnDoe,
-          SubmissionFlags = TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive,
+          SubmissionFlags = originSource == TAGFileOriginSource.LegacyTAGFileSource ? TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive : 0,
           OriginSource = originSource
         };
       }
@@ -88,7 +88,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
                             TagFileContent = bytes,
                             AssetId = machineId,
                             IsJohnDoe = treatAsJohnDoe,
-                            SubmissionFlags = TAGFileSubmissionFlags.AddToArchive
+                            SubmissionFlags = TAGFileSubmissionFlags.AddToArchive,
+                            OriginSource = TAGFileOriginSource.LegacyTAGFileSource
             }
           }
         };
@@ -122,7 +123,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             TagFileContent = bytes, 
             AssetId = machineId, 
             IsJohnDoe = false,
-            SubmissionFlags = TAGFileSubmissionFlags.AddToArchive
+            SubmissionFlags = TAGFileSubmissionFlags.AddToArchive,
+            OriginSource = TAGFileOriginSource.LegacyTAGFileSource
           });
         }
       }

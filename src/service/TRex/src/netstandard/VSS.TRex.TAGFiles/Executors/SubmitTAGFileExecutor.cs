@@ -60,7 +60,7 @@ namespace VSS.TRex.TAGFiles.Executors
       string tccOrgId, bool treatAsJohnDoe, TAGFileSubmissionFlags tagFileSubmissionFlags, TAGFileOriginSource originSource)
     {
       if (OutputInformationalRequestLogging)
-        _log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
+        _log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}, John Doe?:{treatAsJohnDoe}, submission flags: {tagFileSubmissionFlags}, origin source:{originSource}");
       
       var response = new SubmitTAGFileResponse
       {

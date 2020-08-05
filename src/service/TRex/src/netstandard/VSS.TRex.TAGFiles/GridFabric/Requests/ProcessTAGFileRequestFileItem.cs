@@ -82,6 +82,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         {
           OriginSource = (TAGFileOriginSource)reader.ReadInt();
         }
+        else
+        {
+          OriginSource = TAGFileOriginSource.LegacyTAGFileSource;
+        }
+      }
     }
-  }
 }

@@ -99,6 +99,10 @@ namespace VSS.TRex.TAGFiles.Models
       {
         OriginSource = (TAGFileOriginSource)reader.ReadInt();
       }
+      else
+      {
+        OriginSource = TAGFileOriginSource.LegacyTAGFileSource;
+      }
     }
   }
 }

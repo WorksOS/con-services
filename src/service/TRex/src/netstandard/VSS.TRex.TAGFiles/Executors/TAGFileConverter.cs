@@ -139,13 +139,16 @@ namespace VSS.TRex.TAGFiles.Executors
     /// Execute the conversion operation on the Volvo earthworks CSV file
     /// NOTE: This is a POC implementation and does not support some behaviours in the legacy TAG file ingest pathway
     /// </summary>
-    public bool ExecuteVolvoEarthworksCSVFile(string fileName, Stream tagData, Guid assetUid, bool isJohnDoe)
+    public bool ExecuteVolvoEarthworksCSVFile(string filename, Stream tagData, Guid assetUid, bool isJohnDoe)
     {
       ReadResult = TAGReadResult.NoError;
 
+      Log.LogInformation($"In {nameof(ExecuteVolvoEarthworksCSVFile)}: reading file {filename} for asset {assetUid}, JohnDoe: {isJohnDoe}");
+
+
       try
       {
-        var fileDescriptor = new VolvoEarthworksFileNameDescriptor(fileName);
+        var fileDescriptor = new VolvoEarthworksFileNameDescriptor(filename);
 
         Processor?.Dispose();
 
@@ -205,6 +208,8 @@ namespace VSS.TRex.TAGFiles.Executors
     public bool ExecuteLegacyTAGFile(string filename, Stream tagData, Guid assetUid, bool isJohnDoe)
     {
       ReadResult = TAGReadResult.NoError;
+
+      Log.LogInformation($"In {nameof(ExecuteLegacyTAGFile)}: reading file {filename} for asset {assetUid}, JohnDoe: {isJohnDoe}");
 
       try
       {

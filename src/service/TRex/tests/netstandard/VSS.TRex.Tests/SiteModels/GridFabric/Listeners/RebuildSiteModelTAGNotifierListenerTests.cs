@@ -73,7 +73,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Listeners
             FileName = "ATagFile.tag",
             ReadResult = TAGReadResult.NoError,
             SubmissionFlags = TAGFileSubmissionFlags.AddToArchive | TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
-            Success = true
+            Success = true,
+            OriginSource = TAGFileOriginSource.LegacyTAGFileSource // Only legacy TAG files supported for rebuilding
           }
         }
       };
@@ -107,7 +108,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Listeners
             FileName = "ATagFile.tag",
             ReadResult = TAGReadResult.NoError,
             SubmissionFlags = TAGFileSubmissionFlags.AddToArchive | TAGFileSubmissionFlags.NotifyRebuilderOnProceesing,
-            Success = true
+            Success = true,
+            OriginSource = TAGFileOriginSource.LegacyTAGFileSource // Only legacy TAG files supported for rebuilding
           }
         }
       };
