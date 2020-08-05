@@ -58,3 +58,4 @@ AWS_TEMPORARY_BUCKET_NAME: s3-pdxa-rpd-workos-exports
 AWS_PRESIGNED_URL_EXPIRY: 7.00:00:00
 AWS_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-trex-dm-archive
 TGL_GEODATA_PATH: "/trex/TGL_GeoData/"
+COMPlus_legacyCorruptedState­­ExceptionsPolicy: "1"
