@@ -83,21 +83,8 @@ spec:
           value: {{ .Values.mutableData.javaHeapInitialSizeMb | quote }}  
 
         ports:
-        # Ports to open.
-        - containerPort: 47100 # communication SPI port number.
-          name: spicoms
-        - containerPort: 47500 # discovery SPI port number.
-          name: spidisco
-        - containerPort: 48100 # communication SPI port number.
-          name: spicommsmutable
-        - containerPort: 48500
-          name: spidiscomutable
-        - containerPort: 8088 #JMX prometheus
-          name: jmxprometheus
-        - containerPort: 8080  # REST port number.
-          name: restapi
-        - containerPort: 10800 # SQL port number.
-          name: sql
+{{ toYaml .Values.trexPorts | indent 8 }}
+
 
         volumeMounts:
         # Mounting the persistant storage - currently this is in temp which will change when we sort config
