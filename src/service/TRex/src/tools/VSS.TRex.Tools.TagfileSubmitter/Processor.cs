@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Types;
 
 /*
 Arguments for building project #5, Dimensions:
@@ -36,6 +38,20 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     public Guid AssetOverride = Guid.Empty;
 
+    /// <summary>
+    /// Return a delay in milliseconds to be enforced after each TAg file. Different delays can be returned to recognise the relative size
+    /// of certain files
+    /// </summary>
+    private int OriginSourceSubmissionDelay(TAGFileOriginSource originSource)
+    {
+      return originSource switch
+      {
+        TAGFileOriginSource.LegacyTAGFileSource => 10,
+        TAGFileOriginSource.VolvoMachineAssistCompactionCSV => 200,
+        TAGFileOriginSource.VolvoMachineAssistEarthworksCSV => 200,
+        _ => throw new NotImplementedException()
+      };
+    }
 
     public Task SubmitSingleTAGFile(Guid projectId, Guid assetId, string fileName, bool treatAsJohnDoe, TAGFileOriginSource originSource)
     {
@@ -54,12 +70,14 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           TagFileContent = bytes,
           TAGFileName = Path.GetFileName(fileName),
           TreatAsJohnDoe = treatAsJohnDoe,
-          SubmissionFlags = originSource == TAGFileOriginSource.LegacyTAGFileSource ? TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive : 0,
+          SubmissionFlags = originSource == TAGFileOriginSource.LegacyTAGFileSource ? TAGFileSubmissionFlags.AddToArchive : 0,
           OriginSource = originSource
         };
       }
 
       Log.LogInformation($"Submitting TAG file #{++_tagFileCount}: {fileName} to asset {assetId}");
+
+      Task.Delay(OriginSourceSubmissionDelay(originSource)).WaitAndUnwrapException();
 
       return _submitTagFileRequest.ExecuteAsync(arg);
     }

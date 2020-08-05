@@ -8,7 +8,6 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.TAGFiles.Servers.Client;
 using VSS.TRex.TAGFiles.Models;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 
 /*
 Arguments for building project #5, Dimensions:

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 {
@@ -40,6 +41,12 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       return hasValue ? parts[partsIndex] : string.Empty;
     }
 
+    private double GetDouble(string fieldName, Dictionary<string, int> headerLocations, string[] parts, double defaultValue)
+    {
+      var stringValue = GetField(fieldName, headerLocations, parts);
+      return string.IsNullOrEmpty(stringValue) ? defaultValue : double.Parse(stringValue);
+    }
+
     public VolvoEarthworksCSVRecord()
     {
     }
@@ -54,18 +61,18 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       PassNumber = int.Parse(GetField("PassNumber", headerLocations, parts));
       DesignName = GetField("DesignName", headerLocations, parts);
       Machine = GetField("Machine", headerLocations, parts);
-      Speed_mph = double.Parse(GetField("Speed_mph", headerLocations, parts));
+      Speed_mph = GetDouble("Speed_mph", headerLocations, parts, CellPassConsts.NullMachineSpeed);
       TargetPassCount = int.Parse(GetField("TargPassCount", headerLocations, parts));
       ValidPos = GetField("ValidPos", headerLocations, parts) == "Yes";
       Lift = int.Parse(GetField("Lift", headerLocations, parts));
-      LastEDV = double.Parse(GetField("LastEDV", headerLocations, parts));
+      LastEDV = GetDouble("LastEDV", headerLocations, parts, 0.0);
       LastFreq_Hz = int.Parse(GetField("LastFreq_Hz", headerLocations, parts));
-      LastAmp_mm = double.Parse(GetField("LastAmp_mm", headerLocations, parts));
+      LastAmp_mm = GetDouble("LastAmp_mm", headerLocations, parts, CellPassConsts.NullAmplitude);
       TargThickness_FT = double.Parse(GetField("TargThickness_FT", headerLocations, parts));
       MachineGear = GetField("MachineGear", headerLocations, parts);
       VibeState = GetField("VibeState", headerLocations, parts);
-      LastTemp_f = double.Parse(GetField("LastTemp_f", headerLocations, parts));
-      LastCMV = double.Parse(GetField("LastCMV", headerLocations, parts));
+      LastTemp_f = GetDouble("LastTemp_f", headerLocations, parts, CellPassConsts.NullMaterialTemperatureValue);
+      LastCMV = GetDouble("LastCMV", headerLocations, parts, CellPassConsts.NullCCV);
       ICMVType = int.Parse(GetField("ICMVType", headerLocations, parts));
     }
 
@@ -74,8 +81,8 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
     {
       return machineType switch
       {
-        "SD115B" => TRex.Types.MachineType.SoilCompactor,
-        _ => TRex.Types.MachineType.Unknown
+        "SD115B" => MachineType.SoilCompactor,
+        _ => MachineType.Unknown
       };
     }
 

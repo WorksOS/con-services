@@ -102,8 +102,8 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
           processor.Design = cellPass.DesignName;
         }
 
-        // Convert mph to cs/s
-        var speedInCentimetersPerSecond = (int)Math.Round(cellPass.Speed_mph * 1.60934 * 3600 * 100);
+        // Convert mph to cs/s. 44.704 is the magic mph to cm/s conversion factor
+        var speedInCentimetersPerSecond = (int)Math.Round(cellPass.Speed_mph * 44.704);
         processor.SetICMachineSpeedValue(speedInCentimetersPerSecond);
 
         processor.ICPassTargetValue = (ushort)cellPass.TargetPassCount;
