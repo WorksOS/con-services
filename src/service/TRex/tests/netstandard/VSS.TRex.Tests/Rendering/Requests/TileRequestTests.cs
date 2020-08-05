@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
@@ -119,6 +121,90 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var request = new TileRenderRequest();
       var filter = new CellPassAttributeFilter() { MachinesList = new[] { siteModel.Machines[0].ID }, LayerID = 1 };
       var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode, null, filter));
+
+      CheckSimpleRenderTileResponse(response);
+    }
+
+    [Theory]
+    [InlineData(DisplayMode.Height)]
+    [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
+    [InlineData(DisplayMode.MDP)]
+    [InlineData(DisplayMode.MDPPercentSummary)]
+    [InlineData(DisplayMode.MachineSpeed)]
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureDetail)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCount)]
+    [InlineData(DisplayMode.PassCountSummary)]
+    public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithCustomSpatialFilter_Rectangle(DisplayMode displayMode)
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+
+      var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
+
+      var request = new TileRenderRequest();
+
+      var arg = SimpleTileRequestArgument(siteModel, displayMode, palette);
+      arg.Filters.Filters[0].SpatialFilter = new CellSpatialFilter
+      {
+        CoordsAreGrid = true,
+        IsSpatial = true,
+        Fence = new Fence(new BoundingWorldExtent3D(0, 0, 100, 100))
+      };
+
+      var response = await request.ExecuteAsync(arg);
+
+      CheckSimpleRenderTileResponse(response);
+    }
+
+    [Theory]
+    [InlineData(DisplayMode.Height)]
+    [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
+    [InlineData(DisplayMode.MDP)]
+    [InlineData(DisplayMode.MDPPercentSummary)]
+    [InlineData(DisplayMode.MachineSpeed)]
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureDetail)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCount)]
+    [InlineData(DisplayMode.PassCountSummary)]
+    public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithCustomSpatialFilter_Polygonal(DisplayMode displayMode)
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+
+      var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
+
+      var request = new TileRenderRequest();
+
+      var arg = SimpleTileRequestArgument(siteModel, displayMode, palette);
+      arg.Filters.Filters[0].SpatialFilter = new CellSpatialFilter
+      {
+        CoordsAreGrid = true,
+        IsSpatial = true,
+        Fence = new Fence
+        {
+          Points = new List<FencePoint>
+          {
+            new FencePoint() { X = 0, Y = 0},
+            new FencePoint() { X = 0, Y = 100},
+            new FencePoint() { X = 100, Y = 0}
+          }
+        }
+      };
+
+      var response = await request.ExecuteAsync(arg);
 
       CheckSimpleRenderTileResponse(response);
     }
