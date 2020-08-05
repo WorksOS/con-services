@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -172,7 +173,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             timeOffsets[j] = includeTimeOffsets ? time : uint.MaxValue;
           }
 
-          subgrids.Add(PatchSubgridOriginProtobufResult.Create(subgridOriginX, subgridOriginY, elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, elevationOffsets, timeOffsets));
+          subgrids.Add(PatchSubgridOriginProtobufResult.Create(Math.Round(subgridOriginX, 5), Math.Round(subgridOriginY, 5), elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, elevationOffsets, timeOffsets));
           // test: var doubleArrayResult = (new CompactionSinglePatchPackedResult()).UnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
 
         }
