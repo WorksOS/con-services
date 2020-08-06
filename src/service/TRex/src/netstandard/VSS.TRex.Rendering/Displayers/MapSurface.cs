@@ -11,7 +11,6 @@ namespace VSS.TRex.Rendering.Displayers
     public class MapSurface : IDisposable
     {
         private const double MaxViewDimensionMeters = 20000000;
-//        private const double MaxViewDimensionFeet = 60000000;
         private const double MinViewDimensionMeters = 0.001;
 
         public bool SquareAspect = true;
@@ -146,11 +145,12 @@ namespace VSS.TRex.Rendering.Displayers
                 if (inside)
                 {
                     DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
-                    var pt1 = new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(from_x),
-                                          YAxisAdjust - YAxesDirection * (int)Math.Truncate(from_y));
-                    var pt2 = new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(to_x),
-                                          YAxisAdjust - YAxesDirection * (int)Math.Truncate(to_y));
-                    DrawCanvas.DrawLine(pt1, pt2, DrawCanvasPen);
+
+                    DrawCanvas.DrawLine(XAxisAdjust + XAxesDirection * (int)Math.Truncate(from_x),
+                                        YAxisAdjust - YAxesDirection * (int)Math.Truncate(from_y),
+                                        XAxisAdjust + XAxesDirection * (int)Math.Truncate(to_x),
+                                        YAxisAdjust - YAxesDirection * (int)Math.Truncate(to_y),
+                                        DrawCanvasPen);
                 }
             }
         }
@@ -197,16 +197,11 @@ namespace VSS.TRex.Rendering.Displayers
 
         public int GetPenWidth() => (int)DrawCanvasPen.StrokeWidth;
 
-       // public IRenderingFactory RenderingFactory = DIContext.Obtain<IRenderingFactory>();
-
         public SKBitmap BitmapCanvas;
         public SKCanvas DrawCanvas;
 
         public int ClipHeight; // Viewport height
         public int ClipWidth; // Viewport width
-
-        /* All drawing takes place on the offscreen bitmap.This is periodically
-          drawn on to the display surface */
 
         public bool DrawNonSquareAspectScale;
         public bool DrawNonSquareAspectScaleAsVerticalDistanceBar;
@@ -214,12 +209,6 @@ namespace VSS.TRex.Rendering.Displayers
         // ScaleBarRHSIndent records how many pixels from the RHS of the view the scale
         // bar should be drawn.
         public int ScaleBarRHSIndent;
-
-        // The following methods with _ prefixes are ghosted versions of the
-        // matching canvas methods which are aware of the offscreenbitmap. These
-        // should be used instead of the direct canvas method calls to ensure they
-        // are drawn
-
 
         public double CenterX => centerX;
         public double CenterY => centerY;
@@ -245,19 +234,14 @@ namespace VSS.TRex.Rendering.Displayers
             XPixelSize = WidthX / (ClipWidth + 1);
             YPixelSize = WidthY / (ClipHeight + 1);
 
-            // FPenMode:= pmCopy;
-
             ScaleBarRHSIndent = 0;
 
             DrawNonSquareAspectScale = true;
             DrawNonSquareAspectScaleAsVerticalDistanceBar = false;
 
-            BitmapCanvas = new SKBitmap();
-            DrawCanvas = new SKCanvas(BitmapCanvas);
             DrawCanvasPen = new SKPaint
             {
-              Style = SKPaintStyle.Stroke,
-              StrokeWidth = 10
+              Style = SKPaintStyle.Stroke
             };
 
             DrawCanvasBrush = new SKPaint
@@ -288,7 +272,7 @@ namespace VSS.TRex.Rendering.Displayers
 
         public void Clear()
         {
-            DrawCanvas.Clear(new SKColor(DrawCanvasPenColor.R, DrawCanvasPenColor.G, DrawCanvasPenColor.B));
+            DrawCanvas?.Clear(new SKColor(DrawCanvasPenColor.R, DrawCanvasPenColor.G, DrawCanvasPenColor.B));
         }
 
         void SetScale(double scale)
@@ -317,7 +301,6 @@ namespace VSS.TRex.Rendering.Displayers
         /// Note: The action of the rotation is a turned angle, not an orientation, so the magnitude and direction
         /// is all that is needed, so the given survey rotation is simply inverted.
         /// </summary>
-        /// <param name="rotation"></param>
         public void SetRotation(double rotation)
         {
             Rotation = -rotation;
@@ -550,7 +533,7 @@ double BorderSize)
         {
             // We are given the start and end coordinates of a line to be drawn.The
             // coordinates are in World units. We must first transform them to pixel
-            // coordinates before drawing the line */
+            // coordinates before drawing the line 
 
             double px1, py1, px2, py2;
 
@@ -575,7 +558,7 @@ double BorderSize)
         {
             // We are given the start and end coordinates of a line to be drawn.The
             // coordinates are in World units. We must first transform them to pixel
-            //  coordinates before drawing the line *)
+            // coordinates before drawing the line 
 
             int px1, py1, px2, py2;
 
@@ -599,7 +582,7 @@ double BorderSize)
             // This gives us coordinates in pixel space - we must draw the line
 
             DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
-            DrawCanvas.DrawLine(new SKPoint(px1, py1), new SKPoint(px2, py2), DrawCanvasPen);
+            DrawCanvas.DrawLine(px1, py1, px2, py2, DrawCanvasPen);
     }
 
         public void DrawLineNoOrigin(double x1, double y1, double x2, double y2, Color PenColor)
@@ -636,15 +619,16 @@ double BorderSize)
 
             // This gives us coordinates in pixel space -we must draw the line 
             DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
-            DrawCanvas.DrawLine(new SKPoint(XAxisAdjust + XAxesDirection * px1, YAxisAdjust - YAxesDirection * py1), 
-                                  new SKPoint(XAxisAdjust + XAxesDirection * px2, YAxisAdjust - YAxesDirection * py2), DrawCanvasPen);
+            DrawCanvas.DrawLine(XAxisAdjust + XAxesDirection * px1, YAxisAdjust - YAxesDirection * py1,
+                                XAxisAdjust + XAxesDirection * px2, YAxisAdjust - YAxesDirection * py2, 
+                                DrawCanvasPen);
          }
 
-    /// <summary>
-    /// Correct the pixel coordinates from a cartesian coordinate system converted from "bottom left" (0, 0) origin with north east increasing coordinates
-    /// to the bitmap pixel coordinates based on a "top left" (0, 0) origin with south east increasing coordinates
-    /// </summary>
-    private void FinaliseViewPortCoords(bool includeRightAndBottomBoundary, ref int px1, ref int py1, ref int px2, ref int py2)
+        /// <summary>
+        /// Correct the pixel coordinates from a cartesian coordinate system converted from "bottom left" (0, 0) origin with north east increasing coordinates
+        /// to the bitmap pixel coordinates based on a "top left" (0, 0) origin with south east increasing coordinates
+        /// </summary>
+        private void FinaliseViewPortCoords(bool includeRightAndBottomBoundary, ref int px1, ref int py1, ref int px2, ref int py2)
         {
             if (includeRightAndBottomBoundary)
             {
@@ -705,7 +689,7 @@ double BorderSize)
         /// Contains a local store of Point structures to be used by the DrawRect function to remove the overhead 
         /// of 5 memory allocations for each DrawRect invocation
         /// </summary>
-        private Point[] DrawRectPoints = Enumerable.Range(0, 4).Select(x => new Point()).ToArray();
+        private SKPoint[] DrawRectPoints = Enumerable.Range(0, 4).Select(x => new SKPoint()).ToArray();
 
         public void DrawRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
@@ -735,28 +719,12 @@ double BorderSize)
                 if (Fill)
                 {
                     SetBrushColor(PenColor);
-                    DrawCanvas.DrawPoints(SKPointMode.Polygon,
-                      new SKPoint[]
-                      {
-                        new SKPoint(DrawRectPoints[0].X, DrawRectPoints[0].Y),
-                        new SKPoint(DrawRectPoints[1].X, DrawRectPoints[1].Y),
-                        new SKPoint(DrawRectPoints[2].X, DrawRectPoints[2].Y),
-                        new SKPoint(DrawRectPoints[3].X, DrawRectPoints[3].Y)
-                      },
-                    DrawCanvasPen);
+                    DrawCanvas.DrawPoints(SKPointMode.Polygon, DrawRectPoints, DrawCanvasPen);
                 }
                 else
                 {
                     SetBrushColor(PenColor);
-                    DrawCanvas.DrawPoints(SKPointMode.Polygon,
-                      new SKPoint[]
-                      {
-                        new SKPoint(DrawRectPoints[0].X, DrawRectPoints[0].Y),
-                        new SKPoint(DrawRectPoints[1].X, DrawRectPoints[1].Y),
-                        new SKPoint(DrawRectPoints[2].X, DrawRectPoints[2].Y),
-                        new SKPoint(DrawRectPoints[3].X, DrawRectPoints[3].Y)
-                      },
-                    DrawCanvasBrush);
+                    DrawCanvas.DrawPoints(SKPointMode.Polygon, DrawRectPoints, DrawCanvasBrush);
                 }
             }
             catch
@@ -843,14 +811,13 @@ double BorderSize)
                         SetWorldBounds(OriginX, OriginY,
                                        OriginX + WidthX,
                                        OriginY + WidthY, 0);
-                    }                  
+                    }
                 }
             }
             CalculateXYOffsets();
         }
 
     public double Scale { get => GetScale(); set => SetScale(value); }
-
 
     /// <summary>
     /// This will take an array of pixels matching the extent of the canvas and
@@ -868,6 +835,9 @@ double BorderSize)
 
       var info = new SKImageInfo(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Unpremul);
       _ = BitmapCanvas.InstallPixels(info, gcHandle.AddrOfPinnedObject(), info.RowBytes, delegate { gcHandle.Free(); });
+
+      DrawCanvas?.Dispose();
+      DrawCanvas = new SKCanvas(BitmapCanvas);
     }
 
     #region IDisposable Support
