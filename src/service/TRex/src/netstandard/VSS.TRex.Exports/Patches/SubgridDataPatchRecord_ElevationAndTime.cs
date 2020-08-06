@@ -35,6 +35,11 @@ namespace VSS.TRex.Exports.Patches
     /// </summary>
     public byte TimeOffsetSize { get; set; }
 
+    // SubGridOriginX, SubGridOriginY are world space coordinates of the bottom left hand corner of the subgrid
+    public double SubGridOriginX { get; set; }
+
+    public double SubGridOriginY { get; set; }
+
     /// <summary>
     /// The elevation of the lowest cell elevation in the elevation sub grid result, expressed in grid coordinates (meters)
     /// </summary>
@@ -67,6 +72,9 @@ namespace VSS.TRex.Exports.Patches
       var elevations = elevSubGrid.Cells;
       var times = elevSubGrid.Times;
       IsNull = true;
+
+      SubGridOriginX = subGrid.WorldExtents().MinX;
+      SubGridOriginY = subGrid.WorldExtents().MinY;
 
       if (elevSubGrid.Cells != null)
       {

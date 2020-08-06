@@ -138,8 +138,8 @@ namespace VSS.TRex.Tests.Exports.Patches
       result.Should().NotBeNull();
       result.Patch.Should().NotBeNull();
       result.Patch.Length.Should().Be(12);
-      Math.Round(result.Patch[0].CellOriginX, 4).Should().Be(537667.84);
-      Math.Round(result.Patch[0].CellOriginY, 4).Should().Be(5427390.08);
+      Math.Round(result.Patch[0].SubGridOriginX, 4).Should().Be(537667.84);
+      Math.Round(result.Patch[0].SubGridOriginY, 4).Should().Be(5427390.08);
       Math.Round(result.Patch[0].ElevationOrigin, 4).Should().Be(41.397);
       result.Patch[0].TimeOrigin.Should().Be(1361929472);
 
@@ -149,6 +149,16 @@ namespace VSS.TRex.Tests.Exports.Patches
       result.Patch[0].Data[13, 27].TimeOffset.Should().Be(48000000);
       result.Patch[0].Data[13, 28].ElevationOffset.Should().Be(63);
       result.Patch[0].Data[13, 28].TimeOffset.Should().Be(50000000);
+
+      Math.Round(result.Patch[1].SubGridOriginX, 4).Should().Be(537667.84);
+      Math.Round(result.Patch[1].SubGridOriginY, 4).Should().Be(5427400.96);
+      Math.Round(result.Patch[1].ElevationOrigin, 4).Should().Be(41.451);
+      result.Patch[1].TimeOrigin.Should().Be(4237436768);
+
+      Math.Round(result.Patch[2].SubGridOriginX, 4).Should().Be(537667.84);
+      Math.Round(result.Patch[2].SubGridOriginY, 4).Should().Be(5427411.84);
+      Math.Round(result.Patch[2].ElevationOrigin, 4).Should().Be(41.505);
+      result.Patch[2].TimeOrigin.Should().Be(7369472);
     }
 
     [Fact]

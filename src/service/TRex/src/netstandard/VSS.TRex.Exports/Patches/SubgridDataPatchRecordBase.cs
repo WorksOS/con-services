@@ -11,14 +11,14 @@ namespace VSS.TRex.Exports.Patches
   public class SubgridDataPatchRecordBase : ISubgridDataPatchRecord
   {
     /// <summary>
-    /// X ordinate of the bottom left corner of the bottom left cell in the sub grid, expressed in world coordinates
+    /// X ordinate of the bottom left corner of the bottom left cell in the sub grid, expressed in cell coordinates (integer)
     /// </summary>
-    public double CellOriginX { get; set; }
+    public int CellOriginX { get; set; }
 
     /// <summary>
-    /// Y ordinate of the bottom left corner of the bottom left cell in the sub grid, expressed in world coordinates
+    /// Y ordinate of the bottom left corner of the bottom left cell in the sub grid, expressed in cell coordinates (integer)
     /// </summary>
-    public double CellOriginY { get; set; }
+    public int CellOriginY { get; set; }
 
     /// <summary>
     /// Notes if the content of all cells in this sub grid are null (and hence not otherwise encoded in the result)
@@ -31,8 +31,8 @@ namespace VSS.TRex.Exports.Patches
     /// <param name="subGrid"></param>
     public virtual void Populate(IClientLeafSubGrid subGrid)
     {
-      CellOriginX = (subGrid.OriginX - subGrid.IndexOriginOffset) * subGrid.CellSize;
-      CellOriginY = (subGrid.OriginY - subGrid.IndexOriginOffset) * subGrid.CellSize;
+      CellOriginX = (int)subGrid.OriginX;
+      CellOriginY = (int)subGrid.OriginY;
     }
   }
 }
