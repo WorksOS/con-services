@@ -219,7 +219,7 @@ namespace VSS.TRex.Tests.Rendering
 
         var filename = $"RotatedOverlayTileWithSurveyedSurface({imagePixelSize} pixels, rotate about {rotateAboutX},{rotateAboutY} by {rotationDegrees} degrees).bmp";
         var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", filename);
-        var saveFileName = @$"c:\temp\{filename}";
+        var saveFileName = ""; // @$"c:\temp\{filename}";
         CheckSimpleRenderTileResponse(result, saveFileName, "");
 
         rotationDegrees += rotationIncrement;

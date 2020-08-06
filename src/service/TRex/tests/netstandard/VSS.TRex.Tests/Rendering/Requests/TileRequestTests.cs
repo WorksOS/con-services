@@ -454,7 +454,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurface.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = @$"c:\temp\{FILE_NAME}";
+      var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
@@ -493,7 +493,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurfaceWithTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = @$"c:\temp\{FILE_NAME}";
+      var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
