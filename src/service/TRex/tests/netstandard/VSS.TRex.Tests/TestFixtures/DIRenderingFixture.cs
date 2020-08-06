@@ -5,7 +5,6 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.DI;
 using VSS.TRex.Rendering.Abstractions;
-using VSS.TRex.Rendering.Implementations.Core2;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -29,7 +28,6 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
         .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(TileRenderingSmootherFactoryMethod))
         .Complete();
 

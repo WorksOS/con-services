@@ -25,7 +25,6 @@
     <ProjectReference Include="..\..\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Pipelines.Interfaces\VSS.TRex.Pipelines.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />
-    <ProjectReference Include="..\..\VSS.TRex.Rendering.Implementations.Core2\VSS.TRex.Rendering.Implementations.Core2.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Rendering\VSS.TRex.Rendering.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj" />

@@ -25,9 +25,7 @@ using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
-using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Executors.Tasks;
-using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
@@ -108,9 +106,6 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
 
-        // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
-        .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
-
         .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
 
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
@@ -172,7 +167,6 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Rendering.Implementations.Core2.RenderingFactory),
         typeof(VSS.TRex.Rendering.GridFabric.Responses.TileRenderResponse_Core2),
         typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
       };

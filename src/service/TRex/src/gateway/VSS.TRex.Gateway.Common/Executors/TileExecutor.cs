@@ -21,7 +21,6 @@ using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Rendering.GridFabric.Responses;
