@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using SkiaSharp;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
@@ -15,7 +15,6 @@ using VSS.TRex.GridFabric;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.ComputeFuncs;
 using VSS.TRex.Rendering.GridFabric.Responses;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
@@ -113,35 +112,45 @@ namespace VSS.TRex.Tests.Rendering.Requests
         ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
 
         // Convert the response into a bitmap
-        var bmp = Image.FromStream(new MemoryStream(((TileRenderResponse_Core2) response).TileBitmapData)) as Bitmap;
+        var bmp = SKBitmap.Decode(((TileRenderResponse_Core2)response).TileBitmapData);
+
         bmp.Should().NotBeNull();
         bmp.Height.Should().Be(256);
         bmp.Width.Should().Be(256);
         
         if (!string.IsNullOrEmpty(fileName))
         {
-          bmp.Save(fileName);
+          using var image = SKImage.FromBitmap(bmp);
+          using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+          using var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+          data.SaveTo(stream);
         }
         else
         {
           // If the comparison file does not exist then create it to provide a base comparison moving forward.
           if (!string.IsNullOrEmpty(compareToFile) && !File.Exists(compareToFile))
           {
-            bmp.Save(compareToFile);
+            using var image = SKImage.FromBitmap(bmp);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            using var stream = new FileStream(compareToFile, FileMode.Create, FileAccess.Write, FileShare.None);
+            data.SaveTo(stream);
           }
         }
 
         if (!string.IsNullOrEmpty(compareToFile))
         {
-          var goodBmp = Image.FromStream(new FileStream(compareToFile, FileMode.Open, FileAccess.Read, FileShare.Read)) as Bitmap;
+          var goodBmp = SKBitmap.Decode(compareToFile);
           goodBmp.Height.Should().Be(bmp.Height);
           goodBmp.Width.Should().Be(bmp.Width);
-          goodBmp.Size.Should().Be(bmp.Size);
 
-          for (var i = 0; i <= bmp.Width - 1; i++)
+          for (var i = 0; i < bmp.Width; i++)
           {
-            for (var j = 0; j < bmp.Height - 1; j++)
+            for (var j = 0; j < bmp.Height; j++)
             {
+              if (goodBmp.GetPixel(i, j) != bmp.GetPixel(i, j))
+              {
+                j = j;
+              }
               goodBmp.GetPixel(i, j).Should().Be(bmp.GetPixel(i, j));
             }
           }

@@ -83,7 +83,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var fileName = @$"Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "CutFillTile", fileName);
 
-      var saveFileName = ""; //@$"C:\Temp\Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
+      var saveFileName = @$"C:\Temp\Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
@@ -119,7 +119,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var fileName = "FilterToFilter-CutFill-TestTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "CutFillTile", fileName);
 
-      var saveFileName = ""; // @"C:\Temp\FilterToFilter-CutFill-TestTAGFile.bmp";
+      var saveFileName = @"C:\Temp\FilterToFilter-CutFill-TestTAGFile.bmp";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }

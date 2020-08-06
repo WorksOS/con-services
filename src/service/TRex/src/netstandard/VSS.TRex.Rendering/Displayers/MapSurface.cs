@@ -2,10 +2,9 @@
 using System.Drawing;
 using System.Linq;
 using VSS.TRex.Common;
-using VSS.TRex.DI;
-using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Common.Utilities;
 using SkiaSharp;
+using System.Runtime.InteropServices;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -147,11 +146,11 @@ namespace VSS.TRex.Rendering.Displayers
                 if (inside)
                 {
                     DrawCanvasPen.Color = new SKColor(PenColor.R, PenColor.G, PenColor.B);
-                    DrawCanvas.DrawLine(new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(from_x),
-                                                      YAxisAdjust - YAxesDirection * (int)Math.Truncate(from_y)),
-                                          new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(to_x),
-                                                      YAxisAdjust - YAxesDirection * (int)Math.Truncate(to_y)),
-                                          DrawCanvasPen);
+                    var pt1 = new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(from_x),
+                                          YAxisAdjust - YAxesDirection * (int)Math.Truncate(from_y));
+                    var pt2 = new SKPoint(XAxisAdjust + XAxesDirection * (int)Math.Truncate(to_x),
+                                          YAxisAdjust - YAxesDirection * (int)Math.Truncate(to_y));
+                    DrawCanvas.DrawLine(pt1, pt2, DrawCanvasPen);
                 }
             }
         }
@@ -257,7 +256,8 @@ namespace VSS.TRex.Rendering.Displayers
             DrawCanvas = new SKCanvas(BitmapCanvas);
             DrawCanvasPen = new SKPaint
             {
-              Style = SKPaintStyle.Stroke
+              Style = SKPaintStyle.Stroke,
+              StrokeWidth = 10
             };
 
             DrawCanvasBrush = new SKPaint
@@ -812,7 +812,7 @@ double BorderSize)
             }
 
             BitmapCanvas?.Dispose();
-            BitmapCanvas = new SKBitmap(AWidth, AHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
+            BitmapCanvas = new SKBitmap(AWidth, AHeight, SKColorType.Rgba8888, SKAlphaType.Unpremul);
 
             DrawCanvas?.Dispose();
             DrawCanvas = new SKCanvas(BitmapCanvas);
@@ -857,14 +857,17 @@ double BorderSize)
     /// draw the content of those pixels onto the canvas. This is a destructive process
     /// - any content existing in the canvas will be overwritten
     /// </summary>
-    public void DrawFromPixelArray(int width, int height, int[] pixels)
+    public void DrawFromPixelArray(int width, int height, uint[] pixels)
     {
       if (width != BitmapCanvas.Width || height != BitmapCanvas.Height)
       {
         throw new ArgumentException("Extents of target canvas are not the same as the extents being drawn");
       }
 
-      Buffer.BlockCopy(pixels, 0, BitmapCanvas.Pixels, 0, width * height * 4);
+      var gcHandle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
+
+      var info = new SKImageInfo(width, height, SKImageInfo.PlatformColorType, SKAlphaType.Unpremul);
+      _ = BitmapCanvas.InstallPixels(info, gcHandle.AddrOfPinnedObject(), info.RowBytes, delegate { gcHandle.Free(); });
     }
 
     #region IDisposable Support

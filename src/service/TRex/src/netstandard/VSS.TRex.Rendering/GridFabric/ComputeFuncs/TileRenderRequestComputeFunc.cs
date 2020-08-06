@@ -3,17 +3,14 @@ using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
 using Nito.AsyncEx.Synchronous;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 using SkiaSharp;
-using VSS.TRex.IO;
 using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
@@ -71,23 +68,24 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
           if (bmp == null)
           {
             _log.LogInformation("Null bitmap returned by executor");
-          }
 
-          // Get the rendering factory from the DI context
-          var renderingFactory = DIContext.Obtain<IRenderingFactory>();
+            return new TileRenderResponse_Core2
+            {
+              TileBitmapData = null,
+              ResultStatus = Types.RequestErrorStatus.Exception
+            };
+          }
 
           using var image = SKImage.FromBitmap(bmp);
           using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-            // save the data to a stream
           using var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
           data.SaveTo(stream);
 
-          var response =  renderingFactory.CreateTileRenderResponse(bmp. ?.GetBitmap()) as TileRenderResponse;
-
-          if (response != null)
-            response.ResultStatus = render.ResultStatus;
-
-          return response;
+          return new TileRenderResponse_Core2
+          {
+            TileBitmapData = stream.ToArray(),
+            ResultStatus = render.ResultStatus
+          };
         }
         finally
         {

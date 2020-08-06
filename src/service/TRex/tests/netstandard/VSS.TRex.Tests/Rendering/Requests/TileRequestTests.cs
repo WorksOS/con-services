@@ -11,7 +11,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
+using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -454,7 +454,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurface.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
+      var saveFileName = @$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
@@ -493,7 +493,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurfaceWithTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = ""; //@$"c:\temp\{FILE_NAME}";
+      var saveFileName = @$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
