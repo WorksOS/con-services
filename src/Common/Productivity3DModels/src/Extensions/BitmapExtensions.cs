@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.Models.Extensions
     public static byte[] BitmapToByteArray(this Bitmap bitmap)
     {
       using var bitmapStream = new MemoryStream();
-      bitmap.Save(bitmapStream, ImageFormat.Png)
+      bitmap.Save(bitmapStream, ImageFormat.Png);
       return bitmapStream.ToArray();
     }
   }
