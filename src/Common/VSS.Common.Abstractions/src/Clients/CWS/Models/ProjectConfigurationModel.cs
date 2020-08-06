@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-
-  [Obsolete("UI to use cws directly now")]
   public class ProjectConfigurationModel : IMasterDataModel
   {
     //Note: There are other properties returned but we only want some of it

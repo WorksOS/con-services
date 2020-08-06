@@ -5,7 +5,6 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
 {
-  [Obsolete("UI to use cws directly now")]
   public interface ICwsProfileSettingsClient
   {
     Task<ProjectConfigurationModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null);

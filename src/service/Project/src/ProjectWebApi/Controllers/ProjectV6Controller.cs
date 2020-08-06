@@ -97,6 +97,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPost]
+    
+    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest projectRequest)
     {
       if (projectRequest == null)
@@ -188,6 +190,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPut]
+    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task<IActionResult> UpdateProjectV6([FromBody] UpdateProjectRequest projectRequest)
     {
       if (projectRequest == null)

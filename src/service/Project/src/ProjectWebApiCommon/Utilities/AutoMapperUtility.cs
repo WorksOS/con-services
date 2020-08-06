@@ -98,7 +98,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(x => 0))
-            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore());
+            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(x => CwsProjectType.AcceptsTagFiles))
+            .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
+            ;
           cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
             .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
             .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));

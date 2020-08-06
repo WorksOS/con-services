@@ -23,6 +23,7 @@ using Xunit;
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
+  [Obsolete("todoJeannie Projectv6Controller")]
   public class CreateProjectExecutorTests : UnitTestsDIFixture<CreateProjectExecutorTests>
   {
     public CreateProjectExecutorTests()

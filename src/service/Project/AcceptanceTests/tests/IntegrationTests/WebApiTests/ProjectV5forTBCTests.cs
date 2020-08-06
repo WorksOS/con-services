@@ -34,7 +34,9 @@ namespace IntegrationTests.WebApiTests
       var serialized = JsonConvert.SerializeObject(_boundaryLL);
       Assert.Equal(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized);
 
-      var response = await CreateProjectV5TBC(ts, "project 1", CwsProjectType.AcceptsTagFiles);
+      var businessCenterFile = new BusinessCenterFile {FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site"};
+
+      var response = await ts.CreateProjectViaWebApiV5TBC("project 1", _boundaryLL, businessCenterFile);
       var createProjectV5Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
 
       Assert.Equal(HttpStatusCode.Created, createProjectV5Result.Code);
@@ -61,9 +63,5 @@ namespace IntegrationTests.WebApiTests
       return JsonConvert.DeserializeObject<ReturnSuccessV5Result>(response);
     }
 
-    private static Task<string> CreateProjectV5TBC(TestSupport ts, string projectName, CwsProjectType projectType)
-    {
-      return ts.CreateProjectViaWebApiV5TBC(projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, _boundaryLL);
-    }
   }
 }

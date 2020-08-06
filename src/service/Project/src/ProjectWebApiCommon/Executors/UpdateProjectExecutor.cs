@@ -15,6 +15,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// <summary>
   /// The executor which updates a project in cws, storing in trex/DO as appropriate
   /// </summary>
+  [Obsolete("todoJeannie Projectv6Controller")]
   public class UpdateProjectExecutor : RequestExecutorContainer
   {
     /// <summary>
