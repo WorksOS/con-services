@@ -13,7 +13,10 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
     public Bitmap(int x, int y)
     {
-      container = new Draw.Bitmap(x, y);
+      lock (RenderingLock.Lock)
+      {
+        container = new Draw.Bitmap(x, y);
+      }
     }
 
     //
@@ -49,7 +52,10 @@ namespace VSS.TRex.Rendering.Implementations.Core2
     //     will not.
     public Bitmap(int width, int height, int stride, PixelFormat format, IntPtr scan0)
     {
-      container = new Draw.Bitmap(width, height, stride, format, scan0);
+      lock (RenderingLock.Lock)
+      {
+        container = new Draw.Bitmap(width, height, stride, format, scan0);
+      }
     }
 
     public int Width => container.Width;
@@ -62,5 +68,4 @@ namespace VSS.TRex.Rendering.Implementations.Core2
       container?.Dispose();
     }
   }
-
 }

@@ -32,8 +32,8 @@ namespace VSS.TRex.Exports.Patches
           {
             foreach (var patch in Patch)
             {
-              bw.Write(patch.CellOriginX);
-              bw.Write(patch.CellOriginY);
+              bw.Write(patch.SubGridOriginX);
+              bw.Write(patch.SubGridOriginY);
               bw.Write(patch.IsNull);
 
               if (!patch.IsNull)

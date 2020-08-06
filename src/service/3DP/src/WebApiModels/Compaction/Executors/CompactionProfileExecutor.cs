@@ -17,6 +17,7 @@ using VSS.Velociraptor.PDSInterface;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
+using VSS.Productivity3D.Common.Filters.Utilities;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -520,27 +521,37 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       var volumeCalcType = request.VolumeCalcType ?? VolumeCalcType.None;
 
-      var liftBuildSettings = request.LiftBuildSettings;
-      var summaryVolumesProfileDataRequest = new SummaryVolumesProfileDataRequest(
-        request.ProjectUid ?? Guid.Empty,
-        request.BaseFilter,
-        request.TopFilter,
-        request.VolumeDesignDescriptor?.FileUid,
-        request.VolumeDesignDescriptor?.Offset,
-        ConvertVolumeCalcType(volumeCalcType),
-        request.GridPoints != null,
-        request.GridPoints?.x1 ?? request.WGS84Points.lon1,
-        request.GridPoints?.y1 ?? request.WGS84Points.lat1,
-        request.GridPoints?.x2 ?? request.WGS84Points.lon2,
-        request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings),
-        AutoMapperUtility.Automapper.Map<LiftSettings>(liftBuildSettings)
-      );
+      if (volumeCalcType != VolumeCalcType.None)
+      {
+        if (volumeCalcType == VolumeCalcType.GroundToGround && !request.ExplicitFilters)
+        {
+          FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
+        }
 
-      var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders);
+        var liftBuildSettings = request.LiftBuildSettings;
+        var summaryVolumesProfileDataRequest = new SummaryVolumesProfileDataRequest(
+          request.ProjectUid ?? Guid.Empty,
+          request.BaseFilter,
+          request.TopFilter,
+          request.VolumeDesignDescriptor?.FileUid,
+          request.VolumeDesignDescriptor?.Offset,
+          ConvertVolumeCalcType(volumeCalcType),
+          request.GridPoints != null,
+          request.GridPoints?.x1 ?? request.WGS84Points.lon1,
+          request.GridPoints?.y1 ?? request.WGS84Points.lat1,
+          request.GridPoints?.x2 ?? request.WGS84Points.lon2,
+          request.GridPoints?.y2 ?? request.WGS84Points.lat2,
+          AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings),
+          AutoMapperUtility.Automapper.Map<LiftSettings>(liftBuildSettings)
+        );
 
-      return trexResult != null ? ConvertTRexSummaryVolumesProfileResult(trexResult, volumeCalcType) : null;
+        var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<SummaryVolumeProfileCell>, SummaryVolumesProfileDataRequest>(summaryVolumesProfileDataRequest, "/volumes/summary/profile", customHeaders);
+        return trexResult != null ? ConvertTRexSummaryVolumesProfileResult(trexResult, volumeCalcType) : null;
+      }
+
+      return null;
     }
+
 #if RAPTOR
     private CompactionProfileResult<CompactionSummaryVolumesProfileCell> ProcessSummaryVolumesWithRaptor(CompactionProfileProductionDataRequest request)
     {
