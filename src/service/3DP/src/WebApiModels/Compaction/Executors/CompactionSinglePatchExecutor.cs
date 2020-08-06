@@ -35,6 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var request = CastRequestObjectTo<PatchRequest>(item);
 
         if (request.ComputeVolType == VolumesType.Between2Filters)
+        {
           FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
         }
 
