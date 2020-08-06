@@ -172,7 +172,12 @@ namespace VSS.TRex.Gateway.Common.Executors
           cmvPercentChangePalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
 
           cmvPercentChangePalette.TargetCCVColour = Color.Green;
-          cmvPercentChangePalette.DefaultDecoupledCMVColour = Color.Black; break;
+          cmvPercentChangePalette.DefaultDecoupledCMVColour = Color.Black;
+
+          if (request.Palettes != null)
+            cmvPercentChangePalette.PaletteTransitions = request.Palettes.Select(p => new Transition(p.Value, ColorUtility.UIntToColor(p.Color))).ToArray();
+
+          break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
           break;
@@ -276,6 +281,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       if (request.Mode != DisplayMode.Height &&
           request.Mode != DisplayMode.CCVPercentSummary &&
+          request.Mode != DisplayMode.CMVChange &&
           request.Mode != DisplayMode.CCV &&
           request.Mode != DisplayMode.PassCountSummary && 
           request.Mode != DisplayMode.CCASummary &&
