@@ -2,23 +2,17 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-#if RAPTOR
-using ASNodeDecls;
-using SVOICVolumeCalculationsDecls;
-#endif
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using System.Collections.Generic;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Common.Filters.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -39,30 +33,32 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<PatchRequest>(item);
-#if RAPTOR
-        if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES") ?? false)
+
+        if (request.ComputeVolType == VolumesType.Between2Filters)
         {
-#endif
-          var patchDataRequest = new PatchDataRequest(
-            request.ProjectUid.Value,
-            request.Filter1,
-            request.Filter2,
-            request.Mode,
-            request.PatchNumber,
-            request.PatchSize,
-            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
-            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
-
-          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
-
-          return fileResult.Length > 0
-              ? ConvertPatchResult(fileResult, true)
-              : CreateNullPatchReturnedResult();
-#if RAPTOR
+          FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
         }
 
-        return ProcessWithRaptor(request);
-#endif
+        var filter1 = request.Filter1;
+        var filter2 = request.Filter2;
+
+        FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
+
+        var patchDataRequest = new PatchDataRequest(
+          request.ProjectUid.Value,
+          filter1,
+          filter2,
+          request.Mode,
+          request.PatchNumber,
+          request.PatchSize,
+          AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+          AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+
+        var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
+
+        return fileResult.Length > 0
+            ? ConvertPatchResult(fileResult, true)
+            : CreateNullPatchReturnedResult();
       }
       finally
       {
@@ -75,50 +71,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
     }
 
-#if RAPTOR
-    private ContractExecutionResult ProcessWithRaptor(PatchRequest request)
-    {
-      var filter1 = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
-      var filter2 = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
-      var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
-
-      if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
-      {
-        RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
-      }
-
-      RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
-
-      var raptorResult = raptorClient.RequestDataPatchPageWithTime(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
-        ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
-          TASNodeCancellationDescriptorType.cdtDataPatches),
-        RaptorConverters.convertDisplayMode(request.Mode),
-        filter1,
-        filter2,
-        RaptorConverters.DesignDescriptor(request.DesignDescriptor),
-        volType,
-        RaptorConverters.convertOptions(null, request.LiftBuildSettings,
-          request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
-        request.PatchNumber,
-        request.PatchSize,
-        out var patch,
-        out _);
-
-      if (raptorResult == TASNodeErrorStatus.asneOK)
-      {
-        return patch != null
-          ? ConvertPatchResult(patch, request.IncludeTimeOffsets)
-          : CreateNullPatchReturnedResult();
-      }
-
-      throw CreateServiceException<CompactionSinglePatchExecutor>((int)raptorResult);
-    }
-#endif
     protected sealed override void ProcessErrorCodes()
     {
-#if RAPTOR
-      RaptorResult.AddErrorMessages(ContractExecutionStates);
-#endif
     }
 
     private PatchSubgridsProtobufResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
