@@ -276,7 +276,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       if (request.Mode != DisplayMode.Height &&
           request.Mode != DisplayMode.CCVPercentSummary &&
-          request.Mode != DisplayMode.CMVChange &&
           request.Mode != DisplayMode.CCV &&
           request.Mode != DisplayMode.PassCountSummary && 
           request.Mode != DisplayMode.CCASummary &&
