@@ -12,25 +12,64 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
     internal Pen(Draw.Color color)
     {
-      container = new Draw.Pen(color);
+      lock (RenderingLock.Lock)
+      {
+        container = new Draw.Pen(color);
+      }
     }
 
     public Draw.Color Color
     {
-      get => container.Color;
-      set => container.Color = value;
+      get 
+        {
+        lock (RenderingLock.Lock)
+        {
+          return container.Color;
+        }
+      }
+      set 
+        {
+        lock (RenderingLock.Lock)
+        {
+          container.Color = value;
+        }
+      }
     }
 
     public IBrush Brush
     {
-      get => new Brush(container.Brush);
-      set => container.Brush = ((Brush)value).UnderlyingImplementation;
+      get
+      {
+        lock (RenderingLock.Lock)
+        {
+          return new Brush(container.Brush);
+        }
+      }
+      set
+      {
+        lock (RenderingLock.Lock)
+        {
+          container.Brush = ((Brush)value).UnderlyingImplementation;
+        }
+      }
     }
 
     public float Width
     {
-      get => container.Width;
-      set => container.Width = value;
+      get
+      {
+        lock (RenderingLock.Lock)
+        {
+          return container.Width;
+        }
+      }
+      set
+      {
+        lock (RenderingLock.Lock)
+        {
+          container.Width = value;
+        }
+      }
     }
 
     public void Dispose()
