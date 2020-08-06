@@ -73,8 +73,9 @@ namespace VSS.TRex.Exports.Patches
       var times = elevSubGrid.Times;
       IsNull = true;
 
-      SubGridOriginX = subGrid.WorldExtents().MinX;
-      SubGridOriginY = subGrid.WorldExtents().MinY;
+      subGrid.CalculateWorldOrigin(out var worldOriginX, out var worldOriginY);
+      SubGridOriginX = worldOriginX;
+      SubGridOriginY = worldOriginY;
 
       if (elevSubGrid.Cells != null)
       {
