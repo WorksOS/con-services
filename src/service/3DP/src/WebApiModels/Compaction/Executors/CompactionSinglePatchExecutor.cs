@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,8 @@ using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using System.Collections.Generic;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Common.Filters.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -30,10 +33,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       try
       {
         var request = CastRequestObjectTo<PatchRequest>(item);
+
+        if (request.ComputeVolType == VolumesType.Between2Filters)
+        {
+          FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
+        }
+
+        var filter1 = request.Filter1;
+        var filter2 = request.Filter2;
+
+        FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
+
         var patchDataRequest = new PatchDataRequest(
           request.ProjectUid.Value,
-          request.Filter1,
-          request.Filter2,
+          filter1,
+          filter2,
           request.Mode,
           request.PatchNumber,
           request.PatchSize,
@@ -172,7 +186,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             timeOffsets[j] = includeTimeOffsets ? time : uint.MaxValue;
           }
 
-          subgrids.Add(PatchSubgridOriginProtobufResult.Create(subgridOriginX, subgridOriginY, elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, elevationOffsets, timeOffsets));
+          subgrids.Add(PatchSubgridOriginProtobufResult.Create(Math.Round(subgridOriginX, 5), Math.Round(subgridOriginY, 5), elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, elevationOffsets, timeOffsets));
           // test: var doubleArrayResult = (new CompactionSinglePatchPackedResult()).UnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
 
         }
