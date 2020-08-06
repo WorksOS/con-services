@@ -299,6 +299,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
             palette.Add(new ColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1], NO_CCV));
 
+            palette.Reverse();
+
             break;
           }
         case DisplayMode.TemperatureDetail:
