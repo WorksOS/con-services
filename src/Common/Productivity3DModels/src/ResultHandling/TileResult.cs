@@ -24,8 +24,9 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <returns>Returns an empty <see cref="TileResult"/> object.</returns>
     public static TileResult EmptyTile(int width, int height)
     {
-      using (Bitmap bitmap = new Bitmap(width, height))
+      lock (BitmapExtensions.LockObj)
       {
+        using var bitmap = new Bitmap(width, height);
         return new TileResult(bitmap.BitmapToByteArray());
       }
     }
