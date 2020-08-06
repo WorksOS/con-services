@@ -458,7 +458,7 @@ namespace TAGFiles.Tests
       var state = new TAGProcessorStateBase();
       state.HardwareID = Guid.NewGuid().ToString();
       state.MachineType = MachineType.CutterSuctionDredge;
-      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.CB450);
+      state.GetPlatformType().Should().Be(CWSDeviceTypeEnum.TMC);
     }
   }
 }

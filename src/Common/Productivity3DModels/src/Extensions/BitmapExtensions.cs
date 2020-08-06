@@ -6,6 +6,8 @@ namespace VSS.Productivity3D.Models.Extensions
 {
   public static class BitmapExtensions
   {
+    private static object lockObj = new object();
+
     /// <summary>
     /// All public clients of these methods should perform these operations under this global locl=k
     /// SkiaSharp could be an alternative here
@@ -20,7 +22,11 @@ namespace VSS.Productivity3D.Models.Extensions
     public static byte[] BitmapToByteArray(this Bitmap bitmap)
     {
       using var bitmapStream = new MemoryStream();
-      bitmap.Save(bitmapStream, ImageFormat.Png);
+
+      lock (lockObj) {
+        bitmap.Save(bitmapStream, ImageFormat.Png);
+      }
+
       return bitmapStream.ToArray();
     }
   }

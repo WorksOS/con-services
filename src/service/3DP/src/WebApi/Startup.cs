@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.ServiceDiscovery;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -67,6 +69,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
+      services.AddSingleton<ITransferProxyFactory, TransferProxyFactory>();
 
       services.AddTransient<IWebRequest, GracefulWebRequest>();
       services.AddServiceDiscovery();

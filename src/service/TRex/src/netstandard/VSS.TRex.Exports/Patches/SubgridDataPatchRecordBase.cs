@@ -31,8 +31,8 @@ namespace VSS.TRex.Exports.Patches
     /// <param name="subGrid"></param>
     public virtual void Populate(IClientLeafSubGrid subGrid)
     {
-      CellOriginX = (int) subGrid.OriginX;
-      CellOriginY = (int) subGrid.OriginY;
+      CellOriginX = (int)subGrid.OriginX;
+      CellOriginY = (int)subGrid.OriginY;
     }
   }
 }

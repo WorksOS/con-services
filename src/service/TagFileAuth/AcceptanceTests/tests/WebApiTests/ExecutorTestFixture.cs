@@ -25,7 +25,6 @@ namespace WebApiTests
     protected ILogger logger;
     protected IConfigurationStore configStore;
 
-    public static ITagFileAuthProjectProxy tagFileAuthProjectProxy;
     public static ITagFileAuthProjectV5Proxy tagFileAuthProjectV5Proxy;
 
     //// this SNM940 exists on `VSS-TagFileAuth-Alpha` with a valid 3d sub (it's not on Dev)
@@ -52,17 +51,12 @@ namespace WebApiTests
                         .AddTransient<IWebRequest, GracefulWebRequest>()
                         .AddMemoryCache()
                         .AddSingleton<IDataCache, InMemoryDataCache>()
-
-                        .AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>()
                         .AddTransient<ITagFileAuthProjectV5Proxy, TagFileAuthProjectV5Proxy>()
                         .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ExecutorTestFixture>();
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
-      tagFileAuthProjectProxy = serviceProvider.GetRequiredService<ITagFileAuthProjectProxy>();
       tagFileAuthProjectV5Proxy = serviceProvider.GetRequiredService<ITagFileAuthProjectV5Proxy>();
-
-      logger.LogDebug($"{nameof(ExecutorTestFixture)} tagFileAuthProjectProxy null? {tagFileAuthProjectProxy}");
     }
 
     public void Dispose()
