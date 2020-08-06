@@ -72,7 +72,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
             return new TileRenderResponse_Core2
             {
               TileBitmapData = null,
-              ResultStatus = Types.RequestErrorStatus.Exception
+              ResultStatus = render.ResultStatus
             };
           }
 
