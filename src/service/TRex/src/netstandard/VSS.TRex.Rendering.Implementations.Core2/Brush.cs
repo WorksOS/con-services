@@ -12,20 +12,38 @@ namespace VSS.TRex.Rendering.Implementations.Core2
 
     internal Brush(Draw.Color color)
     {
-      container = new Draw.SolidBrush(color);
+      lock (RenderingLock.Lock)
+      {
+        container = new Draw.SolidBrush(color);
+      }
     }
 
     internal Brush(Draw.Brush brush)
     {
-      container = (Draw.SolidBrush)brush;
+      lock (RenderingLock.Lock)
+      {
+        container = (Draw.SolidBrush)brush;
+      }
     }
 
     public Draw.Color Color
     {
-      get => container.Color;
-      set => container.Color = value;
-    }
+      get
+      {
+        lock (RenderingLock.Lock)
+        {
+          return container.Color;
+        }
+      }
 
+      set
+      {
+        lock (RenderingLock.Lock)
+        {
+          container.Color = value;
+        }
+      }
+    }
 
     public void Dispose()
     {
