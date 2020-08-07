@@ -44,10 +44,13 @@ namespace VSS.TRex.Rendering.Implementations.Core2
     {
       lock (RenderingLock.Lock)
       {
-          return new TileRenderResponse_Core2_Obsolete
+        lock (BitmapExtensions.LockObj)
         {
-          TileBitmapData = ((Draw.Bitmap)bmp)?.BitmapToByteArray()
-        };
+          return new TileRenderResponse_Core2
+          {
+            TileBitmapData = ((Draw.Bitmap)bmp)?.BitmapToByteArray()
+          };
+        }
       }
     }
   }
