@@ -66,7 +66,9 @@ namespace VSS.TRex.Tests.SubGrids
         new LiftParameters()
         );
 
-      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height);
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGridEx
+        (GridDataType.Height, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeLevels,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
 
       var result = retriever.RetrieveSubGrid(clientGrid, SubGridTreeBitmapSubGridBits.FullMask, out var seiveFilterInUse,
         () => 
@@ -81,7 +83,8 @@ namespace VSS.TRex.Tests.SubGrids
 
       result.Should().Be(ServerRequestResult.NoError);
       seiveFilterInUse.Should().BeFalse();
-      clientGrid.CountNonNullCells().Should().Be(1);
+      clientGrid.FilterMap.CountBits().Should().Be(1); // Only asking for the one cell...
+      clientGrid.CountNonNullCells().Should().Be(1024); // All cells should be returned
     }
 
     [Fact]
@@ -105,7 +108,9 @@ namespace VSS.TRex.Tests.SubGrids
         new LiftParameters()
         );
 
-      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height);
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGridEx
+        (GridDataType.Height, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeLevels,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
 
       var result = retriever.RetrieveSubGrid(clientGrid, SubGridTreeBitmapSubGridBits.FullMask, out var seiveFilterInUse,
         () =>
@@ -120,7 +125,8 @@ namespace VSS.TRex.Tests.SubGrids
 
       result.Should().Be(ServerRequestResult.NoError);
       seiveFilterInUse.Should().BeFalse();
-      clientGrid.CountNonNullCells().Should().Be(1);
+      clientGrid.FilterMap.CountBits().Should().Be(1); // Only asking for the one cell...
+      clientGrid.CountNonNullCells().Should().Be(1024); // All cells should be returned
     }
 
 
@@ -145,8 +151,10 @@ namespace VSS.TRex.Tests.SubGrids
         new LiftParameters()
         );
 
-      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(GridDataType.Height);
-
+      var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGridEx
+        (GridDataType.Height, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeLevels,
+        SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
+     
       var overrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
       overrideMask[10, 10] = true; // This does not overlap the filter but should still return a result
 
@@ -163,7 +171,8 @@ namespace VSS.TRex.Tests.SubGrids
 
       result.Should().Be(ServerRequestResult.NoError);
       seiveFilterInUse.Should().BeFalse();
-      clientGrid.CountNonNullCells().Should().Be(1);
+      clientGrid.FilterMap.CountBits().Should().Be(1); // Only asking for the one cell...
+      clientGrid.CountNonNullCells().Should().Be(1024); // All cells should be returned
     }
   }
 }
