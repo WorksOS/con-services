@@ -4,7 +4,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.DI;
-using VSS.TRex.Rendering.Abstractions;
 
 namespace VSS.TRex.Tests.TestFixtures
 {

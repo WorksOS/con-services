@@ -99,20 +99,20 @@ namespace VSS.TRex.Tests.Rendering.Requests
     protected void CheckSimpleRenderTileResponse(TileRenderResponse response, DisplayMode? displayMode = null, string fileName = "", string compareToFile = "")
     {
       response.Should().NotBeNull();
-      response.Should().BeOfType<TileRenderResponse_Core2>();
+      response.Should().BeOfType<TileRenderResponse>();
 
       if (displayMode != null && (displayMode == DisplayMode.CCA || displayMode == DisplayMode.CCASummary))
       {
         response.ResultStatus.Should().Be(RequestErrorStatus.FailedToGetCCAMinimumPassesValue);
-        ((TileRenderResponse_Core2)response).TileBitmapData.Should().BeNull();
+        ((TileRenderResponse)response).TileBitmapData.Should().BeNull();
       }
       else
       {
         response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-        ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
+        ((TileRenderResponse)response).TileBitmapData.Should().NotBeNull();
 
         // Convert the response into a bitmap
-        var bmp = SKBitmap.Decode(((TileRenderResponse_Core2)response).TileBitmapData);
+        var bmp = SKBitmap.Decode(((TileRenderResponse)response).TileBitmapData);
 
         bmp.Should().NotBeNull();
         bmp.Height.Should().Be(256);

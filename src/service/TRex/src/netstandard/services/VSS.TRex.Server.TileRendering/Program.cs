@@ -167,7 +167,7 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
-        typeof(VSS.TRex.Rendering.GridFabric.Responses.TileRenderResponse_Core2),
+        typeof(VSS.TRex.Rendering.GridFabric.Responses.TileRenderResponse),
         typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
       };
 

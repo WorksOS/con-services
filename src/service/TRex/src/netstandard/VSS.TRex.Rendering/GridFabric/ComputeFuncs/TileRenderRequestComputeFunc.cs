@@ -69,7 +69,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
           {
             _log.LogInformation("Null bitmap returned by executor");
 
-            return new TileRenderResponse_Core2
+            return new TileRenderResponse
             {
               TileBitmapData = null,
               ResultStatus = render.ResultStatus
@@ -81,7 +81,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
           using var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
           data.SaveTo(stream);
 
-          return new TileRenderResponse_Core2
+          return new TileRenderResponse
           {
             TileBitmapData = stream.ToArray(),
             ResultStatus = render.ResultStatus

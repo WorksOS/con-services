@@ -76,7 +76,7 @@ namespace VSS.TRex.Webtools.Controllers
         pixelsY,
         filters,
         new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0)
-      )) as TileRenderResponse_Core2;
+      ));
 
       return new JsonResult(new TileResult(response?.TileBitmapData));
     }

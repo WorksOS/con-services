@@ -81,7 +81,7 @@ namespace VSS.TRex.Gateway.Common.Executors
             ? new FilterSet(ConvertFilter(request.Filter1, siteModel))
             : new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
           new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0)
-        )) as TileRenderResponse_Core2;
+        ));
 
       return new TileResult(response?.TileBitmapData);
     }
