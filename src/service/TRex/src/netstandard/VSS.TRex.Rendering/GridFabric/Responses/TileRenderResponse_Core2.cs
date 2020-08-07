@@ -1,12 +1,9 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Rendering.Abstractions.GridFabric.Responses;
-using VSS.TRex.Rendering.GridFabric.Responses;
-using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.GridFabric.Responses
 {
@@ -26,21 +23,9 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
       return null;
     }
 
-    public override void SetBitmap(object bitmap)
-    {
-      lock (RenderingLock.Lock)
-      {
-        lock (BitmapExtensions.LockObj)
-        {
-          TileBitmapData = ((Draw.Bitmap)bitmap)?.BitmapToByteArray();
-        }
-      }
-    }
-
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
       try
@@ -66,7 +51,6 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
       try
