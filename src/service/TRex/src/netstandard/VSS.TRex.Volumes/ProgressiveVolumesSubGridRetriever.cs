@@ -152,7 +152,7 @@ namespace VSS.TRex.Volumes
     /// Custom implementation for retrieving stripes of progressive volume cells
     /// </summary>
     /// <param name="stripeIndex"></param>
-    public override void RetrieveSubGridStripe(byte stripeIndex)
+    protected override void RetrieveSubGridStripe(byte stripeIndex)
     {
       // Iterate over the cells in the sub grid applying the filter and assigning the requested information into the sub grid
       for (byte j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)

@@ -144,7 +144,7 @@ namespace VSS.TRex.Designs.SVL
 
         if (DistA < Epsilon || DistB < SmallEpsilon || DistC < SmallEpsilon ||
             // Cosine rule
-            (DistB * DistB + DistC * DistC - DistA + DistA) / (2 * DistB * DistC) > Math.Cos(MinimumRoadFenceAngle * (Math.PI / 180)))
+            (DistB * DistB + DistC * DistC - DistA * DistA) / (2 * DistB * DistC) > Math.Cos(MinimumRoadFenceAngle * (Math.PI / 180)))
         {
           fence.Points.RemoveAt(I);
           if (Increment == 1)
