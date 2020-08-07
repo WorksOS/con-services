@@ -67,16 +67,20 @@ jobs:
     steps:
     - checkout: self
       fetchDepth: 1
-    - task: PowerShell@2
-      displayName: 'Remove WebTools project'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
       inputs:
-        targetType: 'inline'
-        script: 'dotnet sln $(rootServiceFolder)/TRex/TRex.netstandard.sln remove $(rootServiceFolder)/TRex/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj'
-    - template: templates/build-service.yaml
-      parameters:
-        servicePath: '$(rootServiceFolder)/TRex'
-        solution: 'TRex.netstandard.sln'
-        testFolder: 'tests'
+        command: 'build'
+        projects: '${{ parameters.servicePath }}/${{ parameters.solution }}'
+        arguments: '-nowarn:NU1701 -nowarn:CS1591'
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test'
+      inputs:
+        command: test
+        projects: '${{ parameters.servicePath }}/${{ parameters.solution }}'
+        arguments: '-nowarn:NU1701 -nowarn:CS1591'
 
   - job: BuildWebTools
     displayName: 'Build TRex WebTools'
