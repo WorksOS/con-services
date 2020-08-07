@@ -10,7 +10,6 @@ namespace VSS.TRex.Logging
   /// </summary>
   public class TRexIgniteLogger : Apache.Ignite.Core.Log.ILogger
   {
-    /// Wrapped logger.
     private readonly ILogger _logger;
 
     /// <summary>
@@ -59,7 +58,8 @@ namespace VSS.TRex.Logging
     /// </returns>
     public bool IsEnabled(Apache.Ignite.Core.Log.LogLevel level)
     {
-      return (level > LogLevel.Debug) && (_logger?.IsEnabled(ConvertLogLevel2(level)) ?? false);
+      //      return /*(level > LogLevel.Debug) && */ (_logger?.IsEnabled(ConvertLogLevel2(level)) ?? false);
+      return _logger?.IsEnabled(ConvertLogLevel2(level)) ?? false;
     }
     
     /// <summary>
