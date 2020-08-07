@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using VSS.Common.Abstractions.Configuration;
 using LogLevel = Apache.Ignite.Core.Log.LogLevel;
 
 namespace VSS.TRex.Logging
@@ -10,15 +11,28 @@ namespace VSS.TRex.Logging
   /// </summary>
   public class TRexIgniteLogger : Apache.Ignite.Core.Log.ILogger
   {
+    private readonly LogLevel _minLogLevel;
     private readonly ILogger _logger;
 
     /// <summary>
     /// Initializes a new instance of the TRexIgniteLogger class with the provided ILog interface
     /// </summary>
     /// <param name="logger"></param>
-    public TRexIgniteLogger(Microsoft.Extensions.Logging.ILogger logger)
+    public TRexIgniteLogger(IConfigurationStore configStore, Microsoft.Extensions.Logging.ILogger logger)
     {
       _logger = logger;
+      var level = configStore.GetValueInt("TREX_IGNITE_MIN_LOG_LEVEL", (int) LogLevel.Info);
+      if (level < (int) LogLevel.Trace || level > (int) LogLevel.Error)
+      {
+        _logger.LogWarning($"Invalid log level {level} provided. Must be between {(int)LogLevel.Trace} ({LogLevel.Trace}) and {(int)LogLevel.Error} ({LogLevel.Error}). Defaulting to {LogLevel.Info}");
+        _minLogLevel = LogLevel.Info;
+      }
+      else
+      {
+        _minLogLevel = (LogLevel) level;
+      }
+
+      _logger.LogInformation($"Minimum log level for Ignite: {_minLogLevel}");
     }
 
     /// <summary>Logs the specified message.</summary>
@@ -58,8 +72,7 @@ namespace VSS.TRex.Logging
     /// </returns>
     public bool IsEnabled(Apache.Ignite.Core.Log.LogLevel level)
     {
-      //      return /*(level > LogLevel.Debug) && */ (_logger?.IsEnabled(ConvertLogLevel2(level)) ?? false);
-      return _logger?.IsEnabled(ConvertLogLevel2(level)) ?? false;
+      return (level >= _minLogLevel);
     }
     
     /// <summary>
