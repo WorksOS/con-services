@@ -30,7 +30,10 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
     {
       lock (RenderingLock.Lock)
       {
-        TileBitmapData = ((Draw.Bitmap)bitmap)?.BitmapToByteArray();
+        lock (BitmapExtensions.LockObj)
+        {
+          TileBitmapData = ((Draw.Bitmap)bitmap)?.BitmapToByteArray();
+        }
       }
     }
 
