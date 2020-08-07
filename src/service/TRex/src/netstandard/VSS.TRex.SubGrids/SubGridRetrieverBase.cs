@@ -118,7 +118,7 @@ namespace VSS.TRex.SubGrids
       _canUseGlobalLatestCells = _filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
     }
 
-    public abstract void RetrieveSubGridStripe(byte stripeIndex);
+    protected abstract void RetrieveSubGridStripe(byte stripeIndex);
 
     /// <summary>
     /// Performs extraction of specific attributes from a GlobalLatestCells structure depending on the type of
