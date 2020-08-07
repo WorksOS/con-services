@@ -518,7 +518,7 @@ namespace VSS.Productivity3D.Models.Models
       AlignmentFile = alignmentFile;
       StartStation = filter?.StartStation;
       EndStation = filter?.EndStation;
-      LeftOffset = filter?.LeftOffset;
+      LeftOffset = -filter?.LeftOffset;//TRex expects left offsets on the left to be negative, if the left offset is already negative this will make it positive and on the right which is correct.
       RightOffset = filter?.RightOffset;
       LayerType = layerType;
       LayerNumber = filter?.LayerNumber;
