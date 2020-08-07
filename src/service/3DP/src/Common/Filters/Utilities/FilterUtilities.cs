@@ -1,5 +1,7 @@
-﻿using VSS.Productivity3D.Models.Enums;
+﻿using System;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.TRex.Common;
 
 namespace VSS.Productivity3D.Common.Filters.Utilities
 {
@@ -20,7 +22,7 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
 
         // Adjust the base filter accordingly
         baseFilter.EndUtc = baseFilter.StartUtc;
-        baseFilter.StartUtc = null;
+        baseFilter.StartUtc = Consts.MIN_DATETIME_AS_UTC;
         baseFilter.ReturnEarliest = false;
         baseFilter.ElevationType = null;
       }

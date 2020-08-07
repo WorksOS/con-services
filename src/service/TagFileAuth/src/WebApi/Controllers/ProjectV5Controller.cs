@@ -1,12 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
@@ -114,8 +112,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [Route("internal/v5/project/getUids")]
     [HttpPost]
     public async Task<GetProjectUidsResult> GetProjectUids(
-      [FromBody]GetProjectUidsRequest request,
-      [FromServices] ICustomRadioSerialProjectMap customRadioSerialProjectMap)
+      [FromBody]GetProjectUidsRequest request)
     {
       Logger.LogDebug($"{nameof(GetProjectUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();

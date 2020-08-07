@@ -51,10 +51,10 @@ namespace VSS.Productivity3D.TagFileAuth.Models
 
       // if it has a projectUid, then it's a manual import and must have either assetUid or radio/dt  
       if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParse(ProjectUid, out var projectUid))
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(ProjectUid, uniqueCode: 36));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectUidsResult.FormatResult(ProjectUid, uniqueCode: 36));
      
       if (!HasLatLong && !HasNE)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 54));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectUidsResult.FormatResult(uniqueCode: 54));
       
       // NE can be negative and zero
     }
