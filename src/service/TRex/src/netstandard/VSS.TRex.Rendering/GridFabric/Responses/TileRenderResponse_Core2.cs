@@ -28,7 +28,10 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
 
     public override void SetBitmap(object bitmap)
     {
-      TileBitmapData = ((Draw.Bitmap)bitmap)?.BitmapToByteArray();
+      lock (RenderingLock.Lock)
+      {
+        TileBitmapData = ((Draw.Bitmap)bitmap)?.BitmapToByteArray();
+      }
     }
 
     /// <summary>
@@ -44,7 +47,7 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
         VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
         writer.WriteBoolean(TileBitmapData != null);
-        writer.WriteByteArray(TileBitmapData);    
+        writer.WriteByteArray(TileBitmapData);
       }
       catch (TRexSerializationVersionException e)
       {

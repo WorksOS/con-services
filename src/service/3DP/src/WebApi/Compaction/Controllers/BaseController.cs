@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private IFilterServiceProxy filterServiceProxy;
     private IProjectSettingsProxy projectSettingsProxy;
     private ITRexCompactionDataProxy tRexCompactionDataProxy;
-    private ITagFileAuthProjectProxy tagFileAuthProjectProxy;
+    private ITagFileAuthProjectV5Proxy tagFileAuthProjectV5Proxy;
     private IServiceExceptionHandler serviceExceptionHandler;
 
     /// <summary>
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the tagfile authorization proxy interface.
     /// </summary>
-    protected ITagFileAuthProjectProxy TagFileAuthProjectProxy => tagFileAuthProjectProxy ?? (tagFileAuthProjectProxy = HttpContext.RequestServices.GetService<ITagFileAuthProjectProxy>());
+    protected ITagFileAuthProjectV5Proxy TagFileAuthProjectV5Proxy => tagFileAuthProjectV5Proxy ?? (tagFileAuthProjectV5Proxy = HttpContext.RequestServices.GetService<ITagFileAuthProjectV5Proxy>());
 
     /// <summary>
     /// helper methods for getting project statistics from Raptor/TRex
@@ -379,12 +379,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return ps;
     }
 
-    protected async Task<FilterResult> SetupCompactionFilter(Guid projectUid, BoundingBox2DGrid boundingBox)
+    protected FilterResult SetupCompactionFilter(Guid projectUid, BoundingBox2DGrid boundingBox)
     {
-      var filterResult = await GetCompactionFilter(projectUid, null, false);
-
-      if (filterResult == null)
-        filterResult = new FilterResult();
+      var filterResult = new FilterResult();
       filterResult.SetBoundary(new List<Point>
       {
         new Point(boundingBox.BottomleftY, boundingBox.BottomLeftX),

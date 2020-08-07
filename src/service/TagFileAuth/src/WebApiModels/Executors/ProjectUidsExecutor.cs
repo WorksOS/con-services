@@ -30,9 +30,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///
     ///  TFA v5 no longer has radio/deviceType -> Asset/Project map to cover special cases
     ///     Radio serial no longer supported as not available in cws
-    ///
-    /// todoJeannie remove customSerialNumberMapping
-    /// todoJeannie remove old execs etc
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -45,7 +42,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       var device = await dataRepository.GetDevice(request.PlatformSerial);
       var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: {contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
-      log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by PlatformSerial?: {request.PlatformSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
+      log.LogDebug($"{nameof(ProjectUidsExecutor)}: Found by PlatformSerial?: {request.PlatformSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, device);
@@ -96,8 +93,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
       var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(request, device, out var errorCode);
-
-      log.LogDebug($"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
+      log.LogDebug($"{nameof(HandleAutoImport)}: potentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.ProjectDescriptors.Any())
         return GetProjectUidsResult.FormatResult(deviceUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: errorCode);

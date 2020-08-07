@@ -261,5 +261,32 @@ tolerations:
     effect: "NoSchedule"
   none: []
 
+#Ports that trex uses, at some point we may split this into im/mutable mappings
+trexPorts:
+- containerPort: 80
+  name: http
+- containerPort: 8080 
+  name: igniterestapi
+- containerPort: 8088
+  name: jmxprometheus
+- containerPort: 47100
+  name: spicoms
+- containerPort: 47500
+  name: spidisco
+- containerPort: 48100
+  name: spicommsmutable
+- containerPort: 48500
+  name: spidiscomutable
+- containerPort: 49112
+  name: ignitejmx
+- containerPort: 10800
+  name: ignitesql
+- containerPort: 11211
+  name: mutablecoms
+- containerPort: 11212
+  name: immutablecoms
+
+
+
 
 affinity: {}

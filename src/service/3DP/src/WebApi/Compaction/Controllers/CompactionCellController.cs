@@ -89,20 +89,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
 
     /// <summary>
-    /// Gets a single patch of subgrids for the project at the machines lat/long. 
+    /// Gets a single patch of sub-grids for the project at the machines lat/long. 
     /// </summary>
     /// <remarks>
     /// This endpoint is expected to be used by machine based devices requesting latest elevation and machine times.
-    /// The area required is indicated by the bounding box, which is limited to 500m2.
-    /// The response patch of subgrids is lean and decorated for use with Protobuf-net.
+    /// The area required is indicated by the bounding box, which is limited to MAX_BOUNDARY_SQUARE_METERSm2.
+    /// The response patch of sub-grids is lean and decorated for use with Protobuf-net.
     ///     See GeneratePatchResultProtoFile unit test for generating .proto file for injest by client.
     /// </remarks>
     [HttpGet("api/v2/device/patches")]
-    public async Task<IActionResult> GetSubGridPatches(string ecSerial, string radioSerial, string tccOrgUid,
+    public async Task<IActionResult> GetSubGridPatches(string ecSerial,
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
     {
-      var patchesRequest = new PatchesRequest(ecSerial, radioSerial, tccOrgUid, machineLatitude, machineLongitude,
+      var patchesRequest = new PatchesRequest(ecSerial, machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       Log.LogInformation($"{nameof(GetSubGridPatches)}: {JsonConvert.SerializeObject(patchesRequest)}");
 
@@ -111,32 +111,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       patchesRequest.Validate();
 
-      var requestPatchId = 0;
-      var requestPatchSize = 1000; // max # subgrids to scan
-      var requestIncludeTimeOffsets = true;
-
       // identify VSS projectUid and CustomerUid
-      var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectProxy);
-      var tfaResult = await tfaHelper.GetProjectUid(patchesRequest.RadioSerial, patchesRequest.ECSerial,
-        patchesRequest.TccOrgUid, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude);
+      var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectV5Proxy);
+      var tfaResult = await tfaHelper.GetProjectUid(patchesRequest.ECSerial, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude);
 
-      if (tfaResult?.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid) || string.IsNullOrEmpty(tfaResult.CustomerUid))
+      if (tfaResult.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid) || string.IsNullOrEmpty(tfaResult.CustomerUid))
       {
-        var errorMessage = $"Unable to identify a unique project or customer. Error code: {tfaResult?.Code} ProjectUid: {tfaResult?.ProjectUid} AssetUid: {tfaResult?.AssetUid} CustomerUid: {tfaResult?.CustomerUid}";
+        var errorMessage = $"Unable to identify a unique project or customer. Result: {JsonConvert.SerializeObject(tfaResult)}";
         Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
+        return BadRequest(new ContractExecutionResult(tfaResult.Code, errorMessage));
       }
-
-      // rules to be determined if returns a projectUid but HasValidSub = false. 
-      //       e.g. Can Raptor/TRex return only ground from surveyedSurfaces, and NOT productionData?
-      // as per Dimitry on 6Nov2019 we allow if project found, even if no subscription
-      //if (!string.IsNullOrEmpty(tfaResult.ProjectUid) && !tfaResult.HasValidSub)
-      //{
-      //  var errorMessage = $"Unique project was found, however no valid subscription was found. ProjectUid: {tfaResult?.ProjectUid} AssetUid: {tfaResult?.AssetUid} CustomerUid: {tfaResult?.CustomerUid}";
-      //  Log.LogInformation(errorMessage);
-      //  return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
-      //}
-
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
       // Set customerUid for downstream service calls e.g. ProjectSvc
@@ -144,20 +128,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (((RaptorPrincipal)User).SetCustomerUid(tfaResult.CustomerUid))
         Request.Headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID] = tfaResult.CustomerUid;
 
-      var projectUid = Guid.Parse(tfaResult.ProjectUid);
-      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-
-      // CTCT endpoint has no UserId so won't get any excludedSSs.
+      // this endpoint has no UserId so excludedSSs and targets are not relevant
       var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);
-      var projectSettings = GetProjectSettingsTargets(projectUid);
-      await Task.WhenAll(filter, projectSettings);
 
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
-      Log.LogDebug($"{nameof(GetSubGridPatches)}: projectId: {projectId.Result} filter: {JsonConvert.SerializeObject(filter)} projectSettings: {JsonConvert.SerializeObject(projectSettings)} liftSettings: {JsonConvert.SerializeObject(liftSettings)}");
+      var liftSettings = SettingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
+      Log.LogDebug($"{nameof(GetSubGridPatches)}: filter: {JsonConvert.SerializeObject(filter)} liftSettings: {JsonConvert.SerializeObject(liftSettings)}");
 
+      var requestPatchId = 0;
+      var requestPatchSize = 1000; // max # sub-grids to scan
+      var requestIncludeTimeOffsets = true;
       var patchRequest = new PatchRequest(
-        projectId.Result,
-        projectUid,
+        null, // obsolete
+        Guid.Parse(tfaResult.ProjectUid),
         new Guid(),
         DisplayMode.Height,
         null,
@@ -165,17 +147,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         false,
         VolumesType.None,
         VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
-        null, filter.Result, null, FilterLayerMethod.AutoMapReset,
+        null, filter, null, FilterLayerMethod.AutoMapReset,
         requestPatchId, requestPatchSize, requestIncludeTimeOffsets);
 
       patchRequest.Validate();
 
       var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
         .Build<CompactionSinglePatchExecutor>(LoggerFactory,
-#if RAPTOR
-          RaptorClient,
-#endif
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .ProcessAsync(patchRequest));
 
       return Ok(v2PatchRequestResponse);
