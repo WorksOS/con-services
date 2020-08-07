@@ -46,7 +46,7 @@ namespace VSS.TRex.Tests.SubGrids
     }
 
     [Fact]
-    public void SubGridForCachine_IgnoresFilterMask_WithNoOverrideMaskRetriction()
+    public void SubGridForCaching_IgnoresFilterMask_WithNoOverrideMaskRetriction()
     {
       var siteModel = BuildModelForSubGridRequest();
 
@@ -88,7 +88,7 @@ namespace VSS.TRex.Tests.SubGrids
     }
 
     [Fact]
-    public void SubGridForCachine_IgnoresFilterMask_WithFullOverrideMaskRetriction()
+    public void SubGridForCaching_IgnoresFilterMask_WithFullOverrideMaskRetriction()
     {
       var siteModel = BuildModelForSubGridRequest();
 
@@ -131,7 +131,7 @@ namespace VSS.TRex.Tests.SubGrids
 
 
     [Fact]
-    public void SubGridForCachine_IgnoresFilterMask_WithPartialNonOverlappingOverrideMaskRetriction()
+    public void SubGridForCaching_IgnoresFilterMask_WithPartialNonOverlappingOverrideMaskRetriction()
     {
       var siteModel = BuildModelForSubGridRequest();
 
