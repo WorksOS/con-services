@@ -72,6 +72,8 @@ namespace VSS.TRex.SubGrids
 
     private SurveyedSurfacePatchType _surveyedSurfacePatchType;
 
+    private bool _haveComputedSpatialFilterMaskAndClientProdDataMap;
+
     /// <summary>
     /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
     /// and initializes the requester state ready to start processing individual sub grid requests.
@@ -247,6 +249,11 @@ namespace VSS.TRex.SubGrids
           // Check the cache supplied a tpe of sub grid we can use. If not (due to an issue), ignore the returned item and request the result directly
           if (_clientGrid.SupportsAssignationFrom(cachedSubGrid.GridDataType))
           {
+            _clientGrid.ProdDataMap.Assign(cachedSubGrid.ProdDataMap);
+            var innerResult = ComputeSpatialFilterMaskAndClientProdDataMap();
+            if (innerResult != ServerRequestResult.NoError)
+              return innerResult;
+
             // Use the filter mask to copy the relevant cells from the cache to the client sub grid
             _clientGrid.AssignFromCachedPreProcessedClientSubGrid(cachedSubGrid, _clientGrid.FilterMap);
 
@@ -257,7 +264,7 @@ namespace VSS.TRex.SubGrids
         }
       }
 
-      var result = _retriever.RetrieveSubGrid(_clientGrid, CellOverrideMask, out var sieveFilterInUse);
+      var result = _retriever.RetrieveSubGrid(_clientGrid, CellOverrideMask, out var sieveFilterInUse, ComputeSpatialFilterMaskAndClientProdDataMap);
 
       // If a sub grid was retrieved and this is a supported data type in the cache then add it to the cache
       // If the sub grid does not support assignation from a precomputed sub grid then just return the result with 
@@ -303,6 +310,18 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     private async Task<ServerRequestResult> PerformHeightAnnotation()
     {
+      if (!_haveComputedSpatialFilterMaskAndClientProdDataMap)
+      {
+        // At this point, the prod data map will be empty. Fill it here so the filter has something to filter against...
+        _clientGrid.ProdDataMap.Fill();
+      }
+
+      if (!_haveComputedSpatialFilterMaskAndClientProdDataMap && (ComputeSpatialFilterMaskAndClientProdDataMap() != ServerRequestResult.NoError))
+      {
+        ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
+        return ServerRequestResult.FilterInitialisationFailure;
+      }
+
       if ((_filteredSurveyedSurfaces?.Count ?? 0) == 0)
       {
         return ServerRequestResult.NoError;
@@ -366,6 +385,25 @@ namespace VSS.TRex.SubGrids
       return result;
     }
 
+    private ServerRequestResult ComputeSpatialFilterMaskAndClientProdDataMap()
+    {
+      if (_haveComputedSpatialFilterMaskAndClientProdDataMap)
+      {
+        return ServerRequestResult.NoError;
+      }
+
+      if (!SubGridFilterMasks.ConstructSubGridCellFilterMask(_clientGrid, _siteModel, _filter, CellOverrideMask,
+          _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction, _clientGrid.ProdDataMap, _clientGrid.FilterMap))
+      {
+        return ServerRequestResult.FailedToComputeDesignFilterPatch;
+      }
+
+      ModifyFilterMapBasedOnAdditionalSpatialFiltering();
+      _haveComputedSpatialFilterMaskAndClientProdDataMap = true;
+
+      return ServerRequestResult.NoError;
+    }
+
     /// <summary>
     /// Responsible for coordinating the retrieval of production data for a sub grid from a site model and also annotating it with
     /// surveyed surface information for requests involving height data.
@@ -399,29 +437,28 @@ namespace VSS.TRex.SubGrids
       if (ShouldInitialiseFilterContext() && !await InitialiseFilterContext())
       {
         result.requestResult = ServerRequestResult.FilterInitialisationFailure;
+        ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
         return result;
       }
 
-      if (!SubGridFilterMasks.ConstructSubGridCellFilterMask(_clientGrid, _siteModel, _filter, CellOverrideMask,
-        _hasOverrideSpatialCellRestriction, _overrideSpatialCellRestriction, _clientGrid.ProdDataMap, _clientGrid.FilterMap))
-      {
-        result.requestResult = ServerRequestResult.FailedToComputeDesignFilterPatch;
-        ClientLeafSubGridFactory.ReturnClientSubGrid(ref result.clientGrid);
-        return result;
-      }
-
-      ModifyFilterMapBasedOnAdditionalSpatialFiltering();
+      _haveComputedSpatialFilterMaskAndClientProdDataMap = false;
 
       if (_prodDataRequested)
       {
         if ((result.requestResult = PerformDataExtraction()) != ServerRequestResult.NoError)
+        {
+          ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
           return result;
+        }
       }
 
       if (_surveyedSurfaceDataRequested)
       {
-        // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis. TODO: Is this another repeat of the cell filter map construction logic? FIX?
-        result.requestResult = await PerformHeightAnnotation();
+        if ((result.requestResult = await PerformHeightAnnotation()) != ServerRequestResult.NoError)
+        {
+          ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
+          return result;
+        }
       }
 
       // Reassign _clientGrid to result as its reference may have been changed as a result of caching.

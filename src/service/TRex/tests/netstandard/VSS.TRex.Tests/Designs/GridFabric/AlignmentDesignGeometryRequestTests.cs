@@ -43,7 +43,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     [Fact]
     public void Creation()
     {
-      var request = new AlignmentDesignFilterBoundaryRequest();
+      var request = new AlignmentDesignGeometryRequest();
 
       request.Should().NotBeNull();
     }

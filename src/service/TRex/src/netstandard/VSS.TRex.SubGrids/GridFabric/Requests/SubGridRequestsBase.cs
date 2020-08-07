@@ -7,6 +7,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -89,6 +90,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// </summary>
         public Action<TSubGridsRequestArgument> CustomArgumentInitializer { get; set; }
 
+        public SubGridsRequestComputeStyle SubGridsRequestComputeStyle { get; set; } = SubGridsRequestComputeStyle.Normal;
+
         /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
         /// of sub grid processing is returned as a set of partitioned results from the Broadcast() invocation.
@@ -121,7 +124,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                                    IFilterSet filters,
                                    DesignOffset referenceDesign,
                                    AreaControlSet areaControlSet,
-                                   Action<TSubGridsRequestArgument> customArgumentInitializer) : this()
+                                   Action<TSubGridsRequestArgument> customArgumentInitializer,
+                                   SubGridsRequestComputeStyle subGridsRequestComputeStyle) : this()
         {
             TRexTask = tRexTask;
             SiteModelID = siteModelID;
@@ -135,12 +139,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             ReferenceDesign = referenceDesign;
             AreaControlSet = areaControlSet;
             CustomArgumentInitializer = customArgumentInitializer;
+            SubGridsRequestComputeStyle = SubGridsRequestComputeStyle;
         }
 
         /// <summary>
         /// Unpacks elements of the request argument that are represented as byte arrays in the Ignite request
         /// </summary>
-        /// <returns></returns>
         protected void PrepareArgument()
         {
             var originatingIgniteNodeId = Ignite.GetCluster().GetLocalNode().Id;
@@ -158,7 +162,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 OriginatingIgniteNodeId = originatingIgniteNodeId,
                 TRexNodeID = TRexNodeId,
                 ReferenceDesign = ReferenceDesign,
-                AreaControlSet = AreaControlSet
+                AreaControlSet = AreaControlSet,
+                SubGridsRequestComputeStyle = SubGridsRequestComputeStyle
             };
 
             CustomArgumentInitializer?.Invoke(arg);

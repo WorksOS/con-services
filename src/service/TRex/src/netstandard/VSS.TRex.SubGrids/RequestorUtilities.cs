@@ -103,8 +103,7 @@ namespace VSS.TRex.SubGrids
           var context2 = SubGridCache?.LocateOrCreateContext(siteModel.ID, contextType2,
             SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, contextType2, filter, filteredSurveyedSurfacesAsArray));
 
-          if (context1 != null || context2 != null)
-            subGridCacheContexts = new[] {context1, context2}.Where(x => x != null).ToArray();
+          subGridCacheContexts = new[] {context1, context2}.Where(x => x != null).ToArray();
         }
 
         return (gridDataType,
@@ -112,7 +111,7 @@ namespace VSS.TRex.SubGrids
           filteredSurveyedSurfaces,
           _surfaceElevationPatchRequestFactory(SubGridCache, SubGridCache?.LocateOrCreateContext(siteModel.ID, GridDataType.SurveyedSurfaceHeightAndTime,
                                 SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, GridDataType.SurveyedSurfaceHeightAndTime, null,
-                                                                                            filteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0]))),
+                                                                             filteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0]))),
           subGridCacheContexts);
       }
 

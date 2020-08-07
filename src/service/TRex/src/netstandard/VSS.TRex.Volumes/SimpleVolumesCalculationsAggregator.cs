@@ -69,6 +69,7 @@ namespace VSS.TRex.Volumes
 
     // FCellsDiscarded records how many cells were discarded because filtered value was null
     public long CellsDiscarded { get; set; }
+
     public double CellSize { get; set; }
     public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
 
@@ -325,7 +326,7 @@ namespace VSS.TRex.Volumes
 
       // Update the quantities in the aggregator proper
       // Note: the lock is not asynchronous as this will be highly non-contended
-      _lock.Wait();
+      await _lock.WaitAsync();
       try
       {
         CellsScanned += localCellsScanned;

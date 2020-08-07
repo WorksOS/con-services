@@ -17,30 +17,29 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   public class TagFileAuthHelper : ITagFileAuthHelper
   {
     private readonly ILogger _logger;
-    private readonly ITagFileAuthProjectProxy _tagFileAuthProjectV4Proxy;
+    private readonly ITagFileAuthProjectV5Proxy _tagFileAuthProjectV5Proxy;
 
     public TagFileAuthHelper(ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      ITagFileAuthProjectProxy tagFileAuthProjectV4Proxy
+      ITagFileAuthProjectV5Proxy tagFileAuthProjectV5Proxy
       )
     {
       _logger = loggerFactory.CreateLogger<TagFileAuthHelper>();
-      _tagFileAuthProjectV4Proxy = tagFileAuthProjectV4Proxy;
+      _tagFileAuthProjectV5Proxy = tagFileAuthProjectV5Proxy;
     }
 
     /// <summary>
     /// identify VSS projectUid (and potentially VSS AssetUID)
     /// tfa checks in this order: snm940; snm941; EC520
     /// </summary>
-    public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectUid(string radioSerial, string eCSerial,
-        string ObsoletetccOrgUid, double machineLatitude, double machineLongitude)
+    public async Task<GetProjectUidsResult> GetProjectUid(string eCSerial,
+       double machineLatitude, double machineLongitude)
     {
-      var tfaRequest = new GetProjectAndAssetUidsEarthWorksRequest(eCSerial, radioSerial,
-        machineLatitude, machineLongitude, DateTime.UtcNow);
+      var tfaRequest = new GetProjectUidsEarthWorksRequest(eCSerial, machineLatitude, machineLongitude);
 
-      GetProjectAndAssetUidsEarthWorksResult result;
+      GetProjectUidsResult result;
       try
       {
-        result = await _tagFileAuthProjectV4Proxy.GetProjectAndAssetUidsEarthWorks(tfaRequest);
+        result = await _tagFileAuthProjectV5Proxy.GetProjectUidsEarthWorks(tfaRequest);
       }
       catch (Exception e)
       {

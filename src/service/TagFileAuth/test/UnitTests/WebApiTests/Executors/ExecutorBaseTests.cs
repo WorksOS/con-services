@@ -10,7 +10,6 @@ using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
@@ -44,8 +43,7 @@ namespace WebApiTests.Executors
       serviceCollection
         .AddLogging()
         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.TagFileAuth.WepApiTests.log")))
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();

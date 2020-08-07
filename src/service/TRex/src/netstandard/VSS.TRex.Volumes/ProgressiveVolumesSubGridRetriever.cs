@@ -126,7 +126,8 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public override ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask,
-      out bool sieveFilterInUse)
+      out bool sieveFilterInUse,
+      Func<ServerRequestResult> computeSpatialFilterMaskAndClientProdDataMap)
     {
       // Establish the expected number of height layers in the client sub grid
       if (!(clientGrid is IClientProgressiveHeightsLeafSubGrid subGrid))
@@ -144,7 +145,7 @@ namespace VSS.TRex.Volumes
 
       _progressiveClientSubGrid.NumberOfHeightLayers = numHeightLayers; 
 
-      return base.RetrieveSubGrid(clientGrid, cellOverrideMask, out sieveFilterInUse);
+      return base.RetrieveSubGrid(clientGrid, cellOverrideMask, out sieveFilterInUse, computeSpatialFilterMaskAndClientProdDataMap);
     }
 
     /// <summary>

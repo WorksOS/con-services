@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -284,6 +285,16 @@ namespace WebApiTests.Executors
         null,
         expectedResult, expectedCode: 3049, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(49)
       );
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_TestPointInPoly()
+    {
+      var projectGeofenceWKT = "POLYGON((172.72441253557233 -43.525446342866154,172.71803670565257 -43.54241471794758,172.69888222089807 -43.54933739857896,172.7017970337955 -43.55730108381656,172.70991686972403 -43.560996650168654,172.7177552787862 -43.55591609507959,172.7319019494567 -43.55655621592441,172.7376630370601 -43.55649220383993,172.74067160503074 -43.5637255693864,172.74739287390136 -43.566670125272566,172.75552240863058 -43.56359754521743,172.75353803401163 -43.55591609507959,172.7465607168031 -43.55956478389506,172.73913531500318 -43.538760856438415,172.72441253557233 -43.525446342866154))";
+      var latitude = -43.547537;
+      var longitude = 172.711231;
+      var result = PolygonUtils.PointInPolygon(projectGeofenceWKT, latitude, longitude);
+      Assert.IsTrue(result, "should be inside");
     }
 
     private async Task ExecuteAuto(GetProjectUidsRequest request,

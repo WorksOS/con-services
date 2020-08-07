@@ -53,7 +53,7 @@ namespace VSS.TRex.Filters
             // Note: Lat/Lons in filter fence boundaries are supplied to us in decimal degrees, not radians
             for (var fencePointIdx = 0; fencePointIdx < filter.SpatialFilter.Fence.NumVertices; fencePointIdx++)
             {
-              llhCoords[fencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[fencePointIdx].X), MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[fencePointIdx].Y));
+              llhCoords[fencePointIdx] = new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[fencePointIdx].X), MathUtilities.DegreesToRadians(filter.SpatialFilter.Fence[fencePointIdx].Y), 0);
             }
 
             XYZ[] neeCoords;
@@ -84,7 +84,7 @@ namespace VSS.TRex.Filters
           if (filter.SpatialFilter.IsPositional)
           {
             // Note: Lat/Lons in positions are supplied to us in decimal degrees, not radians
-            llhCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY)) };
+            llhCoords = new[] { new XYZ(MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionX), MathUtilities.DegreesToRadians(filter.SpatialFilter.PositionY), 0) };
 
             XYZ[] neeCoords;
 
@@ -118,11 +118,13 @@ namespace VSS.TRex.Filters
           var boundaryResult = boundaryRequest.Execute
           (new AlignmentDesignFilterBoundaryArgument()
           {
+            ProjectID = dataModelId,
             ReferenceDesign = new DesignOffset(filter.SpatialFilter.AlignmentDesignMaskDesignUID, 0),
             StartStation = filter.SpatialFilter.StartStation ?? Common.Consts.NullDouble,
             EndStation = filter.SpatialFilter.EndStation ?? Common.Consts.NullDouble,
             LeftOffset = filter.SpatialFilter.LeftOffset ?? Common.Consts.NullDouble,
-            RightOffset = filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble
+            RightOffset = filter.SpatialFilter.RightOffset ?? Common.Consts.NullDouble,
+            Filters = new FilterSet(new CombinedFilter())
           });
 
           if (boundaryResult.RequestResult != DesignProfilerRequestResult.OK)

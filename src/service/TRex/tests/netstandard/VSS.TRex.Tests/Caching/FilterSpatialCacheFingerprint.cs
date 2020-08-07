@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Caching
     {
       string fp = new CombinedFilter().AttributeFilter.SpatialCacheFingerprint();
 
-      Assert.True(string.IsNullOrEmpty(fp), $"Fingerprint for null filter was not empty, = '{fp}'");
+      Assert.True(fp.Equals("REFCP:0"), $"Fingerprint for null filter was not empty, = '{fp}'");
     }
 
     [Fact]
@@ -37,7 +37,7 @@ namespace VSS.TRex.Tests.Caching
     {
       var filter = CombinedFilter.MakeFilterWith(x => x.AttributeFilter.ReturnEarliestFilteredCellPass = false);
 
-      Assert.False(filter.AttributeFilter.SpatialCacheFingerprint().Contains("REFCP", StringComparison.OrdinalIgnoreCase),
+      Assert.True(filter.AttributeFilter.SpatialCacheFingerprint().Contains("REFCP:0", StringComparison.OrdinalIgnoreCase),
         "Fingerprint contains earliest filtered cell pass ID");
     }
 

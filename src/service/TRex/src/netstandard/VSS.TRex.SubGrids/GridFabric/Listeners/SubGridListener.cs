@@ -13,6 +13,7 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.SubGrids.GridFabric.Listeners
 {
@@ -23,7 +24,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
   /// </summary>
   public class SubGridListener : IMessageListener<ISerialisedByteArrayWrapper>, IBinarizable, IFromToBinary
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridListener>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridListener>();
 
     private const byte VERSION_NUMBER = 1;
 
@@ -45,12 +46,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <summary>
     /// Processes a response containing a set of sub grids from the sub grid processor for a request
     /// </summary>
-    /// <param name="message"></param>
     private void ProcessResponse(ISerialisedByteArrayWrapper message)
     {
       var sw = Stopwatch.StartNew();
       int responseCount = 0;
-      
+
       using (var MS = new MemoryStream(message.Bytes))
       {
         using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
@@ -78,8 +78,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
                 // Check if the returned sub grid is null
                 if (reader.ReadBoolean())
                   clientGrids[i][j].Read(reader);
-               // else  - Remove to reduce unwanted log traffic
-               //   Log.LogWarning($"Sub grid at position [{i},{j}] in sub grid response array is null");
+                // else  - Remove to reduce unwanted log traffic
+                //   Log.LogWarning($"Sub grid at position [{i},{j}] in sub grid response array is null");
               }
             }
 
@@ -101,7 +101,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
                   }
                   else
                   {
-                    Log.LogInformation($"Processing response#{thisResponseCount} FAILED (from thread {Thread.CurrentThread.ManagedThreadId})");
+                    _log.LogInformation($"Processing response#{thisResponseCount} FAILED (from thread {Thread.CurrentThread.ManagedThreadId})");
                   }
                 }
               }
@@ -120,15 +120,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
         }
       }
 
-      Log.LogDebug($"Sub grid listener processed a collection of {responseCount} sub grid results in {sw.Elapsed}");
+      _log.LogDebug($"Sub grid listener processed a collection of {responseCount} sub grid results in {sw.Elapsed}");
     }
 
     /// <summary>
     /// The method called to announce the arrival of a message from a remote context in the cluster
     /// </summary>
-    /// <param name="nodeId"></param>
-    /// <param name="message"></param>
-    /// <returns></returns>
     public bool Invoke(Guid nodeId, ISerialisedByteArrayWrapper message)
     {
       var sw = Stopwatch.StartNew();
@@ -136,7 +133,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       // Todo: Check if there are more performant approaches for handing this off asynchronously
       Task.Run(() => ProcessResponse(message));
 
-      Log.LogDebug($"Processed SubGridListener.Invoke in {sw.Elapsed}");
+      _log.LogDebug($"Processed SubGridListener.Invoke in {sw.Elapsed}");
 
       return true;
     }
@@ -146,7 +143,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <summary>
     /// Constructor accepting a rexTask to pass sub grids into
     /// </summary>
-    /// <param name="tRexTask"></param>
     public SubGridListener(ITRexTask tRexTask)
     {
       TRexTask = tRexTask;
@@ -156,23 +152,45 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <summary>
     /// The sub grid response listener has no serializable state
     /// </summary>
-    /// <param name="writer"></param>
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
 
     /// <summary>
     /// The sub grid response listener has no serializable state
     /// </summary>
-    /// <param name="reader"></param>
     public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      try
+      {
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(SubGridListener)}.ToBinary()");
+        throw; // Mostly for testing purposes...
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, $"Exception in {nameof(SubGridListener)}.ToBinary()");
+      }
     }
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      try
+      {
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      }
+      catch (TRexSerializationVersionException e)
+      {
+        _log.LogError(e, $"Serialization version exception in {nameof(SubGridListener)}.FromBinary()");
+        throw; // Mostly for testing purposes...
+      }
+      catch (Exception e)
+      {
+        _log.LogCritical(e, $"Exception in {nameof(SubGridListener)}.FromBinary()");
+      }
     }
   }
 }

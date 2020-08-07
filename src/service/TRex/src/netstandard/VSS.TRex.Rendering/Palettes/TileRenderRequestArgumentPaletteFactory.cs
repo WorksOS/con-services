@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.Models.Enums;
+﻿using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
@@ -6,6 +7,8 @@ namespace VSS.TRex.Rendering.Palettes
 {
   public static class TileRenderRequestArgumentPaletteFactory
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger("TileRenderRequestArgumentPaletteFactory");
+
     public static IPlanViewPalette GetPalette(DisplayMode mode)
     {
       switch (mode)
@@ -41,6 +44,7 @@ namespace VSS.TRex.Rendering.Palettes
         case DisplayMode.TemperatureSummary:
           return new TemperatureSummaryPalette();
         default:
+          _log.LogError($"No implemented colour palette for this mode ({mode})");
           throw new TRexException($"No implemented colour palette for this mode ({mode})");
       }
     }

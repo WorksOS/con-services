@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var projectVerifier = new ProjectVerifier();
 
       var ex = Assert.ThrowsException<ServiceException>(() => projectVerifier.OnActionExecuting(context));
-      Assert.AreEqual("{\"Code\":-1,\"Message\":\"ProjectId and ProjectUID cannot both be null.\"}", ex.GetContent);
+      Assert.AreEqual("{\"code\":-1,\"message\":\"ProjectId and ProjectUID cannot both be null.\"}", ex.GetContent);
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
     }
 
@@ -70,7 +70,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var projectVerifier = new ProjectVerifier();
 
       var ex = Assert.ThrowsException<ServiceException>(() => projectVerifier.OnActionExecuting(context));
-      Assert.AreEqual("{\"Code\":-1,\"Message\":\"ProjectId and ProjectUID cannot both be null.\"}", ex.GetContent);
+      Assert.AreEqual("{\"code\":-1,\"message\":\"ProjectId and ProjectUID cannot both be null.\"}", ex.GetContent);
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
     }
 
@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var ex = Assert.ThrowsException<ServiceException>(() => projectVerifier.OnActionExecuting(context));
 
       Assert.IsNotNull(ex);
-      Assert.AreEqual("{\"Code\":-1,\"Message\":\"ProjectId and ProjectUID cannot both be null.\"}", ex.GetContent);
+      Assert.AreEqual("{\"code\":-1,\"message\":\"ProjectId and ProjectUID cannot both be null.\"}", ex.GetContent);
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
     }
 
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var innerException = ex.InnerExceptions[0] as ServiceException;
 
       Assert.IsNotNull(innerException);
-      Assert.AreEqual($"{{\"Code\":-5,\"Message\":\"Missing Project or project does not belong to specified customer or don\'t have access to the project {projectUid}\"}}", innerException.GetContent);
+      Assert.AreEqual($"{{\"code\":-5,\"message\":\"Missing Project or project does not belong to specified customer or don\'t have access to the project {projectUid}\"}}", innerException.GetContent);
       Assert.AreEqual(HttpStatusCode.Unauthorized, innerException.Code);
     }
 
@@ -181,7 +181,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var innerException = ex.InnerExceptions[0] as ServiceException;
 
       Assert.IsNotNull(innerException);
-      Assert.AreEqual($"{{\"Code\":-5,\"Message\":\"Missing Project or project does not belong to specified customer or don\'t have access to the project {legacyProjectId}\"}}", innerException.GetContent);
+      Assert.AreEqual($"{{\"code\":-5,\"message\":\"Missing Project or project does not belong to specified customer or don\'t have access to the project {legacyProjectId}\"}}", innerException.GetContent);
       Assert.AreEqual(HttpStatusCode.Unauthorized, innerException.Code);
     }
 
@@ -255,7 +255,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
       var innerException = ex.InnerExceptions[0] as ServiceException;
 
       Assert.IsNotNull(innerException);
-      Assert.AreEqual($"{{\"Code\":-5,\"Message\":\"Missing Project or project does not belong to specified customer or don\'t have access to the project {projectUid}\"}}", innerException.GetContent);
+      Assert.AreEqual($"{{\"code\":-5,\"message\":\"Missing Project or project does not belong to specified customer or don\'t have access to the project {projectUid}\"}}", innerException.GetContent);
       Assert.AreEqual(HttpStatusCode.Unauthorized, innerException.Code);
     }
 

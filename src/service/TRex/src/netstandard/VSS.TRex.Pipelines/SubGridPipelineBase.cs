@@ -13,6 +13,7 @@ using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.Requests;
 using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGrids.Interfaces;
 
 namespace VSS.TRex.Pipelines
 {
@@ -91,6 +92,8 @@ namespace VSS.TRex.Pipelines
         // public float FNoChangeVolumeTolerance;
 
         public AreaControlSet AreaControlSet { get; set; } = AreaControlSet.CreateAreaControlSet();
+
+        public SubGridsRequestComputeStyle SubGridsRequestComputeStyle { get; set; } = SubGridsRequestComputeStyle.Normal;
 
         private bool pipelineCompleted;
 
@@ -222,7 +225,8 @@ namespace VSS.TRex.Pipelines
                 Filters = FilterSet,
                 ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet,
-                CustomArgumentInitializer = CustomArgumentInitializer
+                CustomArgumentInitializer = CustomArgumentInitializer,
+                SubGridsRequestComputeStyle = SubGridsRequestComputeStyle
               };
 
               var Response = requestor.Execute();

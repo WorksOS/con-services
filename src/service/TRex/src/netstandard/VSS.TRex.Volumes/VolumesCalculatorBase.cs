@@ -21,7 +21,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
 using Consts = VSS.TRex.Common.Consts;
-
+using VSS.TRex.SubGrids.Interfaces;
 
 namespace VSS.TRex.Volumes
 {
@@ -201,17 +201,20 @@ namespace VSS.TRex.Volumes
             // Determine if intermediary filter/surface behaviour is required to
             // support summary volumes
             if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC // 'From' has As-At Time filter
-                                                         && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
-                                                         && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
-                                                         && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
+                 && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
+                 && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
+                 && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
             {
               // Create and use the intermediary filter. The intermediary filter
               // is create from the Top filter, with the return earliest flag set to true
               IntermediaryFilter = new CombinedFilter();
               IntermediaryFilter.AttributeFilter.Assign(TopFilter.AttributeFilter);
               IntermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
+              IntermediaryFilter.SpatialFilter.Assign(TopFilter.SpatialFilter);
 
               FilterSet = new FilterSet(new[] {BaseFilter, IntermediaryFilter, TopFilter});
+
+              PipeLine.SubGridsRequestComputeStyle = SubGridsRequestComputeStyle.SimpleVolumeThreeWayCoalescing;
             }
             else
               FilterSet = new FilterSet(BaseFilter, TopFilter);

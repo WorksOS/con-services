@@ -9,8 +9,6 @@ globalConfig: 3dapp-alpha
 
 serviceName: project-service
 
-replicaCount: 1
-
 image:
   tag: latest
 

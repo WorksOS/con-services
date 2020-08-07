@@ -1,11 +1,11 @@
 {{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
-{{- $name :=       printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $fullName := include "projectservice.name" . -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $name }}
+  name: {{ template "projectservice.name" . }}
   labels:
-    app: {{ $name }}
+    app: {{ template "projectservice.name" . }}
   annotations:
   {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
@@ -17,6 +17,6 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: {{ $name }} 
+              serviceName: {{ $fullName }}
               servicePort: 80
     {{- end -}}

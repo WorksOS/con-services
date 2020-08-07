@@ -42,7 +42,8 @@ namespace VSS.TRex.CellDatum.Executors
       if (!arg.CoordsAreGrid)
       {
         //WGS84 coords need to be converted to NEE
-        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), arg.Point.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
+        var pointToConvert = new XYZ(arg.Point.X, arg.Point.Y, 0);
+        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), pointToConvert.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
         result.Northing = arg.Point.Y;
         result.Easting = arg.Point.X;
       }
