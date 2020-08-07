@@ -25,9 +25,9 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
     public string GetCSIBFromDC(string dcFilename) => _convertCoordinates.DCFileToCSIB(DCFile.GetFilePath(dcFilename));
 
-    [Theory(Skip = "Temporarily disable while testing NEE => LLH changes")]
-    [InlineData(36.21730699569774, -115.0372771786517, 550.8719470044193, ReturnAs.Degrees)]
-    [InlineData(0.63211125328050133, -2.007779249296807, 550.87194700441933, ReturnAs.Radians)]
+    [Theory]
+    [InlineData(36.207314496567186, -115.02494438822288, 550.9667886919241, ReturnAs.Degrees)]
+    [InlineData(0.6319368512701705, -2.007564001497864, 550.9667886919241, ReturnAs.Radians)]
     public void CoordinateService_SimpleXYZNEEToLLH(double lat, double lon, double height, ReturnAs returnAs)
     {
       var xyz = _convertCoordinates.NEEToLLH(_csib, new XYZ(2313, 1204, 609), returnAs);
@@ -56,9 +56,9 @@ namespace CoreX.Wrapper.UnitTests.Tests
       llhCoords.Z.Should().BeApproximately(height, LL_CM_TOLERANCE);
     }
 
-    [Theory(Skip = "Temporarily disable while testing NEE => LLH changes")]
-    [InlineData(36.21730699569774, -115.0372771786517, 550.8719470044193, ReturnAs.Degrees)]
-    [InlineData(0.63211125328050133, -2.007779249296807, 550.87194700441933, ReturnAs.Radians)]
+    [Theory]
+    [InlineData(36.207314496567186, -115.02494438822288, 550.9667886919241, ReturnAs.Degrees)]
+    [InlineData(0.6319368512701705, -2.007564001497864, 550.9667886919241, ReturnAs.Radians)]
     public void CoordinateService_SimpleNEEToLLH(double lat, double lon, double height, ReturnAs returnAs)
     {
       var llhCoords = _convertCoordinates.NEEToLLH(_csib,
@@ -115,7 +115,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
       neeCoords[1].Elevation.Should().BeApproximately(609.0, GRID_CM_TOLERANCE);
     }
 
-    [Fact(Skip = "Temporarily disable while testing NEE => LLH changes")]
+    [Fact]
     public void CoordinateService_ManyNEEToLLH()
     {
       var requestArray = new[] {
@@ -127,13 +127,13 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       llhCoords.Should().NotBeNull();
 
-      llhCoords[0].Longitude.Should().BeApproximately(-115.03727717865179, LL_CM_TOLERANCE);
-      llhCoords[0].Latitude.Should().BeApproximately(36.21730699569774, LL_CM_TOLERANCE);
-      llhCoords[0].Height.Should().BeApproximately(550.87194700441933, LL_CM_TOLERANCE);
+      llhCoords[0].Longitude.Should().BeApproximately(-115.02494438822288, LL_CM_TOLERANCE);
+      llhCoords[0].Latitude.Should().BeApproximately(36.207314496567186, LL_CM_TOLERANCE);
+      llhCoords[0].Height.Should().BeApproximately(550.9667886919241, LL_CM_TOLERANCE);
 
-      llhCoords[1].Longitude.Should().BeApproximately(-115.03727717865179, LL_CM_TOLERANCE);
-      llhCoords[1].Latitude.Should().BeApproximately(36.21730699569774, LL_CM_TOLERANCE);
-      llhCoords[1].Height.Should().BeApproximately(550.87194700441933, LL_CM_TOLERANCE);
+      llhCoords[1].Longitude.Should().BeApproximately(-115.02494438822288, LL_CM_TOLERANCE);
+      llhCoords[1].Latitude.Should().BeApproximately(36.207314496567186, LL_CM_TOLERANCE);
+      llhCoords[1].Height.Should().BeApproximately(550.9667886919241, LL_CM_TOLERANCE);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
       neeCoords[2].Z.Should().BeApproximately(70.248819491614839, GRID_CM_TOLERANCE);
     }
 
-    [Fact(Skip = "Temporarily disable while testing NEE => LLH changes")]
+    [Fact]
     public void CoordinateService_ManyXYZNEEToLLH()
     {
       var requestArray = new[] {
@@ -186,13 +186,13 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       llhCoords.Should().NotBeNull();
 
-      llhCoords[0].X.Should().BeApproximately(-115.03727717865179, LL_CM_TOLERANCE);
-      llhCoords[0].Y.Should().BeApproximately(36.21730699569774, LL_CM_TOLERANCE);
-      llhCoords[0].Z.Should().BeApproximately(550.87194700441933, LL_CM_TOLERANCE);
+      llhCoords[0].X.Should().BeApproximately(-115.02494438822288, LL_CM_TOLERANCE);
+      llhCoords[0].Y.Should().BeApproximately(36.207314496567186, LL_CM_TOLERANCE);
+      llhCoords[0].Z.Should().BeApproximately(550.9667886919241, LL_CM_TOLERANCE);
 
-      llhCoords[1].X.Should().BeApproximately(-115.03726605986158, LL_CM_TOLERANCE);
-      llhCoords[1].Y.Should().BeApproximately(36.217316008131625, LL_CM_TOLERANCE);
-      llhCoords[1].Z.Should().BeApproximately(551.87186118441252, LL_CM_TOLERANCE);
+      llhCoords[1].X.Should().BeApproximately(-115.02493326943193, LL_CM_TOLERANCE);
+      llhCoords[1].Y.Should().BeApproximately(36.207323507870385, LL_CM_TOLERANCE);
+      llhCoords[1].Z.Should().BeApproximately(551.9667028719174, LL_CM_TOLERANCE);
     }
 
     [Theory]
