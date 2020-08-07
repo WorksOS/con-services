@@ -648,7 +648,7 @@ namespace VSS.TRex.Profiling
       if (PassFilter == null || !PassFilter.HasPassCountRangeFilter)
         return;
 
-      if (Cell.Layers.Count() < 0)
+      if (Cell.Layers.Count() == 0)
          return;
 
     // Note this filter only applies to processing with no layer analysis
