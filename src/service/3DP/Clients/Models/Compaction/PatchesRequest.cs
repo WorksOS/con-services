@@ -14,14 +14,6 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
     /// <summary>  EC520 serial number  </summary> 
     [JsonProperty(PropertyName = "ecSerial", Required = Required.Always)]
     public string ECSerial { get; private set; }
-
-    /// <summary>  EC520 serial number  </summary> 
-    [JsonProperty(PropertyName = "radioSerial", Required = Required.Default)]
-    public string RadioSerial { get; private set; }
-
-    /// <summary>  TCC OrgId  </summary> 
-    [JsonProperty(PropertyName = "tccOrgUid", Required = Required.Default)]
-    public string TccOrgUid { get; set; }
     
     /// <summary>  WGS84 latitude in decimal degrees.  </summary>
     [JsonProperty(PropertyName = "machineLatitude", Required = Required.Always)]
@@ -41,14 +33,11 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
 
     private const double MAX_BOUNDARY_SQUARE_METERS = 2000;
 
-    public PatchesRequest(string ecSerial, string radioSerial,
-      string tccOrgUid,
+    public PatchesRequest(string ecSerial, 
       double machineLatitude, double machineLongitude,
       BoundingBox2DGrid boundingBox)
     {
       ECSerial = ecSerial;
-      RadioSerial = radioSerial;
-      TccOrgUid = tccOrgUid;
       MachineLatitude = machineLatitude;
       MachineLongitude = machineLongitude;
       BoundingBox = boundingBox;
@@ -56,27 +45,36 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
 
     public void Validate()
     {
+      // the response codes match those in TFA.
       if (string.IsNullOrEmpty(ECSerial))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ECSerial required"));
+          new ContractExecutionResult(3037, "Platform serial number must be provided"));
       }
 
       if (Math.Abs(MachineLatitude) > 90.0 || Math.Abs(MachineLongitude) > 180.0 ||
           (Math.Abs(MachineLatitude) < 2 && Math.Abs(MachineLongitude) < 2))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid Machine Location"));
+          new ContractExecutionResult(3021, "Invalid Machine Location"));
       }
 
-      BoundingBox.Validate();
-
-      // NE are in meters  
-      if (((BoundingBox.TopRightX - BoundingBox.BottomLeftX) * (BoundingBox.TopRightY - BoundingBox.BottomleftY)) > MAX_BOUNDARY_SQUARE_METERS)
+      try
+      {
+        BoundingBox.Validate();
+      }
+      catch (Exception)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"Invalid bounding box: Must be {MAX_BOUNDARY_SQUARE_METERS}m2 or less."));
+          new ContractExecutionResult(3020, "Invalid bounding box: corners are not bottom left and top right."));
+      }
+
+      // NE are in meters  
+      var areaSqMeters = (BoundingBox.TopRightX - BoundingBox.BottomLeftX) * (BoundingBox.TopRightY - BoundingBox.BottomleftY);
+      if (areaSqMeters > MAX_BOUNDARY_SQUARE_METERS)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(3019, $"Invalid bounding box sqM: {Math.Round(areaSqMeters, 4)}. Must be {MAX_BOUNDARY_SQUARE_METERS}m2 or less."));
       }
     }
   }

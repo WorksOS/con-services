@@ -14,8 +14,6 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Manual Import: Unable to determine lat/long from northing/easting position", 18);
       DynamicAddwithOffset("Latitude should be between -90 degrees and 90 degrees", 21);
       DynamicAddwithOffset("Longitude should be between -180 degrees and 180 degrees", 22);
-      DynamicAddwithOffset("TimeOfPosition must have occurred between 50 years ago and the next 2 days", 23);
-      DynamicAddwithOffset("DeviceType is invalid", 30);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
       DynamicAddwithOffset("Platform serial number must be provided", 37);
       DynamicAddwithOffset("Manual Import: Unable to find the Project requested", 38);

@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
+      // Note: The numPatches out parameter is ignored in favor of the same value returned in the PatchResult proper. This will be removed
       // in due course once the breaking modifications process is agreed with BC.
       try
       {
@@ -72,23 +72,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     }
 
     protected sealed override void ProcessErrorCodes()
-    {
-    }
+    { }
 
     private PatchSubgridsProtobufResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
     {
       using (var reader = new BinaryReader(stream))
       {
-        // only set if patchId/patchNumber = 0
-        // else -1
-        var totalPatchesRequired = reader.ReadInt32();  
-        var numSubgridsInPatch = reader.ReadInt32(); // actual count in this patch
-        var numSubgridsInResult = numSubgridsInPatch; // actual count returned
-        double cellSize = reader.ReadDouble();
+        // only set if patchId/patchNumber = 0 ( else -1 )
+        var totalPatchesRequired = reader.ReadInt32();
+        var subGridsInPatch = reader.ReadInt32();    // actual count in this patch
+        var subGridsWithDataToReturn = subGridsInPatch; // sub-grids with data to be returned
+        var cellSize = reader.ReadDouble();
 
         var subgrids = new List<PatchSubgridOriginProtobufResult>();
 
-        for (var i = 0; i < numSubgridsInPatch; i++)
+        for (var i = 0; i < subGridsInPatch; i++)
         {
           var subgridOriginX = reader.ReadDouble();
           var subgridOriginY = reader.ReadDouble();
@@ -96,16 +94,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
           if (isNull)
           {
-            --numSubgridsInResult;
+            --subGridsWithDataToReturn;
             continue;
           }
 
-          float elevationOrigin = reader.ReadSingle();
-          byte elevationOffsetSizeInBytes = reader.ReadByte();
+          var elevationOrigin = reader.ReadSingle();
+          var elevationOffsetSizeInBytes = reader.ReadByte();
 
-          uint timeOrigin = reader.ReadUInt32(); // UTC expressed as Unix time in seconds.
-          byte timeOffsetSizeInBytes = reader.ReadByte();
-          
+          var timeOrigin = reader.ReadUInt32(); // UTC expressed as Unix time in seconds.
+          var timeOffsetSizeInBytes = reader.ReadByte();
+
           // Protobuf is limited to single dimension arrays so we cannot use the [32,32] layout used by other patch executors.
           const int arrayLength = 32 * 32;
           var elevationOffsets = new ushort[arrayLength];
@@ -193,9 +191,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         }
 
-        log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} numSubgridsInPatch: {numSubgridsInPatch} numSubgridsInResult: {numSubgridsInResult} subgridsCount: {subgrids.Count}");
+        log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} subGridsInPatch: {subGridsInPatch} subGridsWithDataToReturn: {subGridsWithDataToReturn} subgridsCount: {subgrids.Count}");
         return PatchSubgridsProtobufResult.Create(cellSize, subgrids.ToArray());
       }
-    }    
+    }
   }
 }

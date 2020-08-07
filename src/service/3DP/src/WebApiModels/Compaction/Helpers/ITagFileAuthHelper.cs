@@ -5,7 +5,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
   public interface ITagFileAuthHelper
   {
-    Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectUid(string radioSerial, string eCSerial,
-      string tccOrgUid, double machineLatitude, double machineLongitude);
+    Task<GetProjectUidsResult> GetProjectUid(string eCSerial, double machineLatitude, double machineLongitude);
   }
 }
