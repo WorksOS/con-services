@@ -96,7 +96,7 @@ namespace VSS.TRex.Designs.SVL
       if (Element == null)
         return;
 
-      Element.ComputeXY(currentPos, -OffsetLeft, out ptX, out ptY);
+      Element.ComputeXY(currentPos, OffsetLeft, out ptX, out ptY);
 
       if (fence.NumVertices > 0)
         PtBrng1 = BearingOf(fence.Points.Last().X, fence.Points.Last().Y, ptX, ptY);
