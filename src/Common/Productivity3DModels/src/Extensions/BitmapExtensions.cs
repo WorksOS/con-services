@@ -9,6 +9,12 @@ namespace VSS.Productivity3D.Models.Extensions
     private static object lockObj = new object();
 
     /// <summary>
+    /// All public clients of these methods should perform these operations under this global locl=k
+    /// SkiaSharp could be an alternative here
+    /// </summary>
+    public static object LockObj = new object();
+
+    /// <summary>
     /// Converts a bitmap to an array of bytes representing the image
     /// </summary>
     /// <param name="bitmap">The bitmap to convert</param>
