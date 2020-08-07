@@ -118,7 +118,7 @@ namespace VSS.TRex.SubGrids
       _canUseGlobalLatestCells = _filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
     }
 
-    public abstract void RetrieveSubGridStripe(byte stripeIndex);
+    protected abstract void RetrieveSubGridStripe(byte stripeIndex);
 
     /// <summary>
     /// Performs extraction of specific attributes from a GlobalLatestCells structure depending on the type of
@@ -433,13 +433,17 @@ namespace VSS.TRex.SubGrids
         // knowledge, which cells need to be visited so that only cells the filter wants and which are actually
         // present in the data set are requested. If the intent is to store the result in a cache then ensure the
         // entire content is requested for the sub grid.
-        _aggregatedCellScanMap.OrWith(_globalLatestCells.PassDataExistenceMap);
-
-        if (sieveFilterInUse)
-          _aggregatedCellScanMap.AndWith(_sieveBitmask); // ... and which are required by any sieve mask
-
-        if (!sieveFilterInUse && _prepareGridForCacheStorageIfNoSieving)
+        if (_prepareGridForCacheStorageIfNoSieving)
         {
+          _aggregatedCellScanMap.Fill();
+        }
+        else
+        {
+          _aggregatedCellScanMap.OrWith(_globalLatestCells.PassDataExistenceMap);
+
+          if (sieveFilterInUse)
+            _aggregatedCellScanMap.AndWith(_sieveBitmask); // ... and which are required by any sieve mask
+
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.ProdDataMap); // ... and which are in the required production data map
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.FilterMap); // ... and which are in the required filter map
         }

@@ -73,7 +73,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       if (targetCMV != CellPassConsts.NullCCV)
         siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCVStateEvents.PutValueAtDate(TRex.Common.Consts.MIN_DATETIME_AS_UTC, targetCMV);
 
-      CellPass[,][] cellPasses = new CellPass[32, 32][];
+      CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
