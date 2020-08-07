@@ -288,8 +288,8 @@ namespace IntegrationTests.WebApiTests
 
       var response = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
 
-      Assert.Equal(errorCode, uppercase ? response.Code.Value : response.code.Value);
-      Assert.Equal(expectedMessage, uppercase ? response.Message.Value : response.message.Value);
+      Assert.Equal(errorCode, uppercase ? response.code.Value : response.code.Value);
+      Assert.Equal(expectedMessage, uppercase ? response.message.Value : response.message.Value);
     }
 
   }
