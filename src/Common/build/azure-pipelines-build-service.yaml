@@ -72,14 +72,14 @@ jobs:
       displayName: 'dotnet build'
       inputs:
         command: 'build'
-        projects: '${{ parameters.servicePath }}/${{ parameters.solution }}'
+        projects: '$(rootServiceFolder)/TRex/TRex.netstandard.sln'
         arguments: '-nowarn:NU1701 -nowarn:CS1591'
   
     - task: DotNetCoreCLI@2
       displayName: 'dotnet test'
       inputs:
         command: test
-        projects: '${{ parameters.servicePath }}/${{ parameters.solution }}'
+        projects: '$(rootServiceFolder)/TRex/TRex.netstandard.sln'
         arguments: '-nowarn:NU1701 -nowarn:CS1591'
 
   - job: BuildWebTools
