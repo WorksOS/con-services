@@ -140,8 +140,8 @@ namespace CoreX.Wrapper
 
       transformer.Transform(
         (geoCoordinateTypes)fromType,
-        nee.East,
         nee.North,
+        nee.East,
         nee.Elevation,
         (geoCoordinateTypes)toType,
         out var toY, out var toX, out var toZ);
@@ -171,8 +171,8 @@ namespace CoreX.Wrapper
 
         transformer.Transform(
           (geoCoordinateTypes)fromType,
-          nee.East,
           nee.North,
+          nee.East,
           nee.Elevation,
           (geoCoordinateTypes)toType,
           out var toY, out var toX, out var toZ);

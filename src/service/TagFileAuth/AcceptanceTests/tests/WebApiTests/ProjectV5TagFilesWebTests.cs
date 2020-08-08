@@ -29,7 +29,7 @@ namespace WebApiTests
       ValidateResult(result, expectedResult);
     }
 
-    [Fact]
+    [Fact(Skip ="Aaron to re enable when moved into integration test.")]
     public async Task NoProjectProvided_Auto_Happy_DeviceAndSingleProjectFound_UsingNE()
     {
       var platformSerial = ExecutorTestFixture.dimensionsSerial;

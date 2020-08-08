@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
@@ -48,7 +49,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     private readonly IHeaderDictionary _mergedCustomHeaders;
 
 
-    public DataRepository(ILogger log, ITPaaSApplicationAuthentication authorization, 
+    public DataRepository(ILogger log, ITPaaSApplicationAuthentication authorization,
       IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy, ITRexCompactionDataProxy tRexCompactionDataProxy,
       IHeaderDictionary requestCustomHeaders)
     {
@@ -180,20 +181,35 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #endregion device
 
-    #region coordSystem
-
     public async Task<CoordinateConversionResult> ConvertNEtoLL(string projectUid, double northing, double easting)
     {
-      var request = new CoordinateConversionRequest(new Guid(projectUid), TwoDCoordinateConversionType.NorthEastToLatLon, new[] {new TwoDConversionCoordinate(easting, northing)});
+      var request = new CoordinateConversionRequest(new Guid(projectUid), TwoDCoordinateConversionType.NorthEastToLatLon, new[] { new TwoDConversionCoordinate(easting, northing) });
 
       try
       {
         var result = await _tRexCompactionDataProxy.SendDataPostRequest<CoordinateConversionResult, CoordinateConversionRequest>(request, "/coordinateconversion", _mergedCustomHeaders);
+
         _log.LogDebug($"{nameof(ConvertNEtoLL)}: CoordinateConversionRequest {JsonConvert.SerializeObject(request)} CoordinateConversionResult {JsonConvert.SerializeObject(result)}");
-        if (result?.ConversionCoordinates == null || result.ConversionCoordinates.Length != 1 
-                                                  || result.ConversionCoordinates[0].X < -180 || result.ConversionCoordinates[0].X > 180 
-                                                  || result.ConversionCoordinates[0].Y < -90 || result.ConversionCoordinates[0].Y > 90)
+
+        // This could be done in the CoreX.Wrapper, if the TRex request pipeline exposed the CoreX.Types.ReturnAs type.
+        // TRex returns the coordinates in radians, all future uses here assume degrees, must convert.
+        var mutatedCoordinates = new TwoDConversionCoordinate[result.ConversionCoordinates.Length];
+
+        for (var i = 0; i < result.ConversionCoordinates.Length; i++)
+        {
+          var point = result.ConversionCoordinates[i];
+
+          mutatedCoordinates[i] = new TwoDConversionCoordinate(point.X.LonRadiansToDegrees(), point.Y.LatRadiansToDegrees());
+        }
+
+        result.SetConversionCoordinates(mutatedCoordinates);
+
+        if (result?.ConversionCoordinates == null || result.ConversionCoordinates.Length != 1
+                                          || result.ConversionCoordinates[0].X < -180 || result.ConversionCoordinates[0].X > 180
+                                          || result.ConversionCoordinates[0].Y < -90 || result.ConversionCoordinates[0].Y > 90)
+        {
           return null;
+        }
 
         return result;
       }
@@ -204,7 +220,5 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
             ContractExecutionStatesEnum.InternalProcessingError, 17, "tRex", e.Message));
       }
     }
-
-    #endregion coordSystem
   }
 }

@@ -33,21 +33,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as GetProjectUidsRequest;
-      if (request == null)
+      if (!(item is GetProjectUidsRequest request))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           GetProjectUidsResult.FormatResult(uniqueCode: TagFileAuth.Models.ContractExecutionStatesEnum.SerializationError));
       }
 
       var device = await dataRepository.GetDevice(request.PlatformSerial);
-      var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: {contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+
+      var deviceStatus = (device?.Code == 0)
+             ? string.Empty
+             : $"Not found: deviceErrorCode: {device?.Code} message: {contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+
       log.LogDebug($"{nameof(ProjectUidsExecutor)}: Found by PlatformSerial?: {request.PlatformSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
-      if (!string.IsNullOrEmpty(request.ProjectUid))
-        return await HandleManualImport(request, device);
-
-      return HandleAutoImport(request, device);
+      return request.IsManualImport
+        ? await HandleManualImport(request, device)
+        : HandleAutoImport(request, device);
     }
 
     private async Task<GetProjectUidsResult> HandleManualImport(GetProjectUidsRequest request, DeviceData device)
