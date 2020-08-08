@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -110,7 +111,7 @@ namespace WebApiTests.Executors
       var easting = 21.3;
       var getProjectUidsRequest = new GetProjectUidsRequest(string.Empty, "ec520Serial", 0.0, 0.0, northing, easting);
       // expected convertNEtoLL result
-      var points = new [] {new TwoDConversionCoordinate(insideLong, insideLat)};
+      var points = new [] {new TwoDConversionCoordinate(insideLong.LonDegreesToRadians(), insideLat.LatDegreesToRadians())};
       var coordinateConversionResult = new CoordinateConversionResult(points);
 
       var platformSerialDeviceUid = Guid.NewGuid().ToString();

@@ -9,18 +9,17 @@ namespace WebApiTests.Models
   public class ProjectUidsRequestTests : ModelBaseTests
   {
     [TestMethod]
-    [DataRow("", "ec520Serial",91, 179, null, null, 3021)] // invalid lat
+    [DataRow("", "ec520Serial", 91, 179, null, null, 3021)] // invalid lat
     [DataRow("", "cb450Serial", 89, 181, null, null, 3022)] // invalid long
     [DataRow("scooby", "CB460Serial", 89, 179, null, null, 3036)] // invalid projectUid
     [DataRow("", "cb450Serial", 0, 0, null, null, 3054)] // missing LL and NE
-
     public void ValidateGeProjectUidsRequest_ValidationErrors
     (string projectUid, string platformSerial,
       double latitude, double longitude, double? northing, double? easting, int errorCode)
     {
       var projectAndAssetUidsRequest =
         new GetProjectUidsRequest
-        (projectUid, platformSerial, 
+        (projectUid, platformSerial,
           latitude, longitude, northing, easting);
 
       var ex = Assert.ThrowsException<ServiceException>(() => projectAndAssetUidsRequest.Validate());
@@ -30,18 +29,29 @@ namespace WebApiTests.Models
     }
 
     [TestMethod]
-    [DataRow("", "ec520Serial",89, 179, null, null, 0)]
-    [DataRow("", "cb450serial", 0, 0, 560.1, 1000.56, 0)]
-    [DataRow("", "ec520-wSerial", 0, 0, 0.0, 0.0, 0)]
+    [DataRow("", "ec520Serial", 89, 179, null, null)]
+    [DataRow("", "cb450serial", 0, 0, 560.1, 1000.56)]
+    [DataRow("", "ec520-wSerial", 0, 0, 0.0, 0.0)]
     public void ValidateGetProjectUidsRequest_ValidationHappyPath
-    (string projectUid, string platformSerial, 
-      double latitude, double longitude, double? northing, double? easting, int errorCode)
+    (string projectUid, string platformSerial,
+      double latitude, double longitude, double? northing, double? easting)
     {
       var projectAndAssetUidsRequest =
         new GetProjectUidsRequest
         (projectUid, platformSerial,
           latitude, longitude, northing, easting);
       projectAndAssetUidsRequest.Validate();
+    }
+
+    [TestMethod]
+    [DataRow(null, false)]
+    [DataRow("", false)]
+    [DataRow("guid", true)]
+    public void Should_indicate_whether_request_is_manual_import(string projectUid, bool expectedResult)
+    {
+      var request = new GetProjectUidsRequest(projectUid, null, 0.0, 0.0);
+
+      Assert.AreEqual(expectedResult, request.IsManualImport);
     }
   }
 }
