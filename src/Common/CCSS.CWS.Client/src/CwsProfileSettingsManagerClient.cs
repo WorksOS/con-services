@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
@@ -8,7 +7,6 @@ using VSS.MasterData.Proxies.Interfaces;
 
 namespace CCSS.CWS.Client
 {
-  [Obsolete("UI to use cws directly now")]
   public abstract class CwsProfileSettingsManagerClient : BaseClient
   {  
     public override string ExternalServiceName => "cws_profilesettings";

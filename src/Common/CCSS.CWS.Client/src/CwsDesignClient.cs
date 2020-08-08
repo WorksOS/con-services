@@ -19,7 +19,6 @@ namespace CCSS.CWS.Client
   ///   See comments in CwsAccountClient re TRN/Guid conversions
   /// </summary>
 
-  [Obsolete("UI to use cws directly now")]
   public class CwsDesignClient : CwsDesignManagerClient, ICwsDesignClient
   {
     public CwsDesignClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
