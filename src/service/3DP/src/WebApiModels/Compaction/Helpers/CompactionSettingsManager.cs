@@ -288,10 +288,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
               ? CompactionProjectSettingsColors.DefaultSettings.cmvPercentColors
               : projectSettingsColors.cmvPercentColors;
 
+            //The first color and value are for below...
             palette.Add(new ColorPalette(cmvPercentChangeColors[0], double.MinValue));
 
-            for (var i = 0; i < cmvPercentChangeSettings.Length; i++)
+            for (var i = 0; i < cmvPercentChangeSettings.Length; i++) {
+              //The last color and value are for above...
               palette.Add(new ColorPalette(cmvPercentChangeColors[i + 1], cmvPercentChangeSettings[i]));
+            }
 
             break;
           }
