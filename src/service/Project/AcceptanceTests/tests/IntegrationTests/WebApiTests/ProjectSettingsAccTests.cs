@@ -92,10 +92,10 @@ namespace IntegrationTests.WebApiTests
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson, customerUid.ToString(), statusCode: HttpStatusCode.BadRequest);
-      Assert.True(response == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
+      Assert.True(response == "{\"code\":2001,\"message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
       // Try to get the project that doesn't exist
       var response1 = await ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", HttpMethod.Get, null, customerUid.ToString(), statusCode: HttpStatusCode.BadRequest);
-      Assert.True(response1 == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
+      Assert.True(response1 == "{\"code\":2001,\"message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
     }    
 
     [Fact]
