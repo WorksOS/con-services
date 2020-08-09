@@ -28,15 +28,13 @@ using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.GridFabric;
-using VSS.TRex.Rendering.Abstractions;
 using System.IO;
 using VSS.TRex.DI;
-using VSS.TRex.Rendering.GridFabric.Responses;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.Common.Utilities;
 using Moq;
 using CoreX.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using SkiaSharp;
 
 namespace VSS.TRex.Tests.Rendering
 {
@@ -56,45 +54,42 @@ namespace VSS.TRex.Tests.Rendering
       IgniteMock.Immutable.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
     }
 
-    protected void CheckSimpleRenderTileResponse(IBitmap bitmap, string fileName = "", string compareToFile = "")
+    protected void CheckSimpleRenderTileResponse(SKBitmap bitmap, string fileName = "", string compareToFile = "")
     {
-
-      // Get the rendering factory from the DI context
-      var renderingFactory = DIContext.Obtain<IRenderingFactory>();
-      var response = renderingFactory.CreateTileRenderResponse(bitmap?.GetBitmap()) as TileRenderResponse;
-
-      var bmp = Image.FromStream(new MemoryStream(((TileRenderResponse_Core2)response).TileBitmapData)) as Bitmap;
-
       // Convert the response into a bitmap
-      bmp.Should().NotBeNull();
-//      bmp.Height.Should().Be(256);
-//      bmp.Width.Should().Be(256);
+      bitmap.Should().NotBeNull();
 
       if (!string.IsNullOrEmpty(fileName))
       {
-        bmp.Save(fileName);
+        using var image = SKImage.FromBitmap(bitmap);
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        using var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+        data.SaveTo(stream);
       }
       else
       {
         // If the comparison file does not exist then create it to provide a base comparison moving forward.
         if (!string.IsNullOrEmpty(compareToFile) && !File.Exists(compareToFile))
         {
-          bmp.Save(compareToFile);
+          using var image = SKImage.FromBitmap(bitmap);
+          using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+          using var stream = new FileStream(compareToFile, FileMode.Create, FileAccess.Write, FileShare.None);
+          data.SaveTo(stream);
         }
       }
 
       if (!string.IsNullOrEmpty(compareToFile))
       {
-        var goodBmp = Image.FromStream(new FileStream(compareToFile, FileMode.Open, FileAccess.Read, FileShare.Read)) as Bitmap;
-        goodBmp.Height.Should().Be(bmp.Height);
-        goodBmp.Width.Should().Be(bmp.Width);
-        goodBmp.Size.Should().Be(bmp.Size);
+        var goodBmp = SKBitmap.Decode(compareToFile);
 
-        for (var i = 0; i <= bmp.Width - 1; i++)
+        goodBmp.Height.Should().Be(bitmap.Height);
+        goodBmp.Width.Should().Be(bitmap.Width);
+
+        for (var i = 0; i <= bitmap.Width - 1; i++)
         {
-          for (var j = 0; j < bmp.Height - 1; j++)
+          for (var j = 0; j < bitmap.Height - 1; j++)
           {
-            goodBmp.GetPixel(i, j).Should().Be(bmp.GetPixel(i, j));
+            goodBmp.GetPixel(i, j).Should().Be(bitmap.GetPixel(i, j));
           }
         }
       }
@@ -224,7 +219,7 @@ namespace VSS.TRex.Tests.Rendering
 
         var filename = $"RotatedOverlayTileWithSurveyedSurface({imagePixelSize} pixels, rotate about {rotateAboutX},{rotateAboutY} by {rotationDegrees} degrees).bmp";
         var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", filename);
-        var saveFileName = @$"c:\temp\{filename}";
+        var saveFileName = ""; // @$"c:\temp\{filename}";
         CheckSimpleRenderTileResponse(result, saveFileName, "");
 
         rotationDegrees += rotationIncrement;

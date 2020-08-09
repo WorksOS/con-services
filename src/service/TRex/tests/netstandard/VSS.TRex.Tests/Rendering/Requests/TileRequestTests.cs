@@ -11,7 +11,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
+using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -61,8 +61,8 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
-      response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
+      response.Should().BeOfType<TileRenderResponse>();
+      ((TileRenderResponse)response).TileBitmapData.Should().NotBeNull();
     }
 
     [Theory]
@@ -93,8 +93,8 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
-      response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
+      response.Should().BeOfType<TileRenderResponse>();
+      ((TileRenderResponse)response).TileBitmapData.Should().NotBeNull();
     }
 
     [Theory]
@@ -268,7 +268,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       CheckSimpleRenderTileResponse(response, displayMode);
 
-      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Theory]
@@ -339,7 +339,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       // And the tile should NOT be null
       CheckSimpleRenderTileResponse(response, displayMode);
 
-      //      File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //      File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Theory]
@@ -375,7 +375,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       CheckSimpleRenderTileResponse(response);
 
-      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Theory]
@@ -418,7 +418,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       CheckSimpleRenderTileResponse(response);
 
       //The tile for 0 offset is red, for -25 it is blue
-      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Fact]
@@ -493,7 +493,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurfaceWithTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = ""; //@$"c:\temp\{FILE_NAME}";
+      var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }
