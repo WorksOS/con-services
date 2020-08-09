@@ -410,9 +410,8 @@ namespace VSS.TRex.Events
         else
         {
           FirstIdx = SecondIdx;
+          SecondIdx++;
         }
-
-        SecondIdx++;
       }
     }
 
