@@ -12,6 +12,7 @@ using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 using Xunit;
 
 namespace TAGFiles.Tests
@@ -29,6 +30,25 @@ namespace TAGFiles.Tests
             TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
 
             Assert.NotNull(processor);
+        }
+
+        [Fact]
+        public void Test_TAGProcessor_TestZeroValuesInvalid()
+        {
+            var SiteModel = new SiteModel(StorageMutability.Immutable);
+            var Machine = new Machine();
+            var SiteModelGridAggregator = new ServerSubGridTree(SiteModel.ID, StorageMutability.Mutable);
+            var MachineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+            TAGProcessor processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, MachineTargetValueChangesAggregator);
+            Assert.True(processor.ICMDPValues.GetLatest() == CellPassConsts.NullMDP, "MDP Initial value incorrect");
+            Assert.True(processor.ICCCVValues.GetLatest() == CellPassConsts.NullCCV, "CCV Initial value incorrect");
+            Assert.True(processor.ICCCAValues.GetLatest() == CellPassConsts.NullCCA, "CCA Initial value incorrect");
+            processor.SetICMDPValue(0);
+            processor.SetICCCVValue(0);
+            processor.SetICCCAValue(0);
+            Assert.True(processor.ICMDPValues.GetLatest() == CellPassConsts.NullMDP, "Zero should not be a valid for MDP");
+            Assert.True(processor.ICCCVValues.GetLatest() == CellPassConsts.NullCCV, "Zero should not be a valid for CCV");
+            Assert.True(processor.ICCCAValues.GetLatest() == CellPassConsts.NullCCA, "Zero should not be a valid for CCA");
         }
 
         [Fact]
