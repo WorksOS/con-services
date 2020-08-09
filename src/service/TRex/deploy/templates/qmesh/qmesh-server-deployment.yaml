@@ -39,7 +39,7 @@ spec:
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.QMesh
-        imagePullPolicy: Always
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
 
         resources:
 {{ toYaml .Values.qmeshServer.resources | indent 10 }}
