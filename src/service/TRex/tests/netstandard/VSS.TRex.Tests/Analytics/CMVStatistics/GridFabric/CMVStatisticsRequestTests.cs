@@ -209,18 +209,11 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
     }
 
     [Theory]
-    // Note: Leaving the old parameters for a bit in case this is a flapping test (in which case we will see these tests break
-    // again and can compare the expected values against the comment out previous values.
-    //    [InlineData(0, 0.0, 0.0, 0.0, 0.964630225080386, 99.035369774919616)]
-    //    [InlineData(200, 90.0, 110.0, 0.964630225080386, 0.0, 99.035369774919616)]
-    //    [InlineData(400, 70.0, 130.0, 0.964630225080386, 90.353697749196144, 8.6816720257234739)]
-    //    [InlineData(500, 80.0, 120.0, 17.684887459807076, 81.304547542489672, 1.0105649977032614)]
-    //    [InlineData(600, 80.0, 120.0, 73.449701423977956, 26.366559485530544, 0.18373909049150206)]
-    [InlineData(0, 0.0, 0.0, 0.0, 0.27713625866050806, 99.7228637413395)]
-    [InlineData(200, 90.0, 110.0, 0.27713625866050806, 0.0, 99.7228637413395)]
-    [InlineData(400, 70.0, 130.0, 0.27713625866050806, 91.005535055350549, 8.71771217712177)]
-    [InlineData(500, 80.0, 120.0, 17.112546125461257, 81.872693726937271, 1.014760147601476)]
-    [InlineData(600, 80.0, 120.0, 73.339483394833948, 26.476014760147603, 0.18475750577367206)]
+    [InlineData(0, 0.0, 0.0, 0.0, 0.0, 100.0)]
+    [InlineData(200, 90.0, 110.0, 0.0, 0.0, 100.0)]
+    [InlineData(400, 70.0, 130.0, 0.0, 91.266173752310536, 8.7338262476894641)]
+    [InlineData(500, 80.0, 120.0, 16.959334565619226, 82.024029574861373, 1.0166358595194085)]
+    [InlineData(600, 80.0, 120.0, 73.2902033271719, 26.524953789279117, 0.18484288354898337)]
     public async Task Test_SummaryCMVStatistics_SiteModelWithSingleTAGFile_FullExtents_WithCMVTargetOverrides
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
@@ -247,11 +240,11 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvSummaryResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
       cmvSummaryResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
       cmvSummaryResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
-      cmvSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2168 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      cmvSummaryResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2164 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
     }
 
     [Theory]
-    [InlineData(0, 0.0, 0.0, 0.0, 0.27713625866050806, 99.7228637413395)]
+    [InlineData(0, 0.0, 0.0, 0.0, 0.0, 100.0)]
     public async Task Test_DetailedCMVStatistics_SiteModelWithSingleTAGFile_FullExtents
       (short target, double minPercentage, double maxPercentage, double percentBelow, double percentWithin, double percentAbove)
     {
@@ -273,7 +266,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvDetailResult.Should().NotBeNull();
 
       // Checks counts and percentages
-      long[] expectedCounts = { 0, 2, 363, 1450, 325, 16, 6, 0, 0, 0, 0, 0, 0, 0, 0 };
+      long[] expectedCounts = { 0, 2, 365, 1450, 325, 16, 6, 0, 0, 0, 0, 0, 0, 0, 0 };
       cmvDetailResult.Counts.Should().BeEquivalentTo(expectedCounts);
 
       // Are all counts the same and do percentages match?
@@ -290,7 +283,7 @@ namespace VSS.TRex.Tests.Analytics.CMVStatistics.GridFabric
       cmvDetailResult.BelowTargetPercent.Should().BeApproximately(percentBelow, 0.001);
       cmvDetailResult.AboveTargetPercent.Should().BeApproximately(percentAbove, 0.001);
       cmvDetailResult.WithinTargetPercent.Should().BeApproximately(percentWithin, 0.001);
-      cmvDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2168 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
+      cmvDetailResult.TotalAreaCoveredSqMeters.Should().BeApproximately(2164 * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize, 0.000001);
       cmvDetailResult.ConstantTargetCMV.Should().Be(MACHINE_TARGET_CMV);
       cmvDetailResult.IsTargetCMVConstant.Should().BeTrue();
     }
