@@ -89,9 +89,9 @@ namespace VSS.TRex.Rendering.Displayers
       // Directly construct the required pixel array by iterating across the pixels in the target
       // image and mapping them to the locations in the accumulator array
 
-      var pixels = new int[MapView.BitmapCanvas.Width * MapView.BitmapCanvas.Height];
+      var pixels = new uint[MapView.BitmapCanvas.Width * MapView.BitmapCanvas.Height];
       var index = 0;
-      var blankColor = Color.Empty.ToArgb();
+      uint blankColor = (uint)Color.Empty.ToArgb();
 
       var mapViewOriginX = MapView.OriginX;
       var mapViewOriginY = MapView.OriginY;
@@ -119,7 +119,7 @@ namespace VSS.TRex.Rendering.Displayers
           if (east_col >= 0 && east_col < _taskAccumulator.CellsWidth &&
               north_row >= 0 && north_row < _taskAccumulator.CellsHeight)
           {
-            pixels[index++] = DoGetDisplayColour().ToArgb();
+            pixels[index++] = (uint)DoGetDisplayColour().ToArgb();
           }
           else
           {

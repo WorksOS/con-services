@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VSS.TRex.Rendering.Implementations.Core2
+﻿namespace VSS.TRex.Rendering
 {
   public static class RenderingLock
   {
