@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CCSS.CWS.Client;
+using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ using TestUtility;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
@@ -17,7 +19,6 @@ using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -67,6 +68,7 @@ namespace IntegrationTests.ExecutorTests
         .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
+
       _serviceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
       Logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -89,21 +91,20 @@ namespace IntegrationTests.ExecutorTests
     }
 
 
-    public async Task<ProjectV6DescriptorsSingleResult> CreateCustomerProject(string customerUid, string userId, string userEmailAddress)
+    public async Task<CreateProjectResponseModel> CreateCustomerProject(string customerUid, string name = "woteva",
+      string boundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))")
     {
-      var validBoundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
-      var createProjectEvent = new CreateProjectEvent() { CustomerUID = new Guid(customerUid), ProjectName = "the project name", ProjectType = CwsProjectType.AcceptsTagFiles, ProjectBoundary = validBoundary };
+      var createProjectRequestModel = new CreateProjectRequestModel
+      {
+        AccountId = customerUid,
+        ProjectName = name,
+        Boundary = GeometryConversion.MapProjectBoundary(boundary)
+      };
 
-      var createExecutor =
-        RequestExecutorContainerFactory.Build<CreateProjectExecutor>
-        (Logger, ConfigStore, ServiceExceptionHandler,
-          customerUid, userId, userEmailAddress, CustomHeaders(customerUid),
-          cwsProjectClient: CwsProjectClient);
-      var result = ( await createExecutor.ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult;
-      
-      return result;
+      var response = await CwsProjectClient.CreateProject(createProjectRequestModel);
+      return response;
     }
-
+    
     public bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
       var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);

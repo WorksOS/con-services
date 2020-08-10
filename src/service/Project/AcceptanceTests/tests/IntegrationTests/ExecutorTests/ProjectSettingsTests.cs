@@ -34,7 +34,6 @@ namespace IntegrationTests.ExecutorTests
 
     [Theory]
     [InlineData(ProjectSettingsType.Targets)]
-    //[InlineData(ProjectSettingsType.ImportedFiles)]
     [InlineData(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_InvalidCustomerProjectRelationship(ProjectSettingsType settingsType)
     {
@@ -44,10 +43,10 @@ namespace IntegrationTests.ExecutorTests
       var userEmailAddress = "whatever@here.there.com";
       var settings = string.Empty;
 
-      var project = await _fixture.CreateCustomerProject(customerUidOfProject, userId, userEmailAddress);
+      var project = await _fixture.CreateCustomerProject(customerUidOfProject);
       Assert.NotNull(project);
 
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectDescriptor.ProjectUid, settings, settingsType);
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.Id, settings, settingsType);
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
@@ -61,7 +60,6 @@ namespace IntegrationTests.ExecutorTests
 
     [Theory]
     [InlineData(ProjectSettingsType.Targets)]
-    //[InlineData(ProjectSettingsType.ImportedFiles)]
     [InlineData(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_NoSettingsExists(ProjectSettingsType settingsType)
     {
@@ -69,11 +67,11 @@ namespace IntegrationTests.ExecutorTests
       var userId = Guid.NewGuid().ToString();
       var userEmailAddress = "whatever@here.there.com";
 
-      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      var project = await _fixture.CreateCustomerProject(customerUid);
       Assert.NotNull(project);
 
       var settings = string.Empty;
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectDescriptor.ProjectUid, settings, settingsType);
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.Id, settings, settingsType);
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
@@ -83,14 +81,13 @@ namespace IntegrationTests.ExecutorTests
       var projectSettingsResult = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.NotNull(projectSettingsResult);
-      Assert.Equal(project.ProjectDescriptor.ProjectUid, projectSettingsResult.projectUid);
+      Assert.Equal(project.Id, projectSettingsResult.projectUid);
       Assert.Null(projectSettingsResult.settings);
       Assert.Equal(settingsType, projectSettingsResult.projectSettingsType);
     }
 
     [Theory]
     [InlineData(ProjectSettingsType.Targets)]
-    //[InlineData(ProjectSettingsType.ImportedFiles)]
     [InlineData(ProjectSettingsType.Colors)]
     public async Task GetProjectSettingsExecutor_Exists(ProjectSettingsType settingsType)
     {
@@ -99,12 +96,12 @@ namespace IntegrationTests.ExecutorTests
       var userEmailAddress = "whatever@here.there.com";
       var settings = @"{firstValue: 10, lastValue: 20}";
 
-      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      var project = await _fixture.CreateCustomerProject(customerUid);
       Assert.NotNull(project);
 
-      var isCreatedOk = _fixture.CreateProjectSettings(project.ProjectDescriptor.ProjectUid, userId, settings, settingsType);
+      var isCreatedOk = _fixture.CreateProjectSettings(project.Id, userId, settings, settingsType);
       Assert.True(isCreatedOk, "created projectSettings");
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectDescriptor.ProjectUid, settings, settingsType);
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.Id, settings, settingsType);
 
       var executor =
         RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
@@ -113,7 +110,7 @@ namespace IntegrationTests.ExecutorTests
           projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(project.ProjectDescriptor.ProjectUid, result.projectUid);
+      Assert.Equal(project.Id, result.projectUid);
       Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
@@ -159,14 +156,14 @@ namespace IntegrationTests.ExecutorTests
       var settings = "blah";
       var settingsUpdated = "blah Is Updated";
 
-      var project = await _fixture.CreateCustomerProject(customerUidOfProject, userId, userEmailAddress);
+      var project = await _fixture.CreateCustomerProject(customerUidOfProject);
       Assert.NotNull(project);
 
-      var isCreatedOk = _fixture.CreateProjectSettings(project.ProjectDescriptor.ProjectUid, userId, settings, settingsType);
+      var isCreatedOk = _fixture.CreateProjectSettings(project.Id, userId, settings, settingsType);
       Assert.True(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =
-        ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectDescriptor.ProjectUid, settingsUpdated, settingsType);
+        ProjectSettingsRequest.CreateProjectSettingsRequest(project.Id, settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
@@ -189,10 +186,10 @@ namespace IntegrationTests.ExecutorTests
       var userEmailAddress = "whatever@here.there.com";
       var settings = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";//"blah";
 
-      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      var project = await _fixture.CreateCustomerProject(customerUid);
       Assert.NotNull(project);
 
-      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectDescriptor.ProjectUid, settings, settingsType);
+      var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(project.Id, settings, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
@@ -201,7 +198,7 @@ namespace IntegrationTests.ExecutorTests
         projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(project.ProjectDescriptor.ProjectUid, result.projectUid);
+      Assert.Equal(project.Id, result.projectUid);
       Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
@@ -235,14 +232,14 @@ namespace IntegrationTests.ExecutorTests
       var settings = "blah";
       var settingsUpdated = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
 
-      var project = await _fixture.CreateCustomerProject(customerUid, userId, userEmailAddress);
+      var project = await _fixture.CreateCustomerProject(customerUid);
       Assert.NotNull(project);
 
-      var isCreatedOk = _fixture.CreateProjectSettings(project.ProjectDescriptor.ProjectUid, userId, settings, settingsType);
+      var isCreatedOk = _fixture.CreateProjectSettings(project.Id, userId, settings, settingsType);
       Assert.True(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest =
-        ProjectSettingsRequest.CreateProjectSettingsRequest(project.ProjectDescriptor.ProjectUid, settingsUpdated, settingsType);
+        ProjectSettingsRequest.CreateProjectSettingsRequest(project.Id, settingsUpdated, settingsType);
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
@@ -251,7 +248,7 @@ namespace IntegrationTests.ExecutorTests
         projectRepo: _fixture.ProjectRepo, cwsProjectClient: _fixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(project.ProjectDescriptor.ProjectUid, result.projectUid);
+      Assert.Equal(project.Id, result.projectUid);
       Assert.Equal(settingsType, result.projectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)

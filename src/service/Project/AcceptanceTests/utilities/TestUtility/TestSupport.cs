@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CSharp.RuntimeBinder;
+using CCSS.Geometry;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -24,31 +23,23 @@ namespace TestUtility
   {
     private const string PROJECT_DB_SCHEMA_NAME = "CCSS-Project";
 
-    public string AssetUid { get; set; }
     public DateTime FirstEventDate { get; set; }
-    public DateTime LastEventDate { get; set; }    
+    public DateTime LastEventDate { get; set; }
     public Guid ProjectUid { get; set; }
     public Guid CustomerUid { get; set; }
-    public Guid GeofenceUid { get; set; }
-
-    public CreateProjectEvent CreateProjectEvt { get; set; }
-    public UpdateProjectEvent UpdateProjectEvt { get; set; }
-
-    public bool IsPublishToWebApi { get; set; }
 
     public readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
     {
       DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
       NullValueHandling = NullValueHandling.Ignore,
       ContractResolver = new CamelCasePropertyNamesContractResolver()
-  };
+    };
 
     private readonly Random rndNumber = new Random();
     private readonly object syncLock = new object();
     private const char SEPARATOR = '|';
 
     private static readonly TestConfig _testConfig;
-    private static readonly object _shortRaptorProjectIDLock = new object();
 
     private static List<TBCPoint> _boundaryLL;
     private static BusinessCenterFile _businessCenterFile;
@@ -69,10 +60,8 @@ namespace TestUtility
     {
       SetFirstEventDate();
       SetLastEventDate();
-      SetAssetUid();
       SetProjectUid();
       SetCustomerUid();
-      SetGeofenceUid();
 
       _boundaryLL = new List<TBCPoint>
       {
@@ -96,11 +85,6 @@ namespace TestUtility
     public void SetLastEventDate() => LastEventDate = FirstEventDate.AddYears(2);
 
     /// <summary>
-    /// Set the asset UID to a random GUID
-    /// </summary>
-    public void SetAssetUid() => AssetUid = Guid.NewGuid().ToString();
-
-    /// <summary>
     /// Set the project UID to a random GUID
     /// </summary>
     public void SetProjectUid() => ProjectUid = Guid.NewGuid();
@@ -110,84 +94,19 @@ namespace TestUtility
     /// </summary>
     public void SetCustomerUid() => CustomerUid = Guid.NewGuid();
 
-    /// <summary>
-    /// Set the geofence UID to a random GUID
-    /// </summary>
-    public void SetGeofenceUid() => GeofenceUid = Guid.NewGuid();
-        
-    /// <summary>
-    /// Publish events to kafka from string array
-    /// </summary>
-    public async Task PublishEventCollection(string[] eventArray, HttpStatusCode statusCode = HttpStatusCode.OK)
+
+    public async Task<CreateProjectResponseModel> CreateCustomerProject(ICwsProjectClient cwsProjectClient, string customerUid,
+      string boundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))")
     {
-      try
+      var createProjectRequestModel = new CreateProjectRequestModel
       {
-        if (IsPublishToWebApi)
-        {
-          Msg.DisplayEventsToConsoleWeb(eventArray);
-        }       
-        else
-        {
-          Msg.DisplayEventsForDbInjectToConsole(eventArray);
-        }
+        AccountId = customerUid,
+        ProjectName = "wotever",
+        Boundary = GeometryConversion.MapProjectBoundary(boundary)
+      };
 
-        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-
-        for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
-        {
-          var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
-          dynamic dynEvt = ConvertToExpando(allColumnNames, eventRow);
-          var eventDate = dynEvt.EventDate;
-          LastEventDate = eventDate;
-          if (IsPublishToWebApi)
-          {
-            var jsonString = BuildEventIntoObject(dynEvt);
-            await CallWebApiWithProject(jsonString, dynEvt.EventType, dynEvt.CustomerUID, statusCode);     
-          }
-          else
-          {
-            IsNotSameAsset(true);
-            BuildMySqlInsertStringAndWriteToDatabase(dynEvt);
-          }
-        }
-      }
-      catch (Exception ex)
-      {
-        Msg.DisplayException(ex.Message);
-        throw;
-      }
-    }
-
-    /// <summary>
-    /// Publish event to web api
-    /// </summary>
-    public async Task<string> PublishEventToWebApi(string[] eventArray, HttpStatusCode statusCode = HttpStatusCode.OK)
-    {
-      try
-      {
-        Msg.DisplayEventsToConsoleWeb(eventArray);
-        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        var eventRow = eventArray.ElementAt(1).Split(SEPARATOR);
-        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
-        var eventDate = eventObject.EventDate;
-        LastEventDate = eventDate;
-        var jsonString = BuildEventIntoObject(eventObject);
-        string response;
-        try
-        {
-          response = await CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID, statusCode);
-        }
-        catch (RuntimeBinderException)
-        {
-          response = await CallWebApiWithProject(jsonString, eventObject.EventType, CustomerUid.ToString(), statusCode);
-        }
-        return response;
-      }
-      catch (Exception ex)
-      {
-        Msg.DisplayException(ex.Message);
-        return ex.Message;
-      }
+      var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+      return response;
     }
 
     public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray, int row)
@@ -237,66 +156,7 @@ namespace TestUtility
       return CallProjectWebApi("api/v5/preferences/tcc", HttpMethod.Post, requestJson, CustomerUid.ToString());
     }
 
-    /// <summary>
-    /// Call the version 4 of the project master data
-    /// </summary>
-    private async Task<string> CallWebApiWithProject(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode)
-    {
-      var response = string.Empty;
-
-      switch (eventType)
-      {
-        case "CreateProjectEvent":
-        case "CreateProjectRequest":
-          response = await CallProjectWebApi("api/v6/project/", HttpMethod.Post, jsonString, customerUid, statusCode: statusCode);
-          break;
-        case "UpdateProjectEvent":
-        case "UpdateProjectRequest":
-          response = await CallProjectWebApi("api/v6/project/", HttpMethod.Put, jsonString, customerUid, statusCode: statusCode);
-          break;
-        case "DeleteProjectEvent":
-          response = await CallProjectWebApi("api/v6/project/" + ProjectUid, HttpMethod.Delete, string.Empty, customerUid, statusCode: statusCode);
-          break;
-      }
-
-      var jsonResponse = JsonConvert.DeserializeObject<ProjectV6DescriptorsSingleResult>(response);
-
-      if (jsonResponse.Code == 0)
-      {
-        ProjectUid = new Guid(jsonResponse.ProjectDescriptor.ProjectUid);
-        CustomerUid = new Guid(jsonResponse.ProjectDescriptor.CustomerUid);
-      }
-
-      return jsonResponse.Message;
-    }
-
-
-    /// <summary>
-    /// Call web api version 6 
-    /// </summary>
-    public async Task GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
-    {
-      var response = await CallProjectWebApi("api/v6/project/", HttpMethod.Get, null, customerUid.ToString());
-      if (statusCode == HttpStatusCode.OK)
-      {
-        if (expectedResultsArray.Length == 0)
-        {
-          var projectDescriptorsListResult = JsonConvert.DeserializeObject<ProjectDescriptorsListResult>(response);
-          var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
-          Assert.True(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
-        }
-        else
-        {
-          var projectDescriptorsListResult = JsonConvert.DeserializeObject<ProjectDescriptorsListResult>(response);
-          var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
-          var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-          Msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-          Assert.True(expectedResultsArray.Length - 1 == actualProjects.Count, " Number of projects return do not match expected");
-          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects, ignoreZeros);
-        }
-      }
-    }
-
+   
     /// <summary>
     /// Call projectSvc deviceGateway endpoint for deviceLKS List for project
     /// </summary>
@@ -318,101 +178,6 @@ namespace TestUtility
       route += $"?deviceName={deviceName}";
       return await CallProjectWebApi(route, HttpMethod.Get, null, customerUid.ToString(), statusCode: statusCode);
     }
-
-    /// <summary>
-    /// Get project details for one project
-    /// </summary>
-    public async Task GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
-    {
-      var response = await CallProjectWebApi("api/v6/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString());
-      if (statusCode == HttpStatusCode.OK)
-      {
-        var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV6DescriptorsSingleResult>(response);
-        var actualProject = new List<ProjectV6Descriptor> { projectDescriptorResult.ProjectDescriptor };
-        var expectedProjects = ConvertArrayToProjectV6DescriptorList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        Msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-        Assert.True(actualProject.Count == 1, " There should be one project");
-        CompareTheActualProjectListV6WithExpected(actualProject, expectedProjects, ignoreZeros);
-      }
-    }
-
-    /// <summary>
-    /// Get project details for one project
-    /// </summary>
-    public async Task<ProjectV6Descriptor> GetProjectDetailsViaWebApiV6(Guid customerUid, string projectUid, HttpStatusCode statusCode)
-    {
-      var response = await CallProjectWebApi("api/v6/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString(), statusCode: statusCode);
-      
-      if (string.IsNullOrEmpty(response))
-      {
-        throw new Exception("There should be one project");
-      }
-
-      return JsonConvert.DeserializeObject<ProjectV6DescriptorsSingleResult>(response)
-                        .ProjectDescriptor;
-    }
-
-
-    /// <summary>
-    /// Compare the two lists of projects
-    /// </summary>
-    public void CompareTheActualProjectListWithExpected(List<ProjectDescriptor> actualProjects, List<ProjectDescriptor> expectedProjects, bool ignoreZeros)
-    {
-      for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
-      {
-        var oType = actualProjects[cntlist].GetType();
-        foreach (var oProperty in oType.GetProperties())
-        {
-          var expectedValue = oProperty.GetValue(expectedProjects[cntlist], null);
-          var actualValue = oProperty.GetValue(actualProjects[cntlist], null);
-          if (ignoreZeros)
-          {
-            if (expectedValue == null)
-            {
-              continue;
-            }
-            if (expectedValue.ToString() == "0")
-            {
-              continue;
-            }
-          }
-
-          Assert.Equal(expectedValue, actualValue);
-        }
-      }
-    }
-
-    /// <summary>
-    /// Compare the two lists of projects
-    /// </summary>
-    public void CompareTheActualProjectDictionaryWithExpected(ImmutableDictionary<int, ProjectDescriptor> actualProjects, ImmutableDictionary<int, ProjectDescriptor> expectedProjects, bool ignoreZeros)
-    {
-      var actualList = actualProjects.Select(p => p.Value).ToList();
-      var expectedList = expectedProjects.Select(p => p.Value).ToList();
-      for (var cntlist = 0; cntlist < actualList.Count; cntlist++)
-      {
-        var oType = actualList[cntlist].GetType();
-        foreach (var oProperty in oType.GetProperties())
-        {
-          var expectedValue = oProperty.GetValue(expectedList[cntlist], null);
-          var actualValue = oProperty.GetValue(actualList[cntlist], null);
-          if (ignoreZeros)
-          {
-            if (expectedValue == null)
-            {
-              continue;
-            }
-            if (expectedValue.ToString() == "0")
-            {
-              continue;
-            }
-          }
-
-          Assert.Equal(expectedValue, actualValue);
-        }
-      }
-    }
-
 
     /// <summary>
     /// Compare the two lists of projects
@@ -489,71 +254,7 @@ namespace TestUtility
       var jsonString = string.Empty;
       string eventType = eventObject.EventType;
       switch (eventType)
-      { 
-        case "CreateProjectRequest":
-          string cpCustomerUid = null;
-          string cpDescription = null;
-          string cpCoordinateSystemFileName = null;
-          byte[] cpCoordinateSystemFileContent = null;
-          /* TEMP. Validation now requires coordinate system for all create project
-          if (HasProperty(eventObject, "CoordinateSystem"))
-          {
-            cpCoordinateSystemFileName = eventObject.CoordinateSystem;
-            cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
-          }
-          */
-          cpCoordinateSystemFileName = "BootCampDimensions.dc";
-          cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
-          if (HasProperty(eventObject, "CustomerUID"))
-          {
-            cpCustomerUid = eventObject.CustomerUID;
-          }
-          if (HasProperty(eventObject, "Description"))
-          {
-            cpDescription = eventObject.Description;
-          }
-          var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpCustomerUid,
-            (CwsProjectType)Enum.Parse(typeof(CwsProjectType), eventObject.ProjectType),
-            eventObject.ProjectName, eventObject.ProjectTimezone,
-            eventObject.ProjectBoundary, cpCoordinateSystemFileName, cpCoordinateSystemFileContent);
-          jsonString = JsonConvert.SerializeObject(cprequest, JsonSettings);
-          break;        
-        case "UpdateProjectRequest":        
-          var updateProjectRequest = new UpdateProjectEvent()
-          {
-            ProjectUID = new Guid(eventObject.ProjectUID),
-          };
-          if (HasProperty(eventObject, "CoordinateSystem"))
-          {
-            updateProjectRequest.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            updateProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
-          }
-          if (HasProperty(eventObject, "ProjectName"))
-          {
-            updateProjectRequest.ProjectName = eventObject.ProjectName;
-          }
-          if (HasProperty(eventObject, "ProjectType"))
-          {
-            updateProjectRequest.ProjectType = (CwsProjectType)Enum.Parse(typeof(CwsProjectType), eventObject.ProjectType);
-          }         
-          if (HasProperty(eventObject, "ProjectBoundary"))
-          {
-            updateProjectRequest.ProjectBoundary = eventObject.ProjectBoundary;
-          }
-
-          var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName, 
-                                                                        updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent, updateProjectRequest.ProjectBoundary);
-          jsonString = JsonConvert.SerializeObject(request, JsonSettings);
-          break;        
-        case "AssociateProjectGeofence":          
-          var associateProjectGeofence = new AssociateProjectGeofence()
-          {
-            ActionUTC = eventObject.EventDate,
-            ProjectUID = eventObject.ProjectUID,
-            GeofenceUID = eventObject.GeofenceUID
-          };
-          jsonString = JsonConvert.SerializeObject(new { AssociateProjectGeofence = associateProjectGeofence }, JsonSettings);
-          break;
+      {
         case "ImportedFileDescriptor":
           var importedFileDescriptor = new ImportedFileDescriptor
           {
@@ -614,80 +315,17 @@ namespace TestUtility
 
       switch (dbTable)
       {
-        case "Asset":
-          sqlCmd += $@"(AssetUID,LegacyAssetID,Name,MakeCode,SerialNumber,Model,IconKey,AssetType,OwningCustomerUID,LastActionedUTC) VALUES 
-                ('{AssetUid}',{eventObject.LegacyAssetID},'{eventObject.Name}','{eventObject.MakeCode}','{eventObject.SerialNumber}','{eventObject.Model}',
-                {eventObject.IconKey},'{eventObject.AssetType}','{eventObject.OwningCustomerUID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "AssetDevice":
-          sqlCmd += $@"(fk_DeviceUID,fk_AssetUID,LastActionedUTC) VALUES 
-                ('{eventObject.fk_DeviceUID}','{eventObject.fk_AssetUID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "AssetSubscription":
-          sqlCmd += $@"(fk_AssetUID,fk_SubscriptionUID,EffectiveDate,LastActionedUTC) VALUES
-                     ('{eventObject.fk_AssetUID}','{eventObject.fk_SubscriptionUID}','{eventObject.EffectiveDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "Customer":
-          sqlCmd += $@"(CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
-                     ('{eventObject.CustomerUID}','{eventObject.Name}',{eventObject.fk_CustomerTypeID},0,'{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "CustomerProject":
-          sqlCmd += $@"(fk_CustomerUID,fk_ProjectUID,LastActionedUTC) VALUES
-                     ('{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "CustomerTccOrg":
-          sqlCmd += $@"(CustomerUID,TCCOrgID,LastActionedUTC) VALUES
-                     ('{eventObject.CustomerUID}','{eventObject.TCCOrgID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "Device":
-          sqlCmd += $@"(DeviceUID,DeviceSerialNumber,DeviceType,DeviceState,DataLinkType,LastActionedUTC) VALUES 
-                ('{eventObject.DeviceUID}','{eventObject.DeviceSerialNumber}','{eventObject.DeviceType}','{eventObject.DeviceState}','{eventObject.DataLinkType}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "Geofence":
-          sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,PolygonST,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES
-                     ('{eventObject.GeofenceUID}','{eventObject.Name}',{eventObject.fk_GeofenceTypeID},ST_GeomFromText('{eventObject.GeometryWKT}'),
-                       {eventObject.FillColor},{eventObject.IsTransparent},{eventObject.IsDeleted},'{eventObject.Description}',
-                      '{eventObject.fk_CustomerUID}','{eventObject.UserUID}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
         case "ImportedFile":
           sqlCmd += $@"(fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_ReferenceImportedFileUid, Offset, IsDeleted, IsActivated, LastActionedUTC) VALUES 
                      ('{eventObject.ProjectUID}', '{eventObject.ImportedFileUID}', {eventObject.ImportedFileID}, '{eventObject.CustomerUID}', {eventObject.ImportedFileType}, '{eventObject.Name}', 
                       '{eventObject.FileDescriptor}', {eventObject.FileCreatedUTC}, {eventObject.FileUpdatedUTC}, '{eventObject.ImportedBy}', {eventObject.SurveyedUTC}, {eventObject.ParentUid}, {eventObject.Offset}, {eventObject.IsDeleted}, {eventObject.IsActivated}, {eventObject.LastActionedUTC});";
-          break;
-        case "Project":
-          var formattedPolygon = string.Format("ST_GeomFromText('{0}')", eventObject.GeometryWKT);
-          sqlCmd += $@"(ProjectUID,LegacyProjectID,Name,fk_ProjectTypeID,ProjectTimeZone,LandfillTimeZone,StartDate,EndDate,PolygonST,LastActionedUTC) VALUES
-                     ('{eventObject.ProjectUID}',{eventObject.LegacyProjectID},'{eventObject.Name}',{eventObject.fk_ProjectTypeID},
-                      '{eventObject.ProjectTimeZone}','{eventObject.LandfillTimeZone}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}',{formattedPolygon},'{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "ProjectGeofence":
-          sqlCmd += $@"(fk_ProjectUID,fk_GeofenceUID,LastActionedUTC) VALUES
-                     ('{eventObject.fk_ProjectUID}','{eventObject.fk_GeofenceUID}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "ProjectSubscription":
-          sqlCmd += $@"(fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
-                     ('{eventObject.fk_SubscriptionUID}','{eventObject.fk_ProjectUID}','{eventObject.StartDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-          break;
-        case "Subscription":
-          sqlCmd += $@"(SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
-                     ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate}','{eventObject.EndDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
 
       MySqlHelper.ExecuteNonQuery(sqlCmd);
     }
 
-    /// <summary>
-    /// This is used to set multiple asset events in the database
-    /// </summary>
-    /// <param name="isSameAsset">True if it's the same asset id we are dealing with</param>
-    private void IsNotSameAsset(bool isSameAsset)
-    {
-      if (isSameAsset) return;
-      SetAssetUid();
-      SetFirstEventDate();
-    }
-
+   
     /// <summary>
     /// Check that a property exists in the dynamic object
     /// </summary>
@@ -744,61 +382,7 @@ namespace TestUtility
       return obj;
     }
 
-    /// <summary>
-    /// Convert the expected results into dynamic objects and form a list
-    /// </summary>
-    /// <param name="eventArray"></param>
-    /// <returns></returns>
-    private List<ProjectDescriptor> ConvertArrayToList(string[] eventArray)
-    {
-      var eventList = new List<ProjectDescriptor>();
-      try
-      {
-        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
-        {
-          var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
-          dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
-
-          var pd = new ProjectDescriptor
-          {
-            Name = eventObject.ProjectName,
-            ProjectTimeZone = eventObject.ProjectTimezone,
-            ProjectType = (CwsProjectType)Enum.Parse(typeof(CwsProjectType), eventObject.ProjectType),
-            ProjectGeofenceWKT = eventObject.ProjectBoundary,
-          };
-          if (HasProperty(eventObject, "IsArchived"))
-          {
-            pd.IsArchived = bool.Parse(eventObject.IsArchived);
-          }
-          if (HasProperty(eventObject, "CoordinateSystem"))
-          {
-            pd.CoordinateSystemFileName = eventObject.CoordinateSystem;
-          }
-          if (HasProperty(eventObject, "ShortRaptorProjectId"))
-          {
-            pd.ShortRaptorProjectId = int.Parse(eventObject.ShortRaptorProjectId);
-          }
-          if (HasProperty(eventObject, "ProjectUID"))
-          {
-            pd.ProjectUid = eventObject.ProjectUID;
-          }
-          if (HasProperty(eventObject, "CustomerUID"))
-          {
-            pd.CustomerUID = eventObject.CustomerUID;
-          }          
-          eventList.Add(pd);
-        }
-        return eventList;
-      }
-      catch (Exception ex)
-      {
-        Msg.DisplayException(ex.Message);
-        throw;
-      }
-    }
-
-
+  
     /// <summary>
     /// Convert the expected results into dynamic objects and forma list
     /// </summary>

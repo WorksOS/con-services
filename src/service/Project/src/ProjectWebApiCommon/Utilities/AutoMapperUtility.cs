@@ -54,11 +54,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         cfg =>
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
-          cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
-            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore()) // will come from cws
-            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
-            .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
-            .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore());
           cfg.CreateMap<CreateProjectEvent, ProjectDatabaseModel>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Boundary, opt => opt.MapFrom(src => src.ProjectBoundary))
@@ -69,10 +64,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
             .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore());
-          cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
-            .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
-            .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
-          cfg.CreateMap<ProjectDatabaseModel, ProjectV6Descriptor>()
+         cfg.CreateMap<ProjectDatabaseModel, ProjectV6Descriptor>()
             .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.Boundary))
             .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.ProjectTimeZoneIana))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
@@ -125,14 +117,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.TRN, opt => opt.Ignore())
             ;
-          cfg.CreateMap<UpdateProjectEvent, CreateProjectRequestModel>()
-            .ForMember(dest => dest.AccountId, opt => opt.Ignore())
-            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
-            .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone)) // not sure if we can update timezone
-            .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
-            .ForMember(dest => dest.TRN, opt => opt.Ignore())
-            ;
-
+         
           cfg.CreateMap<AccountResponseModel, CustomerData>()
             .ForMember(dest => dest.uid, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
@@ -171,16 +156,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
             ;
 
-          cfg.CreateMap<CreateProjectRequest, ProjectValidation>()
-            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUID))
-            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => Guid.Empty))
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
-            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Created))
-            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
-            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
-            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
-            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
-            ;
 
           cfg.CreateMap<CreateProjectEvent, ProjectValidation>()
             .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUID))
@@ -191,28 +166,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
             .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
-            ;
-
-          cfg.CreateMap<UpdateProjectRequest, ProjectValidation>()
-            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => Guid.Empty))
-            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUid))
-            .ForMember(dest => dest.ProjectType, opt => opt.Ignore())
-            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Updated))
-            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
-            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
-            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
-            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
-            ;
-
-          cfg.CreateMap<DeleteProjectEvent, ProjectValidation>()
-            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => Guid.Empty))
-            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUID))
-            .ForMember(dest => dest.ProjectType, opt => opt.Ignore())
-            .ForMember(dest => dest.UpdateType, opt => opt.MapFrom(src => ProjectUpdateType.Deleted))
-            .ForMember(dest => dest.ProjectName, opt => opt.Ignore())
-            .ForMember(dest => dest.ProjectBoundaryWKT, opt => opt.Ignore())
-            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore())
-            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore())
             ;
         }
       );

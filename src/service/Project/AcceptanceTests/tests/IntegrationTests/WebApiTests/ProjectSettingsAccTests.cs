@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using IntegrationTests.ExecutorTests;
 using IntegrationTests.UtilityClasses;
 using Newtonsoft.Json;
 using TestUtility;
@@ -12,8 +13,14 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectSettingsAccTests : WebApiTestsBase
+  public class ProjectSettingsAccTests : WebApiTestsBase, IClassFixture<ExecutorTestFixture>
   {
+    private readonly ExecutorTestFixture _fixture;
+    public ProjectSettingsAccTests(ExecutorTestFixture fixture)
+    {
+      _fixture = fixture;
+    }
+
     [Fact]
     public async Task AddProjectSettingsGoodPath()
     {
@@ -21,12 +28,9 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testText, "Add project settings for a standard project");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
-      
+      var response = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(response.Result.Id);
+
       // Now create the settings
       var projectSettings1 = "{ useMachineTargetPassCount: false,customTargetPassCountMinimum: 5,customTargetPassCountMaximum: 7,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 75," +
       "customTargetTemperatureMaximum: 150,useMachineTargetCmv: false,customTargetCmv: 77,useMachineTargetMdp: false,customTargetMdp: 88,useDefaultTargetRangeCmvPercent: false," +
@@ -86,8 +90,7 @@ namespace IntegrationTests.WebApiTests
       var ts = new TestSupport();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
-
-      ts.IsPublishToWebApi = true;
+ 
       var projectSettings = "{ Invalid project UID }";
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
@@ -105,12 +108,9 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testText, "Add project settings for a project monitoring project");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
-      
+      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
+
       // Now create the settings
       var projectSettings = string.Empty;
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(ts.ProjectUid.ToString(), projectSettings, ProjectSettingsType.Targets);
@@ -140,11 +140,8 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testText, "Add project settings for a project monitoring project");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
+      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       // Now create the settings
       var projectSettings = "{useMachineTargetPassCount: false,customTargetPassCountMinimum: 5}";

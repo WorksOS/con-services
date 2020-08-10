@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Principal;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -24,7 +21,6 @@ using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
-using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -206,11 +202,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation(
         $"{functionName}: UserUID={UserId}, CustomerUID={CustomerUid} and projectUid='{projectUid}'");
 
-    /// <summary>
-    /// Log the Customer and Project details.
-    /// </summary>
-    protected void LogCustomerDetails(string functionName, long legacyProjectId = 0) =>
-      Logger.LogInformation(
-        $"{functionName}: UserUID={UserId}, CustomerUID={CustomerUid} and legacyProjectId='{legacyProjectId}'");
   }
 }

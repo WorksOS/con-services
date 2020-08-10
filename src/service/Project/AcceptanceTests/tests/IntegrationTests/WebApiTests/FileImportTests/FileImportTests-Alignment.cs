@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using IntegrationTests.ExecutorTests;
 using IntegrationTests.UtilityClasses;
 using TestUtility;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -9,8 +10,14 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests.FileImportTests
 {
-  public class FileImportTests_Alignment : WebApiTestsBase
+  public class FileImportTests_Alignment : WebApiTestsBase, IClassFixture<ExecutorTestFixture>
   {
+    private readonly ExecutorTestFixture _fixture;
+    public FileImportTests_Alignment(ExecutorTestFixture fixture)
+    {
+      _fixture = fixture;
+    }
+
     [Theory]
     [InlineData("api/v6/importedfile")]
     [InlineData("api/v6/importedfile/direct")]
@@ -21,11 +28,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
+      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -49,11 +53,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
+      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
       var importFilename1 = TestFileResolver.File(TestFile.TestAlignment1);
@@ -89,11 +90,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
+      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -125,11 +123,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
+      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -159,11 +154,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType     | ProjectTimezone | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | AcceptsTagFiles |                 | {Boundaries.Boundary1}   | {customerUid} |" };
-      await ts.PublishEventCollection(projectEventArray);
+      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
