@@ -22,13 +22,22 @@ namespace VSS.TRex.Gateway.Common.Helpers
       var coords = new List<XYZ>();
 
       if ((geometryResponse.Vertices?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(x => new XYZ(x[1], x[0], 0.0))));
+        coords.AddRange(geometryResponse.Vertices.SelectMany(x => x.Select(pt => new XYZ(x: pt[0], y: pt[1], z: 0.0))));
 
       if ((geometryResponse.Arcs?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Arcs.SelectMany(x => new[] { new XYZ(x.Y1, x.X1, 0.0), new XYZ(x.Y2, x.X2, 0.0), new XYZ(x.YC, x.XC, 0.0) }));
+      {
+        coords.AddRange(geometryResponse.Arcs.SelectMany(x =>
+        new[]
+        {
+          new XYZ(x: x.X1, y: x.Y1, z: 0.0),
+          new XYZ(x: x.X2, y: x.Y2, z: 0.0),
+          new XYZ(x: x.XC, y: x.YC, z: 0.0)
+          }
+        ));
+      }
 
       if ((geometryResponse.Labels?.Length ?? 0) > 0)
-        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x.Y, x.X, 0.0)));
+        coords.AddRange(geometryResponse.Labels.Select(x => new XYZ(x: x.X, y: x.Y, z: 0.0)));
 
       _log.LogDebug($"Assembled vertex & label coordinates before conversion to lat/lon: {string.Join(", ", coords)}");
 
@@ -47,7 +56,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
         {
           for (var j = 0; j < geometryResponse.Vertices[i].Length; j++)
           {
-            geometryResponse.Vertices[i][j] = new [] { convertedCoords[index].X, convertedCoords[index].Y, convertedCoords[index].Z };
+            geometryResponse.Vertices[i][j] = new[] { convertedCoords[index].X, convertedCoords[index].Y, convertedCoords[index].Z };
             index++;
           }
         }
