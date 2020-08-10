@@ -1,24 +1,27 @@
-{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-cfg-%s" .Release.Name .Values.environment | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ template "3dpmservice.name" . }}
   labels:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "3dpmservice.name" . }}
+    component: {{ template "component.webapi" . }}
 spec:
-  replicas: 1
+  replicas: {{ default 1 .Values.replicaCount}}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+      app: {{ template "3dpmservice.name" . }}
+      component: {{ template "component.webapi" . }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+        app: {{ template "3dpmservice.name" . }}
+        component: {{ template "component.webapi" . }}
     spec:
       serviceAccount: {{ .Values.environment }}-service-account
       containers:
       - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-productivity3d-trex-webapi:{{ .Values.image.tag }}
-        name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}        
+        name: {{ template "3dpmservice.name" . }}     
         livenessProbe:
           httpGet:
             scheme: HTTP
