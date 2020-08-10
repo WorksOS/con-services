@@ -79,6 +79,8 @@ namespace VSS.WebApi.Common
         }
       });
 
+      services.AddHttpClient();
+
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
       services.AddJaeger(ServiceName);
       services.AddServiceDiscovery();
@@ -88,7 +90,6 @@ namespace VSS.WebApi.Common
         // for jsonProperty validation
         config.Filters.Add(new ValidationFilterAttribute());
       }).AddMetricsCore();
-
 
       var metrics = AppMetrics.CreateDefaultBuilder()
         .Configuration.Configure(options =>
