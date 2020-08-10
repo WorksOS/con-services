@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
   {
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
     private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS = 6;
-    private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2 = 9;
+    private const int CMV_PERCENT_CHANGE_NUMBER_OF_COLORS_V2 = 8;
 
     protected uint p_cmvDetailsColorNumber = CMV_DETAILS_NUMBER_OF_COLORS;
     protected uint p_cmvPercentChangeColorNumber = CMV_PERCENT_CHANGE_NUMBER_OF_COLORS;

@@ -1,3 +1,6 @@
+image:
+  pullPolicy: IfNotPresent 
+
 psnode:
   replicaCount: 4
   javaHeapMaxSizeMb: 1024
@@ -9,7 +12,18 @@ psnode:
   storage:
     size: 10Gi
     className: aws-efs
-  
+
+designElevation:
+  replicaCount: 1
+  javaHeapMaxSizeMb: 1024
+  javaHeapInitialSizeMb: 768  
+  resources: 
+    requests:
+      cpu: 2000m
+      memory: 3.5Gi
+  autoscaling:
+    enabled: false
+    
 tileServer:
   autoscaling:
     minReplicas: 4
