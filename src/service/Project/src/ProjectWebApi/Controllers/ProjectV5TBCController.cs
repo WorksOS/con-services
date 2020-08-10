@@ -9,7 +9,6 @@ using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -56,6 +55,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var project =  await ProjectRequestHelper.GetProjectForCustomer(new Guid(CustomerUid), new Guid(UserId), id, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
       var projectTbc = AutoMapperUtility.Automapper.Map<ProjectDataTBCSingleResult>(project);
       projectTbc.LegacyProjectId = (Guid.TryParse(project.ProjectId, out var g) ? g.ToLegacyId() : 0);
+      if (projectTbc.LegacyProjectId == 0)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 140);
+
       Logger.LogDebug($"{nameof(GetProjectByShortId)}: completed successfully. projectTbc {projectTbc}");
       
       return projectTbc;
@@ -80,32 +82,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation($"{nameof(CreateProjectTBC)} projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
-      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, CustomerUid);
+      var projectValidation = MapV5Models.MapCreateProjectV5RequestToProjectValidation(projectRequest, CustomerUid);
+
+      projectRequest.CoordinateSystem =
+        ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
       // Read CoordSystem file from TCC as byte[]. 
-      //    Filename and content are used: 
-      //      validated via productivity3dProxy
-      //      created in TRex via productivity3dProxy
-      //    Created in cws
-      createProjectEvent.CoordinateSystemFileContent =
+      projectValidation.CoordinateSystemFileContent =
         await TccHelper
           .GetFileContentFromTcc(projectRequest.CoordinateSystem,
             Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
 
-      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(createProjectEvent);
       var validationResult
         = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
             .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
               CustomerUid, UserId, null, customHeaders,
               Productivity3dV1ProxyCoord, cwsProjectClient: CwsProjectClient)
-            .ProcessAsync(data)
+            .ProcessAsync(projectValidation)
         );
       if (validationResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, validationResult.Code);
-
-      projectRequest.CoordinateSystem =
-        ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -115,7 +112,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient,
             cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
-          .ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult
+          .ProcessAsync(projectValidation)) as ProjectV6DescriptorsSingleResult
         );
       
       Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortRaptorProjectId {result.ProjectDescriptor.ShortRaptorProjectId}");

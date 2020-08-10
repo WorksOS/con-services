@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -52,8 +51,8 @@ namespace CCSS.CWS.Client
       var projectTrn = TRNHelper.MakeTRN(projectUid);
       var projectConfigurationModel = 
         await GetData<ProjectConfigurationModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
-      
-      log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationModel {(projectConfigurationModel == null ? null : JsonConvert.SerializeObject(projectConfigurationModel))}");
+
+      log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
       return projectConfigurationModel;
     }
 

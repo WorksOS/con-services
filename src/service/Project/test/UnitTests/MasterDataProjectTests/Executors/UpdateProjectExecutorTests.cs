@@ -19,7 +19,6 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  [Obsolete("todoJeannie Projectv6Controller")]
   public class UpdateProjectExecutorTests : UnitTestsDIFixture<UpdateProjectExecutorTests>
   {
     private static string _boundaryString;
