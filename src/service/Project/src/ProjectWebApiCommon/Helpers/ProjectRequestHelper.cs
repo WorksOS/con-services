@@ -307,7 +307,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Create CoordinateSystem in Raptor and save a copy of the file in DataOcean
     /// </summary>
     ///  todo CCSSSCON-351 cleanup parameters once UpdateProject endpoint has been converted
-    [Obsolete("todoJeannie Projectv6Controller")]
     public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid,
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,

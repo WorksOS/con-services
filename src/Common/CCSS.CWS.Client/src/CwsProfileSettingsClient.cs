@@ -50,7 +50,7 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
-      ProjectConfigurationModel projectConfigurationModel = 
+      var projectConfigurationModel = 
         await GetData<ProjectConfigurationModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
       
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationModel {(projectConfigurationModel == null ? null : JsonConvert.SerializeObject(projectConfigurationModel))}");

@@ -240,7 +240,6 @@ namespace TestUtility
     /// <summary>
     /// Call the version 4 of the project master data
     /// </summary>
-    [Obsolete("todoJeannie Projectv6Controller")]
     private async Task<string> CallWebApiWithProject(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode)
     {
       var response = string.Empty;
@@ -275,7 +274,6 @@ namespace TestUtility
     /// <summary>
     /// Call web api version 6 
     /// </summary>
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
       var response = await CallProjectWebApi("api/v6/project/", HttpMethod.Get, null, customerUid.ToString());
@@ -324,7 +322,6 @@ namespace TestUtility
     /// <summary>
     /// Get project details for one project
     /// </summary>
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
     {
       var response = await CallProjectWebApi("api/v6/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString());
@@ -342,7 +339,6 @@ namespace TestUtility
     /// <summary>
     /// Get project details for one project
     /// </summary>
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task<ProjectV6Descriptor> GetProjectDetailsViaWebApiV6(Guid customerUid, string projectUid, HttpStatusCode statusCode)
     {
       var response = await CallProjectWebApi("api/v6/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString(), statusCode: statusCode);
@@ -421,7 +417,6 @@ namespace TestUtility
     /// <summary>
     /// Compare the two lists of projects
     /// </summary>
-    [Obsolete("todoJeannie Projectv6Controller")]
     public void CompareTheActualProjectListV6WithExpected(List<ProjectV6Descriptor> actualProjects, List<ProjectV6Descriptor> expectedProjects, bool ignoreZeros)
     {
       for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
@@ -452,7 +447,6 @@ namespace TestUtility
       }
     }
 
-    [Obsolete("todoJeannie Projectv6Controller")]
     public void CompareTheActualImportFileWithExpectedV6(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
       CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);

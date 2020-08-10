@@ -15,7 +15,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   /// <summary>
   /// The executor which creates a project - appropriate for v2 and v4 controllers
   /// </summary>
-  [Obsolete("todoJeannie Projectv6Controller")]
   public class CreateProjectExecutor : RequestExecutorContainer
   {
     /// <summary>

@@ -11,7 +11,6 @@ namespace IntegrationTests.WebApiTests
   public class ProjectV6Tests : WebApiTestsBase
   {
     [Fact]
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task CreateStandardProject()
     {
       var testText = "Project v6 test 1";
@@ -28,7 +27,6 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task CreateStandardProjectWithNoCustomerUid()
     {
       var testText = "Project v6 test 2";
@@ -45,7 +43,6 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task CreateStandardProjectThenUpdateBoundary()
     {
       var testText = "Project v6 test 5";
@@ -76,7 +73,6 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task CreateStandardProjectThenDelete()
     {
       var testText = "Project v6 test 6";
@@ -107,7 +103,6 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task Create2StandardProjectsThenUpdateBoundary_Overlapping()
     {
       var testText = "Project v6 test 7";
@@ -139,7 +134,6 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    [Obsolete("todoJeannie Projectv6Controller")]
     public async Task CreateStandardProjectThenUpdateBoundary_OverlappingSelf_OK()
     {
       var testText = "Project v6 test 8";

@@ -10,7 +10,7 @@ namespace IntegrationTests.WebApiTests
 {
   public class ProjectV5ForTBCTests : WebApiTestsBase
   {
-    [Fact]
+    [Fact(Skip = "Waiting for CCSSSCON-396")]
     public async Task Create_TBCProject_All_Ok()
     {
       Msg.Title("TBC Project", "Create a project");
@@ -23,7 +23,7 @@ namespace IntegrationTests.WebApiTests
       Assert.NotEqual(-1, returnLongV5Result.Id);
     }
 
-    [Fact]
+    [Fact(Skip = "Waiting for CCSSSCON-396")]
     public async Task Get_TBCProject_All_Ok()
     {
       Msg.Title("TBC Project", "Get existing project");
@@ -47,8 +47,7 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(0, projectDataTBCSingleResult.ProjectType); // only historical standard supported
     }
 
-
-    [Fact]
+    [Fact(Skip = "Waiting for CCSSSCON-396")]
     public async Task ValidateTBCOrg_All_Ok()
     {
       Msg.Title("Project V5TBC", "Validate TBCOrg endpoint");

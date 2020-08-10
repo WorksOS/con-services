@@ -13,7 +13,7 @@ namespace IntegrationTests.WebApiTests
 {
   public class FileImportV5forTBCTests : WebApiTestsBase
   {
-    [Fact]
+    [Fact(Skip = "Waiting for CCSSSCON-396")]
     public async Task TestImportV5ForTbcSvlFile_AlignmentType_OK()
     {
       var testText = "File Import V5TBC test 1";
@@ -44,7 +44,7 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal((int)ImportedFileType.Alignment, importFileList[0].fileType);
     }
 
-    [Fact]
+    [Fact(Skip = "Waiting for CCSSSCON-396")]
     public async Task TestImportV5ForTbcSvlFile_MobileLineworkType_Ignore()
     {
       var testText = "File Import V5TBC test 2";
@@ -69,7 +69,7 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(-1, importFileV5Result.Id);
     }
 
-    [Fact]
+    [Fact(Skip = "Waiting for CCSSSCON-396")]
     public async Task TestImportV5ForTbcSvlFile_MassHaulType_Exception()
     {
       var testText = "File Import V5TBC test 3";
