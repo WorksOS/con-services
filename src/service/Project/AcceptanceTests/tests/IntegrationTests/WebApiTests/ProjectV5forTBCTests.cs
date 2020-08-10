@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TestUtility;
-using VSS.Common.Abstractions.Clients.CWS.Enums;
-using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using Xunit;
 
@@ -12,35 +10,42 @@ namespace IntegrationTests.WebApiTests
 {
   public class ProjectV5ForTBCTests : WebApiTestsBase
   {
-    private static List<TBCPoint> _boundaryLL;
-
-    public ProjectV5ForTBCTests()
+    [Fact]
+    public async Task Create_TBCProject_All_Ok()
     {
-      _boundaryLL = new List<TBCPoint>
-      {
-        new TBCPoint(-43.5, 172.6),
-        new TBCPoint(-43.5003, 172.6),
-        new TBCPoint(-43.5003, 172.603),
-        new TBCPoint(-43.5, 172.603)
-      };
+      Msg.Title("TBC Project", "Create a project");
+      var ts = new TestSupport();
+
+      var response = await ts.CreateProjectViaWebApiV5TBC("project 1");
+      var returnLongV5Result= JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
+
+      Assert.Equal(HttpStatusCode.Created, returnLongV5Result.Code);
+      Assert.NotEqual(-1, returnLongV5Result.Id);
     }
 
     [Fact]
-    public async Task Create_ProjectV5_All_Ok()
+    public async Task Get_TBCProject_All_Ok()
     {
-      Msg.Title("Project V5TBC", "Create a project");
+      Msg.Title("TBC Project", "Get existing project");
       var ts = new TestSupport();
 
-      var serialized = JsonConvert.SerializeObject(_boundaryLL);
-      Assert.Equal(@"[{""Latitude"":-43.5,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.6},{""Latitude"":-43.5003,""Longitude"":172.603},{""Latitude"":-43.5,""Longitude"":172.603}]", serialized);
+      var projectName = "project 2";
+      var createResponse = await ts.CreateProjectViaWebApiV5TBC(projectName);
+      var returnLongV5Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(createResponse);
 
-      var response = await CreateProjectV5TBC(ts, "project 1", CwsProjectType.AcceptsTagFiles);
-      var createProjectV5Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
+      Assert.Equal(HttpStatusCode.Created, returnLongV5Result.Code);
+      Assert.NotEqual(-1, returnLongV5Result.Id);
 
-      Assert.Equal(HttpStatusCode.Created, createProjectV5Result.Code);
-      Assert.NotEqual(-1, createProjectV5Result.Id);
+      var getResponse = await ts.GetProjectViaWebApiV5TBC(returnLongV5Result.Id);
+      var projectDataTBCSingleResult = JsonConvert.DeserializeObject<ProjectDataTBCSingleResult>(getResponse);
+
+      Assert.NotNull(projectDataTBCSingleResult);
+      Assert.Equal(returnLongV5Result.Id, projectDataTBCSingleResult.LegacyProjectId);
+      Assert.Equal(DateTime.MinValue.ToString(), projectDataTBCSingleResult.StartDate); // no longer supported
+      Assert.Equal(DateTime.MaxValue.ToString(), projectDataTBCSingleResult.EndDate);  // no longer supported
+      Assert.Equal(projectName, projectDataTBCSingleResult.Name);
+      Assert.Equal(0, projectDataTBCSingleResult.ProjectType); // only historical standard supported
     }
-
 
     [Fact]
     public async Task ValidateTBCOrg_All_Ok()
@@ -61,9 +66,5 @@ namespace IntegrationTests.WebApiTests
       return JsonConvert.DeserializeObject<ReturnSuccessV5Result>(response);
     }
 
-    private static Task<string> CreateProjectV5TBC(TestSupport ts, string projectName, CwsProjectType projectType)
-    {
-      return ts.CreateProjectViaWebApiV5TBC(projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, _boundaryLL);
-    }
   }
 }
