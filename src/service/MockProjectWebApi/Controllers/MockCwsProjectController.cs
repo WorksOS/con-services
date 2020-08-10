@@ -234,7 +234,7 @@ namespace MockProjectWebApi.Controllers
       Logger.LogInformation($"{nameof(GetProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
 
       if (projectConfigurationModel == null)
-        return NotFound();
+        return NotFound(new CwsError() { status = 404 });
       return Ok(projectConfigurationModel);
     }
 
@@ -287,7 +287,7 @@ namespace MockProjectWebApi.Controllers
 
       Logger.LogInformation($"{nameof(UpdateProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)} projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
       if (projectConfigurationModel == null)
-        return NotFound(new CwsError(){status = 404});
+        return NotFound();
       return Ok(projectConfigurationModel);
     }
 

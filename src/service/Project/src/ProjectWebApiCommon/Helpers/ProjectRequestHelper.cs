@@ -23,6 +23,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -57,6 +58,27 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"{nameof(GetProjectListForCustomer)} Project list contains {projectDatabaseModelList.Count} projects");
       return projectDatabaseModelList;
     }
+
+    /// <summary>
+    /// Gets a Project list for customer uid.
+    ///  Includes all projects, regardless of archived state and user role
+    /// </summary>
+    public static async Task<ProjectDetailResponseModel> GetProjectForCustomer(Guid customerUid, Guid? userUid, long projectShortId,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
+    {
+      log.LogDebug($"{nameof(GetProjectForCustomer)} customerUid {customerUid}, userUid {userUid} projectShortId {projectShortId}");
+      var projects = await cwsProjectClient.GetProjectsForCustomer(customerUid, userUid,
+        type: CwsProjectType.AcceptsTagFiles, customHeaders: customHeaders);
+
+      var projectMatches = projects.Projects.Where(p => (Guid.TryParse(p.ProjectId, out var g) ? g.ToLegacyId() : 0) == projectShortId).ToList();
+      log.LogDebug($"{nameof(GetProjectForCustomer)} Found {projectMatches.Count} projects");
+      if (projectMatches.Count != 1)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, (projectMatches.Count == 0 ? 1 : 139));
+
+      log.LogDebug($"{nameof(GetProjectForCustomer)} Project matched {JsonConvert.SerializeObject(projectMatches[0])}");
+      return projectMatches[0];
+    }
+
 
     /// <summary>
     /// Calibration file is optional for nonThreeDReady projects

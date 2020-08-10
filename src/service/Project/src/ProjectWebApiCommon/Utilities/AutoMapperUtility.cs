@@ -90,7 +90,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
-          // for v5 BC apis
+          // for v5 TBC apis
+          cfg.CreateMap<ProjectDetailResponseModel, ProjectDataTBCSingleResult>()
+            .ForMember(dest => dest.LegacyProjectId, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(x => DateTime.MinValue))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(x => DateTime.MaxValue))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(x => 0)) // old standard type
+            .ForMember(dest => dest.Code, opt => opt.Ignore())
+            .ForMember(dest => dest.Message, opt => opt.Ignore());
+          
           cfg.CreateMap<CreateProjectV5Request, CreateProjectEvent>()
             .ForMember(dest => dest.CustomerUID, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.ProjectBoundary, opt => opt.Ignore()) // done externally

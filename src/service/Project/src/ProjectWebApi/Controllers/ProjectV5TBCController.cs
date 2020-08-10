@@ -1,11 +1,11 @@
-﻿using System.IO;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -39,20 +39,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     #region projects
 
-    /* todoJeannie
-         /// <summary>
-    /// Gets a project for a customer. 
+    /// todoJeannie we're not sure which endpoints TBC uses to get its projects.
+    ///       Watch in testing to see what it needs
+   
+
+    /// <summary>
+    /// Gets a project for a customer.
+    ///    includes legacyId
     /// </summary>
-    /// <returns>A project data</returns>
-    [Route("api/v2/projects/{id}")]
+    [Route("api/v5/projects/{id}")]
     [HttpGet]
-    public async Task<ProjectV2DescriptorsSingleResult> GetProjectV2(long id)
+    public async Task<ProjectDataTBCSingleResult> GetProjectByShortId(long id)
     {
-      log.LogInformation("GetProjectV2");
-      var project = await GetProject(id).ConfigureAwait(false);
-      return new ProjectV2DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV2Descriptor>(project));
+      Logger.LogInformation("GetProjectByShortId");
+
+      var project =  await ProjectRequestHelper.GetProjectForCustomer(new Guid(CustomerUid), new Guid(UserId), id, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+      var projectTbc = AutoMapperUtility.Automapper.Map<ProjectDataTBCSingleResult>(project);
+      projectTbc.LegacyProjectId = (Guid.TryParse(project.ProjectId, out var g) ? g.ToLegacyId() : 0);
+      Logger.LogDebug($"{nameof(GetProjectByShortId)}: completed successfully. projectTbc {projectTbc}");
+      
+      return projectTbc;
     }
-    */
 
     // POST: api/v5/projects
     /// <summary>
@@ -143,9 +150,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromBody] ValidateTccAuthorizationRequest tccAuthorizationRequest)
     {
       if (tccAuthorizationRequest == null)
-      {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
-      }
 
       Logger.LogInformation("ValidateTccAuthorization. completed succesfully");
       return ReturnSuccessV5Result.CreateReturnSuccessV5Result(HttpStatusCode.OK, true);
