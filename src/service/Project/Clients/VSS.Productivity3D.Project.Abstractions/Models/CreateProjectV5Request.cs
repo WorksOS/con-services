@@ -1,47 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Enums;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {
   /// <summary>
-  /// The request representation used to Create a project via TBC. 
-  ///   TBC also send CustomerUID and CustomerName on the end, but Legacy and NGen 
-  ///      dont' use this but gets them via TIDAuthenticaition
+  /// The request representation used to Create a project via TBC.
+  /// A project (type=AcceptsTagFiles) will be created via cws/project
+  ///   TBC also send CustomerUID and CustomerName, we ignore and get them via TIDAuthentication
+  ///                 ProjectType; ProjectStartDate; ProjectEndDate; which we ignore
+  ///                 ProjectTimezone which we ignore, it is created in cws based on the boundary
   /// </summary>
   public class CreateProjectV5Request
   {
     /// <summary>
-    /// Project type: Standard = 0 (default), Landfill = 1, ProjectMonitoring = 2 
-    /// </summary>
-    [JsonProperty(PropertyName = "ProjectType", Required = Required.Always)]
-    public CwsProjectType ProjectType { get; set; }
-
-    /// <summary>
     /// The project name, between 1 and 30 characters long. It must be unique.
     /// </summary>
-    [JsonProperty(PropertyName = "ProjectName", Required = Required.Always)]
+    [JsonProperty(PropertyName = "projectName", Required = Required.Always)]
     public string ProjectName { get; set; }
 
     /// <summary>
-    /// The name of time zone of the project. This must be a standard Windows time zone name.
+    /// The list of latitude, longitude points to be validated as per AcceptsTagFiles projects
     /// </summary>
-    [JsonProperty(PropertyName = "TimeZoneName", Required = Required.Always)]
-    public string ProjectTimezone { get; set; }
-
-    /// <summary>
-    /// The list of latitude, longitude points that make up the project boundary.
-    /// The list must contain at least three points and no more than 50 points.
-    /// The boundary must not self-intersect nor overlap (temporarally or spatially) other projects.
-    /// </summary>
-    [JsonProperty(PropertyName = "BoundaryLL", Required = Required.Always)]
+    [JsonProperty(PropertyName = "boundaryLL", Required = Required.Always)]
     public List<TBCPoint> BoundaryLL { get; set; }
 
     /// <summary>
     /// The details of the coordinate system file from Trimble Business Center.
     /// </summary>
-    [JsonProperty(PropertyName = "CoordinateSystem", Required = Required.Always)]
+    [JsonProperty(PropertyName = "coordinateSystem", Required = Required.Always)]
     public BusinessCenterFile CoordinateSystem { get; set; }
 
 
@@ -55,16 +41,12 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// Create instance of CreateProjectV2Request
     /// </summary>
     public static CreateProjectV5Request CreateACreateProjectV5Request(
-      CwsProjectType projectType, DateTime projectStartDate, DateTime projectEndDate, string projectName,
-      string projectTimezone, List<TBCPoint> boundaryLL,
-      BusinessCenterFile coordinateSystem
+      string projectName, List<TBCPoint> boundaryLL, BusinessCenterFile coordinateSystem
       )
     {
       return new CreateProjectV5Request
       {
-        ProjectType = projectType,
         ProjectName = projectName,
-        ProjectTimezone = projectTimezone,
         BoundaryLL = boundaryLL,
         CoordinateSystem = coordinateSystem
       };

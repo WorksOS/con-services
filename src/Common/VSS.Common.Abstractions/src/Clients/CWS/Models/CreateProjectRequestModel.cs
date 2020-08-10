@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
@@ -39,11 +40,28 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public string Timezone { get; set; }
 
     /// <summary>
-    /// 3dp supports what types?
+    /// Project Boundary
     /// </summary>
     [JsonProperty("boundary")]
     public ProjectBoundary Boundary { get; set; }
 
+    /// <summary>
+    /// acceptsTagFiles = 1?
+    /// </summary>
+    [JsonProperty("projectType")]
+    public CwsProjectType ProjectType { get; set; }
+
+    /// <summary>
+    /// CS filename
+    /// </summary>
+    [JsonProperty("calibrationFileName")]
+    public string CalibrationFileName { get; set; }
+
+    /// <summary>
+    /// Base64 file content
+    /// </summary>
+    [JsonProperty("calibrationFileBase64Content")]
+    public string CalibrationFileBase64Content { get; set; }
   }
 
   /* example

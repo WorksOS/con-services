@@ -19,8 +19,8 @@ designElevation:
   javaHeapInitialSizeMb: 768  
   resources: 
     requests:
-      cpu: 2000m
-      memory: 3.5Gi
+      cpu: 1000m
+      memory: 2Gi
   autoscaling:
     enabled: false
     

@@ -1,15 +1,16 @@
-{{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ $name }}
+  name: {{ template "tileservice.name" . }}
   labels:
     service-name: {{ .Values.serviceName }}
+    app: {{ template "tileservice.name" . }}  
   annotations:
     prometheus.io/scrape: "true"
 spec:
   selector:
-    app: {{ $name }}
+    app: {{ template "tileservice.name" . }}
+    component: {{ template "component.webapi" . }}
   ports:
   - protocol: TCP
     port: 80
