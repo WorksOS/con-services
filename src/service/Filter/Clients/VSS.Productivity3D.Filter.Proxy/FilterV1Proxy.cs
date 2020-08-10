@@ -23,8 +23,7 @@ namespace VSS.Productivity3D.Filter.Proxy
   {
     public FilterV1Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
-    {
-    }
+    { }
 
     public override bool IsInsideAuthBoundary => true;
 
