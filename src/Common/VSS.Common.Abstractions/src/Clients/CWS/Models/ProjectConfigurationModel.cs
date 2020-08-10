@@ -5,6 +5,7 @@ using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
+
   [Obsolete("UI to use cws directly now")]
   public class ProjectConfigurationModel : IMasterDataModel
   {
