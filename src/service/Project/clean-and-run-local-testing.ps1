@@ -22,8 +22,8 @@ IF ($args -notcontains "--no-build") {
     $artifactsWorkingDir = "${PSScriptRoot}/artifacts/ProjectWebApi"
 
     Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
-    Invoke-Expression "dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o $artifactsWorkingDir -f netcoreapp3.1 -c Docker"
-    Invoke-Expression "dotnet build ./test/UnitTests/MasterDataProjectTests/VSS.Project.WebApi.Tests.csproj"
+    Invoke-Expression "dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o $artifactsWorkingDir -f netcoreapp3.1 -c Docker -nowarn:NU1701"
+    Invoke-Expression "dotnet build ./test/UnitTests/MasterDataProjectTests/VSS.Project.WebApi.Tests.csproj -nowarn:NU1701"
     Copy-Item ./src/ProjectWebApi/appsettings.json $artifactsWorkingDir
     New-Item -ItemType directory ./artifacts/logs | out-null
 

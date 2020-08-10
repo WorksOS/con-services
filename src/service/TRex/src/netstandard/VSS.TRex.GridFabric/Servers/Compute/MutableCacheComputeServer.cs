@@ -133,7 +133,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       };
 
 
-      cfg.Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableCacheComputeServer"));
+      cfg.Logger = new TRexIgniteLogger(DIContext.Obtain<IConfigurationStore>(), Logger.CreateLogger("MutableCacheComputeServer"));
 
       // Set an Ignite metrics heartbeat of 10 seconds
       cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10); // TODO: This needs to be added to configuration

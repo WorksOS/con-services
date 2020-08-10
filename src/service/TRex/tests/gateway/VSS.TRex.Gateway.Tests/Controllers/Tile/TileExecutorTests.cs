@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
@@ -15,11 +14,9 @@ using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.ComputeFuncs;
 using VSS.TRex.Rendering.GridFabric.Responses;
-using VSS.TRex.Rendering.Implementations.Core2;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
@@ -50,17 +47,10 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
       AddDesignProfilerGridRouting();
     }
 
-    private void AddRenderingFactoryToDI()
-    {
-      // The renderer factory that allows tile rendering services access Bitmap etc platform dependent constructs
-      DIBuilder.Continue().Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory())).Complete();
-    }
-
     [Fact]
     public async Task TileExecutor_EmptySiteModel()
     {
       AddRoutings();
-      AddRenderingFactoryToDI();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
@@ -129,24 +119,36 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
     public async Task TileExecutor_TestPaletteSerilizationAndDeserilization()
     {
       AddRoutings();
-      AddRenderingFactoryToDI();
+
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = MakeTileRequest(siteModel.ID, DisplayMode.Height);
       request.Validate();
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CCV);
       Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.CCVPercentSummary);
       Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.CMVChange);
       Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.PassCount);
+      Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.PassCountSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CCA);
       Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.CCASummary);
       Assert.True(ExecuteTileRequest(request).Result);
-      request = MakeTileRequest(siteModel.ID, DisplayMode.CCV);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CutFill);
       Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.MDP);
       Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.MDPPercentSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.MachineSpeed);
+      Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.TargetSpeedSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.TemperatureDetail);
       Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.TemperatureSummary);
       Assert.True(ExecuteTileRequest(request).Result);

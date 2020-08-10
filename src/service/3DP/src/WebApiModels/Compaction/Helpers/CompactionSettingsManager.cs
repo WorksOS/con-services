@@ -282,22 +282,19 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
           }
         case DisplayMode.CMVChange:
           {
-            const int NO_CCV = VelociraptorConstants.NO_CCV;
-
             var cmvPercentChangeSettings = CompactionCmvPercentChangeSettings(projectSettings);
             var cmvPercentChangeColors = projectSettingsColors.useDefaultCMVPercentColors.HasValue &&
                                          projectSettingsColors.useDefaultCMVPercentColors.Value
               ? CompactionProjectSettingsColors.DefaultSettings.cmvPercentColors
               : projectSettingsColors.cmvPercentColors;
 
-            palette.Add(new ColorPalette(Colors.None, double.MinValue));
+            //The first color and value are for below...
+            palette.Add(new ColorPalette(cmvPercentChangeColors[0], double.MinValue));
 
-            for (var i = 0; i < cmvPercentChangeSettings.Length; i++)
-            {
-              palette.Add(new ColorPalette(cmvPercentChangeColors[i], cmvPercentChangeSettings[i]));
+            for (var i = 0; i < cmvPercentChangeSettings.Length; i++) {
+              //The last color and value are for above...
+              palette.Add(new ColorPalette(cmvPercentChangeColors[i + 1], cmvPercentChangeSettings[i]));
             }
-
-            palette.Add(new ColorPalette(cmvPercentChangeColors[cmvPercentChangeColors.Count - 1], NO_CCV));
 
             break;
           }

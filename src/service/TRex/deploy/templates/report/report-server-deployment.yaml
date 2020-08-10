@@ -39,7 +39,7 @@ spec:
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.Reports
-        imagePullPolicy: Always
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
 
         resources:
 {{ toYaml .Values.reportServer.resources | indent 10 }}

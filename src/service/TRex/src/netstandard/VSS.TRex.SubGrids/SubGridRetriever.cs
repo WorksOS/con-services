@@ -542,7 +542,7 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// Retrieves cell values for a sub grid stripe at a time.
     /// </summary>
-    public override void RetrieveSubGridStripe(byte stripeIndex)
+    protected override void RetrieveSubGridStripe(byte stripeIndex)
     {
       //  int topMostLayerPassCount = 0;
       var topMostLayerCompactionHalfPassCount = 0;
