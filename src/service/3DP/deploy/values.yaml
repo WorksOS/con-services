@@ -10,8 +10,6 @@ globalConfig: 3dapp-alpha
 # Must match the const in VSS.Common.Abstractions.ServiceDiscovery.Constants.ServiceNameConstants
 serviceName: productivity3d-service
 
-replicaCount: 1
-
 image:
   repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-productivity3d-trex-webapi"
   tag: latest-linux
