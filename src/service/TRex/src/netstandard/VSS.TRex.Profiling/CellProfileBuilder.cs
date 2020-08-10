@@ -280,7 +280,7 @@ namespace VSS.TRex.Profiling
         SiteModel.Grid.CalculateIndexOfCellContainingPosition(VtHzIntercepts.Items[i].MidPointX,
           VtHzIntercepts.Items[i].MidPointY, out OTGCellX, out OTGCellY);
 
-        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX & ~SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
 
         if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin))
         {
