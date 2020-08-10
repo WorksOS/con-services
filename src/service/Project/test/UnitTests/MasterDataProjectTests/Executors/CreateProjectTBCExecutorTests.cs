@@ -123,7 +123,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       Assert.NotNull(result);
       Assert.False(string.IsNullOrEmpty(result.ProjectDescriptor.ProjectUid));
-      Assert.True(result.ProjectDescriptor.ShortRaptorProjectId > 0);
+      Assert.True(result.ProjectDescriptor.ShortRaptorProjectId != 0);
       Assert.Equal(request.ProjectName, result.ProjectDescriptor.Name);
     }
   }
