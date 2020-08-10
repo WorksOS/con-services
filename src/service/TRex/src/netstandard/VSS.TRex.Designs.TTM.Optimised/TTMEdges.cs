@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
@@ -16,8 +17,6 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// <summary>
     /// Reads in the collection of edges from the TIN model using the provided reader
     /// </summary>
-    /// <param name="reader"></param>
-    /// <param name="header"></param>
     public void Read(BinaryReader reader, TTMHeader header)
     {
       Items = new int[header.NumberOfEdgeRecords];
@@ -30,5 +29,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
         reader.BaseStream.Position = RecPos + header.EdgeRecordSize;
       }
     }
+
+    public int SizeOf() => Items.Length * sizeof(int);
   }
 }

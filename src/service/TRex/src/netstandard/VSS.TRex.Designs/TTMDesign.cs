@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace VSS.TRex.Designs
     private readonly double cellSize;
     private readonly ISubGridTreeBitMask subGridIndex;
 
-    public TrimbleTINModel Data { get; }
+    public TrimbleTINModel Data { get; private set; }
 
     private Triangle[] triangleItems;
     private XYZ[] vertexItems;
@@ -278,7 +279,7 @@ namespace VSS.TRex.Designs
         //   SIGLogMessage.PublishNoODS(Self, Format('ProcessingCellYIndex (%d) out of range', [ProcessingCellYIndex]), ...);
       } while ((NumCellRowsToProcess > 0) && !SingleRowOnly); // or not InRange(ProcessingCellYIndex, 0, kSubGridTreeDimension - 1);
     }
-  
+
     public override bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
       SubGridTreeBitmapSubGridBits mask,
       SubGridTreeBitmapSubGridBits patch,
@@ -308,7 +309,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Constructs the sub grid existence map for the design
     /// </summary>
-    /// <returns></returns>
     private bool ConstructSubGridIndex()
     {
       // Read through all the triangles in the model and, for each triangle,
@@ -327,8 +327,8 @@ namespace VSS.TRex.Designs
           {
             cellScanner.ScanCellsOverTriangle(subGridIndex,
               triIndex,
-              (tree, x, y) => ((ISubGridTreeBitMask)tree)[x, y],
-              (tree, x, y, t) => ((ISubGridTreeBitMask)tree)[x, y] = true,
+              (tree, x, y) => ((ISubGridTreeBitMask) tree)[x, y],
+              (tree, x, y, t) => ((ISubGridTreeBitMask) tree)[x, y] = true,
               cellScanner.AddTrianglePieceToSubgridIndex
             );
           }
@@ -350,7 +350,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Constructor for a TTMDesign that takes the underlying cell size for the site model that will be used when interpolating heights from the design surface
     /// </summary>
-    /// <param name="ACellSize"></param>
     public TTMDesign(double ACellSize)
     {
       Data = new TrimbleTINModel();
@@ -361,10 +360,7 @@ namespace VSS.TRex.Designs
 
       // Create a sub grid tree bit mask index that holds one bit per on-the-ground
       // sub grid that intersects at least one triangle in the TTM.
-      subGridIndex = new SubGridTreeSubGridExistenceBitMask
-      {
-        CellSize = SubGridTreeConsts.SubGridTreeDimension * ACellSize
-      };
+      subGridIndex = new SubGridTreeSubGridExistenceBitMask {CellSize = SubGridTreeConsts.SubGridTreeDimension * ACellSize};
 
       // Create the optimized sub grid tree spatial index that minimizes the number of allocations in the final result.
       SpatialIndexOptimised = new OptimisedSpatialIndexSubGridTree(SubGridTreeConsts.SubGridTreeLevels - 1, SubGridTreeConsts.SubGridTreeDimension * ACellSize);
@@ -373,10 +369,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Retrieves the ground extents of the TTM design 
     /// </summary>
-    /// <param name="x1"></param>
-    /// <param name="y1"></param>
-    /// <param name="x2"></param>
-    /// <param name="y2"></param>
     public override void GetExtents(out double x1, out double y1, out double x2, out double y2)
     {
       x1 = Data.Header.MinimumEasting;
@@ -388,8 +380,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Retrieves the elevation range of the vertices in the TTm design surface
     /// </summary>
-    /// <param name="z1"></param>
-    /// <param name="z2"></param>
     public override void GetHeightRange(out double z1, out double z2)
     {
       if (minHeight == Common.Consts.NullReal || maxHeight == Common.Consts.NullReal) // better calculate them
@@ -433,12 +423,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Interpolates a single spot height from the design, using the optimized spatial index
     /// </summary>
-    /// <param name="Hint"></param>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Offset"></param>
-    /// <param name="Z"></param>
-    /// <returns></returns>
     public override bool InterpolateHeight(ref int Hint,
       double X, double Y,
       double Offset,
@@ -498,12 +482,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Interpolates heights from the design for all the cells in a sub grid
     /// </summary>
-    /// <param name="Patch"></param>
-    /// <param name="OriginX"></param>
-    /// <param name="OriginY"></param>
-    /// <param name="CellSize"></param>
-    /// <param name="Offset"></param>
-    /// <returns></returns>
     public override bool InterpolateHeights(float[,] Patch, double OriginX, double OriginY, double CellSize, double Offset)
     {
       bool hasValues = false;
@@ -604,11 +582,6 @@ namespace VSS.TRex.Designs
     /// Loads the TTM design file/s, from storage
     /// Includes design file, 2 index files and a boundary file (if they exist)
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="fileName"></param>
-    /// <param name="localPath"></param>
-    /// <param name="loadIndices"></param>
-    /// <returns></returns>
     public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
       var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
@@ -638,9 +611,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads the TTM design from a TTM file, along with the sub grid existence map file and  if it exists (created otherwise)
     /// </summary>
-    /// <param name="localPathAndFileName"></param>
-    /// <param name="saveIndexFiles"></param>
-    /// <returns></returns>
     public override DesignLoadResult LoadFromFile(string localPathAndFileName, bool saveIndexFiles = true)
     {
       try
@@ -678,8 +648,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads the sub grid existence map from a file
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
     private bool LoadSubGridIndex(string fileName)
     {
       try
@@ -701,12 +669,10 @@ namespace VSS.TRex.Designs
         return false;
       }
     }
-    
+
     /// <summary>
     /// Loads the sub grid existence map from a file
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
     private bool LoadSpatialIndex(string fileName)
     {
       try
@@ -729,7 +695,7 @@ namespace VSS.TRex.Designs
             // Load the array of triangle references
             long numTriangles = reader.ReadInt64();
             SpatialIndexOptimisedTriangles = new int[numTriangles];
-            int bufPos = (int)ms.Position;
+            int bufPos = (int) ms.Position;
             for (int i = 0; i < numTriangles; i++)
             {
               // Binary reader version, replaced by faster version below
@@ -761,9 +727,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads a sub grid existence map for the design from a file
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="saveIndexFile"></param>
-    /// <returns></returns>
     private bool LoadSubGridIndexFile(string fileName, bool saveIndexFile)
     {
       Log.LogInformation($"Loading sub grid index file {fileName}");
@@ -789,9 +752,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads a sub grid spatial index for the design from a file
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="saveIndexFile"></param>
-    /// <returns></returns>
     private bool LoadSpatialIndexFile(string fileName, bool saveIndexFile)
     {
       Log.LogInformation($"Loading spatial index file {fileName}");
@@ -822,9 +782,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads a boundary for the design from a file.
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="saveBoundaryFile"></param>
-    /// <returns></returns>
     private bool LoadBoundaryFile(string fileName, bool saveBoundaryFile)
     {
       Log.LogInformation($"Loading boundary file {fileName}");
@@ -855,8 +812,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads the boundary from a file.
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
     private bool LoadBoundary(string fileName)
     {
       try
@@ -897,8 +852,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Saves a boundary for the design to a file
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
     private bool SaveBoundary(string fileName)
     {
       try
@@ -911,8 +864,8 @@ namespace VSS.TRex.Designs
         {
           using (var writer = new BinaryWriter(fs))
           {
-            writer.Write((int)TTM_DESIGN_BOUNDARY_FILE_VERSION); // Version
-            writer.Write((int)(boundary.Count));
+            writer.Write((int) TTM_DESIGN_BOUNDARY_FILE_VERSION); // Version
+            writer.Write((int) (boundary.Count));
 
             foreach (var fence in boundary)
               fence.Write(writer);
@@ -931,12 +884,10 @@ namespace VSS.TRex.Designs
       Log.LogError($"Unable to save sub grid index file {fileName}");
       return false;
     }
-    
+
     /// <summary>
     /// Saves a sub grid existence map for the design to a file
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
     private bool SaveSubGridIndex(string fileName)
     {
       try
@@ -963,8 +914,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Saves a sub grid existence map for the design to a file
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <returns></returns>
     private bool SaveSpatialIndex(string fileName)
     {
       try
@@ -1005,16 +954,12 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// A reference to the internal sub grid existence map for the design
     /// </summary>
-    /// <returns></returns>
     public override ISubGridTreeBitMask SubGridOverlayIndex() => subGridIndex;
 
     /// <summary>
     /// Computes the requested geometric profile over the design and returns the result
     /// as a vector of X, Y, Z, Station & TriangleIndex records
     /// </summary>
-    /// <param name="profilePath"></param>
-    /// <param name="cellSize"></param>
-    /// <returns></returns>
     public override List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize)
     {
       var profiler = DIContext.Obtain<IOptimisedTTMProfilerFactory>().NewInstance(Data, SpatialIndexOptimised, SpatialIndexOptimisedTriangles);
@@ -1024,7 +969,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Computes the requested boundary.
     /// </summary>
-    /// <returns></returns>
     public override List<Fence> GetBoundary()
     {
       if (!LoadBoundaryFile(FileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, false))
@@ -1051,8 +995,24 @@ namespace VSS.TRex.Designs
         Log.LogError(e, $"Exception RemoveFromStorage. file:{fileName}");
         return false;
       }
+
       return true;
     }
 
+    public override long SizeInCache()
+    {
+      return Data.SizeInCache() +
+             SpatialIndexOptimisedTriangles.Length * sizeof(int) + 
+             boundary.Sum(x => x.NumVertices * FencePoint.SizeOf());
+    }
+
+    public override void Dispose()
+    {
+      Data = null;
+      triangleItems = null;
+      vertexItems = null;
+      SpatialIndexOptimisedTriangles = null;
+      boundary = null;
+    }
   }
 }

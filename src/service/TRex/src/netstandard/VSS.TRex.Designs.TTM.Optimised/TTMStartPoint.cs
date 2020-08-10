@@ -8,5 +8,7 @@
     public double X;
     public double Y;
     public int Triangle;
+
+    public static int SizeOf() => 2 * sizeof(double) * sizeof(int);
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -8,21 +9,14 @@ using VSS.TRex.DI;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModels.Interfaces;
 using Nito.AsyncEx.Synchronous;
+using VSS.Common.Abstractions.Configuration;
 
 namespace VSS.TRex.Designs
-{
-
-  /*
+{ 
+/*
 TDesignFiles = class(TObject)
   private
-    FDesignCacheSizeInKB : Integer;
-    FCurrentCacheSizeInKB : Integer;
     FDesignUnlockedEvent : TSimpleEvent;
-    function EnsureSufficientSpaceToLoadDesign(SpaceRequiredInKB: Integer): Boolean;
-    function SpaceAvailableInKB: Integer;
-    function ImportFileFromTCC(const DesignDescriptor : TVLPDDesignDescriptor; const ProjectUid : Int64) : Boolean;
-
-    procedure DeleteLocallyCachedFile(const FileToDelete: TFileName);
 
   public
     Function AnyLocks(out LockCount : integer) : Boolean;
@@ -30,10 +24,6 @@ TDesignFiles = class(TObject)
     function GetCombinedSubgridIndexStream(const Surfaces: TICGroundSurfaceDetailsList;
                                            const ProjectUid : Int64; const ACellSize: Double;
                                            out MS: TMemoryStream): Boolean;
-
-    procedure UpdateDesignCache(const ProjectUid     :Int64;
-                                const DesignFileName  :String;
-                                const DeleteTTMFile   :Boolean);
 end;
 */
 
@@ -41,7 +31,27 @@ end;
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<DesignFiles>();
 
+    public const long DEFAULT_DESIGN_ELEVATION_CACHE_SIZE = 1 * 1024 * 1024 * 1024;
+
+    /// <summary>
+    /// The collection of designs that are currently present in the cache
+    /// </summary>
     private readonly Dictionary<Guid, IDesignBase> _designs = new Dictionary<Guid, IDesignBase>();
+
+    /// <summary>
+    /// The total size of all cached items present
+    /// </summary>
+    private long _designsCacheSize = 0;
+
+    /// <summary>
+    /// The maximum amount of memory available to store cached designs, in bytes
+    /// </summary>
+    private readonly long _maxDesignsCacheSize = (long)DIContext.Obtain<IConfigurationStore>().GetValueUlong("TREX_DESIGN_ELEVATION_CACHE_SIZE", DEFAULT_DESIGN_ELEVATION_CACHE_SIZE);
+
+    /// <summary>
+    /// The amount of memory in the design cache available to store additional designs, in bytes
+    /// </summary>
+    private long FreeSpaceInCache => _maxDesignsCacheSize - _designsCacheSize;
 
     /// <summary>
     /// Removes a design from cache and storage
@@ -66,18 +76,18 @@ end;
     /// </summary>
     public IDesignBase Lock(Guid designUid, Guid dataModelId, double cellSize, out DesignLoadResult loadResult)
     {
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
+      if (siteModel == null)
+      {
+        _log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");
+        loadResult = DesignLoadResult.SiteModelNotFound;
+        return null;
+      }
+
       IDesignBase design;
 
       lock (_designs)
       {
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
-        if (siteModel == null)
-        {
-          _log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");
-          loadResult = DesignLoadResult.SiteModelNotFound;
-          return null;
-        }
-
         _designs.TryGetValue(designUid, out design);
 
         if (design == null)
@@ -125,21 +135,27 @@ end;
           _log.LogDebug($"Creating entry for design UID {designUid}, filename = {descriptor.FileName} within the in-memory cache");
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
-          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelId), descriptor.FileName), cellSize, dataModelId);
+          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(designUid, Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelId), descriptor.FileName), cellSize, dataModelId);
           design.IsLoading = true;
 
           _designs.Add(designUid, design);
+
+          // At this point the lock on the designs is released. There is now a design in the cache representing it which is in 'loading' state
         }
       }
 
+      // Obtain a design specific lock so other design requests are not held up while this design is being loaded
       lock (design)
       {
+        design.WindLock();
+
         if (!design.IsLoading)
         {
           loadResult = DesignLoadResult.Success;
           return design;
         }
 
+        // The design is in 'loading' state, and needs to be loaded here.
         if (!File.Exists(design.FileName))
         {
           _log.LogDebug($"Getting design UID {designUid}, filename = {design.FileName} from persistent store (S3)");
@@ -153,7 +169,11 @@ end;
           }
         }
 
-        _log.LogDebug($"Loading design UID {designUid}, filename = {design.FileName}");
+        var fileInfo = new FileInfo(design.FileName);
+        _log.LogDebug($"Loading design UID {designUid}, filename = {design.FileName}, size = {fileInfo.Length} bytes");
+
+        // As a first approximation, ensure there is at least enough space in the cache to accomodate the load file size
+        EnsureSufficientSpaceToLoadDesign(fileInfo.Length);
 
         loadResult = design.LoadFromFile(design.FileName);
         if (loadResult != DesignLoadResult.Success)
@@ -162,6 +182,9 @@ end;
           _designs.Remove(designUid);
           return null;
         }
+
+        // As a second approximation, ensure there is sufficient space to contain the now loaded design
+        EnsureSufficientSpaceToLoadDesign(design.SizeInCache());
 
         design.IsLoading = false;
         return design;
@@ -176,7 +199,87 @@ end;
       lock (_designs)
       {
         // Very simple unlock function...
+        design.UnWindLock();
+
+        // If the design is not locked check if there should be some maintenance of the content of the cache...
+        if (design.Locked || (_designsCacheSize <= _maxDesignsCacheSize)) 
+          return true;
+
+        lock (design)
+        {
+          if (design.Locked) // Another thread locked the design before we could acquire the lock
+            return true;
+
+          if (_designs.Remove(designUid))
+          {
+            _designsCacheSize = _designsCacheSize - design.SizeInCache();
+            design.Dispose();
+            _log.LogInformation($"Removed design {designUid} in project {design.ProjectUid} from designs cache");
+          }
+          else
+          {
+            _log.LogError($"Failed to remove design {designUid} in project {design.ProjectUid} from designs cache");
+          }
+        }
+
         return true;
+      }
+    }
+
+    /// <summary>
+    /// Removes sufficient designs from the designs list to ensure that the design may be loaded
+    /// If there are no available designs to remove it will block loading the design until there is
+    /// </summary>
+    public bool EnsureSufficientSpaceToLoadDesign(long designCacheSize)
+    {
+      try
+      {
+        if (designCacheSize < FreeSpaceInCache)
+          return true;
+
+        do
+        {
+          if (_designs.Count == 0) // If there are no designs in the cache then permit the cache to be loaded, even if it exceeds the cache available
+            return true;
+
+          // No? Then find some designs to victimise
+          var removedDesign = false;
+
+          lock (_designs)
+          {
+            foreach (var design in _designs.Values)
+            {
+              if (design.Locked) continue;
+
+              _log.LogInformation($"{nameof(EnsureSufficientSpaceToLoadDesign)}: Removing design {design.FileName}/{design.ProjectUid} from cache to make room");
+
+              if (_designs.Remove(design.DesignUid))
+              {
+                _log.LogInformation($"Removed design {design.FileName} in project {design.ProjectUid} from designs cache");
+                removedDesign = true;
+                break;
+              }
+
+              _log.LogInformation($"{nameof(EnsureSufficientSpaceToLoadDesign)}: Failed to remove design from cache");
+            }
+          }
+
+          if (designCacheSize < FreeSpaceInCache)
+            return true;
+
+          if (!removedDesign)
+          {
+            // Still no joy? Spin until a design is released
+            Task.Delay(100).WaitAndUnwrapException();
+          }
+        } while (FreeSpaceInCache < designCacheSize);
+
+        return false;
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"{nameof(EnsureSufficientSpaceToLoadDesign)}: Exception occurred {e.Message}");
+        return false;
       }
     }
 

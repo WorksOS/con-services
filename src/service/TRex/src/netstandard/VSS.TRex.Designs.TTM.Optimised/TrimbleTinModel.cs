@@ -37,11 +37,9 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// <summary>
     /// Reads a TrimbleTINModel using the provided reader
     /// </summary>
-    /// <param name="reader"></param>
-    /// <param name="bytes"></param>
     public void Read(BinaryReader reader, byte[] bytes)
     {
-      string LoadErrMsg = "";
+      var LoadErrMsg = "";
 
       try
       {
@@ -86,37 +84,30 @@ namespace VSS.TRex.Designs.TTM.Optimised
       {
         throw; // pass it on
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        throw new TTMFileReadException($"Exception at TTM loading phase {LoadErrMsg}", E);
+        throw new TTMFileReadException($"Exception at TTM loading phase {LoadErrMsg}", e);
       }
     }
 
     /// <summary>
     /// Loads a TrimbleTINModel from a stream
     /// </summary>
-    /// <param name="stream"></param>
-    /// <param name="bytes"></param>
     public void LoadFromStream(Stream stream, byte [] bytes)
     {
-      using (BinaryReader reader = new BinaryReader(stream))
-      {
-        Read(reader, bytes);
-      }
+      using var reader = new BinaryReader(stream);
+      Read(reader, bytes);
     }
 
     /// <summary>
     /// Loads a TrimbleTINModel from a stream
     /// </summary>
-    /// <param name="fileName"></param>
     public void LoadFromFile(string fileName)
     {
-      byte[] bytes = File.ReadAllBytes(fileName);
+      var bytes = File.ReadAllBytes(fileName);
 
-      using (MemoryStream ms = new MemoryStream(bytes))
-      {
-        LoadFromStream(ms, bytes);
-      }
+      using var ms = new MemoryStream(bytes);
+      LoadFromStream(ms, bytes);
 
       // FYI, This method sucks totally - don't use it
       //using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 2048))
@@ -126,6 +117,15 @@ namespace VSS.TRex.Designs.TTM.Optimised
 
       if (ModelName.Length == 0)
         ModelName = Path.GetFileNameWithoutExtension(fileName);
+    }
+
+
+    public long SizeInCache()
+    {
+      return Vertices.SizeOf() +
+             Triangles.SizeOf() +
+             Edges.SizeOf() +
+             StartPoints.SizeOf();
     }
   }
 }

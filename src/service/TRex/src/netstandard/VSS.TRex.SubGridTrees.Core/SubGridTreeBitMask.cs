@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Factories;
@@ -26,14 +27,12 @@ namespace VSS.TRex.SubGridTrees
         /// Constructor that defaults levels, cell size and sub grid factory 
         /// </summary>
         public SubGridTreeBitMask(double cellSize) : this(SubGridTreeConsts.SubGridTreeLevels, cellSize)
-        {          
+        {
         }
 
         /// <summary>
         /// Constructor that sets levels and cell size with a default factory
         /// </summary>
-        /// <param name="numLevels"></param>
-        /// <param name="cellSize"></param>
         public SubGridTreeBitMask(byte numLevels, double cellSize) : base(numLevels, cellSize,
                                   new SubGridFactory<SubGridTreeNodeBitmapSubGrid, SubGridTreeLeafBitmapSubGrid>())
         {
@@ -43,9 +42,6 @@ namespace VSS.TRex.SubGridTrees
         /// Performs the fundamental GetCell operation that returns a boolean value noting the state of the 
         /// bit in the tree at the [CellX, CellY] location
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>                        
         public bool GetCell(int CellX, int CellY)
         {
             var SubGrid = LocateSubGridContaining(CellX, CellY, numLevels);
@@ -63,10 +59,6 @@ namespace VSS.TRex.SubGridTrees
         /// Performs the fundamental SetCell operation that sets the state of bit in the tree at the 
         /// [CellX, CellY] location according to the boolean value parameter
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <param name="Value"></param>
-        /// <returns></returns>     
         public void SetCell(int CellX, int CellY, bool Value)
         {
             var SubGrid = ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.CreateLeaf);
@@ -79,7 +71,6 @@ namespace VSS.TRex.SubGridTrees
         /// Calculates the integer bounding rectangle within the bit mask sub grid that encloses all bits that
         /// are set to 1 (true)
         /// </summary>
-        /// <returns></returns>
         private BoundingIntegerExtent2D ComputeCellsExtents()
         {
             var SubGridCellsExtents = new BoundingIntegerExtent2D();
@@ -97,9 +88,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Default array indexer for the bits in the sub grid tree mask
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
         public bool this[int CellX, int CellY]
         {
             get => GetCell(CellX, CellY);
@@ -108,10 +96,8 @@ namespace VSS.TRex.SubGridTrees
 
         /// <summary>
         /// RemoveLeafOwningCell locates the leaf sub grid that contains the OTG cell identified by CellX and CellY and removes it from the
-        /// sub grid tree.        
+        /// sub grid tree.
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
         public void RemoveLeafOwningCell(int CellX, int CellY)
         {
             var SubGrid = LocateSubGridContaining(CellX, CellY, (byte)(numLevels - 1));
@@ -128,7 +114,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// CountBits performs a scan of the sub grid bit mask tree and counts all the bits that are set within it
         /// </summary>
-        /// <returns></returns>
         public long CountBits()
         {
             long totalBits = 0;
@@ -146,7 +131,6 @@ namespace VSS.TRex.SubGridTrees
         /// Calculates the world coordinate bounding rectangle within the bit mask sub grid that encloses all bits that
         /// are set to 1 (true)
         /// </summary>
-        /// <returns></returns>
         public BoundingWorldExtent3D ComputeCellsWorldExtents()
         {
             var SubGridCellsExtents = ComputeCellsExtents();
@@ -166,16 +150,12 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// LeafExists determines if there is a leaf cell in the sub grid tree that contains the cell at address [CellX, CellY].
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
         public bool LeafExists(int CellX, int CellY) => ConstructPathToCell(CellX, CellY, SubGridPathConstructionType.ReturnExistingLeafOnly) != null;
 
         /// <summary>
         /// Takes a source SubGridBitMask instance and performs a bitwise OR of the contents of source against the
         /// contents of this instance, modifying the state of this sub grid bit mask tree to produce the result
         /// </summary>
-        /// <param name="Source"></param>
         public void SetOp_OR(ISubGridTreeBitMask Source)
         {
             Source?.ScanAllSubGrids(x =>
@@ -194,7 +174,6 @@ namespace VSS.TRex.SubGridTrees
         /// Takes a source SubGridBitMask instance and performs a bitwise XOR of the contents of source against the
         /// contents of this instance, modifying the state of this sub grid bit mask tree to produce the result
         /// </summary>
-        /// <param name="Source"></param>
         public void SetOp_XOR(ISubGridTreeBitMask Source)
         {
           Source?.ScanAllSubGrids(x =>
@@ -254,7 +233,6 @@ namespace VSS.TRex.SubGridTrees
         /// Takes a source SubGridBitMask instance and performs a bitwise AND of the bitwise NOTed contents of source against the
         /// contents of this instance, modifying the state of this sub grid bit mask tree to produce the result
         /// </summary>
-        /// <param name="Source"></param>
         public void SetOp_ANDNOT(ISubGridTreeBitMask Source)
         {
           ScanAllSubGrids(x =>
@@ -277,9 +255,6 @@ namespace VSS.TRex.SubGridTrees
         /// value of cell is True. The function returns true if the cell was set
         /// and has been cleared
         /// </summary>
-        /// <param name="CellX"></param>
-        /// <param name="CellY"></param>
-        /// <returns></returns>
         public bool ClearCellIfSet(int CellX, int CellY)
         {
           var SubGrid = LocateSubGridContaining(CellX, CellY, numLevels);
@@ -306,7 +281,6 @@ namespace VSS.TRex.SubGridTrees
         /// Note: As each bit represents an on-the-ground leaf sub grid, cell address of that bit is transformed
         /// from the level 5 (node) layer to the level 6 (leaf) layer
         /// </summary>
-        /// <param name="functor"></param>
         public void ScanAllSetBitsAsSubGridAddresses(Action<SubGridCellAddress> functor)
         {
           ScanAllSubGrids(leaf =>
@@ -319,6 +293,28 @@ namespace VSS.TRex.SubGridTrees
             return true;
           });
         }
+
+    /// <summary>
+    /// Calculate the memory used by the sub grid bit mask by traversing the tree and summing the sizes of
+    /// node and leaf sub grids
+    /// </summary>
+    public long SizeOf()
+    {
+      long sum = 0;
+
+      ScanAllSubGrids(leaf =>
+      {
+        sum += SubGridTreeLeafBitmapSubGrid.SizeOf();
+        return true;
+      },
+      node =>
+      {
+        sum += ((NodeSubGrid)node).SizeOf();
+        return SubGridProcessNodeSubGridResult.OK;
+      });
+
+      return sum;
+    }
 
     public override string SerialisedHeaderName() => "ExistenceMap";
 

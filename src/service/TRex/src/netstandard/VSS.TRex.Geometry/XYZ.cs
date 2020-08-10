@@ -458,5 +458,7 @@ namespace VSS.TRex.Geometry
         (P1.Y + P2.Y + P3.Y) / 3,
         (P1.Z + P2.Z + P3.Z) / 3);
     }
+
+    public static int SizeOf() => 3 * sizeof(double);
   }
 }
