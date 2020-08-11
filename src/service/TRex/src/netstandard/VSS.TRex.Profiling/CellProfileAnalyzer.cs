@@ -440,8 +440,7 @@ namespace VSS.TRex.Profiling
 
         // get sub grid setup iterator and set cell address
         // get sub grid origin for cell address
-        var thisSubGridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-          ProfileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        var thisSubGridOrigin = new SubGridCellAddress(ProfileCell.OTGCellX & ~SubGridTreeConsts.SubGridLocalKeyMask, ProfileCell.OTGCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
 
         if (!currentSubGridOrigin.Equals(thisSubGridOrigin)) // if we have a new sub grid to fetch
         {
@@ -450,7 +449,7 @@ namespace VSS.TRex.Profiling
           subGrid = null;
 
           // Does the sub grid tree contain this node in it's existence map?
-          if (PDExistenceMap[currentSubGridOrigin.X, currentSubGridOrigin.Y])
+           if (PDExistenceMap[currentSubGridOrigin.X >> SubGridTreeConsts.SubGridIndexBitsPerLevel, currentSubGridOrigin.Y >> SubGridTreeConsts.SubGridIndexBitsPerLevel])
             subGrid = SubGridTrees.Server.Utilities.SubGridUtilities.LocateSubGridContaining
               (SiteModel.PrimaryStorageProxy, SiteModel.Grid, ProfileCell.OTGCellX, ProfileCell.OTGCellY, SiteModel.Grid.NumLevels, false, false);
 
