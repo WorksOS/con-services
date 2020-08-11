@@ -3,7 +3,12 @@
 Expand the name of the chart.
 */}}
 {{- define "3dpmservice.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- $name := default .Release.Name  -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" $name .Values.environment | lower | replace "_" "-"  | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -17,16 +22,25 @@ If release name contains chart name it will be used as a full name.
 {{- else -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- .Release.Name | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name $name | lower | replace "_" "-"  | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "3dpmservice.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create name for webapi component.
+*/}}
+{{- define "component.webapi" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s-%s-%s" "webapi" $name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}

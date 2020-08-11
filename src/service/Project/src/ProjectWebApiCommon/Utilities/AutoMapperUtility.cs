@@ -90,16 +90,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
-          // for v5 BC apis
-          cfg.CreateMap<CreateProjectV5Request, CreateProjectEvent>()
-            .ForMember(dest => dest.CustomerUID, opt => opt.Ignore()) // done externally
-            .ForMember(dest => dest.ProjectBoundary, opt => opt.Ignore()) // done externally
-            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom((src => src.CoordinateSystem.Name)))
-            .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore()) // done externally
-            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow))
-            .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(x => 0))
-            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore());
-          cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
+          // for v5 TBC apis
+          cfg.CreateMap<ProjectDetailResponseModel, ProjectDataTBCSingleResult>()
+            .ForMember(dest => dest.LegacyProjectId, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(x => DateTime.MinValue))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(x => DateTime.MaxValue))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(x => 0)) // old standard type
+            .ForMember(dest => dest.Code, opt => opt.Ignore())
+            .ForMember(dest => dest.Message, opt => opt.Ignore());
+          
+         cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
             .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
             .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
           // ProjectGeofenceAssociations
@@ -108,17 +109,32 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           // cws clients
           cfg.CreateMap<CreateProjectEvent, CreateProjectRequestModel>()
             .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.TRN, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
-            .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
-            .ForMember(dest => dest.TRN, opt => opt.Ignore())
+            .ForMember(dest => dest.Boundary, opt => opt.Ignore()) 
+            .ForMember(dest => dest.CalibrationFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
+            .ForMember(dest => dest.CalibrationFileBase64Content, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
+
             ;
           cfg.CreateMap<UpdateProjectEvent, CreateProjectRequestModel>()
             .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+            .ForMember(dest => dest.TRN, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone)) // not sure if we can update timezone
             .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.CalibrationFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
+            .ForMember(dest => dest.CalibrationFileBase64Content, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
+            ;
+          cfg.CreateMap<ProjectValidation, CreateProjectRequestModel>()
             .ForMember(dest => dest.TRN, opt => opt.Ignore())
+            .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.CustomerUid))
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.Timezone, opt => opt.Ignore())
+            .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
+            .ForMember(dest => dest.CalibrationFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
+            .ForMember(dest => dest.CalibrationFileBase64Content, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
             ;
 
           cfg.CreateMap<AccountResponseModel, CustomerData>()
