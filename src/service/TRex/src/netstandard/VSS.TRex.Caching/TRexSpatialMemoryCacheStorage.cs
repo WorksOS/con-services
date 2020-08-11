@@ -190,7 +190,10 @@ namespace VSS.TRex.Caching
       var cacheItem = _items[index];
 
       if (cacheItem.Context == null)
+      {
+        // This element has no home, it is by definition null
         return default;
+      }
 
       if (cacheItem.Expired)
       {
