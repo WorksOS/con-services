@@ -1,9 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.SurveyedSurfaces.Executors
 {
@@ -28,7 +30,13 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
         var removed = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(projectUid, surveyedSurfaceUid);
 
-        if (!removed)
+        if (removed)
+        {
+          // Broadcast to listeners that design has changed
+          var sender = DIContext.Obtain<IDesignChangedEventSender>();
+          sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, projectUid, surveyedSurfaceUid, ImportedFileType.DesignSurface, designRemoved: true);
+        }
+        else
         {
           _log.LogError($"Failed to remove surveyed surface {surveyedSurfaceUid} from project {projectUid} as it may not exist in the project");
           return DesignProfilerRequestResult.DesignDoesNotExist;

@@ -14,7 +14,6 @@ namespace VSS.TRex.Designs.GridFabric.Events
   /// </summary>
   public class DesignChangedEventSender : IDesignChangedEventSender
   {
-
     private const string MessageTopicName = "DesignStateChangedEvents";
 
     /// <summary>

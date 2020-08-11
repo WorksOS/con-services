@@ -28,7 +28,13 @@ namespace VSS.TRex.Designs.Executors
 
         var removed = DIContext.Obtain<IDesignManager>().Remove(projectUid, designUid);
 
-        if (!removed)
+        if (removed)
+        {
+          // Broadcast to listeners that design has changed
+          var sender = DIContext.Obtain<IDesignChangedEventSender>();
+          sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, projectUid, designUid, ImportedFileType.DesignSurface, designRemoved: true);
+        }
+        else
         {
           _log.LogError($"Failed to remove design {designUid} from project {projectUid} as it may not exist in the project");
           return DesignProfilerRequestResult.DesignDoesNotExist;
