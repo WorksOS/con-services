@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
@@ -37,20 +40,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     #region projects
-
-    /// todoJeannie we're not sure which endpoints TBC uses to get its projects.
-    ///       Watch in testing to see what it needs
-   
+    
+    // todoJeannie we are not sure on endpoints responses given old pm and OrangeApp endpoints
+    // will need to see what comes out of testing
 
     /// <summary>
     /// Gets a project for a customer.
     ///    includes legacyId
+    /// Yes, this path appears to be singular from old orangeApp code
     /// </summary>
-    [Route("api/v5/projects/{id}")]
+    [Route("api/v5/project/{id}")]
     [HttpGet]
     public async Task<ProjectDataTBCSingleResult> GetProjectByShortId(long id)
     {
-      Logger.LogInformation("GetProjectByShortId");
+      Logger.LogInformation($"{nameof(GetProjectByShortId)}");
 
       var project =  await ProjectRequestHelper.GetProjectForCustomer(new Guid(CustomerUid), new Guid(UserId), id, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
       var projectTbc = AutoMapperUtility.Automapper.Map<ProjectDataTBCSingleResult>(project);
@@ -59,8 +62,35 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 140);
 
       Logger.LogDebug($"{nameof(GetProjectByShortId)}: completed successfully. projectTbc {projectTbc}");
-      
       return projectTbc;
+    }
+
+    /// <summary>
+    /// Gets list of active projects for a customer.
+    ///    includes legacyId
+    /// Yes, this path appears to be singular from old orangeApp code
+    /// </summary>
+    [Route("api/v5/project")]
+    [HttpGet]
+    public async Task<ProjectDataTBCListResult> GetProjects()
+    {
+      Logger.LogInformation($"{nameof(GetProjects)} ");
+
+      var projects = await CwsProjectClient.GetProjectsForCustomer(new Guid(CustomerUid), new Guid(UserId),
+        type: CwsProjectType.AcceptsTagFiles, customHeaders: customHeaders);
+
+      var result = new ProjectDataTBCListResult();
+      foreach (var project in projects.Projects.Where(p=> p.Status == ProjectStatus.Active))
+      {
+        var projectTbc = AutoMapperUtility.Automapper.Map<ProjectDataTBCSingleResult>(project);
+        projectTbc.LegacyProjectId = (Guid.TryParse(project.ProjectId, out var g) ? g.ToLegacyId() : 0);
+        if (projectTbc.LegacyProjectId == 0)
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 140);
+        result.ProjectDescriptors.Add(projectTbc);
+      }
+
+      Logger.LogDebug($"{nameof(GetProjects)}: completed successfully. projects {result}");
+      return result;
     }
 
     // POST: api/v5/projects
@@ -71,7 +101,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     Result: HttpStatusCode.Created
     ///            {"id":6964} 
     /// 
-    ///   This US only handles happy path. ServiceExceptions will be mapped in a future US. 
+    ///   This US only handles happy path. ServiceExceptions will be mapped in a future US.
+    /// Yes, this path appears to be plural from old orangeApp code 
     /// </summary>
     [Route("api/v5/projects")]
     [HttpPost]
@@ -115,7 +146,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(projectValidation)) as ProjectV6DescriptorsSingleResult
         );
       
-      Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortRaptorProjectId {result.ProjectDescriptor.ShortRaptorProjectId}");
+      Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortProjectId {result.ProjectDescriptor.ShortRaptorProjectId}");
       return ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.Created, result.ProjectDescriptor.ShortRaptorProjectId);
     }
 
@@ -149,7 +180,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (tccAuthorizationRequest == null)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
 
-      Logger.LogInformation("ValidateTccAuthorization. completed succesfully");
+      Logger.LogInformation($"{nameof(ValidateTccAuthorization)}: completed successfully");
       return ReturnSuccessV5Result.CreateReturnSuccessV5Result(HttpStatusCode.OK, true);
     }
 
