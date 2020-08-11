@@ -45,13 +45,13 @@ namespace CCSS.CWS.Client
     /////   used by ProjectSvc v6 and v5TBC
     ///// </summary>
     public async Task<ProjectConfigurationModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IHeaderDictionary customHeaders = null)
-    { 
+    {
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
-      var projectConfigurationModel = 
+      var projectConfigurationModel =
         await GetData<ProjectConfigurationModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
-     
+
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
       return projectConfigurationModel;
     }
@@ -67,9 +67,9 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectConfigurations)}: projectUid {projectUid}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
-      var projectConfigurationFileListResponse = 
+      var projectConfigurationFileListResponse =
         await GetData<ProjectConfigurationFileListResponseModel>($"/projects/{projectTrn}/configuration", null, null, null, customHeaders);
-      
+
       log.LogDebug($"{nameof(GetProjectConfigurations)}: projectConfigurationFileListResponse {JsonConvert.SerializeObject(projectConfigurationFileListResponse)}");
       return projectConfigurationFileListResponse;
     }
@@ -100,7 +100,7 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid);
-      var projectConfigurationResponse = 
+      var projectConfigurationResponse =
         await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
 
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectConfigurationResponse {JsonConvert.SerializeObject(projectConfigurationResponse)}");

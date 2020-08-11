@@ -45,22 +45,17 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void MapCreateProjectV5RequestToEvent()
     {
-      var requestedProjectType = CwsProjectType.AcceptsTagFiles;
       var expectedProjectType = CwsProjectType.AcceptsTagFiles;
-      var request = CreateProjectV5Request.CreateACreateProjectV5Request
-        (requestedProjectType, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
-        "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
-      var creatProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid);
+      var request = CreateProjectV5Request.CreateACreateProjectV5Request("projectName", _boundaryLL, _businessCenterFile);
+      var projectValidation = MapV5Models.MapCreateProjectV5RequestToProjectValidation(request, _customerUid);
 
-      Assert.Equal(Guid.Empty, creatProjectEvent.ProjectUID);
-      Guid.TryParse(creatProjectEvent.CustomerUID.ToString(), out var customerUidOut);
+      Assert.Null(projectValidation.ProjectUid);
+      Guid.TryParse(projectValidation.CustomerUid.ToString(), out var customerUidOut);
       Assert.Equal(_customerUid, customerUidOut.ToString());
-      Assert.Equal(expectedProjectType, creatProjectEvent.ProjectType);
-      Assert.Equal(request.ProjectName, creatProjectEvent.ProjectName);
-      Assert.Equal(request.ProjectTimezone, creatProjectEvent.ProjectTimezone);
-      Assert.Equal(_checkBoundaryString, creatProjectEvent.ProjectBoundary);
-      Assert.Equal(_businessCenterFile.Name, creatProjectEvent.CoordinateSystemFileName);
-      Assert.True(creatProjectEvent.ActionUTC > DateTime.MinValue, "ActionUTC has not been mapped correctly");
+      Assert.Equal(expectedProjectType, projectValidation.ProjectType);
+      Assert.Equal(request.ProjectName, projectValidation.ProjectName);
+      Assert.Equal(_checkBoundaryString, projectValidation.ProjectBoundaryWKT);
+      Assert.Equal(_businessCenterFile.Name, projectValidation.CoordinateSystemFileName);
     }
 
     [Fact]

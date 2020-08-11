@@ -10,7 +10,6 @@ using TagFiles.Common;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
 
@@ -24,6 +23,7 @@ namespace MegalodonSvc
     private readonly ITRexTagFileProxy _serviceProxy;
     private FileSystemWatcher fileSystemWatcher;
     private readonly string _path;
+    private TagFileTransfer tagFileTransfer = new TagFileTransfer();
 
     public TagFileDispatchSvc(ITPaaSApplicationAuthentication authn, ILoggerFactory logFactory, IConfigurationStore config, ITRexTagFileProxy serviceProxy)
     {
@@ -60,6 +60,8 @@ namespace MegalodonSvc
             _log.LogInformation($"Tagfile successfully sent. Deleting Tagfile {f}");
             File.Delete(f);
           }
+          else
+            _log.LogWarning($"Tagfile cannot be sent. {f} {t.Result.Message}");
         }
         else
         {
@@ -69,15 +71,15 @@ namespace MegalodonSvc
             File.Delete(f);
           }
           else
-            _log.LogInformation($"Can not submit Tagfile {f}");
+            _log.LogWarning($"Can not submit Tagfile {f}. {t.Result.Message}");
         }
       })));
     }
 
 
-    private Task<ContractExecutionResult> UploadFile(string filename)
+    private async Task<ContractExecutionResult> UploadFile(string filename)
     {
-      _log.LogInformation($"Uploading file {filename}");
+      _log.LogInformation($"Uploading Tagfile {filename}");
 
       var fileData = File.ReadAllBytes(filename);
       var compactionTagFileRequest = new CompactionTagFileRequest
@@ -88,14 +90,18 @@ namespace MegalodonSvc
 
       try
       {
-        return TagFileHelper.SendTagFileToTRex(compactionTagFileRequest, _serviceProxy,_log, _authn.CustomHeaders());
+        // default if keys missing
+        var prodHost = _config.GetValueString("production-host") ?? "https://api.trimble.com";
+        var prodBase = _config.GetValueString("production-base") ?? "/t/trimble.com/ccss-tagfile-gateway/1.0";
+        var res = await tagFileTransfer.SendTagFile(compactionTagFileRequest, prodHost, prodBase);
+        _log.LogInformation($"Tagfile upload result: {res.Message}");
+        return res;
       }
       catch (Exception e)
       {
-        _log.LogWarning(e, $"Can't submit file {filename}");
+        _log.LogError(e, $"Can not submit file {filename}. {e.Message}");
+        return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, e.Message); 
       }
-
-      return null;
     }
 
     private IEnumerable<string> GetFilenames() => Directory.GetFiles(_path, "*.tag").Where(f => File.GetCreationTimeUtc(f) > DateTime.UtcNow.AddMinutes(TagConstants.NEGATIVE_MINUTES_AGED_TAGFILES));
