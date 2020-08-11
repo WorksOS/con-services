@@ -41,8 +41,6 @@ namespace IntegrationTests.ExecutorTests
     public readonly IServiceExceptionHandler ServiceExceptionHandler;
     public readonly ProjectRepository ProjectRepo;
     public readonly ICwsProjectClient CwsProjectClient;
-    public readonly IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord;
-    public readonly IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
     public readonly IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
 
     public ExecutorTestFixture()
@@ -75,8 +73,6 @@ namespace IntegrationTests.ExecutorTests
       ServiceExceptionHandler = _serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       ProjectRepo = _serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
       CwsProjectClient = _serviceProvider.GetRequiredService<ICwsProjectClient>();
-      Productivity3dV1ProxyCoord = _serviceProvider.GetRequiredService<IProductivity3dV1ProxyCoord>();
-      Productivity3dV2ProxyNotification = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyNotification>();
       Productivity3dV2ProxyCompaction = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();
     }
 

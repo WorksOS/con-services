@@ -9,8 +9,8 @@ namespace VSS.MasterData.ProjectTests
     public void DynamicAddwithOffsetTest()
     {
       var projectErrorCodesProvider = new ProjectErrorCodesProvider();
-      Assert.Equal(132, projectErrorCodesProvider.DynamicCount);
-      Assert.Equal("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of 256, is empty, or contains illegal characters.", projectErrorCodesProvider.FirstNameWithOffset(2));
+      Assert.Equal(63, projectErrorCodesProvider.DynamicCount);
+      Assert.Equal("Missing ProjectUID.", projectErrorCodesProvider.FirstNameWithOffset(5));
       Assert.Equal("LegacyImportedFileId has not been generated.", projectErrorCodesProvider.FirstNameWithOffset(50));
     }
   }

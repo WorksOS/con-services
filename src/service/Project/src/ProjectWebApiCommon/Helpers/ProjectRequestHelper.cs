@@ -12,18 +12,11 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
-using VSS.Common.Exceptions;
-using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
@@ -236,50 +229,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"{nameof(DoesProjectOverlap)}: No overlapping projects.");
       return false;
     }
-
-
-    #region coordSystem
-
-    /// <summary>
-    /// validate CoordinateSystem if provided
-    /// </summary>
-    public static async Task<bool> ValidateCoordSystemInProductivity3D(string csFileName, byte[] csFileContent,
-      IServiceExceptionHandler serviceExceptionHandler, IHeaderDictionary customHeaders,
-      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord)
-    {
-      if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
-      {
-        ProjectDataValidator.ValidateFileName(csFileName);
-        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
-        try
-        {
-          coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "productivity3dV1ProxyCoord.CoordinateSystemValidate", e.Message);
-        }
-
-        if (coordinateSystemSettingsResult == null)
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
-
-        if (coordinateSystemSettingsResult != null &&
-            coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47,
-            coordinateSystemSettingsResult.Code.ToString(),
-            coordinateSystemSettingsResult.Message);
-        }
-      }
-
-      return true;
-    }
-
-    /// <summary>
-    
-    #endregion coordSystem
 
 
     #region S3
