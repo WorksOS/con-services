@@ -11,10 +11,8 @@ Trimble Tagfile Service settings are held in the appsettings.json file located i
   "TransmissionProtocolVersion": "1",  Versioning of the transmission protocol. 
    
    * The following keys are for use in tagfile DirectSend *
-  "productivity3d-service-public-v2": "https://api.trimble.com/t/trimble.com/ccss-tagfile-gateway/1.0",
-  "trex-service-mutable-public-v2": "https://api.trimble.com/t/trimble.com/ccss-tagfile-gateway/1.0",
-  "TPAAS_OAUTH_URL": "https://identity.trimble.com/i/oauth2",
-  "TPAAS_APP_TOKENKEYS": "WklNUUcwWFNBbGRySVZPY0ZnU250M1ZoVFdrYTppMUlqT2FaeTRXbmVuSUZPdDVJRG9CbWpOTVFh"
+  "production-host": "https://api.trimble.com",
+  "production-base": "/t/trimble.com/ccss-tagfile-gateway/1.0"
 
 
 *** Optional keys for special situations and only used if directed ***
