@@ -46,7 +46,7 @@ namespace MegalodonSvc
         var result = await responseMessage.Content.ReadAsStringAsync();
 
         if (responseMessage.StatusCode == HttpStatusCode.OK)
-          return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "success");
+          return new ContractExecutionResult();
         else
           return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, result);
       }
