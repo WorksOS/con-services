@@ -78,7 +78,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Time
     /// </summary>
-    private uint _Time = 0;
+    private uint _Time = uint.MaxValue;
     public uint Time
     {
       get => _Time;
@@ -102,7 +102,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Time delta
     /// </summary>
-    private uint _DeltaTime = 0;
+    private uint _DeltaTime = uint.MaxValue;
     public uint DeltaTime
     {
       get => _DeltaTime;
@@ -116,7 +116,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// PrevTime
     /// </summary>
-    private uint _PrevTime = 0;
+    private uint _PrevTime = uint.MaxValue;
     public uint PrevTime
     {
       get => _PrevTime;
@@ -130,7 +130,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Week
     /// </summary>
-    private uint _Week = 0;
+    private uint _Week = uint.MaxValue;
     public uint Week
     {
       get => _Week;
@@ -144,7 +144,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Left Easting Blade
     /// </summary>
-    private double _LEB = 0;
+    private double _LEB = double.MaxValue;
     public double LEB
     {
       get => _LEB;
@@ -158,7 +158,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Left Northing Blade
     /// </summary>
-    private double _LNB = 0;
+    private double _LNB = double.MaxValue;
     public double LNB
     {
       get => _LNB;
@@ -172,7 +172,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Left Height Blade
     /// </summary>
-    private double _LHB = 0;
+    private double _LHB = double.MaxValue;
     public double LHB
     {
       get => _LHB;
@@ -186,7 +186,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Right Easting Blade
     /// </summary>
-    private double _REB = 0;
+    private double _REB = double.MaxValue;
     public double REB
     {
       get => _REB;
@@ -200,7 +200,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Righ Northing Blade
     /// </summary>
-    private double _RNB = 0;
+    private double _RNB = double.MaxValue;
     public double RNB
     {
       get => _RNB;
@@ -214,7 +214,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Right Height Blade
     /// </summary>
-    private double _RHB = 0;
+    private double _RHB = double.MaxValue;
     public double RHB
     {
       get => _RHB;
@@ -228,7 +228,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// GPS Mode
     /// </summary>
-    private ushort _GPM = 0;
+    private ushort _GPM = ushort.MaxValue;
     public ushort GPM
     {
       get => _GPM;
@@ -242,7 +242,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Blade On Ground
     /// </summary>
-    private ushort _BOG = 0;
+    private ushort _BOG = ushort.MaxValue;
     public ushort BOG
     {
       get => _BOG;
@@ -270,7 +270,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Latitude
     /// </summary>
-    private double _LAT = 0;
+    private double _LAT = double.MaxValue;
     public double LAT
     {
       get => _LAT;
@@ -284,7 +284,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Longitude
     /// </summary>
-    private double _LON = 0;
+    private double _LON = double.MaxValue;
     public double LON
     {
       get => _LON;
@@ -298,7 +298,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Height
     /// </summary>
-    private double _HGT = 0;
+    private double _HGT = double.MaxValue;
     public double HGT
     {
       get => _HGT;
@@ -326,7 +326,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Machine Speed
     /// </summary>
-    private double _MSD = 0;
+    private double _MSD = double.MaxValue;
     public double MSD
     {
       get => _MSD;
@@ -340,7 +340,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Machine Type
     /// </summary>
-    private byte _MTP = 0;
+    private byte _MTP = byte.MaxValue;
     public byte MTP
     {
       get => _MTP;
@@ -354,7 +354,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Heading
     /// </summary>
-    private double _HDG = 0;
+    private double _HDG = double.MaxValue;
     public double HDG
     {
       get => _HDG;
@@ -396,7 +396,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Coordinate System
     /// </summary>
-    private ushort _CoordSys = 0;
+    private ushort _CoordSys = ushort.MaxValue;
     public ushort CoordSys
     {
       get => _CoordSys;
@@ -410,7 +410,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Coordinate System
     /// </summary>
-    private ushort _ValidPosition = 1;
+    private ushort _ValidPosition = ushort.MaxValue; 
     public ushort ValidPosition
     {
       get => _ValidPosition;
@@ -424,7 +424,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// UTM Zone
     /// </summary>
-    private byte _UTM = 0;
+    private byte _UTM = byte.MaxValue;
     public byte UTM
     {
       get => _UTM;
@@ -480,7 +480,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// CCV compaction
     /// </summary>
-    private uint _CCV = 0;
+    private uint _CCV = uint.MaxValue;
     public uint CCV
     {
       get => _CCV;
@@ -494,7 +494,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Target CCV
     /// </summary>
-    private uint _TargetCCV = 0; // 12 bit
+    private uint _TargetCCV = uint.MaxValue; // 12 bit
     public uint TargetCCV
     {
       get => _TargetCCV;
@@ -508,7 +508,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// MDP Compaction
     /// </summary>
-    private uint _MDP = 0;
+    private uint _MDP = uint.MaxValue;
     public uint MDP
     {
       get => _MDP;
@@ -522,7 +522,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Target MDP
     /// </summary>
-    private uint _TargetMDP = 0; // 12 bit
+    private uint _TargetMDP = uint.MaxValue; // 12 bit
     public uint TargetMDP
     {
       get => _TargetMDP;
@@ -536,7 +536,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Compaction Sensor Type
     /// </summary>
-    private uint _CST = 0; // 8 bit
+    private uint _CST = uint.MaxValue; // 8 bit
     public uint CST
     {
       get => _CST;
@@ -550,7 +550,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Temperature
     /// </summary>
-    private uint _Temperature = 0; // 12 bit absolute
+    private uint _Temperature = uint.MaxValue; // 12 bit absolute
     public uint Temperature
     {
       get => _Temperature;
@@ -564,7 +564,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Machine Direction
     /// </summary>
-    private uint _Direction = 1; // 4 bit absolute 1 = forward, 2=Reverse,3=unknown
+    private uint _Direction = uint.MaxValue; // 4 bit absolute 1 = forward, 2=Reverse,3=unknown
     public uint Direction
     {
       get => _Direction;
@@ -578,7 +578,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Contains info like type of compaction and vibe state
     /// </summary>
-    private uint _Flags = 1; // 4 bit absolute
+    private uint _Flags = uint.MaxValue; // 4 bit absolute
     public uint Flags
     {
       get => _Flags;
@@ -592,7 +592,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Target Passcount
     /// </summary>
-    private uint _TargetPasses = 0; // 12 bit
+    private uint _TargetPasses = uint.MaxValue; // 12 bit
     public uint TargetPasses
     {
       get => _TargetPasses;
@@ -606,7 +606,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Target Thickness
     /// </summary>
-    private uint _TargetThickness = 0; // 16 bit
+    private uint _TargetThickness = uint.MaxValue; // 16 bit
     public uint TargetThickness
     {
       get => _TargetThickness;
@@ -620,7 +620,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Min target temperature
     /// </summary>
-    private uint _TempMin = 0; // 12 bit
+    private uint _TempMin = uint.MaxValue; // 12 bit
     public uint TempMin
     {
       get => _TempMin;
@@ -634,7 +634,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Max target temperature
     /// </summary>
-    private uint _TempMax = 0; // 12 bit
+    private uint _TempMax = uint.MaxValue; // 12 bit
     public uint TempMax
     {
       get => _TempMax;
