@@ -197,7 +197,7 @@ namespace VSS.TRex.Caching
 
       if (cacheItem.Expired)
       {
-        cacheItem.Context.Remove(cacheItem.Item);
+        cacheItem.Context.OwnerMemoryCache.Remove(cacheItem.Context, cacheItem.Item);
         return default;
       }
 
