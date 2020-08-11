@@ -176,7 +176,7 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Invalidates the cached item within this context at the specified origin location 
+    /// Invalidates the cached item within this context at the specified origin location
     /// </summary>
     public void InvalidateSubGrid(int originX, int originY, out bool subGridPresentForInvalidation)
     {
@@ -190,7 +190,9 @@ namespace VSS.TRex.Caching
       if (contextToken != 0)
       {
         // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
-        MRUList.Invalidate(contextToken - 1);
+        var item = MRUList.Get(contextToken - 1);
+        Remove(item);
+
         subGridPresentForInvalidation = true;
       }
     }
@@ -211,8 +213,9 @@ namespace VSS.TRex.Caching
           var contextToken = ((IGenericLeafSubGrid<int>)leaf).Items[x, y];
           if (contextToken != 0)
           {
-              // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
-              MRUList.Invalidate(contextToken - 1);
+            // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
+            var item = MRUList.Get(contextToken - 1);
+            Remove(item);
           }
         });
         return true;

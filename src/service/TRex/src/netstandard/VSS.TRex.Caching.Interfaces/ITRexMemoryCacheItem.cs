@@ -10,7 +10,6 @@
     /// <summary>
     /// Provides an estimation of the memory consumption of the element when stored in the cache
     /// </summary>
-    /// <returns></returns>
     int IndicativeSizeInBytes();
 
     int CacheOriginX { get; }

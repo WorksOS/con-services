@@ -60,8 +60,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Gets a Project list for customer uid.
-    ///  Includes all projects, regardless of archived state and user role
+    /// Gets a Project for a shortProjectId for TBC
+    ///  Regardless of archived state and user role
     /// </summary>
     public static async Task<ProjectDetailResponseModel> GetProjectForCustomer(Guid customerUid, Guid? userUid, long projectShortId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
@@ -78,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"{nameof(GetProjectForCustomer)} Project matched {JsonConvert.SerializeObject(projectMatches[0])}");
       return projectMatches[0];
     }
-
+    
 
     /// <summary>
     /// Calibration file is optional for nonThreeDReady projects
