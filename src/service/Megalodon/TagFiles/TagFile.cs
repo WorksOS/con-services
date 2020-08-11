@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Timers;
 using Microsoft.Extensions.Logging;
 using TagFiles.Common;
 using TagFiles.Parser;
 using TagFiles.Types;
-using TagFiles.Utils;
 using TAGFiles.Common;
 
 namespace TagFiles
@@ -71,8 +69,6 @@ namespace TagFiles
     /// <summary>
     /// Timer event for closing off tagfiles
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="e"></param>
     private void OnTimedEvent(object source, ElapsedEventArgs e)
     {
       if (!ReadyToWrite)
@@ -102,7 +98,6 @@ namespace TagFiles
         ReadyToWrite = false;
       }
     }
-
 
     /// <summary>
     /// Shut down tagfile and write to disk
@@ -227,7 +222,7 @@ namespace TagFiles
     /// </summary>
     private void CreateTagfileDictionary()
     {
-      short idx = 1; // start idx from 1
+      short idx = 1; // start idx from 1. Matches order in DictionaryItem
       TagFileDictionary = new TAGDictionary();
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileTimeTag, TAGDataType.t32bitUInt, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileTimeTag, TAGDataType.t4bitUInt, idx++);
@@ -255,80 +250,34 @@ namespace TagFiles
       TagFileDictionary.AddEntry(TAGValueNames.kTagMachineSpeed, TAGDataType.tIEEEDouble, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagMachineType, TAGDataType.t8bitUInt, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileValidPositionTag, TAGDataType.t4bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileICCCVTag, TAGDataType.t12bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileICCCVTargetTag, TAGDataType.t12bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileICMDPTag, TAGDataType.t12bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileICMDPTargetTag, TAGDataType.t12bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTemperatureTag, TAGDataType.t12bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileCompactorSensorType, TAGDataType.t8bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileICModeTag, TAGDataType.t4bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileDirectionTag, TAGDataType.t4bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileTargetLiftThickness, TAGDataType.t16bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileICPassTargetTag, TAGDataType.t12bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTempLevelMinTag, TAGDataType.t12bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTempLevelMaxTag, TAGDataType.t12bitUInt, idx++);
     }
 
-    /// <summary>
-    /// Used in testing this class
-    /// </summary>
-    public void CreateTestData()
+
+    public void SetupDefaultConfiguration(ushort mappingMode)
     {
-
       CreateTagfileDictionary();
-
       Parser.EpochRec.Week = 1;
       Parser.EpochRec.CoordSys = 3;
-      Parser.EpochRec.UTM = 0; // not needed so default
-      Parser.EpochRec.MappingMode = 1;
-      // vss supplied
+      Parser.EpochRec.UTM = 0; 
       Parser.EpochRec.RadioType = "torch";
-
-      // handy code
-      Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-
-      // from local time to unix time
-      var dateTime = new DateTime(2015, 05, 24, 10, 2, 0, DateTimeKind.Local);
-      var dateTimeOffset = new DateTimeOffset(dateTime);
-      var unixDateTime = dateTimeOffset.ToUnixTimeSeconds();
-
-      // going back again 
-      var localDateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixDateTime)
-        .DateTime.ToLocalTime();
-
-      var timeStamp = "TME" + unixTimestamp.ToString();
-
-      // Record Seperator
-      var rs = Convert.ToChar(TagConstants.RS).ToString();
-      // this would normally be read from socket
-      ParseText(rs + timeStamp +
-        rs + "GPM3" +
-        rs + "DESPlanB" +
-        rs + "LAT-0.759971" +
-        rs + "LON3.012268" +
-        rs + "HGT-37.600" +
-        rs + "MIDVessel1" +
-        rs + "BOG0" +
-        rs + "UTM0" +
-        rs + "HDG92" +
-        rs + "SERe6cd374b - 22d5 - 4512 - b60e - fd8152a0899b" +
-        rs + "MTPHEX"
-        );
-
-      Header.TagfileName = TagUtils.MakeTagfileName("", Parser.EpochRec.MID);
-
-      unixTimestamp += 100;
-      timeStamp = "TME" + unixTimestamp.ToString();
-
-      ParseText(rs + timeStamp +
-        rs + "LEB504383.841" + rs + "LNB7043871.371" + rs + "LHB-20.882" +
-        rs + "LEB504383.841" + rs + "REB504384.745" + rs + "RNB7043869.853" +
-        rs + "RHB-20.899" + rs + "BOG1" + rs + "MSD0.2" + rs + "HDG93");
-
-
-      unixTimestamp += 100;
-      timeStamp = "TME" + unixTimestamp.ToString();
-
-      ParseText(rs + timeStamp +
-        rs + "LEB504383.851" + rs + "LNB7043871.381" + rs + "LHB-20.992" +
-        rs + "LEB504383.851" + rs + "REB504384.755" + rs + "RNB7043869.863" +
-        rs + "RHB-20.999" + rs + "MSD0.2" + rs + "HDG94");
-
     }
 
     /// <summary>
     /// Write out contents of tagfile
     /// </summary>
     /// <param name="nStream">File stream to write to</param>
-    /// <returns></returns>
     public bool Write(NybbleStream nStream)
     {
       // write header

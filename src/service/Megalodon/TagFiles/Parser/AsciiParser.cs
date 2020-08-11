@@ -120,7 +120,8 @@ namespace TagFiles.Parser
           // Some fields are defaulted by Trimble set them up here now
           // todo add these to appsettings as defaults
           eRecord.CoordSys = TagConstants.DEFAULT_COORDSYS; // coordinate system
-          eRecord.MappingMode = TagConstants.DEFAULT_MAPPINGMODE; // min elevation
+          if  (eRecord.MappingMode == ushort.MaxValue)
+             eRecord.MappingMode = TagConstants.DEFAULT_MAPPINGMODE; // min elevation defaulted if not supplied to suit marine
           eRecord.RadioType = TagConstants.DEFAULT_RADIOTYPE; // torch
           eRecord.AppVersion = TagConstants.DEFAULT_APPVERSION; // app version
           eRecord.ValidPosition = TagConstants.DEFAULT_VALID_POSITION; // has valid position
@@ -128,6 +129,36 @@ namespace TagFiles.Parser
         }
       }
 
+      if (eRecord.HasCST)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CST, DataType = TAGDataType.t8bitUInt, Data = eRecord.CST });
+        eRecord.HasCST = false;
+      }
+      if (eRecord.HasFlags)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.Flags, DataType = TAGDataType.t4bitUInt, Data = eRecord.Flags });
+        eRecord.HasFlags = false;
+      }
+      if (eRecord.HasTargetCCV)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetCCV, DataType = TAGDataType.t12bitUInt, Data = eRecord.TargetCCV });
+        eRecord.HasTargetCCV = false;
+      }
+      if (eRecord.HasTargetMDP)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetMDP, DataType = TAGDataType.t12bitUInt, Data = eRecord.TargetMDP });
+        eRecord.HasTargetMDP = false;
+      }
+      if (eRecord.HasDirection)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.Direction, DataType = TAGDataType.t4bitUInt, Data = eRecord.Direction});
+        eRecord.HasDirection = false;
+      }
+      if (eRecord.HasTemperature)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.Temperature, DataType = TAGDataType.t12bitUInt, Data = eRecord.Temperature});
+        eRecord.HasTemperature = false;
+      }
       if (eRecord.HasCoordSys)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CoordSys, DataType = TAGDataType.t4bitUInt, Data = eRecord.CoordSys });
@@ -143,7 +174,6 @@ namespace TagFiles.Parser
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MappingMode, DataType = TAGDataType.t8bitUInt, Data = eRecord.MappingMode });
         eRecord.HasMappingMode = false;
       }
-
       if (eRecord.HasDES)
       {
         TagContent.AddEntry(new TagData_Unicode() { DictID = (short)DictionaryItem.Design, DataType = TAGDataType.tUnicodeString, Data = eRecord.Design });
@@ -171,12 +201,30 @@ namespace TagFiles.Parser
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.UTMZone, DataType = TAGDataType.t8bitUInt, Data = eRecord.UTM });
         eRecord.HasUTM = false;
       }
-
+      if (eRecord.HasTargetThickness)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetThickness, DataType = TAGDataType.t16bitUInt, Data = eRecord.TargetThickness });
+        eRecord.HasTargetThickness = false;
+      }
+      if (eRecord.HasTargetPasses)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetPasses, DataType = TAGDataType.t12bitUInt, Data = eRecord.TargetPasses });
+        eRecord.HasTargetPasses = false;
+      }
+      if (eRecord.HasTempMin)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TempMin, DataType = TAGDataType.t12bitUInt, Data = eRecord.TempMin });
+        eRecord.HasTempMin = false;
+      }
+      if (eRecord.HasTempMax)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TempMax, DataType = TAGDataType.t12bitUInt, Data = eRecord.TempMax });
+        eRecord.HasTempMax = false;
+      }
       if (TransmissionProtocolVersion < TagConstants.Version1) 
         HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
       else 
         HeaderRequired = !eRecord.HasHeader;
-
       if (eRecord.HasTime & !timeAdded)
       {
         if (eRecord.HasDeltaTime)
@@ -187,7 +235,6 @@ namespace TagFiles.Parser
         eRecord.HasTime = false; // reset
         EpochCount++;
       }
-
       if (eRecord.HasLEB || eRecord.HasLNB || eRecord.HasLHB)
       {
         TagContent.AddEntry(new TagData_Empty() { DictID = (short)DictionaryItem.Left, DataType = TAGDataType.tEmptyType });
@@ -207,7 +254,6 @@ namespace TagFiles.Parser
           eRecord.HasLHB = false;
         }
       }
-
       if (eRecord.HasREB || eRecord.HasRNB || eRecord.HasRHB)
       {
         TagContent.AddEntry(new TagData_Empty() { DictID = (short)DictionaryItem.Right, DataType = TAGDataType.tEmptyType });
@@ -250,6 +296,16 @@ namespace TagFiles.Parser
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.OG, DataType = TAGDataType.t4bitUInt, Data = eRecord.BOG });
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.BOG, DataType = TAGDataType.t4bitUInt, Data = eRecord.BOG });
         eRecord.HasBOG = false;
+      }
+      if (eRecord.HasCCV)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CCV, DataType = TAGDataType.t12bitUInt, Data = eRecord.CCV });
+        eRecord.HasCCV = false;
+      }
+      if (eRecord.HasMDP)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MDP, DataType = TAGDataType.t12bitUInt, Data = eRecord.MDP });
+        eRecord.HasMDP = false;
       }
 
       if (TrailerRequired)
@@ -495,6 +551,73 @@ namespace TagFiles.Parser
               }
               break;
             }
+          case TagConstants.CCV:
+            {
+              EpochRec.CCV = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.MAPPING_MODE:
+            {
+              EpochRec.MappingMode = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.TARGET_CCV:
+            {
+              EpochRec.TargetCCV = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.TEMPERATURE:
+            {
+              EpochRec.Temperature = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.COMPACT_SENSOR_TYPE:
+            {
+              EpochRec.CST = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.FLAGS:
+            {
+              EpochRec.Flags = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.DIRECTION:
+            {
+              EpochRec.Direction = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.MDP:
+            {
+              EpochRec.MDP = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.TARGET_MDP:
+            {
+              EpochRec.TargetMDP = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.TARGET_PASSCOUNT:
+            {
+              EpochRec.TargetPasses = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.TARGET_THICKNESS:
+            {
+              EpochRec.TargetThickness = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.TEMP_MIN:
+            {
+              EpochRec.TempMin = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.TEMP_MAX:
+            {
+              EpochRec.TempMax = Convert.ToUInt16(TagValue);
+              break;
+            }
+
+
           default:
             Log.LogWarning($"ProcessField. Unknown TagName:{TagName} Value:{TagValue}");
             break;

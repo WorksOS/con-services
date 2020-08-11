@@ -41,6 +41,7 @@
     public const char CHAR_EOT = (char)TagConstants.EOT;
     public const char CHAR_RS  = (char)TagConstants.RS;
 
+    // Define Tags here
     public const string TIME = "TME";
     public const string LEFT_EASTING_BLADE = "LEB";
     public const string LEFT_NORTHING_BLADE = "LNB";
@@ -61,6 +62,21 @@
     public const string SERIAL = "SER";
     public const string UTM = "UTM";
     public const string HDR = "HDR";
+    public const string CCV = "CCV";
+    public const string MDP = "MDP";
+    public const string TARGET_CCV = "TCC";
+    public const string TARGET_MDP = "TMD";
+    public const string TARGET_PASSCOUNT = "TPC";
+    public const string TARGET_THICKNESS = "TTS";
+    public const string TEMPERATURE = "TMP";
+    public const string TEMP_MIN = "TMN";
+    public const string TEMP_MAX = "TMX";
+    public const string COMPACT_SENSOR_TYPE = "CST";
+    public const string FLAGS = "FLG";
+    public const string MAPPING_MODE = "MPM";
+    public const string DIRECTION = "DIR";
+
+    // End define tags
 
     public const string TAGFILE_FOLDER = "Tagfiles";
     public const string TAGFILE_FOLDER_TOSEND = "ToSend";
