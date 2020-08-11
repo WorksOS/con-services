@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Models;
@@ -294,7 +293,13 @@ namespace VSS.TRex.Designs
       return s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
     }
 
-    public override long SizeInCache() => throw new TRexException("Class does not support SizeInCache");
+    /// <summary>
+    /// Return an approximation of the memory required to store the master guidance alignment based on 256 bytes per elemnts in the geometry entities
+    /// </summary>
+    public override long SizeInCache()
+    {
+      return _data?.Entities.Count * 256 ?? 0;
+    }
 
     /// <summary>
     /// Obtains the master alignment

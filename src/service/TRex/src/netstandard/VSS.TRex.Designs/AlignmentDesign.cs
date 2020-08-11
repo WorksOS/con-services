@@ -1,12 +1,10 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
@@ -19,7 +17,7 @@ namespace VSS.TRex.Designs
 
   public class AlignmentDesign : DesignBase
   {
-    private static readonly Microsoft.Extensions.Logging.ILogger _log = Logging.Logger.CreateLogger<AlignmentDesign>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AlignmentDesign>();
 
     public byte[] Data { get; set; } // assuming here there will be some kind of SDK model
 
@@ -170,7 +168,10 @@ namespace VSS.TRex.Designs
       return s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
     }
 
-    public override long SizeInCache() => throw new TRexException("Class does not support SizeInCache");
+    public override long SizeInCache()
+    {
+      return 10 * 1024; // 10Kb 
+    }
 
     public override void Dispose()
     {
