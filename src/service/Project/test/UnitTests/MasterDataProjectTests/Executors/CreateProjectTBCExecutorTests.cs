@@ -63,10 +63,10 @@ namespace VSS.MasterData.ProjectTests.Executors
     {
       var request = CreateProjectV5Request.CreateACreateProjectV5Request
       ("projectName", _boundaryLL, _businessCenterFile);
-      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid.ToString());
-      Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);
+      var projectValidation = MapV5Models.MapCreateProjectV5RequestToProjectValidation(request, _customerUid.ToString());
+      Assert.Equal(_checkBoundaryString, projectValidation.ProjectBoundaryWKT);
       var coordSystemFileContent = "Some dummy content";
-      createProjectEvent.CoordinateSystemFileContent = System.Text.Encoding.ASCII.GetBytes(coordSystemFileContent);
+      projectValidation.CoordinateSystemFileContent = System.Text.Encoding.ASCII.GetBytes(coordSystemFileContent);
 
       var createProjectResponseModel = new CreateProjectResponseModel() { TRN = _projectTrn };
       var project = CreateProjectDetailModel(_customerTrn, _projectTrn, request.ProjectName);
@@ -119,7 +119,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
         cwsProjectClient: cwsProjectClient.Object, cwsDesignClient: cwsDesignClient.Object,
         cwsProfileSettingsClient: cwsProfileSettingsClient.Object);
-      var result = await executor.ProcessAsync(createProjectEvent) as ProjectV6DescriptorsSingleResult;
+      var result = await executor.ProcessAsync(projectValidation) as ProjectV6DescriptorsSingleResult;
 
       Assert.NotNull(result);
       Assert.False(string.IsNullOrEmpty(result.ProjectDescriptor.ProjectUid));

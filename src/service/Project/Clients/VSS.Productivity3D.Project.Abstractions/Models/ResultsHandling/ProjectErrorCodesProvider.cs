@@ -137,6 +137,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Invalid ProjectUid", 137);
       this.DynamicAddwithOffset("Invalid earliestOfInterestUtc", 138);
       this.DynamicAddwithOffset("More than 1 project matches the TBC project Id requested.", 139);
+      this.DynamicAddwithOffset("Unable to extract shortProjectId.", 140);
     }
   }
 }

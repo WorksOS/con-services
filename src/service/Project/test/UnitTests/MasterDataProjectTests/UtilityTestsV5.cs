@@ -47,16 +47,15 @@ namespace VSS.MasterData.ProjectTests
     {
       var expectedProjectType = CwsProjectType.AcceptsTagFiles;
       var request = CreateProjectV5Request.CreateACreateProjectV5Request("projectName", _boundaryLL, _businessCenterFile);
-      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid);
+      var projectValidation = MapV5Models.MapCreateProjectV5RequestToProjectValidation(request, _customerUid);
 
-      Assert.Equal(Guid.Empty, createProjectEvent.ProjectUID);
-      Guid.TryParse(createProjectEvent.CustomerUID.ToString(), out var customerUidOut);
+      Assert.Null(projectValidation.ProjectUid);
+      Guid.TryParse(projectValidation.CustomerUid.ToString(), out var customerUidOut);
       Assert.Equal(_customerUid, customerUidOut.ToString());
-      Assert.Equal(expectedProjectType, createProjectEvent.ProjectType);
-      Assert.Equal(request.ProjectName, createProjectEvent.ProjectName);
-      Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);
-      Assert.Equal(_businessCenterFile.Name, createProjectEvent.CoordinateSystemFileName);
-      Assert.True(createProjectEvent.ActionUTC > DateTime.MinValue, "ActionUTC has not been mapped correctly");
+      Assert.Equal(expectedProjectType, projectValidation.ProjectType);
+      Assert.Equal(request.ProjectName, projectValidation.ProjectName);
+      Assert.Equal(_checkBoundaryString, projectValidation.ProjectBoundaryWKT);
+      Assert.Equal(_businessCenterFile.Name, projectValidation.CoordinateSystemFileName);
     }
 
     [Fact]

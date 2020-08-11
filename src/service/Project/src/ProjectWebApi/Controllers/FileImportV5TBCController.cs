@@ -46,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   1) TBC will already have uploaded to TCC, so read it from there
     ///   2) creates/updates database 
     ///   3) copies file in TCC from VSS area to project 
-    ///   4) notify RaptorWebAPI.
+    ///   4) notify TRex WebAPI.
     ///   5) Note that MobileLinework imports are ignored, i.e. just return HttpStatusCode.OK 
     /// Footprint must remain the same as CGen:
     ///   PUT /t/trimble.com/vss-projectmonitoring/1.0/api/v5/projects/6960/importedfiles HTTP/1.1
@@ -186,7 +186,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ) as ImportedFileDescriptorSingleResult;
         }
 
-        // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
+        // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to TRex and used to ref via TCC
         var response = importedFile?.ImportedFileDescriptor != null
           ? ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId)
           : ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.InternalServerError, -1);
@@ -204,7 +204,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
 
-    // GET: api/v5/importedfiles
+    // GET: api/v5/projects/{projectId}/importedfiles/{id?}
     /// <summary>
     /// TBC Get imported files.
     /// This is the same as V6 but TBC URL cannot be changed hence the V5 version.

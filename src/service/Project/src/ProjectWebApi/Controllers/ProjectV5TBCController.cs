@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -39,10 +39,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     #region projects
 
-    /// todoJeannie we're not sure which endpoints TBC uses to get its projects.
-    ///       Watch in testing to see what it needs
-   
-
     /// <summary>
     /// Gets a project for a customer.
     ///    includes legacyId
@@ -51,14 +47,43 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ProjectDataTBCSingleResult> GetProjectByShortId(long id)
     {
-      Logger.LogInformation("GetProjectByShortId");
+      Logger.LogInformation($"{nameof(GetProjectByShortId)}");
 
       var project =  await ProjectRequestHelper.GetProjectForCustomer(new Guid(CustomerUid), new Guid(UserId), id, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
       var projectTbc = AutoMapperUtility.Automapper.Map<ProjectDataTBCSingleResult>(project);
       projectTbc.LegacyProjectId = (Guid.TryParse(project.ProjectId, out var g) ? g.ToLegacyId() : 0);
+      if (projectTbc.LegacyProjectId == 0)
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 140);
+
       Logger.LogDebug($"{nameof(GetProjectByShortId)}: completed successfully. projectTbc {projectTbc}");
-      
       return projectTbc;
+    }
+
+    /// <summary>
+    /// Gets list of projects for a customer.
+    ///    includes legacyId
+    /// </summary>
+    [Route("api/v5/projects")]
+    [HttpGet]
+    public async Task<ProjectDataTBCListResult> GetProjects()
+    {
+      Logger.LogInformation($"{nameof(GetProjects)} ");
+
+      var projects = await CwsProjectClient.GetProjectsForCustomer(new Guid(CustomerUid), new Guid(UserId),
+        type: CwsProjectType.AcceptsTagFiles, customHeaders: customHeaders);
+
+      var result = new ProjectDataTBCListResult();
+      foreach (var project in projects.Projects)
+      {
+        var projectTbc = AutoMapperUtility.Automapper.Map<ProjectDataTBCSingleResult>(project);
+        projectTbc.LegacyProjectId = (Guid.TryParse(project.ProjectId, out var g) ? g.ToLegacyId() : 0);
+        if (projectTbc.LegacyProjectId == 0)
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 140);
+        result.ProjectDescriptors.Add(projectTbc);
+      }
+
+      Logger.LogDebug($"{nameof(GetProjects)}: completed successfully. projects {result}");
+      return result;
     }
 
     // POST: api/v5/projects
@@ -80,32 +105,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation($"{nameof(CreateProjectTBC)} projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
-      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, CustomerUid);
+      var projectValidation = MapV5Models.MapCreateProjectV5RequestToProjectValidation(projectRequest, CustomerUid);
+
+      projectRequest.CoordinateSystem =
+        ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
       // Read CoordSystem file from TCC as byte[]. 
-      //    Filename and content are used: 
-      //      validated via productivity3dProxy
-      //      created in TRex via productivity3dProxy
-      //    Created in cws
-      createProjectEvent.CoordinateSystemFileContent =
+      projectValidation.CoordinateSystemFileContent =
         await TccHelper
           .GetFileContentFromTcc(projectRequest.CoordinateSystem,
             Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
 
-      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(createProjectEvent);
       var validationResult
         = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
             .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
               CustomerUid, UserId, null, customHeaders,
               Productivity3dV1ProxyCoord, cwsProjectClient: CwsProjectClient)
-            .ProcessAsync(data)
+            .ProcessAsync(projectValidation)
         );
       if (validationResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, validationResult.Code);
-
-      projectRequest.CoordinateSystem =
-        ProjectDataValidator.ValidateBusinessCentreFile(projectRequest.CoordinateSystem);
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -115,10 +135,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient,
             cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
-          .ProcessAsync(createProjectEvent)) as ProjectV6DescriptorsSingleResult
+          .ProcessAsync(projectValidation)) as ProjectV6DescriptorsSingleResult
         );
       
-      Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortRaptorProjectId {result.ProjectDescriptor.ShortRaptorProjectId}");
+      Logger.LogDebug($"{nameof(CreateProjectTBC)}: completed successfully. ShortProjectId {result.ProjectDescriptor.ShortRaptorProjectId}");
       return ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.Created, result.ProjectDescriptor.ShortRaptorProjectId);
     }
 
@@ -152,7 +172,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (tccAuthorizationRequest == null)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
 
-      Logger.LogInformation("ValidateTccAuthorization. completed succesfully");
+      Logger.LogInformation($"{nameof(ValidateTccAuthorization)}: completed successfully");
       return ReturnSuccessV5Result.CreateReturnSuccessV5Result(HttpStatusCode.OK, true);
     }
 

@@ -14,28 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="build\**" />
-    <Compile Remove="deploy\**" />
-    <Compile Remove="logs\**" />
-    <Compile Remove="newrelic\**" />
-    <Content Remove="build\**" />
-    <Content Remove="deploy\**" />
-    <Content Remove="logs\**" />
-    <Content Remove="newrelic\**" />
-    <EmbeddedResource Remove="build\**" />
-    <EmbeddedResource Remove="deploy\**" />
-    <EmbeddedResource Remove="logs\**" />
-    <EmbeddedResource Remove="newrelic\**" />
-    <None Remove="build\**" />
-    <None Remove="deploy\**" />
-    <None Remove="logs\**" />
-    <None Remove="newrelic\**" />
+    <Compile Remove="build\**;deploy\**;logs\**" />
+    <EmbeddedResource Remove="build\**;deploy\**;logs\**" />
+    <None Remove="build\**;deploy\**;logs\**" />
   </ItemGroup>
 
  <ItemGroup>
-   <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-   <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.2" />
@@ -46,155 +31,6 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
     <PackageReference Include="SixLabors.ImageSharp.drawing" Version="1.0.0-beta0005" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Json\ALK\GeofenceGoodPolygon1.json" />
-    <Content Remove="Json\ALK\GeofenceGoodPolygon2.json" />
-    <Content Remove="Json\ALK\GeofenceMultiple1.json" />
-    <Content Remove="Json\ALK\GeofenceMultiple2.json" />
-    <Content Remove="Json\ALK\GeofencePoint.json" />
-    <Content Remove="Json\ALK\Hybrid1024x1024-cfv1.json" />
-    <Content Remove="Json\ALK\Hybrid1024x1024-cfv2.json" />
-    <Content Remove="Json\ALK\Hybrid1024x1024-cfv3.json" />
-    <Content Remove="Json\ALK\Hybrid421x420.json" />
-    <Content Remove="Json\ALK\Hybrid439x438.json" />
-    <Content Remove="Json\ALK\LargeReportTile.json" />
-    <Content Remove="Json\ALK\Map1024x1024-cfv1.json" />
-    <Content Remove="Json\ALK\Map1024x1024.json" />
-    <Content Remove="Json\ALK\Map399x398.json" />
-    <Content Remove="Json\ALK\ProjectThumbnail.json" />
-    <Content Remove="Json\ALK\Satellite439x438.json" />
-    <Content Remove="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliestWithPassCountRange.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatestWithPassCountRange.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
-    <Content Remove="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
-    <Content Remove="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\InvalidDateFilterElevationTypeFirst.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\InvalidDateFilterElevationTypeLast.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\NoDataFilterElevationTypeFirst.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\NoDataFilterElevationTypeLast.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilter.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeFirst.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeLast.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesBaseFilter20170305.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\SummaryVolumesTopFilter20170621.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeEarliest.json" />
-    <Content Remove="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeLatest.json" />
-    <Content Remove="Json\Filters\KettlewellDrive\LastElevationSingleCellMultiMode.json" />
-    <Content Remove="Json\Filters\KettlewellDrive\MinElevationOnlySingleCell.json" />
-    <Content Remove="Json\Filters\KettlewellDrive\MinElevationSingleCellPassMultiMode.json" />
-    <Content Remove="Json\Filters\ReportDxfTile.json" />
-    <Content Remove="Json\Filters\SummaryVolumesBaseFilter.json" />
-    <Content Remove="Json\Filters\SummaryVolumesBaseFilterYesterday.json" />
-    <Content Remove="Json\Filters\SummaryVolumesTopFilter.json" />
-    <Content Remove="Json\Filters\DimensionsAlignmentFilter0to200.json" />
-    <Content Remove="Json\Filters\DimensionsAlignmentFilter100to200.json" />
-    <Content Remove="Json\Filters\DimensionsAsAtCustom.json" />
-    <Content Remove="Json\Filters\DimensionsAutomatics.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryCMV.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryCMVAsAtToday.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryCMVPassCountRange.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryFilter.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryFilterAsAtToday.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryMDP.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
-    <Content Remove="Json\Filters\DimensionsBoundaryMDPPassCountRange.json" />
-    <Content Remove="Json\Filters\DimensionsPassCountRange.json" />
-    <Content Remove="Json\Filters\DimensionsTempRangeBoundary.json" />
-    <Content Remove="Json\UserPreferences\DummyUserPreferences.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Json\ALK\GeofenceGoodPolygon1.json" />
-    <EmbeddedResource Include="Json\ALK\GeofenceGoodPolygon2.json" />
-    <EmbeddedResource Include="Json\ALK\GeofenceMultiple1.json" />
-    <EmbeddedResource Include="Json\ALK\GeofenceMultiple2.json" />
-    <EmbeddedResource Include="Json\ALK\GeofencePoint.json" />
-    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv1.json" />
-    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv2.json" />
-    <EmbeddedResource Include="Json\ALK\Hybrid1024x1024-cfv3.json" />
-    <EmbeddedResource Include="Json\ALK\Hybrid421x420.json" />
-    <EmbeddedResource Include="Json\ALK\Hybrid439x438.json" />
-    <EmbeddedResource Include="Json\ALK\LargeReportTile.json" />
-    <EmbeddedResource Include="Json\ALK\Map1024x1024-cfv1.json" />
-    <EmbeddedResource Include="Json\ALK\Map1024x1024.json" />
-    <EmbeddedResource Include="Json\ALK\Map399x398.json" />
-    <EmbeddedResource Include="Json\ALK\ProjectThumbnail.json" />
-    <EmbeddedResource Include="Json\ALK\Satellite439x438.json" />
-    <EmbeddedResource Include="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonToday.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoLatLonYesterday.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNull20121101.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtents.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliest.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsEarliestWithPassCountRange.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatest.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterProjectExtentsLatestWithPassCountRange.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterToday.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterYesterday.json" />
-    <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesTemperature.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\InvalidDateFilterElevationTypeFirst.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\InvalidDateFilterElevationTypeLast.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\NoDataFilterElevationTypeFirst.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\NoDataFilterElevationTypeLast.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\ProjectExtentsFilter.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeFirst.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\ProjectExtentsFilterElevationTypeLast.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumesBaseFilter20170305.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumesTopFilter20170621.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeEarliest.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\VolumesWithPassCountRangeLatest.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1Nov.json" />
-    <EmbeddedResource Include="Json\Filters\GoldenDimensions\SummaryVolumes1NovFirstPass.json" />
-    <EmbeddedResource Include="Json\Filters\KettlewellDrive\LastElevationSingleCellMultiMode.json" />
-    <EmbeddedResource Include="Json\Filters\KettlewellDrive\MinElevationOnlySingleCell.json" />
-    <EmbeddedResource Include="Json\Filters\KettlewellDrive\MinElevationSingleCellPassMultiMode.json" />
-    <EmbeddedResource Include="Json\Filters\ReportDxfTile.json" />
-    <EmbeddedResource Include="Json\Filters\SummaryVolumesBaseFilter.json" />
-    <EmbeddedResource Include="Json\Filters\SummaryVolumesTopFilter.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter0to200.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsAlignmentFilter100to200.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsAsAtCustom.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsAutomatics.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMV.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMVAsAtToday.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryCMVPassCountRange.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilter.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterAsAtToday.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryFilterWithMachine.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPPassCountRange.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsPassCountRange.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsTemperatureRange.json" />
-    <EmbeddedResource Include="Json\Filters\DimensionsTempRangeBoundary.json" />
-    <EmbeddedResource Include="Json\Filters\ElevationRangeAndPaletteNoDataFilter.json" />
-    <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
-
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Topshelf" Version="4.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -213,38 +49,13 @@
  </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
+    <TestDataJson Include="./Json/**" />
+    <TestDataResources Include="./Resources/**" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\Large Sites Road_AlignmentCenterline%24.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z15-Y12844-X5914.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z16-Y41583-X64159.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z18-Y102753-X47317.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
-  </PropertyGroup>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(TestDataJson)" DestinationFolder="$(OutputPath)/Json/%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(TestDataResources)" DestinationFolder="$(OutputPath)/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>

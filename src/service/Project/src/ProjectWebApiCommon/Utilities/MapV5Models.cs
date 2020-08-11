@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
@@ -14,18 +14,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   public class MapV5Models
   {
     // there no legacyIds: Customer or Project
-    public static CreateProjectEvent MapCreateProjectV5RequestToEvent(CreateProjectV5Request source, string customerUid)
+    public static ProjectValidation MapCreateProjectV5RequestToProjectValidation(CreateProjectV5Request source, string customerUid)
     {
-      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(source);
-
-      // project identity must come from profileX now
-      createProjectEvent.CustomerUID = new Guid(customerUid);
+      var projectValidation = new ProjectValidation()
+      {
+        CustomerUid = new Guid(customerUid),
+        ProjectType = CwsProjectType.AcceptsTagFiles,
+        ProjectName = source.ProjectName,
+        UpdateType = ProjectUpdateType.Created,
+        CoordinateSystemFileName = source.CoordinateSystem.Name
+      };
 
       var internalPoints = AutoMapperUtility.Automapper.Map<List<Point>>(source.BoundaryLL);
-      createProjectEvent.ProjectBoundary =
+      projectValidation.ProjectBoundaryWKT =
         GeofenceValidation.GetWicketFromPoints(GeofenceValidation.MakingValidPoints(internalPoints));
-      createProjectEvent.ProjectType = CwsProjectType.AcceptsTagFiles;
-      return createProjectEvent;
+      return projectValidation;
     }
   }
 }

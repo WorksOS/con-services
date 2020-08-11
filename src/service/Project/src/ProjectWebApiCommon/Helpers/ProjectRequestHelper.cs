@@ -59,8 +59,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Gets a Project list for customer uid.
-    ///  Includes all projects, regardless of archived state and user role
+    /// Gets a Project for a shortProjectId for TBC
+    ///  Regardless of archived state and user role
     /// </summary>
     public static async Task<ProjectDetailResponseModel> GetProjectForCustomer(Guid customerUid, Guid? userUid, long projectShortId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
@@ -77,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"{nameof(GetProjectForCustomer)} Project matched {JsonConvert.SerializeObject(projectMatches[0])}");
       return projectMatches[0];
     }
-
+    
 
     /// <summary>
     /// Calibration file is optional for nonThreeDReady projects
@@ -278,77 +278,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Create CoordinateSystem in TRex and cws and save a copy of the file in DataOcean
-    /// </summary>
-    public static async Task DispenseCopiesOfCoordSystem(Guid projectUid,
-      string coordinateSystemFileName,
-      byte[] coordinateSystemFileContent, bool isCreate,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
-      IHeaderDictionary customHeaders,
-      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
-      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
-      ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient, ICwsProjectClient cwsProjectClient = null)
-    {
-      if (!string.IsNullOrEmpty(coordinateSystemFileName))
-      {
-        var headers = customHeaders;
-        headers.TryGetValue("X-VisionLink-ClearCache", out var caching);
-        if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
-          headers.Add("X-VisionLink-ClearCache", "true");
-
-        try
-        {
-          // Pass coordinate system to TRex
-          var coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-            .CoordinateSystemPost(projectUid,
-              coordinateSystemFileContent, coordinateSystemFileName, headers);
-          var message = $"Post of CS create to TRex returned code: {coordinateSystemSettingsResult?.Code ?? -1} Message {coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"}";
-          log.LogDebug(message);
-          if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0)
-          {
-            if (isCreate)
-              await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
-
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
-              (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
-              coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
-          }
-
-          // save copy to DataOcean
-          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
-          if (string.IsNullOrEmpty(rootFolder))
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
-          }
-
-          using (var ms = new MemoryStream(coordinateSystemFileContent))
-          {
-            await DataOceanHelper.WriteFileToDataOcean(
-              ms, rootFolder, customerUid, projectUid.ToString(),
-              DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
-              log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
-          }
-
-          // save copy to CWS
-          using (var ms = new MemoryStream(coordinateSystemFileContent))
-          {
-            await CwsConfigFileHelper.SaveProjectConfigurationFileToCws(projectUid, coordinateSystemFileName, ms,
-              cwsDesignClient, cwsProfileSettingsClient, customHeaders);
-          }
-        }
-        catch (Exception e)
-        {
-          if (isCreate)
-            await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
-
-          //Don't hide exceptions thrown above
-          if (e is ServiceException)
-            throw;
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "productivity3dV1ProxyCoord.CoordinateSystemPost", e.Message);
-        }
-      }
-    }
-
+    
     #endregion coordSystem
 
 

@@ -59,10 +59,5 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
              && otherProject.EndDate == this.EndDate
         ;
     }
-
-    public override int GetHashCode()
-    {
-      return 0;
-    }
   }
 }

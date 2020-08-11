@@ -1,25 +1,27 @@
-{{- $name := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
-{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-cfg-%s" .Release.Name .Values.environment | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $name }}
+  name: {{ template "tileservice.name" . }}
   labels:
-    app: {{ $name }}
+    app: {{ template "tileservice.name" . }}
+    component: {{ template "component.webapi" . }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ default 1 .Values.replicaCount}}
   selector:
     matchLabels:
-      app: {{ $name }}
+      app: {{ template "tileservice.name" . }}
+      component: {{ template "component.webapi" . }}
   template:
     metadata:
       labels:
-        app: {{ $name }}
+        app: {{ template "tileservice.name" . }}
+        component: {{ template "component.webapi" . }}
     spec:
       serviceAccount: {{ .Values.environment }}-service-account
       containers:
-      - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        name: {{ $name }}       
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-tile-webapi:{{ .Values.image.tag }}
+        name: {{ template "tileservice.name" . }}
         livenessProbe:
           httpGet:
             scheme: HTTP

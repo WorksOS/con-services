@@ -1,14 +1,16 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+  name: {{ template "3dpmservice.name" . }}
   labels:
     service-name: {{ .Values.serviceName }}
+    app: {{ template "3dpmservice.name" . }}  
   annotations:
     prometheus.io/scrape: "true"
 spec:
   selector:
-    app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
+    app: {{ template "3dpmservice.name" . }}
+    component: {{ template "component.webapi" . }}
   ports:
   - protocol: TCP
     port: 80

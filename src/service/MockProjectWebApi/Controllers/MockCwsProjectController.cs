@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CCSS.CWS.Client;
 using Mvc = Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -234,7 +233,7 @@ namespace MockProjectWebApi.Controllers
       Logger.LogInformation($"{nameof(GetProjectConfiguration)}: projectTrn {projectTrn} projectConfigurationType {projectConfigurationType} projectConfigurationModel {JsonConvert.SerializeObject(projectConfigurationModel)}");
 
       if (projectConfigurationModel == null)
-        return NotFound(new CwsError() { status = 404 });
+        return NotFound();
       return Ok(projectConfigurationModel);
     }
 

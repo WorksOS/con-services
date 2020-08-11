@@ -24,7 +24,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public async Task Get_TBCProject_All_Ok()
+    public async Task Get_TBCProject_ByProjectId_Ok()
     {
       Msg.Title("TBC Project", "Get existing project");
       var ts = new TestSupport();
@@ -37,14 +37,39 @@ namespace IntegrationTests.WebApiTests
       Assert.NotEqual(-1, returnLongV5Result.Id);
 
       var getResponse = await ts.GetProjectViaWebApiV5TBC(returnLongV5Result.Id);
-      var projectDataTBCSingleResult = JsonConvert.DeserializeObject<ProjectDataTBCSingleResult>(getResponse);
+      var projectDataTbcSingleResult = JsonConvert.DeserializeObject<ProjectDataTBCSingleResult>(getResponse);
 
-      Assert.NotNull(projectDataTBCSingleResult);
-      Assert.Equal(returnLongV5Result.Id, projectDataTBCSingleResult.LegacyProjectId);
-      Assert.Equal(DateTime.MinValue.ToString(), projectDataTBCSingleResult.StartDate); // no longer supported
-      Assert.Equal(DateTime.MaxValue.ToString(), projectDataTBCSingleResult.EndDate);  // no longer supported
-      Assert.Equal(projectName, projectDataTBCSingleResult.Name);
-      Assert.Equal(0, projectDataTBCSingleResult.ProjectType); // only historical standard supported
+      Assert.NotNull(projectDataTbcSingleResult);
+      Assert.Equal(returnLongV5Result.Id, projectDataTbcSingleResult.LegacyProjectId);
+      Assert.Equal(DateTime.MinValue.ToString(), projectDataTbcSingleResult.StartDate); // no longer supported
+      Assert.Equal(DateTime.MaxValue.ToString(), projectDataTbcSingleResult.EndDate);  // no longer supported
+      Assert.Equal(projectName, projectDataTbcSingleResult.Name);
+      Assert.Equal(0, projectDataTbcSingleResult.ProjectType); // only historical 'standard project' supported
+    }
+
+    [Fact]
+    public async Task Get_TBCProject_ByCustomerUid_Ok()
+    {
+      Msg.Title("TBC Project", "Get projects for customer");
+      var ts = new TestSupport();
+
+      var projectName = "project 3";
+      var createResponse = await ts.CreateProjectViaWebApiV5TBC(projectName);
+      var returnLongV5Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(createResponse);
+
+      Assert.Equal(HttpStatusCode.Created, returnLongV5Result.Code);
+      Assert.NotEqual(-1, returnLongV5Result.Id);
+
+      var getResponse = await ts.GetProjectViaWebApiV5TBC();
+      var projectDataTbcListResult = JsonConvert.DeserializeObject<ProjectDataTBCListResult>(getResponse);
+
+      Assert.NotNull(projectDataTbcListResult);
+      Assert.Single(projectDataTbcListResult.ProjectDescriptors);
+      Assert.Equal(returnLongV5Result.Id, projectDataTbcListResult.ProjectDescriptors[0].LegacyProjectId);
+      Assert.Equal(DateTime.MinValue.ToString(), projectDataTbcListResult.ProjectDescriptors[0].StartDate); // no longer supported
+      Assert.Equal(DateTime.MaxValue.ToString(), projectDataTbcListResult.ProjectDescriptors[0].EndDate);  // no longer supported
+      Assert.Equal(projectName, projectDataTbcListResult.ProjectDescriptors[0].Name);
+      Assert.Equal(0, projectDataTbcListResult.ProjectDescriptors[0].ProjectType); // only historical 'standard project' supported
     }
 
     [Fact]
