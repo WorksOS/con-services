@@ -53,11 +53,6 @@
   <ItemGroup>
     <Resources Include="./Resources/**" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(Resources)" DestinationFolder="$(OutputPath)/Resources/%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
