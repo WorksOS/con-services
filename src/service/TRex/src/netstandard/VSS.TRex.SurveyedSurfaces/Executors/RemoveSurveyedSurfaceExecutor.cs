@@ -34,7 +34,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         {
           // Broadcast to listeners that design has changed
           var sender = DIContext.Obtain<IDesignChangedEventSender>();
-          sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, projectUid, surveyedSurfaceUid, ImportedFileType.DesignSurface, designRemoved: true);
+          sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, projectUid, surveyedSurfaceUid, ImportedFileType.SurveyedSurface, designRemoved: true);
         }
         else
         {
