@@ -170,6 +170,8 @@ namespace VSS.TRex.Designs
       y2 = _boundingBox.MaxY;
     }
 
+    public override BoundingWorldExtent3D GetExtents() => new BoundingWorldExtent3D(_boundingBox);
+
     public override void GetHeightRange(out double z1, out double z2)
     {
       z1 = Consts.NullDouble;

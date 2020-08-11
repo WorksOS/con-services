@@ -83,6 +83,8 @@ namespace VSS.TRex.Designs
       y2 = 38;
     }
 
+    public override BoundingWorldExtent3D GetExtents() => new BoundingWorldExtent3D(6, 34, 8, 38);
+
     /// <summary>
     /// Retrieves the elevation range of the vertices in the alignment surface
     /// </summary>

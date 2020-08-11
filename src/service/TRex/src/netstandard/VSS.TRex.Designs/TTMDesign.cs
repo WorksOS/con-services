@@ -378,6 +378,14 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
+    /// Retrieves the ground extents of the TTM design 
+    /// </summary>
+    public override BoundingWorldExtent3D GetExtents()
+    {
+      return new BoundingWorldExtent3D(Data.Header.MinimumEasting, Data.Header.MinimumNorthing, Data.Header.MaximumEasting, Data.Header.MaximumNorthing);
+    }
+
+    /// <summary>
     /// Retrieves the elevation range of the vertices in the TTm design surface
     /// </summary>
     public override void GetHeightRange(out double z1, out double z2)

@@ -39,6 +39,8 @@ namespace VSS.TRex.Designs
 
     public abstract void GetExtents(out double x1, out double y1, out double x2, out double y2);
 
+    public abstract BoundingWorldExtent3D GetExtents();
+
     public abstract void GetHeightRange(out double z1, out double z2);
 
     public abstract bool InterpolateHeight(ref int hint,

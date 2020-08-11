@@ -19,5 +19,7 @@ namespace VSS.TRex.Designs.Interfaces
     bool UnLock(Guid designUid, IDesignBase design);
 
     bool EnsureSufficientSpaceToLoadDesign(long designCacheSize);
+
+    int NumDesignsInCache();
   }
 }
