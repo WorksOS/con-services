@@ -13,14 +13,11 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
-using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -31,9 +28,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// TagFileExecutor
     /// </summary>
-    /// <param name="configStore"></param>
-    /// <param name="logger"></param>
-    /// <param name="exceptionHandler"></param>
     public UpdateTTMDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
     {
@@ -49,9 +43,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Process update design request
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<DesignRequest>(item);
@@ -87,16 +78,10 @@ namespace VSS.TRex.Gateway.Common.Executors
           removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
         }
 
-        if (removedOk)
-        {
-          // Broadcast to listeners that design has changed
-          var sender = DIContext.Obtain<IDesignChangedEventSender>();
-          sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, request.ProjectUid, request.DesignUid, request.FileType, designRemoved: true);
-        }
-        else
+        if (!removedOk)
         {
           throw CreateServiceException<UpdateTTMDesignExecutor>
-            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError, 
+            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
             RequestErrorStatus.DesignImportUnableToDeleteDesign);
         }
 
