@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModels.Interfaces;
 using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
+using System.Drawing.Text;
+using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Designs
 { 
@@ -31,7 +33,7 @@ end;
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<DesignFiles>();
 
-    public const long DEFAULT_DESIGN_ELEVATION_CACHE_SIZE = 1 * 1024 * 1024 * 1024;
+    public const ulong DEFAULT_DESIGN_ELEVATION_CACHE_SIZE = 1 * 1024 * 1024 * 1024;
 
     /// <summary>
     /// The collection of designs that are currently present in the cache
@@ -102,27 +104,25 @@ end;
           {
             _log.LogDebug($"Surface design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
           }
-
-          if (descriptor == null)
+          else
           {
             var surveyedSurfaceRef = siteModel.SurveyedSurfaces?.Locate(designUid);
             descriptor = surveyedSurfaceRef?.DesignDescriptor;
-          }
 
-          if (descriptor != null)
-          {
-            _log.LogDebug($"Surveyed surface design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
-          }
+            if (descriptor != null)
+            {
+              _log.LogDebug($"Surveyed surface design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
+            }
+            else
+            {
+              var alignmentDesignRef = siteModel.Alignments?.Locate(designUid);
+              descriptor = alignmentDesignRef?.DesignDescriptor;
 
-          if (descriptor == null)
-          {
-            var alignmentDesignRef = siteModel.Alignments?.Locate(designUid);
-            descriptor = alignmentDesignRef?.DesignDescriptor;
-          }
-
-          if (descriptor != null)
-          {
-            _log.LogDebug($"Alignment design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
+              if (descriptor != null)
+              {
+                _log.LogDebug($"Alignment design UID {designUid}, filename = {descriptor.FileName} needs to be loaded");
+              }
+            }
           }
 
           if (descriptor == null)
@@ -232,11 +232,13 @@ end;
     /// </summary>
     public bool EnsureSufficientSpaceToLoadDesign(long designCacheSize)
     {
+      const int MaxWaitIterations = 1000;
       try
       {
         if (designCacheSize < FreeSpaceInCache)
           return true;
 
+        var iterationsLeft = MaxWaitIterations;
         do
         {
           if (_designs.Count == 0) // If there are no designs in the cache then permit the cache to be loaded, even if it exceeds the cache available
@@ -272,6 +274,9 @@ end;
             // Still no joy? Spin until a design is released
             Task.Delay(100).WaitAndUnwrapException();
           }
+
+          if (iterationsLeft-- <= 0)
+            throw new TRexException($"Failed to ensure sufficient space after waiting for {MaxWaitIterations} periods");
         } while (FreeSpaceInCache < designCacheSize);
 
         return false;
@@ -280,6 +285,14 @@ end;
       {
         _log.LogError(e, $"{nameof(EnsureSufficientSpaceToLoadDesign)}: Exception occurred {e.Message}");
         return false;
+      }
+    }
+
+    public int NumDesignsInCache()
+    {
+      lock (_designs)
+      {
+        return _designs.Count;
       }
     }
 
