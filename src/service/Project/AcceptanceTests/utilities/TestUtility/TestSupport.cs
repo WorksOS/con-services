@@ -216,11 +216,19 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Create the project via the web api. 
+    /// Get a project by its shortProjectId via the WebAPI 
     /// </summary>
     public Task<string> GetProjectViaWebApiV5TBC(long projectId)
     {
       return  CallProjectWebApi($"api/v5/projects/{projectId}", HttpMethod.Get, null, CustomerUid.ToString());
+    }
+
+    /// <summary>
+    /// Get project list via the web api. Includes the shortProjectId in response 
+    /// </summary>
+    public Task<string> GetProjectViaWebApiV5TBC()
+    {
+      return CallProjectWebApi($"api/v5/projects", HttpMethod.Get, null, CustomerUid.ToString());
     }
 
     /// <summary>
