@@ -18,6 +18,8 @@ namespace VSS.TRex.Tests.Designs
     {
       fixture.ClearDynamicFixtureContent();
       fixture.SetupFixture();
+
+      // Modify the DI Configuration store to specify
     }
 
     [Fact]
@@ -25,6 +27,16 @@ namespace VSS.TRex.Tests.Designs
     {
       var files = new DesignFiles();
       files.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Creation2()
+    {
+      const long MAX_SIZE = 1000000;
+
+      var files = new DesignFiles(MAX_SIZE);
+      files.Should().NotBeNull();
+      files.MaxDesignsCacheSize.Should().Be(MAX_SIZE);
     }
 
     [Fact]
@@ -75,6 +87,36 @@ namespace VSS.TRex.Tests.Designs
       files.NumDesignsInCache().Should().Be(0);
 
       mockDesign.Verify(x => x.RemoveFromStorage(It.IsAny<Guid>(), It.IsAny<string>()), removeFromStorage ? Times.Once() : Times.Never());
+    }
+
+    [Fact]
+    public void Lock_WithDesignEviction_NoContention()
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var designUid1 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, testFileName, true);
+      var designUid2 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, testFileName, true);
+
+      // Work out how big this design is in terms of design cache memory use
+      var files = new DesignFiles();
+      var design1 = files.Lock(designUid1, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
+
+      var spaceUsed = files.DesignsCacheSize;
+      spaceUsed.Should().BeGreaterThan(1000);
+
+      // Create a new design files cache  just a little bit bigger, and reload the design into it
+      files = new DesignFiles((int)Math.Truncate(spaceUsed * 1.2));
+      design1 = files.Lock(designUid1, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out loadResult);
+      loadResult.Should().Be(DesignLoadResult.Success);
+      design1.Should().NotBeNull();
+      design1.DesignUid.Should().Be(designUid1);
+
+      // Load the second design and verify the first design is evicted and space used is as expected
+      var design2 = files.Lock(designUid2, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out loadResult);
+      loadResult.Should().Be(DesignLoadResult.Success);
+      design2.Should().NotBeNull();
+      design2.DesignUid.Should().Be(designUid2);
+
+      files.DesignsCacheSize.Should().Be(spaceUsed);
     }
   }
 }

@@ -10,19 +10,13 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModels.Interfaces;
 using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
-using System.Drawing.Text;
 using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Designs
 { 
 /*
 TDesignFiles = class(TObject)
-  private
-    FDesignUnlockedEvent : TSimpleEvent;
-
   public
-    Function AnyLocks(out LockCount : integer) : Boolean;
-
     function GetCombinedSubgridIndexStream(const Surfaces: TICGroundSurfaceDetailsList;
                                            const ProjectUid : Int64; const ACellSize: Double;
                                            out MS: TMemoryStream): Boolean;
@@ -43,17 +37,17 @@ end;
     /// <summary>
     /// The total size of all cached items present
     /// </summary>
-    private long _designsCacheSize = 0;
-
-    /// <summary>
-    /// The maximum amount of memory available to store cached designs, in bytes
-    /// </summary>
-    private readonly long _maxDesignsCacheSize = (long)DIContext.Obtain<IConfigurationStore>().GetValueUlong("TREX_DESIGN_ELEVATION_CACHE_SIZE", DEFAULT_DESIGN_ELEVATION_CACHE_SIZE);
+    public long DesignsCacheSize { get; private set; }
 
     /// <summary>
     /// The amount of memory in the design cache available to store additional designs, in bytes
     /// </summary>
-    private long FreeSpaceInCache => _maxDesignsCacheSize - _designsCacheSize;
+    public long FreeSpaceInCache => MaxDesignsCacheSize - DesignsCacheSize;
+
+    /// <summary>
+    /// The maximum amount of memory available to store cached designs, in bytes
+    /// </summary>
+    public long MaxDesignsCacheSize { get; private set; } = (long)DIContext.Obtain<IConfigurationStore>().GetValueUlong("TREX_DESIGN_ELEVATION_CACHE_SIZE", DEFAULT_DESIGN_ELEVATION_CACHE_SIZE);
 
     /// <summary>
     /// Removes a design from cache and storage
@@ -202,7 +196,7 @@ end;
         design.UnWindLock();
 
         // If the design is not locked check if there should be some maintenance of the content of the cache...
-        if (design.Locked || (_designsCacheSize <= _maxDesignsCacheSize)) 
+        if (design.Locked || (DesignsCacheSize <= MaxDesignsCacheSize))
           return true;
 
         lock (design)
@@ -212,7 +206,7 @@ end;
 
           if (_designs.Remove(designUid))
           {
-            _designsCacheSize = _designsCacheSize - design.SizeInCache();
+            DesignsCacheSize -= design.SizeInCache();
             design.Dispose();
             _log.LogInformation($"Removed design {designUid} in project {design.ProjectUid} from designs cache");
           }
@@ -301,6 +295,11 @@ end;
     /// </summary>
     public DesignFiles()
     {
+    }
+
+    public DesignFiles(long maxDesignsCacheSize)
+    {
+      MaxDesignsCacheSize = maxDesignsCacheSize;
     }
   }
 }
