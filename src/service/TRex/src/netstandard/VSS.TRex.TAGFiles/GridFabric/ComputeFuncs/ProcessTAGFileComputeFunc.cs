@@ -44,7 +44,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
           AssetUid = x.AssetId,
           Success = false,
           Exception = e.Message,
-          SubmissionFlags = x.SubmissionFlags
+          SubmissionFlags = x.SubmissionFlags,
+          OriginSource = x.OriginSource
         }).ToList())};
       }
     }

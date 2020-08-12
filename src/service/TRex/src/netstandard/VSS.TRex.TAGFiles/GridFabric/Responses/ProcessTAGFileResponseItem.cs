@@ -1,15 +1,15 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.TAGFiles.Models;
-using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {
   public class ProcessTAGFileResponseItem : IProcessTAGFileResponseItem
   {
-    private const byte VERSION_NUMBER = 2;
-    private static byte[] VERSION_NUMBERS = { 1, 2 };
+    private const byte VERSION_NUMBER = 3;
+    private static byte[] VERSION_NUMBERS = { 1, 2, 3 };
 
     public string FileName { get; set; }
 
@@ -22,6 +22,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     public TAGReadResult ReadResult { get; set; }
 
     public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
+
+    /// <summary>
+    /// The orign source that produced the TAG file, such as GCS900, Eathworjs etc
+    /// </summary>
+    public TAGFileOriginSource OriginSource { get; set; } = TAGFileOriginSource.LegacyTAGFileSource;
 
     /// <summary>
     /// Default no-arg constructor
@@ -48,6 +53,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
       writer.WriteString(Exception);
       writer.WriteInt((int)ReadResult);
       writer.WriteInt((int)SubmissionFlags);
+      writer.WriteInt((int)OriginSource);
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -67,6 +73,15 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
       else
       {
         SubmissionFlags = TAGFileSubmissionFlags.AddToArchive;
+      }
+
+      if (messageVersion >= 3)
+      {
+        OriginSource = (TAGFileOriginSource)reader.ReadInt();
+      }
+      else
+      {
+        OriginSource = TAGFileOriginSource.LegacyTAGFileSource;
       }
     }
   }

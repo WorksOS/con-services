@@ -41,6 +41,11 @@ namespace VSS.Productivity3D.Models.Models
     public bool TreatAsJohnDoe { get; set; }
 
     /// <summary>
+    /// Inidcates the source of origin for TAG files; eg: legacy TAg files from GCS/Earthworks machines, or OEM manufacturer systems
+    /// </summary>
+    public TAGFileOriginSource OriginSource { get; set; } = TAGFileOriginSource.LegacyTAGFileSource;
+
+    /// <summary>
     /// Validates all properties
     /// </summary>
     public override void Validate()

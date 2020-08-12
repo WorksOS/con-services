@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.Common
       bs.Should().NotBeNull();
     }
 
-    [Fact]
+    [Fact(Skip = "Exceptions cannot be allowed to exit the BinarizableSerializer as they cause SEHExceptiosn in unmanaged contexts")]
     public void UnsupportedClass_Read()
     {
       var bs = new BinarizableSerializer();
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Common
       e.Message.Should().Be("An exception");
     }
 
-    [Fact]
+    [Fact(Skip = "Exceptions cannot be allowed to exit the BinarizableSerializer as they cause SEHExceptiosn in unmanaged contexts")]
     public void UnsupportedClass_Write()
     {
       var bs = new BinarizableSerializer();
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.Common
     }
 
 
-    [Fact]
+    [Fact(Skip = "Exceptions cannot be allowed to exit the BinarizableSerializer as they cause SEHExceptiosn in unmanaged contexts")]
     public void Exception_Write()
     {
       var bs = new BinarizableSerializer();
