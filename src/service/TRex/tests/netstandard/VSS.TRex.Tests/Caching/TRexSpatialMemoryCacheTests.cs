@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Caching;
@@ -750,7 +751,127 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
-   // [Trait("Category", "Slow")]
+    public void CacheContext_Pressure_MRULRUManagement()
+    {
+      using var cache = new TRexSpatialMemoryCache(100, 1000000, 0.1);
+
+      // Create a context with default invalidation sensitivity, add some data to it
+      // and validate that a change bitmask causes appropriate invalidation in concurrent operations
+      var contextHeight = cache.LocateOrCreateContext(Guid.Empty, GridDataType.Height, "fingerprintHeight");
+      var contextPassCount = cache.LocateOrCreateContext(Guid.Empty, GridDataType.PassCount, "fingerprintPasscount");
+
+      var contexts = new[] { contextHeight, contextPassCount };
+
+      var itemsHeight = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+      var itemsPassCount = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+
+      var items = new[] { itemsHeight, itemsPassCount };
+
+      for (var i = 0; i < 100; i++)
+      {
+        for (var j = 0; j < 100; j++)
+        {
+          items.ForEach((x, index) => x[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+          {
+            Context = contexts[index],
+            CacheOriginX = i * SubGridTreeConsts.SubGridTreeDimension,
+            CacheOriginY = j * SubGridTreeConsts.SubGridTreeDimension,
+            SizeInBytes = 1
+          });
+        }
+      }
+
+      // Progressively add elements in the cache forcing elements to be removed to accomodate them given the cache's small size
+      // Check the retrieved element is also in the expected cache
+      var additionTask = Task.Run(() => {
+        for (var loopCount = 0; loopCount < 100; loopCount++)
+        {
+          for (var i = 0; i < 100; i++)
+          {
+            for (var j = 0; j < 100; j++)
+            {
+              for (var contextIndex = 0; contextIndex < contexts.Length; contextIndex++)
+              {
+                TRexSpatialMemoryCacheContextTests_Element elem;
+                if ((elem = (TRexSpatialMemoryCacheContextTests_Element)cache.Get(contexts[contextIndex], i, j)) != null)
+                {
+                  elem.Context.Should().Be(contexts[contextIndex]);
+                }
+                else
+                {
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]).Should().BeTrue();
+                }
+              }
+            }
+          }
+        }
+      });
+
+      Task.WaitAll(new[] { additionTask  });
+    }
+
+    [Fact]
+    public void CacheContext_Pressure_MRULRUManagement_WithTouhing()
+    {
+      using var cache = new TRexSpatialMemoryCache(100, 1000000, 0.1);
+
+      // Create a context with default invalidation sensitivity, add some data to it
+      // and validate that a change bitmask causes appropriate invalidation in concurrent operations
+      var contextHeight = cache.LocateOrCreateContext(Guid.Empty, GridDataType.Height, "fingerprintHeight");
+      var contextPassCount = cache.LocateOrCreateContext(Guid.Empty, GridDataType.PassCount, "fingerprintPasscount");
+
+      var contexts = new[] { contextHeight, contextPassCount };
+
+      var itemsHeight = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+      var itemsPassCount = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+
+      var items = new[] { itemsHeight, itemsPassCount };
+
+      for (var i = 0; i < 100; i++)
+      {
+        for (var j = 0; j < 100; j++)
+        {
+          items.ForEach((x, index) => x[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+          {
+            Context = contexts[index],
+            CacheOriginX = i * SubGridTreeConsts.SubGridTreeDimension,
+            CacheOriginY = j * SubGridTreeConsts.SubGridTreeDimension,
+            SizeInBytes = 1
+          });
+        }
+      }
+
+      // Progressively add elements in the cache forcing elements to be removed to accomodate them given the cache's small size
+      // Check the retrieved element is also in the expected cache
+      var additionTask = Task.Run(() => {
+        for (var loopCount = 0; loopCount < 100; loopCount++)
+        {
+          for (var i = 0; i < 100; i++)
+          {
+            for (var j = 0; j < 100; j++)
+            {
+              for (var contextIndex = 0; contextIndex < contexts.Length; contextIndex++)
+              {
+                TRexSpatialMemoryCacheContextTests_Element elem;
+                if ((elem = (TRexSpatialMemoryCacheContextTests_Element)cache.Get(contexts[contextIndex], i, j)) != null)
+                {
+                  elem.Context.Should().Be(contexts[contextIndex]);
+                }
+                else
+                {
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]).Should().BeTrue();
+                }
+              }
+            }
+          }
+        }
+      });
+
+      Task.WaitAll(new[] { additionTask });
+    }
+
+    [Fact(Skip = "Slow - Development Use - WIP")]
+    [Trait("Category", "Slow")]
     public void CacheContext_Tenancy_IsUpheld_OnConcurrentRequests_WithLRUEvictionOnSmallCacheSize()
     {
       using var cache = new TRexSpatialMemoryCache(100, 1000000, 0.1);

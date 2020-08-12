@@ -12,7 +12,18 @@ namespace VSS.TRex.Caching
 
     private readonly TRexCacheItem<T>[] _items;
 
+    /// <summary>
+    /// The head of the most recently used list. MRUHead is the most recently added or modified element in the list. 
+    /// Traverse it with *.Next to get progressively older elements
+    /// </summary>
     public int MRUHead { get; private set; }
+
+    /// <summary>
+    /// The head of the least recently used list. LRUHead is the least recently added or modified element in the list
+    /// Traverse it with *.Prev to get progressively older elements
+    /// </summary>
+    public int LRUHead { get; private set; }
+
     private int _freeListHead;
 
     private long _currentToken = -1;
@@ -42,6 +53,7 @@ namespace VSS.TRex.Caching
 
       // Initialise the MRU head to -1 (ie: no items in the list)
       MRUHead = -1;
+      LRUHead = -1;
 
       // Initialise all items to be within the free list
       _freeListHead = 0;
@@ -61,35 +73,26 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void EvictOneLRUItem()
     {
-      if (MRUHead == -1)
+      if (LRUHead == -1)
         return;
 
-      var lruHead = _items[MRUHead].Prev;
-      _items[MRUHead].Prev = _items[lruHead].Prev;
-
-      try
-      {
-        MRUHead = _items[MRUHead].Next;
-      }
-      catch
-      {
-        _log.LogError($"Failure evicting element: MRUHead = {MRUHead}, lruHead = {lruHead}");
-        throw;
-      }
-
-      _items[lruHead].Prev = -1;
+      var oldLRUHead = LRUHead;
+      LRUHead = _items[LRUHead].Prev;
 
       if (_freeListHead != -1)
       {
-        _items[_freeListHead].Prev = lruHead;
-        _items[lruHead].Next = _freeListHead;
+        _items[_freeListHead].Prev = oldLRUHead;
+
+        _items[oldLRUHead].Next = _freeListHead;
+        _items[oldLRUHead].Prev = -1;
       }
       else
       {
-        _items[lruHead].Next = -1;
+        _items[oldLRUHead].Next = -1;
+        _items[oldLRUHead].Prev = -1;
       }
 
-      _freeListHead = lruHead;
+      _freeListHead = oldLRUHead;
 
       // Set the index in the context to the element just evicted to zero
       _items[_freeListHead].RemoveFromContext();
@@ -126,6 +129,11 @@ namespace VSS.TRex.Caching
       {
         _items[index].Set(element, context, token, _items[MRUHead].Prev, MRUHead);
         _items[MRUHead].Prev = index;
+      }
+
+      if (LRUHead == -1)
+      {
+        LRUHead = index;
       }
 
       MRUHead = index;
