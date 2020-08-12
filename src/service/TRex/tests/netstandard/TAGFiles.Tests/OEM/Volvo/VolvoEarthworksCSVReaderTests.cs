@@ -24,7 +24,7 @@ namespace TAGFiles.Tests.OEM.Volvo
       file.Should().NotBeNull();
     }
 
-    [Fact]
+    [Fact(Skip ="Test data not yet in source control")]
     public void LoadFile()
     {
       using var stream = new FileStream(FILENAME, FileMode.Open, FileAccess.Read);

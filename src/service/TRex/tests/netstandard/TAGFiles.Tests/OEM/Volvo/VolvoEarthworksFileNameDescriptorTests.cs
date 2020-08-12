@@ -9,6 +9,7 @@ namespace TAGFiles.Tests.OEM.Volvo
   public class VolvoEarthworksFileNameDescriptorTests : IClassFixture<DILoggingFixture>
   {
     private const string TEST_FILE_NAME = "lift1_Lag 1_1_utm27W_2020-03-11 14-19-07_S135B556186.csv";
+
     [Fact]
     public void Creation()
     {
