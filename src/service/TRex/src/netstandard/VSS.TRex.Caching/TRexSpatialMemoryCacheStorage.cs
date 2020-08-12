@@ -10,6 +10,9 @@ namespace VSS.TRex.Caching
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<TRexSpatialMemoryCacheStorage<T>>();
 
+    private const int NULL_INDEX = -1;
+    private const int NULL_MRU_EPOCH_TOKEN = -1;
+
     private readonly TRexCacheItem<T>[] _items;
 
     /// <summary>
@@ -26,7 +29,7 @@ namespace VSS.TRex.Caching
 
     private int _freeListHead;
 
-    private long _currentToken = -1;
+    private long _currentToken = NULL_MRU_EPOCH_TOKEN;
     private long NextToken() => System.Threading.Interlocked.Increment(ref _currentToken);
 
     private readonly int _maxMruEpochTokenAge;
@@ -37,7 +40,7 @@ namespace VSS.TRex.Caching
     // ReSharper disable once ConvertToAutoPropertyWhenPossible
     public int TokenCount => _tokenCount;
 
-    public bool HasFreeSpace() => _freeListHead != -1;
+    public bool HasFreeSpace() => _freeListHead != NULL_INDEX;
 
     /// <summary>
     /// Constructs a storage ring to contain a fixed maximum number of elements in the cache. The ring defines two internal
@@ -51,15 +54,15 @@ namespace VSS.TRex.Caching
       // Allocate all the wrapper for the cached items into a single array
       _items = new TRexCacheItem<T>[maxNumElements];
 
-      // Initialise the MRU head to -1 (ie: no items in the list)
-      MRUHead = -1;
-      LRUHead = -1;
+      // Initialise the MRU head to NULL_INDEX (ie: no items in the list)
+      MRUHead = NULL_INDEX;
+      LRUHead = NULL_INDEX;
 
       // Initialise all items to be within the free list
       _freeListHead = 0;
       for (var i = 0; i < maxNumElements - 1; i++)
         _items[i].Next = i + 1;
-      _items[maxNumElements - 1].Next = -1;
+      _items[maxNumElements - 1].Next = NULL_INDEX;
 
       for (var i = 0; i < maxNumElements; i++)
         _items[i].Prev = i - 1;
@@ -73,23 +76,23 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void EvictOneLRUItem()
     {
-      if (LRUHead == -1)
+      if (LRUHead == NULL_INDEX)
         return;
 
       var oldLRUHead = LRUHead;
       LRUHead = _items[LRUHead].Prev;
 
-      if (_freeListHead != -1)
+      if (_freeListHead != NULL_INDEX)
       {
         _items[_freeListHead].Prev = oldLRUHead;
 
         _items[oldLRUHead].Next = _freeListHead;
-        _items[oldLRUHead].Prev = -1;
+        _items[oldLRUHead].Prev = NULL_INDEX;
       }
       else
       {
-        _items[oldLRUHead].Next = -1;
-        _items[oldLRUHead].Prev = -1;
+        _items[oldLRUHead].Next = NULL_INDEX;
+        _items[oldLRUHead].Prev = NULL_INDEX;
       }
 
       _freeListHead = oldLRUHead;
@@ -110,7 +113,7 @@ namespace VSS.TRex.Caching
       var token = NextToken();
 
       // Obtain item from free list
-      if (_freeListHead == -1)
+      if (_freeListHead == NULL_INDEX)
       {
         // There are no free entries, victimize one to store it
         EvictOneLRUItem();
@@ -121,7 +124,7 @@ namespace VSS.TRex.Caching
       _freeListHead = _items[index].Next;
 
       // Set the parameters for the new item, setting it's prev pointer to point to the oldest member of the MRUList
-      if (MRUHead == -1)
+      if (MRUHead == NULL_INDEX)
       {
         _items[index].Set(element, context, token, index, MRUHead);
       }
@@ -131,7 +134,7 @@ namespace VSS.TRex.Caching
         _items[MRUHead].Prev = index;
       }
 
-      if (LRUHead == -1)
+      if (LRUHead == NULL_INDEX)
       {
         LRUHead = index;
       }
@@ -151,13 +154,13 @@ namespace VSS.TRex.Caching
     {
       _items[index].GetPrevAndNext(out var prev, out var next);
 
-      if (prev != -1)
+      if (prev != NULL_INDEX)
         _items[prev].Next = next;
 
-      if (next != -1)
+      if (next != NULL_INDEX)
         _items[next].Prev = prev;
 
-      _items[index].Set(default, null, -1, -1, _freeListHead);
+      _items[index].Set(default, null, NULL_MRU_EPOCH_TOKEN, NULL_INDEX, _freeListHead);
       _freeListHead = index;
 
       _tokenCount--;
@@ -175,13 +178,13 @@ namespace VSS.TRex.Caching
       _items[index].GetPrevAndNext(out var prev, out var next);
 
       // Rewire previous and next references in the neighbors to cut this item out of the linked list
-      if (prev != -1)
+      if (prev != NULL_INDEX)
         _items[prev].Next = next;
-      if (next != -1)
+      if (next != NULL_INDEX)
         _items[next].Prev = prev;
 
       // Add the current item to the MRUHead
-      _items[index].Prev = -1;
+      _items[index].Prev = NULL_INDEX;
       _items[index].Next = MRUHead;
 
       // Update MRUHead to point to item at the head of the list
@@ -220,6 +223,6 @@ namespace VSS.TRex.Caching
       return cacheItem.Item;
     }
 
-    public bool IsEmpty() => MRUHead == -1;
+    public bool IsEmpty() => MRUHead == NULL_INDEX;
   }
 }
