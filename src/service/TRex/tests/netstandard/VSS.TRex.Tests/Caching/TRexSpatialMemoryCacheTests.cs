@@ -748,5 +748,116 @@ namespace VSS.TRex.Tests.Caching
         act.Should().Throw<TRexException>().WithMessage("CurrentSizeInBytes < 0! Consider using Cache.Add(context, item).");
       }
     }
+
+    [Fact]
+   // [Trait("Category", "Slow")]
+    public void CacheContext_Tenancy_IsUpheld_OnConcurrentRequests_WithLRUEvictionOnSmallCacheSize()
+    {
+      using var cache = new TRexSpatialMemoryCache(100, 1000000, 0.1);
+
+      // Create a context with default invalidation sensitivity, add some data to it
+      // and validate that a change bitmask causes appropriate invalidation in concurrent operations
+      var contextHeight = cache.LocateOrCreateContext(Guid.Empty, GridDataType.Height, "fingerprintHeight");
+      var contextPassCount = cache.LocateOrCreateContext(Guid.Empty, GridDataType.PassCount, "fingerprintPasscount");
+
+      var contexts = new[] { contextHeight, contextPassCount };
+
+      var itemsHeight = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+      var itemsPassCount = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+
+      var items = new[] { itemsHeight, itemsPassCount };
+
+      // Create the bitmask
+      ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
+
+      for (var i = 0; i < 100; i++)
+      {
+        for (var j = 0; j < 100; j++)
+        {
+          mask[(i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+            (j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
+
+          items.ForEach((x, index) => x[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+          {
+            Context = contexts[index],
+            CacheOriginX = i * SubGridTreeConsts.SubGridTreeDimension,
+            CacheOriginY = j * SubGridTreeConsts.SubGridTreeDimension, SizeInBytes = 1
+          });
+        }
+      }
+
+//      var additionComplete = false;
+//      var invalidationComplete = false;
+
+      // Progressively add elements in the cache forcing elements to be removed to accomodate them given the cache's small size
+      var additionTask = Task.Run(() => {
+        for (var loopCount = 0; loopCount < 100; loopCount++)
+        {
+          for (var i = 0; i < 100; i++)
+          {
+            for (var j = 0; j < 100; j++)
+            {
+              for (var contextIndex = 0; contextIndex < contexts.Length; contextIndex++)
+              {
+                TRexSpatialMemoryCacheContextTests_Element elem;
+                if ((elem = (TRexSpatialMemoryCacheContextTests_Element)cache.Get(contexts[contextIndex], i, j)) != null)
+                {
+                  elem.Context.Should().Be(contexts[contextIndex]);
+                }
+                else
+                {
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]).Should().BeTrue();
+                }
+              }
+            }
+          }
+        }
+
+//        additionComplete = true;
+      });
+
+      /*
+      var invalidationTask = Task.Run(() =>
+      {
+        for (var loopCount = 0; loopCount < 100; loopCount++)
+        {
+          for (var i = 99; i >= 0; i--)
+          {
+            for (var j = 99; j >= 0; j--)
+            {
+              foreach (var context in contexts)
+              {
+                // Empty contexts are ignored
+                if (context.TokenCount > 0)
+                {
+                  context.InvalidateSubGrid(i * SubGridTreeConsts.SubGridTreeDimension, j * SubGridTreeConsts.SubGridTreeDimension, out var subGridPresentForInvalidation);
+                }
+              }
+            }
+          }
+        }
+
+        invalidationComplete = true;
+      });
+      */
+
+/*      var numDesignInvalidations = 0;
+      var designUpdateTask = Task.Run(async () =>
+      {
+        while (!additionComplete || !invalidationComplete)
+        {
+          // Mimic design invalidation by periodically invalidating all sub grids
+          await Task.Delay(10);
+          contexts[numDesignInvalidations % contexts.Length].InvalidateAllSubGrids();
+
+          numDesignInvalidations++;
+        }
+      });
+
+  */
+      Task.WaitAll(new[] { additionTask /*, invalidationTask, designUpdateTask*/ });
+
+//      numDesignInvalidations.Should().BeGreaterThan(0);
+    }
   }
 }
