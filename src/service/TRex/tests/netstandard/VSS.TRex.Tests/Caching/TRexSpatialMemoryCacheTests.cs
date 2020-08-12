@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Caching;
@@ -145,7 +146,7 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(context.TokenCount == 1, "Context token count not one after adding single item");
 
-      var gotItem = context.Get(_originX, _originY);
+      var gotItem = cache.Get(context, _originX, _originY);
 
       Assert.True(gotItem != null, "Failed to retrieve added entry");
 
@@ -189,7 +190,7 @@ namespace VSS.TRex.Tests.Caching
 
         for (int i = 0; i < numContexts; i++)
         {
-          var gotItem = contexts[i].Get(items[i].CacheOriginX, items[i].CacheOriginY);
+          var gotItem = cache.Get(contexts[i], items[i].CacheOriginX, items[i].CacheOriginY);
 
           Assert.True(gotItem != null, "Failed to retrieve added entry");
           Assert.True(ReferenceEquals(items[i], gotItem), $"Got item not same as elements in items array at index {i}");
@@ -277,8 +278,8 @@ namespace VSS.TRex.Tests.Caching
         cache.Add(context, item2);
 
         Assert.True(context.TokenCount == 1, "Token count not one after addition of second element forcing eviction of first");
-        Assert.True(context.Get(item1.CacheOriginX, item1.CacheOriginY) == null, "Able to request item1 after it should have been evicted for item2");
-        Assert.True(context.Get(item2.CacheOriginX, item2.CacheOriginY) != null, "Unable to request item2 after it should have replaced item1");
+        Assert.True(cache.Get(context, item1.CacheOriginX, item1.CacheOriginY) == null, "Able to request item1 after it should have been evicted for item2");
+        Assert.True(cache.Get(context, item2.CacheOriginX, item2.CacheOriginY) != null, "Unable to request item2 after it should have replaced item1");
       }
     }
 
@@ -412,7 +413,7 @@ namespace VSS.TRex.Tests.Caching
           int x = (int) (_originX + i * SubGridTreeConsts.SubGridTreeDimension);
           int y = (int) (_originY + j * SubGridTreeConsts.SubGridTreeDimension);
 
-          var gotItem = context.Get(x, y);
+          var gotItem = cache.Get(context, x, y);
           Assert.True(gotItem != null, "Failed to retrieve added entry");
 
           Assert.Equal(x, gotItem.CacheOriginX);
@@ -444,7 +445,7 @@ namespace VSS.TRex.Tests.Caching
 
         System.Threading.Thread.Sleep(1000); // Allow the item to expire
 
-        Assert.Null(context.Get(1000, 1000));
+        Assert.Null(cache.Get(context, 1000, 1000));
         Assert.True(context.TokenCount == 0, "Element not retired on Get() after expiry date");
       }
     }
@@ -747,6 +748,177 @@ namespace VSS.TRex.Tests.Caching
         Action act = () => cache.ItemRemovedFromContext(100);
         act.Should().Throw<TRexException>().WithMessage("CurrentSizeInBytes < 0! Consider using Cache.Add(context, item).");
       }
+    }
+
+    [Fact]
+    public void CacheContext_Pressure_MRULRUManagement()
+    {
+      using var cache = new TRexSpatialMemoryCache(100, 1000000, 0.1);
+
+      // Create a context with default invalidation sensitivity, add some data to it
+      // and validate that a change bitmask causes appropriate invalidation in concurrent operations
+      var contextHeight = cache.LocateOrCreateContext(Guid.Empty, GridDataType.Height, "fingerprintHeight");
+      var contextPassCount = cache.LocateOrCreateContext(Guid.Empty, GridDataType.PassCount, "fingerprintPasscount");
+
+      var contexts = new[] { contextHeight, contextPassCount };
+
+      var itemsHeight = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+      var itemsPassCount = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+
+      var items = new[] { itemsHeight, itemsPassCount };
+
+      for (var i = 0; i < 100; i++)
+      {
+        for (var j = 0; j < 100; j++)
+        {
+          items.ForEach((x, index) => x[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+          {
+            Context = contexts[index],
+            CacheOriginX = i * SubGridTreeConsts.SubGridTreeDimension,
+            CacheOriginY = j * SubGridTreeConsts.SubGridTreeDimension,
+            SizeInBytes = 1
+          });
+        }
+      }
+
+      // Progressively add elements in the cache forcing elements to be removed to accomodate them given the cache's small size
+      // Check the retrieved element is also in the expected cache
+      var additionTask = Task.Run(() => {
+        for (var loopCount = 0; loopCount < 100; loopCount++)
+        {
+          for (var i = 0; i < 100; i++)
+          {
+            for (var j = 0; j < 100; j++)
+            {
+              for (var contextIndex = 0; contextIndex < contexts.Length; contextIndex++)
+              {
+                TRexSpatialMemoryCacheContextTests_Element elem;
+                if ((elem = (TRexSpatialMemoryCacheContextTests_Element)cache.Get(contexts[contextIndex], i, j)) != null)
+                {
+                  elem.Context.Should().Be(contexts[contextIndex]);
+                }
+                else
+                {
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]).Should().BeTrue();
+                }
+              }
+            }
+          }
+        }
+      });
+
+      Task.WaitAll(new[] { additionTask  });
+    }
+
+    [Fact(Skip = "Slow - Development Use - WIP")]
+    [Trait("Category", "Slow")]
+    public void CacheContext_Tenancy_IsUpheld_OnConcurrentRequests_WithLRUEvictionOnSmallCacheSize()
+    {
+      using var cache = new TRexSpatialMemoryCache(100, 1000000, 0.1);
+
+      // Create a context with default invalidation sensitivity, add some data to it
+      // and validate that a change bitmask causes appropriate invalidation in concurrent operations
+      var contextHeight = cache.LocateOrCreateContext(Guid.Empty, GridDataType.Height, "fingerprintHeight");
+      var contextPassCount = cache.LocateOrCreateContext(Guid.Empty, GridDataType.PassCount, "fingerprintPasscount");
+
+      var contexts = new[] { contextHeight, contextPassCount };
+
+      var itemsHeight = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+      var itemsPassCount = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+
+      var items = new[] { itemsHeight, itemsPassCount };
+
+      // Create the bitmask
+      ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
+
+      for (var i = 0; i < 100; i++)
+      {
+        for (var j = 0; j < 100; j++)
+        {
+          mask[(i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+            (j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
+
+          items.ForEach((x, index) => x[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+          {
+            Context = contexts[index],
+            CacheOriginX = i * SubGridTreeConsts.SubGridTreeDimension,
+            CacheOriginY = j * SubGridTreeConsts.SubGridTreeDimension, SizeInBytes = 1
+          });
+        }
+      }
+
+//      var additionComplete = false;
+//      var invalidationComplete = false;
+
+      // Progressively add elements in the cache forcing elements to be removed to accomodate them given the cache's small size
+      var additionTask = Task.Run(() => {
+        for (var loopCount = 0; loopCount < 100; loopCount++)
+        {
+          for (var i = 0; i < 100; i++)
+          {
+            for (var j = 0; j < 100; j++)
+            {
+              for (var contextIndex = 0; contextIndex < contexts.Length; contextIndex++)
+              {
+                TRexSpatialMemoryCacheContextTests_Element elem;
+                if ((elem = (TRexSpatialMemoryCacheContextTests_Element)cache.Get(contexts[contextIndex], i, j)) != null)
+                {
+                  elem.Context.Should().Be(contexts[contextIndex]);
+                }
+                else
+                {
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]).Should().BeTrue();
+                }
+              }
+            }
+          }
+        }
+
+//        additionComplete = true;
+      });
+
+      /*
+      var invalidationTask = Task.Run(() =>
+      {
+        for (var loopCount = 0; loopCount < 100; loopCount++)
+        {
+          for (var i = 99; i >= 0; i--)
+          {
+            for (var j = 99; j >= 0; j--)
+            {
+              foreach (var context in contexts)
+              {
+                // Empty contexts are ignored
+                if (context.TokenCount > 0)
+                {
+                  context.InvalidateSubGrid(i * SubGridTreeConsts.SubGridTreeDimension, j * SubGridTreeConsts.SubGridTreeDimension, out var subGridPresentForInvalidation);
+                }
+              }
+            }
+          }
+        }
+
+        invalidationComplete = true;
+      });
+      */
+
+/*      var numDesignInvalidations = 0;
+      var designUpdateTask = Task.Run(async () =>
+      {
+        while (!additionComplete || !invalidationComplete)
+        {
+          // Mimic design invalidation by periodically invalidating all sub grids
+          await Task.Delay(10);
+          contexts[numDesignInvalidations % contexts.Length].InvalidateAllSubGrids();
+
+          numDesignInvalidations++;
+        }
+      });
+
+  */
+      Task.WaitAll(new[] { additionTask /*, invalidationTask, designUpdateTask*/ });
+
+//      numDesignInvalidations.Should().BeGreaterThan(0);
     }
   }
 }
