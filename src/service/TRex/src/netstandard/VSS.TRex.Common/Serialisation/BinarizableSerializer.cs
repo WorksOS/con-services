@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Binary;
 using Force.DeepCloner;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Common.Serialisation
 {
@@ -27,17 +26,16 @@ namespace VSS.TRex.Common.Serialisation
           case Exception e:
             writer.WriteObject("Exception", e);
             return;
+          default:
+            _log.LogCritical($"Not IBinarizable on WriteBinary: { obj.GetType()}");
+            break;
         }
       }
       catch (Exception e)
       {
         _log.LogCritical(e, "WriteBinary failure");
-
         // Don't rethrow the exception as this can lead to unhandle-able SEHExceptions in DotNet
-        return;
       }
-
-      throw new TRexNonBinarizableException($"Not IBinarizable on WriteBinary: {obj.GetType()}");
     }
 
     public void ReadBinary(object obj, IBinaryReader reader)
@@ -55,17 +53,16 @@ namespace VSS.TRex.Common.Serialisation
             var res = reader.ReadObject<Exception>("Exception");
             res.ShallowCloneTo(e);
             return;
+          default:
+            _log.LogCritical($"Not IBinarizable on ReadBinary: { obj.GetType()}");
+            break;
         }
       }
       catch (Exception e)
       {
         _log.LogCritical(e, "ReadBinary failure");
-
         // Don't rethrow the exception as this can lead to unhandle-able SEHExceptions in DotNet
-        return;
       }
-
-      throw new TRexNonBinarizableException($"Not IBinarizable on ReadBinary: {obj.GetType()}");
     }
   }
 }
