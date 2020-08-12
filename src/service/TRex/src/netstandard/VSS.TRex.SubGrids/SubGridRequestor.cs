@@ -239,7 +239,7 @@ namespace VSS.TRex.SubGrids
 
         // Determine if there is a suitable pre-calculated result present in the general sub grid result cache.
         // If there is, then apply the filter mask to the cached data and copy it to the client grid
-        var cachedSubGrid = (IClientLeafSubGrid)subGridCacheContext?.OwnerMemoryCache.Get(subGridCacheContext, _clientGrid.CacheOriginX, _clientGrid.CacheOriginY);
+        var cachedSubGrid = (IClientLeafSubGrid)_subGridCache?.Get(subGridCacheContext, _clientGrid.CacheOriginX, _clientGrid.CacheOriginY);
 
         // If there was a cached sub grid located, assign its contents according the client grid mask into the client grid and return it
         if (cachedSubGrid != null)
