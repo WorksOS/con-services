@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           TagFileContent = request.Data,
           TCCOrgID = request.OrgId,
           SubmissionFlags = TAGFiles.Models.TAGFileSubmissionFlags.AddToArchive,
-          OriginSource = TAGFiles.Models.TAGFileOriginSource.LegacyTAGFileSource // Only legacy TAG files supported via this end point for now
+          OriginSource = request.OriginSource
         };
 
         var res = await submitRequest.ExecuteAsync(arg);

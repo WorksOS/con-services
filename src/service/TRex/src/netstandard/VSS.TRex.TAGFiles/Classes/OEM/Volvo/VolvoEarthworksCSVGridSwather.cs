@@ -46,7 +46,7 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 
           var theTime = DateTime.SpecifyKind(cellPass.Time, DateTimeKind.Utc);
 
-          // Volvo VCS files do not have height available yet, just use 0.0 for now
+          // Volvo CSV files do not have height available yet, just use 0.0 for now
           var theHeight = 0.0f;
 
           // Check to see if the blade-on-the-ground flag is set. if not, then we will not process this epoch.

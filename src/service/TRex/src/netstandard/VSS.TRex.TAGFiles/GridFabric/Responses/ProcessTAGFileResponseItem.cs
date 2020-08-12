@@ -1,8 +1,8 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.TAGFiles.Models;
-using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Responses
 {

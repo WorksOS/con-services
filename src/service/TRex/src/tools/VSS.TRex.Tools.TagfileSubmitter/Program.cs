@@ -7,7 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.TAGFiles.Servers.Client;
-using VSS.TRex.TAGFiles.Models;
+using VSS.Productivity3D.Models.Models;
 
 /*
 Arguments for building project #5, Dimensions:

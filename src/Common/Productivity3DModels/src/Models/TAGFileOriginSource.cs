@@ -1,10 +1,9 @@
-﻿namespace VSS.TRex.TAGFiles.Models
+﻿namespace VSS.Productivity3D.Models.Models
 {
   public enum TAGFileOriginSource
-  {
-    /// <summary>
-    /// Represents any machine control system capable of producing a TAG file as defined and used by the CTCT GCS900 & Earthworks product families
-    /// </summary>
+  {    /// <summary>
+       /// Represents any machine control system capable of producing a TAG file as defined and used by the CTCT GCS900 & Earthworks product families
+       /// </summary>
     LegacyTAGFileSource = 0,
 
     /// <summary>

@@ -49,7 +49,8 @@ namespace TAGFiles.Tests.OEM.Volvo
         VibeState = "On",
         LastTemp_f = double.Parse("32.0"),
         LastCMV = 0,
-        ICMVType = 2
+        ICMVType = 2,
+        lineParsedOK = true
       });
     }
   }

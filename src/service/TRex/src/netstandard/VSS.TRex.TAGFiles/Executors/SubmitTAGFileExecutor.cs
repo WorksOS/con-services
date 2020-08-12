@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.Enums;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;

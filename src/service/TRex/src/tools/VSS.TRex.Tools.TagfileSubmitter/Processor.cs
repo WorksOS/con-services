@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
 using VSS.TRex.TAGFiles.GridFabric.Requests;
 using VSS.TRex.TAGFiles.Models;
-using VSS.TRex.Types;
 
 /*
 Arguments for building project #5, Dimensions:

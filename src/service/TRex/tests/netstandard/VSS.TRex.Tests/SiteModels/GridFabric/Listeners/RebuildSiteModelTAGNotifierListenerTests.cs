@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.TAGFiles.GridFabric.Responses;
 using VSS.TRex.TAGFiles.Models;

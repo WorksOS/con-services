@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Integrator;
