@@ -145,7 +145,7 @@ namespace VSS.TRex.Tests.Caching
 
       Assert.True(context.TokenCount == 1, "Context token count not one after adding single item");
 
-      var gotItem = context.Get(_originX, _originY);
+      var gotItem = cache.Get(context, _originX, _originY);
 
       Assert.True(gotItem != null, "Failed to retrieve added entry");
 
@@ -189,7 +189,7 @@ namespace VSS.TRex.Tests.Caching
 
         for (int i = 0; i < numContexts; i++)
         {
-          var gotItem = contexts[i].Get(items[i].CacheOriginX, items[i].CacheOriginY);
+          var gotItem = cache.Get(contexts[i], items[i].CacheOriginX, items[i].CacheOriginY);
 
           Assert.True(gotItem != null, "Failed to retrieve added entry");
           Assert.True(ReferenceEquals(items[i], gotItem), $"Got item not same as elements in items array at index {i}");
@@ -277,8 +277,8 @@ namespace VSS.TRex.Tests.Caching
         cache.Add(context, item2);
 
         Assert.True(context.TokenCount == 1, "Token count not one after addition of second element forcing eviction of first");
-        Assert.True(context.Get(item1.CacheOriginX, item1.CacheOriginY) == null, "Able to request item1 after it should have been evicted for item2");
-        Assert.True(context.Get(item2.CacheOriginX, item2.CacheOriginY) != null, "Unable to request item2 after it should have replaced item1");
+        Assert.True(cache.Get(context, item1.CacheOriginX, item1.CacheOriginY) == null, "Able to request item1 after it should have been evicted for item2");
+        Assert.True(cache.Get(context, item2.CacheOriginX, item2.CacheOriginY) != null, "Unable to request item2 after it should have replaced item1");
       }
     }
 
@@ -412,7 +412,7 @@ namespace VSS.TRex.Tests.Caching
           int x = (int) (_originX + i * SubGridTreeConsts.SubGridTreeDimension);
           int y = (int) (_originY + j * SubGridTreeConsts.SubGridTreeDimension);
 
-          var gotItem = context.Get(x, y);
+          var gotItem = cache.Get(context, x, y);
           Assert.True(gotItem != null, "Failed to retrieve added entry");
 
           Assert.Equal(x, gotItem.CacheOriginX);
@@ -444,7 +444,7 @@ namespace VSS.TRex.Tests.Caching
 
         System.Threading.Thread.Sleep(1000); // Allow the item to expire
 
-        Assert.Null(context.Get(1000, 1000));
+        Assert.Null(cache.Get(context, 1000, 1000));
         Assert.True(context.TokenCount == 0, "Element not retired on Get() after expiry date");
       }
     }
