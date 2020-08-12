@@ -33,8 +33,8 @@ namespace VSS.TRex.Common.Serialisation
       {
         _log.LogCritical(e, "WriteBinary failure");
 
-        // Rethrow the exception - the intent here is not to handle it, but to add visibility to it
-        throw;
+        // Don't rethrow the exception as this can lead to unhandle-able SEHExceptions in DotNet
+        return;
       }
 
       throw new TRexNonBinarizableException($"Not IBinarizable on WriteBinary: {obj.GetType()}");
@@ -61,8 +61,8 @@ namespace VSS.TRex.Common.Serialisation
       {
         _log.LogCritical(e, "ReadBinary failure");
 
-        // Rethrow the exception - the intent here is not to handle it, but to add visibility to it
-        throw;
+        // Don't rethrow the exception as this can lead to unhandle-able SEHExceptions in DotNet
+        return;
       }
 
       throw new TRexNonBinarizableException($"Not IBinarizable on ReadBinary: {obj.GetType()}");
