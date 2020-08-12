@@ -9,7 +9,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
   public class ProcessTAGFileResponseItem : IProcessTAGFileResponseItem
   {
     private const byte VERSION_NUMBER = 3;
-    private static byte[] VERSION_NUMBERS = { 1, 2 };
+    private static byte[] VERSION_NUMBERS = { 1, 2, 3 };
 
     public string FileName { get; set; }
 
