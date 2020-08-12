@@ -38,7 +38,7 @@ namespace VSS.MasterData.Proxies
       HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent
     };
 
-    public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore, IHttpClientFactory clientFactory = null)
+    public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore, IHttpClientFactory clientFactory)
     {
       _log = logger.CreateLogger<GracefulWebRequest>();
       _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxChar);
