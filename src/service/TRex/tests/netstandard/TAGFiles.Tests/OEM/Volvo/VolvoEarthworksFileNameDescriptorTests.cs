@@ -15,6 +15,7 @@ namespace TAGFiles.Tests.OEM.Volvo
     {
       var descriptor = new VolvoEarthworksFileNameDescriptor(TEST_FILE_NAME);
       descriptor.Should().NotBeNull();
+      descriptor.DecodedOK.Should().BeTrue();
     }
 
     [Fact]
@@ -28,6 +29,17 @@ namespace TAGFiles.Tests.OEM.Volvo
       descriptor.CSName.Should().Be("utm27W");
       descriptor.Date.Should().Be(DateTime.SpecifyKind(new DateTime(2020, 3, 11, 14, 19, 7), DateTimeKind.Utc));
       descriptor.MachineID.Should().Be("S135B556186");
+
+      descriptor.DecodedOK.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Creation_Fail()
+    {
+      var descriptor = new VolvoEarthworksFileNameDescriptor("An Invalid FileName.csv");
+      
+      descriptor.Should().NotBeNull();
+      descriptor.DecodedOK.Should().BeFalse();
     }
   }
 }

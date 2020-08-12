@@ -5,6 +5,8 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
 {
   public class VolvoEarthworksFileNameDescriptor
   {
+    public bool DecodedOK { get; set; } = false;
+
     public string Lift { get; set; }
     public string DesignName { get; set; }
     public int Counter { get; set; }
@@ -15,6 +17,12 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
     private void DecodeFromFileName(string fileName)
     {
       var parts = Path.GetFileNameWithoutExtension(fileName).Split('_');
+
+      if (parts.Length < 6)
+      {
+        return;
+      }
+
       Lift = parts[0];
       DesignName = parts[1];
       Counter = int.Parse(parts[2]);
@@ -26,6 +34,8 @@ namespace VSS.TRex.TAGFiles.Classes.OEM.Volvo
       Date = new DateTime(int.Parse(dayParts[0]), int.Parse(dayParts[1]), int.Parse(dayParts[2]), int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
 
       MachineID = parts[5];
+
+      DecodedOK = true;
     }
 
     public VolvoEarthworksFileNameDescriptor(string fileName)
