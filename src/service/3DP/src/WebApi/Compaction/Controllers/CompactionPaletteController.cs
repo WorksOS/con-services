@@ -141,13 +141,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             break;
           case DisplayMode.CMVChange:
             colorValues = new List<ColorValue>();
-            for (int i = 1; i < compactionPalette.Count - 1; i++)
+            for (int i = 0; i < compactionPalette.Count - 1; i++)
             {
               colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].Color,
                 compactionPalette[i].Value));
             }
             cmvPercentChangePalette = DetailPalette.CreateDetailPalette(colorValues,
-              compactionPalette[compactionPalette.Count - 1].Color, compactionPalette[0].Color);
+              compactionPalette[compactionPalette.Count - 1].Color, null);
             break;
           case DisplayMode.TemperatureDetail:
             colorValues = new List<ColorValue>();
