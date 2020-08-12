@@ -65,7 +65,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
       var cachingSupported = arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _context != null;
 
       // Check the item is available in the cache
-      if (cachingSupported && _context?.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
+      if (cachingSupported && _cache?.Get(_context, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
         return ExtractFromCachedItem(cacheResult, arg.ProcessingMap);
 
       SubGridTreeBitmapSubGridBits savedMap = null;
