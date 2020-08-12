@@ -21,9 +21,9 @@ using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Rendering.GridFabric.Responses;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -81,7 +81,7 @@ namespace VSS.TRex.Gateway.Common.Executors
             ? new FilterSet(ConvertFilter(request.Filter1, siteModel))
             : new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
           new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0)
-        )) as TileRenderResponse_Core2;
+        ));
 
       return new TileResult(response?.TileBitmapData);
     }
@@ -106,6 +106,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       var overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides);
 
       PaletteBase convertedPalette;
+
+      var availableTransitions = request.Palettes != null ? request.Palettes.Select(p => new Transition(p.Value, ColorUtility.UIntToColor(p.Color))).ToArray() : new Transition[0];
 
       switch (request.Mode)
       {
@@ -138,6 +140,8 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           cmvPalette.TargetCCVColour = Color.Green;
           cmvPalette.DefaultDecoupledCMVColour = Color.Black;
+
+          cmvPalette.PaletteTransitions = availableTransitions;
           break;
         case DisplayMode.CCVPercentSummary:
           convertedPalette = new CMVSummaryPalette();
@@ -172,7 +176,10 @@ namespace VSS.TRex.Gateway.Common.Executors
           cmvPercentChangePalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
 
           cmvPercentChangePalette.TargetCCVColour = Color.Green;
-          cmvPercentChangePalette.DefaultDecoupledCMVColour = Color.Black; break;
+          cmvPercentChangePalette.DefaultDecoupledCMVColour = Color.Black;
+
+          cmvPercentChangePalette.PaletteTransitions = availableTransitions;
+          break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
           break;
@@ -194,6 +201,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           mdpPalette.AbsoluteTargetMDP = overrides?.OverridingMachineMDP ?? 0;
 
           mdpPalette.TargetMDPColour = Color.Green;
+
+          mdpPalette.PaletteTransitions = availableTransitions;
           break;
         case DisplayMode.MDPPercentSummary:
           convertedPalette = new MDPSummaryPalette();
@@ -285,9 +294,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           request.Mode != DisplayMode.TargetSpeedSummary &&
           request.Mode != DisplayMode.TemperatureSummary)
       {
-        convertedPalette = new PaletteBase(request.Palettes != null 
-          ? convertedPalette.PaletteTransitions = request.Palettes.Select(p => new Transition(p.Value, ColorUtility.UIntToColor(p.Color))).ToArray() 
-          : new Transition[0]);
+        convertedPalette = new PaletteBase(availableTransitions);
       }
 
       return convertedPalette;

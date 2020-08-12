@@ -19,7 +19,6 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.Project.Abstractions.Utilities;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -47,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   1) TBC will already have uploaded to TCC, so read it from there
     ///   2) creates/updates database 
     ///   3) copies file in TCC from VSS area to project 
-    ///   4) notify RaptorWebAPI.
+    ///   4) notify TRex WebAPI.
     ///   5) Note that MobileLinework imports are ignored, i.e. just return HttpStatusCode.OK 
     /// Footprint must remain the same as CGen:
     ///   PUT /t/trimble.com/vss-projectmonitoring/1.0/api/v5/projects/6960/importedfiles HTTP/1.1
@@ -76,20 +75,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         return ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.OK, -1);
       }
 
-      // todo CCSSSCON-396 convert projectId to a ProjectUid
-      var projectUid = Guid.NewGuid();
+      // this also validates that this customer has access to the projectUid
+      var project = await ProjectRequestHelper.GetProjectForCustomer(new Guid(CustomerUid), new Guid(UserId), projectId, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+      var projectUid = project.ProjectId;
 
-      importedFileTbc = FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(projectUid, importedFileTbc);
+      importedFileTbc = FileImportV5TBCDataValidator.ValidateUpsertImportedFileRequest(new Guid(projectUid), importedFileTbc);
       Logger.LogInformation(
         $"{nameof(UpsertImportedFileV5TBC)}: projectId {projectId} projectUid {projectUid} importedFile: {JsonConvert.SerializeObject(importedFileTbc)}");
-
-      // this also validates that this customer has access to the projectUid
-      var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-
+      
       var fileEntryTask = TccHelper.GetFileInfoFromTccRepository(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
       var fileDescriptor = await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
-        CustomerUid, project.ProjectUID, FileSpaceId,
+        CustomerUid, projectUid, FileSpaceId,
         Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
 
       Stream memStream = null;
@@ -101,7 +98,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
           fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-            memStream, project.ProjectUID, importedFileTbc.Name,
+            memStream, projectUid, importedFileTbc.Name,
             importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface,
             importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
               ? importedFileTbc.SurfaceFile.SurveyedUtc
@@ -111,13 +108,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         var existing = await ImportedFileRequestDatabaseHelper
                              .GetImportedFileForProject
-                             (project.ProjectUID, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
+                             (projectUid, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
                               Logger, ProjectRepo, 0, null)
                              .ConfigureAwait(false);
         bool creating = existing == null;
         Logger.LogInformation(
           creating
-            ? $"{nameof(UpsertImportedFileV5TBC)}: file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
+            ? $"{nameof(UpsertImportedFileV5TBC)}: file doesn't exist already in DB: {importedFileTbc.Name} projectUid {projectUid} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
             : $"{nameof(UpsertImportedFileV5TBC)}: file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
         var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
@@ -130,14 +127,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
         }
         await DataOceanHelper.WriteFileToDataOcean(
-          memStream, DataOceanRootFolderId, CustomerUid, project.ProjectUID, dataOceanFileName,
+          memStream, DataOceanRootFolderId, CustomerUid, projectUid, dataOceanFileName,
           Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
 
         var fileEntry = await fileEntryTask;
         ImportedFileDescriptorSingleResult importedFile;
         if (creating)
         {
-          var createImportedFile = new CreateImportedFile(new Guid(project.ProjectUID), importedFileTbc.Name,
+          var createImportedFile = new CreateImportedFile(new Guid(projectUid), importedFileTbc.Name,
             fileDescriptor,
             importedFileTbc.ImportedFileTypeId,
             importedFileTbc.SurfaceFile?.SurveyedUtc,
@@ -165,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         {
           var importedFileUpsertEvent = new UpdateImportedFile
           (
-            Guid.Parse(project.ProjectUID), project.ShortRaptorProjectId, importedFileTbc.ImportedFileTypeId,
+            Guid.Parse(projectUid), projectId, importedFileTbc.ImportedFileTypeId,
             importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
               ? importedFileTbc.SurfaceFile.SurveyedUtc
               : (DateTime?)null,
@@ -189,7 +186,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ) as ImportedFileDescriptorSingleResult;
         }
 
-        // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
+        // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to TRex and used to ref via TCC
         var response = importedFile?.ImportedFileDescriptor != null
           ? ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId)
           : ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.InternalServerError, -1);
@@ -207,7 +204,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
 
-    // GET: api/v5/importedfiles
+    // GET: api/v5/projects/{projectId}/importedfiles/{id?}
     /// <summary>
     /// TBC Get imported files.
     /// This is the same as V6 but TBC URL cannot be changed hence the V5 version.
@@ -218,13 +215,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(GetImportedFilesV5TBC)}: projectId {projectId} id {id}");
 
-      // todo CCSSSCON-396 convert projectId to a ProjectUid
-      var projectUid = Guid.NewGuid();
-
       // this also validates that this customer has access to the projectUid
-      var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-      
-      var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(project.ProjectUID, Logger, UserId, ProjectRepo)
+      var project = await ProjectRequestHelper.GetProjectForCustomer(new Guid(CustomerUid), new Guid(UserId), projectId, Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
+      var projectUid = project.ProjectId;
+
+      var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(projectUid, Logger, UserId, ProjectRepo)
         .ConfigureAwait(false);
 
       var selected = id.HasValue ? files.Where(x => x.LegacyFileId == id.Value) : files;

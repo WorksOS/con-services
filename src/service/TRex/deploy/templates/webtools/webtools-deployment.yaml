@@ -39,7 +39,7 @@ spec:
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.Webtools
-        imagePullPolicy: Always
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
 
         resources:
 {{ toYaml .Values.webtools.resources | indent 10 }}
@@ -51,15 +51,8 @@ spec:
         args: ["VSS.TRex.Webtools.dll"]
 
         ports:
-        # Ports to open.
-        # Might be optional depending on your Kubernetes environment.
-        - containerPort: 80 # communication SPI port number.
-        - containerPort: 47100 # communication SPI port number.
-        - containerPort: 47500 # discovery SPI port number
-        - containerPort: 48100 # communication SPI port number.
-        - containerPort: 49112 # JMX port number.
-        - containerPort: 8080  # REST port number.
-        - containerPort: 10800 # SQL port number.
+{{ toYaml .Values.trexPorts | indent 8 }}
+
         volumeMounts:
         # Mounting the storage with the Ignite configuration.
         #- mountPath: "/data/ignite"

@@ -1,0 +1,1 @@
+start /D "src/netstandard/services/VSS.TRex.Server.TileRendering/bin/Debug/netcoreapp3.1/" "TileRendering" cmd.exe /k "dotnet VSS.TRex.Server.TileRendering.dll"

@@ -45,7 +45,7 @@ namespace VSS.TRex.Profiling
         SubGridTree.CalculateIndexOfCellContainingPosition(Intercepts.Items[InterceptIdx].MidPointX,
           Intercepts.Items[InterceptIdx].MidPointY, out int OTGCellX, out int OTGCellY);
 
-        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(OTGCellX & ~SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
 
         if (!currentSubGridOrigin.Equals(ThisSubgridOrigin))
           break;

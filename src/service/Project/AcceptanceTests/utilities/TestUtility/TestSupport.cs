@@ -50,7 +50,9 @@ namespace TestUtility
     private static readonly TestConfig _testConfig;
     private static readonly object _shortRaptorProjectIDLock = new object();
 
-    private static int _currentShortRaptorProjectID;
+    private static List<TBCPoint> _boundaryLL;
+    private static BusinessCenterFile _businessCenterFile;
+
     static TestSupport()
     {
       _testConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
@@ -61,8 +63,6 @@ namespace TestUtility
       var index = string.IsNullOrEmpty(result)
         ? 1000
         : Convert.ToInt32(result);
-
-      _currentShortRaptorProjectID = Math.Max(index, _currentShortRaptorProjectID);
     }
 
     public TestSupport()
@@ -73,16 +73,16 @@ namespace TestUtility
       SetProjectUid();
       SetCustomerUid();
       SetGeofenceUid();
-    }
 
-    public static int GenerateShortRaptorProjectID()
-    {
-      lock (_shortRaptorProjectIDLock)
+      _boundaryLL = new List<TBCPoint>
       {
-        _currentShortRaptorProjectID += 1;
+        new TBCPoint(-43.5, 172.6),
+        new TBCPoint(-43.5003, 172.6),
+        new TBCPoint(-43.5003, 172.603),
+        new TBCPoint(-43.5, 172.603)
+      };
 
-        return _currentShortRaptorProjectID;
-      }
+      _businessCenterFile = new BusinessCenterFile { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" };
     }
 
     /// <summary>
@@ -204,18 +204,31 @@ namespace TestUtility
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
-    public Task<string> CreateProjectViaWebApiV5TBC(string name, DateTime startDate, DateTime endDate, string timezone, CwsProjectType projectType, List<TBCPoint> boundary)
+    public Task<string> CreateProjectViaWebApiV5TBC(string name)
     {
-      var createProjectV5Request = CreateProjectV5Request.CreateACreateProjectV5Request(
-      projectType, startDate, endDate, name, timezone, boundary,
-        new BusinessCenterFile { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
-      );
+      var createProjectV5Request = CreateProjectV5Request.CreateACreateProjectV5Request(name, _boundaryLL, _businessCenterFile);
 
       var requestJson = createProjectV5Request == null
         ? null
         : JsonConvert.SerializeObject(createProjectV5Request, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
       return CallProjectWebApi("api/v5/projects/", HttpMethod.Post, requestJson, CustomerUid.ToString());
+    }
+
+    /// <summary>
+    /// Get a project by its shortProjectId via the WebAPI 
+    /// </summary>
+    public Task<string> GetProjectViaWebApiV5TBC(long projectId)
+    {
+      return  CallProjectWebApi($"api/v5/project/{projectId}", HttpMethod.Get, null, CustomerUid.ToString());
+    }
+
+    /// <summary>
+    /// Get project list via the web api. Includes the shortProjectId in response 
+    /// </summary>
+    public Task<string> GetProjectViaWebApiV5TBC()
+    {
+      return CallProjectWebApi($"api/v5/project", HttpMethod.Get, null, CustomerUid.ToString());
     }
 
     /// <summary>
@@ -264,8 +277,8 @@ namespace TestUtility
 
       return jsonResponse.Message;
     }
-   
-   
+
+
     /// <summary>
     /// Call web api version 6 
     /// </summary>

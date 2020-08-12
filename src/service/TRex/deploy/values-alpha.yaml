@@ -1,0 +1,6 @@
+psnode:
+  replicaCount: 4
+
+tileServer:
+  autoscaling:
+    minReplicas: 2

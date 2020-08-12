@@ -14,4 +14,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

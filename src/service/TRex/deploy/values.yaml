@@ -10,6 +10,7 @@ serviceAccountName: trex
 image:
   repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex"
   tag: latest
+  pullPolicy: Always
 
 ingress:
   enabled: true
@@ -51,7 +52,7 @@ designElevation:
       cpu: 300m
       memory: 2Gi
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     memory:
@@ -70,15 +71,6 @@ gateway:
     requests:
       cpu: 300m
       memory: 1280Mi
-
-immutableData:
-  replicaCount: 1
-  javaHeapMaxSizeMb: 1024
-  javaHeapInitialSizeMb: 768  
-  resources: 
-    requests:
-      cpu: 300m
-      memory: 1536Mi
 
 mutableData:
   replicaCount: 1
@@ -260,6 +252,33 @@ tolerations:
     value: "trexgp"
     effect: "NoSchedule"
   none: []
+
+#Ports that trex uses, at some point we may split this into im/mutable mappings
+trexPorts:
+- containerPort: 80
+  name: http
+- containerPort: 8080 
+  name: igniterestapi
+- containerPort: 8088
+  name: jmxprometheus
+- containerPort: 47100
+  name: spicoms
+- containerPort: 47500
+  name: spidisco
+- containerPort: 48100
+  name: spicommsmutable
+- containerPort: 48500
+  name: spidiscomutable
+- containerPort: 49112
+  name: ignitejmx
+- containerPort: 10800
+  name: ignitesql
+- containerPort: 11211
+  name: mutablecoms
+- containerPort: 11212
+  name: immutablecoms
+
+
 
 
 affinity: {}

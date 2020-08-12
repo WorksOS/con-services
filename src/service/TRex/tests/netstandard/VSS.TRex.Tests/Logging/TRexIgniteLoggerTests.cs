@@ -1,5 +1,7 @@
 ﻿using System;
 using FluentAssertions;
+using Moq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Logging;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -9,10 +11,12 @@ namespace VSS.TRex.Tests.Logging
 {
   public class TRexIgniteLoggerTests : IClassFixture<DILoggingFixture>
   {
+
+
     [Fact]
     public void Creation()
     {
-      var log = new TRexIgniteLogger(Logger.CreateLogger("UnitTests"));
+      var log = new TRexIgniteLogger(new Mock<IConfigurationStore>().Object, Logger.CreateLogger("UnitTests"));
 
       log.Should().NotBeNull();
     }
@@ -20,7 +24,12 @@ namespace VSS.TRex.Tests.Logging
     [Fact]
     public void IsEnabled()
     {
-      var log = new TRexIgniteLogger(Logger.CreateLogger("UnitTests"));
+      var config = new Mock<IConfigurationStore>();
+      config
+        .Setup(m => m.GetValueInt(It.Is<string>(s => s == "TREX_IGNITE_MIN_LOG_LEVEL"), It.IsAny<int>()))
+        .Returns<string, int>((_, i) => i);
+
+      var log = new TRexIgniteLogger(config.Object, Logger.CreateLogger("UnitTests"));
 
       log.IsEnabled(LogLevel.Trace).Should().BeFalse();
       log.IsEnabled(LogLevel.Debug).Should().BeFalse();
@@ -28,9 +37,24 @@ namespace VSS.TRex.Tests.Logging
     }
 
     [Fact]
+    public void ConfigIsEnabled()
+    {
+      var config = new Mock<IConfigurationStore>();
+      config
+        .Setup(m => m.GetValueInt(It.Is<string>(s => s == "TREX_IGNITE_MIN_LOG_LEVEL"), It.IsAny<int>()))
+        .Returns((int) LogLevel.Trace);
+
+      var log = new TRexIgniteLogger(new Mock<IConfigurationStore>().Object, Logger.CreateLogger("UnitTests"));
+
+      log.IsEnabled(LogLevel.Trace).Should().BeTrue();
+      log.IsEnabled(LogLevel.Debug).Should().BeTrue();
+      log.IsEnabled(LogLevel.Info).Should().BeTrue();
+    }
+
+    [Fact]
     public void Log()
     {
-      var log = new TRexIgniteLogger(Logger.CreateLogger("UnitTests"));
+      var log = new TRexIgniteLogger(new Mock<IConfigurationStore>().Object, Logger.CreateLogger("UnitTests"));
 
       log.Log(LogLevel.Info, "Informative Message", null, null, "Category", string.Empty, null);
     }

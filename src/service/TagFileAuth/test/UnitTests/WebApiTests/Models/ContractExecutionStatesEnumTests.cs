@@ -10,7 +10,7 @@ namespace WebApiTests.Models
     public void DynamicAddwithOffsetTest()
     {
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      Assert.AreEqual(23, contractExecutionStatesEnum.DynamicCount);
+      Assert.AreEqual(21, contractExecutionStatesEnum.DynamicCount);
       Assert.AreEqual("Manual Import: Unable to determine lat/long from northing/easting position", contractExecutionStatesEnum.FirstNameWithOffset(18));
       Assert.AreEqual("Unable to locate projects for device in cws", contractExecutionStatesEnum.FirstNameWithOffset(105));
     }

@@ -40,7 +40,7 @@ spec:
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.TINSurfaceExport
-        imagePullPolicy: Always
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
 
         resources:
 {{ toYaml .Values.tinExportServer.resources | indent 10 }}
@@ -51,22 +51,8 @@ spec:
         args: ["VSS.TRex.Server.TINSurfaceExport.dll"]
 
         ports:
-        # Ports to open.
-        # Might be optional depending on your Kubernetes environment.
-        - containerPort: 47100 # communication SPI port number.
-          name: spicoms
-        - containerPort: 47500 # discovery SPI port number.
-          name: spidisco
-        - containerPort: 48100 # communication SPI port number.
-          name: spicommsmutable
-        - containerPort: 48500
-          name: spidiscomutable
-        - containerPort: 8088 #JMX prometheus
-          name: jmxprometheus
-        - containerPort: 8080  # REST port number.
-          name: restapi
-        - containerPort: 10800 # SQL port number.
-          name: sql
+{{ toYaml .Values.trexPorts | indent 8 }}
+
         env:
           - name: IGNITE_HOME
             value: "/trex/"

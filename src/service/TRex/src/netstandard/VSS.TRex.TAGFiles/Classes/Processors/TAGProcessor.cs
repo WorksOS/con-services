@@ -14,6 +14,7 @@ using VSS.TRex.TAGFiles.Classes.Swather;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.TAGFiles.Classes.Processors
 {
@@ -454,6 +455,8 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     public override void SetICCCVValue(short Value)
     {
+      if (Value == 0)
+        Value = CellPassConsts.NullCCV; 
       base.SetICCCVValue(Value);
       Machine.CompactionDataReported = true;
     }
@@ -466,12 +469,16 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     public override void SetICMDPValue(short Value)
     {
+      if (Value == 0)
+        Value = CellPassConsts.NullMDP;
       base.SetICMDPValue(Value);
       Machine.CompactionDataReported = true;
     }
 
     public override void SetICCCAValue(byte Value)
     {
+      if (Value == 0)
+        Value = CellPassConsts.NullCCA;
       base.SetICCCAValue(Value);
       Machine.CompactionDataReported = true;
     }

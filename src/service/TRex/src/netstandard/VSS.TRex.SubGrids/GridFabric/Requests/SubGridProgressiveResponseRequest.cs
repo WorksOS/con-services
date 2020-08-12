@@ -36,8 +36,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// <summary>
     /// Immutable grid reference only
     /// </summary>
-    private IIgnite immutableIgnite;
-    private IIgnite ImmutableIgnite => immutableIgnite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+    private IIgnite _immutableIgnite;
+    private IIgnite ImmutableIgnite => _immutableIgnite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
     /// <summary>
     /// Default no-arg constructor - used by unit tests
@@ -49,7 +49,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// <summary>
     /// Executes the request to send the payload to the originating node
     /// </summary>
-    /// <param name="arg"></param>
     public bool Execute(ISubGridProgressiveResponseRequestComputeFuncArgument arg)
     {
       try
@@ -63,7 +62,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"Exception in {nameof(SubGridProgressiveResponseRequest )}");
+        _log.LogError(e, $"Exception in {nameof(SubGridProgressiveResponseRequest)}");
         return false;
       }
     }

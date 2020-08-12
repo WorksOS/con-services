@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -63,11 +64,6 @@ namespace VSS.TRex.Profiling
     protected IDesign SurfaceDesignMaskDesign;
 
     /// <summary>
-    /// The design to be used as an alignment design surface based 'cookie cutter' selection mask for production data
-    /// </summary>
-    protected IDesign AlignmentDesignMaskDesign;
-
-    /// <summary>
     /// Creates a CellProfile builder given a list of coordinates defining the path to profile and a container to place the resulting cells into
     /// </summary>
     /// <param name="siteModel"></param>
@@ -94,13 +90,6 @@ namespace VSS.TRex.Profiling
         SurfaceDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.SurfaceDesignMaskDesignUid);
         if (SurfaceDesignMaskDesign == null)
           throw new ArgumentException($"Design {CellFilter.SurfaceDesignMaskDesignUid} not found in project {SiteModel.ID}");
-      }
-
-      if (CellFilter != null && CellFilter.AlignmentDesignMaskDesignUID != Guid.Empty)
-      {
-        AlignmentDesignMaskDesign = SiteModel.Designs.Locate(CellFilter.AlignmentDesignMaskDesignUID);
-        if (AlignmentDesignMaskDesign == null)
-          throw new ArgumentException($"Design {CellFilter.AlignmentDesignMaskDesignUID} not found in project {SiteModel.ID}");
       }
     }
 
@@ -291,7 +280,7 @@ namespace VSS.TRex.Profiling
         SiteModel.Grid.CalculateIndexOfCellContainingPosition(VtHzIntercepts.Items[i].MidPointX,
           VtHzIntercepts.Items[i].MidPointY, out OTGCellX, out OTGCellY);
 
-        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+        ThisSubgridOrigin = new SubGridCellAddress(OTGCellX & ~SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
 
         if (!CurrentSubgridOrigin.Equals(ThisSubgridOrigin))
         {

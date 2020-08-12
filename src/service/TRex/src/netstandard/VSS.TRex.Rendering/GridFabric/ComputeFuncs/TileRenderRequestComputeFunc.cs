@@ -3,15 +3,15 @@ using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
 using Nito.AsyncEx.Synchronous;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
+using SkiaSharp;
+using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
@@ -68,16 +68,24 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
           if (bmp == null)
           {
             _log.LogInformation("Null bitmap returned by executor");
+
+            return new TileRenderResponse
+            {
+              TileBitmapData = null,
+              ResultStatus = render.ResultStatus
+            };
           }
 
-          // Get the rendering factory from the DI context
-          var renderingFactory = DIContext.Obtain<IRenderingFactory>();
-          var response = renderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+          using var image = SKImage.FromBitmap(bmp);
+          using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+          using var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+          data.SaveTo(stream);
 
-          if (response != null)
-            response.ResultStatus = render.ResultStatus;
-
-          return response;
+          return new TileRenderResponse
+          {
+            TileBitmapData = stream.ToArray(),
+            ResultStatus = render.ResultStatus
+          };
         }
         finally
         {
@@ -87,6 +95,11 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
       catch (Exception e)
       {
         _log.LogError(e, "Exception occurred in TileRenderRequestComputeFunc.Invoke()");
+
+        // Put in a 5 seconds delay to see if this allows the log forwarder to catch up and shine more light on failure occurring here.
+        // TODO: Remove this once bug is triaged and solved
+        //Task.Delay(5000).WaitAndUnwrapException();
+
         return new TileRenderResponse { ResultStatus = Types.RequestErrorStatus.Exception };
       }
     }

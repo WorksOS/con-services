@@ -10,36 +10,30 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
     public const string DefaultMessage = "success";
 
     /// <summary>
-    ///   Defines machine-readable code.
+    /// Defines machine-readable code.
     /// </summary>
-    /// <value>
-    ///   Result code.
-    /// </value>
-    [JsonProperty(PropertyName = "Code", Required = Required.Always)]
+    [JsonProperty(Required = Required.Always)]
     public int Code { get; protected set; }
 
     /// <summary>
-    ///   Defines user-friendly message.
+    /// Defines user-friendly message.
     /// </summary>
-    /// <value>
-    ///   The message string.
-    /// </value>
-    [JsonProperty(PropertyName = "Message", Required = Required.Always)]
+    [JsonProperty(Required = Required.Always)]
     public string Message { get; protected set; }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="ContractExecutionResult" /> class with default
-    ///   <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" /> result and "success" message
+    /// Initializes a new instance of the <see cref="ContractExecutionResult" /> class with default
+    /// <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" /> result and "success" message
     /// </summary>
     public ContractExecutionResult()
       : this(DefaultMessage)
     { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="ContractExecutionResult" /> class.
+    /// Initializes a new instance of the <see cref="ContractExecutionResult" /> class.
     /// </summary>
     /// <param name="code">
-    ///   The resulting code. Default value is <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" />
+    /// The resulting code. Default value is <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" />
     /// </param>
     /// <param name="message">The verbose user-friendly message. Default value is empty string.</param>
     public ContractExecutionResult(int code, string message = DefaultMessage)
@@ -53,8 +47,8 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       errorMessage);
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="ContractExecutionResult" /> class with default
-    ///   <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" /> result
+    /// Initializes a new instance of the <see cref="ContractExecutionResult" /> class with default
+    /// <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" /> result
     /// </summary>
     /// <param name="message">The verbose user-friendly message.</param>
     protected ContractExecutionResult(string message)

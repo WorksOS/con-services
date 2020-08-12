@@ -509,8 +509,8 @@ namespace VSS.TRex.Tests.Caching
           {
             items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
             {
-              CacheOriginX = (int)(i * SubGridTreeConsts.SubGridTreeDimension),
-              CacheOriginY = (int)(j * SubGridTreeConsts.SubGridTreeDimension),
+              CacheOriginX = i * SubGridTreeConsts.SubGridTreeDimension,
+              CacheOriginY = j * SubGridTreeConsts.SubGridTreeDimension,
               SizeInBytes = 1
             };
 
@@ -532,13 +532,11 @@ namespace VSS.TRex.Tests.Caching
           }
         }
 
-        for (var i = 0; i < context.TokenCount; i++)
-          Assert.True(cache.MRUList.IsValid(i), $"Item should be valid at index {i}, MRUList");
+        cache.MRUList.TokenCount.Should().Be(context.TokenCount);
 
         cache.InvalidateDueToProductionDataIngest(Guid.Empty, mask);
 
-        for (var i = 0; i < context.TokenCount; i++)
-          Assert.False(cache.MRUList.IsValid(i), $"Item should be invalidated at index {i}, MRUList");
+        cache.MRUList.TokenCount.Should().Be(0);
       }
     }
 
@@ -702,23 +700,24 @@ namespace VSS.TRex.Tests.Caching
         // invalidate first of the 2 contexts added
         cache.InvalidateDueToDesignChange(projectUid, designUid);
 
-        int count = 10000;
+        cache.MRUList.TokenCount.Should().Be(10000);
 
-        for (var i = 0; i < context.TokenCount; i++)
-          Assert.False(cache.MRUList.IsValid(i), $"Item should be invalidated at index {i}, for first context");
-
-        for (var i = count; i < count + context2.TokenCount; i++)
-          Assert.True(cache.MRUList.IsValid(i) == true, $"Item should be valid at index {i}, for context2");
-
-        // Remove the items from first context
+        int counter = 0;
         for (var i = 0; i < 100; i++)
         {
           for (var j = 0; j < 100; j++)
           {
-            cache.Remove(context, items[i, j]);
-            Assert.True(context.TokenCount == --count, $"Count incorrect at index {i}, {j}, count = {count}, tokenCount = {context.TokenCount}");
+            cache.MRUList.Get(counter++).Should().NotBe(items[i, j]);
           }
-        };
+        }
+
+        for (var i = 0; i < 100; i++)
+        {
+          for (var j = 0; j < 100; j++)
+          {
+            cache.MRUList.Get(counter++).Should().Be(items2[i, j]);
+          }
+        }
 
         //Test context is removed
         Assert.True(context.MarkedForRemoval == true, "Empty context should be marked for removal");

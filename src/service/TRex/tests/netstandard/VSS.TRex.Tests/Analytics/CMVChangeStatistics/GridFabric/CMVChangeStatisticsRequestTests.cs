@@ -73,7 +73,7 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
       if (targetCMV != CellPassConsts.NullCCV)
         siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetCCVStateEvents.PutValueAtDate(TRex.Common.Consts.MIN_DATETIME_AS_UTC, targetCMV);
 
-      CellPass[,][] cellPasses = new CellPass[32, 32][];
+      CellPass[,][] cellPasses = new CellPass[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension][];
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
@@ -181,21 +181,21 @@ namespace VSS.TRex.Tests.Analytics.CMVChangeStatistics.GridFabric
     public async Task Test_CMVChangeStatisticsRequest_SiteModelWithMultipleCells_FullExtents()
     {
       const double TOLERANCE = 0.000001;
-      const short NUMBER_OF_CELLS = 2164;
-      const short NUMBER_OF_CELLS_SCANNED = 2170;
+      const short NUMBER_OF_CELLS = 2165;
+      const short NUMBER_OF_CELLS_SCANNED = 2165;
 
       double[] expectedPercentages = 
       {
-        2.310536044362292,
-        11.367837338262476,
-        28.188539741219966,
-        25.508317929759706,
-        12.985212569316081,
-        5.360443622920517,
-        14.279112754158966
+        2.3094688221709005,
+        11.36258660508083,
+        28.175519630484992,
+        25.496535796766747,
+        12.979214780600461,
+        5.3579676674364896,
+        14.318706697459586
       };
 
-      int[] expectedCounts = { 50, 246, 610, 552, 281, 116, 309 };
+      int[] expectedCounts = { 50, 246, 610, 552, 281, 116, 310 };
 
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();

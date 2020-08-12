@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,10 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Geometry;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
-using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
+using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -59,8 +61,8 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
-      response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
+      response.Should().BeOfType<TileRenderResponse>();
+      ((TileRenderResponse)response).TileBitmapData.Should().NotBeNull();
     }
 
     [Theory]
@@ -91,8 +93,8 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.InvalidCoordinateRange);
-      response.Should().BeOfType<TileRenderResponse_Core2>();
-      ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
+      response.Should().BeOfType<TileRenderResponse>();
+      ((TileRenderResponse)response).TileBitmapData.Should().NotBeNull();
     }
 
     [Theory]
@@ -119,6 +121,90 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var request = new TileRenderRequest();
       var filter = new CellPassAttributeFilter() { MachinesList = new[] { siteModel.Machines[0].ID }, LayerID = 1 };
       var response = await request.ExecuteAsync(SimpleTileRequestArgument(siteModel, displayMode, null, filter));
+
+      CheckSimpleRenderTileResponse(response);
+    }
+
+    [Theory]
+    [InlineData(DisplayMode.Height)]
+    [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
+    [InlineData(DisplayMode.MDP)]
+    [InlineData(DisplayMode.MDPPercentSummary)]
+    [InlineData(DisplayMode.MachineSpeed)]
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureDetail)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCount)]
+    [InlineData(DisplayMode.PassCountSummary)]
+    public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithCustomSpatialFilter_Rectangle(DisplayMode displayMode)
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+
+      var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
+
+      var request = new TileRenderRequest();
+
+      var arg = SimpleTileRequestArgument(siteModel, displayMode, palette);
+      arg.Filters.Filters[0].SpatialFilter = new CellSpatialFilter
+      {
+        CoordsAreGrid = true,
+        IsSpatial = true,
+        Fence = new Fence(new BoundingWorldExtent3D(0, 0, 100, 100))
+      };
+
+      var response = await request.ExecuteAsync(arg);
+
+      CheckSimpleRenderTileResponse(response);
+    }
+
+    [Theory]
+    [InlineData(DisplayMode.Height)]
+    [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCA)]
+    [InlineData(DisplayMode.CCASummary)]
+    [InlineData(DisplayMode.MDP)]
+    [InlineData(DisplayMode.MDPPercentSummary)]
+    [InlineData(DisplayMode.MachineSpeed)]
+    [InlineData(DisplayMode.TargetSpeedSummary)]
+    [InlineData(DisplayMode.TemperatureDetail)]
+    [InlineData(DisplayMode.TemperatureSummary)]
+    [InlineData(DisplayMode.PassCount)]
+    [InlineData(DisplayMode.PassCountSummary)]
+    public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithCustomSpatialFilter_Polygonal(DisplayMode displayMode)
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+
+      var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
+
+      var request = new TileRenderRequest();
+
+      var arg = SimpleTileRequestArgument(siteModel, displayMode, palette);
+      arg.Filters.Filters[0].SpatialFilter = new CellSpatialFilter
+      {
+        CoordsAreGrid = true,
+        IsSpatial = true,
+        Fence = new Fence
+        {
+          Points = new List<FencePoint>
+          {
+            new FencePoint() { X = 0, Y = 0},
+            new FencePoint() { X = 0, Y = 100},
+            new FencePoint() { X = 100, Y = 0}
+          }
+        }
+      };
+
+      var response = await request.ExecuteAsync(arg);
 
       CheckSimpleRenderTileResponse(response);
     }
@@ -182,7 +268,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       CheckSimpleRenderTileResponse(response, displayMode);
 
-      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Theory]
@@ -253,7 +339,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       // And the tile should NOT be null
       CheckSimpleRenderTileResponse(response, displayMode);
 
-      //      File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //      File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Theory]
@@ -289,7 +375,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       CheckSimpleRenderTileResponse(response);
 
-      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{displayMode}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Theory]
@@ -332,7 +418,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       CheckSimpleRenderTileResponse(response);
 
       //The tile for 0 offset is red, for -25 it is blue
-      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse_Core2) response).TileBitmapData);
+      //File.WriteAllBytes($@"c:\temp\TRexTileRender-Unit-Test-{DisplayMode.CutFill}.bmp", ((TileRenderResponse) response).TileBitmapData);
     }
 
     [Fact]
@@ -407,7 +493,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurfaceWithTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = ""; //@$"c:\temp\{FILE_NAME}";
+      var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
     }

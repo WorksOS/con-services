@@ -272,10 +272,9 @@ namespace VSS.TRex.TAGFiles.Classes.States
     {
       var type = MachineSerialUtilities.MapSerialToModel(HardwareID);
 
-      // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
       if ( type == CWSDeviceTypeEnum.Unknown && 
             (MachineType == MachineType.CutterSuctionDredge || MachineType == MachineType.BargeMountedExcavator))
-         type = CWSDeviceTypeEnum.CB450;
+         type = CWSDeviceTypeEnum.TMC;
       return type;
     }
 

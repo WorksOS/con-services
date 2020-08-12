@@ -31,13 +31,15 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     [JsonIgnore]
     public bool HasNE => Northing.HasValue && Easting.HasValue;
 
-    public GetProjectUidsRequest() { }
+    [JsonIgnore]
+    public bool IsManualImport => !string.IsNullOrEmpty(ProjectUid);
 
+    public GetProjectUidsRequest() { }
 
     public GetProjectUidsRequest
       (string projectUid, string platformSerial,
-        double latitude, double longitude, 
-        double? northing = null, double? easting = null) 
+        double latitude, double longitude,
+        double? northing = null, double? easting = null)
       : base(platformSerial, latitude, longitude)
     {
       ProjectUid = projectUid;
@@ -50,12 +52,12 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       base.Validate();
 
       // if it has a projectUid, then it's a manual import and must have either assetUid or radio/dt  
-      if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParse(ProjectUid, out var projectUid))
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(ProjectUid, uniqueCode: 36));
-     
+      if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParse(ProjectUid, out var _))
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectUidsResult.FormatResult(ProjectUid, uniqueCode: 36));
+
       if (!HasLatLong && !HasNE)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 54));
-      
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectUidsResult.FormatResult(uniqueCode: 54));
+
       // NE can be negative and zero
     }
   }

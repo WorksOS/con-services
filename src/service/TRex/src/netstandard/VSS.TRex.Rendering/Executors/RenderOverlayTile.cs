@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
+using SkiaSharp;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
@@ -16,7 +17,6 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
-using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes.Interfaces;
@@ -264,7 +264,7 @@ namespace VSS.TRex.Rendering.Executors
     /// Renders all sub grids in a representational style that indicates where there is data, but nothing else. This is used for large scale displays
     /// (zoomed out a lot) where meaningful detail cannot be drawn on the tile
     /// </summary>
-    private IBitmap RenderTileAsRepresentationalDueToScale(ISubGridTreeBitMask overallExistenceMap)
+    private SKBitmap RenderTileAsRepresentationalDueToScale(ISubGridTreeBitMask overallExistenceMap)
     {
       using (var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/))
       {
@@ -308,7 +308,7 @@ namespace VSS.TRex.Rendering.Executors
     /// <summary>
     /// Executor that implements requesting and rendering sub grid information to create the rendered tile
     /// </summary>
-    public async Task<IBitmap> ExecuteAsync()
+    public async Task<SKBitmap> ExecuteAsync()
     {
       // WorkingColorPalette  : TICDisplayPaletteBase;
 

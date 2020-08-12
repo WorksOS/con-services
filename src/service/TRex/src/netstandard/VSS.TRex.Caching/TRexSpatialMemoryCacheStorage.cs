@@ -99,22 +99,6 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
-    /// Invalidates an item held in the MRU list. Initially the element is just marked as invalid.
-    /// If the item being invalidated is already invalidated it is proactively removed.
-    /// </summary>
-    public void Invalidate(int index)
-    {
-      var previousValid = _items[index].Invalidate();
-
-      if (previousValid)
-        return;
-
-      // As it is already invalid, to prevent recurring invalidation again and again, remove it
-      Remove(index);
-      _items[index].RemoveFromContext();
-    }
-
-    /// <summary>
     /// Adds an item into the cache storage.
     /// </summary>
     /// <returns>The index of the newly added item</returns>
@@ -205,10 +189,15 @@ namespace VSS.TRex.Caching
     {
       var cacheItem = _items[index];
 
-      if (cacheItem.Expired || !cacheItem.Valid)
+      if (cacheItem.Context == null)
       {
-        Remove(index);
-        cacheItem.RemoveFromContext();
+        // This element has no home, it is by definition null
+        return default;
+      }
+
+      if (cacheItem.Expired)
+      {
+        cacheItem.Context.OwnerMemoryCache.Remove(cacheItem.Context, cacheItem.Item);
         return default;
       }
 
@@ -224,10 +213,5 @@ namespace VSS.TRex.Caching
     }
 
     public bool IsEmpty() => MRUHead == -1;
-
-    public bool IsValid(int index)
-    {
-      return _items[index].Valid;
-    }
   }
 }

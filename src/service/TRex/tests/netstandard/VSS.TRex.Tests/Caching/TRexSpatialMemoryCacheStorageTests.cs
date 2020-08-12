@@ -246,7 +246,7 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
-    public void Test_TRexSpatialMemoryCacheStorageTests_GetAfterInvalidate()
+    public void Test_TRexSpatialMemoryCacheStorageTests_GetAfterRemove()
     {
       var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
       var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
@@ -262,58 +262,11 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(storage.TokenCount == 1, $"Element count incorrect after add (= {storage.TokenCount})");
       Assert.True(storage.Get(index) != null);
 
-      // Invalidate the item
-      storage.Invalidate(index);
-      
+      // Remove the item
+      storage.Remove(index);
+
       Assert.True(storage.Get(index) == null, "Was able to extract item after invalidation");
       Assert.True(storage.TokenCount == 0, $"Element count incorrect after get after invalidation(= {storage.TokenCount})");
-    }
-
-    [Fact]
-    public void Test_TRexSpatialMemoryCacheStorageTests_NonRemovalAfterSingleInvalidate()
-    {
-      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
-      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
-      var item = new TRexSpatialMemoryCacheContextTests_Element
-      {
-        SizeInBytes = 0,
-        CacheOriginX = 2000,
-        CacheOriginY = 3000
-      };
-
-      var index = storage.Add(item, dummyCache);
-
-      Assert.True(storage.TokenCount == 1, $"Element count incorrect after add (= {storage.TokenCount})");
-
-      // Invalidate the item
-      storage.Invalidate(index);
-
-      Assert.True(storage.TokenCount == 1, $"Element count incorrect after single invalidation (= {storage.TokenCount})");
-    }
-
-    [Fact]
-    public void Test_TRexSpatialMemoryCacheStorageTests_RemovalAfterDoubleInvalidate()
-    {
-      var storage = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50);
-      var dummyCache = new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(1000, 1000, 0), storage);
-      var item = new TRexSpatialMemoryCacheContextTests_Element
-      {
-        SizeInBytes = 0,
-        CacheOriginX = 2000,
-        CacheOriginY = 3000
-      };
-
-      var index = storage.Add(item, dummyCache);
-
-      Assert.True(storage.TokenCount == 1, $"Element count incorrect after add (= {storage.TokenCount})");
-
-      // Invalidate the item once
-      storage.Invalidate(index);
-
-      // Invalidate the item for a second time
-      storage.Invalidate(index);
-
-      Assert.True(storage.TokenCount == 0, $"Element count incorrect after double invalidation (= {storage.TokenCount})");
     }
 
     [Fact]

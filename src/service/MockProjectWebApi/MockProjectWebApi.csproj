@@ -14,28 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="build\**" />
-    <Compile Remove="deploy\**" />
-    <Compile Remove="logs\**" />
-    <Compile Remove="newrelic\**" />
-    <Content Remove="build\**" />
-    <Content Remove="deploy\**" />
-    <Content Remove="logs\**" />
-    <Content Remove="newrelic\**" />
-    <EmbeddedResource Remove="build\**" />
-    <EmbeddedResource Remove="deploy\**" />
-    <EmbeddedResource Remove="logs\**" />
-    <EmbeddedResource Remove="newrelic\**" />
-    <None Remove="build\**" />
-    <None Remove="deploy\**" />
-    <None Remove="logs\**" />
-    <None Remove="newrelic\**" />
+    <Compile Remove="build\**;deploy\**;logs\**" />
+    <EmbeddedResource Remove="build\**;deploy\**;logs\**" />
+    <None Remove="build\**;deploy\**;logs\**" />
   </ItemGroup>
 
  <ItemGroup>
-   <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-   <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.2" />
@@ -47,6 +32,21 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
     <PackageReference Include="SixLabors.ImageSharp.drawing" Version="1.0.0-beta0005" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj" />
+    <ProjectReference Include="..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+    <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
+    <ProjectReference Include="..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj" />
+    <ProjectReference Include="..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
+ </ItemGroup>
 
   <ItemGroup>
     <Content Remove="Json\ALK\GeofenceGoodPolygon1.json" />
@@ -190,61 +190,6 @@
     <EmbeddedResource Include="Json\UserPreferences\DummyUserPreferences.json" />
 
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Topshelf" Version="4.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj" />
-    <ProjectReference Include="..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
-    <ProjectReference Include="..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
-    <ProjectReference Include="..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
-    <ProjectReference Include="..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
-    <ProjectReference Include="..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
-    <ProjectReference Include="..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj" />
-    <ProjectReference Include="..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
- </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\Large Sites Road_AlignmentCenterline%24.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z15-Y12844-X5914.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z16-Y41583-X64159.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Z18-Y102753-X47317.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>

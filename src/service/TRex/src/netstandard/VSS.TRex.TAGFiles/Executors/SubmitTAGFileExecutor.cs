@@ -195,7 +195,6 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public void SendDeviceStatusToDeviceGateway(TagFileDetail tagFileDetail, TAGFilePreScan tagFilePreScan)
     {
-      // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
       if (tagFilePreScan.PlatformType == CWSDeviceTypeEnum.EC520 ||
           tagFilePreScan.PlatformType == CWSDeviceTypeEnum.EC520W ||
            tagFilePreScan.PlatformType == CWSDeviceTypeEnum.Unknown)
@@ -225,16 +224,13 @@ namespace VSS.TRex.TAGFiles.Executors
             AssetSerialNumber = tagFilePreScan.HardwareID,
             AssetNickname = tagFilePreScan.MachineID,
 
-            // [CCSSSCON-885] temporary what should Marine AppName be?
-            AppName = (tagFilePreScan.MachineType == MachineType.CutterSuctionDredge || tagFilePreScan.MachineType == MachineType.BargeMountedExcavator)
-                      ? "TMC" : "GCS900",
+            AppName = (tagFilePreScan.PlatformType == CWSDeviceTypeEnum.TMC) ? "TMC" : "GCS900",
             AppVersion = tagFilePreScan.ApplicationVersion,
             DesignName = tagFilePreScan.DesignName,
 
 
             // PlatformType is only passed as part of DeviceName {platformType}-{assetSerialNumber}
-            // temporary: Marine devices will come through as CB450s  [CCSSSCON-885]
-            AssetType = tagFilePreScan.MachineType.GetEnumMemberValue().ToString(),
+            AssetType = tagFilePreScan.MachineType.GetEnumMemberValue(),
         
             Devices = string.IsNullOrWhiteSpace(tagFilePreScan.RadioSerial) ? null :
               new List<ConnectedDevice>

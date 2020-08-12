@@ -52,14 +52,14 @@ namespace VSS.Productivity3D.Models.Models
     /// Optional. If not present then there is no start time bound.
     /// </summary>
     [JsonProperty(PropertyName = "startUTC", Required = Required.Default)]
-    public DateTime? StartUtc { get; private set; }
+    public DateTime? StartUtc { get; set; }
 
     /// <summary>
     /// The 'end' time for a time based filter. Data recorded after this time is not considered.
     /// Optional. If not present there is no end time bound.
     /// </summary>
     [JsonProperty(PropertyName = "endUTC", Required = Required.Default)]
-    public DateTime? EndUtc { get; private set; }
+    public DateTime? EndUtc { get; set; }
 
     /// <summary>
     /// A machine reported design.
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Models.Models
     /// Controls the cell pass from which to determine data based on its elevation.
     /// </summary>
     [JsonProperty(PropertyName = "elevationType", Required = Required.Default)]
-    public ElevationType? ElevationType { get; private set; }
+    public ElevationType? ElevationType { get; set; }
 
     /// <summary>
     /// A polygon to be used as a spatial filter boundary. The vertices are WGS84 positions
@@ -518,7 +518,7 @@ namespace VSS.Productivity3D.Models.Models
       AlignmentFile = alignmentFile;
       StartStation = filter?.StartStation;
       EndStation = filter?.EndStation;
-      LeftOffset = filter?.LeftOffset;
+      LeftOffset = -filter?.LeftOffset;//TRex expects left offsets on the left to be negative, if the left offset is already negative this will make it positive and on the right which is correct.
       RightOffset = filter?.RightOffset;
       LayerType = layerType;
       LayerNumber = filter?.LayerNumber;
@@ -915,6 +915,11 @@ namespace VSS.Productivity3D.Models.Models
       {
         StartUtc = null;
       }
+    }
+
+    public bool HasTimeComponent()
+    {
+      return EndUtc != null;
     }
   }
 }
