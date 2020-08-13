@@ -12,6 +12,7 @@ using VSS.TRex.GridFabric.Models.Servers;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Extensions;
 using System.Linq;
+using System;
 
 namespace VSS.TRex.GridFabric
 {
@@ -82,6 +83,7 @@ namespace VSS.TRex.GridFabric
 
     protected void DumpClusterStateToLog()
     {
+      try
       {
         var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
 
@@ -101,6 +103,10 @@ namespace VSS.TRex.GridFabric
               _log.LogError("No role attributes present");
           });
         }
+      }
+      catch (Exception e)
+      {
+        _log.LogError($"Exception {e.Message} occurred during {nameof(DumpClusterStateToLog)}");
       }
     }
 
