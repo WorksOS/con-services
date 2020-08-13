@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
       {
         var executor = new SubmitTAGFileExecutor();
         return executor.ExecuteAsync(arg.ProjectID, arg.AssetID, arg.TAGFileName, arg.TagFileContent, arg.TCCOrgID, arg.TreatAsJohnDoe,
-          arg.SubmissionFlags).WaitAndUnwrapException();
+          arg.SubmissionFlags, arg.OriginSource).WaitAndUnwrapException();
       }
       catch (Exception e)
       {

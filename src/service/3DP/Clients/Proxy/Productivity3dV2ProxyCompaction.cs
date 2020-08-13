@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       };
       var response = await GetMasterDataItemServiceDiscoveryNoCache<BaseMasterDataResult>("/validatesettings", customHeaders, queryParams);
 
-      log.LogDebug($"{nameof(ValidateProjectSettings)} 2) response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      log.LogDebug($"{nameof(ValidateProjectSettings)} 2) response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(LogMaxChar))}");
       return response;
     }
 

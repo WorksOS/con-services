@@ -12,5 +12,7 @@ namespace VSS.TRex.Tests.Caching
     public int CacheOriginY { get; set; }
 
     public override string ToString() => $"{CacheOriginX}:{CacheOriginY}:{SizeInBytes}";
+
+    public ITRexSpatialMemoryCacheContext Context { get; set; }
   }
 }

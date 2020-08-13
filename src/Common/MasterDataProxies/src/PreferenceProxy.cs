@@ -44,7 +44,7 @@ namespace VSS.MasterData.Proxies
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("keyName", "global") };
       var response = await GetMasterDataItemServiceDiscovery<UserPreferenceResult>("/user",
         null, userId, customHeaders, queryParams);
-      log.LogDebug($"{nameof(GetUserPreferences)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      log.LogDebug($"{nameof(GetUserPreferences)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(LogMaxChar))}");
 
       return response == null ? null : JsonConvert.DeserializeObject<UserPreferenceData>(response.PreferenceJson);
     }
@@ -57,7 +57,7 @@ namespace VSS.MasterData.Proxies
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("keyName", "global") };
       var response = await GetMasterDataItemServiceDiscovery<UserPreferenceResult>("/user",
         "GlobalSettings", userId, customHeaders, queryParams, cacheLife: invalidation);
-      log.LogDebug($"{nameof(GetShortCachedUserPreferences)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      log.LogDebug($"{nameof(GetShortCachedUserPreferences)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(LogMaxChar))}");
 
       return response == null ? null : JsonConvert.DeserializeObject<UserPreferenceData>(response.PreferenceJson);
     }
