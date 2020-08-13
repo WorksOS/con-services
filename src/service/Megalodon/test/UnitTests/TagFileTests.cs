@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using TagFiles;
 using TagFiles.Common;
+using TagFiles.Parser;
 using TagFiles.Utils;
 using Xunit;
 
@@ -381,6 +382,16 @@ namespace UnitTests
       SetupParser();
       var res = tagFile.ParseText(TagConstants.CHAR_RS + TagConstants.TEMP_MAX + "100");
       res.Should().BeTrue("Valid Temp Max.  Result should be true");
+    }
+
+
+    [Fact]
+    public void EpochRecordNoChange()
+    {
+      var ep = new EpochRecord();
+      var ep2 = new EpochRecord();
+      ep2.EpochCopy(ref ep);
+      ep2.HasUpdateData().Should().BeFalse("Epoc record should not have data");
     }
 
     /// <summary>

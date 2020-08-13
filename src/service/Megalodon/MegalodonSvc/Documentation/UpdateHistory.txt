@@ -8,10 +8,12 @@ Version 1.1 23/7/2020
 * Allow other machine types to be produced. like Dozer, Grader, Compactor
 * Added this update history file
 
-Version 1.2 11/8/2020 
+Version 1.2 12/8/2020 
 * Added more tag options to tagfile creator
 * Changed host for direct tagfile send. No authentication
 * Made tagfile send more robust to failure.
 
+Version 1.3 13/8/2020 
+* Flag tag value change if not null
 
 

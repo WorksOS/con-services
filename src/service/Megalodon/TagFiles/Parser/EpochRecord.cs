@@ -95,7 +95,7 @@ namespace TagFiles.Parser
         }
 
         PrevTime = value;
-        HasTime = true;
+        HasTime = (value != uint.MaxValue);
       }
     }
 
@@ -109,7 +109,7 @@ namespace TagFiles.Parser
       set
       {
         _DeltaTime = value;
-        HasDeltaTime = true;
+        HasDeltaTime = (value != uint.MaxValue);
       }
     }
 
@@ -123,7 +123,7 @@ namespace TagFiles.Parser
       set
       {
         _PrevTime = value;
-        HasPrevTime = true;
+        HasPrevTime = (value != uint.MaxValue);
       }
     }
 
@@ -137,7 +137,7 @@ namespace TagFiles.Parser
       set
       {
         _Week = value;
-        HasWeek = true;
+        HasWeek = (value != uint.MaxValue);
       }
     }
 
@@ -151,7 +151,7 @@ namespace TagFiles.Parser
       set
       {
         _LEB = value;
-        HasLEB = true;
+        HasLEB = (value != double.MaxValue);
       }
     }
 
@@ -165,7 +165,7 @@ namespace TagFiles.Parser
       set
       {
         _LNB = value;
-        HasLNB = true;
+        HasLNB = (value != double.MaxValue);
       }
     }
 
@@ -179,7 +179,7 @@ namespace TagFiles.Parser
       set
       {
         _LHB = value;
-        HasLHB = true;
+        HasLHB = (value != double.MaxValue);
       }
     }
 
@@ -193,7 +193,7 @@ namespace TagFiles.Parser
       set
       {
         _REB = value;
-        HasREB = true;
+        HasREB = (value != double.MaxValue);
       }
     }
 
@@ -207,7 +207,7 @@ namespace TagFiles.Parser
       set
       {
         _RNB = value;
-        HasRNB = true;
+        HasRNB = (value != double.MaxValue);
       }
     }
 
@@ -221,7 +221,7 @@ namespace TagFiles.Parser
       set
       {
         _RHB = value;
-        HasRHB = true;
+        HasRHB = (value != double.MaxValue);
       }
     }
 
@@ -235,7 +235,7 @@ namespace TagFiles.Parser
       set
       {
         _GPM = value;
-        HasGPM = true;
+        HasGPM = (value != ushort.MaxValue);
       }
     }
 
@@ -249,7 +249,7 @@ namespace TagFiles.Parser
       set
       {
         _BOG = value;
-        HasBOG = true;
+        HasBOG = (value != ushort.MaxValue); ;
       }
     }
 
@@ -263,7 +263,7 @@ namespace TagFiles.Parser
       set
       {
         _Design = value;
-        HasDES = true;
+        HasDES = (value != "");
       }
     }
 
@@ -277,7 +277,7 @@ namespace TagFiles.Parser
       set
       {
         _LAT = value;
-        HasLAT = true;
+        HasLAT = (value != double.MaxValue);
       }
     }
 
@@ -291,7 +291,7 @@ namespace TagFiles.Parser
       set
       {
         _LON = value;
-        HasLON = true;
+        HasLON = (value != double.MaxValue);
       }
     }
 
@@ -305,7 +305,7 @@ namespace TagFiles.Parser
       set
       {
         _HGT = value;
-        HasHGT = true;
+        HasHGT = (value != double.MaxValue);
       }
     }
 
@@ -319,7 +319,7 @@ namespace TagFiles.Parser
       set
       {
         _MID = value;
-        HasMID = true;
+        HasMID = (value != "");
       }
     }
 
@@ -333,7 +333,7 @@ namespace TagFiles.Parser
       set
       {
         _MSD = value;
-        HasMSD = true;
+        HasMSD = (value != double.MaxValue);
       }
     }
 
@@ -347,7 +347,7 @@ namespace TagFiles.Parser
       set
       {
         _MTP = value;
-        HasMTP = true;
+        HasMTP = (value != byte.MaxValue);
       }
     }
 
@@ -361,7 +361,7 @@ namespace TagFiles.Parser
       set
       {
         _HDG = value;
-        HasHDG = true;
+        HasHDG = (value != double.MaxValue);
       }
     }
 
@@ -375,21 +375,21 @@ namespace TagFiles.Parser
       set
       {
         _RadioSerial = value;
-        HasRadioSerial = true;
+        HasRadioSerial = (value != "");
       }
     }
 
     /// <summary>
     /// Radio Type
     /// </summary>
-    private string _RadioType = "torch";
+    private string _RadioType = "";
     public string RadioType
     {
       get => _RadioType;
       set
       {
         _RadioType = value;
-        HasRadioType = true;
+        HasRadioType = (value != "");
       }
     }
 
@@ -403,7 +403,7 @@ namespace TagFiles.Parser
       set
       {
         _CoordSys = value;
-        HasCoordSys = true;
+        HasCoordSys = (value != ushort.MaxValue);
       }
     }
 
@@ -417,7 +417,7 @@ namespace TagFiles.Parser
       set
       {
         _ValidPosition = value;
-        HasValidPosition = true;
+        HasValidPosition = (value != ushort.MaxValue); ;
       }
     }
 
@@ -431,7 +431,7 @@ namespace TagFiles.Parser
       set
       {
         _UTM = value;
-        HasUTM = true;
+        HasUTM = (value != byte.MaxValue); ;
       }
     }
 
@@ -445,7 +445,7 @@ namespace TagFiles.Parser
       set
       {
         _MappingMode = value;
-        HasMappingMode = true;
+        HasMappingMode = (value != ushort.MaxValue); ;
       }
     }
 
@@ -459,7 +459,7 @@ namespace TagFiles.Parser
       set
       {
         _AppVersion = value;
-        HasAppVersion = true;
+        HasAppVersion = (value != "");
       }
     }
 
@@ -473,7 +473,7 @@ namespace TagFiles.Parser
       set
       {
         _Serial = value;
-        HasSER = true;
+        HasSER = (value != "");
       }
     }
 
@@ -487,7 +487,7 @@ namespace TagFiles.Parser
       set
       {
         _CCV = value;
-        HasCCV = true;
+        HasCCV = (value != uint.MaxValue);
       }
     }
 
@@ -501,7 +501,7 @@ namespace TagFiles.Parser
       set
       {
         _TargetCCV = value;
-        HasTargetCCV = true;
+        HasTargetCCV = (value != uint.MaxValue);
       }
     }
 
@@ -515,7 +515,7 @@ namespace TagFiles.Parser
       set
       {
         _MDP = value;
-        HasMDP = true;
+        HasMDP = (value != uint.MaxValue);
       }
     }
 
@@ -529,7 +529,7 @@ namespace TagFiles.Parser
       set
       {
         _TargetMDP = value;
-        HasTargetMDP = true;
+        HasTargetMDP = (value != uint.MaxValue);
       }
     }
 
@@ -543,7 +543,7 @@ namespace TagFiles.Parser
       set
       {
         _CST = value;
-        HasCST = true;
+        HasCST = (value != uint.MaxValue);
       }
     }
 
@@ -557,7 +557,7 @@ namespace TagFiles.Parser
       set
       {
         _Temperature = value;
-        HasTemperature = true;
+        HasTemperature = (value != uint.MaxValue);
       }
     }
 
@@ -571,7 +571,7 @@ namespace TagFiles.Parser
       set
       {
         _Direction = value;
-        HasDirection = true;
+        HasDirection = (value != uint.MaxValue);
       }
     }
 
@@ -585,7 +585,7 @@ namespace TagFiles.Parser
       set
       {
         _Flags = value;
-        HasFlags = true;
+        HasFlags = (value != uint.MaxValue);
       }
     }
 
@@ -599,7 +599,7 @@ namespace TagFiles.Parser
       set
       {
         _TargetPasses = value;
-        HasTargetPasses = true;
+        HasTargetPasses = (value != uint.MaxValue);
       }
     }
 
@@ -613,7 +613,7 @@ namespace TagFiles.Parser
       set
       {
         _TargetThickness = value;
-        HasTargetThickness = true;
+        HasTargetThickness = (value != uint.MaxValue);
       }
     }
 
@@ -627,7 +627,7 @@ namespace TagFiles.Parser
       set
       {
         _TempMin = value;
-        HasTempMin = true;
+        HasTempMin = (_TempMin != uint.MaxValue);
       }
     }
 
@@ -641,7 +641,7 @@ namespace TagFiles.Parser
       set
       {
         _TempMax = value;
-        HasTempMax = true;
+         HasTempMax = (_TempMax != uint.MaxValue);
       }
     }
 

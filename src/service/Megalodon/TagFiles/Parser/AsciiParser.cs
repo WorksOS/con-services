@@ -310,8 +310,7 @@ namespace TagFiles.Parser
 
       if (TrailerRequired)
       {
-
-        // hack
+        
         if (ForceSerial != string.Empty)
         {
           eRecord.RadioSerial = ForceSerial;
