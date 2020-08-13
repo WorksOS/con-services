@@ -8,8 +8,9 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs.Interfaces
 {
-  public interface IDesignBase
+  public interface IDesignBase : IDisposable
   {
+    Guid DesignUid { get; set; }
     int LockCount { get; }
     string FileName { get; set; }
     Guid ProjectUid { get; set; }
@@ -52,5 +53,6 @@ namespace VSS.TRex.Designs.Interfaces
     List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
     List<Fence> GetBoundary();
     bool IsLoading { get; set; }
+    long SizeInCache();
   }
 }

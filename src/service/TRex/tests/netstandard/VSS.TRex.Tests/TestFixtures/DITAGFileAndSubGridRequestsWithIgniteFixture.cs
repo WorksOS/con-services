@@ -235,13 +235,13 @@ namespace VSS.TRex.Tests.TestFixtures
       var srcFileName = Path.Combine(filePath, fileName);
       var destFileName = Path.Combine(tempPath, fileName);
 
-      File.Copy(srcFileName, destFileName);
+      File.Copy(srcFileName, destFileName, true);
       File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION,
-                destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+                destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, true);
       File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION,
-                destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+                destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, true);
       File.Copy(srcFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION,
-        destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+        destFileName + TRex.Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, true);
 
       return designUid;
     }
