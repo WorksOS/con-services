@@ -55,6 +55,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///          "legacyProjectId":5929,"customerUID":"f584aa24-5e73-11e6-b7ed-005056831552","legacyCustomerId":"199061","coordinateSystemFileName":"Goliat.dc"},
     /// </summary>
     [Route("api/v5/project")]
+    [Route("api/v2/project")] // TBC has route hardcoded
     [HttpGet]
     public async Task<Dictionary<long, ProjectDataTBCSingleResult>> GetProjects()
     {
@@ -86,6 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Yes, this path appears to be plural from old orangeApp code 
     /// </summary>
     [Route("api/v5/projects")]
+    [Route("api/v2/projects")] // TBC has route hardcoded
     [HttpPost]
     public async Task<ReturnLongV5Result> CreateProjectTBC([FromBody] CreateProjectV5Request projectRequest)
     {
@@ -154,6 +156,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("api/v5/preferences/tcc")]
+    [Route("api/v2/preferences/tcc")] // TBC has route hardcoded
     [HttpPost]
     public ReturnSuccessV5Result ValidateTccAuthorization(
       [FromBody] ValidateTccAuthorizationRequest tccAuthorizationRequest)
