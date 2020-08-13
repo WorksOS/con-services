@@ -23,7 +23,6 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
