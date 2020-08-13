@@ -165,12 +165,12 @@ namespace CCSS.CWS.Client
     protected Task UploadData(string uploadUrl, Stream payload,
       IHeaderDictionary customHeaders = null)
     {
-      return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
+      return WebRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
 
     public async Task<byte[]> DownloadData(string downloadUrl, IHeaderDictionary customHeaders = null)
     {
-      var response = await webRequest.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders);
+      var response = await WebRequest.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders);
       using (var responseStream = await response.ReadAsStreamAsync())
       {
         responseStream.Position = 0;

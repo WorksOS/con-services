@@ -28,6 +28,7 @@ namespace RepositoryTests
     {
       ServiceProvider = new ServiceCollection()
         .AddLogging()
+        .AddHttpClient()
         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Filter.Repository.Tests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()

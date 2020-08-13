@@ -19,9 +19,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
     /// <summary>
     /// Controller for tag file processing
     /// </summary>
-    /// <param name="loggerFactory"></param>
-    /// <param name="exceptionHandler"></param>
-    /// <param name="configStore"></param>
     public TagFileController(ILoggerFactory loggerFactory, IServiceExceptionHandler exceptionHandler, IConfigurationStore configStore)
         : base(loggerFactory, loggerFactory.CreateLogger<TagFileController>(), exceptionHandler, configStore)
     {

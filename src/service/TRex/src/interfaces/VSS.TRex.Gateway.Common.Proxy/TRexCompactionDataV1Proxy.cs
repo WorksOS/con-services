@@ -49,7 +49,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       Gateway = mutableGateway ? GatewayType.Mutable : GatewayType.Immutable;
       var jsonData = JsonConvert.SerializeObject(dataRequest);
-      log.LogDebug($"{nameof(SendDataPostRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
+      log.LogDebug($"{nameof(SendDataPostRequest)}: Sending the request: {jsonData.Truncate(LogMaxChar)}");
 
       using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
       return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Post, payload: payload);
@@ -63,7 +63,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       Gateway = GatewayType.Immutable;
       var payload = JsonConvert.SerializeObject(dataRequest);
-      log.LogDebug($"{nameof(SendDataPostRequestWithStreamResponse)}: Sending the request: {payload.Truncate(logMaxChar)}");
+      log.LogDebug($"{nameof(SendDataPostRequestWithStreamResponse)}: Sending the request: {payload.Truncate(LogMaxChar)}");
 
       var result = await GetMasterDataStreamItemServiceDiscoveryNoCache
         (route, customHeaders, method: HttpMethod.Post, payload: payload);
@@ -83,7 +83,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       Gateway = mutableGateway ? GatewayType.Mutable : GatewayType.Immutable;
       var jsonData = JsonConvert.SerializeObject(dataRequest);
-      log.LogDebug($"{nameof(SendDataDeleteRequest)}: Sending the request: {jsonData.Truncate(logMaxChar)}");
+      log.LogDebug($"{nameof(SendDataDeleteRequest)}: Sending the request: {jsonData.Truncate(LogMaxChar)}");
 
       using var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData));
       return await MasterDataItemServiceDiscoveryNoCache<TResponse>(route, customHeaders, HttpMethod.Delete, payload: payload);

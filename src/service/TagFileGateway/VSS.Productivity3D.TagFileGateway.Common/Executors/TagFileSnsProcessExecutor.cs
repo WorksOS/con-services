@@ -69,7 +69,13 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
           data = tagFile.Data;
         }
 
-        var request = new CompactionTagFileRequest {Data = data, FileName = tagFile.FileName, OrgId = tagFile.OrgId};
+        var request = new CompactionTagFileRequest
+        {
+          Data = data,
+          FileName = tagFile.FileName,
+          OrgId = tagFile.OrgId,
+          OriginSource = tagFile.originSource
+        };
 
         Logger.LogInformation($"{nameof(TagFileSnsProcessExecutor)} Attempting to process sns tag file {tagFile.FileName}");
         var executor = Build<TagFileProcessExecutor>();

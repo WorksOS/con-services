@@ -2,7 +2,7 @@
   "profiles": {
     "VSS.TRex.Tools.TagfileSubmitter": {
       "commandName": "Project",
-      "commandLineArgs": "\"{e64a27ea-f66c-4528-a5fd-00c83322c4eb}\" \"J:\\PP\\Construction\\Office software\\SiteVision Office\\Test Files\\VisionLink Data\\Boone County Expo\" \"\" true"
+      "commandLineArgs": "\"{99C82A5B-1111-4000-8108-59AEAE641CC5}\" \"C:\\Temp\\VolvoEarthworksCSVFiles\" \"\" false VolvoMachineAssistEarthworksCSV"
     }
   }
 }

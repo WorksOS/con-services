@@ -7,6 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.TAGFiles.Servers.Client;
+using VSS.Productivity3D.Models.Models;
 
 /*
 Arguments for building project #5, Dimensions:
@@ -34,6 +35,17 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         .Complete();
     }
 
+    private static string OriginSourceFileSkeleton(TAGFileOriginSource originSource)
+    {
+      return originSource switch
+      {
+        TAGFileOriginSource.LegacyTAGFileSource => "*.tag",
+        TAGFileOriginSource.VolvoMachineAssistCompactionCSV => "*.csv",
+        TAGFileOriginSource.VolvoMachineAssistEarthworksCSV => "*.csv",
+        _ => throw new NotImplementedException()
+      };
+    }
+
     public static void Main(string[] args)
     {
       DependencyInjection();
@@ -52,7 +64,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           // Pull relevant arguments off the command line
           if (args.Length < 2)
           {
-            Console.WriteLine("Usage: ProcessTAGFiles <ProjectUID> <FolderPath> <AssetIDOverride> <TreatAsJohnDoe>");
+            Console.WriteLine("Usage: ProcessTAGFiles <ProjectUID> <FolderPath> <AssetIDOverride> <TreatAsJohnDoe> <OriginSource>");
             Console.ReadKey();
             return;
           }
@@ -98,9 +110,20 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             Console.WriteLine($"Invalid TreatAsJohnDoe flag {args[3]}, setting to false");
           }
 
+          var originSource = TAGFileOriginSource.LegacyTAGFileSource;
           try
           {
-            processor.ProcessSortedTAGFilesInFolder(projectId, folderPath, treatAsJohnDoe);
+            if (args.Length > 4)
+              originSource = (TAGFileOriginSource)Enum.Parse(typeof(TAGFileOriginSource), args[4]);
+          }
+          catch
+          {
+            Console.WriteLine($"Invalid originSource flag {args[4]}, setting to LegacyTAGFileSource");
+          }
+
+          try
+          {
+            processor.ProcessSortedTAGFilesInFolder(projectId, folderPath, treatAsJohnDoe, originSource, OriginSourceFileSkeleton(originSource));
           }
           catch (Exception e)
           {

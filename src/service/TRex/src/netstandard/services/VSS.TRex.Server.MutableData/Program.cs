@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CCSS.CWS.Client;
@@ -109,8 +110,12 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddMemoryCache())
         .Add(x => x.AddServiceDiscovery())
         .Add(x => x.AddSingleton<IDataCache>(factory => new InMemoryDataCache(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IMemoryCache>())))
+        .Add(x => x.AddHttpClient())
         .Add(x => x.AddSingleton<IWebRequest>(factory => 
-          new GracefulWebRequest(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IConfigurationStore>())))
+          new GracefulWebRequest(
+            DIContext.Obtain<ILoggerFactory>(),
+            DIContext.Obtain<IConfigurationStore>(),
+            DIContext.Obtain<IHttpClientFactory>())))
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
         .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
         .Complete();
