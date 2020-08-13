@@ -331,42 +331,42 @@ namespace VSS.TRex.SubGrids.Executors
       if (result[0].clientGrid?.GridDataType != localArg.GridDataType)
       {
         ConvertIntermediarySubGridsToResult(localArg.GridDataType, ref result); //ref clientArray);
+      }
 
-        // If the requested data is cut fill derived from elevation data previously calculated, 
-        // then perform the conversion here
-        if (localArg.GridDataType == GridDataType.CutFill)
+      // If the requested data is cut fill derived from elevation data previously calculated, 
+      // then perform the conversion here
+      if (localArg.GridDataType == GridDataType.CutFill)
+      {
+        if (result.Length == 1)
         {
-          if (result.Length == 1)
+          // The cut fill is defined between one production data derived height sub grid and a
+          // height sub grid to be calculated from a designated design
+          var computeCutFillSubGridResult = await CutFillUtilities.ComputeCutFillSubGrid(
+            result[0].clientGrid, // base
+            ReferenceDesignWrapper, // 'top'
+            localArg.ProjectID);
+
+          if (!computeCutFillSubGridResult.executionResult)
           {
-            // The cut fill is defined between one production data derived height sub grid and a
-            // height sub grid to be calculated from a designated design
-            var computeCutFillSubGridResult = await CutFillUtilities.ComputeCutFillSubGrid(
-              result[0].clientGrid, // base
-              ReferenceDesignWrapper, // 'top'
-              localArg.ProjectID);
-
-            if (!computeCutFillSubGridResult.executionResult)
-            {
-              ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[0].clientGrid);
-              result[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
-            }
+            ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[0].clientGrid);
+            result[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
           }
+        }
 
-          // If the requested data is cut fill derived from two elevation data sub grids previously calculated, 
-          // then perform the conversion here
-          if (result.Length == 2)
-          {
-            // The cut fill is defined between two production data derived height sub grids
-            // depending on volume type work out height difference
-            CutFillUtilities.ComputeCutFillSubGrid((IClientHeightLeafSubGrid)result[0].clientGrid, // 'base'
-                                                   (IClientHeightLeafSubGrid)result[1].clientGrid); // 'top'
+        // If the requested data is cut fill derived from two elevation data sub grids previously calculated, 
+        // then perform the conversion here
+        if (result.Length == 2)
+        {
+          // The cut fill is defined between two production data derived height sub grids
+          // depending on volume type work out height difference
+          CutFillUtilities.ComputeCutFillSubGrid((IClientHeightLeafSubGrid)result[0].clientGrid, // 'base'
+                                                 (IClientHeightLeafSubGrid)result[1].clientGrid); // 'top'
 
-            // ComputeCutFillSubGrid has placed the result of the cut fill computation into clientGrids[0],
-            // so clientGrids[1] can be discarded
-            ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[1].clientGrid);
+          // ComputeCutFillSubGrid has placed the result of the cut fill computation into clientGrids[0],
+          // so clientGrids[1] can be discarded
+          ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[1].clientGrid);
 
-            result = new [] {(ServerRequestResult.NoError, result[0].clientGrid)};
-          }
+          result = new [] {(ServerRequestResult.NoError, result[0].clientGrid)};
         }
       }
 
