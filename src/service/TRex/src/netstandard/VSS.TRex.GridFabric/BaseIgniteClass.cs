@@ -80,6 +80,30 @@ namespace VSS.TRex.GridFabric
       InitialiseIgniteContext(gridName, role);
     }
 
+    protected void DumpClusterStateToLog()
+    {
+      {
+        var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
+
+        // Log the known state of the cluster
+        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster ({_gridName} [Ignite reported:{_ignite.Name}]): {numClusterNodes}");
+
+        if (numClusterNodes > 0)
+        {
+          _ignite?.GetCluster()?.GetNodes().ForEach(x =>
+          {
+            _log.LogInformation($"Node ID {x.Id}, ConsistentID: {x.ConsistentId}, Version:{x.Version}, IsClient?:{x.IsClient}, IsDaemon?:{x.IsDaemon}, IsLocal?:{x.IsLocal}, Order:{x.Order}, Addresses#: {x.Addresses.Count}, HostNames:{(x.HostNames.Count > 0 ? x.HostNames.Aggregate((s, o) => s + o) : "No Host Names")}");
+
+            var roleAttributes = x.Attributes.Where(x => x.Key.StartsWith("Role-"));
+            if (roleAttributes.Count() > 0)
+              _log.LogInformation($"Roles: {roleAttributes.Select(x => $" K:V={x.Key}:{x.Value}").Aggregate((s, o) => s + o)}");
+            else
+              _log.LogError("No role attributes present");
+          });
+        }
+      }
+    }
+
     /// <summary>
     /// Acquires references to group and compute topology projections on the Ignite grid that may accept requests from this request
     /// </summary>
@@ -120,23 +144,7 @@ namespace VSS.TRex.GridFabric
 
       if ((_group.GetNodes()?.Count ?? 0) == 0)
       {
-        var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
-        // Log the known state of the cluter
-        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster ({_gridName} [Ignite reported:{_ignite.Name}]): {numClusterNodes}");
-
-        if (numClusterNodes > 0)
-        {
-          _ignite?.GetCluster()?.GetNodes().ForEach(x =>
-          {
-            _log.LogInformation($"Node ID {x.Id}, ConsistentID: {x.ConsistentId}, Version:{x.Version}, IsClient?:{x.IsClient}, IsDaemon?:{x.IsDaemon}, IsLocal?:{x.IsLocal}, Order:{x.Order}, Addresses#: {x.Addresses.Count}, HostNames:{(x.HostNames.Count > 0 ? x.HostNames.Aggregate((s, o) => s + o) : "No Host Names")}");
-
-            var roleAttributes = x.Attributes.Where(x => x.Key.StartsWith("Role-"));
-            if (roleAttributes.Count() > 0)
-              _log.LogInformation($"Roles: {roleAttributes.Select(x => $" K:V={x.Key}:{x.Value}").Aggregate((s, o) => s + o)}");
-            else
-              _log.LogError("No role attributes present");
-          });
-        }
+        DumpClusterStateToLog();
 
         throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
       }
@@ -151,7 +159,17 @@ namespace VSS.TRex.GridFabric
       }
 
       if (_compute == null)
+      {
+        _log.LogError($"Cluster group for derived compute topology projection is null for request on grid {_gridName}");
+        DumpClusterStateToLog();
         throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {_gridName}");
+      }
+
+      if ((_compute.ClusterGroup.GetNodes()?.Count ?? 0) == 0)
+      {
+        _log.LogError($"Cluster group for derived compute topology projection is empty for request on grid {_gridName}");
+        DumpClusterStateToLog();
+      }
 
       if (_log.IsTraceEnabled())
         _log.LogTrace($"Completed acquisition of TRex topology projections for grid {_gridName}");
