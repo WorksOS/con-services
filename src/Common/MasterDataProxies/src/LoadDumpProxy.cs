@@ -15,7 +15,8 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class LoadDumpProxy : BaseProxy, ILoadDumpProxy
   {
-    public LoadDumpProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache) : base(configurationStore, logger, cache)
+    public LoadDumpProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache cache)
+      : base(webRequest, configurationStore, logger, cache)
     { }
 
     /// <summary>

@@ -17,10 +17,9 @@ namespace VSS.MasterData.Proxies
   public class TpaasEmailProxy : BaseServiceDiscoveryProxy, ITpaasEmailProxy
   {
     public TpaasEmailProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
-      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
-      dataCache, serviceResolution)
-    {
-    }
+      IDataCache dataCache, IServiceResolution serviceResolution)
+      : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
+    { }
     // https://docs.google.com/document/d/1tzktOSNUboEyD64WGV8ZkBDULBU9slHGNo_ZLPvdNY0
 
     public override bool IsInsideAuthBoundary => false;
@@ -28,7 +27,7 @@ namespace VSS.MasterData.Proxies
     public override string ExternalServiceName => "tpaasemail";
     public override ApiVersion Version => ApiVersion.V1;
     public override ApiType Type => ApiType.Public;
-    public override string CacheLifeKey => String.Empty;
+    public override string CacheLifeKey => string.Empty;
 
     public Task<Stream> SendEmail(EmailModel emailModel, IHeaderDictionary customHeaders = null)
     {

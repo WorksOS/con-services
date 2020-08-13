@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.Project.Proxy
       if (result.Code == 0)
         return result.Settings;
 
-      log.LogWarning($"Failed to get project settings by type {settingsType.ToString()}, using default values: {result.Code}, {result.Message}");
+      log.LogWarning($"Failed to get project settings by type {settingsType}, using default values: {result.Code}, {result.Message}");
       return null;
 
     }

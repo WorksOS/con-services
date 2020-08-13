@@ -5,39 +5,37 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using Xunit;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.MasterData.Proxies.UnitTests
 {
   public class MemoryCacheExtensionsTests : IClassFixture<MemoryCacheTestsFixture>
   {
-    private readonly MemoryCacheTestsFixture _testFixture;
     private readonly IConfigurationStore _configStore;
     private readonly ILogger _logger;
+    private readonly IServiceProvider _serviceProvider;
 
     public MemoryCacheExtensionsTests(MemoryCacheTestsFixture TestFixture)
     {
-      _testFixture = TestFixture;
+      _serviceProvider = TestFixture.serviceCollection.BuildServiceProvider();
 
-      _configStore = _testFixture.serviceProvider.GetRequiredService<IConfigurationStore>();
-
-      var logger = _testFixture.serviceProvider.GetRequiredService<ILoggerFactory>();
-      _logger = logger.CreateLogger<MemoryCacheExtensionsTests>();
-
+      _configStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = _serviceProvider
+        .GetRequiredService<ILoggerFactory>()
+        .CreateLogger<MemoryCacheExtensionsTests>();
     }
-    
+
     [Fact]
     public void CanGetCacheOptions()
     {
-      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions("PROJECT_SETTINGS_CACHE_LIFE", _configStore, _logger);
+      var opts = new MemoryCacheEntryOptions().GetCacheOptions("PROJECT_SETTINGS_CACHE_LIFE", _configStore, _logger);
       Assert.NotNull(opts);
-      Assert.Equal(new TimeSpan(0,10,0), opts.SlidingExpiration);
+      Assert.Equal(new TimeSpan(0, 10, 0), opts.SlidingExpiration);
     }
 
     [Fact]
     public void CanGetDefaultCacheOptions()
     {
-      var opts = (new MemoryCacheEntryOptions()).GetCacheOptions(string.Empty, _configStore, _logger);
+      var opts = new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, _configStore, _logger);
       Assert.NotNull(opts);
       Assert.Equal(new TimeSpan(0, 15, 0), opts.SlidingExpiration);
     }
@@ -46,7 +44,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     public void CacheDoesNotReturnInvalidEntries()
     {
       new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, _configStore, _logger);
-      var cache = _testFixture.serviceProvider.GetService<IMemoryCache>();
+      var cache = _serviceProvider.GetService<IMemoryCache>();
 
       var cacheKey = $"test-CacheDoesNotReturnInvalidEntries-{Guid.NewGuid()}";
       var taskExecutionCounter = 0;
@@ -56,7 +54,6 @@ namespace VSS.MasterData.Proxies.UnitTests
         taskExecutionCounter++;
         throw new Exception("Test Exception");
       });
-
 
       for (var cnt = 1; cnt <= 10; cnt++)
       {
@@ -78,7 +75,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     public void CacheDoesCacheValidEntries()
     {
       new MemoryCacheEntryOptions().GetCacheOptions(string.Empty, _configStore, _logger);
-      var cache = _testFixture.serviceProvider.GetService<IMemoryCache>();
+      var cache = _serviceProvider.GetService<IMemoryCache>();
 
       var cacheKey = $"test-CacheDoesCacheValidEntries-{Guid.NewGuid()}";
       var taskExecutionCounter = 0;
@@ -92,7 +89,7 @@ namespace VSS.MasterData.Proxies.UnitTests
       for (var cnt = 1; cnt <= 10; cnt++)
       {
         var cacheEntry = cache.GetOrCreate(cacheKey, entry => mockedCacheFactory.Invoke().Result);
-        
+
         // We should get the same result each time, but we should never execute the method more than once
         Assert.True(string.Compare(cacheEntry, "Passed", StringComparison.Ordinal) == 0);
         Assert.True(taskExecutionCounter == 1);

@@ -51,6 +51,7 @@ namespace IntegrationTests.ExecutorTests
 
       serviceCollection.AddLogging()
         .AddSingleton(loggerFactory)
+        .AddHttpClient()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<ICwsProjectClient, CwsProjectClient>()

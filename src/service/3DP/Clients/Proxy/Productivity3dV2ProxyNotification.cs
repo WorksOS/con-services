@@ -115,7 +115,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("projectUid", projectUid) };
 
       var response = await GetMasterDataItemServiceDiscoveryNoCache<BaseMasterDataResult>("/invalidatecache", customHeaders, queryParams);
-      log.LogDebug($"{nameof(InvalidateCache)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      log.LogDebug($"{nameof(InvalidateCache)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(LogMaxChar))}");
       return response;
     }
 
@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       };
 
       var response = await GetMasterDataItemServiceDiscoveryNoCache<BaseMasterDataResult>("/notification/filterchange", customHeaders, queryParams);
-      log.LogDebug($"{nameof(NotifyFilterChange)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      log.LogDebug($"{nameof(NotifyFilterChange)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(LogMaxChar))}");
 
       return response;
     }
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       where T : class, IMasterDataModel
     {
       T response = await GetMasterDataItemServiceDiscoveryNoCache<T>(route, customHeaders, queryParams);
-      log.LogDebug($"{nameof(NotifyFile)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      log.LogDebug($"{nameof(NotifyFile)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(LogMaxChar))}");
 
       return response;
     }
