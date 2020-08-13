@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
@@ -10,7 +11,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
   {
     bool IsMutable { get; }
 
-    bool LoadLeafSubGridSegment(IStorageProxy storageProxy,
+    FileSystemErrorStatus LoadLeafSubGridSegment(IStorageProxy storageProxy,
       SubGridCellAddress cellAddress,
       bool loadLatestData,
       bool loadAllPasses,
