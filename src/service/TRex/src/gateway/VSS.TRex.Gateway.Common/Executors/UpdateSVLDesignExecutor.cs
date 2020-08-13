@@ -12,9 +12,7 @@ using VSS.TRex.Alignments.GridFabric.Requests;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs;
-using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Types;
 
@@ -62,12 +60,6 @@ namespace VSS.TRex.Gateway.Common.Executors
           throw CreateServiceException<UpdateSVLDesignExecutor>
             (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
               RequestErrorStatus.DesignImportUnableToDeleteDesign);
-        }
-        else
-        {
-          // Broadcast to listeners that design has changed
-          var sender = DIContext.Obtain<IDesignChangedEventSender>();
-          sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, request.ProjectUid, request.DesignUid, request.FileType, designRemoved: true);
         }
 
         // load core file from s3 to local

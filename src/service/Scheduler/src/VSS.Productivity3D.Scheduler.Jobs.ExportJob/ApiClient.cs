@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 {
@@ -17,18 +16,16 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   /// </summary>
   public class ApiClient : IApiClient
   {
-    private readonly IConfigurationStore _configurationStore;
     private readonly ILogger _log;
-    private readonly ILoggerFactory _logger;
+    private readonly IWebRequest _webRequest;
 
     /// <summary>
     /// Constructor
     /// </summary>
-    public ApiClient(IConfigurationStore configurationStore, ILoggerFactory logger)
+    public ApiClient(ILoggerFactory logger, IWebRequest webRequest)
     {
       _log = logger.CreateLogger<ApiClient>();
-      _logger = logger;
-      _configurationStore = configurationStore;
+      _webRequest = webRequest;
     }
 
     /// <summary>
@@ -44,7 +41,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       _log.LogDebug($"Job request is {JsonConvert.SerializeObject(jobRequest)}");
       try
       {
-        var request = new GracefulWebRequest(_logger, _configurationStore);
         // Merge the Custom headers passed in with the http request, and the headers requested by the Schedule Job
         foreach (var header in jobRequest.Headers)
         {
@@ -63,17 +59,17 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         if (jobRequest.IsBinaryData)
         {
           using var ms = new MemoryStream(jobRequest.PayloadBytes);
-          result = await request.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
+          result = await _webRequest.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
         }
         else if (!string.IsNullOrEmpty(jobRequest.Payload))
         {
           using var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload));
-          result = await request.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
+          result = await _webRequest.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
         }
         else
         {
           // Null payload (which is ok), so we don't need a stream
-          result = await request.ExecuteRequest<T>(jobRequest.Url, null, customHeaders, method, jobRequest.Timeout, 0);
+          result = await _webRequest.ExecuteRequest<T>(jobRequest.Url, null, customHeaders, method, jobRequest.Timeout, 0);
         }
 
         _log.LogDebug($"Result of send request: {JsonConvert.SerializeObject(result)}");
@@ -108,7 +104,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       _log.LogDebug($"Job request is {JsonConvert.SerializeObject(jobRequest)}");
       try
       {
-        var request = new GracefulWebRequest(_logger, _configurationStore);
         // Merge the Custom headers passed in with the http request, and the headers requested by the Schedule Job
         foreach (var header in jobRequest.Headers)
         {
@@ -127,17 +122,17 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         if (jobRequest.IsBinaryData)
         {
           using var ms = new MemoryStream(jobRequest.PayloadBytes);
-          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
+          result = await _webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
         }
         else if (!string.IsNullOrEmpty(jobRequest.Payload))
         {
           using var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload));
-          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
+          result = await _webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
         }
         else
         {
           // Null payload (which is ok), so we don't need a stream
-          result = await request.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, jobRequest.Timeout, 0);
+          result = await _webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, jobRequest.Timeout, 0);
         }
 
         _log.LogDebug("Result of send request: Stream Content={0}", result);

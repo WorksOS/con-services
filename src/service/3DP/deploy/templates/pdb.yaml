@@ -6,12 +6,10 @@ metadata:
   name: {{ template "3dpmservice.name" . }}
   labels:
     app: {{ template "3dpmservice.name" . }}
-    component: {{ template "component.webapi" . }}
 spec:
   selector:
     matchLabels:
       app: {{ template "3dpmservice.name" . }}
-      component: {{ template "component.webapi" . }}
   minAvailable: {{ .Values.replicaMinAvailable }}
 {{- end -}}
 {{- end -}}

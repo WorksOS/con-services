@@ -4,6 +4,7 @@ using VSS.TRex.Cells;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
@@ -49,7 +50,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         void DeAllocateLeafFullPassStacks();
         void DeAllocateLeafLatestPassGrid();
 
-        bool LoadSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegment segment, bool loadLatestData, bool loadAllPasses);
+        FileSystemErrorStatus LoadSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegment segment, bool loadLatestData, bool loadAllPasses);
 
         bool RemoveSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegmentInfo segment);
         bool RemoveDirectoryFromStorage(IStorageProxy storageProxy, string fileName);

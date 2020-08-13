@@ -1,6 +1,30 @@
-﻿/// <summary>
+﻿
+/******************************************
+ Adding a new tag? update these units and follow the pattern
+
+ TagConstants
+    public const string CCV = "CCV";
+
+ TagFile.cs
+   private void CreateTagfileDictionary()
+
+ EpochRecord.cs
+
+ AscciiParser.cs
+
+ DictionaryItem.cs
+
+ CreateTagfileDictionary
+
+ TagfileTest.cs
+   TestTagFileCreation for testing new tag
+ *****************************************/
+using TagFiles.Common;
+
+/// <summary>
 /// Acts like a state machine for each epoch
 /// </summary>
+/// 
 namespace TagFiles.Parser
 {
 
@@ -36,13 +60,25 @@ namespace TagFiles.Parser
     public bool HasMappingMode = false;
     public bool HasAppVersion = false;
     public bool HasValidPosition = false;
+    public bool HasCST = false;
+    public bool HasCCV = false;
+    public bool HasTargetCCV = false;
+    public bool HasMDP = false;
+    public bool HasTargetMDP = false;
+    public bool HasFlags = false;
+    public bool HasTemperature = false;
+    public bool HasDirection = false;
+    public bool HasTargetPasses = false;
+    public bool HasTargetThickness = false;
+    public bool HasTempMin = false;
+    public bool HasTempMax = false;
 
     // Fields
 
     /// <summary>
     /// Time
     /// </summary>
-    private uint _Time = 0;
+    private uint _Time = uint.MaxValue;
     public uint Time
     {
       get => _Time;
@@ -63,7 +99,10 @@ namespace TagFiles.Parser
       }
     }
 
-    private uint _DeltaTime = 0;
+    /// <summary>
+    /// Time delta
+    /// </summary>
+    private uint _DeltaTime = uint.MaxValue;
     public uint DeltaTime
     {
       get => _DeltaTime;
@@ -77,7 +116,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// PrevTime
     /// </summary>
-    private uint _PrevTime = 0;
+    private uint _PrevTime = uint.MaxValue;
     public uint PrevTime
     {
       get => _PrevTime;
@@ -91,7 +130,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Week
     /// </summary>
-    private uint _Week = 0;
+    private uint _Week = uint.MaxValue;
     public uint Week
     {
       get => _Week;
@@ -105,7 +144,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Left Easting Blade
     /// </summary>
-    private double _LEB = 0;
+    private double _LEB = double.MaxValue;
     public double LEB
     {
       get => _LEB;
@@ -119,7 +158,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Left Northing Blade
     /// </summary>
-    private double _LNB = 0;
+    private double _LNB = double.MaxValue;
     public double LNB
     {
       get => _LNB;
@@ -133,7 +172,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Left Height Blade
     /// </summary>
-    private double _LHB = 0;
+    private double _LHB = double.MaxValue;
     public double LHB
     {
       get => _LHB;
@@ -147,7 +186,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Right Easting Blade
     /// </summary>
-    private double _REB = 0;
+    private double _REB = double.MaxValue;
     public double REB
     {
       get => _REB;
@@ -161,7 +200,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Righ Northing Blade
     /// </summary>
-    private double _RNB = 0;
+    private double _RNB = double.MaxValue;
     public double RNB
     {
       get => _RNB;
@@ -175,7 +214,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Right Height Blade
     /// </summary>
-    private double _RHB = 0;
+    private double _RHB = double.MaxValue;
     public double RHB
     {
       get => _RHB;
@@ -189,7 +228,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// GPS Mode
     /// </summary>
-    private ushort _GPM = 0;
+    private ushort _GPM = ushort.MaxValue;
     public ushort GPM
     {
       get => _GPM;
@@ -203,7 +242,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Blade On Ground
     /// </summary>
-    private ushort _BOG = 0;
+    private ushort _BOG = ushort.MaxValue;
     public ushort BOG
     {
       get => _BOG;
@@ -231,7 +270,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Latitude
     /// </summary>
-    private double _LAT = 0;
+    private double _LAT = double.MaxValue;
     public double LAT
     {
       get => _LAT;
@@ -245,7 +284,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Longitude
     /// </summary>
-    private double _LON = 0;
+    private double _LON = double.MaxValue;
     public double LON
     {
       get => _LON;
@@ -259,7 +298,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Height
     /// </summary>
-    private double _HGT = 0;
+    private double _HGT = double.MaxValue;
     public double HGT
     {
       get => _HGT;
@@ -287,7 +326,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Machine Speed
     /// </summary>
-    private double _MSD = 0;
+    private double _MSD = double.MaxValue;
     public double MSD
     {
       get => _MSD;
@@ -301,7 +340,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Machine Type
     /// </summary>
-    private byte _MTP = 0;
+    private byte _MTP = byte.MaxValue;
     public byte MTP
     {
       get => _MTP;
@@ -315,7 +354,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Heading
     /// </summary>
-    private double _HDG = 0;
+    private double _HDG = double.MaxValue;
     public double HDG
     {
       get => _HDG;
@@ -357,7 +396,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Coordinate System
     /// </summary>
-    private ushort _CoordSys = 0;
+    private ushort _CoordSys = ushort.MaxValue;
     public ushort CoordSys
     {
       get => _CoordSys;
@@ -371,7 +410,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Coordinate System
     /// </summary>
-    private ushort _ValidPosition = 1;
+    private ushort _ValidPosition = ushort.MaxValue; 
     public ushort ValidPosition
     {
       get => _ValidPosition;
@@ -385,7 +424,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// UTM Zone
     /// </summary>
-    private byte _UTM = 0;
+    private byte _UTM = byte.MaxValue;
     public byte UTM
     {
       get => _UTM;
@@ -399,7 +438,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Mapping Mode
     /// </summary>
-    private ushort _MappingMode = 0;
+    private ushort _MappingMode = ushort.MaxValue;
     public ushort MappingMode
     {
       get => _MappingMode;
@@ -425,7 +464,7 @@ namespace TagFiles.Parser
     }
 
     /// <summary>
-    /// Serial
+    /// Machine serial id
     /// </summary>
     private string _Serial = "";
     public string Serial
@@ -439,8 +478,174 @@ namespace TagFiles.Parser
     }
 
     /// <summary>
-    /// Constructor
+    /// CCV compaction
     /// </summary>
+    private uint _CCV = uint.MaxValue;
+    public uint CCV
+    {
+      get => _CCV;
+      set
+      {
+        _CCV = value;
+        HasCCV = true;
+      }
+    }
+
+    /// <summary>
+    /// Target CCV
+    /// </summary>
+    private uint _TargetCCV = uint.MaxValue; // 12 bit
+    public uint TargetCCV
+    {
+      get => _TargetCCV;
+      set
+      {
+        _TargetCCV = value;
+        HasTargetCCV = true;
+      }
+    }
+
+    /// <summary>
+    /// MDP Compaction
+    /// </summary>
+    private uint _MDP = uint.MaxValue;
+    public uint MDP
+    {
+      get => _MDP;
+      set
+      {
+        _MDP = value;
+        HasMDP = true;
+      }
+    }
+
+    /// <summary>
+    /// Target MDP
+    /// </summary>
+    private uint _TargetMDP = uint.MaxValue; // 12 bit
+    public uint TargetMDP
+    {
+      get => _TargetMDP;
+      set
+      {
+        _TargetMDP = value;
+        HasTargetMDP = true;
+      }
+    }
+
+    /// <summary>
+    /// Compaction Sensor Type
+    /// </summary>
+    private uint _CST = uint.MaxValue; // 8 bit
+    public uint CST
+    {
+      get => _CST;
+      set
+      {
+        _CST = value;
+        HasCST = true;
+      }
+    }
+
+    /// <summary>
+    /// Temperature
+    /// </summary>
+    private uint _Temperature = uint.MaxValue; // 12 bit absolute
+    public uint Temperature
+    {
+      get => _Temperature;
+      set
+      {
+        _Temperature = value;
+        HasTemperature = true;
+      }
+    }
+
+    /// <summary>
+    /// Machine Direction
+    /// </summary>
+    private uint _Direction = uint.MaxValue; // 4 bit absolute 1 = forward, 2=Reverse,3=unknown
+    public uint Direction
+    {
+      get => _Direction;
+      set
+      {
+        _Direction = value;
+        HasDirection = true;
+      }
+    }
+
+    /// <summary>
+    /// Contains info like type of compaction and vibe state
+    /// </summary>
+    private uint _Flags = uint.MaxValue; // 4 bit absolute
+    public uint Flags
+    {
+      get => _Flags;
+      set
+      {
+        _Flags = value;
+        HasFlags = true;
+      }
+    }
+
+    /// <summary>
+    /// Target Passcount
+    /// </summary>
+    private uint _TargetPasses = uint.MaxValue; // 12 bit
+    public uint TargetPasses
+    {
+      get => _TargetPasses;
+      set
+      {
+        _TargetPasses = value;
+        HasTargetPasses = true;
+      }
+    }
+
+    /// <summary>
+    /// Target Thickness
+    /// </summary>
+    private uint _TargetThickness = uint.MaxValue; // 16 bit
+    public uint TargetThickness
+    {
+      get => _TargetThickness;
+      set
+      {
+        _TargetThickness = value;
+        HasTargetThickness = true;
+      }
+    }
+
+    /// <summary>
+    /// Min target temperature
+    /// </summary>
+    private uint _TempMin = uint.MaxValue; // 12 bit
+    public uint TempMin
+    {
+      get => _TempMin;
+      set
+      {
+        _TempMin = value;
+        HasTempMin = true;
+      }
+    }
+
+    /// <summary>
+    /// Max target temperature
+    /// </summary>
+    private uint _TempMax = uint.MaxValue; // 12 bit
+    public uint TempMax
+    {
+      get => _TempMax;
+      set
+      {
+        _TempMax = value;
+        HasTempMax = true;
+      }
+    }
+
+
     public EpochRecord()
     {
       ClearEpoch();
@@ -479,6 +684,19 @@ namespace TagFiles.Parser
       HasMappingMode = false;
       HasAppVersion = false;
       HasValidPosition = false;
+      HasCCV = false;
+      HasMDP = false;
+      HasCST = false;
+      HasTargetCCV = false;
+      HasTargetMDP = false;
+      HasFlags = false;
+      HasTemperature = false;
+      HasDirection = false;
+      HasTargetThickness = false;
+      HasTargetPasses = false;
+      HasTempMin = false;
+      HasTempMax = false;
+
     }
 
     public bool IsFullPositionEpoch()
@@ -519,6 +737,18 @@ namespace TagFiles.Parser
       RadioSerial = eRec.RadioSerial;
       RadioType = eRec.RadioType;
       HasHeader = eRec.HasHeader;
+      CCV = eRec.CCV;
+      CST = eRec.CST;
+      TargetCCV = eRec.TargetCCV;
+      Flags = eRec.Flags;
+      Temperature = eRec.Temperature;
+      Direction = eRec.Direction;
+      TargetMDP = eRec.TargetMDP;
+      MDP = eRec.MDP;
+      TargetThickness = eRec.TargetThickness;
+      TargetPasses = eRec.TargetPasses;
+      TempMin = eRec.TempMin;
+      TempMax = eRec.TempMax;
     }
 
     /// <summary>
@@ -540,7 +770,8 @@ namespace TagFiles.Parser
     public bool HasUpdateData()
     {
       return HasLEB || HasLHB || HasLNB || HasREB || HasRHB || HasRNB || HasGPM || HasBOG || HasDES || HasLAT || HasLON ||
-             HasHGT || HasMSD || HasHDG;
+             HasHGT || HasMSD || HasHDG || HasCCV || HasCST || HasTargetCCV || HasFlags || HasDirection || HasTemperature || 
+             HasMDP || HasTargetMDP || HasTargetPasses || HasTargetThickness || HasTempMin || HasTempMax;
 
     }
 

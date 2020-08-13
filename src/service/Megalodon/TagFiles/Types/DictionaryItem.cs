@@ -29,6 +29,18 @@ namespace TagFiles.Types
     ApplicationVersion,
     MachineSpeed,
     MachineType,
-    ValidPosition
+    ValidPosition,
+    CCV,
+    TargetCCV,
+    MDP,
+    TargetMDP,
+    Temperature,
+    CST,
+    Flags,
+    Direction,
+    TargetThickness,
+    TargetPasses,
+    TempMin,
+    TempMax
   }
 }

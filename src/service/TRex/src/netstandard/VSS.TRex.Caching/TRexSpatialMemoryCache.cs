@@ -189,10 +189,13 @@ namespace VSS.TRex.Caching
     /// </summary>
     public void Remove(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element)
     {
-      context.Remove(element);
+      lock (_contexts)
+      {
+        context.Remove(element);
 
-      // Perform some house keeping to keep the cache size in bounds
-      ItemRemovedFromContext(element.IndicativeSizeInBytes());
+        // Perform some house keeping to keep the cache size in bounds
+        ItemRemovedFromContext(element.IndicativeSizeInBytes());
+      }
     }
 
     private void ItemAddedToContext(int sizeInBytes)

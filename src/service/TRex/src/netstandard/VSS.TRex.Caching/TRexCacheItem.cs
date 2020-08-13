@@ -33,14 +33,7 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// The context to which this cached item belongs
     /// </summary>
-    private ITRexSpatialMemoryCacheContext Context { get; set; }
-
-    /// <summary>
-    /// Describes whether the state containing in this cache item is still valid
-    /// Items are considered to be valid at the time of creation, and stay that way until explicit invalidation or
-    /// overriding of the references item with null.
-    /// </summary>
-    public bool Valid { get; set; }
+    public ITRexSpatialMemoryCacheContext Context { get; private set; }
 
     /// <summary>
     /// The index of the previous element in the list of elements
@@ -61,8 +54,6 @@ namespace VSS.TRex.Caching
       ExpiryTime = DateTime.UtcNow + context.CacheDurationTime;
       Prev = prev;
       Next = next;
-
-      Valid = item != null;
     }
 
     public void Set(T item, ITRexSpatialMemoryCacheContext context, long mruEpochToken, int prev, int next)
@@ -73,8 +64,6 @@ namespace VSS.TRex.Caching
       ExpiryTime = context == null ? Consts.MIN_DATETIME_AS_UTC : DateTime.UtcNow + context.CacheDurationTime;
       Prev = prev;
       Next = next;
-
-      Valid = item != null;
     }
 
     public void GetPrevAndNext(out int prev, out int next)
@@ -91,26 +80,7 @@ namespace VSS.TRex.Caching
     public void RemoveFromContext()
     {
       Context?.RemoveFromContextTokensOnly(Item);
-    }
-
-    /// <summary>
-    /// Sets the valid state of the item to true, returning the previous validity state 
-    /// </summary>
-    public bool Validate()
-    {
-      var result = Valid;
-      Valid = true;
-      return result;
-    }
-
-    /// <summary>
-    /// Sets the valid state of the item to false, returning the previous validity state 
-    /// </summary>
-    public bool Invalidate()
-    {
-      var result = Valid;
-      Valid = false;
-      return result;
+      Context = null;
     }
   }
 }

@@ -21,6 +21,7 @@ namespace VSS.MasterData.Proxies
     private readonly ILogger _log;
     private const int _defaultLogMaxChar = 1000;
     private readonly int _logMaxChar;
+    private readonly IHttpClientFactory _clientFactory;
 
     private static readonly HttpClientHandler _handler = new HttpClientHandler
     {
@@ -28,7 +29,7 @@ namespace VSS.MasterData.Proxies
     };
 
     //TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
-    private static readonly HttpClient _httpClient = new HttpClient(_handler) { Timeout = TimeSpan.FromMinutes(30) };
+    //    private static readonly HttpClient _httpClient = new HttpClient(_handler) { Timeout = TimeSpan.FromMinutes(30) };
 
     //Any 200 code is ok.
     private static readonly List<HttpStatusCode> _okCodes = new List<HttpStatusCode>
@@ -37,10 +38,12 @@ namespace VSS.MasterData.Proxies
       HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent
     };
 
-    public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
+    public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore, IHttpClientFactory clientFactory)
     {
       _log = logger.CreateLogger<GracefulWebRequest>();
       _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxChar);
+
+      _clientFactory = clientFactory;
     }
 
     private Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, HttpMethod method,
@@ -71,16 +74,16 @@ namespace VSS.MasterData.Proxies
         requestStream.Seek(0, SeekOrigin.Begin);
 
       if (method == HttpMethod.Get)
-        return _httpClient.GetAsync(endpoint, timeout, x => ApplyHeaders(customHeaders, x), _log);
+        return _clientFactory.CreateClient().GetAsync(endpoint, timeout, x => ApplyHeaders(customHeaders, x), _log);
 
       if (method == HttpMethod.Post || method == HttpMethod.Put)
       {
-        return _httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
+        return _clientFactory.CreateClient().PostAsync(endpoint, requestStream, method, customHeaders, timeout,
           x => ApplyHeaders(customHeaders, x), _log);
       }
 
       if (method == HttpMethod.Delete)
-        return _httpClient.DeleteAsync(endpoint, requestStream, customHeaders, timeout, 
+        return _clientFactory.CreateClient().DeleteAsync(endpoint, requestStream, customHeaders, timeout,
           x => ApplyHeaders(customHeaders, x), _log);
 
       throw new ArgumentException($"Unknown HTTP method {method}");

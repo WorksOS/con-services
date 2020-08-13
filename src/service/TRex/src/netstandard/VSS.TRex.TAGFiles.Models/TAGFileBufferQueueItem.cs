@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 
@@ -10,8 +11,8 @@ namespace VSS.TRex.TAGFiles.Models
   /// </summary>
   public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary
   { 
-    public const byte VERSION_NUMBER = 2;
-    private static byte[] VERSION_NUMBERS = { 1, 2 };
+    public const byte VERSION_NUMBER = 3;
+    private static byte[] VERSION_NUMBERS = { 1, 2, 3 };
 
     /// <summary>
     /// The date at which the TAG file was inserted into the buffer queue. This field is indexed to permit
@@ -52,6 +53,11 @@ namespace VSS.TRex.TAGFiles.Models
     /// </summary>
     public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
 
+    /// <summary>
+    /// The orign source that produced the TAG file, such as GCS900, Eathworjs etc
+    /// </summary>
+    public TAGFileOriginSource OriginSource { get; set; } = TAGFileOriginSource.LegacyTAGFileSource;
+
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
 
     public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
@@ -67,6 +73,7 @@ namespace VSS.TRex.TAGFiles.Models
       writer.WriteGuid(AssetID);
       writer.WriteBoolean(IsJohnDoe);
       writer.WriteInt((int)SubmissionFlags);
+      writer.WriteInt((int)OriginSource);
     }
 
     public void FromBinary(IBinaryRawReader reader)
@@ -87,6 +94,15 @@ namespace VSS.TRex.TAGFiles.Models
       else
       {
         SubmissionFlags = TAGFileSubmissionFlags.AddToArchive;
+      }
+
+      if (messageVersion >= 3)
+      {
+        OriginSource = (TAGFileOriginSource)reader.ReadInt();
+      }
+      else
+      {
+        OriginSource = TAGFileOriginSource.LegacyTAGFileSource;
       }
     }
   }

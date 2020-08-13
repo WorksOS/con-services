@@ -139,7 +139,7 @@ namespace TestUtility
     /// </summary>
     public Task<string> GetProjectViaWebApiV5TBC(long projectId)
     {
-      return  CallProjectWebApi($"api/v5/projects/{projectId}", HttpMethod.Get, null, CustomerUid.ToString());
+      return  CallProjectWebApi($"api/v5/project/{projectId}", HttpMethod.Get, null, CustomerUid.ToString());
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ namespace TestUtility
     /// </summary>
     public Task<string> GetProjectViaWebApiV5TBC()
     {
-      return CallProjectWebApi($"api/v5/projects", HttpMethod.Get, null, CustomerUid.ToString());
+      return CallProjectWebApi($"api/v5/project", HttpMethod.Get, null, CustomerUid.ToString());
     }
 
     /// <summary>

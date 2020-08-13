@@ -9,6 +9,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -60,8 +61,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         PositionsAreGrid = request.PositionsAreGrid,
         Filters = new FilterSet(baseFilter),
         ReferenceDesign = referenceDesign,
-        StartPoint = new WGS84Point(request.StartX, request.StartY, 0 ),
-        EndPoint = new WGS84Point(request.EndX, request.EndY, 0),
+        StartPoint = new WGS84Point(request.StartX, request.StartY, request.PositionsAreGrid ? Consts.NullDouble : 0),//coord conversion requires elevation set
+        EndPoint = new WGS84Point(request.EndX, request.EndY, request.PositionsAreGrid ? Consts.NullDouble : 0),
         ReturnAllPassesAndLayers = true,
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
         LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)

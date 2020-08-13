@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.Caching
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
-      context.Add(element);
+      context.OwnerMemoryCache.Add(context, element);
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");
       Assert.True(context.MRUList.TokenCount == 1, $"MRU list count incorrect (= {context.MRUList.TokenCount})");
@@ -214,7 +214,7 @@ namespace VSS.TRex.Tests.Caching
       present.Should().BeFalse();
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
-      context.Add(element);
+      context.OwnerMemoryCache.Add(context, element);
 
       context.InvalidateSubGrid(2000, 3000, out present);
       present.Should().BeTrue();
