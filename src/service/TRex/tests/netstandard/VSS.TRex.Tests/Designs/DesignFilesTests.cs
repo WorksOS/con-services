@@ -12,7 +12,9 @@ namespace VSS.TRex.Tests.Designs
 {
   public class DesignFilesTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    public const string testFileName = "Bug36372.ttm";
+    public const string TESTFILENAME = "Bug36372.ttm";
+
+    private const int SAMPLE_DESIGN_SPACE_USED_IN_CACHE = 2214624;
 
     public DesignFilesTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
@@ -33,17 +35,19 @@ namespace VSS.TRex.Tests.Designs
     public void Creation2()
     {
       const long MAX_SIZE = 1000000;
+      const int MAX_EVICTION_ITERATIONS = 10;
 
-      var files = new DesignFiles(MAX_SIZE);
+      var files = new DesignFiles(MAX_SIZE, MAX_EVICTION_ITERATIONS);
       files.Should().NotBeNull();
       files.MaxDesignsCacheSize.Should().Be(MAX_SIZE);
+      files.MaxWaitIterationsDuringDesignEviction.Should().Be(MAX_EVICTION_ITERATIONS);
     }
 
     [Fact]
     public void NumDesignsInCache()
     {
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, testFileName, true);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
 
       var files = new DesignFiles();
       files.Lock(designUid, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
@@ -53,16 +57,60 @@ namespace VSS.TRex.Tests.Designs
     }
 
     [Fact]
+    public void SpaceUsed()
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
+
+      var files = new DesignFiles();
+      var design = files.Lock(designUid, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
+      loadResult.Should().Be(DesignLoadResult.Success);
+      files.DesignsCacheSize.Should().Be(SAMPLE_DESIGN_SPACE_USED_IN_CACHE);
+
+      design.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void FreeSpace()
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
+
+      var files = new DesignFiles(SAMPLE_DESIGN_SPACE_USED_IN_CACHE + 1000, 10);
+      var design = files.Lock(designUid, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
+      design.Should().NotBeNull();
+      loadResult.Should().Be(DesignLoadResult.Success);
+      files.FreeSpaceInCache.Should().Be(1000);
+    }
+
+    [Fact]
     public void Lock_SingleDesign_NoContention()
     {
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, testFileName, true);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
 
       var files = new DesignFiles();
       var design = files.Lock(designUid, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
       loadResult.Should().Be(DesignLoadResult.Success);
 
       design.Should().NotBeNull();
+      design.Locked.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Unlock_SingleDesign_NoContention()
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
+
+      var files = new DesignFiles();
+      var design = files.Lock(designUid, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
+      loadResult.Should().Be(DesignLoadResult.Success);
+
+      design.Should().NotBeNull();
+
+      files.UnLock(designUid, design).Should().BeTrue();
+      design.Locked.Should().BeFalse(); 
     }
 
     [Theory]
@@ -76,7 +124,7 @@ namespace VSS.TRex.Tests.Designs
       mockDesign.Setup(x => x.FileName).Returns("TheFileName");
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, testFileName, true);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
 
       var files = new DesignFiles();
       var design = files.Lock(designUid, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
@@ -90,33 +138,55 @@ namespace VSS.TRex.Tests.Designs
     }
 
     [Fact]
-    public void Lock_WithDesignEviction_NoContention()
+    public void Lock_WithDesignEviction_FailWithUnresolvableContention()
     {
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid1 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, testFileName, true);
-      var designUid2 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, testFileName, true);
+      var designUid1 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
+      var designUid2 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
 
-      // Work out how big this design is in terms of design cache memory use
-      var files = new DesignFiles();
+      // Create a new design files cache  just a little bit bigger that the size it requires, and reload the design into it
+      var files = new DesignFiles((int)Math.Truncate(SAMPLE_DESIGN_SPACE_USED_IN_CACHE * 1.2), 10);
       var design1 = files.Lock(designUid1, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
-
-      var spaceUsed = files.DesignsCacheSize;
-      spaceUsed.Should().BeGreaterThan(1000);
-
-      // Create a new design files cache  just a little bit bigger, and reload the design into it
-      files = new DesignFiles((int)Math.Truncate(spaceUsed * 1.2));
-      design1 = files.Lock(designUid1, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out loadResult);
       loadResult.Should().Be(DesignLoadResult.Success);
       design1.Should().NotBeNull();
       design1.DesignUid.Should().Be(designUid1);
+      files.DesignsCacheSize.Should().Be(SAMPLE_DESIGN_SPACE_USED_IN_CACHE);
 
       // Load the second design and verify the first design is evicted and space used is as expected
+      // leave the first design locked so that it cannot be evicted
+      var design2 = files.Lock(designUid2, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out loadResult);
+      loadResult.Should().Be(DesignLoadResult.InsufficientMemory);
+      design2.Should().BeNull();
+
+      files.DesignsCacheSize.Should().Be(SAMPLE_DESIGN_SPACE_USED_IN_CACHE);
+    }
+
+    [Fact]
+    public void Lock_WithDesignEviction_SucceedWithDesignRemoval()
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var designUid1 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
+      var designUid2 = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, TESTFILENAME, true);
+
+      // Create a new design files cache  just a little bit bigger that the size it requires, and reload the design into it
+      var files = new DesignFiles((int)Math.Truncate(SAMPLE_DESIGN_SPACE_USED_IN_CACHE * 1.2), 10);
+      var design1 = files.Lock(designUid1, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out var loadResult);
+      loadResult.Should().Be(DesignLoadResult.Success);
+      design1.Should().NotBeNull();
+      design1.DesignUid.Should().Be(designUid1);
+      files.DesignsCacheSize.Should().Be(SAMPLE_DESIGN_SPACE_USED_IN_CACHE);
+
+      // Load the second design and verify the first design is evicted and space used is as expected
+      // Unlock the first design to allow it to be evicted from the cache
+      files.UnLock(designUid1, design1).Should().BeTrue();
+
       var design2 = files.Lock(designUid2, siteModel.ID, SubGridTreeConsts.DefaultCellSize, out loadResult);
       loadResult.Should().Be(DesignLoadResult.Success);
       design2.Should().NotBeNull();
       design2.DesignUid.Should().Be(designUid2);
 
-      files.DesignsCacheSize.Should().Be(spaceUsed);
+      files.DesignsCacheSize.Should().Be(SAMPLE_DESIGN_SPACE_USED_IN_CACHE);
     }
+
   }
 }
