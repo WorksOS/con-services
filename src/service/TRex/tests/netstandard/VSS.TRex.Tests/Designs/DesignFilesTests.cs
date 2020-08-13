@@ -20,8 +20,6 @@ namespace VSS.TRex.Tests.Designs
     {
       fixture.ClearDynamicFixtureContent();
       fixture.SetupFixture();
-
-      // Modify the DI Configuration store to specify
     }
 
     [Fact]
@@ -110,7 +108,7 @@ namespace VSS.TRex.Tests.Designs
       design.Should().NotBeNull();
 
       files.UnLock(designUid, design).Should().BeTrue();
-      design.Locked.Should().BeFalse(); 
+      design.Locked.Should().BeFalse();
     }
 
     [Theory]
@@ -187,6 +185,5 @@ namespace VSS.TRex.Tests.Designs
 
       files.DesignsCacheSize.Should().Be(SAMPLE_DESIGN_SPACE_USED_IN_CACHE);
     }
-
   }
 }
