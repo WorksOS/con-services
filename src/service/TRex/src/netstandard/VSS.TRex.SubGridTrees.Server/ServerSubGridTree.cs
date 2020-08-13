@@ -322,7 +322,13 @@ namespace VSS.TRex.SubGridTrees.Server
           if (cleaver.PersistedClovenSegments != null)
             invalidatedSpatialStreams.AddRange(cleaver.PersistedClovenSegments);
 
-          invalidatedSpatialStreams.AddRange(modifiedOriginalSegments.Select(x => x.SegmentInfo.AffinityKey(ID)));
+          // TODO: Review re-inclusion of this activity when/if support for multi - versioned sub grid segments in teh TRex persistent store is added
+          /*
+           Don't add the list of modified segments to the segment retirement queue as TRex does not supprot multiple versions of the 
+           same segment via it's store that same way as the Raptor immutable store provides for.
+
+           invalidatedSpatialStreams.AddRange(modifiedOriginalSegments.Select(x => x.SegmentInfo.AffinityKey(ID)));
+          */
         }
 
         //**********************************************************************
