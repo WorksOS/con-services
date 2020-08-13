@@ -72,6 +72,8 @@
         FailedToCreateAllConcurrentHandles,
         FailedToLockFileRegion,
         InvalidRequest,
-        MutableToImmutableConversionError
+        MutableToImmutableConversionError,
+        ElementToBeReadIsDirty,
+        DeserializationError
     }
 }
