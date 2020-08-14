@@ -108,7 +108,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 
                             // Segment failed to be loaded. Multiple messages will have been posted to the log.
                             // Move to the next item in the iteration
-                            result = null; 
+                            result = null;
                             continue;
                         }
                     }

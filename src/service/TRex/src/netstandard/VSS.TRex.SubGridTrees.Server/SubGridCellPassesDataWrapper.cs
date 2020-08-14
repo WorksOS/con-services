@@ -107,10 +107,6 @@ namespace VSS.TRex.SubGridTrees.Server
     /// If the subGridSegmentPassCountLimit is zero then the default segment pass count
     /// limit specified in the configuration will be used.
     /// </summary>
-    /// <param name="cleavingSegment"></param>
-    /// <param name="persistedClovenSegments"></param>
-    /// <param name="subGridSegmentPassCountLimit"></param>
-    /// <returns></returns>
     public bool CleaveSegment(ISubGridCellPassesDataSegment cleavingSegment,
       List<ISubGridSpatialAffinityKey> persistedClovenSegments,
       int subGridSegmentPassCountLimit = 0)
@@ -228,21 +224,6 @@ namespace VSS.TRex.SubGridTrees.Server
 
       newSegment.Dirty = true;
       newSegment.SegmentInfo.ExistsInPersistentStore = false;
-
-      /*
-       TODO: In TRex, this non-static information is only maintained in the mutable data grid, segment caching is not well defined for it yet
-      if (Owner.PresentInCache)
-      {
-          // Include the new segment in the cache segment tracking
-          if (!DataStoreInstance.GridDataCache.SubGridSegmentTouched(NewSegment))
-          {
-               SIGLogMessage.PublishNoODS(Self,
-                  Format('Failed to touch newly created segment in segment cleaving for sub grid %s [%s]', [
-                      CleavingSegment.Owner.Moniker, CleavingSegment.ToString]), slmcException);
-              return true;
-          }
-      }
-      */
 
 #if DEBUG
       // Check everything looks kosher by comparing the time range of the cells
