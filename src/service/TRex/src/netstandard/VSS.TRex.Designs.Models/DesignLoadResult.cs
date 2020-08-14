@@ -2,7 +2,7 @@
 {
   public enum DesignLoadResult
   {
-    UnknownFailure, 
+    UnknownFailure,
     Success,
     NoAlignmentsFound,
     NoMasterAlignmentsFound,
@@ -10,6 +10,7 @@
     UnableToLoadSpatialIndex,
     DesignDoesNotExist,
     UnableToLoadBoundary,
-    SiteModelNotFound
+    SiteModelNotFound,
+    InsufficientMemory
   }
 }

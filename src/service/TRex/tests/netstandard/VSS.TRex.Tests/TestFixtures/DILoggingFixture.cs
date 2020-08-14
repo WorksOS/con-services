@@ -127,6 +127,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueString("TGL_GEODATA_PATH", It.IsAny<string>())).Returns("Geodata");
 
+          config.Setup(c => c.GetValueUlong("TREX_DESIGN_ELEVATION_CACHE_SIZE", It.IsAny<ulong>())).Returns((ulong)10 * 1024 * 1024);
+
           return config;
         }))
         .Build()

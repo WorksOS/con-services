@@ -75,6 +75,18 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Mocks
       return defaultValue;
     }
 
+    public ulong GetValueUlong(string v)
+    {
+      return (ulong)Values[v];
+    }
+
+    public ulong GetValueUlong(string v, ulong defaultValue)
+    {
+      if (Values.ContainsKey(v))
+        return (ulong)Values[v];
+      return defaultValue;
+    }
+
     public double GetValueDouble(string v)
     {
       return (double) Values[v];

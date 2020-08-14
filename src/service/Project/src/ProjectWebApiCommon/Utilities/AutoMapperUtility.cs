@@ -73,12 +73,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
           // for v5 TBC apis
-          cfg.CreateMap<ProjectDetailResponseModel, ProjectDataTBCSingleResult>()
-            .ForMember(dest => dest.LegacyProjectId, opt => opt.Ignore()) // done externally
-            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(x => DateTime.MinValue))
-            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(x => DateTime.MaxValue))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
+          cfg.CreateMap<ProjectDatabaseModel, ProjectDataTBCSingleResult>()
+            .ForMember(dest => dest.IsArchived, opt => opt.MapFrom(src => src.IsArchived))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.ProjectTimeZone, opt => opt.MapFrom(src => src.ProjectTimeZone))
             .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(x => 0)) // old standard type
+            .ForMember(dest => dest.ProjectTypeName, opt => opt.MapFrom(x => "Standard")) // old standard type
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(x => DateTime.MinValue)) // Obsolete
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(x => DateTime.MaxValue)) // Obsolete
+            .ForMember(dest => dest.ProjectUid, opt => opt.MapFrom(src => src.ProjectUID))
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.Boundary))
+            .ForMember(dest => dest.LegacyProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
+            .ForMember(dest => dest.CustomerUid, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.LegacyCustomerId, opt => opt.MapFrom(src => "0")) // Obsolete
             .ForMember(dest => dest.Code, opt => opt.Ignore())
             .ForMember(dest => dest.Message, opt => opt.Ignore());
           

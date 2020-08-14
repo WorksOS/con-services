@@ -31,5 +31,10 @@ namespace VSS.TRex.SubGridTrees.Types
       CellY = cellY;
       Cell = cell;
     }
+
+    /// <summary>
+    /// Calculate size of this structure. Assume the ISubGrid reference si the size of a long (8 bytes)
+    /// </summary>
+    public static int SizeOf() => 2 * sizeof(byte) + sizeof(long);
   }
 }

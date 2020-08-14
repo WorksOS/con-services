@@ -235,7 +235,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Writes the importedFile to S3
     ///   if file exists, it will be overwritten
-    ///   returns FileDescriptor for backwards compatibility
+    ///   returns FileDescriptor for backwards compatability
     /// </summary>
     /// <returns></returns>
     public static FileDescriptor WriteFileToS3Repository(

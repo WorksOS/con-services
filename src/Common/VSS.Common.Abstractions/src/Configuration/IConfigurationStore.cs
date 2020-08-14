@@ -15,6 +15,8 @@ namespace VSS.Common.Abstractions.Configuration
     uint GetValueUint(string v, uint defaultValue);
     long GetValueLong(string v);
     long GetValueLong(string v, long defaultValue);
+    ulong GetValueUlong(string v);
+    ulong GetValueUlong(string v, ulong defaultValue);
     double GetValueDouble(string v);
     double GetValueDouble(string v, double defaultValue);
     TimeSpan? GetValueTimeSpan(string v);

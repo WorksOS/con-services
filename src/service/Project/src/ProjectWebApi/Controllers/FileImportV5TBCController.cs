@@ -41,9 +41,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       : base(config, transferProxyFactory, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
-    // PUT: api/v5/projects/{id}/importedfiles
     /// <summary>
-    /// TBC Upsert imported file
+    /// Called by TBC only.
+    /// Upsert imported file
     ///   1) TBC will already have uploaded to TCC, so read it from there
     ///   2) creates/updates database 
     ///   3) copies file in TCC from VSS area to project 
@@ -59,6 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates and Imported design file for a project</remarks>
     /// <response code="200">Ok</response>
     [Route("api/v5/projects/{projectId}/importedfiles")]
+    [Route("api/v2/projects/{projectId}/importedfiles")] // TBC has route hardcoded
     [HttpPut]
     public async Task<ReturnLongV5Result> UpsertImportedFileV5TBC(
       [FromRoute] long projectId,
@@ -207,12 +208,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
 
-    // GET: api/v5/projects/{projectId}/importedfiles/{id?}
     /// <summary>
-    /// TBC Get imported files.
+    /// Called by TBC only.
+    /// Get imported files.
     /// This is the same as V6 but TBC URL cannot be changed hence the V5 version.
     /// </summary>
     [Route("api/v5/projects/{projectId}/importedfiles/{id?}")]
+    [Route("api/v2/projects/{projectId}/importedfiles/{id?}")] // TBC has route hardcoded
     [HttpGet]
     public async Task<ImmutableList<DesignDetailV5Result>> GetImportedFilesV5TBC([FromRoute] long projectId, [FromRoute] long? id = null)
     {
