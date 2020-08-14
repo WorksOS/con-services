@@ -294,6 +294,16 @@ namespace VSS.ConfigurationStore
       return GetValue(key, defaultValue);
     }
 
+    public ulong GetValueUlong(string key)
+    {
+      return GetValueUlong(key, ulong.MinValue);
+    }
+
+    public ulong GetValueUlong(string key, ulong defaultValue)
+    {
+      return GetValue(key, defaultValue);
+    }
+
     public double GetValueDouble(string key)
     {
       return GetValueDouble(key, double.MinValue);

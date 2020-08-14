@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Newtonsoft.Json.Serialization;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -50,13 +52,33 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
+    /// Called by TBC only.
+    ///   Signature must remain the same
+    /// </summary>
+    [Route("api/v1/Customers/me")]
+    [HttpGet]
+    public async Task<CustomerDataResult> GetCustomersForMe()
+    {
+      Logger.LogInformation($"{nameof(GetCustomersForMe)}");
+
+      var customers = await _cwsAccountClient.GetMyAccounts(new Guid(UserId), customHeaders);
+
+      var result = new CustomerDataResult {customer = new List<CustomerData>()};
+      foreach (var customer in customers.Accounts)
+        result.customer.Add(new CustomerData { uid = customer.Id, name = customer.Name, type = "Customer" }); 
+
+      Logger.LogInformation($"{nameof(GetCustomersForMe)}: customers {JsonConvert.SerializeObject(result)}");
+      return result;
+    }
+
+    /// <summary>
     /// Gets the total devices licensed for this customer.
     /// Also triggers a lazy load of devices from cws, so that shortRaptorAssetId is generated.
     /// </summary>
     [HttpGet("api/v1/customer/license/{customerUid}")]
     public async Task<CustomerV1DeviceLicenseResult> GetCustomerDeviceLicense(string customerUid)
     {
-      Logger.LogInformation(nameof(GetCustomerDeviceLicense));
+      Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)}");
       var deviceLicenses = await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), customHeaders);
 
       return new CustomerV1DeviceLicenseResult(deviceLicenses.Total);

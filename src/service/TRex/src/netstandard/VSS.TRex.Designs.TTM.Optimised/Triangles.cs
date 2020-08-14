@@ -10,6 +10,8 @@
     /// </summary>
     public Triangle[] Items;
 
+    public int SizeOf() => Items.Length * Triangle.SizeOf();
+
     public Triangles()
     {
     }

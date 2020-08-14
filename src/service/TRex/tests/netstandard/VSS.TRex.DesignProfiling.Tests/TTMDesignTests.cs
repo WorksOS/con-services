@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using FluentAssertions;
 using VSS.TRex.Designs;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -147,8 +148,16 @@ namespace VSS.TRex.DesignProfiling.Tests
     {
       LoadTheDesign();
 
-      Assert.True(design.Data.Triangles.Items.Length > 0, "No triangles present in loaded TTM file.");
-      Assert.True(design.Data.Vertices.Items.Length > 0, "No vertices present in loaded TTM file.");
+      design.SubGridOverlayIndex().Should().NotBeNull();
+
+      design.Data.Triangles.Items.Length.Should().Be(67251);
+      design.Data.Vertices.Items.Length.Should().Be(34405);
+      design.Data.StartPoints.Items.Length.Should().Be(16);
+      design.Data.Edges.Items.Length.Should().Be(1525);
+
+      design.SubGridOverlayIndex().SizeOf().Should().Be(12724);
+
+      design.SizeInCache().Should().Be(2214624);
     }
 
     [Fact]
@@ -156,7 +165,16 @@ namespace VSS.TRex.DesignProfiling.Tests
     {
       LoadTheDesign();
 
-      Assert.NotNull(design.SubGridOverlayIndex());
+      design.SubGridOverlayIndex().Should().NotBeNull();
+
+      design.Data.Triangles.Items.Length.Should().Be(67251);
+      design.Data.Vertices.Items.Length.Should().Be(34405);
+      design.Data.StartPoints.Items.Length.Should().Be(16);
+      design.Data.Edges.Items.Length.Should().Be(1525);
+
+      design.SubGridOverlayIndex().SizeOf().Should().Be(12724);
+
+      design.SizeInCache().Should().Be(2214624);
     }
 
     private void LoadTheGiantDesign()
