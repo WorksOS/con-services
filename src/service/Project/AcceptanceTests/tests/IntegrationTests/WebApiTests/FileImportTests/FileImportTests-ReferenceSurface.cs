@@ -12,14 +12,9 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests.FileImportTests
 {
-  public class FileImportTests_ReferenceSurface : WebApiTestsBase, IClassFixture<ExecutorTestFixture>
+  [Collection("Service collection")]
+  public class FileImportTests_ReferenceSurface : WebApiTestsBase
   {
-    private readonly ExecutorTestFixture _fixture;
-    public FileImportTests_ReferenceSurface(ExecutorTestFixture fixture)
-    {
-      _fixture = fixture;
-    }
-
     [Theory]
     [InlineData("api/v6/importedfile", "api/v6/importedfile/referencesurface")]
     [InlineData("api/v6/importedfile/direct", "api/v6/importedfile/referencesurface")]
@@ -30,7 +25,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFileParent = new ImportFile(uriRoot1);
@@ -65,7 +60,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFileParent = new ImportFile(uriRoot1);
@@ -105,7 +100,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFileParent = new ImportFile(uriRoot1);
@@ -155,7 +150,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
@@ -184,7 +179,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFileParent = new ImportFile(uriRoot1);
@@ -223,7 +218,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFileParent = new ImportFile(uriRoot1);

@@ -96,7 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
             Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
+            cwsProjectClient: CwsProjectClient, 
             cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(data)
       );
@@ -117,7 +117,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<ProjectChangedExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
             Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, cwsDesignClient: CwsDesignClient,
+            cwsProjectClient: CwsProjectClient, 
             cwsProfileSettingsClient: CwsProfileSettingsClient, notificationHubClient: NotificationHubClient)
           .ProcessAsync(updateDto)
       );

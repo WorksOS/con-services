@@ -13,14 +13,9 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectSettingsAccTests : WebApiTestsBase, IClassFixture<ExecutorTestFixture>
+  [Collection("Service collection")]
+  public class ProjectSettingsAccTests : WebApiTestsBase
   {
-    private readonly ExecutorTestFixture _fixture;
-    public ProjectSettingsAccTests(ExecutorTestFixture fixture)
-    {
-      _fixture = fixture;
-    }
-
     [Fact]
     public async Task AddProjectSettingsGoodPath()
     {
@@ -28,7 +23,7 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testText, "Add project settings for a standard project");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var response = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var response = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(response.Result.Id);
 
       // Now create the settings
@@ -108,7 +103,7 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testText, "Add project settings for a project monitoring project");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       // Now create the settings
@@ -140,7 +135,7 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testText, "Add project settings for a project monitoring project");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       // Now create the settings

@@ -16,6 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
+using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -148,7 +149,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             RequestExecutorContainerFactory
               .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
-                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+                productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
@@ -156,7 +157,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ) as ImportedFileDescriptorSingleResult;
 
           Logger.LogInformation(
-            $"{nameof(UpsertImportedFileV5TBC)}: Create completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+            $"{nameof(UpsertImportedFileV5TBC)}: Create completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
         }
         else
         {
@@ -178,7 +179,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             RequestExecutorContainerFactory
               .Build<UpdateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
-                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+                productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
@@ -193,6 +194,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
         Logger.LogInformation(
           $"{nameof(UpsertImportedFileV5TBC)}: Completed successfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
+
+        await NotificationHubClient.Notify(new ProjectChangedNotification(new Guid(projectUid)));
 
         return response;
       }

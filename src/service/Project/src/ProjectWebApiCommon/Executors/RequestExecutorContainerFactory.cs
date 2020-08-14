@@ -27,13 +27,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     public static TExecutor Build<TExecutor>(
       ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
       string customerUid = null, string userId = null, string userEmailAddress = null, IHeaderDictionary headers = null,
-      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null,
-      IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
+      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxyFactory persistantTransferProxyFactory = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
       ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
-      ICwsDesignClient cwsDesignClient = null, ICwsProfileSettingsClient cwsProfileSettingsClient = null,
+      ICwsProfileSettingsClient cwsProfileSettingsClient = null,
       IWebRequest gracefulClient = null, INotificationHubClient notificationHubClient = null
       )
       where TExecutor : RequestExecutorContainer, new()
@@ -48,10 +47,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       executor.Initialise(
         log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers,
-        productivity3dV1ProxyCoord, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
+        productivity3dV1ProxyCoord, productivity3dV2ProxyCompaction,
         persistantTransferProxyFactory, filterServiceProxy, tRexImportFileProxy, projectRepo,
         httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient, cwsProjectClient, cwsDeviceClient,
-        cwsDesignClient, cwsProfileSettingsClient, gracefulClient, notificationHubClient
+        cwsProfileSettingsClient, gracefulClient, notificationHubClient
         );
 
       return executor;

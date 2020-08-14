@@ -141,7 +141,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             CustomerUid, UserId, null, customHeaders,
             Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
             cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient,
-            cwsDesignClient: CwsDesignClient,
             cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(projectValidation)) as ProjectV6DescriptorsSingleResult
         );

@@ -16,14 +16,9 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class FileActivationTests : WebApiTestsBase, IClassFixture<ExecutorTestFixture> 
+  [Collection("Service collection")]
+  public class FileActivationTests : WebApiTestsBase
   {
-    private readonly ExecutorTestFixture _fixture;
-    public FileActivationTests(ExecutorTestFixture fixture)
-    {
-      _fixture = fixture;
-    }
-
     [Fact]
     public async Task GetImportedFiles_should_return_activation_state()
     {
@@ -32,7 +27,7 @@ namespace IntegrationTests.WebApiTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile();
@@ -81,7 +76,7 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testText, "Set ImportFile::IsActivated with no loaded project files");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       await DoActivationRequest(customerUid, ts.ProjectUid.ToString(), "id", false, HttpStatusCode.OK, 400, "Project contains no imported files.");
@@ -95,7 +90,7 @@ namespace IntegrationTests.WebApiTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -115,7 +110,7 @@ namespace IntegrationTests.WebApiTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment2);
@@ -133,7 +128,7 @@ namespace IntegrationTests.WebApiTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment2);
@@ -164,7 +159,7 @@ namespace IntegrationTests.WebApiTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFileParent = new ImportFile(uriRoot1);
@@ -204,7 +199,7 @@ namespace IntegrationTests.WebApiTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFileParent = new ImportFile(uriRoot1);

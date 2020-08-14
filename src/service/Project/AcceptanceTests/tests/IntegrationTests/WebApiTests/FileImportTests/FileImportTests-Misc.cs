@@ -9,14 +9,9 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests.FileImportTests
 {
-  public class FileImportTests : WebApiTestsBase, IClassFixture<ExecutorTestFixture>
+  [Collection("Service collection")]
+  public class FileImportTests : WebApiTestsBase
   {
-    private readonly ExecutorTestFixture _fixture;
-    public FileImportTests(ExecutorTestFixture fixture)
-    {
-      _fixture = fixture;
-    }
-
     [Theory]
     [InlineData("api/v6/importedfile")]
     [InlineData("api/v6/importedfile/direct")]
@@ -26,7 +21,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       Msg.Title(testText, "Create standard project and customer then get imported files - There should be none.");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
@@ -46,7 +41,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
@@ -83,7 +78,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var createProjectResponse = _fixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
+      var createProjectResponse = ExecutorTestFixture.CreateCustomerProject(customerUid.ToString(), testText, Boundaries.Boundary1);
       ts.ProjectUid = new Guid(createProjectResponse.Result.Id);
 
       var importFile = new ImportFile(uriRoot);
