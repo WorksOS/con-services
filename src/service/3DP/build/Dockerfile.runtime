@@ -6,10 +6,10 @@ FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.
 ARG SOURCE_PATH=/build/artifacts/3DP
 ARG DEST_PATH=.
 
-#This is required for the webpi to run properly
-RUN apt-get update && apt-get install -y \
-    libunwind8 \
-    && rm -rf /var/lib/apt/lists/*
+# Required for GDI drawing during tile generation
+RUN apt-get update && apt-get install --assume-yes \
+    libc6-dev \
+    wget
 
 RUN wget https://download.mono-project.com/repo/ubuntu/pool/main/libg/libgdiplus/libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb && \
     apt-get install -y ./libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb
