@@ -197,3 +197,15 @@ jobs:
         servicePath: '$(rootServiceFolder)/Entitlements'
         solution: 'VSS.Productivity3D.Entitlements.sln'
         testFolder: 'test'
+
+  - job: BuildMegalodonService
+    displayName: 'Build Megalodon service'
+    timeoutInMinutes: 20
+    steps:
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Megalodon'
+        solution: 'Megalodon.sln'
+        testFolder: 'test'
