@@ -42,15 +42,15 @@ namespace TagFiles.Parser
     public bool ForceBOG = false;
     public double SeedLat = 0;
     public double SeedLon = 0;
-    public string ForceSerial = "";
+    public string ForceSerial = String.Empty;
 
     /// <summary>
     /// Constructor
     /// </summary>
     public AsciiParser()
     {
-      TagValue = "";
-      TagName = "";
+      TagValue = String.Empty;
+      TagName = String.Empty;
       TagContent = new TagContentList();
     }
 
@@ -179,7 +179,7 @@ namespace TagFiles.Parser
       if (eRecord.HasDesign)
       {
         TagContent.AddEntry(new TagData_Unicode() { DictID = (short)DictionaryItem.Design, DataType = TAGDataType.tUnicodeString, Data = eRecord.Design });
-        eRecord.Design = "";
+        eRecord.Design = String.Empty;
       }
       if (eRecord.HasLAT)
       {
@@ -324,27 +324,27 @@ namespace TagFiles.Parser
         if (eRecord.HasRadioSerial)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.RadioSerial, DataType = TAGDataType.tANSIString, Data = eRecord.RadioSerial });
-          eRecord.RadioSerial = "";
+          eRecord.RadioSerial = String.Empty;
         }
         if (eRecord.HasRadioType)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.RadioType, DataType = TAGDataType.tANSIString, Data = eRecord.RadioType });
-          eRecord.RadioType = "";
+          eRecord.RadioType = String.Empty;
         }
         if (eRecord.HasSerial)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.FileSerial, DataType = TAGDataType.tANSIString, Data = eRecord.Serial });
-          eRecord.Serial = "";
+          eRecord.Serial = String.Empty;
         }
         if (eRecord.HasMID)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.MachineID, DataType = TAGDataType.tANSIString, Data = eRecord.MID });
-          eRecord.MID = "";
+          eRecord.MID = String.Empty;
         }
         if (eRecord.HasAppVersion)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.ApplicationVersion, DataType = TAGDataType.tANSIString, Data = eRecord.AppVersion });
-          eRecord.AppVersion = "";
+          eRecord.AppVersion = String.Empty;
         }
         if (eRecord.HasMTP)
         {
@@ -661,8 +661,8 @@ namespace TagFiles.Parser
     public void Reset()
     {
       EpochRec = new EpochRecord();
-      TagName = "";
-      TagValue = "";
+      TagName = String.Empty;
+      TagValue = String.Empty;
       HaveName = false;
       HaveValue = false;
       HeaderRecordCount = 0;
@@ -731,12 +731,12 @@ namespace TagFiles.Parser
             case TagConstants.NAK:
               continue;
             case TagConstants.RS:
-              if (HaveName && TagValue != "")
+              if (HaveName && TagValue != String.Empty)
                 ProcessField();
               HaveName = false;
               HaveValue = false;
-              TagValue = "";
-              TagName = "";
+              TagValue = String.Empty;
+              TagName = String.Empty;
               continue;
             default:
               if (!HaveName)
@@ -750,7 +750,7 @@ namespace TagFiles.Parser
                 if (!HaveValue)
                   HaveValue = true;
                 if (HaveName && i == bArray.Length - 1) // endoftext
-                  if (HaveName && TagValue != "")
+                  if (HaveName && TagValue != String.Empty)
                   {
                     var res = ProcessField();
                     if (res == false)

@@ -19,6 +19,7 @@
  TagfileTest.cs
    TestTagFileCreation for testing new tag
  *****************************************/
+using System;
 using TagFiles.Common;
 
 /// <summary>
@@ -93,8 +94,8 @@ namespace TagFiles.Parser
     public ushort BOG { get; set; } = ushort.MaxValue;
     public bool HasBOG => BOG != ushort.MaxValue;
 
-    public string Design { get; set; } = "";
-    public bool HasDesign => Design != "";
+    public string Design { get; set; } = String.Empty;
+    public bool HasDesign => Design != String.Empty;
 
     /// Latitude
     public double LAT { get; set; } = double.MaxValue;
@@ -120,8 +121,8 @@ namespace TagFiles.Parser
     public double HDG { get; set; } = double.MaxValue;
     public bool HasHDG => HDG != double.MaxValue;
 
-    public string RadioType { get; set; } = "";
-    public bool HasRadioType => RadioType != "";
+    public string RadioType { get; set; } = String.Empty;
+    public bool HasRadioType => RadioType != String.Empty;
 
     /// Coordinate System
     public ushort CoordSys { get; set; } = ushort.MaxValue;
@@ -136,41 +137,41 @@ namespace TagFiles.Parser
     public ushort MappingMode { get; set; } = ushort.MaxValue;
     public bool HasMappingMode => MappingMode != ushort.MaxValue;
 
-    public string AppVersion { get; set; } = "";
-    public bool HasAppVersion => AppVersion != "";
+    public string AppVersion { get; set; } = String.Empty;
+    public bool HasAppVersion => AppVersion != String.Empty;
 
 
     /// Machine ID
-    public string LastMID { get; set; } = "";
-    private string _MID = "";
+    public string LastMID { get; set; } = String.Empty;
+    private string _MID = String.Empty;
     public string MID
     {
       get => _MID;
       set
       {
         _MID = value;
-        if (_MID != "")
+        if (_MID != String.Empty)
           LastMID = value; // keep last known value
       }
     }
-    public bool HasMID => _MID != "";
+    public bool HasMID => _MID != String.Empty;
 
-    public string LastSerial { get; set; } = "";
-    private string _Serial = "";
+    public string LastSerial { get; set; } = String.Empty;
+    private string _Serial = String.Empty;
     public string Serial
     {
       get => _Serial;
       set
       {
         _Serial = value;
-        if (_Serial != "")
+        if (_Serial != String.Empty)
           LastSerial = value; // keep last known value
       }
     }
-    public bool HasSerial => _Serial != "";
+    public bool HasSerial => _Serial != String.Empty;
 
-    public string RadioSerial { get; set; } = "";
-    public bool HasRadioSerial => RadioSerial != "";
+    public string RadioSerial { get; set; } = String.Empty;
+    public bool HasRadioSerial => RadioSerial != String.Empty;
 
     public uint CCV { get; set; } = uint.MaxValue;
     public bool HasCCV => CCV != uint.MaxValue;
@@ -240,16 +241,16 @@ namespace TagFiles.Parser
       LAT = double.MaxValue;
       LON = double.MaxValue;
       HGT = double.MaxValue;
-      MID = "";
+      MID = String.Empty;
       MSD = double.MaxValue;
       MTP = byte.MaxValue;
       HDG = double.MaxValue;
-      Serial = "";
+      Serial = String.Empty;
       UTM = byte.MaxValue;
-      RadioSerial = "";
-      RadioType = "";
+      RadioSerial = String.Empty;
+      RadioType = String.Empty;
       MappingMode = ushort.MaxValue;
-      AppVersion = "";
+      AppVersion = String.Empty;
       ValidPosition = ushort.MaxValue;
       CCV = uint.MaxValue;
       MDP = uint.MaxValue;
@@ -263,8 +264,8 @@ namespace TagFiles.Parser
       TargetPasses = uint.MaxValue;
       TempMin = uint.MaxValue;
       TempMax = uint.MaxValue;
-      LastMID = "";
-      LastSerial = "";
+      LastMID = String.Empty;
+      LastSerial = String.Empty;
     }
 
     public bool IsFullPositionEpoch()
@@ -357,15 +358,15 @@ namespace TagFiles.Parser
         UTM = eRec.UTM;
       if (eRec.MTP != byte.MaxValue)
         MTP = eRec.MTP;
-      if (eRec.MID != "")
+      if (eRec.MID != String.Empty)
         MID = eRec.MID;
-      if (eRec.Serial != "")
+      if (eRec.Serial != String.Empty)
         Serial = eRec.Serial;
-      if (eRec.Design != "")
+      if (eRec.Design != String.Empty)
         Design = eRec.Design;
-      if (eRec.RadioSerial != "")
+      if (eRec.RadioSerial != String.Empty)
         RadioSerial = eRec.RadioSerial;
-      if (eRec.RadioType != "")
+      if (eRec.RadioType != String.Empty)
         RadioType = eRec.RadioType;
       if (eRec.CCV != uint.MaxValue)
         CCV = eRec.CCV;

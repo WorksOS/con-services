@@ -41,7 +41,7 @@ namespace UnitTests
     public void ParseInvalidEmptyText()
     {
       SetupParser();
-      var res = tagFile.ParseText("");
+      var res = tagFile.ParseText(String.Empty);
       res.Should().BeFalse("Result should be false. Empty string");
       res = tagFile.ParseText(TagConstants.CHAR_STX + TagConstants.BLADE_ON_GROUND + "1" + TagConstants.CHAR_ETX);
       res.Should().BeFalse("Result should be false. Missing record seperator ");
