@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Moq;
 using TagFiles;
 using TagFiles.Common;
 using TagFiles.Parser;
@@ -15,8 +16,7 @@ namespace UnitTests
 
     private void SetupParser()
     {
-      var logF = new LoggerFactory();
-      var log = logF.CreateLogger<TestingConfig>();
+      var log = Mock.Of<ILogger<TagFileTests>>();
       tagFile = new TagFile();
       tagFile.SetupLog(log);
     }
@@ -384,7 +384,7 @@ namespace UnitTests
       res.Should().BeTrue("Valid Temp Max.  Result should be true");
     }
 
-    [Fact(Skip = "Developer Only")]
+    [Fact]
     public void TestTagValueStateChanges()
     {
       SetupParser();
