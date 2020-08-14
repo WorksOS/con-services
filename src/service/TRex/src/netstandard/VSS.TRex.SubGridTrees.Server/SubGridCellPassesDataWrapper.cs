@@ -108,6 +108,7 @@ namespace VSS.TRex.SubGridTrees.Server
     /// limit specified in the configuration will be used.
     /// </summary>
     public bool CleaveSegment(ISubGridCellPassesDataSegment cleavingSegment,
+      List<ISubGridCellPassesDataSegment> newSegmentsFromCleaving,
       List<ISubGridSpatialAffinityKey> persistedClovenSegments,
       int subGridSegmentPassCountLimit = 0)
     {
@@ -169,7 +170,7 @@ namespace VSS.TRex.SubGridTrees.Server
       var testTimeRangeEnd = coveredTimeRangeEnd;
       int passesInFirstTimeRange;
       DateTime testTime;
-        
+
       var desiredCallPassCount = totalPassCount / numRequiredClovenSegments;
       do
       {
@@ -224,6 +225,8 @@ namespace VSS.TRex.SubGridTrees.Server
 
       newSegment.Dirty = true;
       newSegment.SegmentInfo.ExistsInPersistentStore = false;
+
+      newSegmentsFromCleaving.Add(newSegment);
 
 #if DEBUG
       // Check everything looks kosher by comparing the time range of the cells

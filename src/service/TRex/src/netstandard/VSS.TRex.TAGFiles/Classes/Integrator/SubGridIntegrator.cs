@@ -91,10 +91,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         return;
       }
 
-      // As the integration is into the intermediary grid, these segments do not
-      // need to be involved with the cache, so instruct the iterator to not 'touch' them
-      segmentIterator.MarkReturnedSegmentsAsTouched = false;
-
       targetSubGrid.Integrate(sourceSubGrid, segmentIterator, true);
     }
 
@@ -106,12 +102,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Note the fact that this sub grid will be changed and become dirty as a result
       // of the cell pass integration
       targetSubGrid.SetDirty();
-
-      // As the integration is into the live database these segments do
-      // need to be involved with the cache, so instruct the iterator to
-      // 'touch' them
-      segmentIterator.MarkReturnedSegmentsAsTouched = true;
-
       targetSubGrid.Integrate(sourceSubGrid, segmentIterator, false);
 
       subGridChangeNotifier?.Invoke(targetSubGrid.OriginX, targetSubGrid.OriginY);
@@ -198,7 +188,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // into the sub grids in this sub grid tree;
 
       var iterator = new SubGridTreeIterator(_storageProxySubGrids, false) {Grid = _source};
-
       var segmentIterator = new SubGridSegmentIterator(null, _storageProxySubGridSegments) {IterationDirection = IterationDirection.Forwards};
 
       while (iterator.MoveToNextSubGrid())
@@ -214,6 +203,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             return false;
         }
         */
+
         IntegrateSubGrid(sourceSubGrid, integrationMode, subGridChangeNotifier, segmentIterator);
 
         // Release the resources used by SourceSubGrid as this is the last point it is needed

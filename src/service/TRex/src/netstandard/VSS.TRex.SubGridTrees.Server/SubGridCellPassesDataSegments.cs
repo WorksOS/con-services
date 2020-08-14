@@ -10,7 +10,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegments : ISubGridCellPassesDataSegments
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegments>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegments>();
 
     private static readonly bool _performSegmentAdditionIntegrityChecks = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS", Consts.DEBUG_PERFORMSEGMENT_ADDITIONALINTEGRITYCHECKS);
 
@@ -62,7 +62,7 @@ namespace VSS.TRex.SubGridTrees.Server
     private void DumpSegmentsToLog()
     {
       for (int i = 0; i < Count; i++)
-        Log.LogInformation($"Seg #{i}: {Items[i]}");
+        _log.LogInformation($"Seg #{i}: {Items[i]}");
     }
 
     public ISubGridCellPassesDataSegment AddNewSegment(IServerLeafSubGrid subGrid,
@@ -81,11 +81,6 @@ namespace VSS.TRex.SubGridTrees.Server
       };
       segmentInfo.Segment = Result;
 
-      //  SubGrid.CachedMemorySizeOutOfDate = True;
-
-      //###RPW### this insertion process could be modified to use a better than linear lookup to find the
-      // appropriate location to insert the segment. 
-
       for (int I = 0; I < Count; I++)
       {
         if (segmentInfo.EndTime <= Items[I].SegmentInfo.StartTime)
@@ -97,7 +92,7 @@ namespace VSS.TRex.SubGridTrees.Server
             for (int J = 0; J < Count - 1; J++)
               if (Items[J].SegmentInfo.StartTime >= Items[J + 1].SegmentInfo.StartTime)
               {
-                Log.LogError($"Segment passes list out of order {Items[J].SegmentInfo.StartTime} versus {Items[J + 1].SegmentInfo.StartTime}. Segment count = {Count}");
+                _log.LogError($"Segment passes list out of order {Items[J].SegmentInfo.StartTime} versus {Items[J + 1].SegmentInfo.StartTime}. Segment count = {Count}");
                 DumpSegmentsToLog();
                 throw new TRexSubGridProcessingException($"Segment passes list out of order {Items[J].SegmentInfo.StartTime} versus {Items[J + 1].SegmentInfo.StartTime}. Segment count = {Count}");
               }
