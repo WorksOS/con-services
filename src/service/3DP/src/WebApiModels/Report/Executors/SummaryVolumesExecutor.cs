@@ -38,8 +38,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         var summaryVolumesRequest = new SummaryVolumesDataRequest(
             request.ProjectUid,
-            request.BaseFilter,
-            request.TopFilter,
+            baseFilter,
+            topFilter,
             request.BaseDesignDescriptor.FileUid,
             request.BaseDesignDescriptor.Offset,
             request.TopDesignDescriptor.FileUid,
