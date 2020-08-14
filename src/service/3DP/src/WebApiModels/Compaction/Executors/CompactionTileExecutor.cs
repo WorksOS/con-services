@@ -33,9 +33,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
         var request = CastRequestObjectTo<TileRequest>(item);
 
+        var filter1 = request.Filter1;
+        var filter2 = request.Filter2;
         if (request.ComputeVolumesType == VolumesType.Between2Filters && !request.ExplicitFilters)
         {
-          FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
+          var adjusted = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
+          filter1 = adjusted.Item1;
+          filter2 = adjusted.Item2;
         }
 
         var trexRequest = new TRexTileRequest(
@@ -43,8 +47,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             request.Mode,
             request.Palettes,
             request.DesignDescriptor,
-            request.Filter1,
-            request.Filter2,
+            filter1,
+            filter2,
             request.BoundBoxLatLon,
             request.BoundBoxGrid,
             request.Width,

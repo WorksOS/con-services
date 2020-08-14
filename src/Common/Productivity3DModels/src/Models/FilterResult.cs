@@ -492,6 +492,52 @@ namespace VSS.Productivity3D.Models.Models
     }
 
     /// <summary>
+    /// Copy constructor
+    /// </summary>
+    public FilterResult (FilterResult filter)
+    {
+      Id = filter.Id;
+      Uid = filter.Uid;
+      Name = filter.Name;
+      Description = filter.Description;
+      StartUtc = filter.StartUtc;
+      EndUtc = filter.EndUtc;
+      OnMachineDesignId = filter.OnMachineDesignId;
+      AssetIDs = filter.AssetIDs;
+      VibeStateOn = filter.VibeStateOn;
+      CompactorDataOnly = filter.CompactorDataOnly;
+      ElevationType = filter.ElevationType;
+      PolygonLL = filter.PolygonLL;
+      PolygonGrid = filter.PolygonGrid;
+      ForwardDirection = filter.ForwardDirection;
+      AlignmentFile = filter.AlignmentFile;
+      StartStation = filter.StartStation;
+      EndStation = filter.EndStation;
+      LeftOffset = filter.LeftOffset;
+      RightOffset = filter.RightOffset;
+      OnMachineDesignName = filter.OnMachineDesignName;
+      LayerType = filter.LayerType;
+      LayerDesignOrAlignmentFile = filter.LayerDesignOrAlignmentFile;
+      BenchElevation = filter.BenchElevation;
+      LayerNumber = filter.LayerNumber;
+      LayerThickness = filter.LayerThickness;
+      ContributingMachines = filter.ContributingMachines;
+      SurveyedSurfaceExclusionList = filter.SurveyedSurfaceExclusionList;
+      ReturnEarliest = filter.ReturnEarliest;
+      GpsAccuracy = filter.GpsAccuracy;
+      GpsAccuracyIsInclusive = filter.GpsAccuracyIsInclusive;
+      BladeOnGround = filter.BladeOnGround;
+      TrackMapping = filter.TrackMapping;
+      WheelTracking = filter.WheelTracking;
+      DesignFile = filter.DesignFile;
+      AutomaticsType = filter.AutomaticsType;
+      TemperatureRangeMin = filter.TemperatureRangeMin;
+      TemperatureRangeMax = filter.TemperatureRangeMax;
+      PassCountRangeMin = filter.PassCountRangeMin;
+      PassCountRangeMax = filter.PassCountRangeMax;
+    }
+
+    /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
     public FilterResult

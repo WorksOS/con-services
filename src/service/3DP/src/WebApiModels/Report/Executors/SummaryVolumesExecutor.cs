@@ -25,13 +25,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var request = CastRequestObjectTo<SummaryVolumesRequest>(item);
 
-        if (request.VolumeCalcType == VolumesType.Between2Filters && !request.ExplicitFilters)
-        {
-          FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
-        }
-
         var baseFilter = request.BaseFilter;
         var topFilter = request.TopFilter;
+        if (request.VolumeCalcType == VolumesType.Between2Filters && !request.ExplicitFilters)
+        {
+          var adjusted = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
+          baseFilter = adjusted.Item1;
+          topFilter = adjusted.Item2;
+        }
+
         FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
 
         var summaryVolumesRequest = new SummaryVolumesDataRequest(

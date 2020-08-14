@@ -8,7 +8,7 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
   public static class FilterUtilities
   {
 
-    public static void AdjustFilterToFilter(FilterResult baseFilter, FilterResult topFilter)
+    public static Tuple<FilterResult, FilterResult> AdjustFilterToFilter(FilterResult baseFilter, FilterResult topFilter)
     {
       //Special case for Raptor filter to filter comparisons.
       //If base filter is earliest and top filter is latest with a DateTime filter then replace
@@ -18,14 +18,20 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
       if (baseFilter.HasTimeComponent() && (baseFilter.ReturnEarliest ?? false) &&
           topFilter.HasTimeComponent() && !(topFilter.ReturnEarliest ?? false))
       {
-        topFilter.ElevationType = null;
+        //Note: filters are cached so we need to make a copy to adjust.
+        var newTopFilter = new FilterResult(topFilter);
+        newTopFilter.ElevationType = null;
 
         // Adjust the base filter accordingly
-        baseFilter.EndUtc = baseFilter.StartUtc;
-        baseFilter.StartUtc = Consts.MIN_DATETIME_AS_UTC;
-        baseFilter.ReturnEarliest = false;
-        baseFilter.ElevationType = null;
+        var newBaseFilter = new FilterResult(baseFilter);
+        newBaseFilter.EndUtc = baseFilter.StartUtc;
+        newBaseFilter.StartUtc = Consts.MIN_DATETIME_AS_UTC;
+        newBaseFilter.ReturnEarliest = false;
+        newBaseFilter.ElevationType = null;
+
+        return new Tuple<FilterResult, FilterResult>(newBaseFilter, newTopFilter);
       }
+      return new Tuple<FilterResult, FilterResult>(baseFilter, topFilter);
     }
 
     /// <summary>
