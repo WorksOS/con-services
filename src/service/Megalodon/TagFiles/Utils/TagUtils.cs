@@ -40,9 +40,9 @@ namespace TagFiles.Utils
 
     public static string MakeTagfileName(string deviceID, string machineName)
     {
-      if (deviceID == "")
+      if (deviceID == String.Empty)
         deviceID = "unknowndeviceid";
-      if (machineName == "")
+      if (machineName == String.Empty)
         machineName = "unknownname";
       return $"{deviceID}--{machineName}--{DateTime.UtcNow.ToString("yyMMddHHmmss")}.tag"; 
     }

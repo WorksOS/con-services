@@ -19,12 +19,12 @@
  TagfileTest.cs
    TestTagFileCreation for testing new tag
  *****************************************/
+using System;
 using TagFiles.Common;
 
 /// <summary>
 /// Acts like a state machine for each epoch
 /// </summary>
-/// 
 namespace TagFiles.Parser
 {
 
@@ -32,52 +32,7 @@ namespace TagFiles.Parser
   {
 
     public bool HasHeader = false;
-    public bool HasTime = false;
-    public bool HasDeltaTime = false;
-    public bool HasPrevTime = false;
-    public bool HasWeek = false;
-    public bool HasCoordSys = false;
-    public bool HasLEB = false;
-    public bool HasLNB = false;
-    public bool HasLHB = false;
-    public bool HasREB = false;
-    public bool HasRNB = false;
-    public bool HasRHB = false;
-    public bool HasGPM = false;
-    public bool HasBOG = false;
-    public bool HasDES = false;
-    public bool HasLAT = false;
-    public bool HasLON = false;
-    public bool HasHGT = false;
-    public bool HasMID = false;
-    public bool HasMSD = false;
-    public bool HasMTP = false;
-    public bool HasHDG = false;
-    public bool HasSER = false;
-    public bool HasUTM = false;
-    public bool HasRadioSerial = false;
-    public bool HasRadioType = false;
-    public bool HasMappingMode = false;
-    public bool HasAppVersion = false;
-    public bool HasValidPosition = false;
-    public bool HasCST = false;
-    public bool HasCCV = false;
-    public bool HasTargetCCV = false;
-    public bool HasMDP = false;
-    public bool HasTargetMDP = false;
-    public bool HasFlags = false;
-    public bool HasTemperature = false;
-    public bool HasDirection = false;
-    public bool HasTargetPasses = false;
-    public bool HasTargetThickness = false;
-    public bool HasTempMin = false;
-    public bool HasTempMax = false;
 
-    // Fields
-
-    /// <summary>
-    /// Time
-    /// </summary>
     private uint _Time = uint.MaxValue;
     public uint Time
     {
@@ -85,571 +40,184 @@ namespace TagFiles.Parser
       set
       {
         _Time = value;
-
         // workout time delta
         if (HasPrevTime)
         {
-          DeltaTime = value - _PrevTime;
+          DeltaTime = value - PrevTime;
           if (DeltaTime < 0)
             DeltaTime = 0;
         }
-
         PrevTime = value;
-        HasTime = (value != uint.MaxValue);
       }
     }
 
-    /// <summary>
-    /// Time delta
-    /// </summary>
-    private uint _DeltaTime = uint.MaxValue;
-    public uint DeltaTime
-    {
-      get => _DeltaTime;
-      set
-      {
-        _DeltaTime = value;
-        HasDeltaTime = (value != uint.MaxValue);
-      }
-    }
+    public bool HasTime => _Time != uint.MaxValue;
 
-    /// <summary>
-    /// PrevTime
-    /// </summary>
-    private uint _PrevTime = uint.MaxValue;
-    public uint PrevTime
-    {
-      get => _PrevTime;
-      set
-      {
-        _PrevTime = value;
-        HasPrevTime = (value != uint.MaxValue);
-      }
-    }
+    public uint DeltaTime { get; set; } = uint.MaxValue;
+    public bool HasDeltaTime => DeltaTime != uint.MaxValue;
 
-    /// <summary>
-    /// Week
-    /// </summary>
-    private uint _Week = uint.MaxValue;
-    public uint Week
-    {
-      get => _Week;
-      set
-      {
-        _Week = value;
-        HasWeek = (value != uint.MaxValue);
-      }
-    }
+    public uint PrevTime { get; set; } = uint.MaxValue;
+    public bool HasPrevTime => PrevTime != uint.MaxValue;
 
-    /// <summary>
-    /// Left Easting Blade
-    /// </summary>
-    private double _LEB = double.MaxValue;
-    public double LEB
-    {
-      get => _LEB;
-      set
-      {
-        _LEB = value;
-        HasLEB = (value != double.MaxValue);
-      }
-    }
+    public uint Week { get; set; } = uint.MaxValue;
+    public bool HasWeek => Week != uint.MaxValue;
 
-    /// <summary>
-    /// Left Northing Blade
-    /// </summary>
-    private double _LNB = double.MaxValue;
-    public double LNB
-    {
-      get => _LNB;
-      set
-      {
-        _LNB = value;
-        HasLNB = (value != double.MaxValue);
-      }
-    }
+    // Left Easting Blade
+    public double LEB { get; set; } = double.MaxValue;
+    public bool HasLEB => LEB != double.MaxValue;
 
-    /// <summary>
-    /// Left Height Blade
-    /// </summary>
-    private double _LHB = double.MaxValue;
-    public double LHB
-    {
-      get => _LHB;
-      set
-      {
-        _LHB = value;
-        HasLHB = (value != double.MaxValue);
-      }
-    }
+    // Left Northing Blade
+    public double LNB { get; set; } = double.MaxValue;
+    public bool HasLNB => LNB != double.MaxValue;
 
-    /// <summary>
-    /// Right Easting Blade
-    /// </summary>
-    private double _REB = double.MaxValue;
-    public double REB
-    {
-      get => _REB;
-      set
-      {
-        _REB = value;
-        HasREB = (value != double.MaxValue);
-      }
-    }
+    // Left Elevation Blade
+    public double LHB { get; set; } = double.MaxValue;
+    public bool HasLHB => LHB != double.MaxValue;
 
-    /// <summary>
-    /// Righ Northing Blade
-    /// </summary>
-    private double _RNB = double.MaxValue;
-    public double RNB
-    {
-      get => _RNB;
-      set
-      {
-        _RNB = value;
-        HasRNB = (value != double.MaxValue);
-      }
-    }
+    // Right Easting Blade
+    public double REB { get; set; } = double.MaxValue;
+    public bool HasREB => REB != double.MaxValue;
 
-    /// <summary>
-    /// Right Height Blade
-    /// </summary>
-    private double _RHB = double.MaxValue;
-    public double RHB
-    {
-      get => _RHB;
-      set
-      {
-        _RHB = value;
-        HasRHB = (value != double.MaxValue);
-      }
-    }
+    // Right Northing Blade
+    public double RNB { get; set; } = double.MaxValue;
+    public bool HasRNB => RNB != double.MaxValue;
 
-    /// <summary>
+    // Right Elevation Blade
+    public double RHB { get; set; } = double.MaxValue;
+    public bool HasRHB => RHB != double.MaxValue;
+
     /// GPS Mode
-    /// </summary>
-    private ushort _GPM = ushort.MaxValue;
-    public ushort GPM
-    {
-      get => _GPM;
-      set
-      {
-        _GPM = value;
-        HasGPM = (value != ushort.MaxValue);
-      }
-    }
+    public ushort GPM { get; set; } = ushort.MaxValue;
+    public bool HasGPM => GPM != ushort.MaxValue;
 
-    /// <summary>
     /// Blade On Ground
-    /// </summary>
-    private ushort _BOG = ushort.MaxValue;
-    public ushort BOG
-    {
-      get => _BOG;
-      set
-      {
-        _BOG = value;
-        HasBOG = (value != ushort.MaxValue); ;
-      }
-    }
+    public ushort BOG { get; set; } = ushort.MaxValue;
+    public bool HasBOG => BOG != ushort.MaxValue;
 
-    /// <summary>
-    /// Design
-    /// </summary>
-    private string _Design = "";
-    public string Design
-    {
-      get => _Design;
-      set
-      {
-        _Design = value;
-        HasDES = (value != "");
-      }
-    }
+    public string Design { get; set; } = String.Empty;
+    public bool HasDesign => Design != String.Empty;
 
-    /// <summary>
     /// Latitude
-    /// </summary>
-    private double _LAT = double.MaxValue;
-    public double LAT
-    {
-      get => _LAT;
-      set
-      {
-        _LAT = value;
-        HasLAT = (value != double.MaxValue);
-      }
-    }
+    public double LAT { get; set; } = double.MaxValue;
+    public bool HasLAT => LAT != double.MaxValue;
 
-    /// <summary>
     /// Longitude
-    /// </summary>
-    private double _LON = double.MaxValue;
-    public double LON
-    {
-      get => _LON;
-      set
-      {
-        _LON = value;
-        HasLON = (value != double.MaxValue);
-      }
-    }
+    public double LON { get; set; } = double.MaxValue;
+    public bool HasLON => LON != double.MaxValue;
 
-    /// <summary>
-    /// Height
-    /// </summary>
-    private double _HGT = double.MaxValue;
-    public double HGT
-    {
-      get => _HGT;
-      set
-      {
-        _HGT = value;
-        HasHGT = (value != double.MaxValue);
-      }
-    }
+    /// Seed Height
+    public double HGT { get; set; } = double.MaxValue;
+    public bool HasHGT => HGT != double.MaxValue;
 
-    /// <summary>
+    /// Machine Speed
+    public double MSD { get; set; } = double.MaxValue;
+    public bool HasMSD => MSD != double.MaxValue;
+
+    /// Machine Type
+    public byte MTP { get; set; } = byte.MaxValue;
+    public bool HasMTP => HGT != byte.MaxValue;
+
+    /// Heading
+    public double HDG { get; set; } = double.MaxValue;
+    public bool HasHDG => HDG != double.MaxValue;
+
+    public string RadioType { get; set; } = String.Empty;
+    public bool HasRadioType => RadioType != String.Empty;
+
+    /// Coordinate System
+    public ushort CoordSys { get; set; } = ushort.MaxValue;
+    public bool HasCoordSys => CoordSys != ushort.MaxValue;
+
+    public ushort ValidPosition { get; set; } = ushort.MaxValue;
+    public bool HasValidPosition => ValidPosition != ushort.MaxValue;
+
+    public byte UTM { get; set; } = byte.MaxValue;
+    public bool HasUTM => UTM != byte.MaxValue;
+
+    public ushort MappingMode { get; set; } = ushort.MaxValue;
+    public bool HasMappingMode => MappingMode != ushort.MaxValue;
+
+    public string AppVersion { get; set; } = String.Empty;
+    public bool HasAppVersion => AppVersion != String.Empty;
+
+
     /// Machine ID
-    /// </summary>
-    private string _MID = "";
+    public string LastMID { get; set; } = String.Empty;
+    private string _MID = String.Empty;
     public string MID
     {
       get => _MID;
       set
       {
         _MID = value;
-        HasMID = (value != "");
+        if (_MID != String.Empty)
+          LastMID = value; // keep last known value
       }
     }
+    public bool HasMID => _MID != String.Empty;
 
-    /// <summary>
-    /// Machine Speed
-    /// </summary>
-    private double _MSD = double.MaxValue;
-    public double MSD
-    {
-      get => _MSD;
-      set
-      {
-        _MSD = value;
-        HasMSD = (value != double.MaxValue);
-      }
-    }
-
-    /// <summary>
-    /// Machine Type
-    /// </summary>
-    private byte _MTP = byte.MaxValue;
-    public byte MTP
-    {
-      get => _MTP;
-      set
-      {
-        _MTP = value;
-        HasMTP = (value != byte.MaxValue);
-      }
-    }
-
-    /// <summary>
-    /// Heading
-    /// </summary>
-    private double _HDG = double.MaxValue;
-    public double HDG
-    {
-      get => _HDG;
-      set
-      {
-        _HDG = value;
-        HasHDG = (value != double.MaxValue);
-      }
-    }
-
-    /// <summary>
-    /// Radio Serial
-    /// </summary>
-    private string _RadioSerial = "";
-    public string RadioSerial
-    {
-      get => _RadioSerial;
-      set
-      {
-        _RadioSerial = value;
-        HasRadioSerial = (value != "");
-      }
-    }
-
-    /// <summary>
-    /// Radio Type
-    /// </summary>
-    private string _RadioType = "";
-    public string RadioType
-    {
-      get => _RadioType;
-      set
-      {
-        _RadioType = value;
-        HasRadioType = (value != "");
-      }
-    }
-
-    /// <summary>
-    /// Coordinate System
-    /// </summary>
-    private ushort _CoordSys = ushort.MaxValue;
-    public ushort CoordSys
-    {
-      get => _CoordSys;
-      set
-      {
-        _CoordSys = value;
-        HasCoordSys = (value != ushort.MaxValue);
-      }
-    }
-
-    /// <summary>
-    /// Coordinate System
-    /// </summary>
-    private ushort _ValidPosition = ushort.MaxValue; 
-    public ushort ValidPosition
-    {
-      get => _ValidPosition;
-      set
-      {
-        _ValidPosition = value;
-        HasValidPosition = (value != ushort.MaxValue); ;
-      }
-    }
-
-    /// <summary>
-    /// UTM Zone
-    /// </summary>
-    private byte _UTM = byte.MaxValue;
-    public byte UTM
-    {
-      get => _UTM;
-      set
-      {
-        _UTM = value;
-        HasUTM = (value != byte.MaxValue); ;
-      }
-    }
-
-    /// <summary>
-    /// Mapping Mode
-    /// </summary>
-    private ushort _MappingMode = ushort.MaxValue;
-    public ushort MappingMode
-    {
-      get => _MappingMode;
-      set
-      {
-        _MappingMode = value;
-        HasMappingMode = (value != ushort.MaxValue); ;
-      }
-    }
-
-    /// <summary>
-    /// Application Version
-    /// </summary>
-    private string _AppVersion = "";
-    public string AppVersion
-    {
-      get => _AppVersion;
-      set
-      {
-        _AppVersion = value;
-        HasAppVersion = (value != "");
-      }
-    }
-
-    /// <summary>
-    /// Machine serial id
-    /// </summary>
-    private string _Serial = "";
+    public string LastSerial { get; set; } = String.Empty;
+    private string _Serial = String.Empty;
     public string Serial
     {
       get => _Serial;
       set
       {
         _Serial = value;
-        HasSER = (value != "");
+        if (_Serial != String.Empty)
+          LastSerial = value; // keep last known value
       }
     }
+    public bool HasSerial => _Serial != String.Empty;
 
-    /// <summary>
-    /// CCV compaction
-    /// </summary>
-    private uint _CCV = uint.MaxValue;
-    public uint CCV
-    {
-      get => _CCV;
-      set
-      {
-        _CCV = value;
-        HasCCV = (value != uint.MaxValue);
-      }
-    }
+    public string RadioSerial { get; set; } = String.Empty;
+    public bool HasRadioSerial => RadioSerial != String.Empty;
 
-    /// <summary>
-    /// Target CCV
-    /// </summary>
-    private uint _TargetCCV = uint.MaxValue; // 12 bit
-    public uint TargetCCV
-    {
-      get => _TargetCCV;
-      set
-      {
-        _TargetCCV = value;
-        HasTargetCCV = (value != uint.MaxValue);
-      }
-    }
+    public uint CCV { get; set; } = uint.MaxValue;
+    public bool HasCCV => CCV != uint.MaxValue;
 
-    /// <summary>
-    /// MDP Compaction
-    /// </summary>
-    private uint _MDP = uint.MaxValue;
-    public uint MDP
-    {
-      get => _MDP;
-      set
-      {
-        _MDP = value;
-        HasMDP = (value != uint.MaxValue);
-      }
-    }
+    public uint TargetCCV { get; set; } = uint.MaxValue;
+    public bool HasTargetCCV => TargetCCV != uint.MaxValue;
 
-    /// <summary>
-    /// Target MDP
-    /// </summary>
-    private uint _TargetMDP = uint.MaxValue; // 12 bit
-    public uint TargetMDP
-    {
-      get => _TargetMDP;
-      set
-      {
-        _TargetMDP = value;
-        HasTargetMDP = (value != uint.MaxValue);
-      }
-    }
+    public uint MDP { get; set; } = uint.MaxValue;
+    public bool HasMDP => MDP != uint.MaxValue;
 
-    /// <summary>
+    public uint TargetMDP { get; set; } = uint.MaxValue; // 12 bit
+    public bool HasTargetMDP => TargetMDP != uint.MaxValue;
+
     /// Compaction Sensor Type
-    /// </summary>
-    private uint _CST = uint.MaxValue; // 8 bit
-    public uint CST
-    {
-      get => _CST;
-      set
-      {
-        _CST = value;
-        HasCST = (value != uint.MaxValue);
-      }
-    }
+    public uint CST { get; set; } = uint.MaxValue;
+    public bool HasCST => CST != uint.MaxValue;
 
-    /// <summary>
-    /// Temperature
-    /// </summary>
-    private uint _Temperature = uint.MaxValue; // 12 bit absolute
-    public uint Temperature
-    {
-      get => _Temperature;
-      set
-      {
-        _Temperature = value;
-        HasTemperature = (value != uint.MaxValue);
-      }
-    }
+    public uint Temperature { get; set; } = uint.MaxValue;
+    public bool HasTemperature => Temperature != uint.MaxValue;
 
-    /// <summary>
     /// Machine Direction
-    /// </summary>
-    private uint _Direction = uint.MaxValue; // 4 bit absolute 1 = forward, 2=Reverse,3=unknown
-    public uint Direction
-    {
-      get => _Direction;
-      set
-      {
-        _Direction = value;
-        HasDirection = (value != uint.MaxValue);
-      }
-    }
+    public uint Direction { get; set; } = uint.MaxValue; // 4 bit absolute 1 = forward, 2=Reverse,3=unknown
+    public bool HasDirection => Direction != uint.MaxValue;
 
-    /// <summary>
     /// Contains info like type of compaction and vibe state
-    /// </summary>
-    private uint _Flags = uint.MaxValue; // 4 bit absolute
-    public uint Flags
-    {
-      get => _Flags;
-      set
-      {
-        _Flags = value;
-        HasFlags = (value != uint.MaxValue);
-      }
-    }
+    public uint Flags { get; set; } = uint.MaxValue;
+    public bool HasFlags => Flags != uint.MaxValue;
 
-    /// <summary>
-    /// Target Passcount
-    /// </summary>
-    private uint _TargetPasses = uint.MaxValue; // 12 bit
-    public uint TargetPasses
-    {
-      get => _TargetPasses;
-      set
-      {
-        _TargetPasses = value;
-        HasTargetPasses = (value != uint.MaxValue);
-      }
-    }
+    public uint TargetPasses { get; set; } = uint.MaxValue; // 12 bit
+    public bool HasTargetPasses => TargetPasses != uint.MaxValue;
 
-    /// <summary>
-    /// Target Thickness
-    /// </summary>
-    private uint _TargetThickness = uint.MaxValue; // 16 bit
-    public uint TargetThickness
-    {
-      get => _TargetThickness;
-      set
-      {
-        _TargetThickness = value;
-        HasTargetThickness = (value != uint.MaxValue);
-      }
-    }
+    public uint TargetThickness { get; set; } = uint.MaxValue; // 16 bit
+    public bool HasTargetThickness => TargetThickness != uint.MaxValue;
 
-    /// <summary>
     /// Min target temperature
-    /// </summary>
-    private uint _TempMin = uint.MaxValue; // 12 bit
-    public uint TempMin
-    {
-      get => _TempMin;
-      set
-      {
-        _TempMin = value;
-        HasTempMin = (_TempMin != uint.MaxValue);
-      }
-    }
+    public uint TempMin { get; set; } = uint.MaxValue; // 12 bit
+    public bool HasTempMin => TempMin != uint.MaxValue;
 
-    /// <summary>
     /// Max target temperature
-    /// </summary>
-    private uint _TempMax = uint.MaxValue; // 12 bit
-    public uint TempMax
-    {
-      get => _TempMax;
-      set
-      {
-        _TempMax = value;
-         HasTempMax = (_TempMax != uint.MaxValue);
-      }
-    }
-
+    public uint TempMax { get; set; } = uint.MaxValue; // 12 bit
+    public bool HasTempMax => TempMax != uint.MaxValue;
 
     public EpochRecord()
     {
-      ClearEpoch();
     }
+
 
     /// <summary>
     /// Clear data but not static header info
@@ -657,46 +225,47 @@ namespace TagFiles.Parser
     public void ClearEpoch()
     {
       HasHeader = false;
-      HasTime = false;
-      HasDeltaTime = false;
-      HasPrevTime = false;
-      HasWeek = false;
-      HasCoordSys = false;
-      HasLEB = false;
-      HasLNB = false;
-      HasLHB = false;
-      HasREB = false;
-      HasRNB = false;
-      HasRHB = false;
-      HasGPM = false;
-      HasBOG = false;
-      HasLAT = false;
-      HasLON = false;
-      HasHGT = false;
-      HasMID = false;
-      HasMSD = false;
-      HasMTP = false;
-      HasHDG = false;
-      HasSER = false;
-      HasUTM = false;
-      HasRadioSerial = false;
-      HasRadioType = false;
-      HasMappingMode = false;
-      HasAppVersion = false;
-      HasValidPosition = false;
-      HasCCV = false;
-      HasMDP = false;
-      HasCST = false;
-      HasTargetCCV = false;
-      HasTargetMDP = false;
-      HasFlags = false;
-      HasTemperature = false;
-      HasDirection = false;
-      HasTargetThickness = false;
-      HasTargetPasses = false;
-      HasTempMin = false;
-      HasTempMax = false;
-
+      Time = uint.MaxValue;
+      DeltaTime = uint.MaxValue;
+      PrevTime = uint.MaxValue;
+      Week = uint.MaxValue;
+      CoordSys = ushort.MaxValue;
+      LEB = double.MaxValue;
+      LNB = double.MaxValue;
+      LHB = double.MaxValue;
+      REB = double.MaxValue;
+      RNB = double.MaxValue;
+      RHB = double.MaxValue;
+      GPM = ushort.MaxValue;
+      BOG = ushort.MaxValue;
+      LAT = double.MaxValue;
+      LON = double.MaxValue;
+      HGT = double.MaxValue;
+      MID = String.Empty;
+      MSD = double.MaxValue;
+      MTP = byte.MaxValue;
+      HDG = double.MaxValue;
+      Serial = String.Empty;
+      UTM = byte.MaxValue;
+      RadioSerial = String.Empty;
+      RadioType = String.Empty;
+      MappingMode = ushort.MaxValue;
+      AppVersion = String.Empty;
+      ValidPosition = ushort.MaxValue;
+      CCV = uint.MaxValue;
+      MDP = uint.MaxValue;
+      CST = uint.MaxValue;
+      TargetCCV = uint.MaxValue;
+      TargetMDP = uint.MaxValue;
+      Flags = uint.MaxValue;
+      Temperature = uint.MaxValue;
+      Direction = uint.MaxValue;
+      TargetThickness = uint.MaxValue;
+      TargetPasses = uint.MaxValue;
+      TempMin = uint.MaxValue;
+      TempMax = uint.MaxValue;
+      LastMID = String.Empty;
+      LastSerial = String.Empty;
     }
 
     public bool IsFullPositionEpoch()
@@ -752,13 +321,88 @@ namespace TagFiles.Parser
     }
 
     /// <summary>
-    /// Is the blade position different from the ref epoch
+    /// Special copy version that keeps track of last known valid values
     /// </summary>
-    /// <param name="eRec"></param>
-    public bool BladePositionDifferent(ref EpochRecord eRec)
+    public void EpochCopyLatestValues(ref EpochRecord eRec)
+    {
+      HasHeader = eRec.HasHeader;
+      if (eRec.Time != uint.MaxValue)
+        Time = eRec.Time;
+      if (eRec.LEB != double.MaxValue)
+        LEB = eRec.LEB;
+      if (eRec.LNB != double.MaxValue)
+        LNB = eRec.LNB;
+      if (eRec.LHB != double.MaxValue)
+        LHB = eRec.LHB;
+      if (eRec.REB != double.MaxValue)
+        REB = eRec.REB;
+      if (eRec.RNB != double.MaxValue)
+        RNB = eRec.RNB;
+      if (eRec.RHB != double.MaxValue)
+        RHB = eRec.RHB;
+      if (eRec.BOG != ushort.MaxValue)
+        BOG = eRec.BOG;
+      if (eRec.HDG != double.MaxValue)
+        HDG = eRec.HDG;
+      if (eRec.MSD != double.MaxValue)
+        MSD = eRec.MSD;
+      if (eRec.LAT != double.MaxValue)
+        LAT = eRec.LAT;
+      if (eRec.LON != double.MaxValue)
+        LON = eRec.LON;
+      if (eRec.HGT != double.MaxValue)
+        HGT = eRec.HGT;
+      if (eRec.GPM != ushort.MaxValue)
+        GPM = eRec.GPM;
+      if (eRec.UTM != byte.MaxValue)
+        UTM = eRec.UTM;
+      if (eRec.MTP != byte.MaxValue)
+        MTP = eRec.MTP;
+      if (eRec.MID != String.Empty)
+        MID = eRec.MID;
+      if (eRec.Serial != String.Empty)
+        Serial = eRec.Serial;
+      if (eRec.Design != String.Empty)
+        Design = eRec.Design;
+      if (eRec.RadioSerial != String.Empty)
+        RadioSerial = eRec.RadioSerial;
+      if (eRec.RadioType != String.Empty)
+        RadioType = eRec.RadioType;
+      if (eRec.CCV != uint.MaxValue)
+        CCV = eRec.CCV;
+      if (eRec.CST != uint.MaxValue)
+        CST = eRec.CST;
+      if (eRec.CCV != uint.MaxValue)
+        TargetCCV = eRec.TargetCCV;
+      if (eRec.Flags != uint.MaxValue)
+        Flags = eRec.Flags;
+      if (eRec.Temperature != uint.MaxValue)
+        Temperature = eRec.Temperature;
+      if (eRec.Direction != uint.MaxValue)
+        Direction = eRec.Direction;
+      if (eRec.TargetMDP != uint.MaxValue)
+        TargetMDP = eRec.TargetMDP;
+      if (eRec.MDP != uint.MaxValue)
+        MDP = eRec.MDP;
+      if (eRec.TargetThickness != uint.MaxValue)
+        TargetThickness = eRec.TargetThickness;
+      if (eRec.TargetPasses != uint.MaxValue)
+        TargetPasses = eRec.TargetPasses;
+      if (eRec.TempMin != uint.MaxValue)
+        TempMin = eRec.TempMin;
+      if (eRec.TempMax != uint.MaxValue)
+        TempMax = eRec.TempMax;
+    }
+
+
+
+    /// <summary>
+    /// Has the machine state changed from the ref epoch
+    /// </summary>
+    public bool MachineStateDifferent(ref EpochRecord eRec)
     {
       if (IsFullPositionEpoch() & eRec.IsFullPositionEpoch())
-        return !(LEB == eRec.LEB & LNB == eRec.LNB & LHB == eRec.LHB & REB == eRec.REB & RNB == eRec.RNB & RHB == eRec.RHB);
+        return !(LEB == eRec.LEB & LNB == eRec.LNB & LHB == eRec.LHB & REB == eRec.REB & RNB == eRec.RNB & RHB == eRec.RHB & CCV == eRec.CCV & MDP == eRec.MDP & Temperature == eRec.Temperature & BOG == eRec.BOG & ValidPosition == eRec.ValidPosition);
       else
         return true;
 
@@ -769,8 +413,8 @@ namespace TagFiles.Parser
     /// </summary>
     public bool HasUpdateData()
     {
-      return HasLEB || HasLHB || HasLNB || HasREB || HasRHB || HasRNB || HasGPM || HasBOG || HasDES || HasLAT || HasLON ||
-             HasHGT || HasMSD || HasHDG || HasCCV || HasCST || HasTargetCCV || HasFlags || HasDirection || HasTemperature || 
+      return HasLEB || HasLHB || HasLNB || HasREB || HasRHB || HasRNB || HasGPM || HasBOG || HasDesign || HasLAT || HasLON ||
+             HasHGT || HasMSD || HasHDG || HasCCV || HasCST || HasTargetCCV || HasFlags || HasDirection || HasTemperature ||
              HasMDP || HasTargetMDP || HasTargetPasses || HasTargetThickness || HasTempMin || HasTempMax;
 
     }

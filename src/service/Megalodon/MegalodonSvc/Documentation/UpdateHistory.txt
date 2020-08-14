@@ -13,7 +13,7 @@ Version 1.2 12/8/2020
 * Changed host for direct tagfile send. No authentication
 * Made tagfile send more robust to failure.
 
-Version 1.3 13/8/2020 
-* Flag tag value change if not null
+Version 1.3 14/8/2020 
+* Flag tag has value if not null
 
 
