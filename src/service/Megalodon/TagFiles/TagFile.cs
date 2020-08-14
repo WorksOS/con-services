@@ -138,28 +138,32 @@ namespace TagFiles
       Parser.TrailerRequired = true;
       Parser.CloneLastEpoch(); // used as first epoc in new tagfile. Helps prevents gaps when processing tagfiles 
 
-      if (Parser._Prev_EpochRec != null)
+      var serial = Parser.EpochRec.LastSerial == string.Empty ? MachineSerial : Parser.EpochRec.LastSerial;
+      var mid = Parser.EpochRec.LastMID == string.Empty ? MachineID : Parser.EpochRec.LastMID;
+      Header.UpdateTagfileName(serial, mid);
+
+      if (Parser.Prev_EpochRec != null)
       {
-        if (Parser.EpochRec.BladePositionDifferent(ref Parser._Prev_EpochRec))
+        if (Parser.EpochRec.MachineStateDifferent(ref Parser.Prev_EpochRec))
           Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR, TagConstants.UpdateReason.CutOffLastEpoch); // save epoch to tagfile before writing
         else
         {
           // dont report a position change for trailer record 
-          Parser.EpochRec.HasLEB = false;
-          Parser.EpochRec.HasLNB = false;
-          Parser.EpochRec.HasLHB = false;
-          Parser.EpochRec.HasREB = false;
-          Parser.EpochRec.HasRNB = false;
-          Parser.EpochRec.HasRHB = false;
+          Parser.EpochRec.LEB = double.MaxValue;
+          Parser.EpochRec.LNB = double.MaxValue;
+          Parser.EpochRec.LHB = double.MaxValue;
+          Parser.EpochRec.REB = double.MaxValue;
+          Parser.EpochRec.RNB = double.MaxValue;
+          Parser.EpochRec.RHB = double.MaxValue;
           Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR, TagConstants.UpdateReason.CutOffNoChange);
         }
       }
       else
         Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR, TagConstants.UpdateReason.CutOffSoloLastEpoch);
 
-      var serial = Parser.EpochRec.Serial == string.Empty ? MachineSerial : Parser.EpochRec.Serial;
-      var mid = Parser.EpochRec.MID == string.Empty ? MachineID : Parser.EpochRec.MID;
-      Header.UpdateTagfileName(serial, mid);
+      if (Parser.Prev_EpochRec != null)
+        Parser.Prev_EpochRec.ClearEpoch();
+
       // Make sure folder exists
       Directory.CreateDirectory(TagFileFolder);
 

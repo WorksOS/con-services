@@ -384,6 +384,56 @@ namespace UnitTests
       res.Should().BeTrue("Valid Temp Max.  Result should be true");
     }
 
+    [Fact]
+    public void TestTagValueStateChanges()
+    {
+      SetupParser();
+      tagFile.SetupDefaultConfiguration(0);
+
+      var unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+      var timeStamp = "TME" + unixTimestamp.ToString();
+
+      var rs = Convert.ToChar(TagConstants.RS).ToString();
+
+      var hdr = rs + timeStamp + rs + "HDR1" + rs + "GPM3" + rs + "DESDesign A" + rs + "LAT0.631930995750444" + rs + "LON-2.007479992025198" + rs + "HGT542" + rs + "MIDTestTagFileChange" + rs + "UTM0" + rs + "HDG90" + rs +
+                   "SER1551J025SW" + rs + "MTPCOM" + rs + "BOG0" + rs + "MPM0" + rs + "CST1" + rs + "FLG4" + rs + "TMP900" + rs + "TCC600" + rs + "DIR1" + rs + "TTS200" + rs + "TPC5" + rs + "TMD200" + rs + "TMN90" + rs + "TMX143";
+      tagFile.ParseText(hdr);
+
+      // first change record
+      unixTimestamp += 100; timeStamp = "TME" + unixTimestamp.ToString();
+      var rec = rs + timeStamp + rs + "HDR0" + rs + "LEB2745" + rs + "LNB1163.5" + rs + "LHB542" + rs + "REB2745" + rs + "RNB1163" + rs + "RHB542" + rs + "BOG1" + rs + "HDG90" + rs + "CCV600" + rs + "MDP210";
+      tagFile.ParseText(rec);
+
+      // no change
+      unixTimestamp += 100; timeStamp = "TME" + unixTimestamp.ToString();
+      rec = rs + timeStamp + rs + "HDR0" + rs + "LEB2745" + rs + "LNB1163.5" + rs + "LHB542" + rs + "REB2745" + rs + "RNB1163" + rs + "RHB542" + rs + "BOG1" + rs + "HDG90" + rs + "CCV600" + rs + "MDP210";
+      tagFile.ParseText(rec);
+
+      // full change 2nd epoch
+      unixTimestamp += 100; timeStamp = "TME" + unixTimestamp.ToString();
+      rec = rs + timeStamp + rs + "HDR0" + rs + "LEB2746" + rs + "LNB1163.6" + rs + "LHB543" + rs + "REB2746" + rs + "RNB1164" + rs + "RHB543" + rs + "BOG0" + rs + "HDG91" + rs + "CCV601" + rs + "MDP211";
+      tagFile.ParseText(rec);
+
+      // no change
+      unixTimestamp += 100; timeStamp = "TME" + unixTimestamp.ToString();
+      rec = rs + timeStamp + rs + "HDR0" + rs + "LEB2746" + rs + "LNB1163.6" + rs + "LHB543" + rs + "REB2746" + rs + "RNB1164" + rs + "RHB543" + rs + "BOG0" + rs + "HDG91" + rs + "CCV601" + rs + "MDP211";
+      tagFile.ParseText(rec);
+
+
+      // small height change 3rd record
+      unixTimestamp += 100; timeStamp = "TME" + unixTimestamp.ToString();
+      rec = rs + timeStamp + rs + "HDR0" + rs + "LHB544" + rs + "RHB544";
+      tagFile.ParseText(rec);
+
+
+      // small CMV and BOG change 4 the record
+      unixTimestamp += 100; timeStamp = "TME" + unixTimestamp.ToString();
+      rec = rs + timeStamp + rs + "HDR0" + rs + "CCV602" + rs + "BOG1";
+      tagFile.ParseText(rec);
+
+      tagFile.Parser.EpochCount.Should().Be(4,"Epoch count expected to be 4"); 
+
+    }
 
     [Fact]
     public void EpochRecordNoChange()
@@ -429,7 +479,6 @@ namespace UnitTests
       tagFile.ParseText(rec);
 
       tagFile.WriteTagFileToDisk(); // output to standard trimble install location
-
     }
 
     /// <summary>
