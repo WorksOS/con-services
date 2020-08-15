@@ -101,7 +101,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                             // Segment failed to be loaded. Multiple messages will have been posted to the log.
                             // Move to the next item in the iteration
 
-                            // Specific FS failures indicate corruption in the data store that shoudl preclude further iteration and
+                            // Specific FS failures indicate corruption in the data store that should preclude further iteration and
                             // processir of the contents of this sub grid. These conditions result in the sub grid being blacklisted
                             // and the iterator returning no further information for this subgrid
                             if (fsResult == FileSystemErrorStatus.GranuleDoesNotExist)
@@ -183,7 +183,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
           if (SegmentIterationBlackListed)
           {
-            Log.LogWarning($"Iteration aborted in {nameof(MoveNext)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+            //Log.LogWarning($"Iteration aborted in {nameof(MoveNext)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
             return false;
           }
 
@@ -203,7 +203,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterationBlackListed)
             {
-                Log.LogWarning($"Iteration aborted in {nameof(MoveToFirstSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+                //Log.LogWarning($"Iteration aborted in {nameof(MoveToFirstSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
                 return false;
             }
 
@@ -219,7 +219,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterationBlackListed)
             {
-                Log.LogWarning($"Iteration aborted in {nameof(MoveToNextSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+                //Log.LogWarning($"Iteration aborted in {nameof(MoveToNextSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
                 return false;
             }
 
