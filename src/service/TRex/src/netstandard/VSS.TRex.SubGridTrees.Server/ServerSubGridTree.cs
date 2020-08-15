@@ -17,6 +17,8 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.Types;
+using VSS.TRex.Common.Records;
+using VSS.TRex.Common.Extensions;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -335,6 +337,7 @@ namespace VSS.TRex.SubGridTrees.Server
             segment.SegmentInfo.Touch();
 
             segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo), out var fsError);
+            segment.Dirty = false;
 
             if (fsError == FileSystemErrorStatus.OK)
             {
@@ -365,9 +368,11 @@ namespace VSS.TRex.SubGridTrees.Server
           {
             // Update the version of the segment as it is about to be written
             segment.SegmentInfo.Touch();
+            segment.Dirty = false;
 
             if (segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo), out var fsError))
             {
+              segment.Dirty = false;
               if (_log.IsTraceEnabled())
                 _log.LogTrace($"Saved modified grid segment file: {segment}");
             }
@@ -376,6 +381,25 @@ namespace VSS.TRex.SubGridTrees.Server
               _log.LogError($"Failed to save modified original grid segment {GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo)}: Error:{fsError}");
               return false;
             }
+          }
+        }
+
+        // Any remaining dirty segments in the sub grid will be due to previously empty sub grids with newly 
+        // created segments from ingest processing that have not required cleaving. These segments do not require any
+        // special treatment are jsut saved to persistent store
+
+        foreach (var segment in subGrid.Directory.SegmentDirectory.Select(x => x.Segment).Where(x => (x?.Dirty ?? false)))
+        {
+          if (segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo), out var fsError))
+          {
+            segment.Dirty = false;
+            if (_log.IsTraceEnabled())
+              _log.LogTrace($"Saved new sub grid segment file: {segment}");
+          }
+          else
+          {
+            _log.LogError($"Failed to save new sub grid segment {GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo)}: Error:{fsError}");
+            return false;
           }
         }
 
