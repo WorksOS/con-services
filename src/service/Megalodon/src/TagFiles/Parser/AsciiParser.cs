@@ -29,8 +29,10 @@ namespace TagFiles.Parser
 
     public bool TrailerRequired = false;
     private EpochRecord _PrevTagFile_EpochRec; // previous epoch belonging to the last tagfile
-    public EpochRecord _Prev_EpochRec; // previous epoch record in current tagfile
+    public EpochRecord Prev_EpochRec; // previous epoch record in current tagfile
     public EpochRecord EpochRec = new EpochRecord(); // current epoch record
+    private EpochRecord LastStateEpochRecord = new EpochRecord(); // maintains the last known value for a tag. Used to prevent writing the same event or field value each time
+
     public TagContentList TagContent; // tagfile data content
     public ILogger Log;
     public bool NotSeenNewPosition = true;
@@ -40,15 +42,15 @@ namespace TagFiles.Parser
     public bool ForceBOG = false;
     public double SeedLat = 0;
     public double SeedLon = 0;
-    public string ForceSerial = "";
+    public string ForceSerial = String.Empty;
 
     /// <summary>
     /// Constructor
     /// </summary>
     public AsciiParser()
     {
-      TagValue = "";
-      TagName = "";
+      TagValue = String.Empty;
+      TagName = String.Empty;
       TagContent = new TagContentList();
     }
 
@@ -112,7 +114,7 @@ namespace TagFiles.Parser
         {
           TagContent.AddTimeEntry(new TagData_UnsignedInt() { Data = eRecord.Time });
           TagContent.AddWeekEntry(new TagData_UnsignedInt() { Data = eRecord.Week });
-          eRecord.HasTime = false; // reset
+          eRecord.Time = uint.MaxValue; // reset
           HeaderRecordCount++;
           HeaderUpdated = true;
           timeAdded = true;
@@ -132,126 +134,128 @@ namespace TagFiles.Parser
       if (eRecord.HasCST)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CST, DataType = TAGDataType.t8bitUInt, Data = eRecord.CST });
-        eRecord.HasCST = false;
+        eRecord.CST = uint.MaxValue;
       }
       if (eRecord.HasFlags)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.Flags, DataType = TAGDataType.t4bitUInt, Data = eRecord.Flags });
-        eRecord.HasFlags = false;
+        eRecord.Flags = uint.MaxValue; ;
       }
       if (eRecord.HasTargetCCV)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetCCV, DataType = TAGDataType.t12bitUInt, Data = eRecord.TargetCCV });
-        eRecord.HasTargetCCV = false;
+        eRecord.TargetCCV = uint.MaxValue; 
       }
       if (eRecord.HasTargetMDP)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetMDP, DataType = TAGDataType.t12bitUInt, Data = eRecord.TargetMDP });
-        eRecord.HasTargetMDP = false;
+        eRecord.TargetMDP = uint.MaxValue;
       }
       if (eRecord.HasDirection)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.Direction, DataType = TAGDataType.t4bitUInt, Data = eRecord.Direction});
-        eRecord.HasDirection = false;
+        eRecord.Direction = uint.MaxValue; 
       }
       if (eRecord.HasTemperature)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.Temperature, DataType = TAGDataType.t12bitUInt, Data = eRecord.Temperature});
-        eRecord.HasTemperature = false;
+        eRecord.Temperature = uint.MaxValue; 
       }
       if (eRecord.HasCoordSys)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CoordSys, DataType = TAGDataType.t4bitUInt, Data = eRecord.CoordSys });
-        eRecord.HasCoordSys = false;
+        eRecord.CoordSys = ushort.MaxValue; ;
       }
       if (eRecord.HasValidPosition)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.ValidPosition, DataType = TAGDataType.t4bitUInt, Data = eRecord.ValidPosition });
-        eRecord.HasValidPosition = false;
+        eRecord.ValidPosition = ushort.MaxValue; 
       }
       if (eRecord.HasMappingMode)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MappingMode, DataType = TAGDataType.t8bitUInt, Data = eRecord.MappingMode });
-        eRecord.HasMappingMode = false;
+        eRecord.MappingMode = ushort.MaxValue; ;
       }
-      if (eRecord.HasDES)
+      if (eRecord.HasDesign)
       {
         TagContent.AddEntry(new TagData_Unicode() { DictID = (short)DictionaryItem.Design, DataType = TAGDataType.tUnicodeString, Data = eRecord.Design });
-        eRecord.HasDES = false;
+        eRecord.Design = String.Empty;
       }
       if (eRecord.HasLAT)
       {
         TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Latitude, DataType = TAGDataType.tIEEEDouble, Data = eRecord.LAT });
-        eRecord.HasLAT = false;
+        eRecord.LAT = double.MaxValue; 
         HeaderRecordCount++;
       }
       if (eRecord.HasLON)
       {
         TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Longtitude, DataType = TAGDataType.tIEEEDouble, Data = eRecord.LON });
-        eRecord.HasLON = false;
+        eRecord.LON = double.MaxValue; 
         HeaderRecordCount++;
       }
       if (eRecord.HasHGT)
       {
         TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.height, DataType = TAGDataType.tIEEEDouble, Data = eRecord.HGT });
-        eRecord.HasHGT = false;
+        eRecord.HGT = double.MaxValue;
       }
       if (eRecord.HasUTM)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.UTMZone, DataType = TAGDataType.t8bitUInt, Data = eRecord.UTM });
-        eRecord.HasUTM = false;
+        eRecord.UTM = byte.MaxValue;
       }
       if (eRecord.HasTargetThickness)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetThickness, DataType = TAGDataType.t16bitUInt, Data = eRecord.TargetThickness });
-        eRecord.HasTargetThickness = false;
+        eRecord.TargetThickness = uint.MaxValue;
       }
       if (eRecord.HasTargetPasses)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TargetPasses, DataType = TAGDataType.t12bitUInt, Data = eRecord.TargetPasses });
-        eRecord.HasTargetPasses = false;
+        eRecord.TargetPasses = uint.MaxValue;
       }
       if (eRecord.HasTempMin)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TempMin, DataType = TAGDataType.t12bitUInt, Data = eRecord.TempMin });
-        eRecord.HasTempMin = false;
+        eRecord.TempMin = uint.MaxValue; 
       }
       if (eRecord.HasTempMax)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TempMax, DataType = TAGDataType.t12bitUInt, Data = eRecord.TempMax });
-        eRecord.HasTempMax = false;
+        eRecord.TempMax = uint.MaxValue; 
       }
       if (TransmissionProtocolVersion < TagConstants.Version1) 
         HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
       else 
         HeaderRequired = !eRecord.HasHeader;
+
       if (eRecord.HasTime & !timeAdded)
       {
         if (eRecord.HasDeltaTime)
           TagContent.AddTimeDeltaEntry(new TagData_UnsignedInt() { Data = eRecord.DeltaTime });
         else
           TagContent.AddTimeEntry(new TagData_UnsignedInt() { Data = eRecord.Time });
-        eRecord.HasDeltaTime = false;
-        eRecord.HasTime = false; // reset
+        eRecord.DeltaTime = uint.MaxValue; 
+        eRecord.Time = uint.MaxValue;  // reset
         EpochCount++;
       }
+
       if (eRecord.HasLEB || eRecord.HasLNB || eRecord.HasLHB)
       {
         TagContent.AddEntry(new TagData_Empty() { DictID = (short)DictionaryItem.Left, DataType = TAGDataType.tEmptyType });
         if (eRecord.HasLEB)
         {
           TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Easting, DataType = TAGDataType.tIEEEDouble, Data = eRecord.LEB });
-          eRecord.HasLEB = false;
+          eRecord.LEB = double.MaxValue;
         }
         if (eRecord.HasLNB)
         {
           TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Northing, DataType = TAGDataType.tIEEEDouble, Data = eRecord.LNB });
-          eRecord.HasLNB = false;
+          eRecord.LNB = double.MaxValue;
         }
         if (eRecord.HasLHB)
         {
           TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Elevation, DataType = TAGDataType.tIEEEDouble, Data = eRecord.LHB });
-          eRecord.HasLHB = false;
+          eRecord.LHB = double.MaxValue;
         }
       }
       if (eRecord.HasREB || eRecord.HasRNB || eRecord.HasRHB)
@@ -260,58 +264,57 @@ namespace TagFiles.Parser
         if (eRecord.HasREB)
         {
           TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Easting, DataType = TAGDataType.tIEEEDouble, Data = eRecord.REB });
-          eRecord.HasREB = false;
+          eRecord.REB = double.MaxValue;
         }
         if (eRecord.HasRNB)
         {
           TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Northing, DataType = TAGDataType.tIEEEDouble, Data = eRecord.RNB });
-          eRecord.HasRNB = false;
+          eRecord.RNB = double.MaxValue;
         }
         if (eRecord.HasRHB)
         {
           TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Elevation, DataType = TAGDataType.tIEEEDouble, Data = eRecord.RHB });
-          eRecord.HasRHB = false;
+          eRecord.RHB = double.MaxValue;
         }
       }
 
       if (eRecord.HasHDG)
       {
         // special field todo. Heading does not go to tagfile. will go somewhere else eventually 
-        eRecord.HasHDG = false;
+        eRecord.HDG = double.MaxValue;
       }
 
       if (eRecord.HasMSD)
       {
         TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.MachineSpeed, DataType = TAGDataType.tIEEEDouble, Data = eRecord.MSD });
-        eRecord.HasMSD = false;
+        eRecord.MSD = double.MaxValue;
       }
       if (eRecord.HasGPM)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.GPSMode, DataType = TAGDataType.t4bitUInt, Data = eRecord.GPM });
-        eRecord.HasGPM = false;
+        eRecord.GPM = ushort.MaxValue;
       }
       if (eRecord.HasBOG)
       {
         // writes On_GROUND and BLADE_ON_GROUND together
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.OG, DataType = TAGDataType.t4bitUInt, Data = eRecord.BOG });
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.BOG, DataType = TAGDataType.t4bitUInt, Data = eRecord.BOG });
-        eRecord.HasBOG = false;
+        eRecord.BOG = ushort.MaxValue;
       }
       if (eRecord.HasCCV)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CCV, DataType = TAGDataType.t12bitUInt, Data = eRecord.CCV });
-        eRecord.HasCCV = false;
+        eRecord.CCV = uint.MaxValue;
       }
       if (eRecord.HasMDP)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MDP, DataType = TAGDataType.t12bitUInt, Data = eRecord.MDP });
-        eRecord.HasMDP = false;
+        eRecord.MDP = uint.MaxValue;
       }
 
       if (TrailerRequired)
       {
-
-        // hack
+        
         if (ForceSerial != string.Empty)
         {
           eRecord.RadioSerial = ForceSerial;
@@ -321,32 +324,32 @@ namespace TagFiles.Parser
         if (eRecord.HasRadioSerial)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.RadioSerial, DataType = TAGDataType.tANSIString, Data = eRecord.RadioSerial });
-          eRecord.HasRadioSerial = false;
+          eRecord.RadioSerial = String.Empty;
         }
         if (eRecord.HasRadioType)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.RadioType, DataType = TAGDataType.tANSIString, Data = eRecord.RadioType });
-          eRecord.HasRadioType = false;
+          eRecord.RadioType = String.Empty;
         }
-        if (eRecord.HasSER)
+        if (eRecord.HasSerial)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.FileSerial, DataType = TAGDataType.tANSIString, Data = eRecord.Serial });
-          eRecord.HasSER = false;
+          eRecord.Serial = String.Empty;
         }
         if (eRecord.HasMID)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.MachineID, DataType = TAGDataType.tANSIString, Data = eRecord.MID });
-          eRecord.HasMID = false;
+          eRecord.MID = String.Empty;
         }
         if (eRecord.HasAppVersion)
         {
           TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.ApplicationVersion, DataType = TAGDataType.tANSIString, Data = eRecord.AppVersion });
-          eRecord.HasAppVersion = false;
+          eRecord.AppVersion = String.Empty;
         }
         if (eRecord.HasMTP)
         {
           TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MachineType, DataType = TAGDataType.t8bitUInt, Data = eRecord.MTP });
-          eRecord.HasMTP = false;
+          eRecord.MTP = byte.MaxValue;
         }
 
       }
@@ -376,9 +379,9 @@ namespace TagFiles.Parser
           case TagConstants.LEFT_EASTING_BLADE:
             {
               var leb = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasLEB & leb == _Prev_EpochRec.LEB)
+                if (Prev_EpochRec.HasLEB & leb == Prev_EpochRec.LEB)
                   break;
               }
               EpochRec.LEB = leb;
@@ -387,9 +390,9 @@ namespace TagFiles.Parser
           case TagConstants.LEFT_NORTHING_BLADE:
             {
               var lnb = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasLNB & lnb == _Prev_EpochRec.LNB)
+                if (Prev_EpochRec.HasLNB & lnb == Prev_EpochRec.LNB)
                   break;
               }
               EpochRec.LNB = lnb;
@@ -398,9 +401,9 @@ namespace TagFiles.Parser
           case TagConstants.LEFT_HEIGHT_BLADE:
             {
               var lhb = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasLHB & lhb == _Prev_EpochRec.LHB)
+                if (Prev_EpochRec.HasLHB & lhb == Prev_EpochRec.LHB)
                   break;
               }
               EpochRec.LHB = lhb;
@@ -409,9 +412,9 @@ namespace TagFiles.Parser
           case TagConstants.RIGHT_EASTING_BLADE:
             {
               var reb = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasREB & reb == _Prev_EpochRec.REB)
+                if (Prev_EpochRec.HasREB & reb == Prev_EpochRec.REB)
                   break;
               }
               EpochRec.REB = reb;
@@ -420,9 +423,9 @@ namespace TagFiles.Parser
           case TagConstants.RIGHT_NORTHING_BLADE:
             {
               var rnb = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasRNB & rnb == _Prev_EpochRec.RNB)
+                if (Prev_EpochRec.HasRNB & rnb == Prev_EpochRec.RNB)
                   break;
               }
               EpochRec.RNB = rnb;
@@ -431,9 +434,9 @@ namespace TagFiles.Parser
           case TagConstants.RIGHT_HEIGHT_BLADE:
             {
               var rhb = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasRHB & rhb == _Prev_EpochRec.RHB)
+                if (Prev_EpochRec.HasRHB & rhb == Prev_EpochRec.RHB)
                   break;
               }
               EpochRec.RHB = rhb;
@@ -447,9 +450,9 @@ namespace TagFiles.Parser
           case TagConstants.BLADE_ON_GROUND:
             {
               ushort val = Convert.ToUInt16(TagValue);
-              if (_Prev_EpochRec != null) 
+              if (Prev_EpochRec != null) 
               {
-                if (_Prev_EpochRec.HasBOG & val == _Prev_EpochRec.BOG)
+                if (Prev_EpochRec.HasBOG & val == Prev_EpochRec.BOG)
                   break; 
               }
               EpochRec.BOG = Convert.ToUInt16(TagValue);
@@ -458,9 +461,9 @@ namespace TagFiles.Parser
           case TagConstants.DESIGN:
             {
               var design = TagValue;
-              if (_Prev_EpochRec != null) 
+              if (Prev_EpochRec != null) 
               {
-                if (_Prev_EpochRec.HasDES & design == _Prev_EpochRec.Design)
+                if (Prev_EpochRec.HasDesign & design == Prev_EpochRec.Design)
                   break; 
               }
               EpochRec.Design = design;
@@ -469,9 +472,9 @@ namespace TagFiles.Parser
           case TagConstants.LATITUDE:
             {
               var latt = (SeedLat != 0) ? SeedLat : Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null) 
+              if (Prev_EpochRec != null) 
               {
-                if (_Prev_EpochRec.HasLAT & latt == _Prev_EpochRec.LAT)
+                if (Prev_EpochRec.HasLAT & latt == Prev_EpochRec.LAT)
                   break; 
               }
               EpochRec.LAT = latt;
@@ -480,9 +483,9 @@ namespace TagFiles.Parser
           case TagConstants.LONTITUDE:
             {
               var lng = (SeedLon != 0) ? SeedLon : Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasLON & lng == _Prev_EpochRec.LON)
+                if (Prev_EpochRec.HasLON & lng == Prev_EpochRec.LON)
                   break;
               }
               EpochRec.LON = lng;
@@ -491,9 +494,9 @@ namespace TagFiles.Parser
           case TagConstants.HEIGHT:
             {
               var hgt = Convert.ToDouble(TagValue); 
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasHGT & hgt == _Prev_EpochRec.HGT)
+                if (Prev_EpochRec.HasHGT & hgt == Prev_EpochRec.HGT)
                   break;
               }
               EpochRec.HGT = hgt;
@@ -507,9 +510,9 @@ namespace TagFiles.Parser
           case TagConstants.MACHINE_SPEED:
             {
               var spd = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasMSD & spd == _Prev_EpochRec.MSD)
+                if (Prev_EpochRec.HasMSD & spd == Prev_EpochRec.MSD)
                   break;
               }
               EpochRec.MSD = spd;
@@ -523,9 +526,9 @@ namespace TagFiles.Parser
           case TagConstants.HEADING:
             {
               var hdg = Convert.ToDouble(TagValue);
-              if (_Prev_EpochRec != null)
+              if (Prev_EpochRec != null)
               {
-                if (_Prev_EpochRec.HasHDG & hdg == _Prev_EpochRec.HDG)
+                if (Prev_EpochRec.HasHDG & hdg == Prev_EpochRec.HDG)
                   break;
               }
               EpochRec.HDG = hdg;
@@ -553,7 +556,13 @@ namespace TagFiles.Parser
             }
           case TagConstants.CCV:
             {
-              EpochRec.CCV = Convert.ToUInt16(TagValue);
+              var ccv = Convert.ToUInt16(TagValue);
+              if (Prev_EpochRec != null)
+              {
+                if (Prev_EpochRec.HasCCV & ccv == Prev_EpochRec.CCV)
+                  break;
+              }
+              EpochRec.CCV = ccv;
               break;
             }
           case TagConstants.MAPPING_MODE:
@@ -568,7 +577,13 @@ namespace TagFiles.Parser
             }
           case TagConstants.TEMPERATURE:
             {
-              EpochRec.Temperature = Convert.ToUInt16(TagValue);
+              var tmp = Convert.ToUInt16(TagValue);
+              if (Prev_EpochRec != null)
+              {
+                if (Prev_EpochRec.HasTemperature & tmp == Prev_EpochRec.Temperature)
+                  break;
+              }
+              EpochRec.Temperature = tmp;
               break;
             }
           case TagConstants.COMPACT_SENSOR_TYPE:
@@ -588,7 +603,13 @@ namespace TagFiles.Parser
             }
           case TagConstants.MDP:
             {
-              EpochRec.MDP = Convert.ToUInt16(TagValue);
+              var mdp = Convert.ToUInt16(TagValue); 
+              if (Prev_EpochRec != null)
+              {
+                if (Prev_EpochRec.HasMDP & mdp == Prev_EpochRec.MDP)
+                  break;
+              }
+              EpochRec.MDP = mdp;
               break;
             }
           case TagConstants.TARGET_MDP:
@@ -640,8 +661,8 @@ namespace TagFiles.Parser
     public void Reset()
     {
       EpochRec = new EpochRecord();
-      TagName = "";
-      TagValue = "";
+      TagName = String.Empty;
+      TagValue = String.Empty;
       HaveName = false;
       HaveValue = false;
       HeaderRecordCount = 0;
@@ -665,6 +686,7 @@ namespace TagFiles.Parser
       packetIsHeader = false;
 
       // If debugging (causing a ide delay) this can be commented out
+     
       if (prevEpochTime != DateTime.MinValue)
       {
         // this check is here to prevent two epochs seprated by a min time interval being stitched together
@@ -672,12 +694,13 @@ namespace TagFiles.Parser
         TimeSpan currentSpan = DateTime.Now - prevEpochTime;
         if (currentSpan > minSpanAllowed)
         {
-          if (_Prev_EpochRec != null)
-            _Prev_EpochRec = null; // stops the previous epoch being associated to this epoch
+          if (Prev_EpochRec != null)
+            Prev_EpochRec = null; // stops the previous epoch being associated to this epoch
           if (_PrevTagFile_EpochRec != null)
             _PrevTagFile_EpochRec = null;
         }
       }
+      
 
       prevEpochTime = DateTime.Now;
 
@@ -708,12 +731,12 @@ namespace TagFiles.Parser
             case TagConstants.NAK:
               continue;
             case TagConstants.RS:
-              if (HaveName && TagValue != "")
+              if (HaveName && TagValue != String.Empty)
                 ProcessField();
               HaveName = false;
               HaveValue = false;
-              TagValue = "";
-              TagName = "";
+              TagValue = String.Empty;
+              TagName = String.Empty;
               continue;
             default:
               if (!HaveName)
@@ -727,7 +750,7 @@ namespace TagFiles.Parser
                 if (!HaveValue)
                   HaveValue = true;
                 if (HaveName && i == bArray.Length - 1) // endoftext
-                  if (HaveName && TagValue != "")
+                  if (HaveName && TagValue != String.Empty)
                   {
                     var res = ProcessField();
                     if (res == false)
@@ -742,22 +765,29 @@ namespace TagFiles.Parser
         // finally process all fields picked out of the datapacket
         var newHeader = false;
 
-        if (_Prev_EpochRec != null) // test needed
+        LastStateEpochRecord.EpochCopyLatestValues(ref EpochRec); // Remeber last valid values for each tag
+
+        if (Prev_EpochRec != null) // test needed
         {
           // Check if its the same position and elevation
           if (packetIsHeader) // if header record
+          {
             UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.NewHeader);
-          else if (EpochRec.BladePositionDifferent(ref _Prev_EpochRec))
+          }
+          else if (EpochRec.MachineStateDifferent(ref Prev_EpochRec))
           {
             UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.ChangeRecord);
-            if (NotSeenNewPosition && updateCount > 1) 
+            if (NotSeenNewPosition && updateCount > 1)
               NotSeenNewPosition = false;
           }
           else Log.LogError($"** Same Position ***");
 
         }
         else
-          UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.FirstRecord);
+          if (packetIsHeader)
+            UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.NewHeader);
+          else
+            UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.ChangeRecord);
 
         if (newHeader) // Is this the start of a new tagfile
         {
@@ -766,12 +796,14 @@ namespace TagFiles.Parser
             if (_PrevTagFile_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
               UpdateTagContentList(ref _PrevTagFile_EpochRec, ref tmpNR, TagConstants.UpdateReason.LastTagFileEpoch);
             _PrevTagFile_EpochRec = null;
+            LastStateEpochRecord.ClearEpoch();
           }
         }
         else
         {
-          _Prev_EpochRec = new EpochRecord();
-          _Prev_EpochRec.EpochCopy(ref EpochRec);
+          if (Prev_EpochRec == null)
+            Prev_EpochRec = new EpochRecord();
+          Prev_EpochRec.EpochCopy(ref LastStateEpochRecord);
         }
 
         return true;

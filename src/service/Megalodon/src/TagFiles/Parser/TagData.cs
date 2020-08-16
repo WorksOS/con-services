@@ -29,7 +29,7 @@ namespace TagFiles.Parser
 
     public override string AsString()
     {
-      return "";
+      return String.Empty;
     }
   }
 
@@ -66,7 +66,7 @@ namespace TagFiles.Parser
 
     public override string AsString()
     {
-      return "";
+      return String.Empty;
     }
   }
 
@@ -84,7 +84,7 @@ namespace TagFiles.Parser
 
     public override string AsString()
     {
-      return "";
+      return String.Empty;
     }
   }
 
@@ -107,7 +107,7 @@ namespace TagFiles.Parser
 
     public override string AsString()
     {
-      return "";
+      return String.Empty;
     }
   }
 
@@ -132,7 +132,7 @@ namespace TagFiles.Parser
 
     public override string AsString()
     {
-      return "";
+      return String.Empty;
     }
   }
 
@@ -155,7 +155,7 @@ namespace TagFiles.Parser
 
     public override string AsString()
     {
-      return "";
+      return String.Empty;
     }
   }
 
