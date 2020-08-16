@@ -686,7 +686,7 @@ namespace TagFiles.Parser
       packetIsHeader = false;
 
       // If debugging (causing a ide delay) this can be commented out
-      /*
+     
       if (prevEpochTime != DateTime.MinValue)
       {
         // this check is here to prevent two epochs seprated by a min time interval being stitched together
@@ -694,13 +694,13 @@ namespace TagFiles.Parser
         TimeSpan currentSpan = DateTime.Now - prevEpochTime;
         if (currentSpan > minSpanAllowed)
         {
-          if (_Prev_EpochRec != null)
-            _Prev_EpochRec = null; // stops the previous epoch being associated to this epoch
+          if (Prev_EpochRec != null)
+            Prev_EpochRec = null; // stops the previous epoch being associated to this epoch
           if (_PrevTagFile_EpochRec != null)
             _PrevTagFile_EpochRec = null;
         }
       }
-      */
+      
 
       prevEpochTime = DateTime.Now;
 
