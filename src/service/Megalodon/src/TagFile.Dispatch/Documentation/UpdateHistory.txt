@@ -1,19 +1,22 @@
 TrimbleTagfileService Update History
 ************************************
 
-Version 1.0 24/6/2020 Offical release
+Version 1.0 24/June/2020 Offical release
 * New protocol to contain header records. Key "TransmissionProtocolVersion": "1"
 
-Version 1.1 23/7/2020 
+Version 1.1 23/July/2020 
 * Allow other machine types to be produced. like Dozer, Grader, Compactor
 * Added this update history file
 
-Version 1.2 12/8/2020 
+Version 1.2 12/Aug/2020 
 * Added more tag options to tagfile creator
 * Changed host for direct tagfile send. No authentication
 * Made tagfile send more robust to failure.
 
-Version 1.3 14/8/2020 
+Version 1.3 14/Aug/2020 
 * Flag tag has value if not null
+
+Version 1.4 17/Aug/2020 
+* New build solution and small code tidyup
 
 
