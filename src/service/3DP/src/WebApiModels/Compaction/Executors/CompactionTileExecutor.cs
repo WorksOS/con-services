@@ -38,8 +38,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (request.ComputeVolumesType == VolumesType.Between2Filters && !request.ExplicitFilters)
         {
           var adjusted = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
-          filter1 = adjusted.Item1;
-          filter2 = adjusted.Item2;
+          filter1 = adjusted.baseFilter;
+          filter2 = adjusted.topFilter;
         }
 
         var trexRequest = new TRexTileRequest(

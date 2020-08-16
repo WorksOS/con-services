@@ -528,8 +528,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (volumeCalcType == VolumeCalcType.GroundToGround && !request.ExplicitFilters)
         {
           var adjusted = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
-          baseFilter = adjusted.Item1;
-          topFilter = adjusted.Item2;
+          baseFilter = adjusted.baseFilter;
+          topFilter = adjusted.topFilter;
         }
 
         var liftBuildSettings = request.LiftBuildSettings;

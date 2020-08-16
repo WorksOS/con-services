@@ -8,7 +8,7 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
   public static class FilterUtilities
   {
 
-    public static Tuple<FilterResult, FilterResult> AdjustFilterToFilter(FilterResult baseFilter, FilterResult topFilter)
+    public static (FilterResult baseFilter, FilterResult topFilter) AdjustFilterToFilter(FilterResult baseFilter, FilterResult topFilter)
     {
       //Special case for Raptor filter to filter comparisons.
       //If base filter is earliest and top filter is latest with a DateTime filter then replace
@@ -29,37 +29,39 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
         newBaseFilter.ReturnEarliest = false;
         newBaseFilter.ElevationType = null;
 
-        return new Tuple<FilterResult, FilterResult>(newBaseFilter, newTopFilter);
+        return (baseFilter: newBaseFilter, topFilter: newTopFilter);
       }
-      return new Tuple<FilterResult, FilterResult>(baseFilter, topFilter);
+      return (baseFilter, topFilter);
     }
 
     /// <summary>
     /// Ensures there is not a misconfigured topFilter for certain operations that involve design surfaces for tile rendering operations
     /// </summary>
-    public static void ReconcileTopFilterAndVolumeComputationMode(ref FilterResult topFilter,
-                                                                  DisplayMode mode,
-                                                                  VolumesType computeVolType)
+    public static FilterResult ReconcileTopFilterAndVolumeComputationMode(
+      FilterResult topFilter,
+      DisplayMode mode,
+      VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations that effect Cut/Fill, Volume and Thickness requests. 
       // If these requests invovle a design through the appropriate volume computation modes, the topFilter has no effect
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a top filter indication one of the comparative surfaces used by these requests
-      if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) || (mode == DisplayMode.TargetThicknessSummary))
+      if ((mode == DisplayMode.CutFill || mode == DisplayMode.VolumeCoverage || mode == DisplayMode.TargetThicknessSummary)
           &&
-          ((computeVolType == VolumesType.BetweenDesignAndFilter) || (computeVolType == VolumesType.BetweenFilterAndDesign)))
+          (computeVolType == VolumesType.BetweenDesignAndFilter || computeVolType == VolumesType.BetweenFilterAndDesign))
       {
         // Force topfilter (which is filter2) to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
-        topFilter = new FilterResult();
+        return new FilterResult();
       }
+
+      return topFilter;
     }
 
     /// <summary>
     /// Ensures there is not a misconfigured topFilter for certain operations that involve design surfaces for volume computation operations
     /// </summary>
-    public static void ReconcileTopFilterAndVolumeComputationMode(ref FilterResult topFilter,
-                                                                  VolumesType computeVolType)
+    public static FilterResult ReconcileTopFilterAndVolumeComputationMode(FilterResult topFilter, VolumesType computeVolType)
     {
       // Adjust filter to take into account volume computations with respect to designs
       // If these requests invovle a design through the appropriate volume computation modes, the topFilter has no effect
@@ -69,50 +71,55 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
       {
         // Force topfilter (which is filter2) to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
-        topFilter = new FilterResult();
+        return new FilterResult();
       }
+
+      return topFilter;
     }
 
     /// <summary>
     /// Ensures there is not a misconfigured filter2 for certain operations that involve design surfaces for tile rendering operations
     /// </summary>
-    public static void ReconcileTopFilterAndVolumeComputationMode(ref FilterResult filter1,
-                                                                  ref FilterResult filter2,
-                                                                  DisplayMode mode,
-                                                                  VolumesType computeVolType)
+    public static (FilterResult baseFilter, FilterResult topFilter) ReconcileTopFilterAndVolumeComputationMode(
+      FilterResult filter1,
+      FilterResult filter2,
+      DisplayMode mode,
+      VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations that effect Cut/Fill, Volume and Thickness requests. 
-      // If these requests invovle a design through the appropriate volume computation modes, either the topFilter or the baseFilter
+      // If these requests involve a design through the appropriate volume computation modes, either the topFilter or the baseFilter
       // has no effect depending on the style of filter/design and design/filter chosen 
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a filter used by these requests
-      if (((mode == DisplayMode.CutFill) || (mode == DisplayMode.VolumeCoverage) || (mode == DisplayMode.TargetThicknessSummary)))
+      if (mode == DisplayMode.CutFill || mode == DisplayMode.VolumeCoverage || mode == DisplayMode.TargetThicknessSummary)
       {
         if (computeVolType == VolumesType.BetweenDesignAndFilter)
         {
           // Force topfilter to be a plain empty filter to remove any default
           // setting such as the LayerType to percolate through into the request.
-          filter2 = new FilterResult();
+          return (baseFilter: filter1, topFilter: new FilterResult());
         }
 
         if (computeVolType == VolumesType.BetweenFilterAndDesign)
         {
           // Force basefilter to be a plain empty filter to remove any default
           // setting such as the LayerType to percolate through into the request.
-          filter2 = new FilterResult();
+          return (baseFilter: filter1, topFilter: new FilterResult());
         }
       }
+      return (baseFilter: filter1, topFilter: filter2);
     }
 
     /// <summary>
     /// Ensures there is not a misconfigured topFilter or baseFilter for certain operations that involve design surfaces for volume computation operations
     /// </summary>
-    public static void ReconcileTopFilterAndVolumeComputationMode(ref FilterResult baseFilter,
-                                                                  ref FilterResult topFilter,
-                                                                  VolumesType computeVolType)
+    public static (FilterResult baseFilter, FilterResult topFilter) ReconcileTopFilterAndVolumeComputationMode(
+      FilterResult baseFilter,
+      FilterResult topFilter,
+      VolumesType computeVolType)
     {
       // Adjust filter to take into account volume type computations respect to designs. 
-      // If these requests invovle a design through the appropriate volume computation modes, either the topFilter or the baseFilter
+      // If these requests involve a design through the appropriate volume computation modes, either the topFilter or the baseFilter
       // has no effect depending on the style of filter/design and design/filter chosen 
       // and must be made safe so the underlying engines do not receive conflicting instructions between a specified design
       // and a filter used by these requests
@@ -121,15 +128,17 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
       {
         // Force topfilter to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
-        baseFilter = new FilterResult();
+        return (baseFilter: new FilterResult(), topFilter);
       }
 
       if (computeVolType == VolumesType.BetweenFilterAndDesign)
       {
         // Force basefilter to be a plain empty filter to remove any default
         // setting such as the LayerType to percolate through into the request.
-        topFilter = new FilterResult();
+        return (baseFilter, topFilter: new FilterResult());
       }
+
+      return (baseFilter, topFilter);
     }
   }
 }
