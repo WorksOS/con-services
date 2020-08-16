@@ -27,15 +27,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   ///    These are called from external applications using an application context,
   ///     which has no user or customer context.
   ///    They will include the callers applicationName, and may have a device context (DID)
+  ///        todoJeannie perhaps we should validate that the token HAS some kind of DID?
   /// </summary>
   [ProjectVerifier]
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionExternalController : BaseController<CompactionExternalController>
+  public class CompactionApplicationController : BaseController<CompactionApplicationController>
   {
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CompactionExternalController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
+    public CompactionApplicationController(IConfigurationStore configStore, IFileImportProxy fileImportProxy, ICompactionSettingsManager settingsManager)
       : base(configStore, fileImportProxy, settingsManager)
     { }
 
