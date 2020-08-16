@@ -91,12 +91,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
         It.IsAny<HeaderDictionary>())).ReturnsAsync(true);
-
-      var createFileResponseModel = new CreateFileResponseModel
-        { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
-      var cwsDesignClient = new Mock<ICwsDesignClient>();
-      cwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), _customHeaders))
-        .ReturnsAsync(createFileResponseModel);
       
       var projectConfigurationModel = new ProjectConfigurationModel
       {
@@ -117,7 +111,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
         productivity3dV1ProxyCoord.Object, httpContextAccessor: httpContextAccessor,
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
-        cwsProjectClient: cwsProjectClient.Object, cwsDesignClient: cwsDesignClient.Object,
+        cwsProjectClient: cwsProjectClient.Object, 
         cwsProfileSettingsClient: cwsProfileSettingsClient.Object);
       var result = await executor.ProcessAsync(projectValidation) as ProjectV6DescriptorsSingleResult;
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Principal;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -24,7 +21,6 @@ using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
-using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -41,7 +37,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private IServiceExceptionHandler _serviceExceptionHandler;
 
     private IProductivity3dV1ProxyCoord _productivity3dV1ProxyCoord;
-    private IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
     private IProductivity3dV2ProxyCompaction _productivity3dV2ProxyCompaction;
     private IProjectRepository _projectRepo;
     private IFileRepository _fileRepo;
@@ -49,7 +44,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private ITPaaSApplicationAuthentication _authorization;
     private ICwsProjectClient _cwsProjectClient;
     private ICwsDeviceClient _cwsDeviceClient;
-    private ICwsDesignClient _cwsDesignClient;
     private ICwsProfileSettingsClient _cwsProfileSettingsClient;
     private ICwsDeviceGatewayClient _cwsDeviceGatewayClient;
     private IConfigurationStore _configurationStore;
@@ -65,14 +59,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => _productivity3dV1ProxyCoord ??= HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>();
-    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => _productivity3dV2ProxyNotification ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>();
     protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => _productivity3dV2ProxyCompaction ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>();
     protected IProjectRepository ProjectRepo => _projectRepo ??= HttpContext.RequestServices.GetService<IProjectRepository>();
     protected IFileRepository FileRepo => _fileRepo ??= HttpContext.RequestServices.GetService<IFileRepository>();
     protected IDataOceanClient DataOceanClient => _dataOceanClient ??= HttpContext.RequestServices.GetService<IDataOceanClient>();
     protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ??= HttpContext.RequestServices.GetService<ICwsProjectClient>();
     protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ??= HttpContext.RequestServices.GetService<ICwsDeviceClient>();
-    protected ICwsDesignClient CwsDesignClient => _cwsDesignClient ??= HttpContext.RequestServices.GetService<ICwsDesignClient>();
     protected ICwsProfileSettingsClient CwsProfileSettingsClient => _cwsProfileSettingsClient ??= HttpContext.RequestServices.GetService<ICwsProfileSettingsClient>();
     protected ICwsDeviceGatewayClient CwsDeviceGatewayClient => _cwsDeviceGatewayClient ??= HttpContext.RequestServices.GetService<ICwsDeviceGatewayClient>();
     
@@ -206,11 +198,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation(
         $"{functionName}: UserUID={UserId}, CustomerUID={CustomerUid} and projectUid='{projectUid}'");
 
-    /// <summary>
-    /// Log the Customer and Project details.
-    /// </summary>
-    protected void LogCustomerDetails(string functionName, long legacyProjectId = 0) =>
-      Logger.LogInformation(
-        $"{functionName}: UserUID={UserId}, CustomerUID={CustomerUid} and legacyProjectId='{legacyProjectId}'");
   }
 }

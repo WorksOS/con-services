@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {

@@ -407,7 +407,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<DeleteImportedFileExecutor>(
             LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-            productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, persistantTransferProxyFactory: persistantTransferProxyFactory, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
+            persistantTransferProxyFactory: persistantTransferProxyFactory, filterServiceProxy: filterServiceProxy, tRexImportFileProxy: tRexImportFileProxy,
             projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, pegasusClient: pegasusClient, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(deleteImportedFile)
       );
@@ -522,7 +522,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           RequestExecutorContainerFactory
             .Build<CreateImportedFileExecutor>(
               LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+              productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
               projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
               cwsProjectClient: CwsProjectClient)
@@ -550,7 +550,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           RequestExecutorContainerFactory
             .Build<UpdateImportedFileExecutor>(
               LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+              productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               tRexImportFileProxy: tRexImportFileProxy,
               projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
               cwsProjectClient: CwsProjectClient)
