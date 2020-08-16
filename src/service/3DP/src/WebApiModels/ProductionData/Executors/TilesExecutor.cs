@@ -37,16 +37,12 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         {
           if (!request.ExplicitFilters)
           {
-            var adjusted = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
-            filter1 = adjusted.baseFilter;
-            filter2 = adjusted.topFilter;
+            (filter1, filter2) = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
           }
         }
         else
         {
-          var adjusted = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(filter1, filter2, request.Mode, request.ComputeVolumesType);
-          filter1 = adjusted.baseFilter;
-          filter2 = adjusted.topFilter;
+          (filter1, filter2) = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(filter1, filter2, request.Mode, request.ComputeVolumesType);
         }
 
         var trexRequest = new TRexTileRequest(

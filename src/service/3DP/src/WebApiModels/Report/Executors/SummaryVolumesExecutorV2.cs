@@ -34,18 +34,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
           if (!request.ExplicitFilters)
           {
-            var adjusted = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
-            baseFilter = adjusted.baseFilter;
-            topFilter = adjusted.topFilter;
+            (baseFilter, topFilter) = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
           }
         }
         else
         {
           // Note: The use of the ReconcileTopFilterAndVolumeComputationMode() here breaks with the pattern of all the other V2
           // end points which explicitly do not perform this step. It has been copied from the Raptor implementation of this end point
-          var adjusted = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(baseFilter, topFilter, request.VolumeCalcType);
-          baseFilter = adjusted.baseFilter;
-          topFilter = adjusted.topFilter;
+          (baseFilter, topFilter) = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(baseFilter, topFilter, request.VolumeCalcType);
         }
 
         var summaryVolumesRequest = new SummaryVolumesDataRequest(

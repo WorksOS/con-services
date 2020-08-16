@@ -38,15 +38,11 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var filter2 = request.Filter2;
         if (request.ComputeVolType == VolumesType.Between2Filters)
         {
-          var adjusted = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
-          filter1 = adjusted.baseFilter;
-          filter2 = adjusted.topFilter;
+          (filter1, filter2) = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
         }
         else
         {
-          var adjusted = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(filter1, filter2, request.Mode, request.ComputeVolType);
-          filter1 = adjusted.baseFilter;
-          filter2 = adjusted.topFilter;
+          (filter1, filter2) = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(filter1, filter2, request.Mode, request.ComputeVolType);
         }
 
         var patchDataRequest = new PatchDataRequest(

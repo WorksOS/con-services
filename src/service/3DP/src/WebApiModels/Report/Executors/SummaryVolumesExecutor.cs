@@ -31,16 +31,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
           if (!request.ExplicitFilters)
           {
-            var adjusted = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
-            baseFilter = adjusted.baseFilter;
-            topFilter = adjusted.topFilter;
+            (baseFilter, topFilter) = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
           }
         }
         else
         {
-          var adjusted = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(baseFilter, topFilter, request.VolumeCalcType);
-          baseFilter = adjusted.baseFilter;
-          topFilter = adjusted.topFilter;
+          (baseFilter, topFilter) =FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(baseFilter, topFilter, request.VolumeCalcType);
         }
 
         var summaryVolumesRequest = new SummaryVolumesDataRequest(
