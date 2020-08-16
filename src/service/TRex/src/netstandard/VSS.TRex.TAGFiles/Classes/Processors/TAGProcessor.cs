@@ -9,7 +9,9 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.TAGFiles.Classes.OEM.Volvo;
 using VSS.TRex.TAGFiles.Classes.Swather;
+using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Types;
 using VSS.TRex.Types.CellPasses;
@@ -55,7 +57,7 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
     }
 
     // SiteModel is the site model that the read data is being contributed to
-    private ISiteModel SiteModel;
+    public ISiteModel SiteModel { get; }
 
     // SiteModelAggregator is the site model that the read data is aggregated into
     // prior to being integrated into the model represented by SiteModel

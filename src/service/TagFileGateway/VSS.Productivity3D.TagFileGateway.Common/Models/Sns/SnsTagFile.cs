@@ -1,4 +1,6 @@
-﻿namespace VSS.Productivity3D.TagFileGateway.Common.Models.Sns
+﻿using VSS.Productivity3D.Models.Models;
+
+namespace VSS.Productivity3D.TagFileGateway.Common.Models.Sns
 {
   public class SnsTagFile
   {
@@ -11,5 +13,7 @@
     public int FileSize { get; set; }
 
     public string DownloadUrl { get; set; }
+
+    public TAGFileOriginSource originSource { get; set; } = TAGFileOriginSource.LegacyTAGFileSource;
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -24,27 +25,40 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public async Task Get_TBCProject_All_Ok()
+    public async Task Get_TBCProject_ByCustomerUid_Ok()
     {
-      Msg.Title("TBC Project", "Get existing project");
+      Msg.Title("TBC Project", "Get projects for customer");
       var ts = new TestSupport();
 
       var projectName = "project 2";
+      var projectGeofenceWKT = "POLYGON((172.6 -43.5,172.6 -43.5003,172.603 -43.5003,172.603 -43.5,172.6 -43.5))";
       var createResponse = await ts.CreateProjectViaWebApiV5TBC(projectName);
       var returnLongV5Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(createResponse);
 
       Assert.Equal(HttpStatusCode.Created, returnLongV5Result.Code);
       Assert.NotEqual(-1, returnLongV5Result.Id);
 
-      var getResponse = await ts.GetProjectViaWebApiV5TBC(returnLongV5Result.Id);
-      var projectDataTBCSingleResult = JsonConvert.DeserializeObject<ProjectDataTBCSingleResult>(getResponse);
+      var getResponse = await ts.GetProjectViaWebApiV5TBC();
+      var projectDataTbcListResult = JsonConvert.DeserializeObject< Dictionary<long, ProjectDataTBCSingleResult> > (getResponse);
 
-      Assert.NotNull(projectDataTBCSingleResult);
-      Assert.Equal(returnLongV5Result.Id, projectDataTBCSingleResult.LegacyProjectId);
-      Assert.Equal(DateTime.MinValue.ToString(), projectDataTBCSingleResult.StartDate); // no longer supported
-      Assert.Equal(DateTime.MaxValue.ToString(), projectDataTBCSingleResult.EndDate);  // no longer supported
-      Assert.Equal(projectName, projectDataTBCSingleResult.Name);
-      Assert.Equal(0, projectDataTBCSingleResult.ProjectType); // only historical standard supported
+      Assert.NotNull(projectDataTbcListResult);
+      Assert.Single(projectDataTbcListResult);
+      projectDataTbcListResult.TryGetValue(returnLongV5Result.Id, out var firstProject);
+      Assert.NotNull(firstProject);
+      Assert.Equal(returnLongV5Result.Id, firstProject.LegacyProjectId);
+      Assert.False(firstProject.IsArchived);
+      Assert.Equal(projectName, firstProject.Name);
+      Assert.Equal(string.Empty, firstProject.ProjectTimeZone);
+      Assert.Equal(0, firstProject.ProjectType);                          // only historical 'standard project' supported
+      Assert.Equal("Standard", firstProject.ProjectTypeName);
+      Assert.Equal(DateTime.MinValue.ToString(), firstProject.StartDate); // no longer supported
+      Assert.Equal(DateTime.MaxValue.ToString(), firstProject.EndDate);   // no longer supported
+      Assert.True(Guid.TryParse(firstProject.ProjectUid, out _));
+      Assert.Equal(projectGeofenceWKT, firstProject.ProjectGeofenceWKT);
+      Assert.Equal(returnLongV5Result.Id, firstProject.LegacyProjectId);
+      Assert.Equal(ts.CustomerUid, new Guid(firstProject.CustomerUid));
+      Assert.Equal("0", firstProject.LegacyCustomerId);               // no longer supported
+      Assert.Equal(string.Empty, firstProject.CoordinateSystemFileName);
     }
 
     [Fact]

@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       Log.LogDebug("GetReportTile: " + Request.QueryString);
 
-      var request = new GracefulWebRequest(logger, ConfigStore);
+      var request = new GracefulWebRequest(logger, ConfigStore, HttpContext.RequestServices.GetRequiredService<IHttpClientFactory>());
       return await request.ExecuteRequest<TileResult>(GetTileUrl(), null, CustomHeaders, HttpMethod.Get);
     }
 

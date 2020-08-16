@@ -12,15 +12,17 @@ namespace VSS.MasterData.Proxies.UnitTests
   public class MemoryCacheTestsFixture : IDisposable
   {
     public IServiceProvider serviceProvider;
+    public IServiceCollection serviceCollection; 
 
     public MemoryCacheTestsFixture()
     {
-      serviceProvider = new ServiceCollection()
+      serviceCollection = new ServiceCollection()
                         .AddLogging()
                         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.MasterData.Proxies.UnitTests.log")))
                         .AddSingleton<IConfigurationStore, GenericConfiguration>()
                         .AddTransient<IMemoryCache, MemoryCache>()
-                        .BuildServiceProvider();
+                        .AddHttpClient();
+                        //.BuildServiceProvider();
     }
 
     public void Dispose()

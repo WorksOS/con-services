@@ -46,46 +46,39 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
-#if RAPTOR
-    private IASNodeClient raptorClient;
-#endif
-    private ILogger<T> logger;
-    private ILoggerFactory loggerFactory;
-    private IFilterServiceProxy filterServiceProxy;
-    private IProjectSettingsProxy projectSettingsProxy;
-    private ITRexCompactionDataProxy tRexCompactionDataProxy;
-    private ITagFileAuthProjectV5Proxy tagFileAuthProjectV5Proxy;
-    private IServiceExceptionHandler serviceExceptionHandler;
+    private ILogger<T> _logger;
+    private ILoggerFactory _loggerFactory;
+    private IFilterServiceProxy _filterServiceProxy;
+    private IProjectSettingsProxy _projectSettingsProxy;
+    private ITRexCompactionDataProxy _tRexCompactionDataProxy;
+    private ITagFileAuthProjectV5Proxy _tagFileAuthProjectV5Proxy;
+    private IServiceExceptionHandler _serviceExceptionHandler;
+    private ProjectStatisticsHelper _projectStatisticsHelper;
 
     /// <summary>
     /// Gets the filter service proxy interface.
     /// </summary>
-    private IFilterServiceProxy FilterServiceProxy => filterServiceProxy ?? (filterServiceProxy = HttpContext.RequestServices.GetService<IFilterServiceProxy>());
+    private IFilterServiceProxy FilterServiceProxy => _filterServiceProxy ??= HttpContext.RequestServices.GetService<IFilterServiceProxy>();
 
     /// <summary>
     /// Gets the project settings proxy interface.
     /// </summary>
-    private IProjectSettingsProxy ProjectSettingsProxy => projectSettingsProxy ?? (projectSettingsProxy = HttpContext.RequestServices.GetService<IProjectSettingsProxy>());
+    private IProjectSettingsProxy ProjectSettingsProxy => _projectSettingsProxy ??= HttpContext.RequestServices.GetService<IProjectSettingsProxy>();
 
     /// <summary>
     /// Gets the tRex CompactionData proxy interface.
     /// </summary>
-    protected ITRexCompactionDataProxy TRexCompactionDataProxy => tRexCompactionDataProxy ?? (tRexCompactionDataProxy = HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>());
+    protected ITRexCompactionDataProxy TRexCompactionDataProxy => _tRexCompactionDataProxy ??= HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>();
 
     /// <summary>
     /// Gets the tagfile authorization proxy interface.
     /// </summary>
-    protected ITagFileAuthProjectV5Proxy TagFileAuthProjectV5Proxy => tagFileAuthProjectV5Proxy ?? (tagFileAuthProjectV5Proxy = HttpContext.RequestServices.GetService<ITagFileAuthProjectV5Proxy>());
+    protected ITagFileAuthProjectV5Proxy TagFileAuthProjectV5Proxy => _tagFileAuthProjectV5Proxy ??= HttpContext.RequestServices.GetService<ITagFileAuthProjectV5Proxy>();
 
     /// <summary>
     /// helper methods for getting project statistics from Raptor/TRex
     /// </summary>
-    private ProjectStatisticsHelper _projectStatisticsHelper = null;
-    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileImportProxy, TRexCompactionDataProxy
-#if RAPTOR
-         , RaptorClient
-#endif
-       ));
+    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ??= new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileImportProxy, TRexCompactionDataProxy);
 
     /// <summary>
     /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
@@ -95,19 +88,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the service exception handler.
     /// </summary>
-    private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
-#if RAPTOR
-    protected IASNodeClient RaptorClient => raptorClient ?? (raptorClient = HttpContext.RequestServices.GetService<IASNodeClient>());
-#endif
+    private IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
+
     /// <summary>
     /// Gets the application logging interface.
     /// </summary>
-    protected ILogger<T> Log => logger ?? (logger = HttpContext.RequestServices.GetService<ILogger<T>>());
+    protected ILogger<T> Log => _logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
 
     /// <summary>
     /// Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders.
     /// </summary>
-    protected ILoggerFactory LoggerFactory => loggerFactory ?? (loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
+    protected ILoggerFactory LoggerFactory => _loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from
@@ -129,7 +120,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
-    private readonly MemoryCacheEntryOptions filterCacheOptions = new MemoryCacheEntryOptions
+    private readonly MemoryCacheEntryOptions _filterCacheOptions = new MemoryCacheEntryOptions
     {
       SlidingExpiration = TimeSpan.FromDays(3)
     };
@@ -295,25 +286,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                       Path.GetExtension(tccFileName);
       }
 
-#if RAPTOR
-      //For Raptor, need the parent design if it's a reference surface
-      if (file.ImportedFileType == ImportedFileType.ReferenceSurface)
-      {
-        var parent = fileList.FirstOrDefault(f => f.ImportedFileUid == file.ParentUid);
-        if (parent == null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Unable to access parent design file."));
-        }
-
-        fileUid = Guid.Parse(parent.ImportedFileUid);
-        file.LegacyFileId = parent.LegacyFileId;
-        tccFileName = parent.Name;
-        //The file.Path is CustomerUid + ProjectUid which should be the same for both
-      }
-#endif
-
       var fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
@@ -393,9 +365,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-      /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
-      /// </summary>
-      protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
+    /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
+    /// </summary>
+    protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
     {
       var filterKey = filterUid.HasValue ? $"{nameof(FilterResult)} {filterUid.Value}" : string.Empty;
       // Filter models are immutable except for their Name.
@@ -473,7 +445,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               projectUid.ToString()
             };
 
-            FilterCache.Set(filterKey, raptorFilter, filterTags, filterCacheOptions);
+            FilterCache.Set(filterKey, raptorFilter, filterTags, _filterCacheOptions);
 
             return raptorFilter;
           }

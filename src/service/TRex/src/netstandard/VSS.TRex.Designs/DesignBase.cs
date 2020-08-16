@@ -14,13 +14,11 @@ namespace VSS.TRex.Designs
   {
     private int _lockCount;
 
-    //      function GetMemorySizeInKB: Integer; Virtual; Abstract;
+    public Guid DesignUid { get; set; }
 
     public int LockCount => _lockCount;
 
     public string FileName { get; set; } = "";
-
-    //      property MemorySizeInKB : Integer read GetMemorySizeInKB;
 
     public Guid ProjectUid { get; set; }
 
@@ -40,6 +38,8 @@ namespace VSS.TRex.Designs
       bool loadIndices = false);
 
     public abstract void GetExtents(out double x1, out double y1, out double x2, out double y2);
+
+    public abstract BoundingWorldExtent3D GetExtents();
 
     public abstract void GetHeightRange(out double z1, out double z2);
 
@@ -92,5 +92,10 @@ namespace VSS.TRex.Designs
     public abstract List<Fence> GetBoundary();
 
     public abstract bool RemoveFromStorage(Guid siteModelUid, string fileName);
+
+
+    public abstract long SizeInCache();
+
+    public abstract void Dispose();
   }
 }

@@ -169,6 +169,8 @@ namespace VSS.TRex.Designs
       y2 = _boundingBox.MaxY;
     }
 
+    public override BoundingWorldExtent3D GetExtents() => new BoundingWorldExtent3D(_boundingBox);
+
     public override void GetHeightRange(out double z1, out double z2)
     {
       z1 = Consts.NullDouble;
@@ -292,9 +294,16 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
+    /// Return an approximation of the memory required to store the master guidance alignment based on 256 bytes per elemnts in the geometry entities
+    /// </summary>
+    public override long SizeInCache()
+    {
+      return _data?.Entities.Count * 256 ?? 0;
+    }
+
+    /// <summary>
     /// Obtains the master alignment
     /// </summary>
-    /// <returns></returns>
     public NFFGuidableAlignmentEntity GetMasterAlignment() => _data;
 
     /// <summary>
@@ -378,6 +387,12 @@ namespace VSS.TRex.Designs
 
       calcResult = DesignProfilerRequestResult.OK;  // Made it this far so flag OK
       return result;
+    }
+
+    public override void Dispose()
+    {
+      _data = null;
+      _boundingBox = null;
     }
   }
 }

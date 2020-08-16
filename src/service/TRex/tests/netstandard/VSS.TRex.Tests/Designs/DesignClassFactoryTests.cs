@@ -22,12 +22,14 @@ namespace VSS.TRex.Tests.Designs
     {
       const string fileName = "Bob.ttm";
 
+      var designUid = Guid.NewGuid();
       var factory = new DesignClassFactory();
       var siteModelUid = Guid.NewGuid();
-      var design = factory.NewInstance(fileName, 1.0, siteModelUid);
+      var design = factory.NewInstance(designUid, fileName, 1.0, siteModelUid);
 
       design.Should().NotBeNull();
       design.Should().BeOfType<TTMDesign>();
+      design.DesignUid.Should().Be(designUid);
       design.FileName.Should().Be(fileName);
       design.ProjectUid.Should().Be(siteModelUid);
     }
@@ -37,12 +39,14 @@ namespace VSS.TRex.Tests.Designs
     {
       const string fileName = "Bob.svl";
 
+      var designUid = Guid.NewGuid();
       var factory = new DesignClassFactory();
       var siteModelUid = Guid.NewGuid();
-      var design = factory.NewInstance(fileName, 1.0, siteModelUid);
+      var design = factory.NewInstance(designUid, fileName, 1.0, siteModelUid);
 
       design.Should().NotBeNull();
       design.Should().BeOfType<SVLAlignmentDesign>();
+      design.DesignUid.Should().Be(designUid);
       design.FileName.Should().Be(fileName);
       design.ProjectUid.Should().Be(siteModelUid);
     }
@@ -52,9 +56,10 @@ namespace VSS.TRex.Tests.Designs
     {
       const string fileName = "Bob.xxx";
 
+      var designUid = Guid.NewGuid();
       var factory = new DesignClassFactory();
       var siteModelUid = Guid.NewGuid();
-      Action act = () => _ = factory.NewInstance(fileName, 1.0, siteModelUid);
+      Action act = () => _ = factory.NewInstance(designUid, fileName, 1.0, siteModelUid);
       act.Should().Throw<TRexException>().WithMessage($"Unknown design file type in design class factory for design {fileName}");
     }
 
@@ -63,12 +68,14 @@ namespace VSS.TRex.Tests.Designs
     {
       const string fileName = "Bob.xxx.svl";
 
+      var designUid = Guid.NewGuid();
       var factory = new DesignClassFactory();
       var siteModelUid = Guid.NewGuid();
-      var design = factory.NewInstance(fileName, 1.0, siteModelUid);
+      var design = factory.NewInstance(designUid, fileName, 1.0, siteModelUid);
 
       design.Should().NotBeNull();
       design.Should().BeOfType<SVLAlignmentDesign>();
+      design.DesignUid.Should().Be(designUid);
     }
   }
 }

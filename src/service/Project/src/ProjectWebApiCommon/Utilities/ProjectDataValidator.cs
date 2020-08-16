@@ -1,17 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
@@ -72,6 +63,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
       return businessCenterFile;
     }
-
   }
 }

@@ -35,8 +35,8 @@ namespace VSS.TRex.Profiling
       {
         T profileCell = profileCells[CellIdx];
         SubGridCellAddress ThisSubGridOrigin = new SubGridCellAddress(
-          profileCell.OTGCellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-          profileCell.OTGCellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel);
+          profileCell.OTGCellX & ~SubGridTreeConsts.SubGridLocalKeyMask,
+          profileCell.OTGCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
 
         if (!currentSubGridOrigin.Equals(ThisSubGridOrigin))
           break;
