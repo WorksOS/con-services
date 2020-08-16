@@ -9,6 +9,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
@@ -53,8 +54,8 @@ namespace VSS.TRex.Gateway.Common.Executors.Design
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,
         CellSize = siteModel.CellSize,
-        StartPoint = new WGS84Point(request.StartX, request.StartY),
-        EndPoint = new WGS84Point(request.EndX, request.EndY),
+        StartPoint = new WGS84Point(request.StartX, request.StartY, request.PositionsAreGrid ? Consts.NullDouble : 0),//coord conversion requires elevation set
+        EndPoint = new WGS84Point(request.EndX, request.EndY, request.PositionsAreGrid ? Consts.NullDouble : 0),
         PositionsAreGrid = request.PositionsAreGrid
       });
 

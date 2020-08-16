@@ -81,6 +81,8 @@ namespace VSS.TRex.Designs
       y2 = 38;
     }
 
+    public override BoundingWorldExtent3D GetExtents() => new BoundingWorldExtent3D(6, 34, 8, 38);
+
     /// <summary>
     /// Retrieves the elevation range of the vertices in the alignment surface
     /// </summary>
@@ -164,6 +166,15 @@ namespace VSS.TRex.Designs
     {
       var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
       return s3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
+    }
+
+    public override long SizeInCache()
+    {
+      return 10 * 1024; // 10Kb 
+    }
+
+    public override void Dispose()
+    {
     }
   }
 }

@@ -131,8 +131,8 @@ namespace VSS.TRex.Tests.GridFabric
         .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
         .Complete();
 
-      string GridName = TRexGrids.GridName(StorageMutability.Immutable);
-      string Role = "TestRole";
+      var GridName = TRexGrids.GridName(StorageMutability.Immutable);
+      var Role = "TestRole";
 
       Action act = () => new BaseIgniteClass(GridName, Role);
 

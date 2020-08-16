@@ -55,6 +55,8 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
     }
 
+    public int SizeOf() => Items.Length * XYZ.SizeOf();
+
 
     /**** Experimental code requiring unsafe code. Removed for now...
     /// <summary>

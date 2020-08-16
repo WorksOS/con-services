@@ -12,23 +12,38 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
   public class ProjectDataTBCSingleResult : ContractExecutionResult
   {
     /// <summary>
-    /// The id for the project.
+    ///   Gets or sets a value indicating whether this instance is archived.
+    ///       Yes gets archived and non-archived
     /// </summary>
-    /// <value>
-    /// The legacy project ID.
-    /// </value>
-    [JsonProperty(PropertyName = "id", Required = Required.Default)]
-    public long LegacyProjectId { get; set; }
+    [JsonProperty(PropertyName = "isArchived", Required = Required.Default)]
+    public bool IsArchived { get; set; } = false;
 
     /// <summary>
     /// The name for the project.
     /// </summary>
-    /// <value>
-    /// The name.
-    /// </value>
     [JsonProperty(PropertyName = "name", Required = Required.Default)]
     public string Name { get; set; }
 
+    /// <summary>
+    /// Timezone is now calculated by cws from the bounding box
+    ///    todoJeannie do we need to convert it back to the format:  "W. Europe Standard Time"
+    /// </summary>
+    [JsonProperty(PropertyName = "projectTimeZone", Required = Required.Default)]
+    public string ProjectTimeZone { get; set; } // todoJeannie
+
+
+    /// <summary>
+    /// The project type: Standard = 0 (default), only type supported in WorksOS  
+    /// </summary>
+    [JsonProperty(PropertyName = "projectType", Required = Required.Default)]
+    public int ProjectType { get; set; } = 0;
+
+    /// <summary>
+    /// The project type: Standard = 0 (default), only type supported in WorksOS  
+    /// </summary>
+    [JsonProperty(PropertyName = "projectTypeName", Required = Required.Default)]
+    public string ProjectTypeName { get; set; } = "Standard";
+    
     /// <summary>
     /// The start date for the project. Obsolete in WorksOS
     /// </summary>
@@ -42,21 +57,58 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     public string EndDate { get; set; } = DateTime.MaxValue.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>
-    /// The project type: Standard = 0 (default), only type supported in WorksOS  
+    /// Gets or sets the project uid.
     /// </summary>
-    [JsonProperty(PropertyName = "projectType", Required = Required.Default)]
-    public int ProjectType { get; set; } = 0;
+    [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
+    public string ProjectUid { get; set; }
 
+    /// <summary>
+    /// Gets or sets the project geofence.
+    ///    In format: "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+    /// </summary>
+    [JsonProperty(PropertyName = "projectGeofenceWKT", Required = Required.Default)]
+    public string ProjectGeofenceWKT { get; set; } // todoJeannie
 
+    /// <summary>
+    /// The short id generated from the ProjectUid which TBC uses in its legacy code.
+    /// </summary>
+    [JsonProperty(PropertyName = "id", Required = Required.Default)]
+    public long LegacyProjectId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the CustomerUID which the project is associated with
+    /// </summary>
+    [JsonProperty(PropertyName = "customerUid", Required = Required.Default)]
+    public string CustomerUid { get; set; } 
+
+    /// <summary>
+    /// Gets or sets the customer Id from legacy VisionLink. Obsolete in WorksOS
+    /// </summary>
+    [JsonProperty(PropertyName = "legacyCustomerId", Required = Required.Default)]
+    public string LegacyCustomerId { get; set; } = "0"; 
+
+    /// <summary>
+    /// Gets or sets the CoordinateSystem FileName which the project is associated with
+    /// </summary>
+    [JsonProperty(PropertyName = "coordinateSystemFileName", Required = Required.Default)]
+    public string CoordinateSystemFileName { get; set; } // todoJeannie
 
     public override bool Equals(object obj)
     {
       if (!(obj is ProjectDataTBCSingleResult otherProject)) return false;
-      return otherProject.LegacyProjectId == this.LegacyProjectId
-             && otherProject.ProjectType == this.ProjectType
+      return otherProject.IsArchived == this.IsArchived
              && otherProject.Name == this.Name
+             && otherProject.ProjectTimeZone == this.ProjectTimeZone
+             && otherProject.ProjectType == this.ProjectType
+             && otherProject.ProjectTypeName == this.ProjectTypeName
              && otherProject.StartDate == this.StartDate
              && otherProject.EndDate == this.EndDate
+             && otherProject.ProjectUid == this.ProjectUid
+             && otherProject.ProjectGeofenceWKT == this.ProjectGeofenceWKT
+             && otherProject.LegacyProjectId == this.LegacyProjectId
+             && otherProject.CustomerUid == this.CustomerUid
+             && otherProject.LegacyCustomerId == this.LegacyCustomerId
+             && otherProject.CoordinateSystemFileName == this.CoordinateSystemFileName
         ;
     }
   }

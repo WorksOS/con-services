@@ -28,17 +28,12 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public abstract class BaseServiceDiscoveryProxy : BaseProxy, IServiceDiscoveryProxy
   {
-    protected readonly IWebRequest webRequest;
     private readonly IServiceResolution _serviceResolution;
-    private const int _defaultLogMaxchar = 1000;
-    protected readonly int logMaxChar;
 
     protected BaseServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
-      : base(configurationStore, logger, dataCache)
+      : base(webRequest, configurationStore, logger, dataCache)
     {
-      this.webRequest = webRequest;
       _serviceResolution = serviceResolution;
-      logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxchar);
     }
 
     #region Properties
@@ -208,7 +203,7 @@ namespace VSS.MasterData.Proxies
       var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
       var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
-      var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, strippedHeaders, streamPayload)).ReadAsStreamAsync();
+      var result = await (await WebRequest.ExecuteRequestAsStreamContent(url, method, strippedHeaders, streamPayload)).ReadAsStreamAsync();
       BaseProxyHealthCheck.SetStatus(true, GetType());
       return result;
     }
@@ -220,8 +215,8 @@ namespace VSS.MasterData.Proxies
       // If we are calling to our own services, keep the JWT assertion
       var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: strippedHeaders, method: method, retries: retries);
-      log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
+      var result = await WebRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: strippedHeaders, method: method, retries: retries);
+      log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(LogMaxChar)}");
 
       return result;
     }
@@ -233,7 +228,7 @@ namespace VSS.MasterData.Proxies
       // If we are calling to our own services, keep the JWT assertion
       var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<T>(url, payload: payload, customHeaders: strippedHeaders, method: method);
+      var result = await WebRequest.ExecuteRequest<T>(url, payload: payload, customHeaders: strippedHeaders, method: method);
       log.LogDebug($"{nameof(RequestAndReturnResult)} Result: {JsonConvert.SerializeObject(result)}");
 
       return result;
@@ -246,7 +241,7 @@ namespace VSS.MasterData.Proxies
       // If we are calling to our own services, keep the JWT assertion
       var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      await webRequest.ExecuteRequest(url, payload: payload, customHeaders: strippedHeaders, method: method);
+      await WebRequest.ExecuteRequest(url, payload: payload, customHeaders: strippedHeaders, method: method);
     }
 
     #endregion

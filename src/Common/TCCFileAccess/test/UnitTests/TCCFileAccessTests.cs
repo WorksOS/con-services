@@ -23,6 +23,7 @@ namespace VSS.TCCFileAccess.UnitTests
       var serviceCollection = new ServiceCollection();
 
       serviceCollection.AddLogging();
+      serviceCollection.AddHttpClient();
       serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IFileRepository, FileRepository>();

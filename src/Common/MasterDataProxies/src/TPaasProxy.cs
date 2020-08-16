@@ -15,7 +15,8 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class TPaasProxy : BaseProxy, ITPaasProxy
   {
-    public TPaasProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
+    public TPaasProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger)
+      : base(webRequest, configurationStore, logger)
     { }
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     public async Task<TPaasOauthResult> GetApplicationBearerToken(string grantType, IHeaderDictionary customHeaders)
     {
-      log.LogDebug($"GetApplicationBearerToken: grantType: {grantType} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
+      log.LogDebug($"GetApplicationBearerToken: grantType: {grantType} customHeaders: {customHeaders.LogHeaders(LogMaxChar)}");
       var payLoadToSend = $"grant_type={grantType}";
       var tPaasOauthResult = new TPaasOauthResult();
       try
@@ -48,7 +49,7 @@ namespace VSS.MasterData.Proxies
     /// </summary>
     public async Task<BaseDataResult> RevokeApplicationBearerToken(string token, IHeaderDictionary customHeaders)
     {
-      log.LogDebug($"RevokeApplicationBearerToken: token: {token} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
+      log.LogDebug($"RevokeApplicationBearerToken: token: {token} customHeaders: {customHeaders.LogHeaders(LogMaxChar)}");
       var payLoadToSend = $"token={token}";
       var tPaasOauthResult = new BaseDataResult();
       try

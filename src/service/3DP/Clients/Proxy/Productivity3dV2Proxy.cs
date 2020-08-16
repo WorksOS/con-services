@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       log.LogDebug($"{nameof(ExecuteGenericV2Request)} route: {route}");
 
       var response = await SendMasterDataItemServiceDiscoveryNoCache<T>(route, customHeaders, method: method, payload: body);
-      log.LogDebug($"{nameof(ExecuteGenericV2Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      log.LogDebug($"{nameof(ExecuteGenericV2Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(LogMaxChar))}");
       return response;
     }
   }

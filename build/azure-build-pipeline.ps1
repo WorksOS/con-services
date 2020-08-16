@@ -34,12 +34,13 @@ enum ReturnCode {
 }
 
 $services = @{
-    Common        = 'Common'
-    Mock          = 'service/MockProjectWebApi'
-    Push          = 'service/Push'
-    Megalodon     = 'service/Megalodon'
-    TRex          = 'service/TRex'
-    TRexWebTools  = 'service/TRex' # placeholder
+    Common         = 'Common'
+    Productivity3d = 'service/3DP'
+    Mock           = 'service/MockProjectWebApi'
+    Push           = 'service/Push'
+    Megalodon      = 'service/Megalodon'
+    TRex           = 'service/TRex'
+    TRexWebTools   = 'service/TRex' # placeholder
 }
 
 $servicePath = ''
@@ -125,7 +126,7 @@ function Run-Unit-Tests {
     if ($collectCoverage -eq $true) {
         docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/coverage.cobertura.xml $servicePath/$localTestResultsFolder
 
-        $coveragePath = "$servicePath/$localTestResultsFolder/coverage.cobertura.xml"
+        $coveragePath = "$servicePath/$localTestResultsFolder/coverage*cobertura.xml"
 
         if (-not (Test-Path $coveragePath -PathType Leaf)) {
             Write-Host "Unable to find test coverage file '$coveragePath' on local host." -ForegroundColor Red

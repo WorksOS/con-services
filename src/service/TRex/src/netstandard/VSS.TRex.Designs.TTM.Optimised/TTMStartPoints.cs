@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 
 namespace VSS.TRex.Designs.TTM.Optimised
 {
@@ -12,6 +13,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// </summary>
     public TTMStartPoint[] Items;
 
+    public int SizeOf() => Items.Length * TTMStartPoint.SizeOf();
     /// <summary>
     /// Reads the collection of start points from the TTM file using the provided reader
     /// </summary>

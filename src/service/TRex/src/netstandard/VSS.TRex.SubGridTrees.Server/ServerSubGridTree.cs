@@ -99,7 +99,7 @@ namespace VSS.TRex.SubGridTrees.Server
                                   cellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask);
     }
 
-    public bool LoadLeafSubGridSegment(IStorageProxy storageProxy,
+    public FileSystemErrorStatus LoadLeafSubGridSegment(IStorageProxy storageProxy,
       SubGridCellAddress cellAddress,
       bool loadLatestData,
       bool loadAllPasses,
@@ -114,7 +114,7 @@ namespace VSS.TRex.SubGridTrees.Server
       if (!needToLoadLatestData && !needToLoadAllPasses)
       {
         //Log.LogInformation($"Segment load on {cellAddress} exiting as neither latest nor all passes required");
-        return true; // Nothing more to do here
+        return FileSystemErrorStatus.OK; // Nothing more to do here
       }
 
       // Lock the segment briefly while its contents is being loaded
@@ -123,7 +123,7 @@ namespace VSS.TRex.SubGridTrees.Server
         if (!(needToLoadLatestData ^ segment.HasLatestData) && !(needToLoadAllPasses ^ segment.HasAllPasses))
         {
           //Log.LogInformation($"Segment load on {cellAddress} leaving quietly as a previous thread has performed the load");
-          return true; // The load operation was performed on another thread. Leave quietly
+          return FileSystemErrorStatus.OK; // The load operation was performed on another thread. Leave quietly
         }
 
         // Ensure the appropriate storage is allocated
@@ -136,16 +136,16 @@ namespace VSS.TRex.SubGridTrees.Server
         if (!segment.SegmentInfo.ExistsInPersistentStore)
         {
           //Log.LogInformation($"Segment load on {cellAddress} exiting as segment does not exist in persistent store");
-          return true; // Nothing more to do here
+          return FileSystemErrorStatus.OK; // Nothing more to do here
         }
 
         // Locate the segment file and load the data from it
         var fullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, segment.SegmentInfo);
 
         // Load the cells into it from its file
-        var fileLoaded = subGrid.LoadSegmentFromStorage(storageProxy, fullFileName, segment, needToLoadLatestData, needToLoadAllPasses);
+        var fsError = subGrid.LoadSegmentFromStorage(storageProxy, fullFileName, segment, needToLoadLatestData, needToLoadAllPasses);
 
-        if (!fileLoaded)
+        if (fsError != FileSystemErrorStatus.OK)
         {
           //Log.LogInformation($"Segment load on {cellAddress} failed, performing allocation cleanup activities");
 
@@ -156,13 +156,13 @@ namespace VSS.TRex.SubGridTrees.Server
           if (loadLatestData)
             segment.DeAllocateLatestPassGrid();
 
-          return false;
+          return fsError;
         }
       }
         
       //Log.LogInformation($"Segment load on {cellAddress} succeeded, AllPasses?={Segment.HasAllPasses}, Segment.PassesData?Null={Segment.PassesData==null} ");
 
-      return true;
+      return FileSystemErrorStatus.OK;
     }
 
     public bool LoadLeafSubGrid(IStorageProxy storageProxy,

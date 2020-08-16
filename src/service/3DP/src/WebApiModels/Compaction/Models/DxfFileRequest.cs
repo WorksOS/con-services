@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
     /// <summary>
     /// Gets or sets the maximum number of points the returned GeoJSON should include. 
     /// </summary>
-    public int MaxVerticesPerBoundary { get; set; } = NOT_DEFINED;
+    public int MaxVerticesPerBoundary { get; set; } = 1000;
 
     /// <summary>
     /// Gets or sets the maximum number of boundies within the DXF file to process.
@@ -45,7 +45,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 
     public byte[] GetFileAsByteArray(IFormFile file)
     {
-      if (file == null || file.Length <= 0) { return null; }
+      if (file == null || file.Length <= 0)
+      {
+        return null;
+      }
 
       using var ms = new MemoryStream();
       file.CopyTo(ms);
