@@ -71,10 +71,7 @@
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
@@ -98,22 +95,6 @@
     <WarningsAsErrors />
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-    <WarningsAsErrors />
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.2.0" />
-    <PackageReference Include="System.Net.Security" Version="4.3.2" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
-  </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7;RAPTOR</DefineConstants>

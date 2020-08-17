@@ -12,19 +12,11 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
-using VSS.Common.Exceptions;
-using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
@@ -167,32 +159,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation($"Project projectUid: {projectUid} retrieved");
       return ConvertCwsToWorksOSProject(project, log);
     }
-
-    /// <summary>
-    /// Gets a Project and checks customerUid
-    ///   Includes all projects, regardless of archived state and user role
-    /// </summary>
-    public static async Task<bool> ProjectExists(Guid projectUid, Guid customerUid, Guid userUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, ICwsProjectClient cwsProjectClient, IHeaderDictionary customHeaders)
-    {
-      var project = await cwsProjectClient.GetMyProject(projectUid, userUid, customHeaders: customHeaders);
-      if (project == null)
-      {
-        log.LogWarning($"Project not found: {projectUid}");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
-        return false;
-      }
-
-      if (!string.Equals(project.AccountId, customerUid.ToString(), StringComparison.OrdinalIgnoreCase))
-      {
-        log.LogWarning($"Customer doesn't have access to projectUid: {projectUid}");
-        return false;
-      }
-
-      log.LogInformation($"Project projectUid: {projectUid} retrieved");
-      return true;
-    }
-
+    
     /// <summary>
     /// Gets a Project, even if archived.
     ///    Return project even if null. This is called internally from TFA,
@@ -262,118 +229,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"{nameof(DoesProjectOverlap)}: No overlapping projects.");
       return false;
     }
-
-
-    #region coordSystem
-
-    /// <summary>
-    /// validate CoordinateSystem if provided
-    /// </summary>
-    public static async Task<bool> ValidateCoordSystemInProductivity3D(string csFileName, byte[] csFileContent,
-      IServiceExceptionHandler serviceExceptionHandler, IHeaderDictionary customHeaders,
-      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord)
-    {
-      if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
-      {
-        ProjectDataValidator.ValidateFileName(csFileName);
-        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
-        try
-        {
-          coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-            .CoordinateSystemValidate(csFileContent, csFileName, customHeaders);
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-            "productivity3dV1ProxyCoord.CoordinateSystemValidate", e.Message);
-        }
-
-        if (coordinateSystemSettingsResult == null)
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
-
-        if (coordinateSystemSettingsResult != null &&
-            coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47,
-            coordinateSystemSettingsResult.Code.ToString(),
-            coordinateSystemSettingsResult.Message);
-        }
-      }
-
-      return true;
-    }
-
-    /// <summary>
-    /// Create CoordinateSystem in Raptor and save a copy of the file in DataOcean
-    /// </summary>
-    ///  todo CCSSSCON-351 cleanup parameters once UpdateProject endpoint has been converted
-    public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid,
-      string coordinateSystemFileName,
-      byte[] coordinateSystemFileContent, bool isCreate,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
-      IHeaderDictionary customHeaders,
-      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
-      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
-      ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient, ICwsProjectClient cwsProjectClient = null)
-    {
-      if (!string.IsNullOrEmpty(coordinateSystemFileName))
-      {
-        var headers = customHeaders;
-        headers.TryGetValue("X-VisionLink-ClearCache", out var caching);
-        if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
-          headers.Add("X-VisionLink-ClearCache", "true");
-
-        try
-        {
-          //Pass coordinate system to Raptor
-          CoordinateSystemSettingsResult coordinateSystemSettingsResult;
-          coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-            .CoordinateSystemPost(projectUid,
-              coordinateSystemFileContent, coordinateSystemFileName, headers);
-          var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
-            coordinateSystemSettingsResult?.Code ?? -1,
-            coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
-          log.LogDebug(message);
-          if (coordinateSystemSettingsResult == null ||
-              coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
-          {
-            if (isCreate)
-              await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
-
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41,
-              (coordinateSystemSettingsResult?.Code ?? -1).ToString(),
-              coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
-          }
-
-          //save copy to DataOcean
-          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
-          if (string.IsNullOrEmpty(rootFolder))
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
-          }
-
-          using (var ms = new MemoryStream(coordinateSystemFileContent))
-          {
-            await DataOceanHelper.WriteFileToDataOcean(
-              ms, rootFolder, customerUid, projectUid.ToString(),
-              DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
-              log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
-          }
-        }
-        catch (Exception e)
-        {
-          if (isCreate)
-            await RollbackProjectCreation(Guid.Parse(customerUid), projectUid, log, cwsProjectClient);
-
-          //Don't hide exceptions thrown above
-          if (e is ServiceException)
-            throw;
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "productivity3dV1ProxyCoord.CoordinateSystemPost", e.Message);
-        }
-      }
-    }
-    
-    #endregion coordSystem
 
 
     #region S3

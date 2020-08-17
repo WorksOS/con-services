@@ -351,5 +351,21 @@ namespace VSS.TRex.SubGridTrees.Core
     }
 
     public override bool CellHasValue(byte cellX, byte cellY) => GetSubGrid(cellX, cellY) != null;
+
+    /// <summary>
+    /// Calculate the memory used by this node subgrid. Assume the sub grid reference is the size of a long (8 bytes)
+    /// </summary>
+    public int SizeOf()
+    {
+       var sum = 0;
+      if (_cells != null)
+        sum += SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.SubGridTreeDimension * sizeof(long);
+      if (_sparseCells != null)
+        sum += _sparseCells.Length * SubGridTreeSparseCellRecord.SizeOf();
+
+      sum += sizeof(short); // For sparse cell count
+
+      return sum;
+    }
   }
 }

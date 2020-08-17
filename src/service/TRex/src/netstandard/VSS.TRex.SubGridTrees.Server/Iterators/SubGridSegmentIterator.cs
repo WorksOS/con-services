@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
@@ -23,6 +24,14 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool RetrieveLatestData { get; set; } = false;
         public bool RetrieveAllPasses { get; set; } = true;
+
+        /// <summary>
+        /// Records whether an issue with segment iteration within this subgrid should cause all following segment iterator
+        /// operations for this subgrid to be blacklisted and return no results. This may happen in response to discovery
+        /// of corrupted data (eg: GranuleDoesNoExist file system errors) ans is intended to short circuit operations on
+        /// a sub grid rather than encounter the same failure condition repetitively for all cells within the sub grid.
+        /// </summary>
+        public bool SegmentIterationBlackListed { get; set; } = false;
 
         private ISubGridCellPassesDataSegment LocateNextSubGridSegmentInIteration()
         {
@@ -74,48 +83,41 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     if (!result.Dirty && !ReturnCachedItemsOnly && 
                         (RetrieveAllPasses && !result.HasAllPasses || RetrieveLatestData && !result.HasLatestData))
                     {
-                        if (((IServerSubGridTree) IterationState.SubGrid.Owner).LoadLeafSubGridSegment
+                        var fsResult = ((IServerSubGridTree) IterationState.SubGrid.Owner).LoadLeafSubGridSegment
                             (StorageProxyForSubGridSegments,
                              new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
-                             RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
+                             RetrieveLatestData, RetrieveAllPasses,
                              IterationState.SubGrid,
-                             result))
-                        {
-                            /* Raptor Implementation. TRex has no separate cache - it is in Ignite
+                             result);
 
-                            // The segment is now loaded and available for use and should be touched
-                            // to link it into the cache segment MRU management
-                            if (Result != null && Result.Owner.PresentInCache)
-                            {
-                               DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                            }
-                            */
+                        if (fsResult == FileSystemErrorStatus.OK)
+                        {
+                            // TRex has no separate cache - it is in Ignite
                         }
                         else
                         {
-                            /* Raptor Implementation. TRex has no separate cache - it is in Ignite
-
-                            // The segment is failed to load, however it may have been created
-                            // to hold the data being read. The failure handling will have backtracked
-                            // out any allocations made within the segment, but it is safer to include
-                            // it into the cache and allow it to be managed there than to
-                            // independently remove it here
-                            if (Result != null && Result.Owner.PresentInCache)
-                            {
-                                DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                            }
-                            */
+                            // TRex has no separate cache - it is in Ignite
                 
                             // Segment failed to be loaded. Multiple messages will have been posted to the log.
                             // Move to the next item in the iteration
-                            result = null; 
+
+                            // Specific FS failures indicate corruption in the data store that should preclude further iteration and
+                            // processir of the contents of this sub grid. These conditions result in the sub grid being blacklisted
+                            // and the iterator returning no further information for this subgrid
+                            if (fsResult == FileSystemErrorStatus.GranuleDoesNotExist)
+                            {
+                                SegmentIterationBlackListed = true;
+                                Log.LogWarning($"Black listing segment iteration due to file system failure {fsResult} for sub grid {IterationState.SubGrid.Moniker()}");
+                            }
+
+                            result = null;
                             continue;
                         }
                     }
                 }
 
                 if (result != null) // We have a candidate to return as the next item in the iteration
-                {                    
+                {
                     break;
                 }
             }
@@ -126,8 +128,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // up to in the sub grid tree scan. 
 
         public ISubGridCellPassesDataSegment CurrentSubGridSegment { get; set; }
-
-        // property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
 
         /// <summary>
         /// ReturnDirtyOnly allows the iterator to only return segments in the sub grid that are dirty
@@ -157,8 +157,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
           set => IterationState.Directory = value;
         }
 
-        public bool MarkReturnedSegmentsAsTouched { get; set; }
-
         private int _numberOfSegmentsScanned;
 
         public int NumberOfSegmentsScanned
@@ -169,7 +167,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxyForSubGridSegments)
         {
-            MarkReturnedSegmentsAsTouched = true;
             SubGrid = subGrid;
             Directory = subGrid?.Directory;
             StorageProxyForSubGridSegments = storageProxyForSubGridSegments;
@@ -184,6 +181,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool MoveNext()
         {
+          if (SegmentIterationBlackListed)
+          {
+            //Log.LogWarning($"Iteration aborted in {nameof(MoveNext)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+            return false;
+          }
+
           var result = CurrentSubGridSegment == null ? MoveToFirstSubGridSegment() : MoveToNextSubGridSegment();
 
           if (CurrentSubGridSegment != null && CurrentSubGridSegment.PassesData == null)
@@ -198,6 +201,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // MoveToFirstSubGridSegment moves to the first segment in the sub grid
         public bool MoveToFirstSubGridSegment()
         {
+            if (SegmentIterationBlackListed)
+            {
+                //Log.LogWarning($"Iteration aborted in {nameof(MoveToFirstSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+                return false;
+            }
+
             _numberOfSegmentsScanned = 0;
 
             InitialiseIterator();
@@ -208,6 +217,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // MoveToNextSubGridSegment moves to the next segment in the sub grid
         public bool MoveToNextSubGridSegment()
         {
+            if (SegmentIterationBlackListed)
+            {
+                //Log.LogWarning($"Iteration aborted in {nameof(MoveToNextSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+                return false;
+            }
+
             var subGridSegment = LocateNextSubGridSegmentInIteration();
 
             if (subGridSegment == null) // We are at the end of the iteration

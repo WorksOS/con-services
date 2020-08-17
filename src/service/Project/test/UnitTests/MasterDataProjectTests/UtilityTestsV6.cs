@@ -22,51 +22,6 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
-    public void MapCreateProjectRequestToEvent()
-    {
-      var request = CreateProjectRequest.CreateACreateProjectRequest
-      (Guid.NewGuid().ToString(),
-        CwsProjectType.AcceptsTagFiles, "projectName", "NZ whatsup",
-        "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
-       null, null);
-
-      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      Assert.Equal(request.ProjectType, createProjectEvent.ProjectType);
-      Assert.Equal(request.ProjectName, createProjectEvent.ProjectName);
-      Assert.Equal(request.ProjectTimezone, createProjectEvent.ProjectTimezone);
-      Assert.Equal(request.ProjectBoundary, createProjectEvent.ProjectBoundary);
-      Assert.Equal(request.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileName);
-      Assert.Equal(request.CoordinateSystemFileContent, createProjectEvent.CoordinateSystemFileContent);
-
-      Assert.Equal(DateTime.MinValue, createProjectEvent.ActionUTC);
-
-      // just make a copy
-      var copyOfRequest = AutoMapperUtility.Automapper.Map<CreateProjectRequest>(request);
-      Assert.Equal(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName);
-    }
-
-    [Fact]
-    public void MapUpdateProjectRequestToEvent()
-    {
-      var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), CwsProjectType.AcceptsTagFiles, "projectName", "csName", new byte[] { 1, 2, 3 }, null);
-
-      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
-      Assert.Equal(request.ProjectUid, updateProjectEvent.ProjectUID);
-      Assert.Equal(request.ProjectType, updateProjectEvent.ProjectType);
-      Assert.Equal(request.ProjectName, updateProjectEvent.ProjectName);
-      Assert.Equal(request.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileName);
-      Assert.Equal(request.CoordinateSystemFileContent, updateProjectEvent.CoordinateSystemFileContent);
-
-      Assert.Equal(DateTime.MinValue, updateProjectEvent.ActionUTC);
-
-      // just make a copy
-      var copyOfRequest = AutoMapperUtility.Automapper.Map<UpdateProjectRequest>(request);
-      Assert.Equal(request.ProjectUid, copyOfRequest.ProjectUid);
-      Assert.Equal(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName);
-    }
-
-    [Fact]
     public void MapProjectToResult()
     {
       var project = new ProjectDatabaseModel

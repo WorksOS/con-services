@@ -16,6 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
+using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -40,9 +41,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       : base(config, transferProxyFactory, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
-    // PUT: api/v5/projects/{id}/importedfiles
     /// <summary>
-    /// TBC Upsert imported file
+    /// Called by TBC only.
+    /// Upsert imported file
     ///   1) TBC will already have uploaded to TCC, so read it from there
     ///   2) creates/updates database 
     ///   3) copies file in TCC from VSS area to project 
@@ -58,6 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates and Imported design file for a project</remarks>
     /// <response code="200">Ok</response>
     [Route("api/v5/projects/{projectId}/importedfiles")]
+    [Route("api/v2/projects/{projectId}/importedfiles")] // TBC has route hardcoded
     [HttpPut]
     public async Task<ReturnLongV5Result> UpsertImportedFileV5TBC(
       [FromRoute] long projectId,
@@ -148,7 +150,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             RequestExecutorContainerFactory
               .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
-                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+                productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
@@ -156,7 +158,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           ) as ImportedFileDescriptorSingleResult;
 
           Logger.LogInformation(
-            $"{nameof(UpsertImportedFileV5TBC)}: Create completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+            $"{nameof(UpsertImportedFileV5TBC)}: Create completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
         }
         else
         {
@@ -178,7 +180,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             RequestExecutorContainerFactory
               .Build<UpdateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 CustomerUid, UserId, UserEmailAddress, customHeaders,
-                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+                productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
                 cwsProjectClient: CwsProjectClient)
@@ -194,6 +196,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         Logger.LogInformation(
           $"{nameof(UpsertImportedFileV5TBC)}: Completed successfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
 
+        await NotificationHubClient.Notify(new ProjectChangedNotification(new Guid(projectUid)));
+
         return response;
       }
       finally
@@ -204,12 +208,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
 
-    // GET: api/v5/projects/{projectId}/importedfiles/{id?}
     /// <summary>
-    /// TBC Get imported files.
+    /// Called by TBC only.
+    /// Get imported files.
     /// This is the same as V6 but TBC URL cannot be changed hence the V5 version.
     /// </summary>
     [Route("api/v5/projects/{projectId}/importedfiles/{id?}")]
+    [Route("api/v2/projects/{projectId}/importedfiles/{id?}")] // TBC has route hardcoded
     [HttpGet]
     public async Task<ImmutableList<DesignDetailV5Result>> GetImportedFilesV5TBC([FromRoute] long projectId, [FromRoute] long? id = null)
     {

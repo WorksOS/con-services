@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling
       foreach (var boundary in LineworkBoundaries)
       {
         var fencePoints = DouglasPeucker.DouglasPeuckerByCount(
-          boundary.Boundary.Select(p => new WGSPoint(p.Lat, p.Lon)).ToArray(),
+          boundary.Boundary.Select(p => new WGSPoint(latitude: p.Lat, longtitude: p.Lon)).ToArray(),
           maxVerticesToApproximateTo);
 
         geoJson.Features.Add(new Feature

@@ -36,7 +36,7 @@ namespace VSS.TRex.TAGFiles.Executors
     private readonly bool _tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
 
     /// <summary>
-    /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
+    /// Local singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
     private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<Func<ITAGFileBufferQueue>>()();
 
