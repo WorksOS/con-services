@@ -159,15 +159,15 @@ namespace VSS.TRex.Caching
     /// memory cache instance prior to use. This operation is thread safe - all operations are concurrency locked within the
     /// confines of the context.
     /// </summary>
-    public CacheContextAdditionResult Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element, long invalidatioVersion)
+    public CacheContextAdditionResult Add(ITRexSpatialMemoryCacheContext context, ITRexMemoryCacheItem element, long invalidationVersion)
     {
       lock (_contexts)
       {
         // If the invalidation version of a sub grid derivative being added to the cache does not match the current invalidation version
-        // the prevent if being added to the cache, and return a negative result to indicate the refusal
-        if (invalidatioVersion != context.InvalidationVersion)
+        // then prevent it being added to the cache, and return a negative result to indicate the refusal
+        if (invalidationVersion != context.InvalidationVersion)
         {
-          _log.LogInformation($"Sub grid derivate at {element.CacheOriginX}:{element.CacheOriginY} not added to cache context due to invalidation version mismatch ({invalidatioVersion} vs {context.InvalidationVersion})");
+          _log.LogInformation($"Sub grid derivative at {element.CacheOriginX}:{element.CacheOriginY} not added to cache context due to invalidation version mismatch ({invalidationVersion} vs {context.InvalidationVersion})");
           return CacheContextAdditionResult.RejectedDueToInvlidationVersionMismatch;
         }
 
