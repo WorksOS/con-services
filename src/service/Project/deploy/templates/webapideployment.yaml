@@ -5,18 +5,15 @@ metadata:
   name: {{ template "projectservice.name" . }}
   labels:
     app: {{ template "projectservice.name" . }}
-    component: {{ template "component.webapi" . }}
 spec:
   replicas: {{ default 1 .Values.replicaCount}}
   selector:
     matchLabels:
       app: {{ template "projectservice.name" . }}
-      component: {{ template "component.webapi" . }}
   template:
     metadata:
       labels:
         app: {{ template "projectservice.name" . }}
-        component: {{ template "component.webapi" . }}
     spec:
       serviceAccount: {{ .Values.environment }}-service-account
       containers:
