@@ -84,7 +84,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
       if (_immutableCompute == null)
       {
         _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Compute cluster projection is null");
-        DumpClusterStateToLog();
+        DumpClusterStateToLog(ImmutableIgnite, "ImmutableGrid", "ProgressiveResponseRequest");
       }
       else
       {
@@ -92,7 +92,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         if (projectionSize == 0)
         {
           _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Topology projection contains no nodes");
-          DumpClusterStateToLog();
+          DumpClusterStateToLog(ImmutableIgnite, "ImmutableGrid", "ProgressiveResponseRequest");
         }
       }
     }

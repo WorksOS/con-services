@@ -57,8 +57,6 @@ namespace VSS.TRex.GridFabric
     /// <summary>
     /// Initializes the GridName and Role parameters and uses them to establish grid connectivity and compute projections
     /// </summary>
-    /// <param name="gridName"></param>
-    /// <param name="role"></param>
     private void InitialiseIgniteContext(string gridName, string role)
     {
       _gridName = gridName;
@@ -81,20 +79,26 @@ namespace VSS.TRex.GridFabric
       InitialiseIgniteContext(gridName, role);
     }
 
-    protected void DumpClusterStateToLog()
+    protected static void DumpClusterStateToLog(IIgnite ignite, string gridName, string roleAttribute)
     {
       try
       {
         _log.LogInformation("#In# DumpClusterStateToLog: Starting topolgy state dump");
+        
+        if (ignite == null)
+        {
+          _log.LogError("Ignite reference is null");
+          return;
+        }
 
-        var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
+        var numClusterNodes = ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
 
         // Log the known state of the cluster
-        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster ({_gridName} [Ignite reported:{_ignite?.Name ?? "NULL!"}]): {numClusterNodes}");
+        _log.LogInformation($"Node attribute selected for: {roleAttribute}. Num nodes in cluster ({gridName} [Ignite reported:{ignite?.Name ?? "NULL!"}]): {numClusterNodes}");
 
         if (numClusterNodes > 0)
         {
-          _ignite?.GetCluster()?.GetNodes().ForEach(x =>
+          ignite?.GetCluster()?.GetNodes().ForEach(x =>
           {
             _log.LogInformation($"Node ID {x.Id}, ConsistentID: {x.ConsistentId}, Version:{x.Version}, IsClient?:{x.IsClient}, IsDaemon?:{x.IsDaemon}, IsLocal?:{x.IsLocal}, Order:{x.Order}, Addresses#: {x.Addresses?.Count ?? 0}, HostNames:{((x.HostNames?.Count ?? 0) > 0 ? x.HostNames.Aggregate((s, o) => s + o) : "No Host Names")}");
 
@@ -156,7 +160,7 @@ namespace VSS.TRex.GridFabric
 
       if ((_group.GetNodes()?.Count ?? 0) == 0)
       {
-        DumpClusterStateToLog();
+        DumpClusterStateToLog(_ignite, _gridName, _roleAttribute);
 
         throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
       }
@@ -173,14 +177,14 @@ namespace VSS.TRex.GridFabric
       if (_compute == null)
       {
         _log.LogError($"Cluster group for derived compute topology projection is null for request on grid {_gridName}");
-        DumpClusterStateToLog();
+        DumpClusterStateToLog(_ignite, _gridName, _roleAttribute);
         throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {_gridName}");
       }
 
       if ((_compute.ClusterGroup.GetNodes()?.Count ?? 0) == 0)
       {
         _log.LogError($"Cluster group for derived compute topology projection is empty for request on grid {_gridName}");
-        DumpClusterStateToLog();
+        DumpClusterStateToLog(_ignite, _gridName, _roleAttribute);
       }
 
       if (_log.IsTraceEnabled())
@@ -200,7 +204,6 @@ namespace VSS.TRex.GridFabric
     /// <summary>
     /// Implements the Ignite IBinarizable.WriteBinary interface Ignite will call to serialise this object.
     /// </summary>
-    /// <param name="writer"></param>
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
 
     /// <summary>
