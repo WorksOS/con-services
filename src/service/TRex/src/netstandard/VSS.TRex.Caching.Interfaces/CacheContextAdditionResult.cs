@@ -9,6 +9,7 @@ namespace VSS.TRex.Caching.Interfaces
     Unknown,
     Added,
     AlreadyExisting,
-    MRUListFull
+    MRUListFull,
+    RejectedDueToInvlidationVersionMismatch
   }
 }
