@@ -201,12 +201,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           customHeaders: CustomHeaders)
         .ProcessAsync(request) as CellPassesV2Result;
 
+      if (result?.Layers == null || result?.Layers.Length == 0)
+        throw new ServiceException(HttpStatusCode.NoContent, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No layers found"));
 
       if (result?.Layers.Length > 1)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Multiple layers found"));
-
-      if (result?.Layers.Length == 0)
-        throw new ServiceException(HttpStatusCode.NoContent, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No layers found"));
 
       if (result?.Layers[0].PassData == null)
         throw new ServiceException(HttpStatusCode.NoContent, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No cell passes found"));

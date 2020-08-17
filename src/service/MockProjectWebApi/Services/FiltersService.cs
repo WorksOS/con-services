@@ -74,6 +74,7 @@ namespace MockProjectWebApi.Services
           FilterDescriptors.Dimensions.DimensionsAsAtCustom,
           FilterDescriptors.Dimensions.ElevationRangeAndPaletteNoDataFilter,
           FilterDescriptors.Dimensions.DimensionsBoundaryFilterWithMachine,
+          FilterDescriptors.Dimensions.DimensionsFilterWithMachine,
           FilterDescriptors.Dimensions.DimensionsBoundaryFilter,
           FilterDescriptors.Dimensions.DimensionsBoundaryFilterAsAtToday,
           FilterDescriptors.Dimensions.DimensionsBoundaryMdp,
