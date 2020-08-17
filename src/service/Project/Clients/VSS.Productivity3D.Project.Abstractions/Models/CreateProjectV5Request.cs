@@ -15,19 +15,19 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// <summary>
     /// The project name, between 1 and 30 characters long. It must be unique.
     /// </summary>
-    [JsonProperty(PropertyName = "projectName", Required = Required.Always)]
+    [JsonProperty(PropertyName = "ProjectName", Required = Required.Always)]
     public string ProjectName { get; set; }
 
     /// <summary>
     /// The list of latitude, longitude points to be validated as per AcceptsTagFiles projects
     /// </summary>
-    [JsonProperty(PropertyName = "boundaryLL", Required = Required.Always)]
+    [JsonProperty(PropertyName = "BoundaryLL", Required = Required.Always)]
     public List<TBCPoint> BoundaryLL { get; set; }
 
     /// <summary>
     /// The details of the coordinate system file from Trimble Business Center.
     /// </summary>
-    [JsonProperty(PropertyName = "coordinateSystem", Required = Required.Always)]
+    [JsonProperty(PropertyName = "CoordinateSystem", Required = Required.Always)]
     public BusinessCenterFile CoordinateSystem { get; set; }
 
 
