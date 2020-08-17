@@ -8,7 +8,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegmentInfo : ISubGridCellPassesDataSegmentInfo
-  {    
+  {
         /// <summary>
         /// The version number of this segment when it is stored in the persistent layer, defined
         /// as the number of ticks in DateTime.UtcNow at the time it is written.
@@ -51,8 +51,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// It is not intended to resolve boundary edge cases where ATime is exactly
         /// equal to the start or end time of the segment
         /// </summary>
-        /// <param name="time"></param>
-        /// <returns></returns>
         public bool IncludesTimeWithinBounds(DateTime time)
         {
             var testTime = time.Ticks;
@@ -63,16 +61,12 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Returns a string representing the segment identifier for this segment within this sub grid. The identifier
         /// is based on the time range this segment is responsible for storing cell passes for.
         /// </summary>
-        /// <returns></returns>
         public string SegmentIdentifier() => StartTime.Ticks.ToString() + "-" + EndTime.Ticks.ToString(); // 30% faster than $"{StartTime.Ticks}-{EndTime.Ticks}"
 
         /// <summary>
         /// Returns the 'filename', and string that encodes the segment version, spatial location and time range it 
         /// is responsible for. 
         /// </summary>
-        /// <param name="OriginX"></param>
-        /// <param name="OriginY"></param>
-        /// <returns></returns>
         public string FileName(int OriginX, int OriginY) => $"{Version}-{OriginX:d10}-{OriginY:d10}-{SegmentIdentifier()}";
 
         public void Write(BinaryWriter writer)

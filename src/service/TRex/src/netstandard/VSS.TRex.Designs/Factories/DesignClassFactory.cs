@@ -7,7 +7,7 @@ namespace VSS.TRex.Designs.Factories
 {
   public class DesignClassFactory : IDesignClassFactory
   {
-    public IDesignBase NewInstance(string fileName, double cellSize, Guid siteModelUid)
+    public IDesignBase NewInstance(Guid designUid, string fileName, double cellSize, Guid siteModelUid)
     {
       IDesignBase result;
 
@@ -18,6 +18,7 @@ namespace VSS.TRex.Designs.Factories
       else
         throw new TRexException($"Unknown design file type in design class factory for design {fileName}");
 
+      result.DesignUid = designUid;
       result.FileName = fileName;
       result.ProjectUid = siteModelUid;
 

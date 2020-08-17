@@ -17,6 +17,8 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.SubGridTrees.Server.Utilities;
 using VSS.TRex.Types;
+using VSS.TRex.Common.Records;
+using VSS.TRex.Common.Extensions;
 
 namespace VSS.TRex.SubGridTrees.Server
 {
@@ -76,7 +78,7 @@ namespace VSS.TRex.SubGridTrees.Server
     {
       var subGrid = base.CreateNewSubGrid(level);
 
-      if (level == numLevels) 
+      if (level == numLevels)
       {
         // It is a leaf sub grid, decorate it with the required mutability. Note, this subGrid is guaranteed to be an instance
         // of leaf generic type supplied to the factory in the constructor for this sub grid tree.
@@ -99,7 +101,7 @@ namespace VSS.TRex.SubGridTrees.Server
                                   cellAddress.Y & ~SubGridTreeConsts.SubGridLocalKeyMask);
     }
 
-    public bool LoadLeafSubGridSegment(IStorageProxy storageProxy,
+    public FileSystemErrorStatus LoadLeafSubGridSegment(IStorageProxy storageProxy,
       SubGridCellAddress cellAddress,
       bool loadLatestData,
       bool loadAllPasses,
@@ -114,7 +116,7 @@ namespace VSS.TRex.SubGridTrees.Server
       if (!needToLoadLatestData && !needToLoadAllPasses)
       {
         //Log.LogInformation($"Segment load on {cellAddress} exiting as neither latest nor all passes required");
-        return true; // Nothing more to do here
+        return FileSystemErrorStatus.OK; // Nothing more to do here
       }
 
       // Lock the segment briefly while its contents is being loaded
@@ -123,7 +125,7 @@ namespace VSS.TRex.SubGridTrees.Server
         if (!(needToLoadLatestData ^ segment.HasLatestData) && !(needToLoadAllPasses ^ segment.HasAllPasses))
         {
           //Log.LogInformation($"Segment load on {cellAddress} leaving quietly as a previous thread has performed the load");
-          return true; // The load operation was performed on another thread. Leave quietly
+          return FileSystemErrorStatus.OK; // The load operation was performed on another thread. Leave quietly
         }
 
         // Ensure the appropriate storage is allocated
@@ -136,33 +138,33 @@ namespace VSS.TRex.SubGridTrees.Server
         if (!segment.SegmentInfo.ExistsInPersistentStore)
         {
           //Log.LogInformation($"Segment load on {cellAddress} exiting as segment does not exist in persistent store");
-          return true; // Nothing more to do here
+          return FileSystemErrorStatus.OK; // Nothing more to do here
         }
 
         // Locate the segment file and load the data from it
         var fullFileName = GetLeafSubGridSegmentFullFileName(cellAddress, segment.SegmentInfo);
 
         // Load the cells into it from its file
-        var fileLoaded = subGrid.LoadSegmentFromStorage(storageProxy, fullFileName, segment, needToLoadLatestData, needToLoadAllPasses);
+        var fsError = subGrid.LoadSegmentFromStorage(storageProxy, fullFileName, segment, needToLoadLatestData, needToLoadAllPasses);
 
-        if (!fileLoaded)
+        if (fsError != FileSystemErrorStatus.OK)
         {
           //Log.LogInformation($"Segment load on {cellAddress} failed, performing allocation cleanup activities");
 
-          // Oops, something bad happened. Remove the segment from the list. Return failure to the caller.
+          // Something bad happened. Remove the segment from the list. Return failure to the caller.
           if (loadAllPasses)
             segment.DeAllocateFullPassStacks();
 
           if (loadLatestData)
             segment.DeAllocateLatestPassGrid();
 
-          return false;
+          return fsError;
         }
       }
         
       //Log.LogInformation($"Segment load on {cellAddress} succeeded, AllPasses?={Segment.HasAllPasses}, Segment.PassesData?Null={Segment.PassesData==null} ");
 
-      return true;
+      return FileSystemErrorStatus.OK;
     }
 
     public bool LoadLeafSubGrid(IStorageProxy storageProxy,
@@ -268,8 +270,6 @@ namespace VSS.TRex.SubGridTrees.Server
           _log.LogInformation($"SaveLeafSubGrid: {subGrid.Moniker()} ({subGrid.Cells.PassesData.Count} segments)");
 
         var modifiedOriginalSegments = new List<ISubGridCellPassesDataSegment>(100);
-        var newSegmentsFromCleaving = new List<ISubGridCellPassesDataSegment>(100);
-
         var originAddress = new SubGridCellAddress(subGrid.OriginX, subGrid.OriginY);
 
         // The following used to be an assert/exception. However, this is may readily
@@ -281,19 +281,12 @@ namespace VSS.TRex.SubGridTrees.Server
         if (subGrid.Cells.PassesData.Count == 0)
           _log.LogInformation(
             $"Note: Saving a sub grid, {subGrid.Moniker()}, (Segments = {subGrid.Cells.PassesData.Count}, Dirty = {subGrid.Dirty}) with no cached sub grid segments to the persistent store in SaveLeafSubGrid (possible reprocessing of TAG file with no cell pass changes). " +
-            $"SubGrid.Directory.PersistedClovenSegments.Count={cleaver.PersistedClovenSegments?.Count}, ModifiedOriginalFiles.Count={modifiedOriginalSegments.Count}, NewSegmentsFromCleaving.Count={newSegmentsFromCleaving.Count}");
+            $"SubGrid.Directory.PersistedClovenSegments.Count={cleaver.PersistedClovenSegments?.Count}, ModifiedOriginalFiles.Count={modifiedOriginalSegments.Count}, NewSegmentsFromCleaving.Count={cleaver.NewSegmentsFromCleaving.Count}");
 
         var iterator = new SubGridSegmentIterator(subGrid, storageProxyForSubGridSegments)
         {
           IterationDirection = IterationDirection.Forwards,
           ReturnDirtyOnly = true,
-
-          // We don't consider saving of segments to disk to be equivalent to
-          // 'use' of the segments so they are not touched with respect to the cache
-          // when saved. This aids segments that might not be updated again in TAG
-          // processing to exit the cache sooner and also removes clashes with the
-          // cache with it performs cache resize operations.
-          MarkReturnedSegmentsAsTouched = false
         };
 
         //**********************************************************************
@@ -325,21 +318,7 @@ namespace VSS.TRex.SubGridTrees.Server
           invalidatedSpatialStreams.AddRange(modifiedOriginalSegments.Select(x => x.SegmentInfo.AffinityKey(ID)));
         }
 
-        //**********************************************************************
-        //*** Construct list of new segment files that have been created     ***
-        //*** by the cleaving of other segments in the sub grid              ***
-        //**********************************************************************
-
-        iterator.MoveToFirstSubGridSegment();
-        while (iterator.CurrentSubGridSegment != null)
-        {
-          if (!iterator.CurrentSubGridSegment.SegmentInfo.ExistsInPersistentStore)
-            newSegmentsFromCleaving.Add(iterator.CurrentSubGridSegment);
-
-          iterator.MoveToNextSubGridSegment();
-        }
-
-        if (newSegmentsFromCleaving.Count > 0)
+        if (cleaver.NewSegmentsFromCleaving.Count > 0)
         {
           //**********************************************************************
           //***    Write new segment files generated by cleaving               ***
@@ -350,14 +329,15 @@ namespace VSS.TRex.SubGridTrees.Server
           //**********************************************************************
 
           if (_segmentCleavingOperationsToLog)
-            _log.LogInformation($"Sub grid has {newSegmentsFromCleaving.Count} new segments from cleaving");
+            _log.LogInformation($"Sub grid has {cleaver.NewSegmentsFromCleaving.Count} new segments from cleaving");
 
-          foreach (var segment in newSegmentsFromCleaving)
+          foreach (var segment in cleaver.NewSegmentsFromCleaving)
           {
             // Update the version of the segment as it is about to be written
             segment.SegmentInfo.Touch();
 
             segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo), out var fsError);
+            segment.Dirty = false;
 
             if (fsError == FileSystemErrorStatus.OK)
             {
@@ -388,9 +368,11 @@ namespace VSS.TRex.SubGridTrees.Server
           {
             // Update the version of the segment as it is about to be written
             segment.SegmentInfo.Touch();
+            segment.Dirty = false;
 
             if (segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo), out var fsError))
             {
+              segment.Dirty = false;
               if (_log.IsTraceEnabled())
                 _log.LogTrace($"Saved modified grid segment file: {segment}");
             }
@@ -399,6 +381,25 @@ namespace VSS.TRex.SubGridTrees.Server
               _log.LogError($"Failed to save modified original grid segment {GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo)}: Error:{fsError}");
               return false;
             }
+          }
+        }
+
+        // Any remaining dirty segments in the sub grid will be due to previously empty sub grids with newly 
+        // created segments from ingest processing that have not required cleaving. These segments do not require any
+        // special treatment are jsut saved to persistent store
+
+        foreach (var segment in subGrid.Directory.SegmentDirectory.Select(x => x.Segment).Where(x => (x?.Dirty ?? false)))
+        {
+          if (segment.SaveToFile(storageProxyForSubGridSegments, GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo), out var fsError))
+          {
+            segment.Dirty = false;
+            if (_log.IsTraceEnabled())
+              _log.LogTrace($"Saved new sub grid segment file: {segment}");
+          }
+          else
+          {
+            _log.LogError($"Failed to save new sub grid segment {GetLeafSubGridSegmentFullFileName(originAddress, segment.SegmentInfo)}: Error:{fsError}");
+            return false;
           }
         }
 
@@ -486,11 +487,6 @@ namespace VSS.TRex.SubGridTrees.Server
       base.Dispose(disposing);
 
       _disposedValue = true;
-    }
-
-    public void Dispose()
-    {
-      Dispose(true);
     }
     #endregion
   }

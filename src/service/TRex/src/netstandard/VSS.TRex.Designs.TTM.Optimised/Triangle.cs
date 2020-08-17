@@ -17,5 +17,7 @@
       Vertex1 = vertex1;
       Vertex2 = vertex2;
     }
+
+    public static int SizeOf() => 3 * sizeof(int);
   }
 }

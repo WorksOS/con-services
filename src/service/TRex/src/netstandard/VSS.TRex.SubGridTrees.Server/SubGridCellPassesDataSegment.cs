@@ -61,8 +61,6 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <summary>
     /// Determines if this segments time range bounds the data time given in the time argument
     /// </summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
     public bool SegmentMatches(DateTime time) => time >= SegmentInfo.StartTime && time < SegmentInfo.EndTime;
 
     public void AllocateFullPassStacks()
@@ -271,7 +269,6 @@ namespace VSS.TRex.SubGridTrees.Server
     /// segment limit.
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
-    /// <returns></returns>
     public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
     {
       const int cleaveSegmentPassCountDeadBand = 100;
@@ -285,7 +282,6 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <summary>
     /// Verifies if the segment time range bounds are consistent with the cell passes it contains
     /// </summary>
-    /// <returns></returns>
     public bool VerifyComputedAndRecordedSegmentTimeRangeBounds()
     {
       // Determine the actual time range of the passes within the segment

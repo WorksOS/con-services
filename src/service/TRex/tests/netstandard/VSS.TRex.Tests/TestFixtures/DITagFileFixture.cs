@@ -13,7 +13,6 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Factories;
-using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
@@ -51,7 +50,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var converter = new TAGFileConverter();
 
       using var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read);
-      converter.Execute(fs, assetUid, isJohnDoe);
+      converter.ExecuteLegacyTAGFile(fileName, fs, assetUid, isJohnDoe);
 
       return converter;
     }
@@ -62,7 +61,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var fn = Path.Combine("TestData", "TAGFiles", subFolder, fileName);
 
       using var fs = new FileStream(fn, FileMode.Open, FileAccess.Read);
-      converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
+      converter.ExecuteLegacyTAGFile(fileName, fs, Guid.NewGuid(), treatAsJohnDoeMachine);
 
       return converter;
     }
@@ -72,7 +71,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var converter = new TAGFileConverter();
 
       using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-      converter.Execute(fs, Guid.NewGuid(), treatAsJohnDoeMachine);
+      converter.ExecuteLegacyTAGFile(fileName, fs, Guid.NewGuid(), treatAsJohnDoeMachine);
 
       return converter;
     }

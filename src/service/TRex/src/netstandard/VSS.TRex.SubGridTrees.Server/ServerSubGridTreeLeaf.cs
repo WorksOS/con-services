@@ -584,7 +584,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 if (seedSegmentInfo.Segment != null)
                 {
                     if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(storageProxyForSubGridSegments, new SubGridCellAddress(OriginX, OriginY), true, false,
-                                                                          this, seedSegmentInfo.Segment))
+                                                                          this, seedSegmentInfo.Segment) == FileSystemErrorStatus.OK)
                     {
                         lastSegment = seedSegmentInfo.Segment;
                     }
@@ -626,12 +626,12 @@ namespace VSS.TRex.SubGridTrees.Server
             //Log.LogInformation($"Completed ComputeLatestPassInformation for {Moniker()}");
         }
 
-        public bool LoadSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegment segment, bool loadLatestData, bool loadAllPasses)
+        public FileSystemErrorStatus LoadSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegment segment, bool loadLatestData, bool loadAllPasses)
         {
              if (loadAllPasses && segment.Dirty)
              {
                  _log.LogCritical("Leaf sub grid segment loads of cell pass data may not be performed while the segment is dirty. The information should be taken from the cache instead");
-                 return false;
+                 return FileSystemErrorStatus.ElementToBeReadIsDirty;
              }
 
              var fsError = storageProxy.ReadSpatialStreamFromPersistentStore
@@ -641,11 +641,9 @@ namespace VSS.TRex.SubGridTrees.Server
                segment.SegmentInfo.Version,
                FileSystemStreamType.SubGridSegment, out var sms);
 
-             var result = fsError == FileSystemErrorStatus.OK;
-
              try
              {
-               if (!result)
+               if (fsError != FileSystemErrorStatus.OK)
                {
                  _log.LogError(fsError == FileSystemErrorStatus.FileDoesNotExist
                    ? $"Expected leaf sub grid segment {fileName}, model {Owner.ID} does not exist."
@@ -655,7 +653,10 @@ namespace VSS.TRex.SubGridTrees.Server
                {
                  sms.Position = 0;
                  using var reader = new BinaryReader(sms, Encoding.UTF8, true);
-                 result = segment.Read(reader, loadLatestData, loadAllPasses);
+                 if (!segment.Read(reader, loadLatestData, loadAllPasses))
+                 {
+                    fsError = FileSystemErrorStatus.DeserializationError;
+                 }
 
                  if (loadAllPasses && segment.PassesData == null)
                    _log.LogError($"Segment {fileName} passes data is null after reading from store with LoadAllPasses=true.");
@@ -666,7 +667,7 @@ namespace VSS.TRex.SubGridTrees.Server
                 sms?.Dispose();
              }
 
-             return result;
+             return fsError;
         }
 
         public bool RemoveSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegmentInfo segmentInfo)
@@ -836,7 +837,7 @@ namespace VSS.TRex.SubGridTrees.Server
                               ISubGridSegmentIterator iterator,
                               bool integratingIntoIntermediaryGrid)
         {
-            //Log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}");
+            // _log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{integratingIntoIntermediaryGrid}");
 
             if (source == null)
             {
@@ -918,7 +919,8 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
             }
 
-            //Log.LogInformation($"Completed integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}, {AddedCount} cell passes added, {ModifiedCount} modified");
+            //_log.LogInformation($"Completed integrating sub grid {Moniker()}, intermediary?:{integratingIntoIntermediaryGrid}, {addedCount} cell passes added, {modifiedCount} modified");
+            //_log.LogInformation($"Completed integrating sub grid {Moniker()}, intermediary?:{integratingIntoIntermediaryGrid}");
         }
 
     /// <summary>

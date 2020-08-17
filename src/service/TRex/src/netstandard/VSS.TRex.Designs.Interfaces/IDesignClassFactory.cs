@@ -4,6 +4,6 @@ namespace VSS.TRex.Designs.Interfaces
 {
   public interface IDesignClassFactory
   {
-    IDesignBase NewInstance(string fileName, double cellSize, Guid siteModelUid);
+    IDesignBase NewInstance(Guid designUid, string fileName, double cellSize, Guid siteModelUid);
   }
 }

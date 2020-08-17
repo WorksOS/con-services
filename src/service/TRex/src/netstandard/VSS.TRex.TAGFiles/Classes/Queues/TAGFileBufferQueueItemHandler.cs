@@ -106,7 +106,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     TagFileContent = x.Content,
                                     IsJohnDoe = x.IsJohnDoe,
                                     AssetId = x.AssetID,
-                                    SubmissionFlags = x.SubmissionFlags
+                                    SubmissionFlags = x.SubmissionFlags,
+                                    OriginSource = x.OriginSource
                                 }).ToList();
                         }
                         catch (Exception e)
@@ -216,7 +217,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         TagFileContent = x.Content,
                         IsJohnDoe = x.IsJohnDoe,
                         AssetId = x.AssetID,
-                        SubmissionFlags = x.SubmissionFlags
+                        SubmissionFlags = x.SubmissionFlags,
+                        OriginSource = x.OriginSource
                     })
                     .OrderBy(x => x.FileName, _tagFileNameComparer)
                     .ToList();

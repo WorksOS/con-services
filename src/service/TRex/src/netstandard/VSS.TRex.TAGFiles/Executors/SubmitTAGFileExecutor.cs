@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.Enums;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
@@ -35,7 +36,7 @@ namespace VSS.TRex.TAGFiles.Executors
     private readonly bool _tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
 
     /// <summary>
-    /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
+    /// Local singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
     private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<Func<ITAGFileBufferQueue>>()();
 
@@ -55,11 +56,12 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
     /// <param name="treatAsJohnDoe">The TAG file will be processed as if it were a john doe machine is projectId is also specified</param>
     /// <param name="tagFileSubmissionFlags">A flag set controlling how certain aspects of managing a submitted TAG file should be managed</param>
-    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, 
-      string tccOrgId, bool treatAsJohnDoe, TAGFileSubmissionFlags tagFileSubmissionFlags)
+    /// <param name="originSource">Indictaes the system of origin this file came from</param>
+    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent,
+      string tccOrgId, bool treatAsJohnDoe, TAGFileSubmissionFlags tagFileSubmissionFlags, TAGFileOriginSource originSource)
     {
       if (OutputInformationalRequestLogging)
-        _log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
+        _log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}, John Doe?:{treatAsJohnDoe}, submission flags: {tagFileSubmissionFlags}, origin source:{originSource}");
       
       var response = new SubmitTAGFileResponse
       {
@@ -84,16 +86,26 @@ namespace VSS.TRex.TAGFiles.Executors
             IsJohnDoe = treatAsJohnDoe
           };
 
-          // Validate tag file submission
           ContractExecutionResult result;
-          result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
-          
-          if (result.Code == (int) TRexTagFileResultCode.Valid)
-          {
-            if (_isDeviceGatewayEnabled)
-              SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
 
-            result = await TagfileValidator.ValidSubmission(td, tagFilePreScan);
+          if (originSource == TAGFileOriginSource.LegacyTAGFileSource)
+          {
+            // Validate tag file submission
+            result = TagfileValidator.PreScanTagFile(td, out var tagFilePreScan);
+
+            if (result.Code == (int)TRexTagFileResultCode.Valid)
+            {
+              if (_isDeviceGatewayEnabled)
+                SendDeviceStatusToDeviceGateway(td, tagFilePreScan);
+
+              result = await TagfileValidator.ValidSubmission(td, tagFilePreScan);
+            }
+          }
+          else
+          {
+            // For non legacy origins where we have no overt validation rules or need for device status notifications
+            // note the presented file as valid for processing
+            result = new ContractExecutionResult((int)TRexTagFileResultCode.Valid, "Success");
           }
 
           response.Code = result.Code;
@@ -102,7 +114,9 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tag file
-            if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive))
+            if (_tagFileArchiving && tagFileSubmissionFlags.HasFlag(TAGFileSubmissionFlags.AddToArchive)
+              // For now, GCS900/Earthworks style TAG files are the only ones archived
+              && originSource == TAGFileOriginSource.LegacyTAGFileSource)
             {
               _log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
               if (! await TagFileRepository.ArchiveTagfileS3(td))
@@ -128,7 +142,8 @@ namespace VSS.TRex.TAGFiles.Executors
               FileName = tagFileName,
               Content = tagFileContent,
               IsJohnDoe = td.IsJohnDoe,
-              SubmissionFlags = tagFileSubmissionFlags
+              SubmissionFlags = tagFileSubmissionFlags,
+              OriginSource = originSource
             };
 
             if (_queue == null)

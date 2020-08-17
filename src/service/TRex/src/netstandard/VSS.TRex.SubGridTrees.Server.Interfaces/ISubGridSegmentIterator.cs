@@ -12,7 +12,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool IsFirstSegmentInTimeOrder { get; }
         IterationDirection IterationDirection { get; set; }
         IIteratorStateIndex IterationState { get; }
-        bool MarkReturnedSegmentsAsTouched { get; set; }
         int NumberOfSegmentsScanned { get; set; }
         bool RetrieveAllPasses { get; set; }
         bool RetrieveLatestData { get; set; }

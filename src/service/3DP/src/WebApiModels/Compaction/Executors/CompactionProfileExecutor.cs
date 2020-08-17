@@ -523,16 +523,18 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
       if (volumeCalcType != VolumeCalcType.None)
       {
+        var baseFilter = request.BaseFilter;
+        var topFilter = request.TopFilter;
         if (volumeCalcType == VolumeCalcType.GroundToGround && !request.ExplicitFilters)
         {
-          FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
+          (baseFilter, topFilter) = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
         }
 
         var liftBuildSettings = request.LiftBuildSettings;
         var summaryVolumesProfileDataRequest = new SummaryVolumesProfileDataRequest(
           request.ProjectUid ?? Guid.Empty,
-          request.BaseFilter,
-          request.TopFilter,
+          baseFilter,
+          topFilter,
           request.VolumeDesignDescriptor?.FileUid,
           request.VolumeDesignDescriptor?.Offset,
           ConvertVolumeCalcType(volumeCalcType),

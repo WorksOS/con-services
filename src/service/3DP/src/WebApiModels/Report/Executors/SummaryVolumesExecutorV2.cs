@@ -28,16 +28,21 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       {
         var request = CastRequestObjectTo<SummaryVolumesRequest>(item);
 
-        if (request.VolumeCalcType == VolumesType.Between2Filters && !request.ExplicitFilters)
-        {
-          FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
-        }
-
-        // Note: The use of the ReconcileTopFilterAndVolumeComputationMode() here breaks with the pattern of all the other V2
-        // end points which explicitly do not perform this step. It has been copied from the Raptor implementation of this end point
         var baseFilter = request.BaseFilter;
         var topFilter = request.TopFilter;
-        FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(ref baseFilter, ref topFilter, request.VolumeCalcType);
+        if (request.VolumeCalcType == VolumesType.Between2Filters)
+        {
+          if (!request.ExplicitFilters)
+          {
+            (baseFilter, topFilter) = FilterUtilities.AdjustFilterToFilter(request.BaseFilter, request.TopFilter);
+          }
+        }
+        else
+        {
+          // Note: The use of the ReconcileTopFilterAndVolumeComputationMode() here breaks with the pattern of all the other V2
+          // end points which explicitly do not perform this step. It has been copied from the Raptor implementation of this end point
+          (baseFilter, topFilter) = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(baseFilter, topFilter, request.VolumeCalcType);
+        }
 
         var summaryVolumesRequest = new SummaryVolumesDataRequest(
             request.ProjectUid,

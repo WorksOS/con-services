@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Integrator;
@@ -175,14 +176,24 @@ namespace VSS.TRex.TAGFiles.Executors
             using var fs = new MemoryStream(tagFile.TagFileContent);
             try
             {
-              var readResult = commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
+              _log.LogInformation($"About to read file {tagFile.FileName} with origin source {tagFile.OriginSource}");
+
+              bool readResult = tagFile.OriginSource switch
+              {
+                TAGFileOriginSource.VolvoMachineAssistEarthworksCSV => commonConverter.ExecuteVolvoEarthworksCSVFile(tagFile.FileName, fs, tagFile.AssetId, tagFile.IsJohnDoe),
+                TAGFileOriginSource.VolvoMachineAssistCompactionCSV => false,
+                TAGFileOriginSource.LegacyTAGFileSource => commonConverter.ExecuteLegacyTAGFile(tagFile.FileName, fs, tagFile.AssetId, tagFile.IsJohnDoe),
+                _ => throw new NotImplementedException("Unsupported commonConverter origin source"),
+              };
+
               response.Results.Add(new ProcessTAGFileResponseItem
               {
                 FileName = tagFile.FileName,
                 AssetUid = tagFile.AssetId,
                 ReadResult = commonConverter.ReadResult,
                 Success = commonConverter.ReadResult == TAGReadResult.NoError && readResult == true,
-                SubmissionFlags = tagFile.SubmissionFlags
+                SubmissionFlags = tagFile.SubmissionFlags,
+                OriginSource = tagFile.OriginSource
               });
 
               _log.LogInformation(
@@ -198,7 +209,8 @@ namespace VSS.TRex.TAGFiles.Executors
                 Success = false,
                 Exception = e.Message,
                 ReadResult = commonConverter.ReadResult,
-                SubmissionFlags = tagFile.SubmissionFlags
+                SubmissionFlags = tagFile.SubmissionFlags,
+                OriginSource = tagFile.OriginSource
               });
             }
           }

@@ -6,13 +6,14 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 {
   public interface ISubGridCellPassesDataWrapper
   {
-    IServerLeafSubGrid Owner { get; set; } 
+    IServerLeafSubGrid Owner { get; set; }
     ISubGridCellPassesDataSegments PassesData { get; set; }
     void Clear();
     void Initialise();
     ISubGridCellPassesDataSegment SelectSegment(DateTime time);
-    bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment, 
-      List<ISubGridSpatialAffinityKey> PersistedClovenSegments,
+    bool CleaveSegment(ISubGridCellPassesDataSegment cleavingSegment,
+      List<ISubGridCellPassesDataSegment> newSegmentsFromCleaving,
+      List<ISubGridSpatialAffinityKey> persistedClovenSegments,
       int subGridSegmentPassCountLimit = 0);
 
     bool MergeSegments(ISubGridCellPassesDataSegment mergeToSegment,

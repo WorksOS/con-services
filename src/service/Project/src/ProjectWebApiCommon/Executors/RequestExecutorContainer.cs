@@ -57,8 +57,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// </summary>
     protected IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord;
 
-    protected IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification;
-
     protected IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction;
 
     /// <summary>
@@ -92,7 +90,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IPegasusClient pegasusClient;
     protected ICwsProjectClient cwsProjectClient;
     protected ICwsDeviceClient cwsDeviceClient;
-    protected ICwsDesignClient cwsDesignClient;
     protected ICwsProfileSettingsClient cwsProfileSettingsClient;
     protected IWebRequest gracefulClient;
     protected INotificationHubClient notificationHubClient;
@@ -165,7 +162,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null,
       IHeaderDictionary headers = null,
       IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null,
-      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null,
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxyFactory persistantTransferProxyFactory = null, IFilterServiceProxy filterServiceProxy = null,
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
@@ -173,7 +169,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
-      ICwsDesignClient cwsDesignClient = null, ICwsProfileSettingsClient cwsProfileSettingsClient = null,
+      ICwsProfileSettingsClient cwsProfileSettingsClient = null,
       IWebRequest gracefulClient = null, INotificationHubClient notificationHubClient = null)
     {
       log = logger;
@@ -184,7 +180,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.userEmailAddress = userEmailAddress;
       this.customHeaders = headers;
       this.productivity3dV1ProxyCoord = productivity3dV1ProxyCoord;
-      this.productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
       this.productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
       this.persistantTransferProxyFactory = persistantTransferProxyFactory;
       this.filterServiceProxy = filterServiceProxy;
@@ -197,7 +192,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.pegasusClient = pegasusClient;
       this.cwsProjectClient = cwsProjectClient;
       this.cwsDeviceClient = cwsDeviceClient;
-      this.cwsDesignClient = cwsDesignClient;
       this.cwsProfileSettingsClient = cwsProfileSettingsClient;
       this.gracefulClient = gracefulClient;
       this.notificationHubClient = notificationHubClient;

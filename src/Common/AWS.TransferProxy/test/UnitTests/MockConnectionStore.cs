@@ -56,6 +56,16 @@ namespace VSS.AWS.TransferProxy.UnitTests
       return defaultValue;
     }
 
+    public ulong GetValueUlong(string v)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ulong GetValueUlong(string v, ulong defaultValue)
+    {
+      return defaultValue;
+    }
+
     public double GetValueDouble(string v)
     {
       throw new NotImplementedException();

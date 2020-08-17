@@ -5,7 +5,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees
 {
-  /// <summary>
+    /// <summary>
     ///  A sub grid variant that contains a bit mask construct to represent a one-bit-per-pixel map
     /// </summary>
     public class SubGridTreeLeafBitmapSubGrid : LeafSubGridBase, ILeafSubGrid, ISubGridTreeLeafBitmapSubGrid
@@ -15,7 +15,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Writes the contents of the sub grid bit mask to the writer
         /// </summary>
-        /// <param name="writer"></param>
         public override void Write(BinaryWriter writer)
         {
             Bits.Write(writer);
@@ -24,7 +23,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Reads the contents of the sub grid bit mask from the reader
         /// </summary>
-        /// <param name="reader"></param>
         public override void Read(BinaryReader reader)
         {
             Bits.Read(reader);
@@ -40,9 +38,6 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Constructor taking the tree reference, parent and level of the sub grid to be created
         /// </summary>
-        /// <param name="owner"></param>
-        /// <param name="parent"></param>
-        /// <param name="level"></param>
         public SubGridTreeLeafBitmapSubGrid(ISubGridTree owner,
             ISubGrid parent,
             byte level) : base(owner, parent, level)
@@ -52,13 +47,11 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// CountBits counts the number of bits that are set to 1 (true) in the sub grid 
         /// </summary>
-        /// <returns></returns>
         public int CountBits() => Bits.CountBits();
 
         /// <summary>
         /// Computes the bounding extent of the cells (bits) in the sub grid that are set to 1 (true)
         /// </summary>
-        /// <returns></returns>
         public BoundingIntegerExtent2D ComputeCellsExtents()
         {
             BoundingIntegerExtent2D Result = Bits.ComputeCellsExtents();
@@ -75,5 +68,7 @@ namespace VSS.TRex.SubGridTrees
 
       public new void ForEach(Action<byte, byte> functor) => Bits.ForEach(functor);
       public void ForEach(Func<byte, byte, bool> functor) => Bits.ForEach(functor);
+
+      public static int SizeOf() => SubGridTreeConsts.SubGridTreeDimension * sizeof(int);
     }
 }

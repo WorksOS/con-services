@@ -10,7 +10,6 @@ metadata:
 spec:
   selector:
     app: {{ template "3dpmservice.name" . }}
-    component: {{ template "component.webapi" . }}
   ports:
   - protocol: TCP
     port: 80

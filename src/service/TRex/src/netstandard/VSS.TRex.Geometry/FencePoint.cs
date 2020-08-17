@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
 
 namespace VSS.TRex.Geometry
 {
@@ -105,5 +106,7 @@ namespace VSS.TRex.Geometry
       Y = reader.ReadDouble();
       Z = reader.ReadDouble();
     }
+
+    public static int SizeOf() => 3 * sizeof(double);
   }
 }

@@ -144,6 +144,16 @@ namespace UnitTests
       throw new NotImplementedException();
     }
 
+    public ulong GetValueUlong(string v)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ulong GetValueUlong(string v, ulong defaultValue)
+    {
+      throw new NotImplementedException();
+    }
+
     public void Load()
     {
       _config.Add("TCIP", "127.0.0.1");

@@ -48,6 +48,7 @@ namespace ExecutorTests.Internal
     {
       ServiceProvider = new ServiceCollection()
         .AddLogging()
+        .AddHttpClient()
         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Filter.ExecutorTests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
