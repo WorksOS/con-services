@@ -111,5 +111,15 @@ namespace VSS.TRex.SubGridTrees.Client.Types
       LastHeight = 0;
       FirstHeight = 0;
     }
+
+    /// <summary>
+    /// Determines if the cell has a (non-null) value
+    /// </summary>
+    /// <returns></returns>
+    public bool HasNonNullValue()
+    {
+      //If any time has been set...
+      return LowestHeightTime > 0 || HighestHeightTime > 0 || FirstHeightTime > 0 || LastHeightTime > 0;
+    }
   }
 }
