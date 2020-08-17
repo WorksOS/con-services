@@ -30,9 +30,9 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// A tracker for invalidation events that have occurred for this context. Sub grid processing that is sensitive to
     /// low latency interleaving of sub grid access and ingest triggered invalidations should not commit sub grid
-    /// derivatives to a cache if the InvalidationVersion of the cache context is not that same as the InvalidatioVersion
+    /// derivatives to a cache if the InvalidationVersion of the cache context is not the same as the InvalidationVersion
     /// at the start of processing an individual sub grid.
-    /// The intent of this is to prevent possibly outdated sub grid derivates from poisoning the geenral result subgrid
+    /// The intent of this is to prevent possibly outdated sub grid derivatives from poisoning the general result sub grid
     /// cache with information that is potentially never invalidated and will only clear when evicted from the cache through
     /// normal operations. Sub grid processors may elect to abandon the sub grid derivative in favour of recomputing it
     /// if this condition is detected.
