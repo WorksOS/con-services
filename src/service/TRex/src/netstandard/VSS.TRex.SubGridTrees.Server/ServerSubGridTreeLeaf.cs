@@ -837,7 +837,7 @@ namespace VSS.TRex.SubGridTrees.Server
                               ISubGridSegmentIterator iterator,
                               bool integratingIntoIntermediaryGrid)
         {
-            //Log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}");
+            // _log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{integratingIntoIntermediaryGrid}");
 
             if (source == null)
             {
@@ -919,7 +919,8 @@ namespace VSS.TRex.SubGridTrees.Server
                 }
             }
 
-            //Log.LogInformation($"Completed integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}, {AddedCount} cell passes added, {ModifiedCount} modified");
+            //_log.LogInformation($"Completed integrating sub grid {Moniker()}, intermediary?:{integratingIntoIntermediaryGrid}, {addedCount} cell passes added, {modifiedCount} modified");
+            //_log.LogInformation($"Completed integrating sub grid {Moniker()}, intermediary?:{integratingIntoIntermediaryGrid}");
         }
 
     /// <summary>

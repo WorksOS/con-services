@@ -92,35 +92,16 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
                         if (fsResult == FileSystemErrorStatus.OK)
                         {
-                            /* Raptor Implementation. TRex has no separate cache - it is in Ignite
-
-                            // The segment is now loaded and available for use and should be touched
-                            // to link it into the cache segment MRU management
-                            if (Result != null && Result.Owner.PresentInCache)
-                            {
-                               DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                            }
-                            */
+                            // TRex has no separate cache - it is in Ignite
                         }
                         else
                         {
-                            /* Raptor Implementation. TRex has no separate cache - it is in Ignite
-
-                            // The segment is failed to load, however it may have been created
-                            // to hold the data being read. The failure handling will have backtracked
-                            // out any allocations made within the segment, but it is safer to include
-                            // it into the cache and allow it to be managed there than to
-                            // independently remove it here
-                            if (Result != null && Result.Owner.PresentInCache)
-                            {
-                                DataStoreInstance.GridDataCache.SubGridSegmentTouched(Result);
-                            }
-                            */
+                            // TRex has no separate cache - it is in Ignite
                 
                             // Segment failed to be loaded. Multiple messages will have been posted to the log.
                             // Move to the next item in the iteration
 
-                            // Specific FS failures indicate corruption in the data store that shoudl preclude further iteration and
+                            // Specific FS failures indicate corruption in the data store that should preclude further iteration and
                             // processir of the contents of this sub grid. These conditions result in the sub grid being blacklisted
                             // and the iterator returning no further information for this subgrid
                             if (fsResult == FileSystemErrorStatus.GranuleDoesNotExist)
@@ -147,8 +128,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // up to in the sub grid tree scan. 
 
         public ISubGridCellPassesDataSegment CurrentSubGridSegment { get; set; }
-
-        // property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
 
         /// <summary>
         /// ReturnDirtyOnly allows the iterator to only return segments in the sub grid that are dirty
@@ -178,8 +157,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
           set => IterationState.Directory = value;
         }
 
-        public bool MarkReturnedSegmentsAsTouched { get; set; }
-
         private int _numberOfSegmentsScanned;
 
         public int NumberOfSegmentsScanned
@@ -190,7 +167,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxyForSubGridSegments)
         {
-            MarkReturnedSegmentsAsTouched = true;
             SubGrid = subGrid;
             Directory = subGrid?.Directory;
             StorageProxyForSubGridSegments = storageProxyForSubGridSegments;
@@ -207,7 +183,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
           if (SegmentIterationBlackListed)
           {
-            Log.LogWarning($"Iteration aborted in {nameof(MoveNext)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+            //Log.LogWarning($"Iteration aborted in {nameof(MoveNext)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
             return false;
           }
 
@@ -227,7 +203,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterationBlackListed)
             {
-                Log.LogWarning($"Iteration aborted in {nameof(MoveToFirstSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+                //Log.LogWarning($"Iteration aborted in {nameof(MoveToFirstSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
                 return false;
             }
 
@@ -243,7 +219,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (SegmentIterationBlackListed)
             {
-                Log.LogWarning($"Iteration aborted in {nameof(MoveToNextSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
+                //Log.LogWarning($"Iteration aborted in {nameof(MoveToNextSubGridSegment)} due to iteration black list for sub grid {IterationState.SubGrid.Moniker()}");
                 return false;
             }
 

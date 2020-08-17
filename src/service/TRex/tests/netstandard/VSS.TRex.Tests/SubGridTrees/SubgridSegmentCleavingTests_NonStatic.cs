@@ -233,14 +233,16 @@ namespace VSS.TRex.Tests.SubGridTrees
       ISubGridCellPassesDataSegment segment = subGrid.Cells.PassesData[0];
 
       // Instruct the segment container to cleave the segment with a limit of 100000
+      var newSegmentsFromCleaving = new List<ISubGridCellPassesDataSegment>(); 
       var persistedClovenSegments = new List<ISubGridSpatialAffinityKey>();
-      Assert.False(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments, 100000), "Segment was cloven when cell pass count was below limit");
+      Assert.False(subGrid.Cells.CleaveSegment(segment, newSegmentsFromCleaving, persistedClovenSegments, 100000), "Segment was cloven when cell pass count was below limit");
 
       // Set the cleaving limit to 10000 to force the segment TO BE cloven = the cleave result should be true
       subGrid = MakeSubgridWith10240CellPassesAtOneSecondIntervals();
       segment = subGrid.Cells.PassesData[0];
+      newSegmentsFromCleaving = new List<ISubGridCellPassesDataSegment>();
       persistedClovenSegments = new List<ISubGridSpatialAffinityKey>();
-      Assert.True(subGrid.Cells.CleaveSegment(segment, persistedClovenSegments, 10000), "Segment failed to cleave with pass count above limit");
+      Assert.True(subGrid.Cells.CleaveSegment(segment, newSegmentsFromCleaving, persistedClovenSegments, 10000), "Segment failed to cleave with pass count above limit");
 
       //Check there are now two segments in total
       Assert.True(2 == subGrid.Cells.PassesData.Count, $"After cleaving there are {subGrid.Cells.PassesData.Count} segments instead of the expected two segments");

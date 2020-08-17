@@ -26,8 +26,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// It is not intended to resolve boundary edge cases where ATime is exactly
     /// equal to the start or end time of the segment
     /// </summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
     bool IncludesTimeWithinBounds(DateTime time);
 
     string FileName(int OriginX, int OriginY);
