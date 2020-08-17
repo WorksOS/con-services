@@ -85,19 +85,21 @@ namespace VSS.TRex.GridFabric
     {
       try
       {
+        _log.LogInformation("#In# DumpClusterStateToLog: Starting topolgy state dump");
+
         var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
 
         // Log the known state of the cluster
-        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster ({_gridName} [Ignite reported:{_ignite.Name}]): {numClusterNodes}");
+        _log.LogInformation($"Node attribute selected for: {_roleAttribute}. Num nodes in cluster ({_gridName} [Ignite reported:{_ignite?.Name ?? "NULL!"}]): {numClusterNodes}");
 
         if (numClusterNodes > 0)
         {
           _ignite?.GetCluster()?.GetNodes().ForEach(x =>
           {
-            _log.LogInformation($"Node ID {x.Id}, ConsistentID: {x.ConsistentId}, Version:{x.Version}, IsClient?:{x.IsClient}, IsDaemon?:{x.IsDaemon}, IsLocal?:{x.IsLocal}, Order:{x.Order}, Addresses#: {x.Addresses.Count}, HostNames:{(x.HostNames.Count > 0 ? x.HostNames.Aggregate((s, o) => s + o) : "No Host Names")}");
+            _log.LogInformation($"Node ID {x.Id}, ConsistentID: {x.ConsistentId}, Version:{x.Version}, IsClient?:{x.IsClient}, IsDaemon?:{x.IsDaemon}, IsLocal?:{x.IsLocal}, Order:{x.Order}, Addresses#: {x.Addresses?.Count ?? 0}, HostNames:{((x.HostNames?.Count ?? 0) > 0 ? x.HostNames.Aggregate((s, o) => s + o) : "No Host Names")}");
 
-            var roleAttributes = x.Attributes.Where(x => x.Key.StartsWith("Role-"));
-            if (roleAttributes.Count() > 0)
+            var roleAttributes = x.Attributes?.Where(x => x.Key.StartsWith("Role-"));
+            if ((roleAttributes?.Count() ?? 0) > 0)
               _log.LogInformation($"Roles: {roleAttributes.Select(x => $" K:V={x.Key}:{x.Value}").Aggregate((s, o) => s + o)}");
             else
               _log.LogError("No role attributes present");
@@ -107,6 +109,10 @@ namespace VSS.TRex.GridFabric
       catch (Exception e)
       {
         _log.LogError($"Exception {e.Message} occurred during {nameof(DumpClusterStateToLog)}");
+      }
+      finally
+      {
+        _log.LogInformation("#Out# DumpClusterStateToLog: Completed topolgy state dump");
       }
     }
 
