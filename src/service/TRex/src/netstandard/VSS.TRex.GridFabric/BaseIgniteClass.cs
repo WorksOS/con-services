@@ -85,6 +85,8 @@ namespace VSS.TRex.GridFabric
     {
       try
       {
+        _log.LogInformation("#In# DumpClusterStateToLog: Starting topolgy state dump");
+
         var numClusterNodes = _ignite?.GetCluster()?.GetNodes()?.Count ?? 0;
 
         // Log the known state of the cluster
@@ -107,6 +109,10 @@ namespace VSS.TRex.GridFabric
       catch (Exception e)
       {
         _log.LogError($"Exception {e.Message} occurred during {nameof(DumpClusterStateToLog)}");
+      }
+      finally
+      {
+        _log.LogInformation("#Out# DumpClusterStateToLog: Completed topolgy state dump");
       }
     }
 
