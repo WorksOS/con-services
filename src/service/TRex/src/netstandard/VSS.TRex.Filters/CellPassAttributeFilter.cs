@@ -948,8 +948,6 @@ namespace VSS.TRex.Filters
 
         if (passValue.FilteredPass.InternalSiteModelMachineIndex >= MachineIDSet.Count || !MachineIDSet[passValue.FilteredPass.InternalSiteModelMachineIndex])
           return false;
-
-        //return passValue.FilteredPass.InternalSiteModelMachineIndex < MachineIDSet.Count ? MachineIDSet[passValue.FilteredPass.InternalSiteModelMachineIndex] : false;
       }
 
       if (HasDesignFilter)
