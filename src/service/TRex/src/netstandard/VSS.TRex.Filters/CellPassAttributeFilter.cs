@@ -117,6 +117,7 @@ namespace VSS.TRex.Filters
       _anyMachineEventFilterSelections =
         HasDesignFilter ||
         HasVibeStateFilter ||
+        HasMachineFilter ||
         HasMachineDirectionFilter ||
         HasElevationMappingModeFilter ||
         HasGCSGuidanceModeFilter ||
@@ -691,7 +692,7 @@ namespace VSS.TRex.Filters
         // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
-        if (passValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[passValue.InternalSiteModelMachineIndex])
+        if (passValue.InternalSiteModelMachineIndex >= MachineIDSet.Count || !MachineIDSet[passValue.InternalSiteModelMachineIndex])
           return false;
       }
 
@@ -821,7 +822,7 @@ namespace VSS.TRex.Filters
         // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
-        if (passValue.FilteredPass.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[passValue.FilteredPass.InternalSiteModelMachineIndex])
+        if (passValue.FilteredPass.InternalSiteModelMachineIndex >= MachineIDSet.Count || !MachineIDSet[passValue.FilteredPass.InternalSiteModelMachineIndex])
           return false;
       }
 
@@ -940,6 +941,15 @@ namespace VSS.TRex.Filters
         return true;
       }
 
+      if (HasMachineFilter)
+      {
+        // Check the machine identified by passValue.FilteredPass.InternalSiteModelMachineIndex is in our site model Machine
+        // list based on the index of the machine in that list
+
+        if (passValue.FilteredPass.InternalSiteModelMachineIndex >= MachineIDSet.Count || !MachineIDSet[passValue.FilteredPass.InternalSiteModelMachineIndex])
+          return false;
+      }
+
       if (HasDesignFilter)
       {
         if (DesignNameID != Consts.kAllDesignsNameID && DesignNameID != passValue.EventValues.EventDesignNameID)
@@ -1032,7 +1042,7 @@ namespace VSS.TRex.Filters
         // Check the machine identified by PassValue.InternalSiteModelMachineIndex is in our site model Machine
         // list based on the index of the machine in that list
 
-        if (passValue.InternalSiteModelMachineIndex < MachineIDSet.Count && !MachineIDSet[passValue.InternalSiteModelMachineIndex])
+        if (passValue.InternalSiteModelMachineIndex >= MachineIDSet.Count || !MachineIDSet[passValue.InternalSiteModelMachineIndex])
           return false;
       }
 

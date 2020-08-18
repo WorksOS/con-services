@@ -114,6 +114,7 @@
     <Content Remove="Json\Filters\DimensionsBoundaryMDP.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <Content Remove="Json\Filters\DimensionsBoundaryMDPPassCountRange.json" />
+    <Content Remove="Json\Filters\DimensionsFilterWithMachine.json" />
     <Content Remove="Json\Filters\DimensionsPassCountRange.json" />
     <Content Remove="Json\Filters\DimensionsTempRangeBoundary.json" />
     <Content Remove="Json\UserPreferences\DummyUserPreferences.json" />
@@ -183,6 +184,7 @@
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDP.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPAsAtToday.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsBoundaryMDPPassCountRange.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsFilterWithMachine.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsPassCountRange.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsTemperatureRange.json" />
     <EmbeddedResource Include="Json\Filters\DimensionsTempRangeBoundary.json" />

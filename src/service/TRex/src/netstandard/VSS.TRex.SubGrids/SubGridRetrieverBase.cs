@@ -115,6 +115,8 @@ namespace VSS.TRex.SubGrids
       // its attendant machine events and target values prior to assignment to the client sub grid.
       _assignmentContext = new FilteredValueAssignmentContext { Overrides = overrides, LiftParams = liftParams };
 
+      _filter.AttributeFilter.SiteModel = siteModel; 
+
       _canUseGlobalLatestCells = _filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
     }
 

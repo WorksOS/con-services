@@ -175,6 +175,14 @@ namespace MockProjectWebApi.Utils
         FilterJson = JsonResourceHelper.GetFilterJson("DimensionsBoundaryFilterWithMachine")
       };
 
+      public static FilterDescriptor DimensionsFilterWithMachine => new FilterDescriptor
+      {
+        FilterUid = "241708b8-c968-468c-90b1-cc5a65a3531c",
+        Name = "Dimensions filter with machine",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsFilterWithMachine")
+      };
+
       public static FilterDescriptor ElevationRangeAndPaletteNoDataFilter => new FilterDescriptor
       {
         FilterUid = "200c7b47-b5e6-48ee-a731-7df6623412da",
