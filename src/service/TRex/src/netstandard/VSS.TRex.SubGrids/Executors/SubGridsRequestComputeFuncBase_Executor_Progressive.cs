@@ -73,7 +73,7 @@ namespace VSS.TRex.SubGrids.Executors
     {
       contextEstablishmentResponse = SubGridRequestsResponseResult.OK;
 
-      _responseRequest = new SubGridProgressiveResponseRequest(localArg.OriginatingIgniteNodeId);
+      _responseRequest = new SubGridProgressiveResponseRequest(localArg.TRexNodeID);
 
       return true;
     }

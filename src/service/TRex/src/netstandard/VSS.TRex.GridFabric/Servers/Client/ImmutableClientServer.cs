@@ -83,7 +83,6 @@ namespace VSS.TRex.GridFabric.Servers.Client
                             { "TRexNodeId", TRexNodeID }
                         },
 
-
             Logger = new TRexIgniteLogger(DIContext.Obtain<IConfigurationStore>(), Logger.CreateLogger("ImmutableClientServer")),
 
             // Set an Ignite metrics heartbeat of 10 seconds
