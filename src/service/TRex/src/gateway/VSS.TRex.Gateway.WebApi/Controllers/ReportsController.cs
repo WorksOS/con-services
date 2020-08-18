@@ -9,6 +9,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Gateway.WebApi.ActionServices;
@@ -29,6 +30,19 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     public ReportsController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<DetailsDataController>(), serviceExceptionHandler, configStore)
     {
+    }
+
+    /// <summary>
+    /// Called by TBC only.
+    /// Just a ping for now
+    /// </summary>
+    [Route("api/v1/configuration")]
+    [HttpGet]
+    public async Task<ConfigResult> PingGatewaySvc()
+    {
+      Log.LogInformation($"{nameof(PingGatewaySvc)}");
+
+      return new ConfigResult("OK");
     }
 
     /// <summary>

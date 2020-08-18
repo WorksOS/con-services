@@ -62,8 +62,6 @@
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPost.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPut.cs" />
     <Compile Remove=".\ProductionData\ResultHandling\CompactionDesignProfile.cs" />
-
-    <Compile Remove=".\Report\Executors\ConfigExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
