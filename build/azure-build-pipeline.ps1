@@ -35,6 +35,7 @@ enum ReturnCode {
 
 $services = @{
     Common         = 'Common'
+    ThreeDNow      = 'service/3dNow'
     Productivity3d = 'service/3DP'
     Mock           = 'service/MockProjectWebApi'
     Push           = 'service/Push'
