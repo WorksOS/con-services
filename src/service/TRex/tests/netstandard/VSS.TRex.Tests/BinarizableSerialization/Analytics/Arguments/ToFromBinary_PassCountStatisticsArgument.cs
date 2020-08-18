@@ -22,7 +22,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
     {
       var argument = new PassCountStatisticsArgument()
       {
-        TRexNodeID = "1",
+        TRexNodeID = Guid.NewGuid(),
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),

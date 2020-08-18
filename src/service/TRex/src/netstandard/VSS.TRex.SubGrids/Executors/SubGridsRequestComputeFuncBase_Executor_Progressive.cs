@@ -50,9 +50,9 @@ namespace VSS.TRex.SubGrids.Executors
         // ... and send it to the request
         _responseRequest.Execute(new SubGridProgressiveResponseRequestComputeFuncArgument
         {
-          NodeId = localArg.OriginatingIgniteNodeId, 
-          RequestDescriptor = localArg.RequestID, 
-          ExternalDescriptor = localArg.ExternalDescriptor, 
+          NodeId = localArg.TRexNodeID,
+          RequestDescriptor = localArg.RequestID,
+          ExternalDescriptor = localArg.ExternalDescriptor,
           Payload = new SerialisedByteArrayWrapper(ms.ToArray())
         });
       }

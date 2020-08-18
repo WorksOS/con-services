@@ -51,7 +51,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// The identifier of the TRex Node that is issuing the request for sub grids and which wants to receive the processed
         /// sub grid responses
         /// </summary>
-        public string TRexNodeId { get; set; } = string.Empty;
+        public Guid TRexNodeId { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The type of grid data to be retrieved from the sub grid requests
@@ -116,7 +116,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         public SubGridRequestsBase(ITRexTask tRexTask,
                                    Guid siteModelID, 
                                    Guid requestID, 
-                                   string trexNodeId, 
+                                   Guid trexNodeId, 
                                    GridDataType requestedGridDataType, 
                                    bool includeSurveyedSurfaceInformation,
                                    ISubGridTreeBitMask prodDataMask,

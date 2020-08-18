@@ -49,7 +49,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
     {
       return new StationOffsetReportRequestArgument_ApplicationService
       {
-        TRexNodeID = "'Test_StationOffsetReportRequest_Execute_EmptySiteModel",
+        TRexNodeID = Guid.NewGuid(),
         ProjectID = siteModel.ID,
         Filters = new FilterSet(new CombinedFilter()),
         AlignmentDesignUid = Guid.NewGuid(),

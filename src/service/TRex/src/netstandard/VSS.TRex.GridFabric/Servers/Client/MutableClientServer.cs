@@ -53,7 +53,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
         {
           var roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
-          TRexNodeID = Guid.NewGuid().ToString();
+          TRexNodeID = Guid.NewGuid();
 
           _log.LogInformation($"Creating new Ignite node with Roles = {roleNames} & TRexNodeId = {TRexNodeID}");
 
@@ -79,7 +79,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
               UserAttributes = new Dictionary<string, object>()
                         {
-                            { "TRexNodeId", TRexNodeID }
+                            { "TRexNodeId", TRexNodeID.ToString() }
                         },
 
             Logger = new TRexIgniteLogger(DIContext.Obtain<IConfigurationStore>(), Logger.CreateLogger("MutableClientServer")),

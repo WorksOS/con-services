@@ -331,7 +331,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         MappedMachines = new List<CSVExportMappedMachine>(),
         RestrictOutputSize = false,
         RawDataAsDBase = false,
-        TRexNodeID = "'Test_CSVExportRequest_Execute_EmptySiteModel",
+        TRexNodeID = Guid.NewGuid(),
         ProjectID = projectUid
       };
     }

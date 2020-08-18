@@ -71,13 +71,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// Construct a progressive response request that will execute progressive request responses to the
     /// Ignite node identified by nodeId
     /// </summary>
-    /// <param name="nodeId">The internal TREx node identifier of the node originating the request for the sub grids being returned</param>
-    public SubGridProgressiveResponseRequest(string tRexNodeId)
+    /// <param name="tRexNodeId">The internal TREx node identifier of the node originating the request for the sub grids being returned</param>
+    public SubGridProgressiveResponseRequest(Guid tRexNodeId)
     {
       // Determine the single node the request needs to be sent to
       _immutableCompute = ImmutableIgnite
         .GetCluster()
-        .ForAttribute("TRexNodeId", tRexNodeId)
+        .ForAttribute("TRexNodeId", tRexNodeId.ToString())
         .GetCompute()
         .WithExecutor(TREX_PROGRESSIVE_QUERY_CUSTOM_THREAD_POOL_NAME);
 

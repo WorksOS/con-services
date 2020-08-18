@@ -13,7 +13,7 @@ namespace VSS.TRex.Pipelines.Interfaces.Tasks
 
         GridDataType GridDataType { get; set; }
 
-        string TRexNodeID { get; set; }
+        Guid TRexNodeID { get; set; }
 
         ISubGridPipelineBase PipeLine { get; set; }
 

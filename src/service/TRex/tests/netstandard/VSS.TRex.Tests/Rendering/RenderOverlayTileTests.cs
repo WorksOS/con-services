@@ -109,7 +109,7 @@ namespace VSS.TRex.Tests.Rendering
         new DesignOffset(), // DesignDescriptor.Null(),
         null,
         Color.Black,
-        string.Empty,
+        Guid.Empty,
         new LiftParameters());
 
       render.Should().NotBeNull();
@@ -211,7 +211,7 @@ namespace VSS.TRex.Tests.Rendering
                                            new DesignOffset(),
                                            palette,
                                            Color.Black,
-                                           string.Empty,
+                                           Guid.Empty,
                                            new LiftParameters());
 
         var result = await render.ExecuteAsync();

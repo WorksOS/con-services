@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -40,7 +41,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,
         Filters = new FilterSet(new CombinedFilter()),
-        TRexNodeID = "UnitTest_TRexNodeID"
+        TRexNodeID = Guid.NewGuid()
       });
 
       // TODO To complete this test later once an alignment design implementation becomes available on a .Net standard version of the Symphony SDK

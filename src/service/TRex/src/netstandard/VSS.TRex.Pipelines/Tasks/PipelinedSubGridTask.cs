@@ -7,7 +7,7 @@ namespace VSS.TRex.Pipelines.Tasks
     /// <summary>
     /// A base class implementing activities that accept sub grids from a pipelined sub grid query process
     /// </summary>
-    public class PipelinedSubGridTask : TaskBase 
+    public class PipelinedSubGridTask : TaskBase
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelinedSubGridTask>();
 

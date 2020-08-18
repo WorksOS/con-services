@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
         OriginY = 2345,
         Filters = null,
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 999.9),
-        TRexNodeID = "NodeID"        
+        TRexNodeID = Guid.NewGuid()
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom CalculateDesignElevationPatchArgument not same after round trip serialisation");

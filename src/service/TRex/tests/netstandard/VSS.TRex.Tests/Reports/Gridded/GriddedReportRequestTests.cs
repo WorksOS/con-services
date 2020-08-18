@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Reports.Gridded
         EndNorthing = 1000,
         EndEasting = 500,
         Azimuth = 0,
-        TRexNodeID = "Test_GriddedReportRequest_Execute_EmptySiteModel",
+        TRexNodeID = Guid.NewGuid(),
         ProjectID = projectUid,
         Overrides = new OverrideParameters()
       };

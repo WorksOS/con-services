@@ -19,7 +19,7 @@ namespace VSS.TRex.GridFabric.Arguments
     /// The identifier of the TRex node responsible for issuing a request and to which messages containing responses
     /// should be sent on a message topic contained within the derived request. 
     /// </summary>
-    public string TRexNodeID { get; set; } = string.Empty;
+    public Guid TRexNodeID { get; set; } = Guid.Empty;
 
     /// <summary>
     /// The project the request is relevant to
@@ -52,7 +52,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteString(TRexNodeID);
+      writer.WriteGuid(TRexNodeID);
       writer.WriteGuid(ProjectID);
 
       writer.WriteBoolean(ReferenceDesign != null);
@@ -74,7 +74,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      TRexNodeID = reader.ReadString();
+      TRexNodeID = reader.ReadGuid() ?? Guid.Empty;
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
 
       ReferenceDesign = new DesignOffset();

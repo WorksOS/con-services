@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The ID of the Ignite node origination the request the processed sub grids are destined for.
+    /// The ID of the TRex Ignite node originating the request the processed sub grids are destined for.
     /// </summary>
     public Guid NodeId { get; set; } = Guid.Empty;
 

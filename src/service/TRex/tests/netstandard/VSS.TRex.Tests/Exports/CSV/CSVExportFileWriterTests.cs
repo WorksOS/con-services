@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         projectUid, new FilterSet(new CombinedFilter()), "the filename",
         CoordType.Northeast, OutputTypes.PassCountLastPass,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
-      ) { TRexNodeID = Guid.NewGuid().ToString() };
+      ) { TRexNodeID = Guid.NewGuid() };
 
       var dataRows = new List<string> { "string one", "string two" };
 
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.Exports.CSV
           projectUid, new FilterSet(new CombinedFilter()), null,
           CoordType.Northeast, OutputTypes.PassCountLastPass,
           csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
-        ) { TRexNodeID = Guid.NewGuid().ToString() };
+        ) { TRexNodeID = Guid.NewGuid()};
 
       var dataRows = new List<string>() { "string one", "string two" };
       
@@ -98,7 +98,7 @@ namespace VSS.TRex.Tests.Exports.CSV
           projectUid, new FilterSet(new CombinedFilter()), "the filename",
           CoordType.Northeast, OutputTypes.PassCountLastPass,
           csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
-        ) { TRexNodeID = Guid.NewGuid().ToString() };
+        ) { TRexNodeID = Guid.NewGuid() };
 
       var originalConfiguration = DIContext.Obtain<IConfigurationStore>();
       var moqConfiguration = DIContext.Obtain<Mock<IConfigurationStore>>();
@@ -131,7 +131,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         projectUid, new FilterSet(new CombinedFilter()), "the filename",
         CoordType.Northeast, OutputTypes.PassCountLastPass,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
-      ) { TRexNodeID = Guid.NewGuid().ToString() };
+      ) { TRexNodeID = Guid.NewGuid() };
 
       var dataRows = new List<string>() { "string one", "string two" };
 
@@ -185,7 +185,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         projectUid, new FilterSet(new CombinedFilter()), "the filename",
         CoordType.Northeast, OutputTypes.VedaFinalPass,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
-      ) { TRexNodeID = Guid.NewGuid().ToString() };
+      ) { TRexNodeID = Guid.NewGuid() };
 
       var dataRows = new List<string>() { "string one", "string two" };
 
@@ -232,7 +232,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         projectUid, new FilterSet(new CombinedFilter()), "the filename",
         CoordType.LatLon, OutputTypes.VedaAllPasses,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), false, true
-      ) { TRexNodeID = Guid.NewGuid().ToString() };
+      ) { TRexNodeID = Guid.NewGuid() };
 
       var dataRows = new List<string>() { "string one", "string two" };
 
@@ -278,7 +278,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         projectUid, new FilterSet(new CombinedFilter()), "the filename",
         CoordType.LatLon, OutputTypes.VedaAllPasses,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), false, true
-      ) { TRexNodeID = Guid.NewGuid().ToString() };
+      ) { TRexNodeID = Guid.NewGuid()};
 
       var dataRows = new List<string>() { "string one", "string two" };
 
@@ -327,7 +327,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         csvExportUserPreference, new List<CSVExportMappedMachine>(), true, true
       )
       {
-        TRexNodeID = Guid.NewGuid().ToString()
+        TRexNodeID = Guid.NewGuid()
       };
 
       var dataRows = new List<string> { "string one", "string two" };
@@ -390,7 +390,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         csvExportUserPreference, new List<CSVExportMappedMachine>(), true, true
       )
       {
-        TRexNodeID = Guid.NewGuid().ToString()
+        TRexNodeID = Guid.NewGuid()
       };
 
       var dataRows = new List<string>(70000);
