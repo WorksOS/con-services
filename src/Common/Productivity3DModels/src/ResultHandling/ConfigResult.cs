@@ -7,17 +7,11 @@ namespace VSS.Productivity3D.Models.ResultHandling
   public class ConfigResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
-    /// Provides current Raptor configuration as XML.
+    /// Provides current TRex configuration. Currently a string == "OK"
     /// </summary>
-    /// <value>
-    /// The configuration.
-    /// </value>
     public string Configuration { get; private set; }
 
 
-    /// <summary>
-    /// Private constructor
-    /// </summary>
     public ConfigResult(string config)
     {
       Configuration = config;
