@@ -122,25 +122,25 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                       result = false;
                     }
                   }
+                }
 
-                  if (result && HasMachineRestriction && segmentInfo.Segment?.PassesData != null)
+                if (result && HasMachineRestriction && segmentInfo.Segment?.PassesData != null)
+                {
+                  // Check to see if this segment has any machines that match the
+                  // machine restriction. If not, advance to the next segment
+                  var hasMachinesOfInterest = false;
+                  var segmentMachineIdSet = segmentInfo.Segment.PassesData.GetMachineIDSet();
+
+                  if (segmentMachineIdSet != null)
                   {
-                    // Check to see if this segment has any machines that match the
-                    // machine restriction. If not, advance to the next segment
-                    var hasMachinesOfInterest = false;
-                    var segmentMachineIdSet = segmentInfo.Segment.PassesData.GetMachineIDSet();
-
-                    if (segmentMachineIdSet != null)
+                    for (var i = 0; i < MachineIDSet.Count; i++)
                     {
-                      for (var i = 0; i < MachineIDSet.Count; i++)
-                      {
-                        hasMachinesOfInterest = MachineIDSet[i] && segmentMachineIdSet[i];
-                        if (hasMachinesOfInterest)
-                          break;
-                      }
-
-                      result = hasMachinesOfInterest;
+                      hasMachinesOfInterest = MachineIDSet[i] && segmentMachineIdSet[i];
+                      if (hasMachinesOfInterest)
+                        break;
                     }
+
+                    result = hasMachinesOfInterest;
                   }
                 }
             }
@@ -177,6 +177,9 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public void SetMachineRestriction(BitArray machineIdSet)
         {
             MachineIDSet = machineIdSet;
+
+            if (MachineIDSet?.Length > 0)
+              HasMachineRestriction = true;
         }
 
         public void SegmentListExtended()

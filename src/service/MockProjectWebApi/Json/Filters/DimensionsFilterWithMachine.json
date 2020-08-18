@@ -5,6 +5,18 @@
       "assetUid": "36ca28a5-60b0-454b-9245-69833314b513",
       "machineName": "D61 SATD PE",
       "isJohnDoe": false
+    },
+    {
+      "assetID": -1,
+      "assetUid": "f9160670-9417-41e4-90e5-ea33dd00dad3",
+      "machineName": "LIEBHERR724",
+      "isJohnDoe": false
+    },
+    {
+      "assetID": -1,
+      "assetUid": "fb7dbb0d-0fe3-4bb8-94cb-3223476d8cce",
+      "machineName": "VOLVO G946B",
+      "isJohnDoe": false
     }
   ]
 }
