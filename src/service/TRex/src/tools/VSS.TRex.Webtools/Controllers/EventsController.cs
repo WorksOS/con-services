@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Webtools.Controllers
@@ -18,7 +16,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Returns the list of available event types
     /// </summary>
-    /// <returns></returns>
     [HttpGet("types")]
     public JsonResult GetEventTypes()
     {
@@ -56,13 +53,6 @@ namespace VSS.TRex.Webtools.Controllers
     /// human readable text string. The range of queries is restricted by the date range, and the maximum
     /// number of events in the request
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="machineID"></param>
-    /// <param name="eventType"></param>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
-    /// <param name="maxEventsToReturn"></param>
-    /// <returns></returns>
     [HttpGet("text/{siteModelID}/{machineID}/{eventType}")]
     public JsonResult GetEventListAsText(string siteModelID, 
       string machineID,
@@ -71,13 +61,13 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] DateTime endDate,
       [FromQuery] int maxEventsToReturn)
     {
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
-      IMachine machine = siteModel?.Machines.Locate(Guid.Parse(machineID));
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID));
+      var machine = siteModel?.Machines.Locate(Guid.Parse(machineID));
 
       if (siteModel == null || machine == null)
         return new JsonResult($"Site model {siteModelID} and/or machine {machineID} unknown");
 
-      return new JsonResult(siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].GetEventList((ProductionEventType)eventType).ToStrings(startDate.ToUniversalTime(), endDate.ToUniversalTime(), maxEventsToReturn));
+      return new JsonResult(siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].GetEventList((ProductionEventType)eventType)?.ToStrings(startDate.ToUniversalTime(), endDate.ToUniversalTime(), maxEventsToReturn));
     }
   }
 }

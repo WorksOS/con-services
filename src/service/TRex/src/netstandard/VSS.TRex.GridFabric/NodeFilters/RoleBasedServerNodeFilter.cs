@@ -17,7 +17,6 @@ namespace VSS.TRex.GridFabric.NodeFilters
         /// <summary>
         /// Constructor accepting the name of the role to filter nodes with
         /// </summary>
-        /// <param name="role"></param>
         public RoleBasedServerNodeFilter(string role) : base(role)
         {
         }
@@ -25,8 +24,6 @@ namespace VSS.TRex.GridFabric.NodeFilters
         /// <summary>
         /// Implementation of the filter that is provided with node references to determine if they match the filter
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
         public override bool Invoke(IClusterNode node)
         {
             return !node.IsClient && base.Invoke(node);
