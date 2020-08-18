@@ -275,6 +275,8 @@ namespace VSS.TRex.SubGrids
         // Don't add sub grids computed using a non-trivial WMS sieve to the general sub grid cache
         var shouldBeCached = subGridCacheContext != null && !sieveFilterInUse && (_clientGrid.GridDataType == subGridCacheContext.GridDataType);
 
+        var subGridInvalidationVersion = shouldBeCached ? subGridCacheContext.InvalidationVersion : 0;
+
         var clientGrid2 = ClientLeafSubGridFactory.GetSubGrid(_clientGrid.GridDataType);
         clientGrid2.Assign(_clientGrid);
         clientGrid2.AssignFromCachedPreProcessedClientSubGrid(_clientGrid, _clientGrid.FilterMap);
@@ -284,7 +286,7 @@ namespace VSS.TRex.SubGrids
           //Log.LogInformation($"Adding sub grid {ClientGrid.Moniker()} in data model {SiteModel.ID} to result cache");
 
           // Add the newly computed client sub grid to the cache by creating a clone of the client and adding it...
-          if (!_subGridCache.Add(subGridCacheContext, _clientGrid))
+          if (_subGridCache.Add(subGridCacheContext, _clientGrid, subGridInvalidationVersion) != CacheContextAdditionResult.Added)
           {
             _log.LogWarning($"Failed to add sub grid {clientGrid2.Moniker()}, data model {_siteModel.ID} to sub grid result cache context [FingerPrint:{subGridCacheContext.FingerPrint}], returning sub grid to factory as not added to cache");
             ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);

@@ -623,10 +623,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, siteModelFromDatamodel, siteModelFromDatamodel.Grid, 
                                                         _storageProxyMutableForSubGrids, _storageProxyMutableForSubGridSegments);
 
+          _log.LogInformation($"Aggregation Task Process --> Begining integration into live database");
+
           if (!IntegrateCellPassesIntoLiveSiteModel(siteModelFromDatamodel, task, subGridIntegrator, groupedAggregatedCellPasses, numTagFilesRepresented, out totalPassCountInAggregation))
           {
             return false;
           }
+
+          _log.LogInformation($"Aggregation Task Process --> Completed integration into live database");
 
           // Commit spatial data changes to the store.
           // This is done in two phases:

@@ -6,12 +6,10 @@ metadata:
   name: {{ template "projectservice.name" . }}
   labels:
     app: {{ template "projectservice.name" . }}
-    component: {{ template "component.webapi" . }}
 spec:
   selector:
     matchLabels:
       app: {{ template "projectservice.name" . }}
-      component: {{ template "component.webapi" . }}
   minAvailable: {{ .Values.replicaMinAvailable }}
 {{- end -}}
 {{- end -}}

@@ -77,6 +77,8 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         arg.ProcessingMap = SubGridTreeBitmapSubGridBits.FullMask;
       }
 
+      var subGridInvalidationVersion = cachingSupported ? _context.InvalidationVersion : 0;
+
       IClientLeafSubGrid clientResult = null;
       var result = Compute.Apply(_computeFunc, arg);
 
@@ -87,7 +89,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
         // For now, only cache non-composite elevation sub grids
         if (cachingSupported)
-          _cache?.Add(_context, clientResult);
+          _cache?.Add(_context, clientResult, subGridInvalidationVersion);
 
         if (savedMap != null)
           clientResult = ExtractFromCachedItem(clientResult, savedMap);

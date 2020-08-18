@@ -30,14 +30,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       {
         var request = CastRequestObjectTo<TileRequest>(item);
 
-        if (request.ComputeVolumesType == VolumesType.Between2Filters && !request.ExplicitFilters)
-        {
-          FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
-        }
-
         var filter1 = request.Filter1;
         var filter2 = request.Filter2;
-        FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolumesType);
+
+        if (request.ComputeVolumesType == VolumesType.Between2Filters)
+        {
+          if (!request.ExplicitFilters)
+          {
+            (filter1, filter2) = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
+          }
+        }
+        else
+        {
+          (filter1, filter2) = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(filter1, filter2, request.Mode, request.ComputeVolumesType);
+        }
 
         var trexRequest = new TRexTileRequest(
             request.ProjectUid.Value,

@@ -52,6 +52,7 @@ namespace MegalodonSvc
                                                                     .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
                                                                     .AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>()
                                                                     .AddSingleton<ITPaasProxy,TPaasProxy>()
+                                                                    .AddHttpClient()
                                                                     .AddSingleton<IWebRequest, GracefulWebRequest>()
                                                                     .AddSingleton<IDataCache, InMemoryDataCache>()
                                                                     .AddSingleton<IMemoryCache,MemoryCache>()

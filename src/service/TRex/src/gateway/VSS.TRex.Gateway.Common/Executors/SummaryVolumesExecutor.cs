@@ -70,7 +70,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       if (simpleVolumesResponse != null)
       {
-        log.LogWarning($"Volume response is {JsonConvert.SerializeObject(simpleVolumesResponse)}");
+        log.LogInformation($"Volume response is {JsonConvert.SerializeObject(simpleVolumesResponse)}");
         return ConvertResult(simpleVolumesResponse);
       }
 

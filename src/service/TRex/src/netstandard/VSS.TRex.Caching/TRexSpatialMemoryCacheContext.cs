@@ -25,6 +25,20 @@ namespace VSS.TRex.Caching
     /// </summary>
     public string FingerPrint { get; }
 
+    private long _invalidationVersion = 0;
+
+    /// <summary>
+    /// A tracker for invalidation events that have occurred for this context. Sub grid processing that is sensitive to
+    /// low latency interleaving of sub grid access and ingest triggered invalidations should not commit sub grid
+    /// derivatives to a cache if the InvalidationVersion of the cache context is not the same as the InvalidationVersion
+    /// at the start of processing an individual sub grid.
+    /// The intent of this is to prevent possibly outdated sub grid derivatives from poisoning the general result sub grid
+    /// cache with information that is potentially never invalidated and will only clear when evicted from the cache through
+    /// normal operations. Sub grid processors may elect to abandon the sub grid derivative in favour of recomputing it
+    /// if this condition is detected.
+    /// </summary>
+    public long InvalidationVersion { get => _invalidationVersion; }
+
     /// <summary>
     /// The underlying grid data type this cache context is storing
     /// </summary>
@@ -195,6 +209,9 @@ namespace VSS.TRex.Caching
 
         subGridPresentForInvalidation = true;
       }
+
+      // Increment invalidation version to allow sub grid processors to determnine if they wish to reprocess
+      _invalidationVersion++;
     }
 
     /// <summary>

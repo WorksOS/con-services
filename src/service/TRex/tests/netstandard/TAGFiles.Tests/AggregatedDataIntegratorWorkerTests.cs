@@ -61,7 +61,7 @@ namespace TAGFiles.Tests
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
 
-      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID,  converter.Machines, 
+      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID,  converter.Machines,
                                       converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachinesTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
@@ -69,7 +69,6 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks, 1);
-      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -102,7 +101,6 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks, 1);
-      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -139,7 +137,6 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks, 1);
-      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(1);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -176,7 +173,6 @@ namespace TAGFiles.Tests
 
       var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
       worker.ProcessTask(processedTasks, 2);
-      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(2);
       targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(12);
@@ -235,8 +231,6 @@ namespace TAGFiles.Tests
       worker.ProcessTask(processedTasks, converters.Length);
 
       //    Log.LogInformation("Calling CompleteTaskProcessing");
-
-      worker.CompleteTaskProcessing();
 
       processedTasks.Count.Should().Be(numToTake);
 

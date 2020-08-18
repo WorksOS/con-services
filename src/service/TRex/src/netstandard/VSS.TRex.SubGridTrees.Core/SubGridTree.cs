@@ -133,7 +133,7 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The sub grid factory to create sub grids for the sub grid tree
         /// </summary>
-        private readonly ISubGridFactory _subGridFactory;
+        private ISubGridFactory _subGridFactory;
 
         /// <summary>
         /// CreateNewSubGrid creates a new sub grid relevant to the requested level
@@ -620,6 +620,9 @@ namespace VSS.TRex.SubGridTrees
           {
             ReaderWriterLock?.Dispose();
             ReaderWriterLock = null;
+
+          _root = null;
+          _subGridFactory = null;
           }
 
           _disposedValue = true;

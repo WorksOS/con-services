@@ -367,7 +367,7 @@ namespace VSS.TRex.Profiling
 // are coords set right?
       int CellX = ProfileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
       int CellY = ProfileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
-      bool HaveCompositeSurfaceForCell = CompositeHeightsGrid?.ProdDataMap.BitSet(CellX, CellY) ?? false;
+      bool HaveCompositeSurfaceForCell = CompositeHeightsGrid?.Cells[CellX, CellY].HasNonNullValue() ?? false;
 
       if (HaveCompositeSurfaceForCell)
       {

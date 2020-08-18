@@ -55,7 +55,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///          "legacyProjectId":5929,"customerUID":"f584aa24-5e73-11e6-b7ed-005056831552","legacyCustomerId":"199061","coordinateSystemFileName":"Goliat.dc"},
     /// </summary>
     [Route("api/v5/project")]
-    [Route("api/v2/project")] // TBC has route hardcoded
+    [Route("api/v3/project")] // TBC has route hardcoded
     [HttpGet]
     public async Task<Dictionary<long, ProjectDataTBCSingleResult>> GetProjects()
     {
