@@ -1,8 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.Contracts;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -10,29 +17,49 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class ConfigController
+  public class ConfigController : Controller, IReportSvc
   {
-    private readonly IASNodeClient raptorClient;
-    private readonly ILoggerFactory logger;
+    private readonly ILoggerFactory _logger;
+    private readonly ILogger _log;
+
+    /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    private readonly IConfigurationStore _configStore;
+
+    /// <summary>
+    /// The TRex Gateway proxy for use by executor.
+    /// </summary>
+    private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
+
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
+
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ConfigController(IASNodeClient raptorClient, ILoggerFactory logger)
+    public ConfigController(ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy tRexCompactionDataProxy)
     {
-      this.raptorClient = raptorClient;
-      this.logger = logger;
+      _logger = logger;
+      _log = logger.CreateLogger<ConfigController>();
+      _configStore = configStore;
+      _tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// <summary>
-    /// Gets Raptor Configuration in XML
+    /// Called by TBC only.
+    ///    For now, just call the Trex endpoint which returns 'OK'
     /// </summary>
-    /// <returns>The current Raptor configuration using the XML representation of the Velociraptor.Config.xml Raptor configuration file. All configuration options are included, not just the non-default setting in the actual configuration file.</returns>
     [Route("api/v1/configuration")]
     [HttpGet]
-    public ConfigResult Get()
+    public async Task<ConfigResult> GetConfigTBC()
     {
-      return RequestExecutorContainerFactory.Build<ConfigExecutor>(logger, raptorClient).Process(new object()) as ConfigResult;
+      _log.LogDebug($"{nameof(GetConfigTBC)}");
+      return await RequestExecutorContainerFactory.Build<ConfigExecutor>(_logger,
+        _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(string.Empty) as ConfigResult;
     }
   }
 }
