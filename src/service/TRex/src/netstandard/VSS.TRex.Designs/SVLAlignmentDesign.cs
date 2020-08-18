@@ -260,11 +260,6 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads the SVL design file/s, from storage
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="fileName"></param>
-    /// <param name="localPath"></param>
-    /// <param name="loadIndices"></param>
-    /// <returns></returns>
     public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
       var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
@@ -319,7 +314,6 @@ namespace VSS.TRex.Designs
       var subsetStartStation = Math.Max(_data.StartStation, startStation);
       var subsetEndStation = Math.Min(_data.EndStation, endStation);
       var currentStation = subsetStartStation;
-      var endTestRequired = false;
 
       void AddCoord(double x, double y, double station, double offset)
       {
@@ -349,7 +343,7 @@ namespace VSS.TRex.Designs
           foreach (var offset in offsets)
           {
             element.ComputeXY(currentStation, offset, out var ptX, out var ptY); // get x y at current position
-            AddPointAtStation(ptX, ptY, currentStation, offset, endTestRequired);
+            AddPointAtStation(ptX, ptY, currentStation, offset, rangeTestRequired: false);
           }
 
           if (currentStation + crossSectionInterval > subsetEndStation && currentStation < subsetEndStation)
@@ -380,7 +374,7 @@ namespace VSS.TRex.Designs
           break;
 
         // See if a test for end of range is required
-        endTestRequired = !(currentElement.StartStation >= subsetStartStation && currentElement.EndStation <= subsetEndStation);
+        _ = !(currentElement.StartStation >= subsetStartStation && currentElement.EndStation <= subsetEndStation);
 
         AddSpotPointsFromElement(currentElement);
       }
