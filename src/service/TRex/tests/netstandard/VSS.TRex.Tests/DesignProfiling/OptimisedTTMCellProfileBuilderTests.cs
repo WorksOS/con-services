@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.NotNull(tree);
       Assert.NotNull(indices);
 
-      Assert.True(indices.Length == 1, $"Number of indices [{indices.Length}] incorrect, should be 1");
+      Assert.True(indices.Length == 2, $"Number of indices [{indices.Length}] incorrect, should be 2");
     }
 
     [Fact]
