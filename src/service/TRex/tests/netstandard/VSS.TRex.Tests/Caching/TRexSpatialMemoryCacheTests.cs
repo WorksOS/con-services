@@ -142,7 +142,7 @@ namespace VSS.TRex.Tests.Caching
         SizeInBytes = _size,
         CacheOriginX = _originX,
         CacheOriginY = _originY,
-      });
+      }, context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
 
       Assert.True(context.TokenCount == 1, "Context token count not one after adding single item");
 
@@ -183,7 +183,7 @@ namespace VSS.TRex.Tests.Caching
 
         for (int i = 0; i < numContexts; i++)
         {
-          cache.Add(contexts[i], items[i]);
+          cache.Add(contexts[i], items[i], contexts[i].InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
 
           Assert.True(contexts[i].TokenCount == 1, "Context token count not one after adding single item");
         }
@@ -228,7 +228,7 @@ namespace VSS.TRex.Tests.Caching
 
         for (int i = 0; i < numContexts; i++)
         {
-          cache.Add(contexts[i], items[i]);
+          cache.Add(contexts[i], items[i], contexts[i].InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
 
           Assert.True(contexts[i].TokenCount == 1, "Context token count not one after adding single item");
         }
@@ -274,8 +274,8 @@ namespace VSS.TRex.Tests.Caching
           CacheOriginY = _originY + SubGridTreeConsts.SubGridTreeDimension
         };
 
-        cache.Add(context, item1);
-        cache.Add(context, item2);
+        cache.Add(context, item1, context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
+        cache.Add(context, item2, context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
 
         Assert.True(context.TokenCount == 1, "Token count not one after addition of second element forcing eviction of first");
         Assert.True(cache.Get(context, item1.CacheOriginX, item1.CacheOriginY) == null, "Able to request item1 after it should have been evicted for item2");
@@ -303,8 +303,8 @@ namespace VSS.TRex.Tests.Caching
           CacheOriginY = _originY
         };
 
-        Assert.True(cache.Add(context, item1), "Failed to add element for the first time");
-        Assert.False(cache.Add(context, item1), "Succeeded overwriting element - bad!");
+        Assert.True(cache.Add(context, item1, context.InvalidationVersion) == CacheContextAdditionResult.Added, "Failed to add element for the first time");
+        Assert.False(cache.Add(context, item1, context.InvalidationVersion) == CacheContextAdditionResult.Added, "Succeeded overwriting element - bad!");
       }
     }
 
@@ -337,7 +337,7 @@ namespace VSS.TRex.Tests.Caching
         for (int i = 0; i < numElementsToAdd; i++)
         {
           var expectedSize = (i + 1) * elementSize > maxNumBytes ? maxNumBytes : (i + 1) * elementSize;
-          cache.Add(context, items[i]);
+          cache.Add(context, items[i], context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
           Assert.True(cache.CurrentSizeInBytes == expectedSize,
             $"Cache size is not correct, current = {cache.CurrentSizeInBytes}, elementSize = {elementSize}, expected = {expectedSize}, capacity = {capacity}, i = {i}, numElementsToAdd = {numElementsToAdd}");
         }
@@ -372,7 +372,7 @@ namespace VSS.TRex.Tests.Caching
 
         for (int i = 0; i < numElementsToAdd; i++)
         {
-          cache.Add(context, items[i]);
+          cache.Add(context, items[i], context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
           Assert.True(cache.CurrentSizeInBytes > 0, "Cache with elements has 0 size!");
           Assert.True(cache.CurrentSizeInBytes <= maxNumBytes, $"Current cache size of {cache.CurrentSizeInBytes} bytes is greater than limit of {maxNumBytes} bytes");
         }
@@ -401,7 +401,7 @@ namespace VSS.TRex.Tests.Caching
               SizeInBytes = _size,
               CacheOriginX = (int) (_originX + i * SubGridTreeConsts.SubGridTreeDimension),
               CacheOriginY = (int) (_originY + j * SubGridTreeConsts.SubGridTreeDimension)
-            }), $"Failed to add item to cache at {i}:{j}");
+            }, context.InvalidationVersion) == CacheContextAdditionResult.Added, $"Failed to add item to cache at {i}:{j}");
           }
         }
 
@@ -439,7 +439,7 @@ namespace VSS.TRex.Tests.Caching
           CacheOriginX = 1000,
           CacheOriginY = 1000,
           SizeInBytes = 1000
-        });
+        }, context.InvalidationVersion);
 
         Assert.True(context.TokenCount == 1, "Failed to add new item to context");
 
@@ -462,7 +462,7 @@ namespace VSS.TRex.Tests.Caching
           CacheOriginX = 1000,
           CacheOriginY = 1000,
           SizeInBytes = 1000
-        });
+        }, context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
 
         Assert.True(context.TokenCount == 1, "Failed to add new item to context");
 
@@ -486,7 +486,7 @@ namespace VSS.TRex.Tests.Caching
           SizeInBytes = 1000
         };
 
-        cache.Add(context, item);
+        cache.Add(context, item, context.InvalidationVersion);
         Assert.True(context.TokenCount == 1, "Token count incorrect after addition");
 
         cache.Remove(context, item);
@@ -515,7 +515,7 @@ namespace VSS.TRex.Tests.Caching
               SizeInBytes = 1
             };
 
-            cache.Add(context, items[i, j]);
+            cache.Add(context, items[i, j], context.InvalidationVersion);
           }
         }
 
@@ -588,7 +588,7 @@ namespace VSS.TRex.Tests.Caching
               for (var contextIndex = 0; contextIndex < contexts.Length; contextIndex++)
               {
                 if (cache.Get(contexts[contextIndex], i, j) == null)
-                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]);
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j], contexts[contextIndex].InvalidationVersion);
               }
             }
           }
@@ -676,7 +676,7 @@ namespace VSS.TRex.Tests.Caching
                   CacheOriginY = (int)(j * SubGridTreeConsts.SubGridTreeDimension),
                   SizeInBytes = 1
                 };
-                cache.Add(context, items[i, j]);
+                cache.Add(context, items[i, j], context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added); ;
               }
               else
               {
@@ -686,7 +686,7 @@ namespace VSS.TRex.Tests.Caching
                   CacheOriginY = (int)(j * SubGridTreeConsts.SubGridTreeDimension),
                   SizeInBytes = 1
                 };
-                cache.Add(context2, items2[i, j]);
+                cache.Add(context2, items2[i, j], context2.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
               }
             }
           }
@@ -799,7 +799,7 @@ namespace VSS.TRex.Tests.Caching
                 }
                 else
                 {
-                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]).Should().BeTrue();
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j], contexts[contextIndex].InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
                 }
               }
             }
@@ -807,7 +807,7 @@ namespace VSS.TRex.Tests.Caching
         }
       });
 
-      Task.WaitAll(new[] { additionTask  });
+      Task.WaitAll(new[] { additionTask });
     }
 
     [Fact(Skip = "Slow - Development Use - WIP")]
@@ -867,7 +867,7 @@ namespace VSS.TRex.Tests.Caching
                 }
                 else
                 {
-                  cache.Add(contexts[contextIndex], items[contextIndex][i, j]).Should().BeTrue();
+                  cache.Add(contexts[contextIndex], items[contextIndex][i, j], contexts[contextIndex].InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
                 }
               }
             }

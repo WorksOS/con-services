@@ -14,30 +14,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// </summary>
         public ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess { get; } = new ConcurrentQueue<AggregatedDataIntegratorTask>();
 
-        // FProcessEvent is used to wake up this processing thread when something arrives
-        // into the FFilesToProcess list
-        //      FProcessEvent : TSimpleEvent;
-
-        // FShuttingDown is a signal to the processor to clean up and prepare for
-        // shutdown
-        //      FShuttingDown : Boolean;
-
-        // FShutdownReadyEvent is used to signal the wider production server that
-        // the snippet processor is ready to shutdown.
-        //      FShutdownReadyEvent : TSimpleEvent;
-
         private int _pendingFilesToBeProcessedCount;
 
         private int _outstandingCellPasses;
         private long _totalCellPassesProcessed;
-
-        //      FNumberOfTasksBeingProcessed : Integer;
-        //      FRemainingNumberOfTasksBeingProcessed : Integer;
-
-        //      FWorkers : Array of AggregatedDataIntegratorWorkerThread;
-
-        //    public
-        //      property ShutdownReadyEvent : TSimpleEvent read FShutdownReadyEvent;
 
         // AddTaskToProcessList adds a task to the processing queue for the task
         // processor. This is a thread safe call, multiple threads may safely add
@@ -67,8 +47,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             TasksToProcess.Enqueue(newTask);
 
             System.Threading.Interlocked.Increment(ref _pendingFilesToBeProcessedCount);
-
-            // FProcessEvent.SetEvent;
         }
 
         // CountOfTasksToProcess returns the number of tasks remaining in the
