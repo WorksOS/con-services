@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.GridFabric.Arguments;
@@ -64,7 +65,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
         Filters = new FilterSet(new CombinedFilter()),
         StartPoint = new WGS84Point(startX, startY),
         EndPoint = new WGS84Point(endX, endY),
-        TRexNodeID = "UnitTest_TRexNodeID",
+        TRexNodeID = Guid.NewGuid(),
         PositionsAreGrid = true        
       });
 

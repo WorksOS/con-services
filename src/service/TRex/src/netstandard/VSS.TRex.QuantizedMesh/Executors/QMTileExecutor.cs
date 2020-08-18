@@ -31,7 +31,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
   public class QMTileExecutor
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<QMTileExecutor>();
-    private string RequestingTRexNodeID { get; set; }
+    private Guid RequestingTRexNodeID { get; set; }
     private int TileGridSize;
     private Guid DataModelUid;
     private IFilterSet Filters;
@@ -81,7 +81,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       int z,
       int displayMode,
       bool hasLighting,
-      string requestingTRexNodeId
+      Guid requestingTRexNodeId
     )
     {
       DataModelUid = dataModelUid;

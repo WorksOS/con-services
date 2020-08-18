@@ -32,7 +32,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     public async Task Execute_FailWithNoSiteModel()
     {
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(new Guid(), filter, 0, 0, 19, 0, false, "1");
+      var request = new QMTileExecutor(new Guid(), filter, 0, 0, 19, 0, false, Guid.NewGuid());
       var result = await request.ExecuteAsync();
       result.Should().BeFalse();
     }
@@ -216,7 +216,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     public void Creation()
     {
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(Guid.NewGuid(), filter, 0, 0, 0, DisplayMode, false, "1");
+      var request = new QMTileExecutor(Guid.NewGuid(), filter, 0, 0, 0, DisplayMode, false, Guid.NewGuid());
       request.Should().NotBeNull();
     }
 
@@ -226,7 +226,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
   
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var filter = new FilterSet(new CombinedFilter());
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 19, DisplayMode, false, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 19, DisplayMode, false, Guid.NewGuid());
       await request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
@@ -241,7 +241,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     {
       AddClusterComputeGridRouting();
       SetupTest();
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, DisplayMode, false, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, DisplayMode, false, Guid.NewGuid());
       await request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
@@ -253,7 +253,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     {
       AddClusterComputeGridRouting();
       SetupTest();
-      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 10, DisplayMode, false, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 10, DisplayMode, false, Guid.NewGuid());
       await request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
@@ -266,7 +266,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     {
       AddClusterComputeGridRouting();
       SetupTest();
-      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, DisplayMode, false, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, DisplayMode, false, Guid.NewGuid());
       await request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK);
       var QMTileResponse = request.QMTileResponse;
@@ -279,7 +279,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
       AddClusterComputeGridRouting();
       SetupTest();
       // Missing coordinate system
-      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 0, false, "1");
+      var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 0, false, Guid.NewGuid());
       await request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK); // Empty tile expected
       var QMTileResponse = request.QMTileResponse;

@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
         new FilterResult(),
         1,3,3,3,false
       );
-            
+
       request.Validate();
 
       var executor = RequestExecutorContainer

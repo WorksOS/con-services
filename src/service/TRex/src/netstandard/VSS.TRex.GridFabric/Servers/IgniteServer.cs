@@ -40,7 +40,7 @@ namespace VSS.TRex.GridFabric.Servers
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
         /// </summary>
-        public string TRexNodeID = string.Empty;
+        public Guid TRexNodeID = Guid.Empty;
 
         /// <summary>
         /// Base configuration for the grid

@@ -73,7 +73,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Pretend there is a single node in the cluster group
       mockClusterNode = new Mock<IClusterNode>(MockBehavior.Strict);
-      mockClusterNode.Setup(x => x.GetAttribute<string>("TRexNodeId")).Returns("UnitTest-TRexNodeId");
+      mockClusterNode.Setup(x => x.GetAttribute<string>("TRexNodeId")).Returns(Guid.Empty.ToString());
       mockClusterNode.Setup(x => x.Id).Returns(Guid.NewGuid());
 
       mockClusterNodes = new Mock<ICollection<IClusterNode>>(MockBehavior.Strict);

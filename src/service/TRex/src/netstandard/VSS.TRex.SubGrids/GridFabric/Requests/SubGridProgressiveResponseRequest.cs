@@ -71,19 +71,19 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// Construct a progressive response request that will execute progressive request responses to the
     /// Ignite node identified by nodeId
     /// </summary>
-    /// <param name="nodeId">The internal Ignite identifier of the node origination the request for the sub grids being returned</param>
-    public SubGridProgressiveResponseRequest(Guid nodeId)
+    /// <param name="tRexNodeId">The internal TREx node identifier of the node originating the request for the sub grids being returned</param>
+    public SubGridProgressiveResponseRequest(Guid tRexNodeId)
     {
       // Determine the single node the request needs to be sent to
       _immutableCompute = ImmutableIgnite
         .GetCluster()
-        .ForNodeIds(new List<Guid> {nodeId})
+        .ForAttribute("TRexNodeId", tRexNodeId.ToString())
         .GetCompute()
         .WithExecutor(TREX_PROGRESSIVE_QUERY_CUSTOM_THREAD_POOL_NAME);
 
       if (_immutableCompute == null)
       {
-        _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Compute cluster projection is null");
+        _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{tRexNodeId}'. Compute cluster projection is null");
         DumpClusterStateToLog(ImmutableIgnite, "ImmutableGrid", "ProgressiveResponseRequest");
       }
       else
@@ -91,7 +91,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         var projectionSize = _immutableCompute?.ClusterGroup?.GetNodes()?.Count ?? 0;
         if (projectionSize == 0)
         {
-          _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{nodeId}'. Topology projection contains no nodes");
+          _log.LogWarning($"Failed to creating SubGridProgressiveResponseRequest instance for node '{tRexNodeId}'. Topology projection contains no nodes");
           DumpClusterStateToLog(ImmutableIgnite, "ImmutableGrid", "ProgressiveResponseRequest");
         }
       }

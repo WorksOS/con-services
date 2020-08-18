@@ -39,7 +39,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// <summary>
     /// The TRex application service node performing the request
     /// </summary>
-    private string RequestingTRexNodeID { get; }
+    private Guid RequestingTRexNodeID { get; }
 
     private readonly Guid _dataModelId;
     private readonly IFilterSet _filters;
@@ -53,7 +53,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       Guid dataModelId,
       IFilterSet filters,
       double tolerance,
-      string requestingTRexNodeId,
+      Guid requestingTRexNodeId,
       ILiftParameters liftParams
     )
     {

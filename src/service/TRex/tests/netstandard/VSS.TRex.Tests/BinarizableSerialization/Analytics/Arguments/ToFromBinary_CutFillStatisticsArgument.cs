@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Analytics.Arguments
     {
       var argument = new CutFillStatisticsArgument()
       {
-        TRexNodeID = "1",
+        TRexNodeID = Guid.NewGuid(),
         ProjectID = Guid.NewGuid(),
         Filters = new FilterSet(new CombinedFilter()),
         ReferenceDesign = new DesignOffset(),

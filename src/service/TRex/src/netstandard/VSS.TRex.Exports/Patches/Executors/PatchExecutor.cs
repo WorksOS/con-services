@@ -35,7 +35,7 @@ namespace VSS.TRex.Exports.Patches.Executors
     /// <summary>
     /// The TRex application service node performing the request
     /// </summary>
-    private string RequestingTRexNodeID { get; }
+    private Guid RequestingTRexNodeID { get; }
 
     private Guid DataModelID;
     private DisplayMode Mode;
@@ -59,8 +59,8 @@ namespace VSS.TRex.Exports.Patches.Executors
       //AExternalDescriptor :TASNodeRequestDescriptor;
       DisplayMode mode,
       IFilterSet filters,
-      DesignOffset cutFillDesign, 
-      string requestingTRexNodeId,
+      DesignOffset cutFillDesign,
+      Guid requestingTRexNodeId,
       int dataPatchPageNumber,
       int dataPatchPageSize,
       ILiftParameters liftParams

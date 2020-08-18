@@ -43,7 +43,7 @@ namespace VSS.TRex.Rendering.Executors
     /// <summary>
     /// The TRex application service node performing the request
     /// </summary>
-    private string RequestingTRexNodeID { get; }
+    private Guid RequestingTRexNodeID { get; }
 
     private readonly Guid DataModelID;
     private readonly DisplayMode Mode;
@@ -90,7 +90,7 @@ namespace VSS.TRex.Rendering.Executors
       DesignOffset cutFillDesign,
       IPlanViewPalette aColorPalettes,
       Color representColor,
-      string requestingTRexNodeId,
+      Guid requestingTRexNodeId,
       ILiftParameters liftParams
     )
     {

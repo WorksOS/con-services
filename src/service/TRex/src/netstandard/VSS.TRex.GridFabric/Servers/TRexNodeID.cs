@@ -1,4 +1,5 @@
-﻿using VSS.TRex.DI;
+﻿using System;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Storage.Models;
 
@@ -12,13 +13,13 @@ namespace VSS.TRex.Servers
         /// <summary>
         /// Local storage for the 
         /// </summary>
-        private static readonly string[] tRexNodeIDs = {"", ""}; 
+        private static readonly Guid[] tRexNodeIDs = {Guid.Empty, Guid.Empty}; 
 
-        public static string ThisNodeID(StorageMutability mutability)
+        public static Guid ThisNodeID(StorageMutability mutability)
         {
-            if (string.IsNullOrEmpty(tRexNodeIDs[(int)mutability]))
+            if (tRexNodeIDs[(int)mutability].Equals(Guid.Empty))
             {
-                tRexNodeIDs[(int)mutability] = DIContext.Obtain<ITRexGridFactory>().Grid(mutability).GetCluster().GetLocalNode().GetAttribute<string>("TRexNodeId");
+                tRexNodeIDs[(int)mutability] = Guid.Parse(DIContext.Obtain<ITRexGridFactory>().Grid(mutability).GetCluster().GetLocalNode().GetAttribute<string>("TRexNodeId"));
             }
 
             return tRexNodeIDs[(int)mutability];

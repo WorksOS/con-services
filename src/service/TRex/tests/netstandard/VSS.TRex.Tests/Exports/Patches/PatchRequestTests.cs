@@ -76,7 +76,7 @@ namespace VSS.TRex.Tests.Exports.Patches
         Mode = DisplayMode.Height,
         ProjectID = projectUid,
         ReferenceDesign = new DesignOffset(),
-        TRexNodeID = "'Test_PatchRequest_Execute_EmptySiteModel"
+        TRexNodeID = Guid.NewGuid()
       };
     }
 

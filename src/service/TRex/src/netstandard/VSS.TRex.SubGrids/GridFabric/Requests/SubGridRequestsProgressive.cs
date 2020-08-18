@@ -78,7 +78,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// Overrides the base Execute() semantics to add a listener available for in-progress updates of information
         /// from the processing engine.
         /// </summary>
-        /// <returns></returns>
         public override TSubGridRequestsResponse Execute()
         {
             PrepareForExecution();
@@ -103,7 +102,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             // Send the appropriate response to the caller
             return taskResult.Result?.Count > 0 
-              ? taskResult.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)) 
+              ? taskResult.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second))
               : null;
         }
 
@@ -111,7 +110,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// Overrides the base ExecuteAsync() semantics to add a listener available for in-progress updates of information
         /// from the processing engine.
         /// </summary>
-        /// <returns></returns>
         public override Task<TSubGridRequestsResponse> ExecuteAsync()
         {
             PrepareForExecution();

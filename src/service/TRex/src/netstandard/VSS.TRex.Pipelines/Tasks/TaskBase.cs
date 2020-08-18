@@ -31,7 +31,7 @@ namespace VSS.TRex.Pipelines.Tasks
     /// <summary>
     /// The node wanting to receive the results of task bases sub grid requests to the PSNode clustered processing layer
     /// </summary>
-    public string TRexNodeID { get; set; } = string.Empty;
+    public Guid TRexNodeID { get; set; } = Guid.Empty;
 
     /// <summary>
     /// Default no-arg constructor
