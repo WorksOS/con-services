@@ -221,6 +221,10 @@ namespace VSS.TRex.Designs
 
               for (var i = 0; i < triList.Count; i++)
               {
+                /* *** DO NOT REMOVE THIS CODE ***
+                 It is commented out for now as it is an optimization for grid queries but it creates problems for profile queries
+                as in triangles that should be included for design profiling are excluded because they have no cell center in them.
+
                 // Get the triangle...
                 var tri = TriangleItems[triList[i]];
 
@@ -291,7 +295,7 @@ namespace VSS.TRex.Designs
                   // No cell in the sub grid intersects with the triangle - ignore it
                   continue;
                 }
-
+                */
                 // This triangle is a candidate for being probed, copy it into the array
                 trianglesCopiedToLeaf++;
                 spatialIndexOptimisedTriangles[copiedCount++] = triList[i];

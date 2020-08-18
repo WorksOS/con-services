@@ -157,7 +157,7 @@ namespace VSS.TRex.DesignProfiling.Tests
 
       design.SubGridOverlayIndex().SizeOf().Should().Be(12724);
 
-      design.SizeInCache().Should().Be(2214624);
+      design.SizeInCache().Should().Be(2285888);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ namespace VSS.TRex.DesignProfiling.Tests
 
       design.SubGridOverlayIndex().SizeOf().Should().Be(12724);
 
-      design.SizeInCache().Should().Be(2214624);
+      design.SizeInCache().Should().Be(2285888);
     }
 
     private void LoadTheGiantDesign()

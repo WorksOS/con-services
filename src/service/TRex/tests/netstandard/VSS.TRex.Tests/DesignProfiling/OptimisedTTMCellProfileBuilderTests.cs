@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Designs.TTM.Optimised.Profiling;
+﻿using FluentAssertions;
+using VSS.TRex.Designs.TTM.Optimised.Profiling;
 using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
@@ -11,6 +12,7 @@ namespace VSS.TRex.Tests.DesignProfiling
     public void Test_OptimisedTTMCellProfileBuilder_Creation()
     {
       var builder = new OptimisedTTMCellProfileBuilder(1.0, true);
+      builder.Should().NotBeNull();
     }
 
     /// <summary>
@@ -29,7 +31,7 @@ namespace VSS.TRex.Tests.DesignProfiling
       Assert.NotNull(tree);
       Assert.NotNull(indices);
 
-      Assert.True(indices.Length == 1, $"Number of indices [{indices.Length}] incorrect, should be 1");
+      Assert.True(indices.Length == 2, $"Number of indices [{indices.Length}] incorrect, should be 2");
     }
 
     [Fact]
