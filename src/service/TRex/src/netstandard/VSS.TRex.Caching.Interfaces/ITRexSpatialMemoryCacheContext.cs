@@ -10,6 +10,8 @@ namespace VSS.TRex.Caching.Interfaces
 
     string FingerPrint { get; }
 
+    public long InvalidationVersion { get; }
+
     GridDataType GridDataType { get; }
 
     bool MarkedForRemoval { get; set; }

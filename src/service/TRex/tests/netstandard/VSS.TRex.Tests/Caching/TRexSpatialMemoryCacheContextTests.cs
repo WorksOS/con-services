@@ -71,7 +71,7 @@ namespace VSS.TRex.Tests.Caching
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
-      context.OwnerMemoryCache.Add(context, element);
+      context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");
       Assert.True(context.MRUList.TokenCount == 1, $"MRU list count incorrect (= {context.MRUList.TokenCount})");
@@ -82,6 +82,17 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
+    public void Test_TRexSpatialMemoryCacheContext_AddOneElement_FailWithInvalidationVersionMismatch()
+    {
+      ITRexSpatialMemoryCacheContext context =
+        new TRexSpatialMemoryCacheContext(new TRexSpatialMemoryCache(100, 1000000, 0.5),
+          new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
+
+      var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
+      context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion + 1).Should().Be(CacheContextAdditionResult.RejectedDueToInvlidationVersionMismatch);
+    }
+
+    [Fact]
     public void Test_TRexSpatialMemoryCacheContext_RemoveOneElement()
     {
       ITRexSpatialMemoryCacheContext context =
@@ -89,7 +100,7 @@ namespace VSS.TRex.Tests.Caching
           new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(100, 50));
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
-      context.OwnerMemoryCache.Add(context, element);
+      context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added); ;
 
       Assert.True(context.TokenCount == 1, $"Element count incorrect (= {context.TokenCount})");
       Assert.True(context.MRUList.TokenCount == 1, $"MRU list count incorrect (= {context.MRUList.TokenCount})");
@@ -112,8 +123,8 @@ namespace VSS.TRex.Tests.Caching
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
 
-      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
-      Assert.False(context.OwnerMemoryCache.Add(context, element), "Result is true on second addition of same element");
+      Assert.True(context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion) == CacheContextAdditionResult.Added, "Result is false on addition of first element");
+      Assert.True(context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion) == CacheContextAdditionResult.AlreadyExisting, "Result is true on second addition of same element");
     }
 
     [Fact]
@@ -144,7 +155,7 @@ namespace VSS.TRex.Tests.Caching
       var currentDate = DateTime.UtcNow;
       var element = new TRexSpatialMemoryCacheContextTests_Element { SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000 };
 
-      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
+      Assert.True(context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion) == CacheContextAdditionResult.Added, "Result is false on addition of first element");
       Assert.True(!context.MarkedForRemoval && context.TokenCount == 1);
 
       context.Remove(element);
@@ -162,7 +173,7 @@ namespace VSS.TRex.Tests.Caching
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
 
-      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
+      Assert.True(context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion) == CacheContextAdditionResult.Added, "Result is false on addition of first element");
 
       context.MarkForRemoval(DateTime.UtcNow);
       Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
@@ -185,7 +196,7 @@ namespace VSS.TRex.Tests.Caching
       Assert.True(context.MarkedForRemoval, "Marking context for removal did not set state");
 
       // Reanimate by adding an element
-      Assert.True(context.OwnerMemoryCache.Add(context, element), "Result is false on addition of first element");
+      Assert.True(context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion) == CacheContextAdditionResult.Added, "Result is false on addition of first element");
 
       Assert.False(context.MarkedForRemoval, "Marking context for removal did not set state");
       Assert.True(context.MarkedForRemovalAtUtc == TRex.Common.Consts.MIN_DATETIME_AS_UTC, "Marking context for removal did not set date");
@@ -214,7 +225,7 @@ namespace VSS.TRex.Tests.Caching
       present.Should().BeFalse();
 
       var element = new TRexSpatialMemoryCacheContextTests_Element {SizeInBytes = 1000, CacheOriginX = 2000, CacheOriginY = 3000};
-      context.OwnerMemoryCache.Add(context, element);
+      context.OwnerMemoryCache.Add(context, element, context.InvalidationVersion).Should().Be(CacheContextAdditionResult.Added);
 
       context.InvalidateSubGrid(2000, 3000, out present);
       present.Should().BeTrue();
