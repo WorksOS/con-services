@@ -1,12 +1,7 @@
 trigger:
-  branches:
-    include:
-      - master
-      - feature/*
-      - bug/*
   paths:
     include:
-      - 'src/service/3dNow/*'
+    - 'src/service/3dNow/*'
 
 pool: fsm-merino-services
 
@@ -57,7 +52,7 @@ jobs:
         displayName: 'Publish Code Coverage'
         inputs:
           codeCoverageTool: Cobertura
-          summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage*cobertura.xml'
+          summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml'
           pathToSources: '$(rootServiceFolder)'
           failIfCoverageEmpty: true
 
