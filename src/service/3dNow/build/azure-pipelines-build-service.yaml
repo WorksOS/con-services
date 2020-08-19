@@ -1,4 +1,8 @@
 trigger:
+  branches:
+    include:
+    - master
+    # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
   paths:
     include:
     - 'src/service/3dNow/*'
