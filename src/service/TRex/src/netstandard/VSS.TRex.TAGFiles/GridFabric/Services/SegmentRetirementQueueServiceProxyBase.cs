@@ -50,6 +50,12 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public void Deploy()
         {
+            if (Log == null)
+            {
+                Console.WriteLine($"ERROR: logger is null in {nameof(SegmentRetirementQueueServiceProxyBase)}.{nameof(Deploy)}");
+            }
+
+
             var services = _ignite.GetServices();
 
             // Attempt to cancel any previously deployed service
@@ -58,17 +64,16 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 Log.LogInformation($"Cancelling deployed service {ServiceName}");
                 services.Cancel(ServiceName);
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError(E, "Exception thrown while attempting to cancel service");
-                throw;
+                Log.LogError(e, "Exception thrown while attempting to cancel service");
             }
 
             try
             {
                 Log.LogInformation("Deploying new service");
 
-                services.Deploy(new ServiceConfiguration()
+                services.Deploy(new ServiceConfiguration
                 {
                     Name = ServiceName,
                     Service = new SegmentRetirementQueueService(),
@@ -77,10 +82,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                     NodeFilter = NodeFilter
                 });
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError(E, "Exception thrown while attempting to deploy service");
-                throw;
+                Log.LogError(e, "Exception thrown while attempting to deploy service");
             }
 
             try
@@ -88,10 +92,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 Log.LogInformation($"Obtaining service proxy for {ServiceName}");
                 /* proxy = */ services.GetServiceProxy<ISegmentRetirementQueueService>(ServiceName);
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError(E, "Exception thrown while attempting to get service proxy");
-                throw;
+                Log.LogError(e, "Exception thrown while attempting to get service proxy");
             }
         }
     }
