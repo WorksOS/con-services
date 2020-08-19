@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace VSS.FlowJSHandler
 {
@@ -17,7 +18,7 @@ namespace VSS.FlowJSHandler
     public string[] Extensions { get; set; }
     public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
-      var flowJs = new FlowJsRepo();
+      var flowJs = filterContext.HttpContext.RequestServices.GetService<IFlowJsRepo>();
       var request = filterContext.HttpContext.Request;
       var validationRules = new FlowValidationRules();
       validationRules.AcceptedExtensions.AddRange(Extensions);

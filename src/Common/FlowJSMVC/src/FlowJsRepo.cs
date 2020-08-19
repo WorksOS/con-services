@@ -4,11 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 
 namespace VSS.FlowJSHandler
 {
   public class FlowJsRepo : IFlowJsRepo
   {
+    private readonly ITransferProxyFactory factory;
+
     /// <summary>
     /// A lock to be used when accessing the File Locks dictionary
     /// </summary>
@@ -18,6 +23,11 @@ namespace VSS.FlowJSHandler
     /// A dictionary to hold locks per file being uploaded (to stop the file being merged multiple times when the chunks finish at the same time)
     /// </summary>
     private static readonly Dictionary<string, object> fileLocks = new Dictionary<string, object>();
+
+    public FlowJsRepo(ITransferProxyFactory factory)
+    {
+      this.factory = factory;
+    }
 
     public FlowJsPostChunkResponse PostChunk(HttpRequest request, string folder, FlowValidationRules validationRules = null)
     {
