@@ -43,7 +43,7 @@ namespace VSS.TRex.Events
 
     private byte VERSION_NUMBER = 1;
 
-    private const int MinStreamLength = 16;
+    private const int MinStreamLength = 9;
 
     public bool EventsChanged { get; set; }
 
@@ -520,6 +520,8 @@ namespace VSS.TRex.Events
         immutableWriter.BaseStream.Position = countPosition;
         immutableWriter.Write(filteredEventCount);
         immutableWriter.BaseStream.Position = eosPosition;
+
+        // Log.LogDebug($"Converted event list to immutable for event {typeof(T).Name}. Mutable count = {Events.Count}, immutable count = {filteredEventCount}");
       }
 
       return immutableStream;
