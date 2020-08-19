@@ -29,7 +29,7 @@ namespace VSS.TRex.SiteModels.Heartbeats
         RebuildSiteModelPhase.Monitoring => $"Processed files: {metaData.NumberOfTAGFilesProcessed}, last processed: {metaData.LastProcessedTagFile}",
         RebuildSiteModelPhase.Completion => $"Result: {metaData.RebuildResult}",
         RebuildSiteModelPhase.Complete => "",
-        _ => throw new ArgumentOutOfRangeException()
+        _ => "Unknown phase for state logging"
       };
     }
 

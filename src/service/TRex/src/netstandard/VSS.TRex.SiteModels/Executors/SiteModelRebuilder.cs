@@ -161,6 +161,9 @@ namespace VSS.TRex.SiteModels.Executors
     private void AdvancePhase(ref RebuildSiteModelPhase currentPhase)
     {
       currentPhase = NextPhase(currentPhase);
+
+      _log.LogInformation($"Advancing to phase: {currentPhase}");
+
       UpdatePhase(currentPhase);
     }
 
@@ -204,6 +207,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     private async Task<bool> ExecuteTAGFileScanning()
     {
+      _log.LogInformation("Scanning files present in S3 and placing them in the files cache");
+
       var continuation = string.Empty;
       do
       {
@@ -218,12 +223,10 @@ namespace VSS.TRex.SiteModels.Executors
         sb.AppendJoin('|', candidateTagFiles);
 
         await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
-        await using (var compressedStream = MemoryStreamCompression.Compress(ms))
-        {
-          if (_log.IsTraceEnabled())
-            _log.LogInformation($"Putting block of {candidateTagFiles.Length} TAG file names for project {ProjectUid}");
-          await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, _metadata.NumberOfTAGFileKeyCollections.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
-        }
+        await using var compressedStream = MemoryStreamCompression.Compress(ms);
+
+        _log.LogInformation($"Putting block of {candidateTagFiles.Length} TAG file names for project {ProjectUid}");
+        await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, _metadata.NumberOfTAGFileKeyCollections.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
 
         _metadata.NumberOfTAGFilesFromS3 += candidateTagFiles.Length;
         _metadata.NumberOfTAGFileKeyCollections++;
@@ -241,6 +244,8 @@ namespace VSS.TRex.SiteModels.Executors
     private async Task<bool> ExecuteTAGFileSubmission()
     {
       var tagFileCollection = new List<string>();
+
+      _log.LogInformation("Reading collections from files cache prior to submission");
 
       // Read all collections into a single list
       for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
@@ -271,6 +276,8 @@ namespace VSS.TRex.SiteModels.Executors
           return false;
         }
       }
+
+      _log.LogInformation($"Read {_metadata.NumberOfTAGFileKeyCollections} containing {tagFileCollection.Count} files. About to sort and submit");
 
       // Sort the list based on time contained in the name of the tag file
       tagFileCollection = tagFileCollection.OrderBy(x =>
@@ -335,6 +342,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     private async Task<bool> ExecuteMonitoring()
     {
+      _log.LogInformation("Entering monitoring state");
+
       var token = _cancellationSource.Token;
       while (!_aborted && !token.IsCancellationRequested)
       {
@@ -356,6 +365,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     private async Task<bool> ExecuteCompletion()
     {
+      _log.LogInformation("Executing completion activities");
+
       // Remove all the collections of TAG file keys
       for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
       {
@@ -476,7 +487,7 @@ namespace VSS.TRex.SiteModels.Executors
     {
       // Make a note of the last file processed
       if (responseItems.Length > 0)
-        _metadata.LastProcessedTagFile = responseItems[responseItems.Length - 1].FileName;
+        _metadata.LastProcessedTagFile = responseItems[^1].FileName;
 
       // Update the count of observed files processed
       _metadata.NumberOfTAGFilesProcessed += responseItems.Length;
