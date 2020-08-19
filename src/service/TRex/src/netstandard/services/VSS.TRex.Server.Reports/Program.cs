@@ -168,6 +168,8 @@ namespace VSS.TRex.Server.Reports
     {
       try
       {
+        Console.WriteLine($"TRex service starting at {DateTime.Now}");
+
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 

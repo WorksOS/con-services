@@ -193,6 +193,8 @@ namespace VSS.TRex.Server.TileRendering
     {
       try
       {
+        Console.WriteLine($"TRex service starting at {DateTime.Now}");
+
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 
