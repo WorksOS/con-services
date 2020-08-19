@@ -355,20 +355,23 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueItemHandler()
         {
-          var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
+            _log.LogInformation($"Creating TAGFileBufferQueueItemHandler with {_numConcurrentProcessingTasks} concurrent tasks");
+
+            var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
             _queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             // Create the grouper responsible for grouping TAG files into project/asset combinations
             _grouper = new TAGFileBufferQueueGrouper();
 
             // Note ToArray at end is important to activate tasks (ie: lazy loading)
-            var _ = Enumerable.Range(0, _numConcurrentProcessingTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
+            var _ = Enumerable.Range(0, _numConcurrentProcessingTasks).Select(_ => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
+
+            _log.LogInformation($"Creation of TAGFileBufferQueueItemHandler complete after initializing {_numConcurrentProcessingTasks} concurrent tasks");
         }
 
         /// <summary>
         /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continuous query
         /// </summary>
-        /// <param name="key"></param>
         public void Add(ITAGFileBufferQueueKey key)
         {
             _grouper.Add(key);
