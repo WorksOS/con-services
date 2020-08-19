@@ -462,7 +462,6 @@ namespace VSS.TRex.Designs.SVL
           break;
         case NFFLineworkArcTransitDirection.atdEndToStart:
           Result = -Result;
-          TransitDirection = NFFLineworkArcTransitDirection.atdStartToEnd;
           break;
       }
 

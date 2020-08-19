@@ -11,7 +11,7 @@ namespace VSS.TRex.Designs.Executors
 {
   public class AlignmentDesignGeometryExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<AlignmentDesignGeometryExecutor>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AlignmentDesignGeometryExecutor>();
 
     /// <summary>
     /// Performs execution business logic for this executor
@@ -24,13 +24,13 @@ namespace VSS.TRex.Designs.Executors
 
         if (siteModel == null)
         {
-          Log.LogError($"Site model {projectUid} not found");
+          _log.LogError($"Site model {projectUid} not found");
           return null;
         }
 
         if (convertArcsToPolyLines && arcChordTolerance < 0.001)
         {
-          Log.LogError("Arc chord tolerance too small, must be >= 0.001 meters");
+          _log.LogError("Arc chord tolerance too small, must be >= 0.001 meters");
           return null;
         }
 
@@ -39,26 +39,26 @@ namespace VSS.TRex.Designs.Executors
 
         if (lockResult != DesignLoadResult.Success)
         {
-          Log.LogError($"Failed to lock design with error {lockResult}");
+          _log.LogError($"Failed to lock design with error {lockResult}");
           return null;
         }
 
         if (design == null)
         {
-          Log.LogError($"Failed to read file for alignment {alignmentDesignUid}");
+          _log.LogError($"Failed to read file for alignment {alignmentDesignUid}");
           return null;
         }
 
         if (!(design is SVLAlignmentDesign alignment))
         {
-          Log.LogError($"Design {alignmentDesignUid} is not an alignment");
+          _log.LogError($"Design {alignmentDesignUid} is not an alignment");
           return null;
         }
 
         var master = alignment.GetMasterAlignment();
         if (master == null)
         {
-          Log.LogError($"Design {alignmentDesignUid} does not contain a master alignment");
+          _log.LogError($"Design {alignmentDesignUid} does not contain a master alignment");
           return null;
         }
 
@@ -74,14 +74,14 @@ namespace VSS.TRex.Designs.Executors
 
         if (!success)
         {
-          Log.LogError($"Failed to generate geometry for alignment design {alignmentDesignUid}, error = {geometryExporter.CalcResult}");
+          _log.LogError($"Failed to generate geometry for alignment design {alignmentDesignUid}, error = {geometryExporter.CalcResult}");
         }
 
         return geometryExporter;
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Execute: Exception: ");
+        _log.LogError(e, "Execute: Exception: ");
         return null;
       }
     }
