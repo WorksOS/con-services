@@ -14,6 +14,7 @@ using VSS.TRex.GridFabric.Services;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
 using System;
+using VSS.Serilog.Extensions.Enrichers;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
@@ -54,6 +55,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// </summary>
     public void Init(IServiceContext context)
     {
+      if (_log == null)
+      {
+        Console.WriteLine($"Error: Null logger present in {nameof(TAGFileBufferQueueService)}.{nameof(Init)}");
+      }
+
       _log.LogInformation($"{nameof(TAGFileBufferQueueService)} {context.Name} initializing");
     }
 
@@ -69,40 +75,47 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
           Console.WriteLine($"Error: Null logger present in {nameof(TAGFileBufferQueueService)}.{nameof(Execute)}");
         }
 
-        _log.LogInformation($"{nameof(TAGFileBufferQueueService)} {context.Name} starting executing");
-
-        _aborted = false;
-        _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-        // Get the ignite grid and cache references
-
-        var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ??
-                     Ignition.GetIgnite(TRexGrids.MutableGridName());
-
-        if (ignite == null)
+        try
         {
-          _log.LogError("Ignite reference in service is null - aborting service execution");
-          return;
+          _log.LogInformation($"{nameof(TAGFileBufferQueueService)} {context.Name} starting executing");
+
+          _aborted = false;
+          _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+          // Get the ignite grid and cache references
+
+          var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ??
+                       Ignition.GetIgnite(TRexGrids.MutableGridName());
+
+          if (ignite == null)
+          {
+            _log.LogError("Ignite reference in service is null - aborting service execution");
+            return;
+          }
+
+          var queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
+
+          var handler = new TAGFileBufferQueueItemHandler();
+
+          // Construct the continuous query machinery
+          // Set the initial query to return all elements in the cache
+          // Instantiate the queryHandle and start the continuous query on the remote nodes
+          // Note: Only cache items held on this local node will be handled here
+          using var queryHandle = queueCache.QueryContinuous
+          (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler)) { Local = true },
+            initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> { Local = true });
+
+          _log.LogInformation("Performing initial continuous query cursor scan of items to process in TAGFileBufferQueue");
+
+          // Perform the initial query to grab all existing elements and add them to the grouper
+          foreach (var item in queryHandle.GetInitialQueryCursor())
+          {
+            handler.Add(item.Key);
+          }
         }
-
-        var queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
-
-        var handler = new TAGFileBufferQueueItemHandler();
-
-        // Construct the continuous query machinery
-        // Set the initial query to return all elements in the cache
-        // Instantiate the queryHandle and start the continuous query on the remote nodes
-        // Note: Only cache items held on this local node will be handled here
-        using var queryHandle = queueCache.QueryContinuous
-        (qry: new ContinuousQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(new LocalTAGFileListener(handler)) { Local = true },
-          initialQry: new ScanQuery<ITAGFileBufferQueueKey, TAGFileBufferQueueItem> { Local = true });
-
-        _log.LogInformation("Performing initial continuous query cursor scan of items to process in TAGFileBufferQueue");
-
-        // Perform the initial query to grab all existing elements and add them to the grouper
-        foreach (var item in queryHandle.GetInitialQueryCursor())
+        catch (Exception e)
         {
-          handler.Add(item.Key);
+          _log.LogError(e, "Exception occured performing initial set up of conitunous query and scan of existing items");
         }
 
         // Transition into steady state looking for new elements in the cache via the continuous query
