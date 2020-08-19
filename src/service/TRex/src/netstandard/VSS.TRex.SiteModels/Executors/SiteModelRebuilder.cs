@@ -378,75 +378,88 @@ namespace VSS.TRex.SiteModels.Executors
 
     private async Task<IRebuildSiteModelMetaData> Execute()
     {
-      _log.LogInformation($"Starting rebuilding project {ProjectUid}");
-
-      var currentPhase = RebuildSiteModelPhase.Unknown;
-
-      // Get metadata. If one exists and it is 'Complete', then reset it
-      var persistedMetadata = GetMetaData(ProjectUid);
-      if (persistedMetadata != null)
+      try
       {
-        if (persistedMetadata.Phase == RebuildSiteModelPhase.Complete)
+        _log.LogInformation($"Starting rebuilding project {ProjectUid}");
+
+        var currentPhase = RebuildSiteModelPhase.Unknown;
+
+        // Get metadata. If one exists and it is 'Complete', then reset it
+        var persistedMetadata = GetMetaData(ProjectUid);
+        if (persistedMetadata != null)
         {
-          _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
-          // Reset the metadata to start the process
-          UpdatePhase(RebuildSiteModelPhase.Unknown);
+          if (persistedMetadata.Phase == RebuildSiteModelPhase.Complete)
+          {
+            _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
+            // Reset the metadata to start the process
+            UpdatePhase(RebuildSiteModelPhase.Unknown);
+          }
+          else
+          {
+            _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
+            currentPhase = persistedMetadata.Phase;
+          }
+
+          // Set the internal meta data to the state of the persisted metadata
+          _metadata = persistedMetadata;
         }
-        else
+
+        // Ensure persisted metadata state matches the internal metadata state
+        UpdateMetaData();
+
+        _s3FileTransfer = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(_metadata.OriginS3TransferProxy);
+
+        // Move to the current Phase and start processing from that point
+
+        while (!_aborted && _metadata.Phase != RebuildSiteModelPhase.Complete)
         {
-          _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
-          currentPhase = persistedMetadata.Phase;
-        }
+          switch (currentPhase)
+          {
+            case RebuildSiteModelPhase.Unknown:
+              break; // Ignore this phase
 
-        // Set the internal meta data to the state of the persisted metadata
-        _metadata = persistedMetadata;
-      }
-
-      // Ensure persisted metadata state matches the internal metadata state
-      UpdateMetaData();
-
-      _s3FileTransfer = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(_metadata.OriginS3TransferProxy);
-
-      // Move to the current Phase and start processing from that point
-
-      while (!_aborted && _metadata.Phase != RebuildSiteModelPhase.Complete)
-      {
-        switch (currentPhase)
-        {
-          case RebuildSiteModelPhase.Unknown:
-            break; // Ignore this phase
-
-          case RebuildSiteModelPhase.Deleting:
-            if (!await ExecuteProjectDelete())
+            case RebuildSiteModelPhase.Deleting:
+              if (!await ExecuteProjectDelete())
                 return _metadata;
-            break;
+              break;
 
-          case RebuildSiteModelPhase.Scanning:
-            if (!await ExecuteTAGFileScanning())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Scanning:
+              if (!await ExecuteTAGFileScanning())
+                return _metadata;
+              break;
 
-          case RebuildSiteModelPhase.Submitting:
-            if (!await ExecuteTAGFileSubmission())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Submitting:
+              if (!await ExecuteTAGFileSubmission())
+                return _metadata;
+              break;
 
-          case RebuildSiteModelPhase.Monitoring:
-            if (!await ExecuteMonitoring())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Monitoring:
+              if (!await ExecuteMonitoring())
+                return _metadata;
+              break;
 
-          case RebuildSiteModelPhase.Completion:
-            if (!await ExecuteCompletion())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Completion:
+              if (!await ExecuteCompletion())
+                return _metadata;
+              break;
+          }
+
+          AdvancePhase(ref currentPhase);
         }
 
-        AdvancePhase(ref currentPhase);
+        _metadata.RebuildResult = _aborted ? RebuildSiteModelResult.Aborted : RebuildSiteModelResult.OK;
+        UpdateMetaData();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Exception occurred while in rebuilding phase {_metadata?.Phase ?? RebuildSiteModelPhase.Unknown}");
 
-      _metadata.RebuildResult = _aborted ? RebuildSiteModelResult.Aborted : RebuildSiteModelResult.OK;
-      UpdateMetaData();
+        if (_metadata != null)
+        {
+          _metadata.RebuildResult = RebuildSiteModelResult.UnhandledException;
+          UpdateMetaData();
+        }
+      }
 
       return _metadata;
     }
