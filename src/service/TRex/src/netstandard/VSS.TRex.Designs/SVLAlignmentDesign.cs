@@ -128,7 +128,7 @@ namespace VSS.TRex.Designs
       {
         for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
-          if (!mask.BitSet(i, j)) 
+          if (!mask.BitSet(i, j))
             continue;
 
           // Force element to be nil for all calculation until we resolve the issue
@@ -333,7 +333,7 @@ namespace VSS.TRex.Designs
             AddCoord(x, y, station, offset); // add station if we have it
         }
         else
-          AddCoord(x, y, station, offset); 
+          AddCoord(x, y, station, offset);
       }
 
       void AddSpotPointsFromElement(NFFStationedLineworkEntity element)
@@ -372,9 +372,6 @@ namespace VSS.TRex.Designs
 
         if (currentElement.StartStation > subsetEndStation) // are we pass end of range
           break;
-
-        // See if a test for end of range is required
-        _ = !(currentElement.StartStation >= subsetStartStation && currentElement.EndStation <= subsetEndStation);
 
         AddSpotPointsFromElement(currentElement);
       }
