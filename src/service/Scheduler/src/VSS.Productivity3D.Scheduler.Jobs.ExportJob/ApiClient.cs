@@ -124,11 +124,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
         }
 
         using var serviceScope = _scopeFactory.CreateScope();
-
-        var webRequest = new GracefulWebRequest(
-          serviceScope.ServiceProvider.GetService<ILoggerFactory>(),
-          serviceScope.ServiceProvider.GetService<IConfigurationStore>(),
-          serviceScope.ServiceProvider.GetService<IHttpClientFactory>());
+        var webRequest = serviceScope.ServiceProvider.GetService<IWebRequest>();
 
         // The Schedule job request may contain encoded binary data, or a standard string,
         // We need to handle both cases differently, as we could lose data if converting binary information to a string

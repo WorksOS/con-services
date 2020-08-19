@@ -71,7 +71,6 @@ namespace VSS.WebApi.Common
     public void ConfigureServices(IServiceCollection services)
     {
       var corsPolicies = GetCors();
-      services.AddHttpClient();
       services.AddCors(options =>
       {
         foreach (var (name, corsPolicy) in corsPolicies)

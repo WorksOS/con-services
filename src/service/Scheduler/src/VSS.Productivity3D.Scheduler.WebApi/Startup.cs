@@ -69,7 +69,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// Configures the services.
     /// </summary>
-    /// <param name="services">The services.</param>
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       services.AddTransient<IExportJob, ExportJob>();
