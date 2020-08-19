@@ -90,13 +90,10 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       var route = $"/projects/{projectUid}/machines";
       var assetList = await productivity3dV2ProxyCompaction.ExecuteGenericV2Request<MachineExecutionResult>(route, HttpMethod.Get, null, customHeaders);
 
-      foreach (var assetMatch in assetList.MachineStatuses.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty && a.AssetId > 0))
+      foreach (var assetMatch in assetList.MachineStatuses)
       {
-        foreach (var assetOnDesignPeriod in machines.FindAll(a => a.AssetUid == assetMatch.AssetUid && a.AssetId < 1))
+        foreach (var assetOnDesignPeriod in machines.FindAll(a => a.AssetUid == assetMatch.AssetUid))
           assetOnDesignPeriod.AssetId = assetMatch.AssetId;
-
-        foreach (var assetOnDesignPeriod in machines.FindAll(a => a.AssetId == assetMatch.AssetId && (!a.AssetUid.HasValue || a.AssetUid.Value == Guid.Empty)))
-          assetOnDesignPeriod.AssetUid = assetMatch.AssetUid;
       }
     }
   }

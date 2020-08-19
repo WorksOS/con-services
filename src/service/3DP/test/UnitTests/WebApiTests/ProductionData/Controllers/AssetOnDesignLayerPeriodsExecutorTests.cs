@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions.Extensions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -31,7 +32,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(777, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
-      var assetId = NULL_ASSETID;
+      var assetId = assetUid.ToLegacyId();
       long layerId = 444;
       var machineDesignName = "The machine design name";
       var machineName = "MachineName2";
@@ -77,13 +78,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(777, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid1Good = Guid.NewGuid();
-      var assetId1Good = NULL_ASSETID;
-      var assetId1Expected = assetId1Good;
+      var assetId1Expected = assetUid1Good.ToLegacyId();
       var assetUid2Good = Guid.NewGuid();
-      var assetId2Invalid = 0;
-      var assetId2Expected = NULL_ASSETID;
+      var assetId2Expected = assetUid2Good.ToLegacyId();
       var assetUid3Good = Guid.NewGuid();
-      var assetId3Expected = NULL_ASSETID;
+      var assetId3Expected = assetUid3Good.ToLegacyId();
       long layerId = 444;
       var machineDesignName = "The machine Design name";
 
