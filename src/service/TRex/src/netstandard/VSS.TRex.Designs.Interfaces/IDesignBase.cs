@@ -48,8 +48,6 @@ namespace VSS.TRex.Designs.Interfaces
     bool HasFiltrationDataForSubGridPatch(double x, double y);
     bool HasFiltrationDataForSubGridPatch(int subGridX, int subGridY);
     ISubGridTreeBitMask SubGridOverlayIndex();
-    void AcquireExclusiveInterlock();
-    void ReleaseExclusiveInterlock();
     List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
     List<Fence> GetBoundary();
     bool IsLoading { get; set; }

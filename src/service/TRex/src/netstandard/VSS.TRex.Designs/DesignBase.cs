@@ -84,9 +84,6 @@ namespace VSS.TRex.Designs
 
     public virtual ISubGridTreeBitMask SubGridOverlayIndex() => null;
 
-    public void AcquireExclusiveInterlock() => Monitor.Enter(this);
-    public void ReleaseExclusiveInterlock() => Monitor.Exit(this);
-
     public abstract List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
 
     public abstract List<Fence> GetBoundary();
