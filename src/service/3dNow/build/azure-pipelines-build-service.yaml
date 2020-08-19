@@ -50,15 +50,15 @@ jobs:
           searchFolder: '$(rootServiceFolder)/UnitTestResults'
           failTaskOnFailedTests: true
 
-      # - task: PublishCodeCoverageResults@1
-      #   # Only run for /master branch
-      #   condition: and(succeeded(), eq(variables['isMasterBranch'], true))
-      #   displayName: 'Publish Code Coverage'
-      #   inputs:
-      #     codeCoverageTool: Cobertura
-      #     summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage*cobertura.xml'
-      #     pathToSources: '$(rootServiceFolder)'
-      #     failIfCoverageEmpty: true
+      - task: PublishCodeCoverageResults@1
+        # Only run for /master branch
+        #condition: and(succeeded(), eq(variables['isMasterBranch'], true))
+        displayName: 'Publish Code Coverage'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage*cobertura.xml'
+          pathToSources: '$(rootServiceFolder)'
+          failIfCoverageEmpty: true
 
       - task: PowerShell@2
         displayName: 'Publish Service'

@@ -52,7 +52,7 @@ jobs:
 
       - task: PublishCodeCoverageResults@1
         # Only run for /master branch
-        condition: and(succeeded(), eq(variables['isMasterBranch'], true))
+        #condition: and(succeeded(), eq(variables['isMasterBranch'], true))
         displayName: 'Publish Code Coverage'
         inputs:
           codeCoverageTool: Cobertura
