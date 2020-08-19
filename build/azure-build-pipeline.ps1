@@ -115,23 +115,26 @@ function Run-Unit-Tests {
     docker create --name $unique_container_name $container_name
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_CREATE_FAILED) }
 
-    if ($recordTestResults -eq $true) {
+    if ($recordTestResults -eq $true -Or $collectCoverage -eq $true) {
+        Write-Host "Copying files from container /UnitTestResults/ to local host..." -ForegroundColor Green
         docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/. $servicePath/$localTestResultsFolder
+        Write-Host "Listing results of file copy..." -ForegroundColor Green
+        Get-ChildItem $servicePath/$localTestResultsFolder
 
-        if (-not (Test-Path -Path $servicePath/$localTestResultsFolder/* -Include *.trx)) {
-            Write-Host "Unable to find any .trx results files on local host." -ForegroundColor Red
-            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
+        if ($recordTestResults -eq $true) {
+            if (-not (Test-Path -Path $servicePath/$localTestResultsFolder/* -Include *.trx)) {
+                Write-Host "Unable to find any .trx results files on local host." -ForegroundColor Red
+                Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
+            }
         }
-    }
-
-    if ($collectCoverage -eq $true) {
-        docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/coverage.cobertura.xml $servicePath/$localTestResultsFolder
-
-        $coveragePath = "$servicePath/$localTestResultsFolder/coverage*cobertura.xml"
-
-        if (-not (Test-Path $coveragePath -PathType Leaf)) {
-            Write-Host "Unable to find test coverage file '$coveragePath' on local host." -ForegroundColor Red
-            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_COVERAGE)
+    
+        if ($collectCoverage -eq $true) {
+            $coveragePath = "$servicePath/$localTestResultsFolder/coverage*cobertura.xml"
+    
+            if (-not (Test-Path $coveragePath -PathType Leaf)) {
+                Write-Host "Unable to find test coverage file '$coveragePath' on local host." -ForegroundColor Red
+                Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_COVERAGE)
+            }
         }
     }
 
