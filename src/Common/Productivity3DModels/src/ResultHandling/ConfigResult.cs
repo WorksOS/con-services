@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -9,6 +10,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     /// <summary>
     /// Provides current TRex configuration. Currently a string == "OK"
     /// </summary>
+    [JsonProperty(Required = Required.Always)]
     public string Configuration { get; private set; }
 
 

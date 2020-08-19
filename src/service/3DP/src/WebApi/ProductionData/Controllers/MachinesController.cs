@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// 
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class MachinesController : Controller, IMachinesContract
+  public class MachinesController : Controller
   {
 #if RAPTOR
     private readonly IASNodeClient _raptorClient;
@@ -63,6 +63,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       _trexCompactionDataProxy = trexCompactionDataProxy;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets details such as last known position, design, status etc. for machines for a specified project
     /// </summary>
@@ -70,9 +71,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machines")]
     [HttpGet]
-    public async Task<MachineExecutionResult> GetMachinesOnProject([FromRoute] long projectId)
+    public async Task<MachineExecutionResult> GetMachinesOnProjectTbc([FromRoute] long projectId)
     {
-      _log.LogInformation($"{nameof(GetMachinesOnProject)} Request. projectId: {projectId}");
+      _log.LogInformation($"{nameof(GetMachinesOnProjectTbc)} Request. projectId: {projectId}");
 
       var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
@@ -85,7 +86,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
-      _log.LogInformation($"{nameof(GetMachinesOnProject)} Response: {JsonConvert.SerializeObject(response)}");
+      _log.LogInformation($"{nameof(GetMachinesOnProjectTbc)} Response: {JsonConvert.SerializeObject(response)}");
       return response;
     }
 
@@ -115,7 +116,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return response;
     }
 
-    // GET: api/Machines
+    /// Called by TBC only.
     /// <summary>
     ///Gets details such as last known position, design, status etc. for machines for a specified machine (must have contributed data to the project)
     /// </summary>
@@ -126,9 +127,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machines/{machineId}")]
     [HttpGet]
-    public async Task<ContractExecutionResult> GetMachineOnProject([FromRoute] long projectId, [FromRoute] long machineId)
+    public async Task<ContractExecutionResult> GetMachineOnProjectTbc([FromRoute] long projectId, [FromRoute] long machineId)
     {
-      _log.LogInformation($"{nameof(GetMachineOnProject)} Request. projectId: {projectId} machineId: {machineId}");
+      _log.LogInformation($"{nameof(GetMachineOnProjectTbc)} Request. projectId: {projectId} machineId: {machineId}");
 
       var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
@@ -141,7 +142,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
-      _log.LogInformation($"{nameof(GetMachineOnProject)} Response: machineIdFilter {machineId} responsePreFilter {JsonConvert.SerializeObject(response)}");
+      _log.LogInformation($"{nameof(GetMachineOnProjectTbc)} Response: machineIdFilter {machineId} responsePreFilter {JsonConvert.SerializeObject(response)}");
       response?.FilterByMachineId(machineId);
 
       return response;
@@ -209,7 +210,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return response;
     }
 
-    // GET: api/Machines/AssetOnDesignPeriods
+    /// Called by TBC only.
     /// <summary>
     /// Gets On Machine assetOnDesigns for the selected datamodel
     /// </summary>
@@ -219,9 +220,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinedesigns")]
     [HttpGet]
-    public async Task<MachineDesignsResult> GetMachineDesigns([FromRoute] long projectId)
+    public async Task<MachineDesignsResult> GetMachineDesignsTbc([FromRoute] long projectId)
     {
-      _log.LogInformation($"{nameof(GetMachineDesigns)} Request. projectId: {projectId}");
+      _log.LogInformation($"{nameof(GetMachineDesignsTbc)} Request. projectId: {projectId}");
 
       var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
@@ -235,7 +236,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
       var response = CreateUniqueMachineDesignList(result);
 
-      _log.LogInformation($"{nameof(GetMachineDesigns)} Response: {JsonConvert.SerializeObject(response)}");
+      _log.LogInformation($"{nameof(GetMachineDesignsTbc)} Response: {JsonConvert.SerializeObject(response)}");
       return response;
     }
 
@@ -366,6 +367,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return response;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets On Machine lift ids for all machines for the selected datamodel
     /// </summary>
@@ -375,9 +377,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/liftids")]
     [HttpGet]
-    public async Task<AssetOnDesignLayerPeriodsExecutionResult> GetMachineOnDesignLayerPeriods([FromRoute] long projectId)
+    public async Task<AssetOnDesignLayerPeriodsExecutionResult> GetMachineOnDesignLayerPeriodsTbc([FromRoute] long projectId)
     {
-      _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriods)} Request. projectId: {projectId}");
+      _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriodsTbc)} Request. projectId: {projectId}");
 
       var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
@@ -390,7 +392,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
 
-      _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriods)} Response. {JsonConvert.SerializeObject(response)}");
+      _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriodsTbc)} Response. {JsonConvert.SerializeObject(response)}");
       return response;
     }
 
@@ -422,6 +424,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return response;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets On Machine lift ids for each machine for the selected datamodel for the specified date range.
     /// </summary>
@@ -434,17 +437,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinelifts")]
     [HttpGet]
-    public async Task<MachineLayerIdsExecutionResult> GetMachineLiftsByDateRange([FromRoute] long projectId,
+    public async Task<MachineLayerIdsExecutionResult> GetMachineLiftsByDateRangeTbc([FromRoute] long projectId,
       [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
-      _log.LogInformation($"{nameof(GetMachineLiftsByDateRange)} Request. projectId: {projectId} startUtc: {startUtc} endUtc: {endUtc}");
+      _log.LogInformation($"{nameof(GetMachineLiftsByDateRangeTbc)} Request. projectId: {projectId} startUtc: {startUtc} endUtc: {endUtc}");
 
       var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       var response = await GetMachineLiftsWith(projectIds, startUtc, endUtc);
 
-      _log.LogDebug($"{nameof(GetMachineLiftsByDateRange)} Response: {JsonConvert.SerializeObject(response)}");
+      _log.LogDebug($"{nameof(GetMachineLiftsByDateRangeTbc)} Response: {JsonConvert.SerializeObject(response)}");
       return response;
     }
 
