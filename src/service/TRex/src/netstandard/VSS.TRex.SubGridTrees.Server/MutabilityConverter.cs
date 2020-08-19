@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Server
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<MutabilityConverter>();
 
-    private const int MinEventStreamLength = 16;
+    private const int MinEventStreamLength = 9;
 
     private readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
     private readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
