@@ -7,7 +7,7 @@ namespace VSS.Productivity3D.Now3D.UnitTests
     [Fact]
     public void TestMethod1()
     {
-      Assert.True(true);
+      new Now3DExecutionStates();
     }
   }
 }
