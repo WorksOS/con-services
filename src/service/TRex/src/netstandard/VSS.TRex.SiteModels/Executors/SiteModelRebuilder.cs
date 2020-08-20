@@ -161,6 +161,9 @@ namespace VSS.TRex.SiteModels.Executors
     private void AdvancePhase(ref RebuildSiteModelPhase currentPhase)
     {
       currentPhase = NextPhase(currentPhase);
+
+      _log.LogInformation($"Advancing to phase: {currentPhase}");
+
       UpdatePhase(currentPhase);
     }
 
@@ -204,6 +207,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     private async Task<bool> ExecuteTAGFileScanning()
     {
+      _log.LogInformation("Scanning files present in S3 and placing them in the files cache");
+
       var continuation = string.Empty;
       do
       {
@@ -218,12 +223,10 @@ namespace VSS.TRex.SiteModels.Executors
         sb.AppendJoin('|', candidateTagFiles);
 
         await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
-        await using (var compressedStream = MemoryStreamCompression.Compress(ms))
-        {
-          if (_log.IsTraceEnabled())
-            _log.LogInformation($"Putting block of {candidateTagFiles.Length} TAG file names for project {ProjectUid}");
-          await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, _metadata.NumberOfTAGFileKeyCollections.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
-        }
+        await using var compressedStream = MemoryStreamCompression.Compress(ms);
+
+        _log.LogInformation($"Putting block of {candidateTagFiles.Length} TAG file names for project {ProjectUid}");
+        await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, _metadata.NumberOfTAGFileKeyCollections.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
 
         _metadata.NumberOfTAGFilesFromS3 += candidateTagFiles.Length;
         _metadata.NumberOfTAGFileKeyCollections++;
@@ -241,6 +244,8 @@ namespace VSS.TRex.SiteModels.Executors
     private async Task<bool> ExecuteTAGFileSubmission()
     {
       var tagFileCollection = new List<string>();
+
+      _log.LogInformation("Reading collections from files cache prior to submission");
 
       // Read all collections into a single list
       for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
@@ -271,6 +276,8 @@ namespace VSS.TRex.SiteModels.Executors
           return false;
         }
       }
+
+      _log.LogInformation($"Read {_metadata.NumberOfTAGFileKeyCollections} containing {tagFileCollection.Count} files. About to sort and submit");
 
       // Sort the list based on time contained in the name of the tag file
       tagFileCollection = tagFileCollection.OrderBy(x =>
@@ -335,6 +342,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     private async Task<bool> ExecuteMonitoring()
     {
+      _log.LogInformation("Entering monitoring state");
+
       var token = _cancellationSource.Token;
       while (!_aborted && !token.IsCancellationRequested)
       {
@@ -356,6 +365,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     private async Task<bool> ExecuteCompletion()
     {
+      _log.LogInformation("Executing completion activities");
+
       // Remove all the collections of TAG file keys
       for (var i = 0; i < _metadata.NumberOfTAGFileKeyCollections; i++)
       {
@@ -378,75 +389,88 @@ namespace VSS.TRex.SiteModels.Executors
 
     private async Task<IRebuildSiteModelMetaData> Execute()
     {
-      _log.LogInformation($"Starting rebuilding project {ProjectUid}");
-
-      var currentPhase = RebuildSiteModelPhase.Unknown;
-
-      // Get metadata. If one exists and it is 'Complete', then reset it
-      var persistedMetadata = GetMetaData(ProjectUid);
-      if (persistedMetadata != null)
+      try
       {
-        if (persistedMetadata.Phase == RebuildSiteModelPhase.Complete)
+        _log.LogInformation($"Starting rebuilding project {ProjectUid}");
+
+        var currentPhase = RebuildSiteModelPhase.Unknown;
+
+        // Get metadata. If one exists and it is 'Complete', then reset it
+        var persistedMetadata = GetMetaData(ProjectUid);
+        if (persistedMetadata != null)
         {
-          _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
-          // Reset the metadata to start the process
-          UpdatePhase(RebuildSiteModelPhase.Unknown);
+          if (persistedMetadata.Phase == RebuildSiteModelPhase.Complete)
+          {
+            _log.LogInformation($"Pre-existing completed project rebuild found for {ProjectUid} - resetting");
+            // Reset the metadata to start the process
+            UpdatePhase(RebuildSiteModelPhase.Unknown);
+          }
+          else
+          {
+            _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
+            currentPhase = persistedMetadata.Phase;
+          }
+
+          // Set the internal meta data to the state of the persisted metadata
+          _metadata = persistedMetadata;
         }
-        else
+
+        // Ensure persisted metadata state matches the internal metadata state
+        UpdateMetaData();
+
+        _s3FileTransfer = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(_metadata.OriginS3TransferProxy);
+
+        // Move to the current Phase and start processing from that point
+
+        while (!_aborted && _metadata.Phase != RebuildSiteModelPhase.Complete)
         {
-          _log.LogInformation($"Pre-existing project rebuild found for {ProjectUid} - current state is {_metadata.Phase}");
-          currentPhase = persistedMetadata.Phase;
-        }
+          switch (currentPhase)
+          {
+            case RebuildSiteModelPhase.Unknown:
+              break; // Ignore this phase
 
-        // Set the internal meta data to the state of the persisted metadata
-        _metadata = persistedMetadata;
-      }
-
-      // Ensure persisted metadata state matches the internal metadata state
-      UpdateMetaData();
-
-      _s3FileTransfer = DIContext.Obtain<Func<TransferProxyType, IS3FileTransfer>>()(_metadata.OriginS3TransferProxy);
-
-      // Move to the current Phase and start processing from that point
-
-      while (!_aborted && _metadata.Phase != RebuildSiteModelPhase.Complete)
-      {
-        switch (currentPhase)
-        {
-          case RebuildSiteModelPhase.Unknown:
-            break; // Ignore this phase
-
-          case RebuildSiteModelPhase.Deleting:
-            if (!await ExecuteProjectDelete())
+            case RebuildSiteModelPhase.Deleting:
+              if (!await ExecuteProjectDelete())
                 return _metadata;
-            break;
+              break;
 
-          case RebuildSiteModelPhase.Scanning:
-            if (!await ExecuteTAGFileScanning())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Scanning:
+              if (!await ExecuteTAGFileScanning())
+                return _metadata;
+              break;
 
-          case RebuildSiteModelPhase.Submitting:
-            if (!await ExecuteTAGFileSubmission())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Submitting:
+              if (!await ExecuteTAGFileSubmission())
+                return _metadata;
+              break;
 
-          case RebuildSiteModelPhase.Monitoring:
-            if (!await ExecuteMonitoring())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Monitoring:
+              if (!await ExecuteMonitoring())
+                return _metadata;
+              break;
 
-          case RebuildSiteModelPhase.Completion:
-            if (!await ExecuteCompletion())
-              return _metadata;
-            break;
+            case RebuildSiteModelPhase.Completion:
+              if (!await ExecuteCompletion())
+                return _metadata;
+              break;
+          }
+
+          AdvancePhase(ref currentPhase);
         }
 
-        AdvancePhase(ref currentPhase);
+        _metadata.RebuildResult = _aborted ? RebuildSiteModelResult.Aborted : RebuildSiteModelResult.OK;
+        UpdateMetaData();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Exception occurred while in rebuilding phase {_metadata?.Phase ?? RebuildSiteModelPhase.Unknown}");
 
-      _metadata.RebuildResult = _aborted ? RebuildSiteModelResult.Aborted : RebuildSiteModelResult.OK;
-      UpdateMetaData();
+        if (_metadata != null)
+        {
+          _metadata.RebuildResult = RebuildSiteModelResult.UnhandledException;
+          UpdateMetaData();
+        }
+      }
 
       return _metadata;
     }
@@ -463,7 +487,7 @@ namespace VSS.TRex.SiteModels.Executors
     {
       // Make a note of the last file processed
       if (responseItems.Length > 0)
-        _metadata.LastProcessedTagFile = responseItems[responseItems.Length - 1].FileName;
+        _metadata.LastProcessedTagFile = responseItems[^1].FileName;
 
       // Update the count of observed files processed
       _metadata.NumberOfTAGFilesProcessed += responseItems.Length;
