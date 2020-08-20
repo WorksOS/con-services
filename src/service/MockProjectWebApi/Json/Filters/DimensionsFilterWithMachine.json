@@ -8,14 +8,44 @@
     },
     {
       "assetID": -1,
-      "assetUid": "f9160670-9417-41e4-90e5-ea33dd00dad3",
-      "machineName": "LIEBHERR724",
+      "assetUid": "7d678ba8-c2c8-41a6-a9e3-1f13d641ca14",
+      "machineName": "KOMATSU PC210",
+      "isJohnDoe": false
+    },
+    {
+      "assetID": -1,
+      "assetUid": "40b25310-69f4-4e7d-8921-4964eddd2bc5",
+      "machineName": "LIEBHERR 924C",
+      "isJohnDoe": false
+    },
+    {
+      "assetID": -1,
+      "assetUid": "5f8c3c73-1e48-4a8e-9bc2-f0e2b23719d8",
+      "machineName": "JD 764 CV",
+      "isJohnDoe": false
+    },
+    {
+      "assetID": -1,
+      "assetUid": "686897be-426d-41ff-9b6c-eac770673728",
+      "machineName": "CAT CS56B",
+      "isJohnDoe": false
+    },
+    {
+      "assetID": -1,
+      "assetUid": "9faa5445-7634-43d8-9491-a2be269d2115",
+      "machineName": "CASE CX160C",
       "isJohnDoe": false
     },
     {
       "assetID": -1,
       "assetUid": "fb7dbb0d-0fe3-4bb8-94cb-3223476d8cce",
       "machineName": "VOLVO G946B",
+      "isJohnDoe": false
+    },
+    {
+      "assetID": -1,
+      "assetUid": "f9160670-9417-41e4-90e5-ea33dd00dad3",
+      "machineName": "LIEBHERR724",
       "isJohnDoe": false
     }
   ]
