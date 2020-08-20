@@ -641,7 +641,7 @@ namespace VSS.TRex.Profiling
     /// Returns true if the value of the profile cell is null (ie: no profile information)
     /// </summary>
     /// <returns></returns>
-    public override bool IsNull() => CellLastElev == Consts.NullHeight;
+    public override bool IsNull() => CellLastElev == Consts.NullHeight && CellLastCompositeElev == Consts.NullHeight;
 
     //procedure ReadFromStream(const Stream : TStream; APassesPackager : TICFilteredMultiplePassInfoPackager);
     //procedure WriteToStream(const Stream : TStream; const WriteCellPassesAndLayers : Boolean; APassesPackager : TICFilteredMultiplePassInfoPackager);
