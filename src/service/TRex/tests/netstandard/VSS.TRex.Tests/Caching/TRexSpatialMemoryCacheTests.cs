@@ -3,10 +3,14 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Extensions;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -23,6 +27,11 @@ namespace VSS.TRex.Tests.Caching
     public TRexSpatialMemoryCacheTests(ITestOutputHelper output)
     {
       this.output = output;
+
+      // Set the cache removal timeout to zero for unit test purposes
+      var configurationMock = DIContext.Obtain<Mock<IConfigurationStore>>();
+      configurationMock.Setup(c => c.GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", It.IsAny<int>())).Returns(0);
+      DIBuilder.Continue().Add(x => x.AddSingleton<IConfigurationStore>(DIContext.Obtain<Mock<IConfigurationStore>>().Object)).Complete();
     }
 
     [Fact]
@@ -97,11 +106,12 @@ namespace VSS.TRex.Tests.Caching
     {
       using (var cache = new TRexSpatialMemoryCache(100, 1000000, 0.5))
       {
+        var removalUtc = DateTime.UtcNow;
         var context = cache.LocateOrCreateContext(Guid.Empty, GridDataType.Height, "fingerprint");
 
         Assert.True(context != null, "Failed to create new context");
         Assert.True(context.MarkedForRemoval, "Context not marked for removal on creation in cache");
-        Assert.True(context.MarkedForRemovalAtUtc > DateTime.UtcNow, "Marked for removal time earlier than now");
+        Assert.True(context.MarkedForRemovalAtUtc >= removalUtc, "Marked for removal time earlier than expected");
       }
     }
 
@@ -242,7 +252,7 @@ namespace VSS.TRex.Tests.Caching
           Assert.True(contexts[i].TokenCount == 0, "Token count not zero after removing only token in context");
         }
 
-        cache.RemoveContextsMarkedForRemoval(0);
+        cache.RemoveContextsMarkedForRemoval();
         cache.ContextRemovalCount.Should().Be(numContexts);
       }
     }

@@ -12,12 +12,11 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContextRemover : IDisposable
   {
-    private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCacheContextRemover>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<TRexSpatialMemoryCacheContextRemover>();
 
     private readonly ITRexSpatialMemoryCache _cache;
     private Thread _removalThread;
-    private readonly int _sleepTimeMS;
-    private readonly int _removalWaitTimeSeconds;
+    private readonly int _sleepTimeMs;
     private bool _cancelled;
 
     private readonly EventWaitHandle _waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
@@ -30,15 +29,15 @@ namespace VSS.TRex.Caching
         {
           // Instruct the cache to perform the cleanup...
           // Wait a time period minutes to remove items marked for removal
-          _cache.RemoveContextsMarkedForRemoval(_removalWaitTimeSeconds);
+          _cache.RemoveContextsMarkedForRemoval();
         }
         catch (Exception e)
         {
-          log.LogError(e, $"Exception thrown during {nameof(PerformRemovalOperation)}");
+          _log.LogError(e, $"Exception thrown during {nameof(PerformRemovalOperation)}");
         }
 
         if (!_cancelled)
-          _waitHandle.WaitOne(_sleepTimeMS);
+          _waitHandle.WaitOne(_sleepTimeMs);
       }
     }
 
@@ -54,11 +53,10 @@ namespace VSS.TRex.Caching
       _removalThread = null;
     }
 
-    public TRexSpatialMemoryCacheContextRemover(ITRexSpatialMemoryCache cache, int sleepTimeSeconds, int removalWaitTimeSeconds)
+    public TRexSpatialMemoryCacheContextRemover(ITRexSpatialMemoryCache cache, int sleepTimeSeconds)
     {
       _cache = cache;
-      _removalWaitTimeSeconds = removalWaitTimeSeconds;
-      _sleepTimeMS = sleepTimeSeconds * 1000;
+      _sleepTimeMs = sleepTimeSeconds * 1000;
       _removalThread = new Thread(PerformRemovalOperation);
       _removalThread.Start();
     }
