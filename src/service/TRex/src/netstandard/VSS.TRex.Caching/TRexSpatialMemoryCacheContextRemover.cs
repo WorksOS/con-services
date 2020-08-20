@@ -27,17 +27,19 @@ namespace VSS.TRex.Caching
       {
         try
         {
-          // Instruct the cache to perform the cleanup...
-          // Wait a time period minutes to remove items marked for removal
-          _cache.RemoveContextsMarkedForRemoval();
+          _waitHandle.WaitOne(_sleepTimeMs);
+
+          if (!_cancelled)
+          {
+            // Instruct the cache to perform the cleanup...
+            // Wait a time period minutes to remove items marked for removal
+            _cache.RemoveContextsMarkedForRemoval();
+          }
         }
         catch (Exception e)
         {
           _log.LogError(e, $"Exception thrown during {nameof(PerformRemovalOperation)}");
         }
-
-        if (!_cancelled)
-          _waitHandle.WaitOne(_sleepTimeMs);
       }
     }
 
