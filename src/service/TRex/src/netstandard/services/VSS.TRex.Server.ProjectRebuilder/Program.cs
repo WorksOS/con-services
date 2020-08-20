@@ -150,6 +150,8 @@ namespace VSS.TRex.Server.ProjectRebuilder
     {
       try
       {
+        Console.WriteLine($"TRex service starting at {DateTime.Now}");
+
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 

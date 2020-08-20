@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 

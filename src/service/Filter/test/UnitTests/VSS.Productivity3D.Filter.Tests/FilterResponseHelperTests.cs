@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
@@ -328,61 +329,18 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.Equal(expectedResult, actualResult.ContributingMachines);
     }
 
-    [Fact]
-    public void Should_match_contributingMachines_contains_legacyAssetId_using_FilterDescriptor()
-    {
-      var dateRangeType = DateRangeType.CurrentMonth;
-      var asAtDate = true;
-
-      long assetId = 999;
-      var machineName = "the machine name";
-      var isJohnDoe = false;
-      var assetUid = Guid.NewGuid();
-
-      var contributingMachinesString =
-        $",\"contributingMachines\":[{{\"assetID\":\"{assetId}\",\"machineName\":\"{machineName}\",\"isJohnDoe\":{(isJohnDoe ? "true" : "false")}}}]";
-      var filterDescriptor = new FilterDescriptor
-      {
-        FilterJson =
-          $"{{\"dateRangeType\":\"{dateRangeType}\",\"asAtDate\":\"{asAtDate}\",\"elevationType\":null{contributingMachinesString}}}"
-      };
-
-      var expectedResult = new List<MachineDetails> { new MachineDetails(assetId, machineName, isJohnDoe, assetUid) };
-
-      var getMachinesExecutionResult = new MachineExecutionResult
-      (
-        new List<MachineStatus>(1)
-        {
-          new MachineStatus(assetId, machineName, isJohnDoe,
-            string.Empty, 0, null, null, null, null, null,
-            assetUid: assetUid)
-        }
-      );
-
-      _mockedProductivity3dV2ProxyCompaction.Setup(x =>
-          x.ExecuteGenericV2Request<MachineExecutionResult>(It.IsAny<String>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(), It.IsAny<IHeaderDictionary>()))
-        .ReturnsAsync(getMachinesExecutionResult);
-
-      FilterJsonHelper.ParseFilterJson(
-        new ProjectData { IanaTimeZone = "America/Los_Angeles", ProjectUID = _projectGuid.ToString() }, filterDescriptor,
-        _mockedProductivity3dV2ProxyCompaction.Object, new HeaderDictionary());
-
-      var actualResult = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterDescriptor.FilterJson);
-      Assert.Single(actualResult.ContributingMachines);
-      Assert.Equal(expectedResult[0], actualResult.ContributingMachines[0]);
-    }
-
+    
     [Fact]
     public void Should_match_contributingMachines_contains_assetUid_using_FilterDescriptor()
     {
       var dateRangeType = DateRangeType.CurrentMonth;
       var asAtDate = true;
 
-      long assetId = 999;
       var nullLegacyAssetId = -1;
       var machineName = "the machine name";
       var isJohnDoe = false;
       var assetUid = Guid.NewGuid();
+      var assetId = assetUid.ToLegacyId();
 
       var contributingMachinesString =
         $",\"contributingMachines\":[{{\"assetID\":\"{nullLegacyAssetId}\",\"machineName\":\"{machineName}\",\"isJohnDoe\":{(isJohnDoe ? "true" : "false")},\"assetUid\":\"{assetUid}\"}}]";

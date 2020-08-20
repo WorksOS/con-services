@@ -180,6 +180,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
     {
       try
       {
+        Console.WriteLine($"TRex service starting at {DateTime.Now}");
+
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 
