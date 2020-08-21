@@ -31,6 +31,6 @@ namespace VSS.TRex.Caching.Interfaces
     void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask);
     void InvalidateDueToDesignChange(Guid projectUid, Guid designUid);
 
-    void RemoveContextsMarkedForRemoval(int ageSeconds);
+    void RemoveContextsMarkedForRemoval();
   }
 }

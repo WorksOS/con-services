@@ -1,8 +1,12 @@
 ﻿using System;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -12,6 +16,14 @@ namespace VSS.TRex.Tests.Caching
 {
   public class TRexSpatialMemoryCacheContextTests : IClassFixture<DILoggingAndStorageProxyFixture>
   {
+    public TRexSpatialMemoryCacheContextTests()
+    {
+      // Set the cache removal timeout to zero for unit test purposes
+      var configurationMock = DIContext.Obtain<Mock<IConfigurationStore>>();
+      configurationMock.Setup(c => c.GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", It.IsAny<int>())).Returns(0);
+      DIBuilder.Continue().Add(x => x.AddSingleton<IConfigurationStore>(DIContext.Obtain<Mock<IConfigurationStore>>().Object)).Complete();
+    }
+
     [Fact]
     public void Test_TRexSpatialMemoryCacheContext_Creation_Default()
     {
@@ -161,7 +173,7 @@ namespace VSS.TRex.Tests.Caching
       context.Remove(element);
 
       Assert.True(context.MarkedForRemoval, "Removing last element in context for removal did not mark for removal");
-      Assert.True(context.MarkedForRemovalAtUtc >= currentDate && context.MarkedForRemovalAtUtc <= DateTime.UtcNow, "Removal date not expected");
+      Assert.True(context.MarkedForRemovalAtUtc >= currentDate, "Removal date not expected");
     }
 
     [Fact]

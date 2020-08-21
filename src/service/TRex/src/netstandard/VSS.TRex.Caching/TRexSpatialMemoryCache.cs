@@ -105,7 +105,7 @@ namespace VSS.TRex.Caching
       _contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
       _projectContexts = new Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>>();
 
-      _contextRemover = new TRexSpatialMemoryCacheContextRemover(this, _spatialMemoryCacheInterEpochSleepTimeSeconds, _spatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds);
+      _contextRemover = new TRexSpatialMemoryCacheContextRemover(this, _spatialMemoryCacheInterEpochSleepTimeSeconds);
     }
 
     /// <summary>
@@ -296,10 +296,10 @@ namespace VSS.TRex.Caching
     /// <summary>
     /// Removes all contexts in the cache that are marked for removal more than 'age' ago
     /// </summary>
-    public void RemoveContextsMarkedForRemoval(int ageSeconds)
+    public void RemoveContextsMarkedForRemoval()
     {
       var numRemoved = 0;
-      var removalDateUtc = DateTime.UtcNow.AddSeconds(-ageSeconds);
+      var removalDateUtc = DateTime.UtcNow;
       var startTime = DateTime.UtcNow;
       
       lock (_contexts)
