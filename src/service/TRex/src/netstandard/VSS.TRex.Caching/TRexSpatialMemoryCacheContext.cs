@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.DI;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -15,6 +17,9 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCacheContext : ITRexSpatialMemoryCacheContext, IDisposable
   {
+    private readonly int _spatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds
+      = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", Consts.SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS);
+
     /// <summary>
     /// The project for which this cache context stores items
     /// </summary>
@@ -149,7 +154,7 @@ namespace VSS.TRex.Caching
       // If the context has been emptied by the removal of this item then mark as a candidate for removal
       if (Interlocked.Decrement(ref _tokenCount) == 0)
       {
-        MarkForRemoval(DateTime.UtcNow);
+        MarkForRemoval(DateTime.UtcNow.AddSeconds(_spatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds));
       }
     }
 
