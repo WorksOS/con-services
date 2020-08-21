@@ -189,7 +189,7 @@ function Publish-Service {
 }
 
 function Push-Container-Image {
-    Login-Aws
+    #Login-Aws
 
     $publishImage = "$serviceName-webapi"
 
@@ -343,6 +343,12 @@ switch ($action) {
         Push-Container-Image
         continue
     }
+    'publishAndPushImage' {
+        Publish-Service
+        Push-Container-Image
+        continue
+    }
+    
     'updateNugetSources' {
         Update-Nuget-Sources
         continue

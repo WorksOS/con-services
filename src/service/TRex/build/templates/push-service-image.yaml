@@ -14,20 +14,13 @@ parameters:
 steps:
   - ${{ each service in parameters.trexServices }}:
     - task: PowerShell@2
-      displayName: "Publish Service: ${{ service }}"
-      inputs:
-        filePath: build/azure-build-pipeline.ps1
-        arguments: "-service $(serviceName)
-                    -action publish
-                    -sourceArtifactPath /trex/${{ service }}
-                    -destArtifactPath /trex/${{ service }}"
-
-    - task: PowerShell@2
       displayName: "Push Image: ${{ service }}"
       inputs:
         filePath: build/azure-build-pipeline.ps1
-        arguments: "-service ${{ parameters.serviceName }} 
-                    -action pushImage
+        arguments: "-service ${{ parameters.serviceName }}
+                    -action publishAndPushImage
+                    -sourceArtifactPath /trex/${{ service }}
+                    -destArtifactPath /trex/${{ service }}
                     -branch ${{ parameters.sourceBranchName }}
                     -imageSuffix \"${{ parameters.buildId }}.${{ service }}\"
                     -ecrRepositoryName ${{ parameters.ecrRepositoryName }}"
