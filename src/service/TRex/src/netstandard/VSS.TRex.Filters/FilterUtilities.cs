@@ -214,8 +214,9 @@ namespace VSS.TRex.Filters
         }
       }
 
+      //Only one filter for design-filter or filter-design
       else if (volumeType == VolumeComputationType.BetweenDesignAndFilter)
-        return new FilterSet(filterSet.Filters[1]);
+        return new FilterSet(filterSet.Filters[0]);
 
       else if (volumeType == VolumeComputationType.BetweenFilterAndDesign)
         return new FilterSet(filterSet.Filters[0]);

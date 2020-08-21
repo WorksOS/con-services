@@ -407,7 +407,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var referenceDesign = new DesignOffset(designUid, offset);
 
       var request = new TileRenderRequest();
-      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette, volumeType:VolumeComputationType.BetweenFilterAndDesign);
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette, volumeType:VolumeComputationType.BetweenDesignAndFilter);
 
       // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
       // with an additional 1 meter border around the cell
