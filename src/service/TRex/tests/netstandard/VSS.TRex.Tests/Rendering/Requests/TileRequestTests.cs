@@ -328,7 +328,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var tileExtents = siteModel.Grid.GetCellExtents(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
 
       var request = new TileRenderRequest();
-      var arg = new TileRenderRequestArgument(siteModel.ID, displayMode, null, tileExtents, true, 256, 256, new FilterSet(new CombinedFilter()), new DesignOffset(), VolumeComputationType.None);
+      var arg = new TileRenderRequestArgument(siteModel.ID, displayMode, null, tileExtents, true, 256, 256, new FilterSet(new CombinedFilter(), new CombinedFilter()), new DesignOffset(), VolumeComputationType.None);
 
       var startTime = DateTime.UtcNow;
       var response = await request.ExecuteAsync(arg);
@@ -457,7 +457,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
 
-      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
+      CheckSimpleRenderTileResponse(response, DisplayMode.Height, saveFileName, path);
     }
 
     [Fact]
@@ -496,7 +496,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
 
-      CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, saveFileName, path);
+      CheckSimpleRenderTileResponse(response, DisplayMode.Height, saveFileName, path);
     }
   }
 }

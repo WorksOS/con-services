@@ -77,9 +77,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         hasGridCoords,
         request.Width, // PixelsX
         request.Height, // PixelsY
-        request.Filter2 == null
-          ? new FilterSet(ConvertFilter(request.Filter1, siteModel))
-          : new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
+        //for now always construct 2 filters until we do #1329
+        new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
         new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0),
         (VolumeComputationType)request.VolumeType
       );
