@@ -17,7 +17,7 @@ steps:
       displayName: "Publish Service: ${{ service }}"
       inputs:
         filePath: build/azure-build-pipeline.ps1
-        arguments: "-service $(serviceName)
+        arguments: "-service ${{ parameters.serviceName }}
                     -action publish
                     -sourceArtifactPath /trex/${{ service }}
                     -destArtifactPath /trex/${{ service }}"

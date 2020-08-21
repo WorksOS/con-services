@@ -189,9 +189,16 @@ function Publish-Service {
 }
 
 function Push-Container-Image {
-    Login-Aws
+    #Login-Aws
 
-    $publishImage = "$serviceName-webapi"
+    $publishImage = ''
+
+    if ($action -eq 'pushImage') {
+        $publishImage = "$serviceName-webapi"
+    }
+    if ($action -eq 'pushBuildImage') {
+        $publishImage = "$serviceName-build:latest"
+    }
 
     if ($(docker images $publishImage -q).Count -eq 0) {
         Write-Host "Unable to find required publish image '$publishImage'. Looking for build image..." -ForegroundColor Green
@@ -337,6 +344,10 @@ switch ($action) {
     }
     'publish' {
         Publish-Service
+        continue
+    }
+    'pushBuildImage' {
+        Push-Container-Image
         continue
     }
     'pushImage' {
