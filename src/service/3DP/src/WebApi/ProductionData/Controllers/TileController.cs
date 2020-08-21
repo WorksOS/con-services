@@ -69,6 +69,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
+    /// Called by TBC only? todoJeannie
     /// <summary>
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
     /// elevation, compaction, temperature, cut/fill, volumes etc
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/tiles")]
     [HttpPost]
-    public async Task<TileResult> Post([FromBody] TileRequest request)
+    public async Task<TileResult> PostTiles([FromBody] TileRequest request)
     {
       request.Validate();
 

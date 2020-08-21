@@ -45,7 +45,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (request.IsCustomCMVTargets && (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CMV") ?? false))
         {
 #endif
-          var settings = (CMVSettingsEx)request.CmvSettings;
+        var settings = new CMVSettingsEx(request.CmvSettings.CmvTarget, request.CmvSettings.MaxCMV, request.CmvSettings.MaxCMVPercent,
+          request.CmvSettings.MinCMV, request.CmvSettings.MinCMVPercent, request.CmvSettings.OverrideTargetCMV, 
+          new[] { 0, 40, 80, 120, 150 }); // todoJeanie how should these defaults be set?
           var cmvDetailsRequest = new CMVDetailsRequest(
             request.ProjectUid.Value, 
             request.Filter, 
