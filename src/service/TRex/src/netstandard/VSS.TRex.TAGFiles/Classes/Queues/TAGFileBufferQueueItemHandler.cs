@@ -25,9 +25,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private static readonly ILogger _log = Logging.Logger.CreateLogger<TAGFileBufferQueueItemHandler>();
 
         /// <summary>
-        /// The interval between epochs where the service checks to see if there is anything to do
+        /// The interval between epochs where the service checks to see if there is anything to do, set to 10 seconds
         /// </summary>
-        private const int QUEUE_SERVICE_CHECK_INTERVAL_MS = 1000;
+        private const int QUEUE_SERVICE_CHECK_INTERVAL_MS = 10000;
 
         private const int DEFAULT_NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS = 4;
 
@@ -167,10 +167,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                 if (!hadWorkToDo)
                 {
-                    if (_log.IsTraceEnabled())
+                    //if (_log.IsTraceEnabled())
                       _log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {QUEUE_SERVICE_CHECK_INTERVAL_MS}ms");
 
-                    Thread.Sleep(QUEUE_SERVICE_CHECK_INTERVAL_MS);
+                    await Task.Delay(QUEUE_SERVICE_CHECK_INTERVAL_MS);
                 }
             } while (!_aborted);
 
@@ -261,7 +261,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         {
                             if (tagFileResponse.Success)
                             {
-                              if (_log.IsTraceEnabled())
+                              //if (_log.IsTraceEnabled())
                                 _log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
                             }
                             else
@@ -276,7 +276,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             if (!await _queueCache.RemoveAsync(removalKey))
                               _log.LogError($"Failed to remove TAG file {removalKey}");
                             else
-                              if (_log.IsTraceEnabled())
+                              //if (_log.IsTraceEnabled())
                                  _log.LogInformation($"Successfully removed TAG file {removalKey}");
                         }
                         catch (Exception e)
@@ -304,6 +304,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // Cycle looking for new work to do as TAG files arrive until aborted...
                 do
                 {
+                    _log.LogInformation("Checking if there is work to be done");
+
                     var hadWorkToDo = false;
 
                     // Check to see if there is a work package to feed to the processing pipeline
@@ -337,7 +339,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                     if (!hadWorkToDo)
                     {
-                        Thread.Sleep(QUEUE_SERVICE_CHECK_INTERVAL_MS);
+                        _log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {QUEUE_SERVICE_CHECK_INTERVAL_MS}ms before checking for more work to do");
+                        await Task.Delay(QUEUE_SERVICE_CHECK_INTERVAL_MS);
                     }
                 } while (!_aborted);
 
