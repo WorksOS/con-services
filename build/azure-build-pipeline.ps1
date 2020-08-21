@@ -109,7 +109,7 @@ function Run-Unit-Tests {
     $unique_container_name = "$container_name`_$(Get-Random -Minimum 1000 -Maximum 9999)"
 
     # Had instances of the docker login failing, possibly due to AWS token expiry? 
-    Login-Aws
+    # Login-Aws
 
     # Start the container image and terminate and detach immediately
     docker create --name $unique_container_name $container_name
@@ -277,6 +277,10 @@ function TrackTime($Time) {
     }
 }
 
+function Docker-Image-Prune {
+    # Prune all images created more than 48 hours ago. This should help prevent the build agent from becoming too cluttered.
+    docker image prune -a --force --filter "until=48h"
+}
 function Exit-With-Code {
     param(
         [ReturnCode][Parameter(Mandatory = $true)]$code
@@ -328,6 +332,7 @@ $timeStart = Get-Date
 # Run the appropriate action.
 switch ($action) {
     'build' {
+        Docker-Image-Prune
         Build-Solution
         continue
     }
