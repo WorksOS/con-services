@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -327,7 +328,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var tileExtents = siteModel.Grid.GetCellExtents(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset);
 
       var request = new TileRenderRequest();
-      var arg = new TileRenderRequestArgument(siteModel.ID, displayMode, null, tileExtents, true, 256, 256, new FilterSet(new CombinedFilter()), new DesignOffset());
+      var arg = new TileRenderRequestArgument(siteModel.ID, displayMode, null, tileExtents, true, 256, 256, new FilterSet(new CombinedFilter()), new DesignOffset(), VolumeComputationType.None);
 
       var startTime = DateTime.UtcNow;
       var response = await request.ExecuteAsync(arg);
@@ -406,7 +407,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var referenceDesign = new DesignOffset(designUid, offset);
 
       var request = new TileRenderRequest();
-      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette);
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette, volumeType:VolumeComputationType.BetweenFilterAndDesign);
 
       // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
       // with an additional 1 meter border around the cell

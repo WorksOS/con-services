@@ -58,7 +58,8 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
             arg.Palette,
             Color.Black,
             arg.TRexNodeID,
-            arg.LiftParams);
+            arg.LiftParams,
+            arg.VolumeType);
 
           _log.LogInformation("Executing render.ExecuteAsync()");
 

@@ -6,11 +6,13 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models;
+using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
@@ -66,22 +68,24 @@ namespace VSS.TRex.Gateway.Common.Executors
       }
 
       var siteModel = GetSiteModel(request.ProjectUid);
-      
+
+      var arg = new TileRenderRequestArgument
+      (siteModel.ID,
+        request.Mode,
+        ConvertColorPalettes(request, siteModel),
+        extents,
+        hasGridCoords,
+        request.Width, // PixelsX
+        request.Height, // PixelsY
+        request.Filter2 == null
+          ? new FilterSet(ConvertFilter(request.Filter1, siteModel))
+          : new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
+        new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0),
+        (VolumeComputationType)request.VolumeType
+      );
+
       var tileRequest = new TileRenderRequest();
-      var response = await tileRequest.ExecuteAsync(
-        new TileRenderRequestArgument
-        (siteModel.ID,
-          request.Mode,
-          ConvertColorPalettes(request, siteModel),
-          extents,
-          hasGridCoords,
-          request.Width, // PixelsX
-          request.Height, // PixelsY
-          request.Filter2 == null 
-            ? new FilterSet(ConvertFilter(request.Filter1, siteModel))
-            : new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
-          new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0)
-        ));
+      var response = await tileRequest.ExecuteAsync(arg);
 
       return new TileResult(response?.TileBitmapData);
     }
