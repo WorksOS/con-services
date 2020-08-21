@@ -278,7 +278,8 @@ function TrackTime($Time) {
 }
 
 function Docker-Image-Prune {
-    # Prune all images created more than 48 hours ago. This should help prevent the build agent from becoming too cluttered.
+    # This should help prevent the build agent from becoming too cluttered.
+    Write-Host "`nPrune all images created more than 48 hours ago..." -ForegroundColor Green
     docker image prune -a --force --filter "until=48h"
 }
 function Exit-With-Code {
