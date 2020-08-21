@@ -90,7 +90,7 @@ jobs:
 
   - job: webtools
     displayName: "Build, test and Deploy: Webtools"
-    timeoutInMinutes: 20
+    timeoutInMinutes: 60
 
     steps:
       - checkout: self
