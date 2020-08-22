@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
-    /// Called by TBC only? todoJeannie
+    /// Called by TBC only
     /// <summary>
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
     /// elevation, compaction, temperature, cut/fill, volumes etc
@@ -80,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/tiles")]
     [HttpPost]
-    public async Task<TileResult> PostTiles([FromBody] TileRequest request)
+    public async Task<TileResult> PostTilesTbc([FromBody] TileRequest request)
     {
       request.Validate();
 
@@ -91,6 +91,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as TileResult;
     }
 
+    /// Called by TBC only???
     /// <summary>
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc

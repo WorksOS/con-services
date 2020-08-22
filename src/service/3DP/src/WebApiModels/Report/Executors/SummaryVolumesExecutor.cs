@@ -1,15 +1,17 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Utilities;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
-  public class SummaryVolumesExecutor : RequestExecutorContainer
+  public class SummaryVolumesExecutor : ExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -27,6 +29,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         var baseFilter = request.BaseFilter;
         var topFilter = request.TopFilter;
+        await PairUpAssetIdentifiers(request, baseFilter, topFilter);
+
         if (request.VolumeCalcType == VolumesType.Between2Filters)
         {
           if (!request.ExplicitFilters)
@@ -48,8 +52,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
             request.TopDesignDescriptor.FileUid,
             request.TopDesignDescriptor.Offset,
             request.VolumeCalcType);
-
-          return await trexCompactionDataProxy.SendDataPostRequest<SummaryVolumesResult, SummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary", customHeaders);
+        log.LogDebug($"{nameof(SummaryVolumesExecutor)} trexRequest {JsonConvert.SerializeObject(summaryVolumesRequest)}");
+        return await trexCompactionDataProxy.SendDataPostRequest<SummaryVolumesResult, SummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary", customHeaders);
       }
       finally
       {

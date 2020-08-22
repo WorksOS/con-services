@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -15,6 +17,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -22,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// The executor which passes the summary CMV request to Raptor
   /// </summary>
-  public class SummaryCMVExecutor : RequestExecutorContainer
+  public class SummaryCMVExecutor : ExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -44,16 +47,17 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CMV") ?? false)
         {
 #endif
-          var cmvSummaryRequest = new CMVSummaryRequest(
+        await PairUpAssetIdentifiers(request, request.Filter); 
+        var cmvSummaryRequest = new CMVSummaryRequest(
             request.ProjectUid.Value,
             request.Filter,
             request.CmvSettings.CmvTarget,
             request.CmvSettings.OverrideTargetCMV,
             request.CmvSettings.MaxCMVPercent,
-            request.CmvSettings.MinCMVPercent,
-            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+            request.CmvSettings.MinCMVPercent, AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+        log.LogDebug($"{nameof(SummaryCMVExecutor)} trexRequest {JsonConvert.SerializeObject(cmvSummaryRequest)}");
 
-          return await trexCompactionDataProxy.SendDataPostRequest<CMVSummaryResult, CMVSummaryRequest>(cmvSummaryRequest, "/cmv/summary", customHeaders);
+        return await trexCompactionDataProxy.SendDataPostRequest<CMVSummaryResult, CMVSummaryRequest>(cmvSummaryRequest, "/cmv/summary", customHeaders);
 #if RAPTOR
         }
 
