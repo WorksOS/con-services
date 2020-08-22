@@ -8,7 +8,7 @@ namespace VSS.TRex.GridFabric.Affinity
 {
   /// <summary>
   /// The key type used to drive non-spatial affinity key mapping for elements stored in the Ignite cache. This controls
-  /// which nodes in the PSNode layer the data for this key should reside. 
+  /// which nodes in the PSNode layer the data for this key should reside.
   /// </summary>
   public struct NonSpatialAffinityKey : INonSpatialAffinityKey, IBinarizable, IFromToBinary
   {
@@ -28,11 +28,9 @@ namespace VSS.TRex.GridFabric.Affinity
     /// A constructor for the affinity key that accepts the project and sub grid origin location
     /// and returns an instance of the spatial affinity key
     /// </summary>
-    /// <param name="projectID"></param>
-    /// <param name="keyName"></param>
-    public NonSpatialAffinityKey(Guid projectID, string keyName)
+    public NonSpatialAffinityKey(Guid projectUid, string keyName)
     {
-      ProjectUID = projectID;
+      ProjectUID = projectUid;
       KeyName = keyName;
     }
 
@@ -40,7 +38,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// Converts the affinity key into a string representation suitable for use as a unique string
     /// identifying this data element in the cache.
     /// </summary>
-    /// <returns></returns>
     public override string ToString() => $"{ProjectUID}-{KeyName}";
 
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
@@ -50,7 +47,7 @@ namespace VSS.TRex.GridFabric.Affinity
     public void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-   
+
       writer.WriteGuid(ProjectUID);
       writer.WriteString(KeyName);
     }
