@@ -178,7 +178,7 @@ namespace VSS.TRex.TAGFiles.Executors
             {
               _log.LogInformation($"About to read file {tagFile.FileName} with origin source {tagFile.OriginSource}");
 
-              bool readResult = tagFile.OriginSource switch
+              var readResult = tagFile.OriginSource switch
               {
                 TAGFileOriginSource.VolvoMachineAssistEarthworksCSV => commonConverter.ExecuteVolvoEarthworksCSVFile(tagFile.FileName, fs, tagFile.AssetId, tagFile.IsJohnDoe),
                 TAGFileOriginSource.VolvoMachineAssistCompactionCSV => false,

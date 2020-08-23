@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       func.Should().NotBeNull();
     }
 
-    [Fact]
+    [Fact(Skip = "Exceptions no longer allowed to escape the Invoke() method")]
     public void Test_CellPassesRequestComputeFunc_ClusterCompute_Creation_FailInvokeWithNullArgument()
     {
       var func = new CellPassesRequestComputeFunc_ClusterCompute

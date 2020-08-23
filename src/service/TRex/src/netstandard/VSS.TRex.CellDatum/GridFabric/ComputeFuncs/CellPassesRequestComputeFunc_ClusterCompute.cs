@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Reflection;
+using System.Collections.Generic;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
+using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.Executors;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Responses;
@@ -11,6 +12,7 @@ using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Types;
 
 namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 {
@@ -18,32 +20,37 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
   {
     private const byte VERSION_NUMBER = 1;
 
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CellPassesRequestComputeFunc_ClusterCompute>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CellPassesRequestComputeFunc_ClusterCompute>();
 
     public CellPassesRequestArgument_ClusterCompute Argument { get; set; }
 
     public CellPassesResponse Invoke()
     {
-      Log.LogInformation($"In {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.Invoke()");
+      _log.LogInformation($"In {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.Invoke()");
 
       try
       {
-        var request = new CellPassesComputeFuncExecutor_ClusterCompute(); 
+        var request = new CellPassesComputeFuncExecutor_ClusterCompute();
 
-        Log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.ExecuteAsync()");
+        _log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.ExecuteAsync()");
 
         if (Argument == null)
         {
           throw new ArgumentException("Argument for ComputeFunc must be provided");
         }
         return request.ExecuteAsync(
-          Argument, 
+          Argument,
           new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, Argument.ProjectID, Argument.OTGCellX, Argument.OTGCellY)
           ).WaitAndUnwrapException();
       }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception computing cell pass response on cluster");
+        return new CellPassesResponse { ReturnCode = CellPassesReturnCode.Error, CellPasses = new List<ClientCellProfileLeafSubgridRecord>(), Easting = 0.0, Northing = 0.0 };
+      }
       finally
       {
-        Log.LogInformation($"Exiting {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.Invoke()");
+        _log.LogInformation($"Exiting {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.Invoke()");
       }
     }
 

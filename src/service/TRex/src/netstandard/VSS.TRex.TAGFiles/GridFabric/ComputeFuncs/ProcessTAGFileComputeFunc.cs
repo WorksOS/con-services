@@ -36,17 +36,32 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"{nameof(ProcessTAGFileComputeFunc)}.{nameof(Invoke)} failed with exception processing {arg.TAGFiles} TAF files:");
+        _log.LogError(e, $"{nameof(ProcessTAGFileComputeFunc)}.{nameof(Invoke)} failed with exception processing {arg.TAGFiles.Count} TAG files.");
 
-        return new ProcessTAGFileResponse {Results = new List<IProcessTAGFileResponseItem>(arg.TAGFiles.Select(x => new ProcessTAGFileResponseItem
+        try
         {
-          FileName = x.FileName,
-          AssetUid = x.AssetId,
-          Success = false,
-          Exception = e.Message,
-          SubmissionFlags = x.SubmissionFlags,
-          OriginSource = x.OriginSource
-        }).ToList())};
+          return new ProcessTAGFileResponse
+          {
+            Results = new List<IProcessTAGFileResponseItem>(arg.TAGFiles.Select(x => new ProcessTAGFileResponseItem
+            {
+              FileName = x.FileName,
+              AssetUid = x.AssetId,
+              Success = false,
+              Exception = e.Message,
+              SubmissionFlags = x.SubmissionFlags,
+              OriginSource = x.OriginSource
+            }).ToList())
+          };
+        }
+        catch (Exception e2)
+        {
+          _log.LogError(e2, "Exception handling exception thrown during TAG file processing");
+          return null;
+        }
+      }
+      finally
+      {
+        _log.LogInformation($"Completed processing {arg.TAGFiles.Count} tag files in project {arg.ProjectID}");
       }
     }
   }
