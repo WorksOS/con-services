@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
@@ -183,12 +184,23 @@ namespace VSS.TRex.Storage
             // The generic transactional cache cannot track the size of the elements being 'put' to the cache
             lock (PendingTransactedDeletes)
             {
-              numDeleted = PendingTransactedDeletes.Count;
+                numDeleted = PendingTransactedDeletes.Count;
 
-              // TODO: Can (should) this be pooled into a collection of tasks run concurrently?
-              PendingTransactedDeletes.ForEach(async x => await base.RemoveAsync(x));
-              // PendingTransactedDeletes needs ot be ordered to safely call RemoveAll
-              //base.RemoveAll(PendingTransactedDeletes);
+                // TODO: Can (should) this be pooled into a collection of tasks run concurrently?
+                PendingTransactedDeletes.ForEach(async x =>
+                {
+                  try
+                  {
+                    await base.RemoveAsync(x);
+                  }
+                  catch (Exception e)
+                  {
+                    _log.LogError(e, $"Exception in RemoveAsync removing element with key {x} in cache {Name}");
+                  }
+                });
+
+                // PendingTransactedDeletes needs to be ordered to safely call RemoveAll
+                //base.RemoveAll(PendingTransactedDeletes);
             }
 
             lock (PendingTransactedWrites)
@@ -199,9 +211,18 @@ namespace VSS.TRex.Storage
               PendingTransactedWrites.ForEach(async x =>
               {
                 // TODO: Can (should) this be pooled into a collection of tasks run concurrently?
-                await base.PutAsync(x.Key, x.Value);
-                if (x.Value is ISerialisedByteArrayWrapper wrapper)
-                  localBytesWritten += wrapper.Count;
+
+                try
+                {
+                  await base.PutAsync(x.Key, x.Value);
+
+                  if (x.Value is ISerialisedByteArrayWrapper wrapper)
+                    localBytesWritten += wrapper.Count;
+                }
+                catch (Exception e)
+                {
+                  _log.LogError(e, $"Exception in PutAsync putting element with key {x.Key} and value {x.Value} in cache {Name}");
+                }
               });
 
               // This option leverages the ICache<>.PutAll() behaviour. This may cause problems with 

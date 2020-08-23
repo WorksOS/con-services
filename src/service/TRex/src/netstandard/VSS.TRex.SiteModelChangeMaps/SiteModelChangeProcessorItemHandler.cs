@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -36,6 +37,8 @@ namespace VSS.TRex.SiteModelChangeMaps
 
     private readonly EventWaitHandle _waitHandle;
 
+    private readonly Task _task;
+
     public SiteModelChangeProcessorItemHandler()
     {
       var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
@@ -51,7 +54,8 @@ namespace VSS.TRex.SiteModelChangeMaps
       _changeMapProxy = new SiteModelChangeMapProxy();
 
       _log.LogInformation("Starting site model change processor item handler task");
-      var _ = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
+
+      _task = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
     }
 
     public int QueueCount => _queue.Count;
@@ -228,9 +232,14 @@ namespace VSS.TRex.SiteModelChangeMaps
       }
     }
 
-    public void Dispose()
+    public void Cancel()
     {
       Aborted = true;
+      _task?.WaitAndUnwrapException();
+    }
+
+    public void Dispose()
+    {
     }
   }
 }

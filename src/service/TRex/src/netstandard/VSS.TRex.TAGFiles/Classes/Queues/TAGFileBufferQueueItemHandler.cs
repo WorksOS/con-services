@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -27,7 +28,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do, set to 10 seconds
         /// </summary>
-        private const int QUEUE_SERVICE_CHECK_INTERVAL_MS = 10000;
+        private const int QUEUE_SERVICE_CHECK_INTERVAL_MS = 5000;
 
         private const int DEFAULT_NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS = 4;
 
@@ -49,6 +50,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private readonly int _numConcurrentProcessingTasks = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", DEFAULT_NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS);
 
         private readonly TAGFileNameComparer _tagFileNameComparer = new TAGFileNameComparer();
+
+        private readonly Task<Task>[] _grouperTasks;
 
         private async Task ProcessTAGFilesFromGrouper()
         {
@@ -367,7 +370,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             _grouper = new TAGFileBufferQueueGrouper();
 
             // Note ToArray at end is important to activate tasks (ie: lazy loading)
-            var _ = Enumerable.Range(0, _numConcurrentProcessingTasks).Select(_ => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
+            _grouperTasks = Enumerable.Range(0, _numConcurrentProcessingTasks).Select(_ => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
 
             _log.LogInformation($"Creation of TAGFileBufferQueueItemHandler complete after initializing {_numConcurrentProcessingTasks} concurrent tasks");
         }
@@ -380,9 +383,14 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             _grouper.Add(key);
         }
 
+        public void Cancel()
+        {
+          _aborted = true;
+          _grouperTasks?.WhenAll().WaitAndUnwrapException();
+        }
+
         public void Dispose()
         {
-            _aborted = true;
         }
     }
 }

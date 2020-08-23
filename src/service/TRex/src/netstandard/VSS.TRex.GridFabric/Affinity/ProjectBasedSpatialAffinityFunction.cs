@@ -24,8 +24,10 @@ namespace VSS.TRex.GridFabric.Affinity
         return Math.Abs(GuidHashCode.Hash(value.ProjectUID)) % NumPartitions;
       }
 
-      Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
-      throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
+      Log.LogCritical($"Unknown key type to compute non spatial affinity partition key for: [{key.GetType().FullName}] {key}. Returning partition 0 to avoid thrown exception");
+      return 0;
+
+      //throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
     }
   }
 }

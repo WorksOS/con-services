@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
 
@@ -24,8 +23,10 @@ namespace VSS.TRex.GridFabric.Affinity
         return SubGridCellAddress.ToSpatialPartitionDescriptor(value.SubGridX, value.SubGridY);
       }
 
-      Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
-      throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
+      Log.LogCritical($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}. Returning partition 0 to avoid thrown exception");
+      return 0;
+     
+      //throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
     }
   }
 }
