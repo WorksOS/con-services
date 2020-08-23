@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
@@ -86,92 +87,91 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
           Console.WriteLine($"Error: Null logger present in {nameof(SiteModelChangeProcessorService)}.{nameof(Execute)}");
         }
 
-        try
+        _log.LogInformation($"{context.Name} starting executing");
+        Aborted = false;
+        _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+        // Get the ignite grid and cache references
+
+        var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
+                     Ignition.GetIgnite(TRexGrids.ImmutableGridName());
+
+        if (ignite == null)
         {
-          _log.LogInformation($"{context.Name} starting executing");
-          Aborted = false;
-          _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+          _log.LogError("Ignite reference in service is null - aborting service execution");
+          return;
+        }
 
-          // Get the ignite grid and cache references
+        var queueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
 
-          var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
-                       Ignition.GetIgnite(TRexGrids.ImmutableGridName());
+        _log.LogInformation($"Obtained queue cache for SiteModelChangeBufferQueueKey: {queueCache}");
 
-          if (ignite == null)
+        var handler = new SiteModelChangeProcessorItemHandler();
+        var listener = new LocalSiteModelChangeListener(handler);
+
+        // Obtain the query handle for the continuous query from the DI context, or if not available create it directly
+        // Construct the continuous query machinery
+        // Set the initial query to return all elements in the cache
+        // Instantiate the queryHandle and start the continuous query on the remote nodes
+        // Note: Only cache items held on this local node will be handled here
+        var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>>();
+        IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> queryHandle = null;
+
+        if (queryHandleFactory != null)
+        {
+          _log.LogInformation("Obtaining query handle from DI factory");
+          queryHandle = queryHandleFactory(listener);
+        }
+
+        if (queryHandle == null)
+        {
+          _log.LogInformation("Obtaining query handle from QueryContinuous() API");
+
+          queryHandle = queueCache.QueryContinuous
+          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener) {Local = true},
+            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> {Local = true});
+        }
+
+        using (queryHandle)
+        {
+          _log.LogInformation("Performing initial continuous query cursor scan of items to process");
+
+          // Perform the initial query to grab all existing elements and process them. Make sure to sort them in time order first
+          queryHandle.GetInitialQueryCursor().OrderBy(x => x.Key.InsertUTCTicks).ForEach(handler.Add);
+
+          while (!Aborted)
           {
-            _log.LogError("Ignite reference in service is null - aborting service execution");
-            return;
-          }
-
-          var queueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
-
-          _log.LogInformation($"Obtained queue cache for SiteModelChangeBufferQueueKey: {queueCache}");
-
-          var handler = new SiteModelChangeProcessorItemHandler();
-          var listener = new LocalSiteModelChangeListener(handler);
-
-          // Obtain the query handle for the continuous query from the DI context, or if not available create it directly
-          // Construct the continuous query machinery
-          // Set the initial query to return all elements in the cache
-          // Instantiate the queryHandle and start the continuous query on the remote nodes
-          // Note: Only cache items held on this local node will be handled here
-          var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>>();
-          IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> queryHandle = null;
-
-          if (queryHandleFactory != null)
-          {
-            _log.LogInformation("Obtaining query handle from DI factory");
-            queryHandle = queryHandleFactory(listener);
-          }
-
-          if (queryHandle == null)
-          {
-            _log.LogInformation("Obtaining query handle from QueryContinuous() API");
-
-            queryHandle = queueCache.QueryContinuous
-            (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener) { Local = true },
-              initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> { Local = true });
-          }
-
-          using (queryHandle)
-          {
-            _log.LogInformation("Performing initial continuous query cursor scan of items to process");
-
-            // Perform the initial query to grab all existing elements and process them. Make sure to sort them in time order first
-            queryHandle.GetInitialQueryCursor().OrderBy(x => x.Key.InsertUTCTicks).ForEach(handler.Add);
-
-            while (!Aborted)
+            try
             {
-              try
               {
+                // Cycle looking for new work to do as items arrive until aborted...
+                _log.LogInformation("Entering steady state continuous query scan of items to process");
+
+                // Activate the handler with the inject initial continuous query and move into steady state processing
+
+                InSteadyState = true;
+                handler.Activate();
+                do
                 {
-                  // Cycle looking for new work to do as items arrive until aborted...
-                  _log.LogInformation("Entering steady state continuous query scan of items to process");
-
-                  // Activate the handler with the inject initial continuous query and move into steady state processing
-
-                  InSteadyState = true;
-                  handler.Activate();
-                  do
-                  {
-                    _waitHandle.WaitOne(_serviceCheckIntervalMs);
-                  } while (!Aborted);
-                }
+                  _waitHandle.WaitOne(_serviceCheckIntervalMs);
+                } while (!Aborted);
               }
-              catch (Exception e)
-              {
-                _log.LogError(e, "Site model change processor service unhandled exception, waiting and trying again");
+            }
+            catch (Exception e)
+            {
+              _log.LogError(e, "Site model change processor service unhandled exception, waiting and trying again");
 
-                // Sleep for 5 seconds to see if things come right and then try again
-                Thread.Sleep(5000);
-              }
+              // Sleep for 5 seconds to see if things come right and then try again
+              Thread.Sleep(5000);
             }
           }
         }
-        catch (Exception e)
-        {
-          _log.LogError(e, "Exception occured performing initial set up of conitunous query and scan of existing items");
-        }
+
+        handler.Cancel();
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception occurred performing initial set up of continuous query and scan of existing items");
       }
       finally
       {
@@ -206,7 +206,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
         if (_log == null)
         {
           Console.WriteLine("Error: No logger available");
-          Console.WriteLine($"Error: Exception serializing site model change service state {e.Message} occured at {e.StackTrace}");
+          Console.WriteLine($"Error: Exception serializing site model change service state {e.Message} occurred at {e.StackTrace}");
         }
         else
         {
@@ -231,7 +231,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
         if (_log == null)
         {
           Console.WriteLine("Error: No logger available");
-          Console.WriteLine($"Error: Exception deserializing site model change service state {e.Message} occured at {e.StackTrace}");
+          Console.WriteLine($"Error: Exception deserializing site model change service state {e.Message} occurred at {e.StackTrace}");
         }
         else
         {

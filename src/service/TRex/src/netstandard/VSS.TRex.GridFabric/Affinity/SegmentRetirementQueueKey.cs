@@ -25,7 +25,7 @@ namespace VSS.TRex.GridFabric.Affinity
     public void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-      
+
       writer.WriteGuid(ProjectUID);
       writer.WriteLong(InsertUTCAsLong);
     }
