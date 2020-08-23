@@ -69,6 +69,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var siteModel = GetSiteModel(request.ProjectUid);
 
+      var filter1 = ConvertFilter(request.Filter1, siteModel);
       var arg = new TileRenderRequestArgument
       (siteModel.ID,
         request.Mode,
@@ -77,8 +78,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         hasGridCoords,
         request.Width, // PixelsX
         request.Height, // PixelsY
-        //for now always construct 2 filters until we do #1329
-        new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
+        //for now always construct 2 filters for cut-fill/volumes until we do #1329
+        request.Mode == DisplayMode.CutFill ?
+          new FilterSet(filter1, ConvertFilter(request.Filter2, siteModel)) :
+          new FilterSet(filter1),
         new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0),
         (VolumeComputationType)request.VolumeType
       );

@@ -53,7 +53,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
     protected TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null, CellPassAttributeFilter attributeFilter = null, VolumeComputationType volumeType = VolumeComputationType.None)
     {
-      var filter = new FilterSet(new CombinedFilter(), new CombinedFilter());
+      var filter = displayMode == DisplayMode.CutFill ? new FilterSet(new CombinedFilter(), new CombinedFilter()) : new FilterSet(new CombinedFilter());
 
       if (attributeFilter != null)
         filter.Filters[0].AttributeFilter = attributeFilter;
