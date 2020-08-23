@@ -354,6 +354,6 @@ switch ($action) {
         Write-Host "Invalid action ($action)"
         Exit-With-Code ([ReturnCode]::INVALID_ACTION)
     }
-
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
+
+Exit-With-Code ([ReturnCode]::SUCCESS)
