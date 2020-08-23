@@ -923,7 +923,8 @@ Result = false;
 
     /// <summary>
     /// GetDateRange returns the chronological extents of production data in the site model.
-    /// if no production data exists, then min = MaxValue and max and MinValue
+    /// if no production data exists, then surveyed dates of surveyed surfaces, if any, 
+    /// should be used to set min/max dates, otherwise - min = MaxValue and max and MinValue.
     /// </summary>
     /// <returns></returns>
     public (DateTime startUtc, DateTime endUtc) GetDateRange()
@@ -948,6 +949,20 @@ Result = false;
             if (maxDate < eventDateLast)
               maxDate = eventDateLast;
           }
+        }
+      }
+
+      // In case there is no production data exixts, surveyed dates of surveyed surfaces,
+      // if any, should be used to set min/max dates.
+      if (minDate == Consts.MAX_DATETIME_AS_UTC && maxDate == Consts.MIN_DATETIME_AS_UTC)
+      {
+        foreach (var surveyedSurface in SurveyedSurfaces)
+        {
+          if (surveyedSurface.AsAtDate < minDate)
+            minDate = surveyedSurface.AsAtDate;
+
+          if (surveyedSurface.AsAtDate > maxDate)
+            maxDate = surveyedSurface.AsAtDate;
         }
       }
 
