@@ -70,8 +70,6 @@ function Build-Solution {
         Write-Host $image[1]
         Write-Host "`nBuild of '$imageTag' image complete" -ForegroundColor Green
     }
-
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Run-Unit-Tests {
@@ -141,8 +139,6 @@ function Run-Unit-Tests {
     Write-Host "`nRemoving test container..." -ForegroundColor Green
     docker rm $unique_container_name
     Write-Host "`nUnit test run complete" -ForegroundColor Green
-
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Publish-Service {
@@ -185,7 +181,6 @@ function Publish-Service {
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
     Write-Host "`nPublish application complete" -ForegroundColor Green
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Push-Container-Image {
@@ -223,8 +218,6 @@ function Push-Container-Image {
     if (-not $?) { Exit-With-Code ([ReturnCode]::IMAGE_PUSH_FAILED) }
 
     Write-Host "`nImage push complete" -ForegroundColor Green
-
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Login-Aws {
@@ -263,8 +256,6 @@ function Login-Aws {
 #     Write-Host "`nUpdating credentials for NuGet source '$sourceName'..." -ForegroundColor Green
 #     & '..\build\nuget\nuget.exe' sources update -Name "${sourceName}" -Username "az" -Password "${systemAccessToken}" -ConfigFile "NuGet.Config"
 #     if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
-
-#     Exit-With-Code ([ReturnCode]::SUCCESS)
 # }
 function TrackTime($Time) {
     if (!($Time)) { 
@@ -363,4 +354,6 @@ switch ($action) {
         Write-Host "Invalid action ($action)"
         Exit-With-Code ([ReturnCode]::INVALID_ACTION)
     }
+
+    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
