@@ -67,7 +67,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
         256,
         256,
         null,
-        null);
+        null,
+        VolumesType.None);
 
       request.Validate();
 
@@ -112,7 +113,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
         256,
         256,
         null,
-        null);
+        null,
+        VolumesType.None);
     }
 
     [Fact]

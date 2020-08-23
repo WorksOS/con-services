@@ -35,6 +35,7 @@ using Moq;
 using CoreX.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Tests.Rendering
 {
@@ -110,7 +111,8 @@ namespace VSS.TRex.Tests.Rendering
         null,
         Color.Black,
         Guid.Empty,
-        new LiftParameters());
+        new LiftParameters(),
+        VolumeComputationType.None);
 
       render.Should().NotBeNull();
     }
@@ -212,7 +214,8 @@ namespace VSS.TRex.Tests.Rendering
                                            palette,
                                            Color.Black,
                                            Guid.Empty,
-                                           new LiftParameters());
+                                           new LiftParameters(),
+                                           VolumeComputationType.None);
 
         var result = await render.ExecuteAsync();
         result.Should().NotBeNull();

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
@@ -70,7 +71,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var referenceDesign = new DesignOffset(designUid, 0.0);
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent);
       var request = new TileRenderRequest();
-      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette);
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette, volumeType: VolumeComputationType.BetweenFilterAndDesign);
 
       // Add the cut/fill design reference to the request, and set the rendering extents to the cell in question,
       // with an additional 1 meter border around the cell
@@ -101,7 +102,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var palette = PVMPaletteFactory.GetPalette(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent);
       var request = new TileRenderRequest();
 
-      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette);
+      var arg = SimpleTileRequestArgument(siteModel, DisplayMode.CutFill, palette, volumeType:VolumeComputationType.Between2Filters);
 
       // Create a pair of filters to support first -> last cell pass comparison
       arg.Filters = new FilterSet(new CombinedFilter(), new CombinedFilter());

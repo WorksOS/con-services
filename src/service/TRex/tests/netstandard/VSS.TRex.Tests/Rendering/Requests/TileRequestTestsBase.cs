@@ -5,6 +5,7 @@ using FluentAssertions;
 using SkiaSharp;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
@@ -50,14 +51,14 @@ namespace VSS.TRex.Tests.Rendering.Requests
         <AlignmentDesignFilterBoundaryComputeFunc, AlignmentDesignFilterBoundaryArgument, AlignmentDesignFilterBoundaryResponse>();
     }
 
-    protected TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null, CellPassAttributeFilter attributeFilter = null)
+    protected TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null, CellPassAttributeFilter attributeFilter = null, VolumeComputationType volumeType = VolumeComputationType.None)
     {
-      var filter = new FilterSet(new CombinedFilter());
+      var filter = displayMode == DisplayMode.CutFill ? new FilterSet(new CombinedFilter(), new CombinedFilter()) : new FilterSet(new CombinedFilter());
 
       if (attributeFilter != null)
         filter.Filters[0].AttributeFilter = attributeFilter;
 
-      return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256, filter, new DesignOffset());
+      return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256, filter, new DesignOffset(), volumeType);
     }
 
     protected ISiteModel BuildModelForSingleCellTileRender(float heightIncrement,

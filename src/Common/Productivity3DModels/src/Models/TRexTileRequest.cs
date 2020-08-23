@@ -99,6 +99,12 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     [JsonProperty(Required = Required.Default)]
     public LiftSettings LiftSettings { get; private set; }
+    
+    /// <summary>
+    /// Volume calculation type for cut-fill & volumes tiles
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public VolumesType VolumeType { get; private set; }
 
     /// <summary>
     /// Default public constructor.
@@ -121,7 +127,8 @@ namespace VSS.Productivity3D.Models.Models
       ushort width,
       ushort height,
       OverridingTargets overrides,
-      LiftSettings liftSettings)
+      LiftSettings liftSettings,
+      VolumesType volumeType)
     {
       ProjectUid = projectUid;
       Mode = mode;
@@ -135,6 +142,7 @@ namespace VSS.Productivity3D.Models.Models
       Height = height;
       Overrides = overrides;
       LiftSettings = liftSettings;
+      VolumeType = volumeType;
     }
 
     /// <summary>

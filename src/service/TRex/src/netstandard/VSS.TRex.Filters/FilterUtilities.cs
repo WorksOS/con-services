@@ -2,6 +2,7 @@
 using CoreX.Interfaces;
 using CoreX.Types;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -176,6 +177,50 @@ namespace VSS.TRex.Filters
       }
 
       return status;
+    }
+
+    /// <summary>
+    /// Constructs the set of filters that will be used to derive the set of production data sub grids.
+    /// </summary>
+    /// <returns></returns>
+    public static IFilterSet ConstructFilters(IFilterSet filterSet, VolumeComputationType volumeType)
+    {
+      if (volumeType == VolumeComputationType.None)
+        return filterSet;
+
+      // If the volume calculation is between two filters then handle appropriately...
+      if (volumeType == VolumeComputationType.Between2Filters)
+      {
+        var baseFilter = filterSet.Filters[0];
+        var topFilter = filterSet.Filters[1];
+
+        // Determine if intermediary filter/surface behaviour is required to support summary volumes
+        var intermediaryFilterRequired = volumeType == VolumeComputationType.Between2Filters &&
+                                         baseFilter.AttributeFilter.HasTimeFilter && baseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC && // 'From' has As-At Time filter
+                                          !baseFilter.AttributeFilter.ReturnEarliestFilteredCellPass && // Want latest cell pass in 'from'
+                                         topFilter.AttributeFilter.HasTimeFilter && topFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC && // 'To' has time-range filter with latest
+                                          !topFilter.AttributeFilter.ReturnEarliestFilteredCellPass; // Want latest cell pass in 'to'
+
+        if (intermediaryFilterRequired)
+        {
+          // Create and use the intermediary filter. The intermediary filter
+          // is created from the Top filter, with the return earliest flag set to true
+          var intermediaryFilter = new CombinedFilter();
+          intermediaryFilter.AttributeFilter.Assign(topFilter.AttributeFilter);
+          intermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
+          intermediaryFilter.SpatialFilter.Assign(topFilter.SpatialFilter);
+
+          return new FilterSet(new[] { baseFilter, intermediaryFilter, topFilter });
+        }
+      }
+
+      else if (volumeType == VolumeComputationType.BetweenDesignAndFilter)
+        return new FilterSet(filterSet.Filters[1]);
+
+      else if (volumeType == VolumeComputationType.BetweenFilterAndDesign)
+        return new FilterSet(filterSet.Filters[0]);
+
+      return filterSet;
     }
   }
 }

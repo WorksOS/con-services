@@ -13,8 +13,10 @@ using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
+using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Rendering.Displayers;
@@ -22,6 +24,8 @@ using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -63,6 +67,7 @@ namespace VSS.TRex.Rendering.Executors
     private double WorldTileWidth, WorldTileHeight;
 
     private readonly IFilterSet Filters;
+    private readonly VolumeComputationType VolumeType;
 
     /// <summary>
     /// The identifier for the design held in the designs list of the project to be used to calculate cut/fill values
@@ -91,7 +96,8 @@ namespace VSS.TRex.Rendering.Executors
       IPlanViewPalette aColorPalettes,
       Color representColor,
       Guid requestingTRexNodeId,
-      ILiftParameters liftParams
+      ILiftParameters liftParams,
+      VolumeComputationType volumeType
     )
     {
       DataModelID = dataModelId;
@@ -108,6 +114,7 @@ namespace VSS.TRex.Rendering.Executors
       RepresentColor = representColor;
       RequestingTRexNodeID = requestingTRexNodeId;
       LiftParams = liftParams;
+      VolumeType = volumeType;
     }
 
     private readonly BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
@@ -455,13 +462,14 @@ namespace VSS.TRex.Rendering.Executors
           var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
           CellExtents.Expand(1);
 
+          var filterSet = FilterUtilities.ConstructFilters(Filters, VolumeType);
           // Construct PipelineProcessor
           using var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
             RequestDescriptor,
             DataModelID,
             GridDataFromModeConverter.Convert(Mode),
             new SubGridsPipelinedResponseBase(),
-            Filters,
+            filterSet,
             CutFillDesign,
             DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
             DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
@@ -471,6 +479,11 @@ namespace VSS.TRex.Rendering.Executors
             CellExtents,
             LiftParams
           );
+          if (filterSet.Filters.Length == 3)
+          {
+            var pipeline = processor.Pipeline as SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>;
+            pipeline.SubGridsRequestComputeStyle = SubGridsRequestComputeStyle.SimpleVolumeThreeWayCoalescing;
+          }
 
           // Set the PVM rendering rexTask parameters for progressive processing
           processor.Task.TRexNodeID = RequestingTRexNodeID;
