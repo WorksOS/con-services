@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.Common.Filters.Utilities;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
@@ -34,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         var filter1 = request.Filter1;
         var filter2 = request.Filter2;
-        await PairUpAssetIdentifiers(request, filter1, filter2);
+        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, filter1, filter2);
 
         if (request.ComputeVolumesType == VolumesType.Between2Filters)
         {

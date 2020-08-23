@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 
@@ -35,7 +36,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_DATUM"))
       {
 #endif
-      await PairUpAssetIdentifiers(request, request.Filter);
+     
+      await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
       log.LogDebug($"{nameof(CellDatumExecutor)} trexRequest {JsonConvert.SerializeObject(request)}");
 
       var trexData = await GetTRexCellDatumData(request);

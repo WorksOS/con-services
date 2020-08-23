@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Extensions;
@@ -46,7 +47,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_PASSCOUNT"))
         {
 #endif
-        await PairUpAssetIdentifiers(request, request.Filter);
+        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
         var pcDetailsRequest = new PassCountDetailsRequest(
             request.ProjectUid.Value,
             request.Filter, 

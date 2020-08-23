@@ -16,6 +16,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Extensions;
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.CmvSettings.MinCMV, request.CmvSettings.MinCMVPercent, request.CmvSettings.OverrideTargetCMV, 
           new[] { 0, 40, 80, 120, 150 }); // todoJeanie how should these defaults be set?
 
-        await PairUpAssetIdentifiers(request, request.Filter);
+        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
         var cmvDetailsRequest = new CMVDetailsRequest(
             request.ProjectUid.Value,
             request.Filter, 
