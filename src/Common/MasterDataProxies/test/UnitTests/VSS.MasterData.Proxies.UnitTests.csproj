@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj" />
     <ProjectReference Include="..\..\src\VSS.MasterData.Proxies.csproj" />
   </ItemGroup>
 
