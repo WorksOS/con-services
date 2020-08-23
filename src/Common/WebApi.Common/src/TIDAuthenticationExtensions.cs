@@ -10,11 +10,7 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// Uses the tid authentication.
     /// </summary>
-    /// <param name="builder">The builder.</param>
-    /// <returns></returns>
-    public static IApplicationBuilder UseTIDAuthentication(this IApplicationBuilder builder)
-    {
-      return builder.UseMiddleware<TIDAuthentication>();
-    }
+    public static IApplicationBuilder UseTIDAuthentication(this IApplicationBuilder builder) =>
+      builder.UseMiddleware<TIDAuthentication>();
   }
 }
