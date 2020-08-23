@@ -1,12 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>VSS.MasterData.Repositories.netcore</PackageId>
-    <Authors>Merino</Authors>
-    <Company>VSS</Company>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Product>VSS.MasterData.Repositories.netcore</Product>
     <Description>Shared lib to access MasterData aspects in the DB</Description>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>VSS.MasterData.Repositories</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
