@@ -26,10 +26,11 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 
     /// <summary>
     /// Timezone is now calculated by cws from the bounding box
-    ///    todoJeannie do we need to convert it back to the format:  "W. Europe Standard Time"
+    ///    Do we need to convert it back to the format:  "W. Europe Standard Time"?
+    ///       TBC may not use this field
     /// </summary>
     [JsonProperty(PropertyName = "projectTimeZone", Required = Required.Default)]
-    public string ProjectTimeZone { get; set; } // todoJeannie
+    public string ProjectTimeZone { get; set; } 
 
 
     /// <summary>
@@ -67,7 +68,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     ///    In format: "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
     /// </summary>
     [JsonProperty(PropertyName = "projectGeofenceWKT", Required = Required.Default)]
-    public string ProjectGeofenceWKT { get; set; } // todoJeannie
+    public string ProjectGeofenceWKT { get; set; }
 
     /// <summary>
     /// The short id generated from the ProjectUid which TBC uses in its legacy code.
@@ -91,7 +92,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// Gets or sets the CoordinateSystem FileName which the project is associated with
     /// </summary>
     [JsonProperty(PropertyName = "coordinateSystemFileName", Required = Required.Default)]
-    public string CoordinateSystemFileName { get; set; } // todoJeannie
+    public string CoordinateSystemFileName { get; set; }
 
     public override bool Equals(object obj)
     {

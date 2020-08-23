@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// The executor which passes the summary CMV request to Raptor
   /// </summary>
-  public class SummaryCMVExecutor : ExecutorHelper
+  public class SummaryCMVExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build

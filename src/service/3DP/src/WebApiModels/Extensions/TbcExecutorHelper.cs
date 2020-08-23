@@ -12,7 +12,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 
 namespace VSS.Productivity3D.WebApi.Models.Extensions
 {
-  public class ExecutorHelper : RequestExecutorContainer
+  public class TbcExecutorHelper : RequestExecutorContainer
   {
     protected async Task PairUpAssetIdentifiers(long? projectId, Guid? projectUid, FilterResult filter1, FilterResult filter2 = null)
     {

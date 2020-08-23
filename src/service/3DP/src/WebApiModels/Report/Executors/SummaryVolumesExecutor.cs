@@ -13,7 +13,7 @@ using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
-  public class SummaryVolumesExecutor : ExecutorHelper
+  public class SummaryVolumesExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build

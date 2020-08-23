@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// The executor which passes the detailed CMV request to Raptor
   /// </summary>
-  public class DetailedCMVExecutor : ExecutorHelper
+  public class DetailedCMVExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 #endif
         var settings = new CMVSettingsEx(request.CmvSettings.CmvTarget, request.CmvSettings.MaxCMV, request.CmvSettings.MaxCMVPercent,
           request.CmvSettings.MinCMV, request.CmvSettings.MinCMVPercent, request.CmvSettings.OverrideTargetCMV, 
-          new[] { 0, 40, 80, 120, 150 }); // todoJeanie how should these defaults be set?
+          (CompactionProjectSettings.DefaultSettings.customCMVTargets.ToArray()));
 
         await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
         var cmvDetailsRequest = new CMVDetailsRequest(

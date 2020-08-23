@@ -21,7 +21,7 @@ using VSS.Productivity3D.WebApi.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class CellDatumExecutor : ExecutorHelper
+  public class CellDatumExecutor : TbcExecutorHelper
   {
     private ServiceException CreateNoCellDatumReturnedException()
     {

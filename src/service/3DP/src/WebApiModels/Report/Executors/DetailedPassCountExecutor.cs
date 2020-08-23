@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// The executor which passes the detailed pass counts request to Raptor
   /// </summary>
-  public class DetailedPassCountExecutor : ExecutorHelper
+  public class DetailedPassCountExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build

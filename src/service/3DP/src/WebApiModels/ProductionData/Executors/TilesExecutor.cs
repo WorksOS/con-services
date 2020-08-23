@@ -15,7 +15,7 @@ using VSS.Productivity3D.WebApi.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
-  public class TilesExecutor : ExecutorHelper
+  public class TilesExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor.
