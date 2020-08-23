@@ -30,9 +30,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// TAG File Buffer Queue key constructor taking project, asset and filename
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="projectID"></param>
-    /// <param name="assetUid"></param>
     public TAGFileBufferQueueKey(string fileName, Guid projectID, Guid assetUid)
     {
       FileName = fileName;
@@ -43,7 +40,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Provides string representation of the state of the key
     /// </summary>
-    /// <returns></returns>
     public override string ToString() => $"Project: {ProjectUID}, Asset: {AssetUID}, FileName: {FileName}"; //$"Project: {ProjectUID}, Asset: {AssetUID}, FileName: {FileName}";
 
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());

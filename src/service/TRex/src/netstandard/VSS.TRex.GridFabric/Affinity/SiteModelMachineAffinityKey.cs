@@ -44,7 +44,6 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Provides string representation of the state of the key
     /// </summary>
-    /// <returns></returns>
     public override string ToString() => $"Project: {ProjectUID}, Asset: {AssetUID}, StreamType:{StreamType}";
 
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
