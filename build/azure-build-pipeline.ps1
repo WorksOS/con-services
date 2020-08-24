@@ -107,7 +107,7 @@ function Run-Unit-Tests {
     $unique_container_name = "$container_name`_$(Get-Random -Minimum 1000 -Maximum 9999)"
 
     # Had instances of the docker login failing, possibly due to AWS token expiry? 
-    # Login-Aws
+    Login-Aws
 
     # Start the container image and terminate and detach immediately
     docker create --name $unique_container_name $container_name
@@ -184,7 +184,7 @@ function Publish-Service {
 }
 
 function Push-Container-Image {
-    #Login-Aws
+    Login-Aws
 
     $publishImage = "$serviceName-webapi"
 
