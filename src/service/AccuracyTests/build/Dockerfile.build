@@ -4,4 +4,4 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish $SERVICE_PATH/src/AccuracyTests/AccuracyTests.csproj --configuration Release --output /build/artifacts/AccuracyTests --framework netcoreapp3.1 --runtime linux-x64 -nowarn:NU1701 -nowarn:CS1591
+RUN dotnet build $SERVICE_PATH/test/AccuracyTests/AccuracyTests.csproj --configuration Release --output /build/artifacts/AccuracyTests --framework netcoreapp3.1 --runtime linux-x64 -nowarn:NU1701 -nowarn:CS1591
