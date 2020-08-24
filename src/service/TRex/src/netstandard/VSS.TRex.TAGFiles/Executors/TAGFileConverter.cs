@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using CoreX.Interfaces;
+using CoreX.Models;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
+using VSS.TRex.Geometry;
 using VSS.TRex.Logging;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
@@ -78,6 +83,11 @@ namespace VSS.TRex.TAGFiles.Executors
     /// Once the TAG file is converted, this contains the final state of the TAGProcessor state machine.
     /// </summary>
     public TAGProcessor Processor { get; set; }
+
+    /// <summary>
+    /// Is coordinate system of type UTM
+    /// </summary>
+    public bool IsUTMCoordinateSystem { get; set; }
 
     /// <summary>
     /// Default no-arg constructor
@@ -201,15 +211,184 @@ namespace VSS.TRex.TAGFiles.Executors
       return true;
     }
 
+
+
+
+
+
+
+
+
+
+    private string GetGroupName(byte utmZone, bool newGroupNames = false )
+    {
+
+      const string STR_UTM = "UTM"; // Zones ##1..60.. {SKIP}
+      const string STR_UPS = "UPS"; // Zone #61..      {SKIP}
+      const string STR_POLE = "Pole";
+      const string STR_NORTH = "North";
+      const string STR_SOUTH = "South";
+
+      var result = "";
+
+      if ((utmZone & 0x3F) == 61)
+      {
+        result = STR_UPS;
+        if (newGroupNames)
+          return "Polar Regions/" + result;
+      }
+      else
+      {
+      result = STR_UTM;
+        if (newGroupNames)
+          result = "World wide/" + result;
+      }
+
+      return result;
+    }
+
+
+      private string MakeUTMZoneCSIB(int i)
+    {
+
+      // get zone
+
+      // get group name
+
+
+      return "";
+    }
+
+
+    private bool TranslatePositions(string projectCSIBFile, ref List<UTMCoordPointPair> coordPositions)
+    {
+
+      if (coordPositions == null || coordPositions.Count == 0) return true; // nothing todo
+
+      // testing
+      var DIMENSIONS_2012_WITHOUT_VERT_ADJUST = "VE5MIENTSUIAAAAAAAAmQFByb2plY3Rpb24gZnJvbSBkYXRhIGNvbGxlY3RvcgAAWm9uZSBmcm9tIGRhdGEgY29sbGVjdG9yAABab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAABEYXR1bVRocmVlUGFyYW1ldGVycwAAAAAAAABAplRYQeM2GhTEP1hBAAAAAAAAAIAAAAAAAAAAgAAAAAAAAACADlpvbmUgZnJvbSBkYXRhIGNvbGxlY3RvcgAAt0YpjXZY6L8DXnvbAh4IQAAAAAAAaihBAAAAAABqGEEAAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAIF4LavCiChB4TsitpOdF0Fw85mH0Tt/vw9Pj9e7aCk/tdtew3Jyyj4+8FHdAgDwPwFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAHbj3dWkgShBru4e94uPF0FcFrRN6LYnwNAqy4rBHPC+JEubOpUlrr4AABgtRFT7Ifm/GC1EVPshCUAYLURU+yH5PxgtRFT7IQlAAQEBAQEBA1AAcgBvAGoAZQBjAHQAaQBvAG4AIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAWgBvAG4AZQAgAGYAcgBvAG0AIABkAGEAdABhACAAYwBvAGwAbABlAGMAdABvAHIAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAARABhAHQAdQBtAFQAaAByAGUAZQBQAGEAcgBhAG0AZQB0AGUAcgBzAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAFoAbwBuAGUAIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAAAAAAAAAAAB7TEdFPTQxNjc7TERFPTYxNjc7R0dFPTQxNjc7R0RFPTYxNjc7fQB7TEVFPTcwMTk7fQAA";
+
+      try
+      {
+
+        var convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
+        if (convertCoordinates == null)
+        {
+          Log.LogError("TranslatePositions. IConvertCoordinates not implemented");
+          return false;
+        }
+
+        //todo make 120 utm CSIB files
+        var csibList = new List<string>();
+
+        // make list of utm coordinate files
+        for (var i = 0; i < 120; i++)
+        {
+          // csibList.Add("todo");
+          csibList.Add(MakeUTMZoneCSIB(i));
+        }
+
+        byte currentUTMZone = 0;
+        var currentUTMCSIBFile = csibList[currentUTMZone];
+
+
+        for (var i = 0; i < coordPositions.Count; i++)
+        {
+
+          if (coordPositions[i].UTMZone != currentUTMZone)
+          {
+            currentUTMCSIBFile = csibList[coordPositions[i].UTMZone];
+            currentUTMZone = coordPositions[i].UTMZone;
+          }
+
+          projectCSIBFile = DIMENSIONS_2012_WITHOUT_VERT_ADJUST;
+          currentUTMCSIBFile = DIMENSIONS_2012_WITHOUT_VERT_ADJUST; // debugging
+
+          if (ValidPositionsforPair(coordPositions[i]))
+          {
+            // convert left point to WGS84 LL point
+            var leftLLPoint = convertCoordinates.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Left.ToCoreX_XYZ()).ToTRex_XYZ();
+            // convert left WGS84 LL point to project NNE
+            var leftNNEPoint = convertCoordinates.LLHToNEE(projectCSIBFile, leftLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
+
+            // convert right point to WGS84 LL point
+            var rightLLPoint = convertCoordinates.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Right.ToCoreX_XYZ()).ToTRex_XYZ();
+            // convert right WGS84 LL point to project NNE
+            var rightNNEPoint = convertCoordinates.LLHToNEE(projectCSIBFile, rightLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
+
+            coordPositions[i] = new UTMCoordPointPair(leftNNEPoint, rightNNEPoint, currentUTMZone);
+
+          }
+
+        }
+
+      }
+      catch (Exception ex) 
+      {
+        Log.LogError(ex, "Exception occurred while converting ACS coordinates");
+        return false;
+      }
+
+
+      return true;
+    }
+
+
+    /// <summary>
+    /// Scan tag file for each epoch position and convert from position's UTM zone to WGS84LL. Then back to the coordinate sytem used by project.
+    /// </summary>
+    private bool CollectAndConvertBladePostions(string projectCSIBFile, ref Stream tagData, ref List<UTMCoordPointPair> aCSBladePositions, ref List<UTMCoordPointPair> aCSRearAxlePositions, ref List<UTMCoordPointPair> aCSTrackPositions, ref List<UTMCoordPointPair> aCSWheelPositions)
+    {
+
+      // todo temp
+      projectCSIBFile = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
+
+
+      if (projectCSIBFile == String.Empty)
+      {
+        Log.LogError($"CollectAndConvertBladePostions called with missing project CSIB file");
+        return false;
+      }
+
+      var tagFilePreScanACS = new TAGFilePreScanACS(); // special scanner to collect positions
+      tagFilePreScanACS.Execute(tagData, ref aCSBladePositions, ref aCSRearAxlePositions, ref aCSTrackPositions, ref aCSWheelPositions);
+      tagData.Position = 0; // reset
+
+      if (tagFilePreScanACS.ReadResult == TAGReadResult.NoError)
+      {
+        Log.LogInformation($"Successful ACS prescan of tagfile. {tagFilePreScanACS.ReadResult}. # Blade positions to convert:{aCSBladePositions.Count}, RearAxle:{aCSRearAxlePositions.Count}, Track:{aCSTrackPositions.Count}, Wheel:{aCSWheelPositions.Count}");
+        if (!TranslatePositions(projectCSIBFile, ref aCSBladePositions)) return false;
+        if (!TranslatePositions(projectCSIBFile, ref aCSRearAxlePositions)) return false;
+        if (!TranslatePositions(projectCSIBFile, ref aCSTrackPositions)) return false;
+        if (!TranslatePositions(projectCSIBFile, ref aCSWheelPositions)) return false;
+      }
+      else
+      {
+        Log.LogWarning($"Unsuccessful PrescanACS of tagfile. {tagFilePreScanACS.ReadResult}");
+        return false;
+      }
+
+      return true;
+    }
+
+    private bool ValidPositionsforPair(UTMCoordPointPair uTMCoordPointPair)
+    {
+      return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal);
+    }
+
     /// <summary>
     /// Execute the conversion operation on the TAG file, returning a boolean success result.
-    /// Sets up local state detailing the pre-scan fields retried from the ATG file
+    /// Sets up local state detailing the pre-scan fields retrieved from the TAG file
     /// </summary>
     public bool ExecuteLegacyTAGFile(string filename, Stream tagData, Guid assetUid, bool isJohnDoe)
     {
-      ReadResult = TAGReadResult.NoError;
-
       Log.LogInformation($"In {nameof(ExecuteLegacyTAGFile)}: reading file {filename} for asset {assetUid}, JohnDoe: {isJohnDoe}");
+
+      ReadResult = TAGReadResult.NoError;
+      List<UTMCoordPointPair> aCSBladePositions = null;
+      List<UTMCoordPointPair> ACSRearAxlePositions = null;
+      List<UTMCoordPointPair> ACSTrackPositions = null;
+      List<UTMCoordPointPair> ACSWheelPositions = null;
 
       try
       {
@@ -222,20 +401,34 @@ namespace VSS.TRex.TAGFiles.Executors
         var machineHardwareId = string.Empty;
         var machineId = string.Empty;
 
-        if (Machine == null || Machine.MachineType == MachineType.Unknown)
+        //Prescan to get all relevant information necessary for processing the tag file. e.g. Machinetype, IsACS
+        var tagFilePreScan = new TAGFilePreScan();
+        tagFilePreScan.Execute(tagData);
+        tagData.Position = 0; // reset
+        if (tagFilePreScan.ReadResult == TAGReadResult.NoError)
         {
-          // Unknown machine. Prescan to determine machinetype for swather creation
-          var tagFilePreScan = new TAGFilePreScan();
-          tagFilePreScan.Execute(tagData);
-          tagData.Position = 0; // reset
-          if (tagFilePreScan.ReadResult == TAGReadResult.NoError)
+          machineType = tagFilePreScan.MachineType; // used in creation of swather
+          machineHardwareId = tagFilePreScan.HardwareID;
+          machineId = tagFilePreScan.MachineID;
+          IsUTMCoordinateSystem = !tagFilePreScan.IsCSIBCoordSystemTypeOnly; // do we need to convert UTM coordinates to project coordinates
+          if (IsUTMCoordinateSystem && tagFilePreScan.ProcessedEpochCount > 0)
           {
-            machineType = tagFilePreScan.MachineType;
-            machineHardwareId = tagFilePreScan.HardwareID;
-            machineId = tagFilePreScan.MachineID;
+            Log.LogInformation($"{nameof(ExecuteLegacyTAGFile)}: ACS coordinate system detected. {filename}");
+            aCSBladePositions = new List<UTMCoordPointPair>();
+            ACSRearAxlePositions = new List<UTMCoordPointPair>();
+            ACSTrackPositions = new List<UTMCoordPointPair>();
+            ACSWheelPositions = new List<UTMCoordPointPair>();
+            if (!CollectAndConvertBladePostions(SiteModel.CSIB(), ref tagData, ref aCSBladePositions, ref ACSRearAxlePositions, ref ACSTrackPositions, ref ACSWheelPositions))
+            {
+              Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Failed to collect and convert blade positions for tagfile processing with ACS. TAG FILE:{filename}");
+              return false;
+            }
           }
-          else
-            return false;
+        }
+        else
+        {
+          Log.LogWarning($"Unsuccessful prescan of tagfile. {tagFilePreScan.ReadResult}");
+          return false;
         }
 
         if (Machine == null)
@@ -265,12 +458,29 @@ namespace VSS.TRex.TAGFiles.Executors
         }
 
         Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, machineTargetValueChangesAggregator);
+
+        // If ACS coordinate system populate converted UTM coordinates
+        if (IsUTMCoordinateSystem && tagFilePreScan.ProcessedEpochCount > 0)
+        {
+          if (aCSBladePositions != null && aCSBladePositions.Count > 0)
+            Processor.ConvertedBladePositions.AddRange(aCSBladePositions);
+          if (ACSRearAxlePositions != null && ACSRearAxlePositions.Count > 0)
+            Processor.ConvertedRearAxlePositions.AddRange(ACSRearAxlePositions);
+          if (ACSTrackPositions != null && ACSTrackPositions.Count > 0)
+            Processor.ConvertedTrackPositions.AddRange(ACSTrackPositions);
+          if (ACSWheelPositions != null && ACSWheelPositions.Count > 0)
+            Processor.ConvertedWheelPositions.AddRange(ACSWheelPositions);
+        }
+
         var sink = new TAGValueSink(Processor);
         using (var reader = new TAGReader(tagData))
         {
           var tagFile = new TAGFile();
 
           ReadResult = tagFile.Read(reader, sink);
+
+          // processor was part of sink that went into tagfile.read
+          Log.LogInformation($"IsCSIBCoordSystemTypeOnly:{Processor.IsCSIBCoordSystemTypeOnly}");
 
           // Notify the processor that all reading operations have completed for the file
           Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
