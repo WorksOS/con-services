@@ -76,5 +76,7 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// The number of TAG file reported processed by the TAG file processor
     /// </summary>
     public int NumberOfTAGFilesProcessed { get; set; }
+
+    public string ToString();
   }
 }
