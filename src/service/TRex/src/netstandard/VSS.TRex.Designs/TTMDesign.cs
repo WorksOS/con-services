@@ -565,7 +565,9 @@ namespace VSS.TRex.Designs
               if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
                 continue; // No intersection, move to next triangle
 
-              double Z = GetHeight2(ref triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
+              //For now use the non-optimized version as the optimized value can differ. See #1412
+              //double Z = GetHeight2(ref triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
+              var Z = GetHeight(triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
               if (Z != Common.Consts.NullReal)
               {
