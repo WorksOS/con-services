@@ -211,8 +211,13 @@ namespace VSS.TRex.SubGrids
         _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _designElevations[x, y] != Consts.NullHeight));
 
       // ReSharper disable once CompareOfFloatsByEqualityOperator
-      if (_surfaceDesignMaskElevations != null)
-        _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _surfaceDesignMaskElevations[x, y] != Consts.NullHeight));
+      if (_filter.SpatialFilter.HasSurfaceDesignMask())
+      {
+        if (_surfaceDesignMaskElevations == null)
+          _clientGrid.FilterMap.Clear();
+        else
+          _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _surfaceDesignMaskElevations[x, y] != Consts.NullHeight));
+      }
     }
 
     /// <summary>
