@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DI;
@@ -123,6 +122,8 @@ namespace VSS.TRex.SiteModels.Executors
     {
       lock (_metadata)
       {
+        _log.LogDebug($"Updating metadata for project: {_metadata}");
+
         _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
         MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, MetadataKeyName), _metadata);
       }
@@ -227,7 +228,7 @@ namespace VSS.TRex.SiteModels.Executors
         await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
         await using var compressedStream = MemoryStreamCompression.Compress(ms);
 
-        _log.LogInformation($"Putting block of {candidateTagFiles.Length} TAG file names for project {ProjectUid}");
+        _log.LogInformation($"Putting block of {candidateTagFiles.Length} TAG file names for project {ProjectUid}, stream size is {compressedStream.Length}");
         await FilesCache.PutAsync(new NonSpatialAffinityKey(ProjectUid, _metadata.NumberOfTAGFileKeyCollections.ToString(CultureInfo.InvariantCulture)), new SerialisedByteArrayWrapper(compressedStream.ToArray()));
 
         _metadata.NumberOfTAGFilesFromS3 += candidateTagFiles.Length;
@@ -465,7 +466,7 @@ namespace VSS.TRex.SiteModels.Executors
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"Exception occurred while in rebuilding phase {_metadata?.Phase ?? RebuildSiteModelPhase.Unknown}");
+        _log.LogError(e, $"Exception occurred while in rebuilding phase {_metadata?.Phase ?? RebuildSiteModelPhase.Unknown}. This rebuilder will terminate active operations.");
 
         if (_metadata != null)
         {

@@ -87,6 +87,11 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     public int NumberOfTAGFilesProcessed { get; set; }
 
+    public override string ToString()
+    {
+      return $"Project: {ProjectUID}, Flags: {Flags}, Deletion selectivity: {DeletionSelectivity}, OriginTransferProxy:{OriginS3TransferProxy}, TAG files:{NumberOfTAGFilesFromS3}/{NumberOfTAGFileKeyCollections}/{NumberOfTAGFilesSubmitted}/{NumberOfTAGFilesProcessed}, Phase: {Phase}, {LastSubmittedTagFile}/{LastProcessedTagFile}";
+    }
+
     public void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
