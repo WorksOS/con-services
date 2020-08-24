@@ -209,14 +209,16 @@ namespace VSS.TRex.SiteModels.Executors
     {
       _log.LogInformation("Scanning files present in S3 and placing them in the files cache");
 
-      var continuation = string.Empty;
+      string continuationToken = null;
       do
       {
         if (_aborted)
           return false;
 
-        var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuation);
-        continuation = nextContinuation;
+        _log.LogInformation($"Requesting block of TAG file names for project {ProjectUid}, continuation token = '{continuationToken}'");
+
+        var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuationToken);
+        continuationToken = nextContinuation;
 
         // Put the candidate TAG files into the cache
         var sb = new StringBuilder(2 * (candidateTagFiles.Sum(x => x.Length) + 1));
@@ -232,7 +234,7 @@ namespace VSS.TRex.SiteModels.Executors
         _metadata.NumberOfTAGFileKeyCollections++;
 
         UpdateMetaData();
-      } while (!string.IsNullOrEmpty(continuation));
+      } while (!string.IsNullOrEmpty(continuationToken));
 
       return true;
     }

@@ -148,13 +148,13 @@ namespace VSS.AWS.TransferProxy
     /// </summary>
     /// <param name="prefix">Only S3 keys with this prefix will be returned</param>
     /// <param name="maxKeys">Maximum number of keys to return</param>
-    /// <param name="continuationToken">A token to supplh on subsequent calls to effect a scan over larger collections of object keys</param>
-    /// <returns>A tuple containing a lsit of responses and a continuation token. If there are more elements to return from the query the continuation token will be a non-null, non-empty string</returns>
-    public async Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = "")
+    /// <param name="continuationToken">A token to supply on subsequent calls to effect a scan over larger collections of object keys. Supply null token for first call</param>
+    /// <returns>A tuple containing a list of responses and a continuation token. If there are more elements to return from the query the continuation token will be a non-null, non-empty string</returns>
+    public async Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = null)
     {
       using (var s3Client = GetS3Client())
       {
-        var request = new ListObjectsV2Request()
+        var request = new ListObjectsV2Request
         {
           BucketName = awsBucketName,
           ContinuationToken = continuationToken,
