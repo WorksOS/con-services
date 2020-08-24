@@ -1,0 +1,78 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{3ABBCA23-159B-4EAB-A1FA-9D424192C07A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{997D953A-DA04-47FD-B958-9B7B4F1C6295}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11338CA0-860E-45C5-89C2-0E91EEC0629A}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\.editorconfig = ..\..\..\.editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{7D33A1DC-58B0-406E-8210-B7862FCD7C7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.IntegrationTests.Utils", "..\..\Common\IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj", "{ACAAB408-7446-447C-8A71-20D7E93F3E57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccuracyTests", "test\AccuracyTests\AccuracyTests.csproj", "{562E59D0-627D-4776-817E-9857E1D960A8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{B70922F4-7138-4546-A4B0-9EF87F049BF4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{B25A5718-7F05-46F0-BDFC-CD6E21341D64}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Productivity3D.Models", "..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj", "{86080FD4-6ACA-424F-AF02-70446D6A6DC6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj", "{85D42CB1-14B5-4063-902D-F0DD04327796}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{610A249B-3F4B-475F-9B06-40106741AAE9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACAAB408-7446-447C-8A71-20D7E93F3E57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACAAB408-7446-447C-8A71-20D7E93F3E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACAAB408-7446-447C-8A71-20D7E93F3E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACAAB408-7446-447C-8A71-20D7E93F3E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{562E59D0-627D-4776-817E-9857E1D960A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{562E59D0-627D-4776-817E-9857E1D960A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{562E59D0-627D-4776-817E-9857E1D960A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{562E59D0-627D-4776-817E-9857E1D960A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B70922F4-7138-4546-A4B0-9EF87F049BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B70922F4-7138-4546-A4B0-9EF87F049BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B70922F4-7138-4546-A4B0-9EF87F049BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B70922F4-7138-4546-A4B0-9EF87F049BF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86080FD4-6ACA-424F-AF02-70446D6A6DC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86080FD4-6ACA-424F-AF02-70446D6A6DC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86080FD4-6ACA-424F-AF02-70446D6A6DC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86080FD4-6ACA-424F-AF02-70446D6A6DC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85D42CB1-14B5-4063-902D-F0DD04327796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85D42CB1-14B5-4063-902D-F0DD04327796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85D42CB1-14B5-4063-902D-F0DD04327796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85D42CB1-14B5-4063-902D-F0DD04327796}.Release|Any CPU.Build.0 = Release|Any CPU
+		{610A249B-3F4B-475F-9B06-40106741AAE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{610A249B-3F4B-475F-9B06-40106741AAE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{610A249B-3F4B-475F-9B06-40106741AAE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{610A249B-3F4B-475F-9B06-40106741AAE9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3ABBCA23-159B-4EAB-A1FA-9D424192C07A} = {7D33A1DC-58B0-406E-8210-B7862FCD7C7D}
+		{ACAAB408-7446-447C-8A71-20D7E93F3E57} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+		{562E59D0-627D-4776-817E-9857E1D960A8} = {997D953A-DA04-47FD-B958-9B7B4F1C6295}
+		{B70922F4-7138-4546-A4B0-9EF87F049BF4} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+		{B25A5718-7F05-46F0-BDFC-CD6E21341D64} = {7D33A1DC-58B0-406E-8210-B7862FCD7C7D}
+		{86080FD4-6ACA-424F-AF02-70446D6A6DC6} = {B25A5718-7F05-46F0-BDFC-CD6E21341D64}
+		{85D42CB1-14B5-4063-902D-F0DD04327796} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+		{610A249B-3F4B-475F-9B06-40106741AAE9} = {3ABBCA23-159B-4EAB-A1FA-9D424192C07A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFE4CFD0-6FE9-49B2-9465-9D9778699F4A}
+	EndGlobalSection
+EndGlobal

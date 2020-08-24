@@ -1,0 +1,37 @@
+trigger:
+  branches:
+    include:
+      - master
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
+  paths:
+    include:
+      - 'src/service/AccuracyTests/*'
+
+pool: fsm-merino-services
+
+variables:
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  serviceName: AccuracyTests
+  rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service/AccuracyTests'
+  #ecrRepositoryName: ''
+  isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+
+jobs:
+  - job: BuildTestAndDeploy
+    displayName: 'Build, test and Deploy'
+    timeoutInMinutes: 20
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/build/templates/update-buildnumber.yaml
+        parameters:
+          buildId: $(Build.BuildId)
+
+      - task: PowerShell@2
+        displayName: 'Build'
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: '-service $(serviceName) -action build'
