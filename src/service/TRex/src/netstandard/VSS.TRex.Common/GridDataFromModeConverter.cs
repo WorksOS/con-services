@@ -28,7 +28,7 @@ namespace VSS.TRex.Types
         case DisplayMode.TemperatureSummary: return GridDataType.Temperature;
         case DisplayMode.CutFill: return GridDataType.CutFill; 
         case DisplayMode.GPSMode: return GridDataType.GPSMode;
-        case DisplayMode.CompactionCoverage: return GridDataType.Height;
+        case DisplayMode.CompactionCoverage: return GridDataType.CCV;
         case DisplayMode.VolumeCoverage: return GridDataType.SimpleVolumeOverlay;
         case DisplayMode.MDP: return GridDataType.MDP;
         case DisplayMode.MDPSummary: return GridDataType.MDP;

@@ -43,6 +43,8 @@ namespace VSS.TRex.Rendering.Palettes
           return new TemperaturePalette();
         case DisplayMode.TemperatureSummary:
           return new TemperatureSummaryPalette();
+        case DisplayMode.CompactionCoverage: 
+          return new CompactionCoveragePalette();
         default:
           _log.LogError($"No implemented colour palette for this mode ({mode})");
           throw new TRexException($"No implemented colour palette for this mode ({mode})");

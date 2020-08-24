@@ -23,7 +23,6 @@ using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Rendering.GridFabric.Responses;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -286,6 +285,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           compactionCoveragePalette.HasNoCMVData = availableTransitions[1].Color;
           break;
         default:
+          // when adding modes, there are various other places in the code which will need work
           throw new TRexException($"No implemented colour palette for this mode ({request.Mode})");
       }
 

@@ -119,6 +119,7 @@ namespace VSS.TRex.CellDatum.Executors
           success = result.Value != CellPassConsts.NullHeight;
           break;
         case DisplayMode.CCV:
+        case DisplayMode.CompactionCoverage:
           result.Value = cell.LastPassValidCCV;
           success = result.Value != CellPassConsts.NullCCV;
           break;
@@ -209,7 +210,6 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.Amplitude:
         case DisplayMode.Moisture:
         case DisplayMode.GPSMode:
-        case DisplayMode.CompactionCoverage:
         case DisplayMode.VolumeCoverage:
           break;
       }
