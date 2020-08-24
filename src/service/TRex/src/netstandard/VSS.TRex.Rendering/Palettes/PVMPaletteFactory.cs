@@ -35,6 +35,7 @@ namespace VSS.TRex.Rendering.Palettes
         case DisplayMode.CutFill: return new CutFillPalette();
         case DisplayMode.CCA: return new CCAPalette();
         case DisplayMode.CCASummary: return new CCASummaryPalette();
+        case DisplayMode.CompactionCoverage: return new CompactionCoveragePalette();
 
         default:
           throw new TRexException($"Unknown display mode in {nameof(GetPalette)}");

@@ -39,6 +39,8 @@ namespace VSS.TRex.Rendering.Displayers
           return new PVMDisplayer_CCA();
         case DisplayMode.CCASummary:
           return new PVMDisplayer_CCASummary();
+        case DisplayMode.CompactionCoverage:
+          return new PVMDisplayer_CompactionCoverage();
 
         default:
           throw new TRexException($"Unknown display mode to create a displayer for: {mode}");
