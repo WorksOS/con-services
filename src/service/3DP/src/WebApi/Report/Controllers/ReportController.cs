@@ -157,21 +157,18 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           .ProcessAsync(request) as ExportResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Posts summary pass count request to Raptor. 
     /// This is a summary of whether the pass count exceeds the target, meets the pass count target, or falls below the target.
     /// </summary>
-    /// <param name="request">Summary pass counts request request</param>
-    /// <returns>Returns JSON structure wtih operation result.
-    /// </returns>
-    /// <executor>SummaryPassCountsExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/compaction/passcounts/summary")]
     [HttpPost]
-    public async Task<PassCountSummaryResult> PostExportSummaryPasscounts([FromBody] PassCounts request)
+    public async Task<PassCountSummaryResult> PostExportSummaryPasscountsTbc([FromBody] PassCounts request)
     {
-      _log.LogDebug($"{nameof(PostExportSummaryPasscounts)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryPasscountsTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       return await RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(_logger,
@@ -184,21 +181,18 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .ProcessAsync(request) as PassCountSummaryResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Posts detailed pass count request to Raptor. 
     /// This is the number of machine passes over a cell.
     /// </summary>
-    /// <param name="request">Detailed pass counts request request</param>
-    /// <returns>Returns JSON structure with operation result. {"Code":0,"Message":"User-friendly"}
-    /// </returns>
-    /// <executor>DetailedPassCountExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/compaction/passcounts/detailed")]
     [HttpPost]
-    public async Task<PassCountDetailedResult> PostExportDetailedPasscounts([FromBody] PassCounts request)
+    public async Task<PassCountDetailedResult> PostExportDetailedPasscountsTbc([FromBody] PassCounts request)
     {
-      _log.LogDebug($"{nameof(PostExportDetailedPasscounts)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportDetailedPasscountsTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       //pass count settings required for detailed report
@@ -216,20 +210,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .ProcessAsync(request) as PassCountDetailedResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Posts summary CMV request to Raptor. 
     /// </summary>
-    /// <param name="request">Summary CMV request request</param>
-    /// <returns>Returns JSON structure wtih operation result.
-    /// </returns>
-    /// <executor>SummaryCMVExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/compaction/cmv/summary")]
     [HttpPost]
-    public async Task<CMVSummaryResult> PostExportSummaryCmv([FromBody] CMVRequest request)
+    public async Task<CMVSummaryResult> PostExportSummaryCmvTbc([FromBody] CMVRequest request)
     {
-      _log.LogDebug($"{nameof(PostExportSummaryCmv)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryCmvTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       return await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(_logger,
@@ -240,20 +231,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .ProcessAsync(request) as CMVSummaryResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Posts detailed CMV request to Raptor. 
-    /// </summary>
-    /// <param name="request">Detailed CMV request request</param>
-    /// <returns>Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
-    /// </returns>
-    /// <executor>DetailedCMVExecutor</executor>     
+    /// </summary>  
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/compaction/cmv/detailed")]
     [HttpPost]
-    public async Task<CMVDetailedResult> PostExportDetailedCmv([FromBody] CMVRequest request)
+    public async Task<CMVDetailedResult> PostExportDetailedCmvTbc([FromBody] CMVRequest request)
     {
-      _log.LogDebug($"{nameof(PostExportDetailedCmv)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportDetailedCmvTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       return await RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(_logger,
@@ -264,20 +252,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .ProcessAsync(request) as CMVDetailedResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets project statistics from Raptor.
     /// </summary>
-    /// <param name="request">The request for statistics request to Raptor</param>
-    /// <returns></returns>
-    /// <executor>ProjectStatisticsExecutor</executor>
-    [Obsolete("We now use CompactionElevationController api/v2/projectstatistics")]
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/projects/statistics")]
     [HttpPost]
-    public async Task<ProjectStatisticsResult> PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
+    public async Task<ProjectStatisticsResult> PostProjectStatisticsTbc([FromBody] ProjectStatisticsRequest request)
     {
-      _log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostProjectStatisticsTbc)}: {JsonConvert.SerializeObject(request)}");
 
       if (!request.ProjectUid.HasValue)
         request.ProjectUid = await ((RaptorPrincipal) User).GetProjectUid(request.ProjectId ?? -1);
@@ -298,19 +283,18 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         CustomHeaders);
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets volumes summary from Raptor.
     /// </summary>
-    /// <param name="request">The request for volumes summary request to Raptor</param>
-    /// <returns></returns>
     /// <executor>SummaryVolumesExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/volumes/summary")]
     [HttpPost]
-    public async Task<SummaryVolumesResult> PostExportSummaryVolumes([FromBody] SummaryVolumesRequest request)
+    public async Task<SummaryVolumesResult> PostExportSummaryVolumesTbc([FromBody] SummaryVolumesRequest request)
     {
-      _log.LogDebug($"{nameof(PostExportSummaryVolumes)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryVolumesTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       return await
@@ -348,19 +332,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #endif
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets Speed summary from Raptor.
     /// </summary>
-    /// <param name="request">The request for speed summary request to Raptor</param>
-    /// <returns></returns>
-    /// <executor>SummarySpeedExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/speed/summary")]
     [HttpPost]
-    public async Task<SpeedSummaryResult> PostExportSummarySpeed([FromBody] SummarySpeedRequest request)
+    public async Task<SpeedSummaryResult> PostExportSummarySpeedTbc([FromBody] SummarySpeedRequest request)
     {
-      _log.LogDebug($"{nameof(PostExportSummarySpeed)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummarySpeedTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       return await RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(_logger,
@@ -371,6 +353,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .ProcessAsync(request) as SpeedSummaryResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets CMV Change summary from Raptor. This request uses absolute values of CMV.
     /// </summary>
@@ -381,9 +364,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/cmvchange/summary")]
     [HttpPost]
-    public async Task<CMVChangeSummaryResult> PostExportSummaryCmvChange([FromBody] CMVChangeSummaryRequest request)
+    public async Task<CMVChangeSummaryResult> PostExportSummaryCmvChangeTbc([FromBody] CMVChangeSummaryRequest request)
     {
-      _log.LogDebug($"{nameof(PostExportSummaryCmvChange)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryCmvChangeTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       return await RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(_logger,
@@ -394,19 +377,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             .ProcessAsync(request) as CMVChangeSummaryResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Gets elevation statistics from Raptor.
     /// </summary>
-    /// <param name="request">The request for elevation statistics request to Raptor</param>
-    /// <returns></returns>
-    /// <executor>ElevationStatisticsExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/statistics/elevation")]
     [HttpPost]
-    public async Task<ElevationStatisticsResult> PostExportElevationStatistics([FromBody] ElevationStatisticsRequest request)
+    public async Task<ElevationStatisticsResult> PostExportElevationStatisticsTbc([FromBody] ElevationStatisticsRequest request)
     {
-      _log.LogDebug($"{nameof(PostExportElevationStatistics)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportElevationStatisticsTbc)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 
@@ -419,20 +400,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           as ElevationStatisticsResult;
     }
 
+    /// Called by TBC only.
     /// <summary>
     /// Posts summary CCA request to Raptor. 
     /// </summary>
-    /// <param name="request">Summary CCA request</param>
-    /// <returns>Returns JSON structure wtih operation result.
-    /// </returns>
-    /// <executor>SummaryCCAExecutor</executor>
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/compaction/cca/summary")]
     [HttpPost]
-    public async Task<CCASummaryResult> PostExportCcaSummary([FromBody] CCARequest request)
+    public async Task<CCASummaryResult> PostExportCcaSummaryTbc([FromBody] CCARequest request)
     {
-      _log.LogDebug($"{nameof(PostExportCcaSummary)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportCcaSummaryTbc)}: {JsonConvert.SerializeObject(request)}");
 
       if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA") ?? false)
         request.ProjectUid = await GetProjectUid(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID);
