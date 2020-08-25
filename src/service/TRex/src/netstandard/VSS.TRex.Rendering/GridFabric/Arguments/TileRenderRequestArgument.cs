@@ -18,7 +18,9 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<TileRenderRequestArgument>();
 
-    private const byte VERSION_NUMBER = 1;
+    private const byte VERSION_NUMBER = 2;
+    private static byte[] VERSION_NUMBERS = { 1, 2 };
+
 
     public DisplayMode Mode { get; set; } = DisplayMode.Height;
 
@@ -31,6 +33,8 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     public ushort PixelsX { get; set; } = 256;
     public ushort PixelsY { get; set; } = 256;
 
+    public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
+
     public TileRenderRequestArgument()
     { }
 
@@ -42,7 +46,8 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
                                      ushort pixelsX,
                                      ushort pixelsY,
                                      IFilterSet filters,
-                                     DesignOffset referenceDesign)
+                                     DesignOffset referenceDesign,
+                                     VolumeComputationType volumeType)
     {
       ProjectID = siteModelId;
       Mode = mode;
@@ -53,6 +58,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       PixelsY = pixelsY;
       Filters = filters;
       ReferenceDesign = referenceDesign;
+      VolumeType = volumeType;
     }
 
     /// <summary>
@@ -78,6 +84,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         writer.WriteBoolean(CoordsAreGrid);
         writer.WriteInt(PixelsX);
         writer.WriteInt(PixelsY);
+        writer.WriteByte((byte)VolumeType);
       }
       catch (TRexSerializationVersionException e)
       {
@@ -100,9 +107,9 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
       {
         base.FromBinary(reader);
 
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+        var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
-        Mode = (DisplayMode)reader.ReadInt();
+        Mode = (DisplayMode) reader.ReadInt();
 
         if (reader.ReadBoolean())
         {
@@ -117,9 +124,14 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         }
 
         CoordsAreGrid = reader.ReadBoolean();
-        PixelsX = (ushort)reader.ReadInt();
-        PixelsY = (ushort)reader.ReadInt();
+        PixelsX = (ushort) reader.ReadInt();
+        PixelsY = (ushort) reader.ReadInt();
+        if (messageVersion >= 2)
+        {
+          VolumeType = (VolumeComputationType) reader.ReadByte();
+        }
       }
+
       catch (TRexSerializationVersionException e)
       {
         _log.LogError(e, $"Serialization version exception in {nameof(TileRenderRequestArgument)}.FromBinary()");

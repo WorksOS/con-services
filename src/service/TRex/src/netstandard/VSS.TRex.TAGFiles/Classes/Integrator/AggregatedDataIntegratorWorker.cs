@@ -539,7 +539,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
       if (!siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable))
       {
-        _log.LogError($"SaveToPersistentStoreForTAGFileIngest() failed for sitemodel {siteModelFromDatamodel.ID}");
+        _log.LogError($"SaveToPersistentStoreForTAGFileIngest() failed for site model {siteModelFromDatamodel.ID}");
       }
 
       if (!_storageProxyMutable.Commit())
@@ -623,14 +623,14 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, siteModelFromDatamodel, siteModelFromDatamodel.Grid, 
                                                         _storageProxyMutableForSubGrids, _storageProxyMutableForSubGridSegments);
 
-          _log.LogInformation($"Aggregation Task Process --> Begining integration into live database");
+          _log.LogInformation("Aggregation Task Process --> Beginning integration into live database");
 
           if (!IntegrateCellPassesIntoLiveSiteModel(siteModelFromDatamodel, task, subGridIntegrator, groupedAggregatedCellPasses, numTagFilesRepresented, out totalPassCountInAggregation))
           {
             return false;
           }
 
-          _log.LogInformation($"Aggregation Task Process --> Completed integration into live database");
+          _log.LogInformation("Aggregation Task Process --> Completed integration into live database");
 
           // Commit spatial data changes to the store.
           // This is done in two phases:

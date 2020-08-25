@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       Assert.NotNull(func);
     }
 
-    [Fact]
+    [Fact(Skip="Exceptions no longer allowed to escape the Invoke() method")]
     public void Test_CellDatumRequestComputeFunc_ClusterCompute_Creation_FailInvokeWithNullArgument()
     {
       var func = new CellDatumRequestComputeFunc_ClusterCompute

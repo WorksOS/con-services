@@ -57,9 +57,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (_lockObj)
             {
-                if (_log.IsTraceEnabled())
+                //if (_log.IsTraceEnabled())
                 {
-                    _log.LogTrace($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
+                    _log.LogInformation($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
                 }
 
                 if (_groupMap.TryGetValue(key.ProjectUID, out var keyList))
@@ -162,9 +162,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 if (result.Any())
                 {
                     // Add the project to the avoid list
-                    if (_log.IsTraceEnabled())
+                    //if (_log.IsTraceEnabled())
                     {
-                        _log.LogTrace($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectId} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                        _log.LogInformation($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectId} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
                     }
 
                     avoidProjects.Add(projectId);
@@ -172,12 +172,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
                 _log.LogInformation($"Grouper returning group containing {result.Count()} TAG files");
 
-                if (_log.IsTraceEnabled())
+                //if (_log.IsTraceEnabled())
                 {
                     var count = 0;
                     foreach (var tagFile in result)
                     {
-                        _log.LogTrace($"Returned TAG file {count++} is {tagFile.FileName} representing asset {tagFile.AssetUID} within project {tagFile.ProjectUID}");
+                        _log.LogInformation($"Returned TAG file {count++} is {tagFile.FileName} representing asset {tagFile.AssetUID} within project {tagFile.ProjectUID}");
                     }
                 }
                 

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -30,6 +31,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
         PixelsX = 100,
         PixelsY = 200,
         Extents = BoundingWorldExtent3D.Inverted(),
+        VolumeType = VolumeComputationType.BetweenDesignAndFilter
       };
 
       SimpleBinarizableInstanceTester.TestClass(argument, "Custom TileRenderRequestArgument not same after round trip serialisation");

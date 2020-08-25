@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Serilog.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
@@ -25,9 +26,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private static readonly ILogger _log = Logging.Logger.CreateLogger<TAGFileBufferQueueItemHandler>();
 
         /// <summary>
-        /// The interval between epochs where the service checks to see if there is anything to do
+        /// The interval between epochs where the service checks to see if there is anything to do, set to 10 seconds
         /// </summary>
-        private const int QUEUE_SERVICE_CHECK_INTERVAL_MS = 1000;
+        private const int QUEUE_SERVICE_CHECK_INTERVAL_MS = 5000;
 
         private const int DEFAULT_NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS = 4;
 
@@ -49,6 +50,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private readonly int _numConcurrentProcessingTasks = DIContext.Obtain<IConfigurationStore>().GetValueInt("NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS", DEFAULT_NUM_CONCURRENT_TAG_FILE_PROCESSING_TASKS);
 
         private readonly TAGFileNameComparer _tagFileNameComparer = new TAGFileNameComparer();
+
+        private readonly Task<Task>[] _grouperTasks;
 
         private async Task ProcessTAGFilesFromGrouper()
         {
@@ -167,10 +170,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                 if (!hadWorkToDo)
                 {
-                    if (_log.IsTraceEnabled())
+                    //if (_log.IsTraceEnabled())
                       _log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {QUEUE_SERVICE_CHECK_INTERVAL_MS}ms");
 
-                    Thread.Sleep(QUEUE_SERVICE_CHECK_INTERVAL_MS);
+                    await Task.Delay(QUEUE_SERVICE_CHECK_INTERVAL_MS);
                 }
             } while (!_aborted);
 
@@ -261,7 +264,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                         {
                             if (tagFileResponse.Success)
                             {
-                              if (_log.IsTraceEnabled())
+                              //if (_log.IsTraceEnabled())
                                 _log.LogInformation($"Grouper2 TAG file {tagFileResponse.FileName} successfully processed");
                             }
                             else
@@ -276,7 +279,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             if (!await _queueCache.RemoveAsync(removalKey))
                               _log.LogError($"Failed to remove TAG file {removalKey}");
                             else
-                              if (_log.IsTraceEnabled())
+                              //if (_log.IsTraceEnabled())
                                  _log.LogInformation($"Successfully removed TAG file {removalKey}");
                         }
                         catch (Exception e)
@@ -304,6 +307,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 // Cycle looking for new work to do as TAG files arrive until aborted...
                 do
                 {
+                    _log.LogInformation("Checking if there is work to be done");
+
                     var hadWorkToDo = false;
 
                     // Check to see if there is a work package to feed to the processing pipeline
@@ -337,7 +342,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     // if there was no work to do in the last epoch, sleep for a bit until the next check epoch
                     if (!hadWorkToDo)
                     {
-                        Thread.Sleep(QUEUE_SERVICE_CHECK_INTERVAL_MS);
+                        _log.LogInformation($"ProcessTAGFilesFromGrouper sleeping for {QUEUE_SERVICE_CHECK_INTERVAL_MS}ms before checking for more work to do");
+                        await Task.Delay(QUEUE_SERVICE_CHECK_INTERVAL_MS);
                     }
                 } while (!_aborted);
 
@@ -355,28 +361,36 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueItemHandler()
         {
-          var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
+            _log.LogInformation($"Creating TAGFileBufferQueueItemHandler with {_numConcurrentProcessingTasks} concurrent tasks");
+
+            var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Mutable) ?? Ignition.GetIgnite(TRexGrids.MutableGridName());
             _queueCache = ignite.GetCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
             // Create the grouper responsible for grouping TAG files into project/asset combinations
             _grouper = new TAGFileBufferQueueGrouper();
 
             // Note ToArray at end is important to activate tasks (ie: lazy loading)
-            var _ = Enumerable.Range(0, _numConcurrentProcessingTasks).Select(x => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
+            _grouperTasks = Enumerable.Range(0, _numConcurrentProcessingTasks).Select(_ => Task.Factory.StartNew(ProcessTAGFilesFromGrouper2, TaskCreationOptions.LongRunning)).ToArray();
+
+            _log.LogInformation($"Creation of TAGFileBufferQueueItemHandler complete after initializing {_numConcurrentProcessingTasks} concurrent tasks");
         }
 
         /// <summary>
         /// Adds a new TAG file item from the buffer queue via the remote filter supplied tot he continuous query
         /// </summary>
-        /// <param name="key"></param>
         public void Add(ITAGFileBufferQueueKey key)
         {
             _grouper.Add(key);
         }
 
+        public void Cancel()
+        {
+          _aborted = true;
+          _grouperTasks?.WhenAll().WaitAndUnwrapException();
+        }
+
         public void Dispose()
         {
-            _aborted = true;
         }
     }
 }

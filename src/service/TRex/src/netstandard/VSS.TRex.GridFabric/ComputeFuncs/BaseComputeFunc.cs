@@ -22,7 +22,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// for execution of the function. Thus, IBinarizable serialization for base compute func in TRex is a
     /// null function.
     /// </summary>
-    /// <param name="writer"></param>
     public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
 
     /// <summary>
@@ -32,7 +31,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// for execution of the function. Thus, IBinarizable serialization for base compute func in TRex is a
     /// null function.
     /// </summary>
-    /// <param name="reader"></param>
     public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
 
     public virtual void ToBinary(IBinaryRawWriter writer)

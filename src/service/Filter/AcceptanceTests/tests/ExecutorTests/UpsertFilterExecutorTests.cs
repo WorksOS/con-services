@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
+using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
@@ -58,8 +59,10 @@ namespace ExecutorTests
       string userUid = Guid.NewGuid().ToString();
       string projectUid = Guid.NewGuid().ToString();
       string filterUid = Guid.NewGuid().ToString();
+      string assetUid = Guid.NewGuid().ToString();
+      var assetId = new Guid(assetUid).ToLegacyId();
       string name = string.Empty;
-      string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
+      string filterJson = $"{{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{{\"assetID\":\"{assetId}\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":\"{assetUid}\"}}]}}";
 
       var request = FilterRequestFull.Create(new HeaderDictionary(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = FilterType.Transient });
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);

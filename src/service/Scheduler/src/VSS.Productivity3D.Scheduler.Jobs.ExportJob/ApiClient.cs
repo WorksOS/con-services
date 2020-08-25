@@ -4,9 +4,12 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
@@ -17,15 +20,15 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
   public class ApiClient : IApiClient
   {
     private readonly ILogger _log;
-    private readonly IWebRequest _webRequest;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     /// <summary>
     /// Constructor
     /// </summary>
-    public ApiClient(ILoggerFactory logger, IWebRequest webRequest)
+    public ApiClient(ILoggerFactory logger, IServiceScopeFactory serviceScope)
     {
       _log = logger.CreateLogger<ApiClient>();
-      _webRequest = webRequest;
+      _scopeFactory = serviceScope;
     }
 
     /// <summary>
@@ -54,22 +57,25 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           }
         }
 
+        using var serviceScope = _scopeFactory.CreateScope();
+        var webRequest = serviceScope.ServiceProvider.GetService<IWebRequest>();
+
         // The Schedule job request may contain encoded binary data, or a standard string,
         // We need to handle both cases differently, as we could lose data if converting binary information to a string
         if (jobRequest.IsBinaryData)
         {
           using var ms = new MemoryStream(jobRequest.PayloadBytes);
-          result = await _webRequest.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
+          result = await webRequest.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
         }
         else if (!string.IsNullOrEmpty(jobRequest.Payload))
         {
           using var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload));
-          result = await _webRequest.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
+          result = await webRequest.ExecuteRequest<T>(jobRequest.Url, ms, customHeaders, method, jobRequest.Timeout, 0);
         }
         else
         {
           // Null payload (which is ok), so we don't need a stream
-          result = await _webRequest.ExecuteRequest<T>(jobRequest.Url, null, customHeaders, method, jobRequest.Timeout, 0);
+          result = await webRequest.ExecuteRequest<T>(jobRequest.Url, null, customHeaders, method, jobRequest.Timeout, 0);
         }
 
         _log.LogDebug($"Result of send request: {JsonConvert.SerializeObject(result)}");
@@ -117,22 +123,25 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
           }
         }
 
+        using var serviceScope = _scopeFactory.CreateScope();
+        var webRequest = serviceScope.ServiceProvider.GetService<IWebRequest>();
+
         // The Schedule job request may contain encoded binary data, or a standard string,
         // We need to handle both cases differently, as we could lose data if converting binary information to a string
         if (jobRequest.IsBinaryData)
         {
           using var ms = new MemoryStream(jobRequest.PayloadBytes);
-          result = await _webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
+          result = await webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
         }
         else if (!string.IsNullOrEmpty(jobRequest.Payload))
         {
           using var ms = new MemoryStream(Encoding.UTF8.GetBytes(jobRequest.Payload));
-          result = await _webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
+          result = await webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, ms, jobRequest.Timeout, 0);
         }
         else
         {
           // Null payload (which is ok), so we don't need a stream
-          result = await _webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, jobRequest.Timeout, 0);
+          result = await webRequest.ExecuteRequestAsStreamContent(jobRequest.Url, method, customHeaders, null, jobRequest.Timeout, 0);
         }
 
         _log.LogDebug("Result of send request: Stream Content={0}", result);

@@ -40,7 +40,7 @@ jobs:
         displayName: 'Run unit tests'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action unittest -collectCoverage false'
+          arguments: '-service $(serviceName) -action unittest -collectCoverage true'
 
       - task: PublishTestResults@2
         displayName: 'Publish Unit Test Results'
@@ -50,15 +50,15 @@ jobs:
           searchFolder: '$(rootServiceFolder)/UnitTestResults'
           failTaskOnFailedTests: true
 
-      # - task: PublishCodeCoverageResults@1
-      #   # Only run for /master branch
-      #   condition: and(succeeded(), eq(variables['isMasterBranch'], true))
-      #   displayName: 'Publish Code Coverage'
-      #   inputs:
-      #     codeCoverageTool: Cobertura
-      #     summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage*cobertura.xml'
-      #     pathToSources: '$(rootServiceFolder)'
-      #     failIfCoverageEmpty: true
+      - task: PublishCodeCoverageResults@1
+        # Only run for /master branch
+        condition: and(succeeded(), eq(variables['isMasterBranch'], true))
+        displayName: 'Publish Code Coverage'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage*cobertura.xml'
+          pathToSources: '$(rootServiceFolder)'
+          failIfCoverageEmpty: true
 
       - task: PowerShell@2
         displayName: 'Publish Service'

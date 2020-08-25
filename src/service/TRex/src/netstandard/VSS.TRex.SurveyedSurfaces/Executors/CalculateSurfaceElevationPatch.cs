@@ -41,7 +41,6 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Constructor for the executor accepting the arguments for its operation
     /// </summary>
-    /// <param name="args"></param>
     public CalculateSurfaceElevationPatch(ISurfaceElevationPatchArgument args) : this()
     {
       Args = args;
@@ -50,8 +49,6 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Performs the donkey work of the elevation patch calculation
     /// </summary>
-    /// <param name="CalcResult"></param>
-    /// <returns></returns>
     private IClientLeafSubGrid Calc(out DesignProfilerRequestResult CalcResult)
     {
       CalcResult = DesignProfilerRequestResult.UnknownError;
@@ -114,75 +111,67 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         try
         {
           // Todo: Determine if this exclusive lock acquisition is really necessary
-          Design.AcquireExclusiveInterlock();
-          try
+          if (!Design.HasElevationDataForSubGridPatch(
+            Args.OTGCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+            Args.OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
+            continue;
+
+          long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
+
+          // Walk across the sub grid checking for a design elevation for each appropriate cell
+          // based on the processing bit mask passed in
+          Args.ProcessingMap.ForEachSetBit((x, y) =>
           {
-            if (!Design.HasElevationDataForSubGridPatch(
-              Args.OTGCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-              Args.OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
-              continue;
+            // If we can interpolate a height for the requested cell, then update the cell height
+            // and decrement the bit count so that we know when we've handled all the requested cells
 
-            long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
-
-            // Walk across the sub grid checking for a design elevation for each appropriate cell
-            // based on the processing bit mask passed in
-            Args.ProcessingMap.ForEachSetBit((x, y) =>
+            if (Design.InterpolateHeight(ref Hint,
+            OriginXPlusHalfCellSize + CellSize * x, OriginYPlusHalfCellSize + CellSize * y,
+            0, out double z))
             {
-              // If we can interpolate a height for the requested cell, then update the cell height
-              // and decrement the bit count so that we know when we've handled all the requested cells
-
-              if (Design.InterpolateHeight(ref Hint,
-                OriginXPlusHalfCellSize + CellSize * x, OriginYPlusHalfCellSize + CellSize * y,
-                0, out double z))
+              // Check for composite elevation processing
+              if (Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations)
               {
-                // Check for composite elevation processing
-                if (Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations)
+                // Set the first elevation if not already set
+                if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
                 {
-                  // Set the first elevation if not already set
-                  if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
-                  {
-                    PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
-                    PatchComposite.Cells[x, y].FirstHeight = (float) z;
-                  }
-
-                  // Always set the latest elevation (surfaces ordered by increasing date)
-                  PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
-                  PatchComposite.Cells[x, y].LastHeight = (float) z;
-
-                  // Update the lowest height
-                  if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
-                      PatchComposite.Cells[x, y].LowestHeight > z)
-                  {
-                    PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
-                    PatchComposite.Cells[x, y].LowestHeight = (float) z;
-                  }
-
-                  // Update the highest height
-                  if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
-                      PatchComposite.Cells[x, y].HighestHeight > z)
-                  {
-                    PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
-                    PatchComposite.Cells[x, y].HighestHeight = (float) z;
-                  }
+                  PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
+                  PatchComposite.Cells[x, y].FirstHeight = (float)z;
                 }
-                else // earliest/latest singular value processing
+
+                // Always set the latest elevation (surfaces ordered by increasing date)
+                PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
+                PatchComposite.Cells[x, y].LastHeight = (float)z;
+
+                // Update the lowest height
+                if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
+                  PatchComposite.Cells[x, y].LowestHeight > z)
                 {
-                  PatchSingle.Times[x, y] = AsAtDate;
-                  PatchSingle.Cells[x, y] = (float) z;
+                  PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
+                  PatchComposite.Cells[x, y].LowestHeight = (float)z;
+                }
+
+                // Update the highest height
+                if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
+                  PatchComposite.Cells[x, y].HighestHeight > z)
+                {
+                  PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
+                  PatchComposite.Cells[x, y].HighestHeight = (float)z;
                 }
               }
+              else // earliest/latest singular value processing
+              {
+                PatchSingle.Times[x, y] = AsAtDate;
+                PatchSingle.Cells[x, y] = (float)z;
+              }
+            }
 
-              // Only clear the processing bit if earliest or latest information is wanted from the surveyed surfaces
-              if (Args.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations)
-                Args.ProcessingMap.ClearBit(x, y);
+            // Only clear the processing bit if earliest or latest information is wanted from the surveyed surfaces
+            if (Args.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations)
+              Args.ProcessingMap.ClearBit(x, y);
 
-              return true;
-            });
-          }
-          finally
-          {
-            Design.ReleaseExclusiveInterlock();
-          }
+            return true;
+          });
         }
         finally
         {

@@ -177,9 +177,6 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         public void SetMachineRestriction(BitArray machineIdSet)
         {
             MachineIDSet = machineIdSet;
-
-            if (MachineIDSet?.Length > 0)
-              HasMachineRestriction = true;
         }
 
         public void SegmentListExtended()

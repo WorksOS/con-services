@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
@@ -75,7 +76,9 @@ namespace VSS.TRex.Webtools.Controllers
         pixelsX,
         pixelsY,
         filters,
-        new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0)
+        new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0),
+        displayMode == DisplayMode.CutFill ? VolumeComputationType.BetweenFilterAndDesign : VolumeComputationType.None
+
       ));
 
       return new JsonResult(new TileResult(response?.TileBitmapData));

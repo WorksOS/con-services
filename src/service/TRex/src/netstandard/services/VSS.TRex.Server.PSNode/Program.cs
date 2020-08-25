@@ -221,6 +221,8 @@ namespace VSS.TRex.Server.PSNode
     {
       try
       {
+        Console.WriteLine($"TRex service starting at {DateTime.Now}");
+
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 

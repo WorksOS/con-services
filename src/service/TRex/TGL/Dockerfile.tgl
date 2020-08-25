@@ -26,4 +26,4 @@ RUN rm -r tgl_geodata/.git
 # Bundle the TGL geodetic database files into a bare bones image for later COPYing into the TRex runtime image.
 FROM scratch as publish-image
 
-COPY --from=builder /tgl_geodata/ /tgl_geodata/
+COPY --from=builder /app/tgl_geodata/ /tgl_geodata/

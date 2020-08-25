@@ -41,7 +41,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"Exception occured during execution of {nameof(Execute)}");
+        _log.LogError(e, $"Exception occurred during execution of {nameof(Execute)}");
         return null;
       }
     }
@@ -58,7 +58,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Requests
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"Exception occured during execution of {nameof(Execute)}");
+        _log.LogError(e, $"Exception occurred during execution of {nameof(Execute)}");
         return Task.FromResult<ProcessTAGFileResponse>(null);
       }
     }

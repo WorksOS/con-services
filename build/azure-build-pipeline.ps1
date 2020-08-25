@@ -70,8 +70,6 @@ function Build-Solution {
         Write-Host $image[1]
         Write-Host "`nBuild of '$imageTag' image complete" -ForegroundColor Green
     }
-
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Run-Unit-Tests {
@@ -115,31 +113,32 @@ function Run-Unit-Tests {
     docker create --name $unique_container_name $container_name
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_CREATE_FAILED) }
 
-    if ($recordTestResults -eq $true) {
+    if ($recordTestResults -eq $true -Or $collectCoverage -eq $true) {
+        Write-Host "Copying files from container /UnitTestResults/ to local host..." -ForegroundColor Green
         docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/. $servicePath/$localTestResultsFolder
+        Write-Host "Listing results of file copy..." -ForegroundColor Green
+        Get-ChildItem $servicePath/$localTestResultsFolder
 
-        if (-not (Test-Path -Path $servicePath/$localTestResultsFolder/* -Include *.trx)) {
-            Write-Host "Unable to find any .trx results files on local host." -ForegroundColor Red
-            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
+        if ($recordTestResults -eq $true) {
+            if (-not (Test-Path -Path $servicePath/$localTestResultsFolder/* -Include *.trx)) {
+                Write-Host "Unable to find any .trx results files on local host." -ForegroundColor Red
+                Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
+            }
         }
-    }
-
-    if ($collectCoverage -eq $true) {
-        docker cp $unique_container_name`:/build/$servicePath/UnitTestResults/coverage.cobertura.xml $servicePath/$localTestResultsFolder
-
-        $coveragePath = "$servicePath/$localTestResultsFolder/coverage*cobertura.xml"
-
-        if (-not (Test-Path $coveragePath -PathType Leaf)) {
-            Write-Host "Unable to find test coverage file '$coveragePath' on local host." -ForegroundColor Red
-            Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_COVERAGE)
+    
+        if ($collectCoverage -eq $true) {
+            $coveragePath = "$servicePath/$localTestResultsFolder/coverage*cobertura.xml"
+    
+            if (-not (Test-Path $coveragePath -PathType Leaf)) {
+                Write-Host "Unable to find test coverage file '$coveragePath' on local host." -ForegroundColor Red
+                Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_COVERAGE)
+            }
         }
     }
 
     Write-Host "`nRemoving test container..." -ForegroundColor Green
     docker rm $unique_container_name
     Write-Host "`nUnit test run complete" -ForegroundColor Green
-
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Publish-Service {
@@ -182,7 +181,6 @@ function Publish-Service {
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
     Write-Host "`nPublish application complete" -ForegroundColor Green
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Push-Container-Image {
@@ -220,8 +218,6 @@ function Push-Container-Image {
     if (-not $?) { Exit-With-Code ([ReturnCode]::IMAGE_PUSH_FAILED) }
 
     Write-Host "`nImage push complete" -ForegroundColor Green
-
-    Exit-With-Code ([ReturnCode]::SUCCESS)
 }
 
 function Login-Aws {
@@ -260,8 +256,6 @@ function Login-Aws {
 #     Write-Host "`nUpdating credentials for NuGet source '$sourceName'..." -ForegroundColor Green
 #     & '..\build\nuget\nuget.exe' sources update -Name "${sourceName}" -Username "az" -Password "${systemAccessToken}" -ConfigFile "NuGet.Config"
 #     if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
-
-#     Exit-With-Code ([ReturnCode]::SUCCESS)
 # }
 function TrackTime($Time) {
     if (!($Time)) { 
@@ -274,6 +268,11 @@ function TrackTime($Time) {
     }
 }
 
+function Docker-Image-Prune {
+    # This should help prevent the build agent from becoming too cluttered.
+    Write-Host "`nPrune all images created more than 48 hours ago..." -ForegroundColor Green
+    docker image prune -a --force --filter "until=48h"
+}
 function Exit-With-Code {
     param(
         [ReturnCode][Parameter(Mandatory = $true)]$code
@@ -325,6 +324,7 @@ $timeStart = Get-Date
 # Run the appropriate action.
 switch ($action) {
     'build' {
+        Docker-Image-Prune
         Build-Solution
         continue
     }
@@ -340,6 +340,12 @@ switch ($action) {
         Push-Container-Image
         continue
     }
+    'publishAndPushImage' {
+        Publish-Service
+        Push-Container-Image
+        continue
+    }
+    
     'updateNugetSources' {
         Update-Nuget-Sources
         continue
@@ -349,3 +355,5 @@ switch ($action) {
         Exit-With-Code ([ReturnCode]::INVALID_ACTION)
     }
 }
+
+Exit-With-Code ([ReturnCode]::SUCCESS)

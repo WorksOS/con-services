@@ -67,48 +67,6 @@ namespace VSS.TRex.Profiling
     }
 
     /// <summary>
-    /// Constructs the set of filters that will be used to derive the set of production data sub grids required for
-    /// each sub grid being considered along the profile line.
-    /// </summary>
-    /// <returns></returns>
-    private IFilterSet ConstructFilters()
-    {
-      // If the volume calculation is between two filters then handle appropriately...
-      if (VolumeType == VolumeComputationType.Between2Filters)
-      {
-        var BaseFilter = FilterSet.Filters[0];
-        var TopFilter = FilterSet.Filters[1];
-
-        // Determine if intermediary filter/surface behaviour is required to support summary volumes
-        IntermediaryFilterRequired = VolumeType == VolumeComputationType.Between2Filters &&
-                                          BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC && // 'From' has As-At Time filter
-                                          !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass && // Want latest cell pass in 'from'
-                                          TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC && // 'To' has time-range filter with latest
-                                          !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass; // Want latest cell pass in 'to'
-
-        if (IntermediaryFilterRequired)
-        {
-          // Create and use the intermediary filter. The intermediary filter
-          // is create from the Top filter, with the return earliest flag set to true
-          var IntermediaryFilter = new CombinedFilter();
-          IntermediaryFilter.AttributeFilter.Assign(TopFilter.AttributeFilter);
-          IntermediaryFilter.AttributeFilter.ReturnEarliestFilteredCellPass = true;
-          IntermediaryFilter.SpatialFilter.Assign(TopFilter.SpatialFilter);
-
-          return new FilterSet(new[] {FilterSet.Filters[0], IntermediaryFilter, FilterSet.Filters[1]});
-        }
-      }
-
-      if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-        return new FilterSet(new [] { FilterSet.Filters[1] });
-
-      if (VolumeType == VolumeComputationType.BetweenFilterAndDesign)
-        return new FilterSet(new[] { FilterSet.Filters[0] });
-
-      return FilterSet;
-    }
-
-    /// <summary>
     /// Merges the 'from' elevation sub grid and the 'intermediary' sub grid result into a single sub grid for 
     /// subsequent calculation. THe result is placed into the 'from' sub grid.
     /// </summary>
@@ -222,7 +180,6 @@ namespace VSS.TRex.Profiling
     /// <returns></returns>
     public override async Task<bool> Analyze(List<SummaryVolumeProfileCell> profileCells, ISubGridSegmentCellPassIterator cellPassIterator)
     {
-
       Log.LogDebug($"Analyze Summary Volume ProfileCells. Processing {profileCells.Count}");
 
       var CurrentSubgridOrigin = new SubGridCellAddress(int.MaxValue, int.MaxValue);
@@ -231,9 +188,11 @@ namespace VSS.TRex.Profiling
       profileCell = null;
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
+      var filterSet = FilterUtilities.ConstructFilters(FilterSet, VolumeType);
+      IntermediaryFilterRequired = filterSet.Filters.Length == 3;
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       Requestors = utilities.ConstructRequestors(null, SiteModel, Overrides, LiftParams,
-        utilities.ConstructRequestorIntermediaries(SiteModel, ConstructFilters(), true, GridDataType.HeightAndTime),
+        utilities.ConstructRequestorIntermediaries(SiteModel, filterSet, true, GridDataType.HeightAndTime),
         AreaControlSet.CreateAreaControlSet(), PDExistenceMap);
 
       var cellOverrideMask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);

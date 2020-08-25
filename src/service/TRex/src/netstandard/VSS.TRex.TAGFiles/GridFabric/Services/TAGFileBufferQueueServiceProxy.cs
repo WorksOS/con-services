@@ -38,7 +38,14 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public TAGFileBufferQueueServiceProxy()
         {
-            _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+            if (Log == null)
+            {
+                Console.WriteLine($"ERROR: logger is null in constructor for {nameof(TAGFileBufferQueueServiceProxy)}");
+            }
+            else
+            {
+                _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+            }
         }
 
         /// <summary>
@@ -46,6 +53,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         /// </summary>
         public void Deploy()
         {
+            if (Log == null)
+            {
+                Console.WriteLine($"ERROR: logger is null in {nameof(TAGFileBufferQueueServiceProxy)}.{nameof(Deploy)}");
+            }
+
             var services = _ignite.GetServices();
 
             // Attempt to cancel any previously deployed service
@@ -57,7 +69,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             catch (Exception E)
             {
                 Log.LogError(E, "Exception thrown while attempting to cancel service");
-                throw;
             }
 
             try
@@ -73,10 +84,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                     NodeFilter = new TAGProcessorRoleBasedNodeFilter()
                 });
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError(E, "Exception thrown while attempting to deploy service");
-                throw;
+                Log.LogError(e, "Exception thrown while attempting to deploy service");
             }
 
             try
@@ -84,10 +94,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
                 Log.LogInformation($"Obtaining service proxy for {ServiceName}");
                 proxy = services.GetServiceProxy<ITAGFileBufferQueueService>(ServiceName);
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError(E, "Exception thrown while attempting to get service proxy");
-                throw;
+                Log.LogError(e, "Exception thrown while attempting to get service proxy");
             }
         }
     }

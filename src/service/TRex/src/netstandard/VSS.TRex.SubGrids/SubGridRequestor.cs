@@ -67,7 +67,7 @@ namespace VSS.TRex.SubGrids
     private IDesignWrapper _elevationRangeDesign;
     private IDesign _surfaceDesignMaskDesign;
 
-    private float[,] _designElevations;
+    private float[,] _elevationRangeDesignElevations;
     private float[,] _surfaceDesignMaskElevations;
 
     private SurveyedSurfacePatchType _surveyedSurfacePatchType;
@@ -172,13 +172,13 @@ namespace VSS.TRex.SubGrids
           // Query the design to get the patch of elevations calculated from the design
           var getDesignHeightsResult = await _elevationRangeDesign.Design.GetDesignHeights(
             _siteModel.ID, _elevationRangeDesign.Offset, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
-          _designElevations = getDesignHeightsResult.designHeights.Cells;
+          _elevationRangeDesignElevations = getDesignHeightsResult.designHeights.Cells;
 
           if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-              || _designElevations == null)
+              || _elevationRangeDesignElevations == null)
             return false;
 
-          _filterAnnex.InitializeElevationRangeFilter(_filter.AttributeFilter, _designElevations);
+          _filterAnnex.InitializeElevationRangeFilter(_filter.AttributeFilter, _elevationRangeDesignElevations);
         }
       }
 
@@ -207,12 +207,22 @@ namespace VSS.TRex.SubGrids
       // If we have DesignElevations at this point, then a Lift filter is in operation and
       // we need to use it to constrain the returned client grid to the extents of the design elevations
       // ReSharper disable once CompareOfFloatsByEqualityOperator
-      if (_designElevations != null)
-        _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _designElevations[x, y] != Consts.NullHeight));
+      if (_elevationRangeDesign != null)
+      {
+        if (_elevationRangeDesignElevations == null)
+          _clientGrid.FilterMap.Clear();
+        else
+          _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _elevationRangeDesignElevations[x, y] != Consts.NullHeight));
+      }
 
       // ReSharper disable once CompareOfFloatsByEqualityOperator
-      if (_surfaceDesignMaskElevations != null)
-        _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _surfaceDesignMaskElevations[x, y] != Consts.NullHeight));
+      if (_filter.SpatialFilter.HasSurfaceDesignMask())
+      {
+        if (_surfaceDesignMaskElevations == null)
+          _clientGrid.FilterMap.Clear();
+        else
+          _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _surfaceDesignMaskElevations[x, y] != Consts.NullHeight));
+      }
     }
 
     /// <summary>
