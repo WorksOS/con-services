@@ -17,10 +17,12 @@ namespace VSS.TRex.Rendering.Displayers
           return new PVMDisplayer_MachineSpeedSummary();
         case DisplayMode.CCV:
           return new PVMDisplayer_CMV();
+        case DisplayMode.CCVPercent:
         case DisplayMode.CCVPercentSummary:
-          return new PVMDisplayer_CMVSummary();
+        case DisplayMode.CCVPercentChange:
+          return new PVMDisplayer_CCVPercent();
         case DisplayMode.CMVChange:
-          return new PVMDisplayer_CMVPercentChange();
+          return new PVMDisplayer_CMVChange();
         case DisplayMode.MDP:
           return new PVMDisplayer_MDP();
         case DisplayMode.MDPPercentSummary:

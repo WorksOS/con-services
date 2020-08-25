@@ -184,6 +184,7 @@ namespace VSS.TRex.Webtools.Controllers
               cell.CellCCV == CellPassConsts.NullCCV)
             return NULL_VALUE;
           return (NO_INDEX, cell.CellCCV / 10.0, 0);
+        case DisplayMode.CCVPercent:
         case DisplayMode.CCVPercentSummary:
           if (cell.CellTargetCCV == 0 || cell.CellTargetCCV == CellPassConsts.NullCCV ||
               cell.CellCCV == CellPassConsts.NullCCV)
@@ -192,6 +193,7 @@ namespace VSS.TRex.Webtools.Controllers
           index = value < overrides.CMVRange.Min ? BELOW_TARGET : value > overrides.CMVRange.Max ? ABOVE_TARGET : ON_TARGET;
           return (index, value, 0);
         case DisplayMode.CMVChange:
+        case DisplayMode.CCVPercentChange:
           if (cell.CellCCV == CellPassConsts.NullCCV)
             return NULL_VALUE;
           value = cell.CellPreviousMeasuredCCV == CellPassConsts.NullCCV ? 100 : 
@@ -253,7 +255,9 @@ namespace VSS.TRex.Webtools.Controllers
       switch ((DisplayMode)mode)
       {
         case DisplayMode.CCV:
+        case DisplayMode.CCVPercent:
         case DisplayMode.CCVPercentSummary:
+        case DisplayMode.CCVPercentChange:
         case DisplayMode.CMVChange:
           elevation = cell.CellCCVElev;
           break;

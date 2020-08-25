@@ -1,16 +1,15 @@
-﻿using System.Drawing;
-using FluentAssertions;
+﻿using FluentAssertions;
 using VSS.TRex.Rendering.Palettes;
 using Xunit;
 
 namespace VSS.TRex.Tests.Rendering.Palettes
 {
-  public class CMVPercentChangePaletteTests
+  public class CMVChangePaletteTests
   {
     [Fact]
-    public void Test_CMVPercentChangePalette_Creation()
+    public void Test_CMVChangePalettePalette_Creation()
     {
-      var palette = new CMVPercentChangePalette();
+      var palette = new CMVChangePalette();
 
       palette.Should().NotBeNull();
 
@@ -35,9 +34,9 @@ namespace VSS.TRex.Tests.Rendering.Palettes
     }
 
     [Fact]
-    public void Test_CMVPercentChangePalette_ChooseColour()
+    public void Test_CMVChangePalettePalette_ChooseColour()
     {
-      var palette = new CMVPercentChangePalette();
+      var palette = new CMVChangePalette();
 
       palette.Should().NotBeNull();
 

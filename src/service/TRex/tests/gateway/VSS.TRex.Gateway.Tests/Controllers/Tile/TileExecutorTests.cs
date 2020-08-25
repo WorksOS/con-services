@@ -128,7 +128,11 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Tile
       Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.CCV);
       Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CCVPercent);
+      Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.CCVPercentSummary);
+      Assert.True(ExecuteTileRequest(request).Result);
+      request = MakeTileRequest(siteModel.ID, DisplayMode.CCVPercentChange);
       Assert.True(ExecuteTileRequest(request).Result);
       request = MakeTileRequest(siteModel.ID, DisplayMode.CMVChange);
       Assert.True(ExecuteTileRequest(request).Result);
