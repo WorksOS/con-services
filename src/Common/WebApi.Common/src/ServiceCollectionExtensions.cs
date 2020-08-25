@@ -29,16 +29,16 @@ namespace VSS.WebApi.Common
     public static IServiceCollection AddCommon<T>(this IServiceCollection services, string serviceTitle, string serviceDescription = null, string version = "v1")
     {
       if (services == null) { throw new ArgumentNullException(nameof(services)); }
-      
+
       // Guard against BaseStartup::ServiceVersion not being implemented in Startup.cs; else the following call to setup Swagger fails with 'null value for key'.
       // Hard code to v1, as it's not important (our endpoints have quite differening versions)
       // This must match whats provided in the SwaggerEndpoint call
       version = "v1";
-      
+
       //Configure swagger
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc(version, new OpenApiInfo  { Title = serviceTitle, Description = serviceDescription, Version = version });
+        c.SwaggerDoc(version, new OpenApiInfo { Title = serviceTitle, Description = serviceDescription, Version = version });
         // Allows swagger to index models on it's full name, rather than class name - which causes conflicts if a class name is used more than once in the swagger documentation
         // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
         c.CustomSchemaIds(x => x.FullName);
@@ -62,9 +62,15 @@ namespace VSS.WebApi.Common
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToXml = Path.GetDirectoryName(pathToExe);
         }
-        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
-        options.IgnoreObsoleteProperties();
-        options.DescribeAllEnumsAsStrings();
+
+        var documentationFile = Path.Combine(pathToXml, assemblyName + ".xml");
+
+        if (File.Exists(documentationFile))
+        {
+          options.IncludeXmlComments(documentationFile);
+          options.IgnoreObsoleteProperties();
+          options.DescribeAllEnumsAsStrings();
+        }
       });
 
       services.AddMemoryCache();

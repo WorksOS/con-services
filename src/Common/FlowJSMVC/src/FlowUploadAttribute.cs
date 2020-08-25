@@ -8,22 +8,27 @@ namespace VSS.FlowJSHandler
 {
   public class FlowUploadAttribute : ActionFilterAttribute
   {
+    public int Size { get; set; }
+    public string[] Extensions { get; set; }
+
     public FlowUploadAttribute(params string[] extensions)
     {
       Extensions = extensions;
       Size = 5000000;
     }
 
-    public int Size { get; set; }
-    public string[] Extensions { get; set; }
     public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
       var flowJs = filterContext.HttpContext.RequestServices.GetService<IFlowJsRepo>();
       var request = filterContext.HttpContext.Request;
       var validationRules = new FlowValidationRules();
+      
       validationRules.AcceptedExtensions.AddRange(Extensions);
       validationRules.MaxFileSize = Size;
-      var status = flowJs.PostChunk(request, Path.GetTempPath(), validationRules);
+
+      var tmpPath = Path.GetTempPath();
+
+      var status = flowJs.PostChunk(request, tmpPath, validationRules);
 
       if (status.Status == PostChunkStatus.Done)
       {
@@ -41,10 +46,14 @@ namespace VSS.FlowJSHandler
       }
 
       if (status.Status == PostChunkStatus.Error)
+      {
         //TODO: Figure out how we can return the flow errors to the client
         filterContext.Result = new BadRequestResult();
+      }
       else
+      {
         filterContext.Result = new AcceptedResult();
+      }
 
       base.OnActionExecuting(filterContext);
     }
