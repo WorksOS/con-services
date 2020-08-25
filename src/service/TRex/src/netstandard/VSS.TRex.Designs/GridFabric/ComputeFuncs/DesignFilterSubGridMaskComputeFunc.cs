@@ -5,6 +5,7 @@ using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
@@ -35,7 +36,8 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
         }
 
         result.RequestResult = calcResult;
-
+        result.Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        
         var patchCells = patch.Cells;
         for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
         {
