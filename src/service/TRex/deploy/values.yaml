@@ -71,6 +71,16 @@ gateway:
     requests:
       cpu: 300m
       memory: 1280Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    memory:
+      enabled: false
+      target: 0
+    cpu:
+      enabled: true
+      target: 75
 
 mutableData:
   replicaCount: 1

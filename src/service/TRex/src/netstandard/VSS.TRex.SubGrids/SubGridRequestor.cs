@@ -67,7 +67,7 @@ namespace VSS.TRex.SubGrids
     private IDesignWrapper _elevationRangeDesign;
     private IDesign _surfaceDesignMaskDesign;
 
-    private float[,] _designElevations;
+    private float[,] _elevationRangeDesignElevations;
     private float[,] _surfaceDesignMaskElevations;
 
     private SurveyedSurfacePatchType _surveyedSurfacePatchType;
@@ -153,7 +153,7 @@ namespace VSS.TRex.SubGrids
     /// InitialiseFilterContext performs any required filter initialization and configuration
     /// that is external to the filter prior to engaging in cell by cell processing of this sub grid
     /// </summary>
-    private async Task<bool> InitialiseFilterContext()
+    private bool InitialiseFilterContext()
     {
       if (_filter == null)
         return true;
@@ -170,15 +170,15 @@ namespace VSS.TRex.SubGrids
         if (_elevationRangeDesign != null)
         {
           // Query the design to get the patch of elevations calculated from the design
-          var getDesignHeightsResult = await _elevationRangeDesign.Design.GetDesignHeights(
+          var getDesignHeightsResult = _elevationRangeDesign.Design.GetDesignHeightsViaLocalCompute(
             _siteModel.ID, _elevationRangeDesign.Offset, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
-          _designElevations = getDesignHeightsResult.designHeights.Cells;
+          _elevationRangeDesignElevations = getDesignHeightsResult.designHeights.Cells;
 
           if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
-              || _designElevations == null)
+              || _elevationRangeDesignElevations == null)
             return false;
 
-          _filterAnnex.InitializeElevationRangeFilter(_filter.AttributeFilter, _designElevations);
+          _filterAnnex.InitializeElevationRangeFilter(_filter.AttributeFilter, _elevationRangeDesignElevations);
         }
       }
 
@@ -188,7 +188,7 @@ namespace VSS.TRex.SubGrids
         // Query the DesignProfiler service to get the patch of elevations calculated
 
         //Spatial design filter - don't care about offset
-        var getDesignHeightsResult = await _surfaceDesignMaskDesign.GetDesignHeights(_siteModel.ID, 0, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
+        var getDesignHeightsResult = _surfaceDesignMaskDesign.GetDesignHeightsViaLocalCompute(_siteModel.ID, 0, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
         _surfaceDesignMaskElevations = getDesignHeightsResult.designHeights.Cells;
 
         if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
@@ -207,12 +207,22 @@ namespace VSS.TRex.SubGrids
       // If we have DesignElevations at this point, then a Lift filter is in operation and
       // we need to use it to constrain the returned client grid to the extents of the design elevations
       // ReSharper disable once CompareOfFloatsByEqualityOperator
-      if (_designElevations != null)
-        _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _designElevations[x, y] != Consts.NullHeight));
+      if (_elevationRangeDesign != null)
+      {
+        if (_elevationRangeDesignElevations == null)
+          _clientGrid.FilterMap.Clear();
+        else
+          _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _elevationRangeDesignElevations[x, y] != Consts.NullHeight));
+      }
 
       // ReSharper disable once CompareOfFloatsByEqualityOperator
-      if (_surfaceDesignMaskElevations != null)
-        _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _surfaceDesignMaskElevations[x, y] != Consts.NullHeight));
+      if (_filter.SpatialFilter.HasSurfaceDesignMask())
+      {
+        if (_surfaceDesignMaskElevations == null)
+          _clientGrid.FilterMap.Clear();
+        else
+          _clientGrid.FilterMap.ForEachSetBit((x, y) => _clientGrid.FilterMap.SetBitValue(x, y, _surfaceDesignMaskElevations[x, y] != Consts.NullHeight));
+      }
     }
 
     /// <summary>
@@ -310,7 +320,7 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// Annotates height information with elevations from surveyed surfaces
     /// </summary>
-    private async Task<ServerRequestResult> PerformHeightAnnotation()
+    private ServerRequestResult PerformHeightAnnotation()
     {
       if (!_haveComputedSpatialFilterMaskAndClientProdDataMap)
       {
@@ -361,7 +371,7 @@ namespace VSS.TRex.SubGrids
           ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
         };
 
-        if (!(await _surfaceElevationPatchRequest.ExecuteAsync(surfaceElevationPatchArg) is ClientHeightAndTimeLeafSubGrid surfaceElevations))
+        if (!(_surfaceElevationPatchRequest.Execute(surfaceElevationPatchArg) is ClientHeightAndTimeLeafSubGrid surfaceElevations))
         {
           return result;
         }
@@ -410,7 +420,7 @@ namespace VSS.TRex.SubGrids
     /// Responsible for coordinating the retrieval of production data for a sub grid from a site model and also annotating it with
     /// surveyed surface information for requests involving height data.
     /// </summary>
-    public async Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> RequestSubGridInternal(
+    public (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid) RequestSubGridInternal(
       SubGridCellAddress subGridAddress,
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested)
@@ -436,7 +446,7 @@ namespace VSS.TRex.SubGrids
 
       _clientGrid = result.clientGrid;
 
-      if (ShouldInitialiseFilterContext() && !await InitialiseFilterContext())
+      if (ShouldInitialiseFilterContext() && !InitialiseFilterContext())
       {
         result.requestResult = ServerRequestResult.FilterInitialisationFailure;
         ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
@@ -456,7 +466,7 @@ namespace VSS.TRex.SubGrids
 
       if (_surveyedSurfaceDataRequested)
       {
-        if ((result.requestResult = await PerformHeightAnnotation()) != ServerRequestResult.NoError)
+        if ((result.requestResult = PerformHeightAnnotation()) != ServerRequestResult.NoError)
         {
           ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
           return result;

@@ -15,13 +15,11 @@ namespace VSS.TRex.Designs.Interfaces
     /// <summary>
     /// Binary serialization logic
     /// </summary>
-    /// <param name="writer"></param>
     void Write(BinaryWriter writer);
 
     /// <summary>
     /// Binary deserialization logic
     /// </summary>
-    /// <param name="reader"></param>
     void Read(BinaryReader reader);
 
     /// <summary>
@@ -37,50 +35,42 @@ namespace VSS.TRex.Designs.Interfaces
     /// <summary>
     /// Produces a deep clone of the design
     /// </summary>
-    /// <returns></returns>
     IDesign Clone();
 
     /// <summary>
     /// ToString() for Design
     /// </summary>
-    /// <returns></returns>
     string ToString();
 
     /// <summary>
     /// Determine if two designs are equal
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     bool Equals(IDesign other);
 
     /// <summary>
     /// Calculates a spot elevation designated location on this design
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="offset"></param>
-    /// <param name="spotX"></param>
-    /// <param name="spotY"></param>
-    /// <returns></returns>
     Task<(double spotHeight, DesignProfilerRequestResult errorCode)> GetDesignSpotHeight(Guid siteModelID, double offset,double spotX, double spotY);
 
     /// <summary>
-    /// Calculates an elevation sub grid for a design sub grid on this design
+    /// Calculates an elevation sub grid for a design sub grid on this design by making a request to the design elevation service
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="offset"></param>
-    /// <param name="originCellAddress"></param>
-    /// <param name="cellSize"></param>
-    /// <returns></returns>
-    Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(Guid siteModelID, double offset, SubGridCellAddress originCellAddress, double cellSize);
+    Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeightsViaDesignElevationService(Guid siteModelID, double offset, SubGridCellAddress originCellAddress, double cellSize);
+
+    /// <summary>
+    /// Calculates an elevation sub grid for a design sub grid on this design by performing the design elevation query locally in the same process
+    /// </summary>
+    (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) GetDesignHeightsViaLocalCompute(Guid siteModelID, double offset, SubGridCellAddress originCellAddress, double cellSize);
+    
+    /// <summary>
+    /// Calculates a filter mask for a designated sub grid on this design
+    /// </summary>
+    Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMaskViaDesignElevationService(Guid siteModelID, SubGridCellAddress originCellAddress, double cellSize);
 
     /// <summary>
     /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="originCellAddress"></param>
-    /// <param name="cellSize"></param>
-    /// <returns></returns>
-    Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMask(Guid siteModelID, SubGridCellAddress originCellAddress, double cellSize);
+    (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) GetFilterMaskViaLocalCompute(Guid siteModelID, SubGridCellAddress originCellAddress, double cellSize);
 
     DesignDescriptor DesignDescriptor { get; }
 

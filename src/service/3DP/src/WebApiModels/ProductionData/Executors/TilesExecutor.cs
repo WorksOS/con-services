@@ -1,17 +1,21 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.Common.Filters.Utilities;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
-  public class TilesExecutor : RequestExecutorContainer
+  public class TilesExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor.
@@ -32,6 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
         var filter1 = request.Filter1;
         var filter2 = request.Filter2;
+        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, filter1, filter2);
 
         if (request.ComputeVolumesType == VolumesType.Between2Filters)
         {
@@ -44,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         {
           (filter1, filter2) = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(filter1, filter2, request.Mode, request.ComputeVolumesType);
         }
-
+        
         var trexRequest = new TRexTileRequest(
             request.ProjectUid.Value,
             request.Mode,
@@ -60,7 +65,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings),
             request.ComputeVolumesType
           );
-          var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(trexRequest, "/tile", customHeaders);
+        log.LogDebug($"{nameof(TilesExecutor)} trexRequest {JsonConvert.SerializeObject(trexRequest)}");
+ 
+        var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(trexRequest, "/tile", customHeaders);
 
           using (var ms = new MemoryStream())
           {

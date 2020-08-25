@@ -29,3 +29,7 @@ tileServer:
     minReplicas: 4
     maxReplicas: 20
 
+gateway:
+  autoscaling:
+    minReplicas: 2
+    maxReplicas: 5

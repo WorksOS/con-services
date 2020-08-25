@@ -39,10 +39,10 @@ namespace VSS.TRex.SiteModels.Executors
 
     public SiteModelRebuilderManager()
     {
-      MetadataCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
+      MetadataCache = DIContext.ObtainRequired<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.Metadata)
         as IStorageProxyCache<INonSpatialAffinityKey, IRebuildSiteModelMetaData>;
 
-      FilesCache = DIContext.Obtain<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.KeyCollections)
+      FilesCache = DIContext.ObtainRequired<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>()(RebuildSiteModelCacheType.KeyCollections)
          as IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>;
     }
 
@@ -188,11 +188,16 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     public Task BeginOperations()
     {
-      return Task.Run(async () => 
+      return Task.Run(async () =>
       {
         var values = await MetadataCache.GetAllValuesAsync();
+
         values.Where(x => x.Value.Phase != RebuildSiteModelPhase.Complete)
-          .ForEach(x => Rebuild(x.Value));
+          .ForEach(x =>
+          {
+            _log.LogInformation("Recommencing operations for {x.Value}");
+            Rebuild(x.Value);
+          });
       });
     }
   }

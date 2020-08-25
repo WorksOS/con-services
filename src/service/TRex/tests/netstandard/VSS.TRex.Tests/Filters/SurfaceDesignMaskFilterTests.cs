@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Models;
@@ -64,7 +63,7 @@ namespace VSS.TRex.Tests.Filters
     }
 
     [Fact]
-    public async void MasksOutValues_WithoutSurveyedSurfaces()
+    public void MasksOutValues_WithoutSurveyedSurfaces()
     {
       SetupTestIgniteRouting();
 
@@ -104,7 +103,7 @@ namespace VSS.TRex.Tests.Filters
 
       requestors.Length.Should().Be(1);
 
-      var response = await requestors[0].RequestSubGridInternal
+      var response = requestors[0].RequestSubGridInternal
         (new SubGridCellAddress(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset),
         true, false);
 

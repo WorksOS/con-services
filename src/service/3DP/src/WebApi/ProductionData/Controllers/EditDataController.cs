@@ -61,6 +61,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
+    /// Called by TBC only
     /// <summary>
     /// Gets a list of edits or overrides of the production data for a project and machine.
     /// </summary>
@@ -69,7 +70,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/productiondata/getedits")]
     [HttpPost]
-    public async Task<EditDataResult> PostEditDataAcquire([FromBody] GetEditDataRequest request)
+    public async Task<EditDataResult> PostEditDataAcquireTbc([FromBody] GetEditDataRequest request)
     {
       request.Validate();
       return await RequestExecutorContainerFactory.Build<GetEditDataExecutor>(logger,
@@ -82,6 +83,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         ).ProcessAsync(request) as EditDataResult;
     }
 
+    /// Called by TBC only
     /// <summary>
     /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
     /// </summary>
@@ -90,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
-    public async Task<ContractExecutionResult> Post([FromBody]EditDataRequest request)
+    public async Task<ContractExecutionResult> PostEditTbc([FromBody]EditDataRequest request)
     {
       request.Validate();
 
@@ -99,7 +101,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         //Validate against existing data edits
         var getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
             request.dataEdit.assetId);
-        var editResult = await PostEditDataAcquire(getRequest);
+        var editResult = await PostEditDataAcquireTbc(getRequest);
         ValidateNoOverlap(editResult.dataEdits, request.dataEdit);
         //Validate request date range within production data date range
         await ValidateDates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.ProjectUid.Value, request.dataEdit);
