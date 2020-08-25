@@ -154,12 +154,12 @@ namespace VSS.TRex.Profiling.Executors
             new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides, LiftParams);
 
           Log.LogInformation("Building cell profile");
-          if (await Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
+          if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
             SetupForCellPassStackExamination(Filters.Filters[0].AttributeFilter);
 
             Log.LogInformation("Building lift profile");
-            if (await Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
+            if (Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
             {
               Log.LogInformation("Lift profile building succeeded");
 

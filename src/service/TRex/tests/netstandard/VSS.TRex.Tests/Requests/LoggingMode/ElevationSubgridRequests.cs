@@ -59,9 +59,9 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Request all elevation sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
-        var requestSubGridInternalResult = await Requestors[0].RequestSubGridInternal(x, true, false);
+        var requestSubGridInternalResult = Requestors[0].RequestSubGridInternal(x, true, false);
         if (requestSubGridInternalResult.requestResult  == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
@@ -91,9 +91,9 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       // Request all elevation sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses( x =>
       {
-        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, true, false);
+        var requestSubGridInternalResult = requestors[0].RequestSubGridInternal(x, true, false);
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });

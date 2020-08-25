@@ -1,18 +1,16 @@
 ﻿using System.Threading.Tasks;
-using Apache.Ignite.Core.Compute;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric;
-using VSS.TRex.GridFabric.Requests;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
+using VSS.TRex.SurveyedSurfaces.Executors;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 {
-  public class SurfaceElevationPatchRequest : DesignProfilerServicePoolRequest<ISurfaceElevationPatchArgument, IClientLeafSubGrid>, ISurfaceElevationPatchRequest
+  public class SurfaceElevationPatchRequestViaLocalCompute : ISurfaceElevationPatchRequest
   {
     private readonly SurfaceElevationPatchRequestCache _cache;
 
@@ -21,26 +19,23 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
     /// </summary>
     private readonly IClientLeafSubGridFactory _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
-    /// <summary>
-    /// The compute function used for surface elevation patch requests
-    /// </summary>
-    private readonly IComputeFunc<ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper> _computeFunc = new SurfaceElevationPatchComputeFunc();
+    public SurfaceElevationPatchRequestViaLocalCompute()
+    {
+    }
 
-    public SurfaceElevationPatchRequest(ITRexSpatialMemoryCache cache, ITRexSpatialMemoryCacheContext context) : this()
+    public SurfaceElevationPatchRequestViaLocalCompute(ITRexSpatialMemoryCache cache, ITRexSpatialMemoryCacheContext context) : this()
     {
       if (cache != null && context != null)
         _cache = new SurfaceElevationPatchRequestCache(cache, context, _clientLeafSubGridFactory);
     }
 
-    /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    public SurfaceElevationPatchRequest()
-    {
-    }
+    public Task<IClientLeafSubGrid> ExecuteAsync(ISurfaceElevationPatchArgument arg) => Task.Run(() => Execute(arg));
 
-    public override IClientLeafSubGrid Execute(ISurfaceElevationPatchArgument arg)
+    public IClientLeafSubGrid Execute(ISurfaceElevationPatchArgument arg)
     {
+      if (arg.SurveyedSurfacePatchType > SurveyedSurfacePatchType.CompositeElevations)
+        return null;
+
       var cachingSupported = arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _cache != null;
 
       // Check the item is available in the cache
@@ -58,14 +53,11 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
       var subGridInvalidationVersion = cachingSupported ? _cache.InvalidationVersion : 0;
 
-      IClientLeafSubGrid clientResult = null;
-      var result = Compute.Apply(_computeFunc, arg);
+      var executor = new CalculateSurfaceElevationPatch(arg);
+      var clientResult = executor.Execute();
 
-      if (result?.Bytes != null)
+      if (clientResult != null)
       {
-        clientResult = _clientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
-        clientResult.FromBytes(result.Bytes);
-
         // For now, only cache non-composite elevation sub grids
         if (cachingSupported)
           _cache?.Add(clientResult, subGridInvalidationVersion);
@@ -77,9 +69,18 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
       return clientResult;
     }
 
-    public override Task<IClientLeafSubGrid> ExecuteAsync(ISurfaceElevationPatchArgument arg)
+    /// <summary>
+    /// No implementation for local compute requests
+    /// </summary>
+    public void WriteBinary(IBinaryWriter writer)
     {
-      return Task.Run(() => Execute(arg));
+    }
+
+    /// <summary>
+    /// No implementation for local compute requests
+    /// </summary>
+    public void ReadBinary(IBinaryReader reader)
+    {
     }
   }
 }

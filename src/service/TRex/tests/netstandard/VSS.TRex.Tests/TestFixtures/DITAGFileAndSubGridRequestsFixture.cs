@@ -72,7 +72,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
         .Build()
         // Register the factory for surface elevation requests
-        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => new SurfaceElevationPatchRequest(cache, context)))
+        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => new SurfaceElevationPatchRequestViaLocalCompute(cache, context)))
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
         .Build()
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
