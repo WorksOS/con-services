@@ -20,14 +20,14 @@ namespace VSS.TRex.SubGrids
     /// Calculates a cut/fill sub grid from a production data elevation sub grid and an elevation sub grid computed from a referenced design,
     /// replacing the elevations in the first sub grid with the resulting cut fill values
     /// </summary>
-    public static async Task<(bool executionResult, DesignProfilerRequestResult profilerRequestResult)> ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid, IDesignWrapper designWrapper, Guid DataModelID)
+    public static (bool executionResult, DesignProfilerRequestResult profilerRequestResult) ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid, IDesignWrapper designWrapper, Guid DataModelID)
     {
       (bool executionResult, DesignProfilerRequestResult profilerRequestResult) result = (false, DesignProfilerRequestResult.UnknownError);
 
       if (designWrapper?.Design == null)
         return result;
 
-      var getDesignHeightsResult = await designWrapper.Design.GetDesignHeights(DataModelID, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize);
+      var getDesignHeightsResult = designWrapper.Design.GetDesignHeightsViaLocalCompute(DataModelID, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize);
 
       result.profilerRequestResult = getDesignHeightsResult.errorCode;
 

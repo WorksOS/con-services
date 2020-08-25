@@ -69,8 +69,8 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
       var Patch = ClientLeafSubGridFactory.GetSubGridEx(
         Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations
           ? GridDataType.CompositeHeights
-          : GridDataType.HeightAndTime, 
-          Args.CellSize, SubGridTreeConsts.SubGridTreeLevels, 
+          : GridDataType.HeightAndTime,
+          Args.CellSize, SubGridTreeConsts.SubGridTreeLevels,
           Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY);
 
       // Assign 

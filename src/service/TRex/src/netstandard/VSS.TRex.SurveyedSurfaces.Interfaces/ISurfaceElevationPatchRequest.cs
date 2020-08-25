@@ -5,5 +5,6 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
 {
   public interface ISurfaceElevationPatchRequest : IBaseRequest<ISurfaceElevationPatchArgument, IClientLeafSubGrid>
   {
+    IClientLeafSubGrid Execute(ISurfaceElevationPatchArgument arg);
   }
 }

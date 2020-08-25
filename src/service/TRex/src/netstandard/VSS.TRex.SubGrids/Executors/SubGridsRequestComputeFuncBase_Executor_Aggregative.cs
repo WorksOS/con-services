@@ -23,8 +23,6 @@ namespace VSS.TRex.SubGrids.Executors
     /// <summary>
     /// Processes a sub grid result consisting of a client leaf sub grid matching each of the filters present in the request
     /// </summary>
-    /// <param name="results"></param>
-    /// <param name="resultCount"></param>
     protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       if (Task == null)
@@ -36,7 +34,6 @@ namespace VSS.TRex.SubGrids.Executors
     /// <summary>
     /// Transforms the internal aggregation state into the desired response for the request
     /// </summary>
-    /// <returns></returns>
     protected override TSubGridRequestsResponse AcquireComputationResult()
     {
       return new TSubGridRequestsResponse();

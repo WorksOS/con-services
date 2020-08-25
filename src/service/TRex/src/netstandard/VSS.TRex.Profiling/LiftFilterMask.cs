@@ -56,7 +56,7 @@ namespace VSS.TRex.Profiling
       }
     }
 
-    public static async Task<bool> ConstructSubGridCellFilterMask(ISubGridTree tree, 
+    public static bool ConstructSubGridCellFilterMask(ISubGridTree tree, 
       SubGridCellAddress currentSubGridOrigin, 
       List<T> profileCells,
       SubGridTreeBitmapSubGridBits mask,
@@ -87,7 +87,7 @@ namespace VSS.TRex.Profiling
 
       if (SurfaceDesignMaskDesign != null)
       {
-        var getFilterMaskResult = await SurfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
+        var getFilterMaskResult = SurfaceDesignMaskDesign.GetFilterMaskViaLocalCompute(tree.ID, currentSubGridOrigin, tree.CellSize);
 
         if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
         {
@@ -110,7 +110,7 @@ namespace VSS.TRex.Profiling
       return true;
     }
 
-    public static async Task<(bool executionResult, DesignProfilerRequestResult filterDesignErrorCode)> 
+    public static (bool executionResult, DesignProfilerRequestResult filterDesignErrorCode)
       InitialiseFilterContext(ISiteModel siteModel, ICellPassAttributeFilter passFilter, 
         ICellPassAttributeFilterProcessingAnnex passFilterAnnex, ProfileCell profileCell, IDesignWrapper passFilterElevRangeDesign)
     {
@@ -121,7 +121,7 @@ namespace VSS.TRex.Profiling
 
       if (passFilter.HasElevationRangeFilter && passFilterElevRangeDesign != null)
       {
-        var getDesignHeightsResult = await passFilterElevRangeDesign.Design.GetDesignHeights(siteModel.ID, passFilterElevRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY), siteModel.CellSize);
+        var getDesignHeightsResult = passFilterElevRangeDesign.Design.GetDesignHeightsViaLocalCompute(siteModel.ID, passFilterElevRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY), siteModel.CellSize);
 
         result.filterDesignErrorCode = getDesignHeightsResult.errorCode;
 

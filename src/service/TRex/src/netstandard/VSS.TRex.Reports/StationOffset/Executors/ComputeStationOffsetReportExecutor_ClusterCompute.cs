@@ -5,7 +5,6 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -18,7 +17,6 @@ using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -63,7 +61,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
             return new StationOffsetReportRequestResponse_ClusterCompute{ResultStatus = RequestErrorStatus.OK, ReturnCode = ReportReturnCode.NoData };
           }
 
-          return response = await GetProductionData();
+          return response = GetProductionData();
         }
         finally
         {
@@ -77,7 +75,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     /// For each point in the list, get the sub grid and extract productionData at the station/offset i.e pointOfInterest
     ///    This could be optimized to get any poi from each sub grid before disposal
     /// </summary>
-    private async Task<StationOffsetReportRequestResponse_ClusterCompute> GetProductionData()
+    private StationOffsetReportRequestResponse_ClusterCompute GetProductionData()
     {
       var result = new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.Unknown};
 
@@ -128,7 +126,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
         requestors[0].CellOverrideMask = cellOverrideMask;
 
         // using the cell address get the index of cell in clientGrid
-        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(
+        var requestSubGridInternalResult = requestors[0].RequestSubGridInternal(
           thisSubGridOrigin, true, true);
 
         if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
@@ -138,7 +136,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           continue;
         }
 
-        var hydratedPoint = await ExtractRequiredValues(cutFillDesignWrapper, point, requestSubGridInternalResult.clientGrid as ClientCellProfileLeafSubgrid, cellX, cellY);
+        var hydratedPoint = ExtractRequiredValues(cutFillDesignWrapper, point, requestSubGridInternalResult.clientGrid as ClientCellProfileLeafSubgrid, cellX, cellY);
         result.StationOffsetRows.Add(hydratedPoint);
       }
 
@@ -147,7 +145,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     }
 
 
-    private async Task<StationOffsetRow> ExtractRequiredValues(IDesignWrapper cutFillDesignWrapper, StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, int cellX, int cellY)
+    private StationOffsetRow ExtractRequiredValues(IDesignWrapper cutFillDesignWrapper, StationOffsetPoint point, ClientCellProfileLeafSubgrid clientGrid, int cellX, int cellY)
     {
       clientGrid.CalculateWorldOrigin(out double subgridWorldOriginX, out double subgridWorldOriginY);
       var cell = clientGrid.Cells[cellX, cellY];
@@ -158,7 +156,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        getDesignHeightsResult = await cutFillDesignWrapper.Design.GetDesignHeights(requestArgument.ProjectID, cutFillDesignWrapper.Offset, clientGrid.OriginAsCellAddress(), clientGrid.CellSize);
+        getDesignHeightsResult = cutFillDesignWrapper.Design.GetDesignHeightsViaLocalCompute(requestArgument.ProjectID, cutFillDesignWrapper.Offset, clientGrid.OriginAsCellAddress(), clientGrid.CellSize);
 
         if (getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
         {
