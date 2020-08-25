@@ -9,11 +9,14 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>VSS.MasterData.ProjectTests</RootNamespace>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
+    <DocumentationFile></DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,13 +24,17 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="coverlet.msbuild" Version="2.8.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.7" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj" />
     <ProjectReference Include="..\..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
@@ -51,9 +58,12 @@
   <ItemGroup>
     <Resources Include="./Resources/**" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(Resources)" DestinationFolder="$(OutputPath)/Resources/%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
-  <!-- End bulk copy. -->
+  <!-- End bulk copy. -->  
 
 </Project>

@@ -4,20 +4,28 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
+using VSS.AWS.TransferProxy.Interfaces;
 
 namespace VSS.FlowJSHandler
 {
   public class FlowJsRepo : IFlowJsRepo
   {
+    private readonly ITransferProxyFactory _factory;
+
     /// <summary>
     /// A lock to be used when accessing the File Locks dictionary
     /// </summary>
-    private static readonly object dictLock = new object();
+    private static readonly object _dictLock = new object();
 
     /// <summary>
     /// A dictionary to hold locks per file being uploaded (to stop the file being merged multiple times when the chunks finish at the same time)
     /// </summary>
-    private static readonly Dictionary<string, object> fileLocks = new Dictionary<string, object>();
+    private static readonly Dictionary<string, object> _fileLocks = new Dictionary<string, object>();
+
+    public FlowJsRepo(ITransferProxyFactory factory)
+    {
+      _factory = factory;
+    }
 
     public FlowJsPostChunkResponse PostChunk(HttpRequest request, string folder, FlowValidationRules validationRules = null)
     {
@@ -105,16 +113,16 @@ namespace VSS.FlowJSHandler
       // Due to timing issues, we may have all chunks uploaded state for all chunks, causing the file to be merged up to n times, where n is the number of chunks
       // To resolve this, we will have a global lock on a filename lock dict, and then lock the filename lock 
       // Allowing multiple files to be uploaded at once, with one global lock to set the filename state
-      lock (dictLock)
+      lock (_dictLock)
       {
-        if (!fileLocks.ContainsKey(chunk.Identifier))
+        if (!_fileLocks.ContainsKey(chunk.Identifier))
         {
           Console.WriteLine($"Created a lock for Identifier {chunk.Identifier} TID: {Thread.CurrentThread.ManagedThreadId}");
-          fileLocks[chunk.Identifier] = new object();
+          _fileLocks[chunk.Identifier] = new object();
         }
       }
 
-      var localLock = fileLocks[chunk.Identifier];
+      var localLock = _fileLocks[chunk.Identifier];
       if (Monitor.TryEnter(localLock))
       {
         try
@@ -155,7 +163,7 @@ namespace VSS.FlowJSHandler
           Console.WriteLine($"Released lock for Identifier {chunk.Identifier}");
           Monitor.Exit(localLock);
           // Don't need to lock here
-          fileLocks.Remove(chunk.Identifier);
+          _fileLocks.Remove(chunk.Identifier);
         }
       }
 

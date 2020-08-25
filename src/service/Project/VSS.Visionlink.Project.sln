@@ -138,6 +138,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlem
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entitlements", "Entitlements", "{B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.IntegrationTests.Utils", "..\..\Common\IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj", "{7C8AF89D-C308-4E5A-81C2-2F8CB9465843}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -336,6 +338,10 @@ Global
 		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C8AF89D-C308-4E5A-81C2-2F8CB9465843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8AF89D-C308-4E5A-81C2-2F8CB9465843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8AF89D-C308-4E5A-81C2-2F8CB9465843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8AF89D-C308-4E5A-81C2-2F8CB9465843}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -400,6 +406,7 @@ Global
 		{9CE48FCB-9752-4B6E-A91F-E2F71AE49677} = {B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD}
 		{6DF0B2D7-80F3-41DB-B7D6-C25496848EE7} = {B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD}
 		{B1B0ECF4-F87A-464C-B1A0-3D7F533EA0CD} = {0B171363-3F4B-4614-B74A-AC6155E644FF}
+		{7C8AF89D-C308-4E5A-81C2-2F8CB9465843} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}
