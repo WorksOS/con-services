@@ -9,7 +9,7 @@ namespace VSS.TRex.Designs.GridFabric.Responses
   {
     private const byte VERSION_NUMBER = 1;
 
-    public SubGridTreeBitmapSubGridBits Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    public SubGridTreeBitmapSubGridBits Bits;
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
@@ -37,6 +37,8 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
       if (reader.ReadBoolean())
       {
+        Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
         int[] buffer = reader.ReadIntArray();
         for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
           Bits.Bits[i] = unchecked((uint) buffer[i]);
