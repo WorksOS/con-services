@@ -25,7 +25,6 @@ using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Rendering.GridFabric.Responses;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -285,22 +284,15 @@ namespace VSS.TRex.Gateway.Common.Executors
           temperatureSummaryPalette.TemperatureLevels.Min = overrides?.OverridingTemperatureWarningLevels.Min ?? TEMPERATURE_LEVELS_MIN;
           temperatureSummaryPalette.TemperatureLevels.Max = overrides?.OverridingTemperatureWarningLevels.Max ?? TEMPERATURE_LEVELS_MAX;
           break;
+        case DisplayMode.CompactionCoverage:
+          convertedPalette = new CompactionCoveragePalette();
+          var compactionCoveragePalette = ((CompactionCoveragePalette)convertedPalette);
+          compactionCoveragePalette.HasCMVData = availableTransitions[0].Color;
+          compactionCoveragePalette.HasNoCMVData = availableTransitions[1].Color;
+          break;
         default:
+          // when adding modes, there are various other places in the code which will need work
           throw new TRexException($"No implemented colour palette for this mode ({request.Mode})");
-      }
-
-      if (request.Mode != DisplayMode.Height &&
-          request.Mode != DisplayMode.CCVPercentSummary &&
-          request.Mode != DisplayMode.CMVChange &&
-          request.Mode != DisplayMode.CCV &&
-          request.Mode != DisplayMode.PassCountSummary && 
-          request.Mode != DisplayMode.CCASummary &&
-          request.Mode != DisplayMode.MDPPercentSummary &&
-          request.Mode != DisplayMode.MDP &&
-          request.Mode != DisplayMode.TargetSpeedSummary &&
-          request.Mode != DisplayMode.TemperatureSummary)
-      {
-        convertedPalette = new PaletteBase(availableTransitions);
       }
 
       return convertedPalette;
