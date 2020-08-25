@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -12,9 +14,12 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -22,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// The executor which passes the summary pass counts request to Raptor
   /// </summary>
-  public class SummaryPassCountsExecutor : RequestExecutorContainer
+  public class SummaryPassCountsExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -47,13 +52,15 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PASSCOUNT") ?? false)
         {
 #endif
-          var pcSummaryRequest = new PassCountSummaryRequest(
+        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
+        var pcSummaryRequest = new PassCountSummaryRequest(
             request.ProjectUid.Value,
             request.Filter,
             request.liftBuildSettings.OverridingTargetPassCountRange,
             AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings));
+        log.LogDebug($"{nameof(SummaryPassCountsExecutor)} trexRequest {JsonConvert.SerializeObject(pcSummaryRequest)}");
 
-          return await trexCompactionDataProxy.SendDataPostRequest<PassCountSummaryResult, PassCountSummaryRequest>(pcSummaryRequest, "/passcounts/summary", customHeaders);
+        return await trexCompactionDataProxy.SendDataPostRequest<PassCountSummaryResult, PassCountSummaryRequest>(pcSummaryRequest, "/passcounts/summary", customHeaders);
 #if RAPTOR
         }
 
