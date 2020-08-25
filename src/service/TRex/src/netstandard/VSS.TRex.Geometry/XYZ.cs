@@ -377,7 +377,7 @@ namespace VSS.TRex.Geometry
             {
               var Fraction2 = (Y - Y1) / (Y3 - Y1);
 
-              if (Fraction2 >= MIN_EPSILON && Fraction <= MAX_EPSILON)
+              if (Fraction2 >= MIN_EPSILON && Fraction2 <= MAX_EPSILON)
               {
                 Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
                 return Z1 + Fraction2 * (Z3 - Z1);
@@ -395,7 +395,7 @@ namespace VSS.TRex.Geometry
             {
               var Fraction2 = (Y - Y2) / (Y3 - Y2);
 
-              if (Fraction2 >= MIN_EPSILON && Fraction <= MAX_EPSILON)
+              if (Fraction2 >= MIN_EPSILON && Fraction2 <= MAX_EPSILON)
               {
                 Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
                 return Z2 + Fraction2 * (Z3 - Z2);
