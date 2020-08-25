@@ -7,7 +7,7 @@ namespace VSS.TRex.Tests.Rendering.Palettes
   public class CMVChangePaletteTests
   {
     [Fact]
-    public void Test_CMVChangePalettePalette_Creation()
+    public void Test_CMVChangePalette_Creation()
     {
       var palette = new CMVChangePalette();
 
@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.Rendering.Palettes
     }
 
     [Fact]
-    public void Test_CMVChangePalettePalette_ChooseColour()
+    public void Test_CMVChangePalette_ChooseColour()
     {
       var palette = new CMVChangePalette();
 
