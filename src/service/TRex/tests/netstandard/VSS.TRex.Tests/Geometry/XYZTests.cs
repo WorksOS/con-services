@@ -378,7 +378,7 @@ namespace VSS.TRex.Tests.Geometry
             Assert.True(XYZ.VectorLength(diff) < 0.00001, $"VectorLength for two similar vectors are different: {av} vs {bv}");
         }
 
-        [Fact(Skip = "Use for testing #1412 when it is implemented")]
+        [Fact]
         public void Test_XYZTests_GetTriangleHeightExWrong()
         {
           //GetTriangleHeight and GetTriangleHeightEx should return the same result. The latter is an optimized version of the former.

@@ -319,7 +319,7 @@ namespace VSS.TRex.Geometry
       }
 
       ////////////////////////////////////////////////////////////////////////////
-      // bool GetInt2 = GetYInt(ref P2, ref P3, X, out double Y2, out double Z2);
+      // bool GetInt2 = GetYInt(P2, P3, X, out double Y2, out double Z2);
       ////////////////////////////////////////////////////////////////////////////
 
       if (Math.Abs(P2.X - P3.X) > 0.0000000001) // Consider them not the same
@@ -334,7 +334,7 @@ namespace VSS.TRex.Geometry
         }
       }
 
-      double Result = Consts.NullDouble;
+      var Result = Consts.NullDouble;
 
       ///////////////////////////////////////////////////////////////////////////
       // Note: In some cases we may actually work out that we have intersects
@@ -350,15 +350,15 @@ namespace VSS.TRex.Geometry
         {
           Fraction = (Y - Y1) / (Y2 - Y1);
           Result = Fraction >= MIN_EPSILON && Fraction <= MAX_EPSILON ? Z1 + Fraction * (Z2 - Z1) : Consts.NullDouble;
-        }
-        /////////////////////////////////////////////////////////////////////////
-      }
 
-      if (Result != Consts.NullDouble)
-        return Result;
+          if (Result != Consts.NullDouble)
+            return Result;
+        }
+      }
+      /////////////////////////////////////////////////////////////////////////
 
       ////////////////////////////////////////////////////////////////////////////
-      //bool GetInt3 = (GetYInt(ref P1, ref P3, X, out double Y3, out double Z3))
+      //bool GetInt3 = (GetYInt(P1, P3, X, out double Y3, out double Z3))
       ////////////////////////////////////////////////////////////////////////////
       if (Math.Abs(P1.X - P3.X) > 0.0000000001) // Consider them NOT the same
       {
@@ -375,16 +375,13 @@ namespace VSS.TRex.Geometry
             //////////////////////////////////////////////////////////////////////
             if (Math.Abs(Y1 - Y3) > 0.0000000001) // Consider them NOT the same
             {
-              Fraction = (Y - Y1) / (Y3 - Y1);
+              var Fraction2 = (Y - Y1) / (Y3 - Y1);
 
-              if (Fraction >= MIN_EPSILON && Fraction <= MAX_EPSILON)
+              if (Fraction2 >= MIN_EPSILON && Fraction <= MAX_EPSILON)
               {
                 Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
-                Result = Z1 + Fraction * (Z3 - Z1);
+                return Z1 + Fraction2 * (Z3 - Z1);
               }
-
-              if (Result != Consts.NullDouble)
-                return Result;
             }
             //////////////////////////////////////////////////////////////////////
           }
@@ -396,16 +393,13 @@ namespace VSS.TRex.Geometry
             //////////////////////////////////////////////////////////////////////
             if (Math.Abs(Y2 - Y3) >= 0.0000000001) // Consider them NOT the same
             {
-              Fraction = (Y - Y2) / (Y3 - Y2);
+              var Fraction2 = (Y - Y2) / (Y3 - Y2);
 
-              if (Fraction >= MIN_EPSILON && Fraction <= MAX_EPSILON)
+              if (Fraction2 >= MIN_EPSILON && Fraction <= MAX_EPSILON)
               {
                 Z3 = P1.Z + Fraction * (P3.Z - P1.Z);
-                Result = Z2 + Fraction * (Z3 - Z2);
+                return Z2 + Fraction2 * (Z3 - Z2);
               }
-
-              if (Result != Consts.NullDouble)
-                return Result;
             }
             //////////////////////////////////////////////////////////////////////
           }
