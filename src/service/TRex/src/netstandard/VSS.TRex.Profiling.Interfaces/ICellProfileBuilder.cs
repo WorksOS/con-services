@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Profiling.Interfaces
@@ -8,6 +7,6 @@ namespace VSS.TRex.Profiling.Interfaces
   {
     bool Aborted { get; set; }
 
-    Task<bool> Build(XYZ[] nEECoords, List<T> profileCells);
+    bool Build(XYZ[] nEECoords, List<T> profileCells);
   }
 }

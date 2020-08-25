@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -68,15 +67,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Constructs a mask using all spatial filtering elements active in the supplied filter
     /// </summary>
-    /// <param name="currentSubGridOrigin"></param>
-    /// <param name="intercepts"></param>
-    /// <param name="fromProfileCellIndex"></param>
-    /// <param name="mask"></param>
-    /// <param name="cellFilter"></param>
-    /// <param name="tree"></param>
-    /// <param name="surfaceDesignMaskDesign"></param>
-    /// <returns></returns>
-    public static async Task<bool> ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
+    public static bool ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
       InterceptList intercepts,
       int fromProfileCellIndex,
       SubGridTreeBitmapSubGridBits mask,
@@ -110,7 +101,7 @@ namespace VSS.TRex.Profiling
 
       if (surfaceDesignMaskDesign != null)
       {
-        var getFilterMaskResult = await surfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
+        var getFilterMaskResult = surfaceDesignMaskDesign.GetFilterMaskViaLocalCompute(tree.ID, currentSubGridOrigin, tree.CellSize);
 
         if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
         {

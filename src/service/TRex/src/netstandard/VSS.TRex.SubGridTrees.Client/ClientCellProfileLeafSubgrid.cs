@@ -362,7 +362,7 @@ namespace VSS.TRex.SubGridTrees.Client
         // Check if there is an elevation range filter in effect and whether the surveyed surface elevation data matches it
         if (elevationRangeFilterLambda != null)
         {
-          if (!(elevationRangeFilterLambda(x, y, surveyedSurfaceCellHeight)))
+          if (!elevationRangeFilterLambda(x, y, surveyedSurfaceCellHeight))
           {
             // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
             processingMap.ClearBit(x, y);

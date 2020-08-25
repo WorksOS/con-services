@@ -27,13 +27,6 @@ namespace VSS.TRex.Designs.Executors
       /// <summary>
       /// Performs the donkey work of the elevation patch calculation
       /// </summary>
-      /// <param name="calcResult"></param>
-      /// <param name="projectUid"></param>
-      /// <param name="referenceDesign"></param>
-      /// <param name="cellSize"></param>
-      /// <param name="originX"></param>
-      /// <param name="originY"></param>
-      /// <returns></returns>
       private IClientHeightLeafSubGrid Calc(Guid projectUid, DesignOffset referenceDesign, double cellSize, int originX, int originY,
           out DesignProfilerRequestResult calcResult)
         {
@@ -84,7 +77,6 @@ namespace VSS.TRex.Designs.Executors
         /// <summary>
         /// Performs execution business logic for this executor
         /// </summary>
-        /// <returns></returns>
         public IClientHeightLeafSubGrid Execute(Guid projectUid, DesignOffset referenceDesign, double cellSize, int originX, int originY, out DesignProfilerRequestResult calcResult)
         {
             // Perform the design elevation patch calculation
