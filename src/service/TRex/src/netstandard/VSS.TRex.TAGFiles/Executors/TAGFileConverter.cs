@@ -211,129 +211,6 @@ namespace VSS.TRex.TAGFiles.Executors
       return true;
     }
 
-
-
-
-
-
-
-
-
-
-    private string GetGroupName(byte utmZone, bool newGroupNames = false )
-    {
-
-      const string STR_UTM = "UTM"; // Zones ##1..60.. {SKIP}
-      const string STR_UPS = "UPS"; // Zone #61..      {SKIP}
-      const string STR_POLE = "Pole";
-      const string STR_NORTH = "North";
-      const string STR_SOUTH = "South";
-
-      var result = "";
-
-      if ((utmZone & 0x3F) == 61)
-      {
-        result = STR_UPS;
-        if (newGroupNames)
-          return "Polar Regions/" + result;
-      }
-      else
-      {
-      result = STR_UTM;
-        if (newGroupNames)
-          result = "World wide/" + result;
-      }
-
-      return result;
-    }
-
-
-      private string MakeUTMZoneCSIB(int i)
-    {
-
-      // get zone
-
-      // get group name
-
-
-      return "";
-    }
-
-
-    private bool TranslatePositions(string projectCSIBFile, ref List<UTMCoordPointPair> coordPositions)
-    {
-
-      if (coordPositions == null || coordPositions.Count == 0) return true; // nothing todo
-
-      // testing
-      var DIMENSIONS_2012_WITHOUT_VERT_ADJUST = "VE5MIENTSUIAAAAAAAAmQFByb2plY3Rpb24gZnJvbSBkYXRhIGNvbGxlY3RvcgAAWm9uZSBmcm9tIGRhdGEgY29sbGVjdG9yAABab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAABEYXR1bVRocmVlUGFyYW1ldGVycwAAAAAAAABAplRYQeM2GhTEP1hBAAAAAAAAAIAAAAAAAAAAgAAAAAAAAACADlpvbmUgZnJvbSBkYXRhIGNvbGxlY3RvcgAAt0YpjXZY6L8DXnvbAh4IQAAAAAAAaihBAAAAAABqGEEAAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAIF4LavCiChB4TsitpOdF0Fw85mH0Tt/vw9Pj9e7aCk/tdtew3Jyyj4+8FHdAgDwPwFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAHbj3dWkgShBru4e94uPF0FcFrRN6LYnwNAqy4rBHPC+JEubOpUlrr4AABgtRFT7Ifm/GC1EVPshCUAYLURU+yH5PxgtRFT7IQlAAQEBAQEBA1AAcgBvAGoAZQBjAHQAaQBvAG4AIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAWgBvAG4AZQAgAGYAcgBvAG0AIABkAGEAdABhACAAYwBvAGwAbABlAGMAdABvAHIAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAARABhAHQAdQBtAFQAaAByAGUAZQBQAGEAcgBhAG0AZQB0AGUAcgBzAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAFoAbwBuAGUAIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAAAAAAAAAAAB7TEdFPTQxNjc7TERFPTYxNjc7R0dFPTQxNjc7R0RFPTYxNjc7fQB7TEVFPTcwMTk7fQAA";
-
-      try
-      {
-
-        var convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
-        if (convertCoordinates == null)
-        {
-          Log.LogError("TranslatePositions. IConvertCoordinates not implemented");
-          return false;
-        }
-
-        //todo make 120 utm CSIB files
-        var csibList = new List<string>();
-
-        // make list of utm coordinate files
-        for (var i = 0; i < 120; i++)
-        {
-          // csibList.Add("todo");
-          csibList.Add(MakeUTMZoneCSIB(i));
-        }
-
-        byte currentUTMZone = 0;
-        var currentUTMCSIBFile = csibList[currentUTMZone];
-
-
-        for (var i = 0; i < coordPositions.Count; i++)
-        {
-
-          if (coordPositions[i].UTMZone != currentUTMZone)
-          {
-            currentUTMCSIBFile = csibList[coordPositions[i].UTMZone];
-            currentUTMZone = coordPositions[i].UTMZone;
-          }
-
-          projectCSIBFile = DIMENSIONS_2012_WITHOUT_VERT_ADJUST;
-          currentUTMCSIBFile = DIMENSIONS_2012_WITHOUT_VERT_ADJUST; // debugging
-
-          if (ValidPositionsforPair(coordPositions[i]))
-          {
-            // convert left point to WGS84 LL point
-            var leftLLPoint = convertCoordinates.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Left.ToCoreX_XYZ()).ToTRex_XYZ();
-            // convert left WGS84 LL point to project NNE
-            var leftNNEPoint = convertCoordinates.LLHToNEE(projectCSIBFile, leftLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
-
-            // convert right point to WGS84 LL point
-            var rightLLPoint = convertCoordinates.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Right.ToCoreX_XYZ()).ToTRex_XYZ();
-            // convert right WGS84 LL point to project NNE
-            var rightNNEPoint = convertCoordinates.LLHToNEE(projectCSIBFile, rightLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
-
-            coordPositions[i] = new UTMCoordPointPair(leftNNEPoint, rightNNEPoint, currentUTMZone);
-
-          }
-
-        }
-
-      }
-      catch (Exception ex) 
-      {
-        Log.LogError(ex, "Exception occurred while converting ACS coordinates");
-        return false;
-      }
-
-
-      return true;
-    }
-
-
     /// <summary>
     /// Scan tag file for each epoch position and convert from position's UTM zone to WGS84LL. Then back to the coordinate sytem used by project.
     /// </summary>
@@ -341,14 +218,7 @@ namespace VSS.TRex.TAGFiles.Executors
     {
 
       // todo temp
-      projectCSIBFile = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
-
-
-      if (projectCSIBFile == String.Empty)
-      {
-        Log.LogError($"CollectAndConvertBladePostions called with missing project CSIB file");
-        return false;
-      }
+    //  projectCSIBFile = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
 
       var tagFilePreScanACS = new TAGFilePreScanACS(); // special scanner to collect positions
       tagFilePreScanACS.Execute(tagData, ref aCSBladePositions, ref aCSRearAxlePositions, ref aCSTrackPositions, ref aCSWheelPositions);
@@ -357,10 +227,11 @@ namespace VSS.TRex.TAGFiles.Executors
       if (tagFilePreScanACS.ReadResult == TAGReadResult.NoError)
       {
         Log.LogInformation($"Successful ACS prescan of tagfile. {tagFilePreScanACS.ReadResult}. # Blade positions to convert:{aCSBladePositions.Count}, RearAxle:{aCSRearAxlePositions.Count}, Track:{aCSTrackPositions.Count}, Wheel:{aCSWheelPositions.Count}");
-        if (!TranslatePositions(projectCSIBFile, ref aCSBladePositions)) return false;
-        if (!TranslatePositions(projectCSIBFile, ref aCSRearAxlePositions)) return false;
-        if (!TranslatePositions(projectCSIBFile, ref aCSTrackPositions)) return false;
-        if (!TranslatePositions(projectCSIBFile, ref aCSWheelPositions)) return false;
+        var acsTranslator = DIContext.Obtain<IACSTranslator>();
+        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSBladePositions) == null) return false;
+        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSRearAxlePositions) == null) return false;
+        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSTrackPositions) == null) return false;
+        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSWheelPositions) == null) return false;
       }
       else
       {
