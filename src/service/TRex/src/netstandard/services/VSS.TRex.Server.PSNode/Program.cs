@@ -18,6 +18,7 @@ using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -118,6 +119,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
+        .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
