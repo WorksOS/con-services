@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Rendering
         Filters = new FilterSet(new CombinedFilter(), new CombinedFilter()),
         ReferenceDesign = new DesignOffset(Guid.NewGuid(), 1.5),
         Mode = DisplayMode.Height,
-        CoordsAreGrid =  true,
+        CoordsAreGrid = true,
         PixelsX = 100,
         PixelsY = 200,
         Extents = BoundingWorldExtent3D.Inverted(),

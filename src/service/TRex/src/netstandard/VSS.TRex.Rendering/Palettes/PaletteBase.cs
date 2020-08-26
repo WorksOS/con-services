@@ -10,6 +10,8 @@ namespace VSS.TRex.Rendering.Palettes
   {
     private const byte VERSION_NUMBER = 1;
 
+    public PaletteBase() { }
+
     public PaletteBase(Transition[] transitions)
     {
       PaletteTransitions = transitions;

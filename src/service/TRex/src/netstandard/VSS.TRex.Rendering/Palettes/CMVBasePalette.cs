@@ -31,6 +31,8 @@ namespace VSS.TRex.Rendering.Palettes
     /// </summary>
     public short AbsoluteTargetCMV = ABSOLUTE_TARGET_CMV;
 
+    public CMVBasePalette() { }
+
     public CMVBasePalette(Transition[] transitions) : base(transitions)
     {
     }

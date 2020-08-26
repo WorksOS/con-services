@@ -18,7 +18,9 @@ namespace VSS.TRex.Rendering.Palettes
 
     protected double _minTarget => MDPPercentageRange.Min / 100;
     protected double _maxTarget => MDPPercentageRange.Max / 100;
-    
+
+    public MDPBasePalette() { }
+
     public MDPRangePercentageRecord MDPPercentageRange = new MDPRangePercentageRecord(MDP_DEFAULT_PERCENTAGE_MIN, MDP_DEFAULT_PERCENTAGE_MAX);
 
     /// <summary>

@@ -115,8 +115,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       result4.Should().Be(true);
 
       var type = typeof(AddCoordinateSystemArgument);
-      var typeHasReadWriteMembers = HasMethod(type, "FromBinary", new[] {typeof(IBinaryRawReader)}, true) &&
-                                    HasMethod(type, "ToBinary", new[] {typeof(IBinaryRawWriter)}, true);
+      var typeHasReadWriteMembers = HasMethod(type, "InternalFromBinary", new[] {typeof(IBinaryRawReader)}, true) &&
+                                    HasMethod(type, "InternalToBinary", new[] {typeof(IBinaryRawWriter)}, true);
       typeHasReadWriteMembers.Should().BeTrue();
     }
 

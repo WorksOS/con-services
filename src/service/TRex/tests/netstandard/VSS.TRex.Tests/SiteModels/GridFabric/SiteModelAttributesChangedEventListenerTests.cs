@@ -58,7 +58,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
     {
       var message = new SiteModelAttributesChangedEvent();
       var listener = new SiteModelAttributesChangedEventListener();
-      listener.Invoke(Guid.NewGuid(), message).Should().BeFalse();
+      listener.Invoke(Guid.NewGuid(), message).Should().BeTrue();
     }
 
     [Fact]

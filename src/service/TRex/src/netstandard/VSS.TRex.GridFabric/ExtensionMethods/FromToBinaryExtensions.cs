@@ -156,7 +156,7 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
 
       var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (version == -1)
+      if (version == 1)
       {
         item.X = reader.ReadDouble();
         item.Y = reader.ReadDouble();

@@ -92,7 +92,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
 
       var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
-      if (messageVersion == 1)
+      if (messageVersion >= 1)
       {
         Mode = (DisplayMode) reader.ReadInt();
 
@@ -111,10 +111,11 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         CoordsAreGrid = reader.ReadBoolean();
         PixelsX = (ushort) reader.ReadInt();
         PixelsY = (ushort) reader.ReadInt();
-        if (messageVersion >= 2)
-        {
-          VolumeType = (VolumeComputationType) reader.ReadByte();
-        }
+      }
+
+      if (messageVersion >= 2)
+      {
+        VolumeType = (VolumeComputationType) reader.ReadByte();
       }
     }
   }
