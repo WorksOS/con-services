@@ -110,7 +110,6 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
         try
         {
-          // Todo: Determine if this exclusive lock acquisition is really necessary
           if (!Design.HasElevationDataForSubGridPatch(
             Args.OTGCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
             Args.OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
@@ -126,8 +125,8 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
             // and decrement the bit count so that we know when we've handled all the requested cells
 
             if (Design.InterpolateHeight(ref Hint,
-            OriginXPlusHalfCellSize + CellSize * x, OriginYPlusHalfCellSize + CellSize * y,
-            0, out double z))
+                OriginXPlusHalfCellSize + CellSize * x, OriginYPlusHalfCellSize + CellSize * y,
+                0, out double z))
             {
               // Check for composite elevation processing
               if (Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations)
@@ -136,33 +135,33 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
                 if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
                 {
                   PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
-                  PatchComposite.Cells[x, y].FirstHeight = (float)z;
+                    PatchComposite.Cells[x, y].FirstHeight = (float) z;
                 }
 
                 // Always set the latest elevation (surfaces ordered by increasing date)
                 PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
-                PatchComposite.Cells[x, y].LastHeight = (float)z;
+                  PatchComposite.Cells[x, y].LastHeight = (float) z;
 
                 // Update the lowest height
                 if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
-                  PatchComposite.Cells[x, y].LowestHeight > z)
+                      PatchComposite.Cells[x, y].LowestHeight > z)
                 {
                   PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
-                  PatchComposite.Cells[x, y].LowestHeight = (float)z;
+                    PatchComposite.Cells[x, y].LowestHeight = (float) z;
                 }
 
                 // Update the highest height
                 if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
-                  PatchComposite.Cells[x, y].HighestHeight > z)
+                      PatchComposite.Cells[x, y].HighestHeight > z)
                 {
                   PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
-                  PatchComposite.Cells[x, y].HighestHeight = (float)z;
+                    PatchComposite.Cells[x, y].HighestHeight = (float) z;
                 }
               }
               else // earliest/latest singular value processing
               {
                 PatchSingle.Times[x, y] = AsAtDate;
-                PatchSingle.Cells[x, y] = (float)z;
+                  PatchSingle.Cells[x, y] = (float) z;
               }
             }
 
@@ -196,15 +195,21 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     public IClientLeafSubGrid Execute()
     {
       // Perform the design profile calculation
-      //try
-      //{
-      // Calculate the patch of elevations and return it
-      var result = Calc(out var calcResult);
+      try
+      {
+        // Calculate the patch of elevations and return it
+        var result = Calc(out var calcResult);
 
-      // TODO: Handle case of failure to request patch of elevations from design
+        // TODO: Handle case of failure to request patch of elevations from design
 
-      return result;
-      //}
+        return result;
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Exception occurred calculating surveyed surface patch");
+        return null;
+      }
+
       //finally
       //{
       //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
