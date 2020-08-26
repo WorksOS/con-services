@@ -1,9 +1,11 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Executors;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -23,8 +25,12 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
       {
         // _log.LogDebug($"SurfaceElevationPatchComputeFunc: Arg = {arg}");
 
-        var executor = new CalculateSurfaceElevationPatch(arg);
-        var result = executor.Execute();
+        var executor = new CalculateSurfaceElevationPatch();
+        var result = executor.Execute(arg.SiteModelID, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY,
+          arg.CellSize, arg.SurveyedSurfacePatchType, arg.IncludedSurveyedSurfaces,
+          DIContext.ObtainRequired<IDesignFiles>(),
+          DIContext.ObtainRequired<ISiteModels>().GetSiteModel(arg.SiteModelID).SurveyedSurfaces,
+          arg.ProcessingMap);
 
         byte[] resultAsBytes = null;
         if (result != null)

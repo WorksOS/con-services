@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Executors;
@@ -18,6 +20,16 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
     /// Reference to the client sub grid factory
     /// </summary>
     private readonly IClientLeafSubGridFactory _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
+
+    /// <summary>
+    /// Design files references kept for the duration of the request utilizing this local compute scope
+    /// </summary>
+    private IDesignFiles _designFiles;
+
+    /// <summary>
+    /// Surveyed surfaces references kept for the duration of the request utilizing this local compute scope
+    /// </summary>
+    private ISurveyedSurfaces _surveyedSurfaces;
 
     public SurfaceElevationPatchRequestViaLocalCompute()
     {
@@ -40,7 +52,9 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
       // Check the item is available in the cache
       if (cachingSupported && _cache?.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
+      {
         return _cache.ExtractFromCachedItem(cacheResult, arg.ProcessingMap, arg.SurveyedSurfacePatchType);
+      }
 
       SubGridTreeBitmapSubGridBits savedMap = null;
 
@@ -53,8 +67,12 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
       var subGridInvalidationVersion = cachingSupported ? _cache.InvalidationVersion : 0;
 
-      var executor = new CalculateSurfaceElevationPatch(arg);
-      var clientResult = executor.Execute();
+      var executor = new CalculateSurfaceElevationPatch();
+      var clientResult = executor.Execute(arg.SiteModelID, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY,
+        arg.CellSize, arg.SurveyedSurfacePatchType, arg.IncludedSurveyedSurfaces,
+        _designFiles ??= DIContext.ObtainRequired<IDesignFiles>(),
+        _surveyedSurfaces ??= DIContext.ObtainRequired<ISiteModels>().GetSiteModel(arg.SiteModelID).SurveyedSurfaces,
+        arg.ProcessingMap);
 
       if (clientResult != null)
       {
