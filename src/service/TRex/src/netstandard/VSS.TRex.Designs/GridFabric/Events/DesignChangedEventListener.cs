@@ -88,7 +88,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occured processing design changed event");
+        Log.LogError(e, "Exception occurred processing design changed event");
         return false;
       }
       finally

@@ -30,7 +30,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
       var responseCount = 0;
       try
       {
-
         responseCount = message.ResponseItems?.Length ?? 0;
         _log.LogInformation($"Received notification of TAG file processing for {message.ProjectUid}, #TAG files = {responseCount}");
 
@@ -51,12 +50,12 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception occured processing site model attributes changed event");
+        _log.LogError(e, "Exception occurred processing site model attributes changed event");
         return false;
       }
       finally
       {
-        _log.LogInformation($"Completed handling of notification of TAG file processing for {message.ProjectUid}, #TAG files = {responseCount}");
+        _log.LogInformation($"Completed handling of notification of TAG file processing for {message?.ProjectUid}, #TAG files = {responseCount}");
       }
 
       return true;

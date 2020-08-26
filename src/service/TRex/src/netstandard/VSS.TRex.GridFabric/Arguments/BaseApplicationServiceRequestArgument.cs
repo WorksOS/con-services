@@ -1,5 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
@@ -13,6 +14,8 @@ namespace VSS.TRex.GridFabric.Arguments
   /// </summary>
   public class BaseApplicationServiceRequestArgument : BaseRequestArgument
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<BaseApplicationServiceRequestArgument>();
+
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
@@ -48,55 +51,69 @@ namespace VSS.TRex.GridFabric.Arguments
 
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      try
+      {
+        base.ToBinary(writer);
 
-      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteGuid(TRexNodeID);
-      writer.WriteGuid(ProjectID);
+        writer.WriteGuid(TRexNodeID);
+        writer.WriteGuid(ProjectID);
 
-      writer.WriteBoolean(ReferenceDesign != null);
-      ReferenceDesign?.ToBinary(writer);
+        writer.WriteBoolean(ReferenceDesign != null);
+        ReferenceDesign?.ToBinary(writer);
 
-      writer.WriteBoolean(Filters != null);
-      Filters?.ToBinary(writer);
+        writer.WriteBoolean(Filters != null);
+        Filters?.ToBinary(writer);
 
-      writer.WriteBoolean(Overrides != null);
-      Overrides?.ToBinary(writer);
+        writer.WriteBoolean(Overrides != null);
+        Overrides?.ToBinary(writer);
 
-      writer.WriteBoolean(LiftParams != null);
-      LiftParams?.ToBinary(writer);
+        writer.WriteBoolean(LiftParams != null);
+        LiftParams?.ToBinary(writer);
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception in ToBinary()");
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
-
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      TRexNodeID = reader.ReadGuid() ?? Guid.Empty;
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
-
-      ReferenceDesign = new DesignOffset();
-      if (reader.ReadBoolean())
-        ReferenceDesign.FromBinary(reader);
-
-      if (reader.ReadBoolean())
+      try
       {
-        Filters = DI.DIContext.Obtain<IFilterSet>();
-        Filters.FromBinary(reader);
+        base.FromBinary(reader);
+
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+        TRexNodeID = reader.ReadGuid() ?? Guid.Empty;
+        ProjectID = reader.ReadGuid() ?? Guid.Empty;
+
+        ReferenceDesign = new DesignOffset();
+        if (reader.ReadBoolean())
+          ReferenceDesign.FromBinary(reader);
+
+        if (reader.ReadBoolean())
+        {
+          Filters = DI.DIContext.Obtain<IFilterSet>();
+          Filters.FromBinary(reader);
+        }
+
+        if (reader.ReadBoolean())
+        {
+          Overrides = new OverrideParameters();
+          Overrides.FromBinary(reader);
+        }
+
+        if (reader.ReadBoolean())
+        {
+          LiftParams = new LiftParameters();
+          LiftParams.FromBinary(reader);
+        }
       }
-
-      if (reader.ReadBoolean())
+      catch (Exception e)
       {
-        Overrides = new OverrideParameters();
-        Overrides.FromBinary(reader);
-      }
-
-      if (reader.ReadBoolean())
-      {
-        LiftParams = new LiftParameters();
-        LiftParams.FromBinary(reader);
+        _log.LogError(e, "Exception in FromBinary()");
       }
     }
   }

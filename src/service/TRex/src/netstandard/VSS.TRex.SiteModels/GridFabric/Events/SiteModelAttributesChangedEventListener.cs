@@ -49,13 +49,13 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occured processing site model attributes changed event");
+        Log.LogError(e, "Exception occurred processing site model attributes changed event");
         return false;
       }
       finally
       {
         Log.LogInformation(
-          $"Completed handling notification of site model attributes changed for {message.SiteModelID}: ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
+          $"Completed handling notification of site model attributes changed for '{message.SiteModelID}': ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
       }
 
       return true;

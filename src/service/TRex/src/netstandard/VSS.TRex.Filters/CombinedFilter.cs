@@ -34,8 +34,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     ///  Handy helper function to make a configured filter
     /// </summary>
-    /// <param name="configure"></param>
-    /// <returns></returns>
     public static CombinedFilter MakeFilterWith(Action<CombinedFilter> configure)
     {
       var combinedFilter = new CombinedFilter();
@@ -51,8 +49,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Constructor accepting attribute and spatial filters
     /// </summary>
-    /// <param name="attributeFilter"></param>
-    /// <param name="spatialFilter"></param>
     public CombinedFilter(ICellPassAttributeFilter attributeFilter, ICellSpatialFilter spatialFilter)
     {
       AttributeFilter = attributeFilter;
@@ -61,7 +57,7 @@ namespace VSS.TRex.Filters
 
     public void ToBinary(IBinaryRawWriter writer)
     {
-      VersionSerializationHelper.EmitVersionByte(writer, CombinedFilter.VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteBoolean(AttributeFilter != null);
       AttributeFilter?.ToBinary(writer);
@@ -72,13 +68,13 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, CombinedFilter.VERSION_NUMBER);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       if (reader.ReadBoolean())
-        (AttributeFilter ?? (AttributeFilter = new CellPassAttributeFilter())).FromBinary(reader);
+        (AttributeFilter ??= new CellPassAttributeFilter()).FromBinary(reader);
 
       if (reader.ReadBoolean())
-        (SpatialFilter ?? (SpatialFilter = new CellSpatialFilter())).FromBinary(reader);
+        (SpatialFilter ??= new CellSpatialFilter()).FromBinary(reader);
     }
   }
 }

@@ -1,8 +1,8 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Records;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
 {
@@ -11,6 +11,8 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
   /// </summary>    
   public class PassCountStatisticsArgument : BaseApplicationServiceRequestArgument
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<PassCountStatisticsArgument>();
+
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
@@ -21,27 +23,39 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      try
+      {
+        base.ToBinary(writer);
 
-      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteIntArray(PassCountDetailValues);
+        writer.WriteIntArray(PassCountDetailValues);
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception in ToBinary()");
+      }
     }
 
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      try
+      {
+        base.FromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      PassCountDetailValues = reader.ReadIntArray();
+        PassCountDetailValues = reader.ReadIntArray();
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception in FromBinary()");
+      }
     }
   }
 }
