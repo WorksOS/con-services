@@ -228,10 +228,18 @@ namespace VSS.TRex.TAGFiles.Executors
       {
         Log.LogInformation($"Successful ACS prescan of tagfile. {tagFilePreScanACS.ReadResult}. # Blade positions to convert:{aCSBladePositions.Count}, RearAxle:{aCSRearAxlePositions.Count}, Track:{aCSTrackPositions.Count}, Wheel:{aCSWheelPositions.Count}");
         var acsTranslator = DIContext.Obtain<IACSTranslator>();
+        if (acsTranslator == null)
+        {
+          Log.LogError($"IACSTranslator not implemented");
+          return false;
+        }
+        var hold = ReadResult;
+        ReadResult = TAGReadResult.CoordinateConversionFailure;
         if (acsTranslator.TranslatePositions(projectCSIBFile, aCSBladePositions) == null) return false;
         if (acsTranslator.TranslatePositions(projectCSIBFile, aCSRearAxlePositions) == null) return false;
         if (acsTranslator.TranslatePositions(projectCSIBFile, aCSTrackPositions) == null) return false;
         if (acsTranslator.TranslatePositions(projectCSIBFile, aCSWheelPositions) == null) return false;
+        ReadResult = hold;
       }
       else
       {
