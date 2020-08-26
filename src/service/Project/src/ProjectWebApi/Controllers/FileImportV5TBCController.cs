@@ -95,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       try
       {
         // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
-        if (IsDesignFileType(importedFileTbc.ImportedFileTypeId))
+        if (IsTRexDesignFileType(importedFileTbc.ImportedFileTypeId))
         {
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
