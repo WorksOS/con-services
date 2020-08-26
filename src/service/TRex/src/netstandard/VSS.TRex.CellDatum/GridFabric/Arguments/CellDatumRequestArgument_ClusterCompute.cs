@@ -81,12 +81,15 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
     {
       base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Mode = (DisplayMode)reader.ReadInt();
-      NEECoords = NEECoords.FromBinary(reader);
-      OTGCellX = reader.ReadInt();
-      OTGCellY = reader.ReadInt();
+      if (version == 1)
+      {
+        Mode = (DisplayMode) reader.ReadInt();
+        NEECoords = NEECoords.FromBinary(reader);
+        OTGCellX = reader.ReadInt();
+        OTGCellY = reader.ReadInt();
+      }
     }
   }
 }

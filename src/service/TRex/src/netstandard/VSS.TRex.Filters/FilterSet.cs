@@ -93,19 +93,22 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      var filterCount = reader.ReadInt();
-      if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))
+      if (version == 1)
       {
-        _log.LogError("$Invalid number of filters { filterCount} in deserialisation. Setting to a single default filter");
-        Filters = new ICombinedFilter[] { new CombinedFilter() };
-      }
-      else
-      {
-        Filters = new ICombinedFilter[filterCount];
-        for (var i = 0; i < Filters.Length; i++)
-          Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
+        var filterCount = reader.ReadInt();
+        if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))
+        {
+          _log.LogError("$Invalid number of filters { filterCount} in deserialisation. Setting to a single default filter");
+          Filters = new ICombinedFilter[] {new CombinedFilter()};
+        }
+        else
+        {
+          Filters = new ICombinedFilter[filterCount];
+          for (var i = 0; i < Filters.Length; i++)
+            Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
+        }
       }
     }
   }

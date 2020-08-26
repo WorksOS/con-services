@@ -36,10 +36,13 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     {
       base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      DesignID = reader.ReadGuid() ?? Guid.Empty;
+      if (version == 1)
+      {
+        ProjectID = reader.ReadGuid() ?? Guid.Empty;
+        DesignID = reader.ReadGuid() ?? Guid.Empty;
+      }
     }
   }
 }

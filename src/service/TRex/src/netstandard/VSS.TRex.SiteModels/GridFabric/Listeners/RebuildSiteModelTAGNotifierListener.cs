@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces.Listeners;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace VSS.TRex.SiteModels.GridFabric.Listeners
 {
-  public class RebuildSiteModelTAGNotifierListener : IMessageListener<IRebuildSiteModelTAGNotifierEvent>, IDisposable, IRebuildSiteModelTAGNotifierListener, IBinarizable, IFromToBinary
+  public class RebuildSiteModelTAGNotifierListener : VersionCheckedBinarizableSerializationBase, IMessageListener<IRebuildSiteModelTAGNotifierEvent>, IDisposable, IRebuildSiteModelTAGNotifierListener
   {
     /// <summary>
     /// The listener that responds to TAG file processing notifications for the project rebuilder
@@ -90,29 +89,21 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
       StopListening();
     }
 
-    /// <summary>
-    /// Listener has no serializable content
-    /// </summary>
-    /// <param name="writer"></param>
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    /// <summary>
-    /// Listener has no serializable content
-    /// </summary>
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteString(MessageTopicName);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      MessageTopicName = reader.ReadString();
+      if (version == 1)
+      {
+        MessageTopicName = reader.ReadString();
+      }
     }
   }
 }

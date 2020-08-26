@@ -1,7 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 
@@ -10,7 +9,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
   /// <summary>
   /// Represents the state of a change map store in the change map buffer queue awaiting processing.
   /// </summary>
-  public class SiteModelChangeBufferQueueItem : IBinarizable, IFromToBinary, ISiteModelChangeBufferQueueItem, IEquatable<SiteModelChangeBufferQueueItem>
+  public class SiteModelChangeBufferQueueItem : VersionCheckedBinarizableSerializationBase, ISiteModelChangeBufferQueueItem, IEquatable<SiteModelChangeBufferQueueItem>
   { 
     public const byte VERSION_NUMBER = 1;
 
@@ -51,11 +50,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// </summary>
     public SiteModelChangeMapOrigin Origin { get; set; }
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -67,16 +62,19 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
       writer.WriteInt((int)Origin);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      InsertUTC = DateTime.FromBinary(reader.ReadLong());
-      Content = reader.ReadByteArray();
-      ProjectUID = reader.ReadGuid() ?? Guid.Empty;
-      MachineUid = reader.ReadGuid() ?? Guid.Empty;
-      Operation = (SiteModelChangeMapOperation) reader.ReadInt();
-      Origin = (SiteModelChangeMapOrigin) reader.ReadInt();
+      if (version == 1)
+      {
+        InsertUTC = DateTime.FromBinary(reader.ReadLong());
+        Content = reader.ReadByteArray();
+        ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+        MachineUid = reader.ReadGuid() ?? Guid.Empty;
+        Operation = (SiteModelChangeMapOperation) reader.ReadInt();
+        Origin = (SiteModelChangeMapOrigin) reader.ReadInt();
+      }
     }
 
     public bool Equals(SiteModelChangeBufferQueueItem other)

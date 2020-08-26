@@ -35,9 +35,12 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     {
       base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      PassCountDetailValues = reader.ReadIntArray();
+      if (version == 1)
+      {
+        PassCountDetailValues = reader.ReadIntArray();
+      }
     }
   }
 }

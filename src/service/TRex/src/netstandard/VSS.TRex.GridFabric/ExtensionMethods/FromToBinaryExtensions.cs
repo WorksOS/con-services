@@ -43,19 +43,22 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      bool isNull = reader.ReadBoolean();
-      if (isNull)
-        return;
+      if (version == 1)
+      {
+        bool isNull = reader.ReadBoolean();
+        if (isNull)
+          return;
 
-      item.IsRectangle = reader.ReadBoolean();
+        item.IsRectangle = reader.ReadBoolean();
 
-      item.Points = new List<FencePoint>(reader.ReadInt());
-      for (int i = 0; i < item.Points.Capacity; i++)
-         item.Points.Add(new FencePoint(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble()));
+        item.Points = new List<FencePoint>(reader.ReadInt());
+        for (int i = 0; i < item.Points.Capacity; i++)
+          item.Points.Add(new FencePoint(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble()));
 
-      item.UpdateExtents();
+        item.UpdateExtents();
+      }
     }
 
     /// <summary>
@@ -82,14 +85,17 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      item.MinX = reader.ReadDouble();
-      item.MinY = reader.ReadDouble();
-      item.MinZ = reader.ReadDouble();
-      item.MaxX = reader.ReadDouble();
-      item.MaxY = reader.ReadDouble();
-      item.MaxZ = reader.ReadDouble();
+      if (version == 1)
+      {
+        item.MinX = reader.ReadDouble();
+        item.MinY = reader.ReadDouble();
+        item.MinZ = reader.ReadDouble();
+        item.MaxX = reader.ReadDouble();
+        item.MaxY = reader.ReadDouble();
+        item.MaxZ = reader.ReadDouble();
+      }
     }
 
     /// <summary>
@@ -114,12 +120,15 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      item.MinX = reader.ReadInt();
-      item.MinY = reader.ReadInt();
-      item.MaxX = reader.ReadInt();
-      item.MaxY = reader.ReadInt();
+      if (version == 1)
+      {
+        item.MinX = reader.ReadInt();
+        item.MinY = reader.ReadInt();
+        item.MaxX = reader.ReadInt();
+        item.MaxY = reader.ReadInt();
+      }
 
       return item;
     }
@@ -145,11 +154,14 @@ namespace VSS.TRex.GridFabric.ExtensionMethods
     {
       const byte VERSION_NUMBER = 1;
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      item.X = reader.ReadDouble();
-      item.Y = reader.ReadDouble();
-      item.Z = reader.ReadDouble();
+      if (version == -1)
+      {
+        item.X = reader.ReadDouble();
+        item.Y = reader.ReadDouble();
+        item.Z = reader.ReadDouble();
+      }
 
       return item;
     }

@@ -68,13 +68,16 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
-        (AttributeFilter ??= new CellPassAttributeFilter()).FromBinary(reader);
+      if (version == 1)
+      {
+        if (reader.ReadBoolean())
+          (AttributeFilter ??= new CellPassAttributeFilter()).FromBinary(reader);
 
-      if (reader.ReadBoolean())
-        (SpatialFilter ??= new CellSpatialFilter()).FromBinary(reader);
+        if (reader.ReadBoolean())
+          (SpatialFilter ??= new CellSpatialFilter()).FromBinary(reader);
+      }
     }
   }
 }
