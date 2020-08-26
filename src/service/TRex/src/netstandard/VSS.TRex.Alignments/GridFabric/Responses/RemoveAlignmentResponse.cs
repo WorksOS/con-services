@@ -22,11 +22,6 @@ namespace VSS.TRex.Alignments.GridFabric.Responses
 
     public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      if (reader is null)
-      {
-        throw new ArgumentNullException(nameof(reader));
-      }
-
       base.InternalFromBinary(reader);
 
       var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);

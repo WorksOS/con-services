@@ -19,6 +19,11 @@ namespace VSS.TRex.Common
     {
       try
       {
+        if (writer is null)
+        {
+          throw new ArgumentNullException(nameof(writer));
+        }
+
         InternalToBinary(writer);
       }
       catch (Exception e)
@@ -31,6 +36,11 @@ namespace VSS.TRex.Common
     {
       try
       {
+        if (reader is null)
+        {
+          throw new ArgumentNullException(nameof(reader));
+        }
+
         InternalFromBinary(reader);
       }
       catch (Exception e)
