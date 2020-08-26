@@ -148,29 +148,31 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           cmvPalette.PaletteTransitions = availableTransitions;
           break;
+        case DisplayMode.CCVPercent:
         case DisplayMode.CCVPercentSummary:
-          convertedPalette = new CMVSummaryPalette();
+        case DisplayMode.CCVPercentChange:
+          convertedPalette = new CCVPercentPalette();
 
-          var cmvSummaryPalette = ((CMVSummaryPalette) convertedPalette);
+          var cmvPercentPalette = ((CCVPercentPalette) convertedPalette);
 
-          cmvSummaryPalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
-          cmvSummaryPalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
+          cmvPercentPalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
+          cmvPercentPalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
 
-          cmvSummaryPalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
-          cmvSummaryPalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
+          cmvPercentPalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
+          cmvPercentPalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
 
           if (request.Palettes != null)
           {
-            cmvSummaryPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
-            cmvSummaryPalette.BelowCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
-            cmvSummaryPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
+            cmvPercentPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
+            cmvPercentPalette.BelowCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            cmvPercentPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
           }
 
           break;
         case DisplayMode.CMVChange:
-          convertedPalette = new CMVPercentChangePalette();
+          convertedPalette = new CMVChangePalette();
 
-          var cmvPercentChangePalette = ((CMVPercentChangePalette)convertedPalette);
+          var cmvPercentChangePalette = ((CMVChangePalette)convertedPalette);
           
           cmvPercentChangePalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
           cmvPercentChangePalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;

@@ -710,7 +710,9 @@ namespace VSS.TRex.Webtools.Controllers
       return new JsonResult(new List<(DisplayMode id, string name)>
         {
           (DisplayMode.CCV, "CMV Details"),
-          (DisplayMode.CCVPercentSummary, "CMV Summary"),
+          (DisplayMode.CCVPercent, "CMV Percent"),
+          (DisplayMode.CCVPercentSummary, "CMV Percent Summary"),
+          (DisplayMode.CCVPercentChange, "CMV Percent Change"),
           (DisplayMode.CMVChange, "CMV Change"),
           (DisplayMode.MDPPercentSummary, "MDP Summary"),
           (DisplayMode.PassCount, "Pass Count Details"),

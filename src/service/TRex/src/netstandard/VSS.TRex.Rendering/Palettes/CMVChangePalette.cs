@@ -8,7 +8,7 @@ using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.Rendering.Palettes
 {
-  public class CMVPercentChangePalette : CMVPalette
+  public class CMVChangePalette : CMVPalette
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -28,7 +28,7 @@ namespace VSS.TRex.Rendering.Palettes
       new Transition(50, Color.FromArgb(1, 87, 155))
     };
 
-    public CMVPercentChangePalette() : base(Transitions)
+    public CMVChangePalette() : base(Transitions)
     {
     }
 

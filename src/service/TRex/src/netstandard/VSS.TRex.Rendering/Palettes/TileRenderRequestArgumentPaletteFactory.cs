@@ -19,10 +19,12 @@ namespace VSS.TRex.Rendering.Palettes
           return new CCASummaryPalette();
         case DisplayMode.CCV:
           return new CMVPalette();
+        case DisplayMode.CCVPercent:
         case DisplayMode.CCVPercentSummary:
-          return new CMVSummaryPalette();
+        case DisplayMode.CCVPercentChange:
+          return new CCVPercentPalette();
         case DisplayMode.CMVChange:
-          return new CMVPercentChangePalette();
+          return new CMVChangePalette();
         case DisplayMode.CutFill:
           return new CutFillPalette();
         case DisplayMode.Height:
