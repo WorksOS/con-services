@@ -29,7 +29,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Aggregate new stationOffsets into this set and return the result.
     /// </summary>
-    /// <param name="other"></param>
     public StationOffsetReportRequestResponse_ClusterCompute AggregateWith(StationOffsetReportRequestResponse_ClusterCompute other)
     {
       this.StationOffsetRows.AddRange(other.StationOffsetRows);
@@ -39,10 +38,9 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -58,22 +56,24 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ReturnCode = (ReportReturnCode)reader.ReadInt();
-      ReportType = (ReportType)reader.ReadInt();
-      var griddedRowsCount = reader.ReadInt();
-      StationOffsetRows = new List<StationOffsetRow>(griddedRowsCount);
-      for (int i = 0; i < griddedRowsCount; i++)
+      if (version == 1)
       {
-        var row = new StationOffsetRow();
-        row.FromBinary(reader);
-        StationOffsetRows.Add(row);
+        ReturnCode = (ReportReturnCode) reader.ReadInt();
+        ReportType = (ReportType) reader.ReadInt();
+        var griddedRowsCount = reader.ReadInt();
+        StationOffsetRows = new List<StationOffsetRow>(griddedRowsCount);
+        for (int i = 0; i < griddedRowsCount; i++)
+        {
+          var row = new StationOffsetRow();
+          row.FromBinary(reader);
+          StationOffsetRows.Add(row);
+        }
       }
     }
   }
