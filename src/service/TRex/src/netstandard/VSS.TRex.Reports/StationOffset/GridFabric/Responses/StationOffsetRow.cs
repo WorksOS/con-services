@@ -63,6 +63,7 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
+
     public new void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);

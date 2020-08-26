@@ -122,7 +122,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize out the state of the cell spatial filter using the Ignite IBinarizable serialisation
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -170,7 +169,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize in the state of the cell spatial filter using the Ignite IBinarizable serialisation
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
