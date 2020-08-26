@@ -26,16 +26,9 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     private readonly IClientLeafSubGridFactory _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
     /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    public CalculateSurfaceElevationPatch()
-    {
-    }
-
-    /// <summary>
     /// Performs the donkey work of the elevation patch calculation
     /// </summary>
-    public IClientLeafSubGrid Execute(Guid siteModelID, int OTGCellBottomLeftX, int OTGCellBottomLeftY, double cellSize, SurveyedSurfacePatchType patchType,
+    public IClientLeafSubGrid Execute(Guid siteModelId, int otgCellBottomLeftX, int otgCellBottomLeftY, double cellSize, SurveyedSurfacePatchType patchType,
       Guid[] includedSurveyedSurfaces, IDesignFiles designs, ISurveyedSurfaces surveyedSurfaces, SubGridTreeBitmapSubGridBits processingMap)
     {
       var calcResult = DesignProfilerRequestResult.UnknownError;
@@ -50,14 +43,14 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
         if (includedSurveyedSurfaces == null)
         {
-          _log.LogError($"Included surveyed surfaces list is null, returning null");
+          _log.LogError("Included surveyed surfaces list is null, returning null");
           return null;
         }
 
         var patch = _clientLeafSubGridFactory.GetSubGridEx(
           patchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime,
           cellSize, SubGridTreeConsts.SubGridTreeLevels,
-          OTGCellBottomLeftX, OTGCellBottomLeftY);
+          otgCellBottomLeftX, otgCellBottomLeftY);
 
         // Assign 
         var patchSingle = patchType != SurveyedSurfacePatchType.CompositeElevations
@@ -75,21 +68,21 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
         var originYPlusHalfCellSize = originY + halfCellSize;
 
         // Work down through the list of surfaces in the time ordering provided by the caller
-        for (var i = 0; i < includedSurveyedSurfaces.Length; i++)
+        foreach (var surveyedSurfaceUid in includedSurveyedSurfaces)
         {
           if (processingMap.IsEmpty())
             break;
 
-          var thisSurveyedSurface = surveyedSurfaces.Locate(includedSurveyedSurfaces[i]);
+          var thisSurveyedSurface = surveyedSurfaces.Locate(surveyedSurfaceUid);
           if (thisSurveyedSurface == null)
           {
-            _log.LogError($"Surveyed surface {includedSurveyedSurfaces[i]} not found in site model, returning null");
+            _log.LogError($"Surveyed surface {surveyedSurfaceUid} not found in site model, returning null");
             calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
             return null;
           }
 
           // Lock & load the design
-          var design = designs.Lock(thisSurveyedSurface.DesignDescriptor.DesignID, siteModelID, cellSize, out _);
+          var design = designs.Lock(thisSurveyedSurface.DesignDescriptor.DesignID, siteModelId, cellSize, out _);
 
           if (design == null)
           {
@@ -101,8 +94,8 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           try
           {
             if (!design.HasElevationDataForSubGridPatch(
-              OTGCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-              OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
+              otgCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+              otgCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
             {
               continue;
             }
