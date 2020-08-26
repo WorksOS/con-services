@@ -493,7 +493,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Fact]
     public async Task Test_TileRenderRequest_TAGFile_And_SurveyedSurface_ElevationOnly()
     {
-      // Render a surveyed surface across a processd TAG file extent
+      // Render a surveyed surface across a processed TAG file extent
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
@@ -524,7 +524,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurfaceWithTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
+      var saveFileName = ""; //@$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.Height, saveFileName, path);
     }
