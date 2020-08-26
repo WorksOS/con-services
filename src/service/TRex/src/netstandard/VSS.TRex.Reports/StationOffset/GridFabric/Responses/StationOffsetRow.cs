@@ -53,7 +53,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public new void ToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
@@ -64,7 +63,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public new void FromBinary(IBinaryRawReader reader)
     {
       base.FromBinary(reader);

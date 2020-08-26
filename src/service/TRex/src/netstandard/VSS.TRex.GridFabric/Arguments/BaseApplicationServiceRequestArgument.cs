@@ -51,41 +51,34 @@ namespace VSS.TRex.GridFabric.Arguments
 
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      try
-      {
-        base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
-        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-        writer.WriteGuid(TRexNodeID);
-        writer.WriteGuid(ProjectID);
+      writer.WriteGuid(TRexNodeID);
+      writer.WriteGuid(ProjectID);
 
-        writer.WriteBoolean(ReferenceDesign != null);
-        ReferenceDesign?.ToBinary(writer);
+      writer.WriteBoolean(ReferenceDesign != null);
+      ReferenceDesign?.ToBinary(writer);
 
-        writer.WriteBoolean(Filters != null);
-        Filters?.ToBinary(writer);
+      writer.WriteBoolean(Filters != null);
+      Filters?.ToBinary(writer);
 
-        writer.WriteBoolean(Overrides != null);
-        Overrides?.ToBinary(writer);
+      writer.WriteBoolean(Overrides != null);
+      Overrides?.ToBinary(writer);
 
-        writer.WriteBoolean(LiftParams != null);
-        LiftParams?.ToBinary(writer);
-      }
-      catch (Exception e)
-      {
-        _log.LogError(e, "Exception in ToBinary()");
-      }
+      writer.WriteBoolean(LiftParams != null);
+      LiftParams?.ToBinary(writer);
     }
 
     public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      try
+      base.InternalFromBinary(reader);
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
       {
-        base.FromBinary(reader);
-
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
         TRexNodeID = reader.ReadGuid() ?? Guid.Empty;
         ProjectID = reader.ReadGuid() ?? Guid.Empty;
 
@@ -110,10 +103,6 @@ namespace VSS.TRex.GridFabric.Arguments
           LiftParams = new LiftParameters();
           LiftParams.FromBinary(reader);
         }
-      }
-      catch (Exception e)
-      {
-        _log.LogError(e, "Exception in FromBinary()");
       }
     }
   }

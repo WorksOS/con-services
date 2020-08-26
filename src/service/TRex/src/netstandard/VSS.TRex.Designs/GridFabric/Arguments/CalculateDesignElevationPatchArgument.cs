@@ -63,7 +63,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// </summary>
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 

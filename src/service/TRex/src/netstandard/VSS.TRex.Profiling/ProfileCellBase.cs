@@ -1,9 +1,10 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Profiling.Interfaces;
 
 namespace VSS.TRex.Profiling
 {
-  public abstract class ProfileCellBase : IProfileCellBase
+  public abstract class ProfileCellBase : VersionCheckedBinarizableSerializationBase, IProfileCellBase
   {
     /// <summary>
     /// The real-world distance from the 'start' of the profile line drawn by the user;
@@ -35,8 +36,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public virtual void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       writer.WriteDouble(Station);
       writer.WriteDouble(InterceptLength);
@@ -50,8 +50,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public virtual void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       Station = reader.ReadDouble();
       InterceptLength = reader.ReadDouble();

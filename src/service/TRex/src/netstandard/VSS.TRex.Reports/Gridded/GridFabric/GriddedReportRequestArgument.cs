@@ -53,7 +53,7 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     /// </summary>
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -73,15 +73,18 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     {
       base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      GridInterval = reader.ReadDouble();
-      GridReportOption = (GridReportOption) reader.ReadInt();
-      StartNorthing = reader.ReadDouble();
-      StartEasting = reader.ReadDouble();
-      EndNorthing = reader.ReadDouble();
-      EndEasting = reader.ReadDouble();
-      Azimuth = reader.ReadDouble();
+      if (version == 1)
+      {
+        GridInterval = reader.ReadDouble();
+        GridReportOption = (GridReportOption) reader.ReadInt();
+        StartNorthing = reader.ReadDouble();
+        StartEasting = reader.ReadDouble();
+        EndNorthing = reader.ReadDouble();
+        EndEasting = reader.ReadDouble();
+        Azimuth = reader.ReadDouble();
+      }
     }
   }
 }
