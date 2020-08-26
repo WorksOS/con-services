@@ -7,6 +7,8 @@ namespace VSS.TRex.Profiling
 {
   public class SummaryVolumeProfileCell : ProfileCellBase, ISummaryVolumeProfileCell
   {
+    private const byte VERSION_NUMBER = 1;
+
     public float LastCellPassElevation1;
     public float LastCellPassElevation2;
 
@@ -23,6 +25,9 @@ namespace VSS.TRex.Profiling
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
       base.InternalToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteFloat(LastCellPassElevation1);
       writer.WriteFloat(LastCellPassElevation2);
     }
@@ -33,8 +38,14 @@ namespace VSS.TRex.Profiling
     public override void InternalFromBinary(IBinaryRawReader reader)
     {
       base.InternalFromBinary(reader);
-      LastCellPassElevation1 = reader.ReadFloat();
-      LastCellPassElevation2 = reader.ReadFloat();
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
+      {
+        LastCellPassElevation1 = reader.ReadFloat();
+        LastCellPassElevation2 = reader.ReadFloat();
+      }
     }
 
     /// <summary>
