@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -21,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// Builds Summary speed report from Raptor
   /// </summary>
-  public class SummarySpeedExecutor : RequestExecutorContainer
+  public class SummarySpeedExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -51,7 +52,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_SPEED") ?? false)
         {
 #endif
-          var speedSummaryRequest = new SpeedSummaryRequest(
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+
+        var speedSummaryRequest = new SpeedSummaryRequest(
             request.ProjectUid.Value,
             request.Filter,
             request.LiftBuildSettings.MachineSpeedTarget,

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
 
@@ -22,7 +23,8 @@ namespace VSS.Productivity3D.Common.Interfaces
       IConfigurationStore configStore = null,
       List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null,
       ITRexTagFileProxy tRexTagFileProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
-      IHeaderDictionary customHeaders = null, string customerUid = null)
+      IFileImportProxy fileImportProxy = null,
+      IHeaderDictionary customHeaders = null, string customerUid = null, string userId = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -45,8 +47,10 @@ namespace VSS.Productivity3D.Common.Interfaces
         profileResultHelper,
         tRexTagFileProxy,
         trexCompactionDataProxy,
+        fileImportProxy,
         customHeaders,
-        customerUid);
+        customerUid,
+        userId);
 
       return executor;
     }

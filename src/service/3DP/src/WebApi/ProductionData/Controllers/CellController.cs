@@ -38,7 +38,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return await RequestExecutorContainerFactory.Build<CellPassesExecutor>(
         LoggerFactory,
         configStore: ConfigStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy
+        trexCompactionDataProxy: TRexCompactionDataProxy, 
+        fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId()
         ).ProcessAsync(request) as CellPassesResult;
     }
 
@@ -58,16 +59,18 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(
         LoggerFactory,
         configStore: ConfigStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy
+        trexCompactionDataProxy: TRexCompactionDataProxy,
+        fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId()
         ).ProcessAsync(request) as CellDatumResult;
     }
 
+    /// Called by TBC only
     /// <summary>
     /// Requests cell passes information in patches (raw Raptor data output)
     /// </summary>
     [PostRequestVerifier]
     [HttpPost("api/v1/productiondata/patches")]
-    public ContractExecutionResult Post([FromBody] PatchRequest request)
+    public ContractExecutionResult PostProductionDataPatchesTbc([FromBody] PatchRequest request)
     {
       request.Validate();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
@@ -37,7 +39,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       {
 #endif
      
-      await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
+      await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+      await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+
       log.LogDebug($"{nameof(CellDatumExecutor)} trexRequest {JsonConvert.SerializeObject(request)}");
 
       var trexData = await GetTRexCellDatumData(request);

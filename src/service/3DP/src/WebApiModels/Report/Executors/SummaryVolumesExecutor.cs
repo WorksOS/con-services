@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Utilities;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Extensions;
@@ -31,7 +33,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
         var baseFilter = request.BaseFilter;
         var topFilter = request.TopFilter;
-        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, baseFilter, topFilter);
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, baseFilter, topFilter);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: baseFilter, filter2: topFilter);
+
+        var designDescriptors = new List<DesignDescriptor>();
+        designDescriptors.Add(request.BaseDesignDescriptor);
+        designDescriptors.Add(request.TopDesignDescriptor);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, designDescriptors);
 
         if (request.VolumeCalcType == VolumesType.Between2Filters)
         {
