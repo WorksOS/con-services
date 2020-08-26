@@ -117,10 +117,12 @@ namespace VSS.TRex.Webtools.Controllers
           cmvPalette.TargetCCVColour = Color.Green;
           cmvPalette.DefaultDecoupledCMVColour = Color.Black;
           break;
+        case DisplayMode.CCVPercent:
         case DisplayMode.CCVPercentSummary:
-          convertedPalette = new CMVSummaryPalette();
+        case DisplayMode.CCVPercentChange:
+          convertedPalette = new CCVPercentPalette();
 
-          var cmvSummaryPalette = ((CMVSummaryPalette)convertedPalette);
+          var cmvSummaryPalette = ((CCVPercentPalette)convertedPalette);
 
           cmvSummaryPalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
           cmvSummaryPalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
@@ -129,9 +131,9 @@ namespace VSS.TRex.Webtools.Controllers
           cmvSummaryPalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
           break;
         case DisplayMode.CMVChange:
-          convertedPalette = new CMVPercentChangePalette();
+          convertedPalette = new CMVChangePalette();
 
-          var cmvPercentChangePalette = ((CMVPercentChangePalette)convertedPalette);
+          var cmvPercentChangePalette = ((CMVChangePalette)convertedPalette);
 
           cmvPercentChangePalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
           cmvPercentChangePalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
@@ -229,7 +231,9 @@ namespace VSS.TRex.Webtools.Controllers
       {
         (DisplayMode.Height, "Height"),
         (DisplayMode.CCV, "CCV"),
+        (DisplayMode.CCVPercent, "CCV Percent"),
         (DisplayMode.CCVPercentSummary, "CCV Summary"),
+        (DisplayMode.CCVPercentChange, "CCV Percent Change"),
         (DisplayMode.CMVChange, "CCV Change"),
         (DisplayMode.PassCount, "Pass Count"),
         (DisplayMode.PassCountSummary, "Pass Count Summary"),

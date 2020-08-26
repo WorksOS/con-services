@@ -77,6 +77,7 @@ namespace VSS.TRex.SubGridTrees.Client
         case DisplayMode.CCVPercent:
         case DisplayMode.CCVSummary:
         case DisplayMode.CCVPercentSummary:
+        case DisplayMode.CCVPercentChange:
           return filteredValue.FilteredPass.CCV == CellPassConsts.NullCCV;
 
         case DisplayMode.MDPPercent:

@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.Palettes
   /// <summary>
   /// Simple palette for rendering raw CMV summary data
   /// </summary>
-  public class CMVSummaryPalette : CMVBasePalette
+  public class CCVPercentPalette : CMVBasePalette
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -27,7 +27,7 @@ namespace VSS.TRex.Rendering.Palettes
     /// </summary>
     public Color BelowCMVTargetRangeColour = Color.Blue;
 
-    public CMVSummaryPalette() : base(null)
+    public CCVPercentPalette() : base(null)
     {
     }
 

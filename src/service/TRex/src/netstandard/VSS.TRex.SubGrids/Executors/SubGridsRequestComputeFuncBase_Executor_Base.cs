@@ -546,6 +546,12 @@ namespace VSS.TRex.SubGrids.Executors
         (siteModel, localArg.Filters, localArg.IncludeSurveyedSurfaceInformation, localArg.GridDataType);
 
       var result = PerformSubGridRequests();
+
+      if (result == null)
+      {
+        return new TSubGridRequestsResponse {ResponseCode = SubGridRequestsResponseResult.Exception};
+      }
+
       result.NumSubgridsExamined = numSubGridsToBeExamined;
 
       //TODO: Map the actual response code into this

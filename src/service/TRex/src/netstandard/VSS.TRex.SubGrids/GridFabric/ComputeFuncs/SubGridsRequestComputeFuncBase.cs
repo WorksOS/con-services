@@ -56,10 +56,10 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       {
         _log.LogError(e, "Exception occurred in base sub grid request compute function");
 
-        return new TSubGridRequestsResponse {ResponseCode = SubGridRequestsResponseResult.Unknown};
+        return new TSubGridRequestsResponse { ResponseCode = SubGridRequestsResponseResult.Unknown};
       }
 
-      return result;
+      return result ?? new TSubGridRequestsResponse {ResponseCode = SubGridRequestsResponseResult.Unknown};
     }
   }
 }
