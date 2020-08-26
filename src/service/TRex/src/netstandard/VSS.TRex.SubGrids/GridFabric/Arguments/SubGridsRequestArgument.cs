@@ -76,7 +76,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public override void InternalFromBinary(IBinaryRawReader reader)
     {
       base.InternalFromBinary(reader);
