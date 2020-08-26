@@ -31,11 +31,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
     /// </summary>
     public ISerialisedByteArrayWrapper Payload { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       try
       {
-        base.ToBinary(writer);
+        base.InternalToBinary(writer);
 
         VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -59,14 +59,14 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      try
+      base.InternalFromBinary(reader);
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
       {
-        base.FromBinary(reader);
-
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
         NodeId = reader.ReadGuid() ?? Guid.Empty;
         RequestDescriptor = reader.ReadGuid() ?? Guid.Empty;
 
@@ -74,15 +74,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
         {
           Payload = new SerialisedByteArrayWrapper(reader.ReadByteArray());
         }
-      }
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(SubGridProgressiveResponseRequestComputeFuncArgument)}.FromBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(SubGridProgressiveResponseRequestComputeFuncArgument)}.FromBinary()");
       }
     }
   }

@@ -54,10 +54,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -78,24 +77,27 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
     /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      RequestID = reader.ReadGuid() ?? Guid.Empty;
-      GridDataType = (GridDataType) reader.ReadInt();
+      if (version == 1)
+      {
+        RequestID = reader.ReadGuid() ?? Guid.Empty;
+        GridDataType = (GridDataType) reader.ReadInt();
 
-      ProdDataMaskBytes = reader.ReadByteArray();
-      SurveyedSurfaceOnlyMaskBytes = reader.ReadByteArray();
+        ProdDataMaskBytes = reader.ReadByteArray();
+        SurveyedSurfaceOnlyMaskBytes = reader.ReadByteArray();
 
-      IncludeSurveyedSurfaceInformation = reader.ReadBoolean();
+        IncludeSurveyedSurfaceInformation = reader.ReadBoolean();
 
-      AreaControlSet = new AreaControlSet();
-      AreaControlSet.FromBinary(reader);
+        AreaControlSet = new AreaControlSet();
+        AreaControlSet.FromBinary(reader);
 
-      SubGridsRequestComputeStyle = (SubGridsRequestComputeStyle)reader.ReadInt();
+        SubGridsRequestComputeStyle = (SubGridsRequestComputeStyle) reader.ReadInt();
+      }
     }
   }
 }
