@@ -1,6 +1,6 @@
 ﻿using Apache.Ignite.Core.Binary;
 
-namespace VSS.TRex.GridFabric.Interfaces
+namespace VSS.TRex.Common.Interfaces
 {
   public interface IVersionCheckedBinarizableSerializationBase
   {

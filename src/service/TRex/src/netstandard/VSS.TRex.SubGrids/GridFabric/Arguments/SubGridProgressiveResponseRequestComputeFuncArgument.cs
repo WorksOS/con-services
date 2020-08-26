@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Interfaces;
@@ -33,29 +32,17 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
 
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      try
-      {
-        base.InternalToBinary(writer);
+      base.InternalToBinary(writer);
 
-        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-        writer.WriteGuid(NodeId);
-        writer.WriteGuid(RequestDescriptor);
+      writer.WriteGuid(NodeId);
+      writer.WriteGuid(RequestDescriptor);
 
-        writer.WriteBoolean(Payload?.Bytes != null);
-        if (Payload?.Bytes != null)
-        {
-          writer.WriteByteArray(Payload.Bytes);
-        }
-      }
-      catch (TRexSerializationVersionException e)
+      writer.WriteBoolean(Payload?.Bytes != null);
+      if (Payload?.Bytes != null)
       {
-        _log.LogError(e, $"Serialization version exception in {nameof(SubGridProgressiveResponseRequestComputeFuncArgument)}.ToBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(SubGridProgressiveResponseRequestComputeFuncArgument)}.ToBinary()");
+        writer.WriteByteArray(Payload.Bytes);
       }
     }
 

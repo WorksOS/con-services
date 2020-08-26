@@ -2,9 +2,8 @@
 using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.GridFabric.Interfaces;
 
-namespace VSS.TRex.GridFabric
+namespace VSS.TRex.Common
 {
   public abstract class VersionCheckedBinarizableSerializationBase : IBinarizable, IFromToBinary, IVersionCheckedBinarizableSerializationBase
   {

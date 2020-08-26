@@ -49,7 +49,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           else
           {
             Log.LogWarning("No IDesignManager instance available from DIContext to send attributes change message to");
-            return false;
+            return true; // Stay subscribed
           }
         }
         else if (message.FileType == ImportedFileType.SurveyedSurface)
@@ -63,7 +63,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           else
           {
             Log.LogWarning("No ISurveyedSurfaceManager instance available from DIContext to send attributes change message to");
-            return false;
+            return true;  // Stay subscribed
           }
         }
         else if (message.FileType == ImportedFileType.Alignment)
@@ -78,7 +78,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           {
             // Note! not all listeners maybe interested in the design type removed so only log as warning 
             Log.LogWarning("No IAlignmentManager instance available from DIContext to send attributes change message to");
-            return false;
+            return true;  // Stay subscribed
           }
         }
 
@@ -89,7 +89,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
       catch (Exception e)
       {
         Log.LogError(e, "Exception occurred processing design changed event");
-        return false;
+        return true; // Stay subscribed
       }
       finally
       {

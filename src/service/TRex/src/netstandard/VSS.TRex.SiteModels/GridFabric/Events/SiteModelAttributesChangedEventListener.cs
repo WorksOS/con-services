@@ -44,13 +44,13 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         else
         {
           Log.LogError("No ISiteModels instance available from DIContext to send attributes change message to");
-          return false;
+          return true; // Stay subscribed
         }
       }
       catch (Exception e)
       {
         Log.LogError(e, "Exception occurred processing site model attributes changed event");
-        return false;
+        return true;  // stay subscribed
       }
       finally
       {

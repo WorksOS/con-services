@@ -44,14 +44,14 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
           else
           {
             _log.LogError("No ISiteModelRebuilderManager instance available from DIContext to send TAG file processing notification to");
-            return false;
+            return true; // Stay subscribed
           }
         }
       }
       catch (Exception e)
       {
         _log.LogError(e, "Exception occurred processing site model attributes changed event");
-        return false;
+        return true;  // Stay subscribed
       }
       finally
       {

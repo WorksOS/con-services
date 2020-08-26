@@ -6,8 +6,10 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.Responses
 {
-  public class CalculateDesignElevationPatchResponse : BaseRequestResponse 
+  public class CalculateDesignElevationPatchResponse : BaseRequestResponse
   {
+    private const byte VERSION_NUMBER = 1;
+
     public DesignProfilerRequestResult CalcResult { get; set; } = DesignProfilerRequestResult.UnknownError;
 
     /// <summary>
@@ -15,21 +17,26 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     /// </summary>
     public IClientHeightLeafSubGrid Heights { get; set; } = new ClientHeightLeafSubGrid();
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      // Transient message so no versioning...
-      CalcResult = (DesignProfilerRequestResult) reader.ReadByte();
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        Heights = new ClientHeightLeafSubGrid();
-        Heights.FromBytes(reader.ReadByteArray());
+        CalcResult = (DesignProfilerRequestResult) reader.ReadByte();
+
+        if (reader.ReadBoolean())
+        {
+          Heights = new ClientHeightLeafSubGrid();
+          Heights.FromBytes(reader.ReadByteArray());
+        }
       }
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      // Transient message so no versioning...
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteByte((byte)CalcResult);
       writer.WriteBoolean(Heights != null);
       if (Heights != null)

@@ -10,7 +10,6 @@ using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Rendering.GridFabric.Arguments
 {
@@ -66,34 +65,22 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     /// </summary>
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      try
-      {
-        base.InternalToBinary(writer);
+      base.InternalToBinary(writer);
 
-        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-        writer.WriteInt((int)Mode);
+      writer.WriteInt((int) Mode);
 
-        writer.WriteBoolean(Palette != null);
-        Palette?.ToBinary(writer);
+      writer.WriteBoolean(Palette != null);
+      Palette?.ToBinary(writer);
 
-        writer.WriteBoolean(Extents != null);
-        Extents.ToBinary(writer);
+      writer.WriteBoolean(Extents != null);
+      Extents.ToBinary(writer);
 
-        writer.WriteBoolean(CoordsAreGrid);
-        writer.WriteInt(PixelsX);
-        writer.WriteInt(PixelsY);
-        writer.WriteByte((byte)VolumeType);
-      }
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderRequestArgument)}.ToBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(TileRenderRequestArgument)}.ToBinary()");
-      }
+      writer.WriteBoolean(CoordsAreGrid);
+      writer.WriteInt(PixelsX);
+      writer.WriteInt(PixelsY);
+      writer.WriteByte((byte) VolumeType);
     }
 
     /// <summary>
@@ -101,12 +88,12 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     /// </summary>
     public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      try
+      base.InternalFromBinary(reader);
+
+      var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
+
+      if (messageVersion == 1)
       {
-        base.InternalFromBinary(reader);
-
-        var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
-
         Mode = (DisplayMode) reader.ReadInt();
 
         if (reader.ReadBoolean())
@@ -128,16 +115,6 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
         {
           VolumeType = (VolumeComputationType) reader.ReadByte();
         }
-      }
-
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderRequestArgument)}.FromBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(TileRenderRequestArgument)}.FromBinary()");
       }
     }
   }
