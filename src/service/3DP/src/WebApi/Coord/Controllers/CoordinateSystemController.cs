@@ -59,6 +59,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     [PostRequestVerifier]
     [Route("api/v1/coordsystem")]
     [Route("api/v2/coordsystem")]
+    [Obsolete("TBC doesn't call this (as per Shawn 20200826")]
     [HttpPost]
     public async Task<CoordinateSystemSettings> Post([FromBody] CoordinateSystemFile request)
     {

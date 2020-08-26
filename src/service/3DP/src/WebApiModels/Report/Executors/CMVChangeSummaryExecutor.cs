@@ -15,6 +15,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -22,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// Builds CMV change report from Raptor
   /// </summary>
-  public class CMVChangeSummaryExecutor : RequestExecutorContainer
+  public class CMVChangeSummaryExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -52,7 +53,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_CMV"))
         {
 #endif
-          var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+        
+        var cmvChangeDetailsRequest = new CMVChangeDetailsRequest(
             request.ProjectUid.Value, 
             request.Filter, 
             request.CMVChangeSummaryValues,

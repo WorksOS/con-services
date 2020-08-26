@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
     /// The unique id of the design file
     /// </summary>
     [JsonProperty(PropertyName = "fileUid", Required = Required.Default)]
-    public Guid? FileUid { get; private set; }
+    public Guid? FileUid { get; set; }
 
     /// <summary>
     /// The id of the design file

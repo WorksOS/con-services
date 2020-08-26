@@ -17,12 +17,13 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 {
-  public class CellPassesExecutor : RequestExecutorContainer
+  public class CellPassesExecutor : TbcExecutorHelper
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -31,7 +32,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_PASSES"))
       {
 #endif
-        return await GetTRexCellPasses(request);
+
+      await PairUpAssetIdentifiers(request.ProjectUid.Value, request.filter);
+      await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.filter);
+
+      return await GetTRexCellPasses(request);
 #if RAPTOR
       }
 

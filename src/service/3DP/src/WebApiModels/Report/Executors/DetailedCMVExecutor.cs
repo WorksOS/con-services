@@ -53,7 +53,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.CmvSettings.MinCMV, request.CmvSettings.MinCMVPercent, request.CmvSettings.OverrideTargetCMV, 
           (CompactionProjectSettings.DefaultSettings.customCMVTargets.ToArray()));
 
-        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+
         var cmvDetailsRequest = new CMVDetailsRequest(
             request.ProjectUid.Value,
             request.Filter, 

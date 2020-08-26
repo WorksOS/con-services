@@ -15,11 +15,12 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 {
-  public class ElevationStatisticsExecutor : RequestExecutorContainer
+  public class ElevationStatisticsExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -60,7 +61,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_ELEVATION") || UseTRexGateway("ENABLE_TREX_GATEWAY_TILES"))
       {
 #endif
-        var elevationStatisticsRequest = new ElevationDataRequest(
+      await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+      await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+      
+      var elevationStatisticsRequest = new ElevationDataRequest(
           request.ProjectUid.Value, 
           request.Filter,
           AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
