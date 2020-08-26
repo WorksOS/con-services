@@ -40,7 +40,7 @@ namespace VSS.TRex.TAGFiles.Executors
       try
       {
 
-        var convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
+        var convertCoordinates = DIContext.Obtain<ICoreXWrapper>();
 
         if (convertCoordinates == null)
         {

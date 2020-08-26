@@ -360,7 +360,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       siteModel.CSIB().Should().Be(DIMENSIONS_2012_DC_CSIB);
 
       var arg = CreateCellDatumRequestArgument_ApplicationService(siteModel, new DesignOffset(), DisplayMode.Height, new OverrideParameters());
-      arg.Point = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(siteModel.CSIB(), arg.Point.ToCoreX_XYZ()).ToTRex_XYZ();
+      arg.Point = DIContext.Obtain<ICoreXWrapper>().NEEToLLH(siteModel.CSIB(), arg.Point.ToCoreX_XYZ()).ToTRex_XYZ();
       arg.CoordsAreGrid = false;
 
       var request = new CellDatumRequest_ApplicationService();

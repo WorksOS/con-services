@@ -41,7 +41,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
 
       _log.LogDebug($"Assembled vertex & label coordinates before conversion to lat/lon: {string.Join(", ", coords)}");
 
-      var convertedCoords = DIContext.Obtain<IConvertCoordinates>()
+      var convertedCoords = DIContext.Obtain<ICoreXWrapper>()
         .NEEToLLH(csib, coords.ToArray().ToCoreX_XYZ(), CoreX.Types.ReturnAs.Degrees)
         .ToTRex_XYZ();
 

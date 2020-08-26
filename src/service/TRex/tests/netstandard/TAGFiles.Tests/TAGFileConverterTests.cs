@@ -28,7 +28,7 @@ namespace TAGFiles.Tests
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<IACSTranslator, ACSTranslator>())
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Complete();
     }
 

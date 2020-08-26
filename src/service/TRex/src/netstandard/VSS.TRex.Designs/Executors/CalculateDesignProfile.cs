@@ -55,7 +55,7 @@ namespace VSS.TRex.Designs.Executors
 
         if (siteModel != null)
         {
-          arg2.ProfilePathNEE = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(
+          arg2.ProfilePathNEE = DIContext.Obtain<ICoreXWrapper>().WGS84ToCalibration(
             siteModel.CSIB(),
             new[] { arg.StartPoint, arg.EndPoint }
             .ToCoreX_WGS84Point(),

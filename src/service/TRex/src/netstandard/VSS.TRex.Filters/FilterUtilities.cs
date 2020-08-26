@@ -62,7 +62,7 @@ namespace VSS.TRex.Filters
             try
             {
               neeCoords = DIContext
-              .Obtain<IConvertCoordinates>()
+              .Obtain<ICoreXWrapper>()
               .LLHToNEE(siteModel.CSIB(), llhCoords.ToCoreX_XYZ(), InputAs.Radians)
               .ToTRex_XYZ();
             }
@@ -92,7 +92,7 @@ namespace VSS.TRex.Filters
             try
             {
               neeCoords = DIContext
-                .Obtain<IConvertCoordinates>()
+                .Obtain<ICoreXWrapper>()
                 .LLHToNEE(siteModel.CSIB(), llhCoords.ToCoreX_XYZ(), InputAs.Radians)
                 .ToTRex_XYZ();
             }

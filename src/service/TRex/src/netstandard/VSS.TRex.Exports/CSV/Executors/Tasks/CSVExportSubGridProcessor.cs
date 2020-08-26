@@ -28,7 +28,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   {
     private static ILogger _log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
 
-    private IConvertCoordinates _convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
+    private ICoreXWrapper _convertCoordinates = DIContext.Obtain<ICoreXWrapper>();
 
     private readonly int _maxExportRows;
     private int _totalRowCountSoFar;
