@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Factories;
@@ -167,6 +169,21 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register the hook used to capture cell pass mutation events while processing TAG files.
         .Add(x => x.AddSingleton<ICell_NonStatic_MutationHook>(new Cell_NonStatic_MutationHook()))
 
+        .Complete();
+
+        MockACSDependencies(); // default mocking behaviour for ACS tagfiles
+    }
+
+    private void MockACSDependencies()
+    {
+      var mockACSTranslator = new Mock<IACSTranslator>();
+      mockACSTranslator
+        .Setup(x => x.TranslatePositions(It.IsAny<string>(), It.IsAny<List<UTMCoordPointPair>>()))
+        .Returns((string x, List<UTMCoordPointPair> y) => y);
+
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton<IACSTranslator>(mockACSTranslator.Object))
         .Complete();
     }
 
