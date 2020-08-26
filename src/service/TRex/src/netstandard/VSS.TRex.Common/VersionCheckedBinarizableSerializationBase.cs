@@ -9,8 +9,6 @@ namespace VSS.TRex.Common
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<VersionCheckedBinarizableSerializationBase>();
 
-    //public abstract byte[] GetVersionNumbers();
-
     public abstract void InternalFromBinary(IBinaryRawReader reader);
 
     public abstract void InternalToBinary(IBinaryRawWriter writer);
