@@ -64,12 +64,11 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       try
       {
-        base.ToBinary(writer);
+        base.InternalToBinary(writer);
 
         VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -100,12 +99,11 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       try
       {
-        base.FromBinary(reader);
+        base.InternalFromBinary(reader);
 
         var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 

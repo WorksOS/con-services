@@ -49,7 +49,7 @@ namespace VSS.TRex.GridFabric.Arguments
     /// </summary>
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       try
       {
@@ -78,7 +78,7 @@ namespace VSS.TRex.GridFabric.Arguments
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       try
       {

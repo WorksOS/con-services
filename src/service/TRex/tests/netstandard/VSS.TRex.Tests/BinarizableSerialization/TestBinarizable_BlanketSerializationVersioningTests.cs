@@ -181,7 +181,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       }
     }
 
-    [Theory]
+    [Theory(Skip= "Cannot return exception from Ignite JNI mediated contexts as these cause untrappable SEH exceptions")]
+
     [MemberData(nameof(GetTypes))]
     public void FromToBinaryVersioning(Type type)
     {

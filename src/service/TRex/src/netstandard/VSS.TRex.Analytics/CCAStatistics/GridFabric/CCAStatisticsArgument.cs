@@ -6,7 +6,7 @@ namespace VSS.TRex.Analytics.CCAStatistics.GridFabric
 {
   /// <summary>
   /// Argument containing the parameters required for a CCA statistics request
-  /// </summary>    
+  /// </summary>
   public class CCAStatisticsArgument : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
@@ -14,25 +14,21 @@ namespace VSS.TRex.Analytics.CCAStatistics.GridFabric
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-
     }
 
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
     }
   }
 }

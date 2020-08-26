@@ -110,7 +110,6 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
 
         try
         {
-          // Todo: Determine if this exclusive lock acquisition is really necessary
           if (!Design.HasElevationDataForSubGridPatch(
             Args.OTGCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
             Args.OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))

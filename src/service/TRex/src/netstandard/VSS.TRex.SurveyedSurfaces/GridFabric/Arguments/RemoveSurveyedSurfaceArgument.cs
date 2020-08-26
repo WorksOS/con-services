@@ -22,9 +22,9 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
     /// </summary>
     public Guid DesignID { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -32,9 +32,9 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
       writer.WriteGuid(DesignID);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 

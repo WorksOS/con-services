@@ -1,6 +1,4 @@
-﻿using System;
-using Apache.Ignite.Core.Binary;
-using Microsoft.Extensions.Logging;
+﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
 
@@ -8,11 +6,9 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
 {
   /// <summary>
   /// Argument containing the parameters required for a Pass Count statistics request
-  /// </summary>    
+  /// </summary>
   public class PassCountStatisticsArgument : BaseApplicationServiceRequestArgument
   {
-    private static readonly ILogger _log = Logging.Logger.CreateLogger<PassCountStatisticsArgument>();
-
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
@@ -23,39 +19,25 @@ namespace VSS.TRex.Analytics.PassCountStatistics.GridFabric
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      try
-      {
-        base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
-        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-        writer.WriteIntArray(PassCountDetailValues);
-      }
-      catch (Exception e)
-      {
-        _log.LogError(e, "Exception in ToBinary()");
-      }
+      writer.WriteIntArray(PassCountDetailValues);
     }
 
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      try
-      {
-        base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-        PassCountDetailValues = reader.ReadIntArray();
-      }
-      catch (Exception e)
-      {
-        _log.LogError(e, "Exception in FromBinary()");
-      }
+      PassCountDetailValues = reader.ReadIntArray();
     }
   }
 }

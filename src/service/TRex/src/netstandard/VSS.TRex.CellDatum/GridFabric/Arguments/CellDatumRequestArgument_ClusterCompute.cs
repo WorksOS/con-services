@@ -13,18 +13,18 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
 {
   /// <summary>
   /// Argument containing the parameters required for a Cell Datum request
-  /// </summary>    
+  /// </summary>
   public class CellDatumRequestArgument_ClusterCompute : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The datum type to return (eg: height, CMV, Temperature etc). 
+    /// The datum type to return (eg: height, CMV, Temperature etc).
     /// </summary>
     public DisplayMode Mode { get; set; } = DisplayMode.Height;
 
     /// <summary>
-    /// The grid point in the project coordinate system to identify the cell from. 
+    /// The grid point in the project coordinate system to identify the cell from.
     /// </summary>
     public XYZ NEECoords { get; set; }
 
@@ -62,10 +62,9 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -78,10 +77,9 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 

@@ -37,9 +37,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// </summary>
     public ISubGridTreeBitMask ExistenceMap { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -58,23 +58,26 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
-
-      if (reader.ReadBoolean())
-        (DesignDescriptor = new DesignDescriptor()).FromBinary(reader);
-
-      if (reader.ReadBoolean())
-        (Extents = new BoundingWorldExtent3D()).FromBinary(reader);
-
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        (ExistenceMap = new SubGridTreeSubGridExistenceBitMask()).FromBytes(reader.ReadByteArray());
+        ProjectID = reader.ReadGuid() ?? Guid.Empty;
+
+        if (reader.ReadBoolean())
+          (DesignDescriptor = new DesignDescriptor()).FromBinary(reader);
+
+        if (reader.ReadBoolean())
+          (Extents = new BoundingWorldExtent3D()).FromBinary(reader);
+
+        if (reader.ReadBoolean())
+        {
+          (ExistenceMap = new SubGridTreeSubGridExistenceBitMask()).FromBytes(reader.ReadByteArray());
+        }
       }
     }
   }

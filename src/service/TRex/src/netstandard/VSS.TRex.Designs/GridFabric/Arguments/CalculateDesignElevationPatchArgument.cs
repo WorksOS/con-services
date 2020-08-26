@@ -39,11 +39,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Constructor taking the full state of the elevation patch computation operation
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="originX"></param>
-    /// <param name="originY"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="referenceDesign"></param>
     public CalculateDesignElevationPatchArgument(Guid siteModelID,
       int originX,
       int originY,
@@ -58,7 +53,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Overloaded ToString to add argument properties
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return base.ToString() + $" -> SiteModel:{ProjectID}, Origin:{OriginX}/{OriginY}, CellSize:{CellSize}, Design:{ReferenceDesign?.DesignID}, Offset:{ReferenceDesign?.Offset}";
@@ -67,8 +61,7 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       base.ToBinary(writer);
 
@@ -82,16 +75,18 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      OriginX = reader.ReadInt();
-      OriginY = reader.ReadInt();
-      CellSize = reader.ReadDouble();
+      if (version == 1)
+      {
+        OriginX = reader.ReadInt();
+        OriginY = reader.ReadInt();
+        CellSize = reader.ReadDouble();
+      }
     }
   }
 }
