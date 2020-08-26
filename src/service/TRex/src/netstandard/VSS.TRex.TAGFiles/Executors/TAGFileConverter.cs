@@ -217,9 +217,6 @@ namespace VSS.TRex.TAGFiles.Executors
     private bool CollectAndConvertBladePostions(string projectCSIBFile, ref Stream tagData, ref List<UTMCoordPointPair> aCSBladePositions, ref List<UTMCoordPointPair> aCSRearAxlePositions, ref List<UTMCoordPointPair> aCSTrackPositions, ref List<UTMCoordPointPair> aCSWheelPositions)
     {
 
-      // todo temp
-    //  projectCSIBFile = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
-
       var tagFilePreScanACS = new TAGFilePreScanACS(); // special scanner to collect positions
       tagFilePreScanACS.Execute(tagData, ref aCSBladePositions, ref aCSRearAxlePositions, ref aCSTrackPositions, ref aCSWheelPositions);
       tagData.Position = 0; // reset
@@ -280,7 +277,7 @@ namespace VSS.TRex.TAGFiles.Executors
         var machineHardwareId = string.Empty;
         var machineId = string.Empty;
 
-        //Prescan to get all relevant information necessary for processing the tag file. e.g. Machinetype, IsACS
+        //Prescan to get all relevant information necessary for processing the tag file. e.g. Machinetype for swather, Type of coordinate system (ACS)
         var tagFilePreScan = new TAGFilePreScan();
         tagFilePreScan.Execute(tagData);
         tagData.Position = 0; // reset
@@ -357,9 +354,6 @@ namespace VSS.TRex.TAGFiles.Executors
           var tagFile = new TAGFile();
 
           ReadResult = tagFile.Read(reader, sink);
-
-          // processor was part of sink that went into tagfile.read
-          Log.LogInformation($"IsCSIBCoordSystemTypeOnly:{Processor.IsCSIBCoordSystemTypeOnly}");
 
           // Notify the processor that all reading operations have completed for the file
           Processor.DoPostProcessFileAction(ReadResult == TAGReadResult.NoError);
