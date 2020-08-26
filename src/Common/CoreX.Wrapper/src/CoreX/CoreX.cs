@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using CoreX.Models;
 using CoreX.Types;
@@ -23,6 +24,7 @@ namespace CoreX.Wrapper
     {
       _log = loggerFactory.CreateLogger<CoreX>();
 
+      // CoreX static classes aren't thread safe singletons.
       lock (_lock)
       {
         GeodeticDatabasePath = configStore.GetValueString("TGL_GEODATA_PATH", "Geodata");
@@ -46,7 +48,7 @@ namespace CoreX.Wrapper
 
       using var reader = new StreamReader(xmlFilePath);
       var xmlData = reader.ReadToEnd();
-      var resultCode = (csmErrorCode)CsdManagementPINVOKE.csmLoadCoordinateSystemDatabase(xmlData);
+      var resultCode = CsdManagement.csmLoadCoordinateSystemDatabase(xmlData);
 
       if (resultCode != (int)csmErrorCode.cecSuccess)
       {
@@ -68,8 +70,7 @@ namespace CoreX.Wrapper
         CoreXGeodataLogger.DumpGeodataFiles(_log, GeodeticDatabasePath);
       }
 
-      // CoreX static classes aren't thread safe singletons.
-      CsdManagementPINVOKE.csmSetGeodataPath(GeodeticDatabasePath);
+      CsdManagement.csmSetGeodataPath(GeodeticDatabasePath);
       GeodeticX.geoSetGeodataPath(GeodeticDatabasePath);
     }
 
@@ -83,16 +84,15 @@ namespace CoreX.Wrapper
 
       using var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
-      // CsdManagementPINVOKE isn't a thread safe singleton.
       lock (_lock)
       {
         // Slow, takes 2.5 seconds, need to speed up somehow?
-        var result = (csmErrorCode)CsdManagementPINVOKE.csmGetCSIBFromDCFileData(
+        var result = CsdManagement.csmGetCSIBFromDCFileData(
           fileContent,
           false,
-          CppFileListCallback.getCPtr(Utils.FileListCallBack),
-          CppEmbeddedDataCallback.getCPtr(Utils.EmbeddedDataCallback),
-          CSMCsibBlobContainer.getCPtr(csmCsibBlobContainer));
+          Utils.FileListCallBack,
+          Utils.EmbeddedDataCallback,
+          csmCsibBlobContainer);
 
         if (result != (int)csmErrorCode.cecSuccess)
         {
@@ -106,14 +106,11 @@ namespace CoreX.Wrapper
             default:
               {
                 throw new InvalidOperationException($"{nameof(GetCSIBFromDCFileContent)}: Get CSIB from file content failed, error {result}");
-
               }
           }
         }
 
-        var bytes = Utils.IntPtrToSByte(csmCsibBlobContainer.pCSIBData, (int)csmCsibBlobContainer.CSIBDataLength);
-
-        return Convert.ToBase64String(Array.ConvertAll(bytes, sb => unchecked((byte)sb)));
+        return GetCSIB(csmCsibBlobContainer);
       }
     }
 
@@ -303,6 +300,98 @@ namespace CoreX.Wrapper
       var csmErrorCode = CsdManagement.csmImportCoordSysFromCsib(csmCsibData, csFromCSIB);
 
       return csmErrorCode == csmErrorCode.cecSuccess;
+    }
+
+    private string GetCSIB(CSMCsibBlobContainer csibBlobContainer) =>
+      Convert.ToBase64String(
+        Array.ConvertAll(Utils.IntPtrToSByte(csibBlobContainer.pCSIBData, (int)csibBlobContainer.CSIBDataLength), sb => unchecked((byte)sb)));
+
+    public string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString)
+    {
+      lock (_lock)
+      {
+        var retStructZoneGroups = new CSMStringListContainer();
+        var resultCode = CsdManagement.csmGetListOfZoneGroups(retStructZoneGroups);
+
+        if (resultCode != (int)csmErrorCode.cecSuccess)
+        {
+          throw new Exception($"Error '{resultCode}' attempting to retrieve list of zone groups");
+        }
+
+        var zoneGroups = retStructZoneGroups
+          .stringList
+          .Split(new[] { CsdManagement.STRING_SEPARATOR }, StringSplitOptions.RemoveEmptyEntries)
+          .Select(s => s.Split(CsdManagement.ITEM_SEPERATOR)[1]);
+
+        if (!zoneGroups.Any())
+        {
+          throw new Exception("The count of zone groups should be greater than 0");
+        }
+
+        var zoneGroupName = zoneGroupNameString.Substring(zoneGroupNameString.IndexOf(",") + 1);
+        var retStructListOfZones = new CSMStringListContainer();
+
+        resultCode = CsdManagement.csmGetListOfZones(zoneGroupName, retStructListOfZones);
+
+        if (resultCode != (int)csmErrorCode.cecSuccess)
+        {
+          throw new Exception($"Error '{resultCode}' attempting to retrieve list of zones for group '{zoneGroupName}'");
+        }
+
+        var zones = retStructListOfZones
+          .stringList
+          .Split(new[] { CsdManagement.STRING_SEPARATOR }, StringSplitOptions.RemoveEmptyEntries);
+
+        if (!zones.Any())
+        {
+          throw new Exception($"The count of zones in {zoneGroupName} should be greater than 0");
+        }
+
+        if (Array.IndexOf(zones, zoneNameString) < 0)
+        {
+          throw new Exception($"Could not find '{zoneNameString}' in the list of zones for group '{zoneGroupName}'");
+        }
+
+        var zoneName = zoneNameString.Substring(zoneNameString.IndexOf(",") + 1);
+        var items = zoneNameString.Split(CsdManagement.ITEM_SEPERATOR);
+
+        var zoneId = uint.Parse(items[0]);
+        //var zone = items[1];
+
+        var retCsStruct = new CSMCoordinateSystemContainer();
+        var result = CsdManagement.csmGetCoordinateSystemFromCSDSelectionDefaults(zoneGroupName, zoneName, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retCsStruct);
+
+        if (resultCode != (int)csmErrorCode.cecSuccess)
+        {
+          throw new Exception($"Error '{resultCode}' attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}");
+        }
+
+        var record1 = retCsStruct.GetSelectedRecord();
+
+        var zoneID = unchecked((uint)record1.ZoneSystemId());
+        var datumID = unchecked((uint)record1.DatumSystemId());
+        var geoidID = unchecked((uint)record1.GeoidSystemId());
+
+        if (record1.DatumSystemId() <= 0)
+        {
+          throw new Exception($"Error attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}, no datum found");
+        }
+
+        var retStructFromICoordinateSystem = new CSMCsibBlobContainer();
+        var csibResult = CsdManagement.csmGetCSIBFromCoordinateSystem(record1, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromICoordinateSystem);
+
+        var csib = GetCSIB(retStructFromICoordinateSystem);
+
+        //// Create CSIB by zoneId, datumId, geoidId
+        //var retStructFromIds = new CSMCsibBlobContainer();
+        //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionById(zoneID, datumID, geoidID, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromIds);
+
+        //// Create CSIB by just zoneId
+        //var retStructFromZoneId = new CSMCsibBlobContainer();
+        //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionDefaultById(zoneId, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromZoneId);
+
+        return csib;
+      }
     }
 
     private bool _disposed = false;

@@ -10,11 +10,11 @@ namespace CoreX.Wrapper.UnitTests.Tests
 {
   public class ThreadingTests : IClassFixture<UnitTestBaseFixture>
   {
-    private readonly IConvertCoordinates _convertCoordinates;
+    private readonly ICoreXWrapper _convertCoordinates;
 
     public ThreadingTests(UnitTestBaseFixture testFixture)
     {
-      _convertCoordinates = testFixture.ConvertCoordinates;
+      _convertCoordinates = testFixture.CoreXWrapper;
     }
 
     [Fact]

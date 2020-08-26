@@ -12,13 +12,13 @@ namespace CoreX.Wrapper.UnitTests.Tests
   [Category("Slow")]
   public class DcFileTests : IClassFixture<UnitTestBaseFixture>
   {
-    private readonly IConvertCoordinates _convertCoordinates;
+    private readonly ICoreXWrapper _convertCoordinates;
     private const double LL_CM_TOLERANCE = 0.00000001;
     private const double GRID_CM_TOLERANCE = 0.01;
 
     public DcFileTests(UnitTestBaseFixture testFixture)
     {
-      _convertCoordinates = testFixture.ConvertCoordinates;
+      _convertCoordinates = testFixture.CoreXWrapper;
     }
 
     public string GetCSIBFromDC(string dcFilename) => _convertCoordinates.DCFileToCSIB(DCFile.GetFilePath(dcFilename));

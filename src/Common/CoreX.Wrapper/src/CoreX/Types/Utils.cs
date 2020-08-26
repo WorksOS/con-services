@@ -9,6 +9,7 @@ namespace CoreX.Wrapper.Types
     internal static CSharpFileListCallback FileListCallBack = new CSharpFileListCallback();
     public const double MISSING_VALUE = -9.99e27;
     public const double MISSING_LIMIT = -9.99e26;
+    public const int MISSING_ID = -1;
     public const double PI = 3.14159265358979323846;
 
     public static sbyte[] IntPtrToSByte(IntPtr value, int length)

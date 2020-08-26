@@ -3,7 +3,7 @@ using CoreX.Types;
 
 namespace CoreX.Interfaces
 {
-  public interface IConvertCoordinates
+  public interface ICoreXWrapper
   {
     /// <summary>
     /// Returns the filepath to the geodetic database files; defined by the TGL_GEODATA_PATH environment variable.
@@ -77,5 +77,7 @@ namespace CoreX.Interfaces
     /// Takes the content of a DC file and returns a CSIB string.
     /// </summary>
     string GetCSIBFromDCFileContent(string fileContent);
+
+    string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString);
   }
 }

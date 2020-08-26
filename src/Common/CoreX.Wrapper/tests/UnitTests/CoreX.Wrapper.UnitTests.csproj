@@ -34,6 +34,11 @@
     <TestData Include="./TestData/**" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CsdManagementWrapper">
+      <HintPath>..\..\src\CoreX\CoreXLibs\trimble.csdmanagementwrapper\3.0.2\lib\netstandard2.0\CsdManagementWrapper.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
