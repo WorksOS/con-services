@@ -39,9 +39,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     {
     }
 
-    protected string SubGridIndexFileName(string filename) => $"{filename}Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION";
-    protected string SpatialIndexFileName(string filename) => $"{filename}Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION";
-    protected string BoundaryFileName(string filename) => $"{filename}Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION";
+    private string SubGridIndexFileName(string filename) => $"{filename}{Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}";
+    private string SpatialIndexFileName(string filename) => $"{filename}{Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}";
+    private string BoundaryFileName(string filename) => $"{filename}{Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}";
 
     /// <summary>
     /// Add a design or surveyed surface or alignment file to TRex

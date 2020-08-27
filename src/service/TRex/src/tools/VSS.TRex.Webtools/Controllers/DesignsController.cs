@@ -24,9 +24,9 @@ namespace VSS.TRex.Webtools.Controllers
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignController>();
 
-    private string SubGridIndexFileName(string filename) => $"{filename}Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION";
-    private string SpatialIndexFileName(string filename) => $"{filename}Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION";
-    private string BoundaryFileName(string filename) => $"{filename}Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION";
+    private string SubGridIndexFileName(string filename) => $"{filename}{Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}";
+    private string SpatialIndexFileName(string filename) => $"{filename}{Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}";
+    private string BoundaryFileName(string filename) => $"{filename}{Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}";
 
     /// <summary>
     /// Returns the list of designs registered for a sitemodel. If there are no designs the
@@ -57,7 +57,7 @@ namespace VSS.TRex.Webtools.Controllers
 
 
     /// <summary>
-    /// Deletes a design from a sitemodel.
+    /// Deletes a design from a sitemodel. NOTE: This does not delete any files from s3.
     /// </summary>
     [HttpDelete("{siteModelUid}/{importedFileType}/{designUid}")]
     public JsonResult DeleteDesignFromSiteModel(string siteModelUid, string importedFileType, string designUid)
