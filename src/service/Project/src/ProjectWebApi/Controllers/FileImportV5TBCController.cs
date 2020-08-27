@@ -128,9 +128,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         {
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
         }
-        await DataOceanHelper.WriteFileToDataOcean(
-          memStream, DataOceanRootFolderId, CustomerUid, projectUid, dataOceanFileName,
-          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+
+        if (importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff)
+        {
+          await DataOceanHelper.WriteFileToDataOcean(
+            memStream, DataOceanRootFolderId, CustomerUid, projectUid, dataOceanFileName,
+            Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+        }
 
         var fileEntry = await fileEntryTask;
         ImportedFileDescriptorSingleResult importedFile;
