@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -18,6 +19,8 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
   /// </summary>
   public class CalculateSurfaceElevationPatch
   {
+    private static int _callCount = 0;
+
     private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateSurfaceElevationPatch>();
 
     /// <summary>
@@ -35,6 +38,21 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
       
       try
       {
+        // Test effect of differing exceptions
+
+        return _callCount++ switch
+        {
+          0 => throw new ArgumentException($"Call count {_callCount}"),
+          1 => throw new TRexException($"Call count {_callCount}"),
+          2 => throw new NotImplementedException($"Call count {_callCount}"),
+          3 => throw new Exception($"Call count {_callCount}"),
+          4 => throw new NullReferenceException($"Call count {_callCount}"),
+          5 => throw new AccessViolationException($"Call count {_callCount}"),
+          6 => throw new ArgumentNullException($"Call count {_callCount}"),
+          _ => null
+        };
+
+
         if (!Enum.IsDefined(typeof(SurveyedSurfacePatchType), patchType))
         {
           _log.LogError($"Unknown SurveyedSurfacePatchType: {patchType}, returning null");
