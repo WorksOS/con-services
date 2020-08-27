@@ -128,7 +128,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return changedUids;
     }
 
-    protected bool IsDesignFileType(ImportedFileType importedFileType)
+    protected bool IsTRexDesignFileType(ImportedFileType importedFileType)
     {
       return importedFileType == ImportedFileType.DesignSurface ||
              importedFileType == ImportedFileType.SurveyedSurface ||
