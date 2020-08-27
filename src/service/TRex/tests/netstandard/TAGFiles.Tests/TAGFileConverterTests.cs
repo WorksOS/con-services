@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CoreX.Interfaces;
-using CoreX.Wrapper;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Nito.AsyncEx;
-using VSS.TRex.DI;
-using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Tests;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -20,64 +14,6 @@ namespace TAGFiles.Tests
 {
   public class TAGFileConverterTests : IClassFixture<DITagFileFixture>
   {
-    /// <summary>
-    ///  The real deal test setup for ACS conversion
-    /// </summary>
-    private void InjectACSDependencies()
-    {
-      DIBuilder
-        .Continue()
-        .Add(x => x.AddSingleton<IACSTranslator, ACSTranslator>())
-        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-        .Complete();
-    }
-
-
-    [Fact()]
-    public void Test_ACS_Coordinate_Conversion_Mock()
-    {
-
-      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false);
-      Assert.True(converter.IsUTMCoordinateSystem, "Tagfile should be ACS coordinate system");
-      converter.Processor.ConvertedBladePositions.Should().HaveCount(1478);
-      converter.Processor.ConvertedRearAxlePositions.Should().HaveCount(1478);
-      converter.Processor.ConvertedTrackPositions.Should().HaveCount(0);
-      converter.Processor.ConvertedWheelPositions.Should().HaveCount(0);
-      Assert.True(converter.ReadResult == TAGReadResult.NoError, $"converter.ReadResult == TAGReadResult.NoError [= {converter.ReadResult}");
-      Assert.True(converter.ProcessedCellPassCount == 16525,$"converter.ProcessedCellPassCount != 16525 [={converter.ProcessedCellPassCount}]");
-      Assert.True(converter.ProcessedEpochCount == 1478, $"converter.ProcessedEpochCount != 1478, [= {converter.ProcessedEpochCount}]");
-    }
-
-
-    [Fact()]
-    public void Test_ACS_Coordinate_Conversion()
-    {
-      InjectACSDependencies();
-
-      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false);
-      Assert.True(converter.IsUTMCoordinateSystem, "Tagfile should be ACS coordinate system");
-      converter.Processor.ConvertedBladePositions.Should().HaveCount(1478);
-      converter.Processor.ConvertedRearAxlePositions.Should().HaveCount(1478);
-      converter.Processor.ConvertedTrackPositions.Should().HaveCount(0);
-      converter.Processor.ConvertedWheelPositions.Should().HaveCount(0);
-      Assert.True(converter.ReadResult == TAGReadResult.NoError, $"converter.ReadResult == TAGReadResult.NoError [= {converter.ReadResult}");
-      Assert.True(converter.ProcessedCellPassCount == 16525, $"converter.ProcessedCellPassCount != 16525 [={converter.ProcessedCellPassCount}]");
-      Assert.True(converter.ProcessedEpochCount == 1478, $"converter.ProcessedEpochCount != 1478, [= {converter.ProcessedEpochCount}]");
-    }
-
-    [Fact()]
-    public void Test_Not_ACS_Coordinate_Conversion()
-    {
-      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile-CMV-1.tag", Guid.NewGuid(), false);
-      Assert.False(converter.IsUTMCoordinateSystem, "Tagfile should not be ACS coordinate system");
-      converter.Processor.ConvertedBladePositions.Should().HaveCount(0);
-      converter.Processor.ConvertedRearAxlePositions.Should().HaveCount(0);
-      converter.Processor.ConvertedTrackPositions.Should().HaveCount(0);
-      converter.Processor.ConvertedWheelPositions.Should().HaveCount(0);
-      Assert.True(converter.ReadResult == TAGReadResult.NoError, $"converter.ReadResult == TAGReadResult.NoError [= {converter.ReadResult}");
-      Assert.True(converter.ProcessedCellPassCount == 2810, $"converter.ProcessedCellPassCount != 2810 [={converter.ProcessedCellPassCount}]");
-      Assert.True(converter.ProcessedEpochCount == 1428, $"converter.ProcessedEpochCount != 1428, [= {converter.ProcessedEpochCount}]");
-    }
 
     [Fact()]
     public void Test_TAGFileConverter_Creation()

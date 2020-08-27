@@ -57,6 +57,16 @@ namespace VSS.TRex.Tests.TestFixtures
       return converter;
     }
 
+    public static TAGFileConverter ReadTAGFile(string fileName, Guid assetUid, bool isJohnDoe , ref ISiteModel siteModel)
+    {
+      var converter = new TAGFileConverter();
+      converter.SiteModel = siteModel;
+      using var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read);
+      converter.ExecuteLegacyTAGFile(fileName, fs, assetUid, isJohnDoe);
+
+      return converter;
+    }
+
     public static TAGFileConverter ReadTAGFile(string subFolder, string fileName, bool treatAsJohnDoeMachine = false)
     {
       var converter = new TAGFileConverter();
