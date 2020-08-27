@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid must be provided"));
       }
 
-      if (FileType != ImportedFileType.DesignSurface && FileType != ImportedFileType.SurveyedSurface && FileType != ImportedFileType.Alignment)
+      if (FileType != ImportedFileType.DesignSurface && FileType != ImportedFileType.SurveyedSurface && FileType != ImportedFileType.Alignment && FileType != ImportedFileType.ReferenceSurface)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File type must be DesignSurface, SurveyedSurface or Alignment"));
       }
