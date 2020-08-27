@@ -11,27 +11,25 @@ namespace VSS.TRex.SurveyedSurface.GridFabric.Responses
 
     public Guid DesignUid { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(DesignUid);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      if (reader is null)
+      base.InternalFromBinary(reader);
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
       {
-        throw new ArgumentNullException(nameof(reader));
+        DesignUid = reader.ReadGuid() ?? Guid.Empty;
       }
-
-      base.FromBinary(reader);
-
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
-      DesignUid = reader.ReadGuid() ?? Guid.Empty;
     }
   }
 }

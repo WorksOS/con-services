@@ -8,7 +8,7 @@ namespace VSS.TRex.Common.Models
   /// <summary>
   /// Parameters used for lift analysis
   /// </summary>
-  public class LiftParameters : ILiftParameters, IBinarizable
+  public class LiftParameters : VersionCheckedBinarizableSerializationBase, ILiftParameters
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -52,8 +52,7 @@ namespace VSS.TRex.Common.Models
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -77,40 +76,28 @@ namespace VSS.TRex.Common.Models
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      OverrideMachineThickness = reader.ReadBoolean();
-      LiftThicknessType = (LiftThicknessType) reader.ReadInt();
-      OverridingLiftThickness = reader.ReadDouble();
-      CCVSummaryTypes = (CCVSummaryTypes)reader.ReadInt();
-      CCVSummarizeTopLayerOnly = reader.ReadBoolean();
-      FirstPassThickness = reader.ReadFloat();
-      MDPSummaryTypes = (MDPSummaryTypes)reader.ReadInt();
-      MDPSummarizeTopLayerOnly = reader.ReadBoolean();
-      LiftDetectionType = (LiftDetectionType)reader.ReadInt();
-      IncludeSuperseded = reader.ReadBoolean();
-      TargetLiftThickness = reader.ReadDouble();
-      AboveToleranceLiftThickness = reader.ReadDouble();
-      BelowToleranceLiftThickness = reader.ReadDouble();
-      DeadBandLowerBoundary = reader.ReadDouble();
-      DeadBandUpperBoundary = reader.ReadDouble();
+      if (version == 1)
+      {
+        OverrideMachineThickness = reader.ReadBoolean();
+        LiftThicknessType = (LiftThicknessType) reader.ReadInt();
+        OverridingLiftThickness = reader.ReadDouble();
+        CCVSummaryTypes = (CCVSummaryTypes) reader.ReadInt();
+        CCVSummarizeTopLayerOnly = reader.ReadBoolean();
+        FirstPassThickness = reader.ReadFloat();
+        MDPSummaryTypes = (MDPSummaryTypes) reader.ReadInt();
+        MDPSummarizeTopLayerOnly = reader.ReadBoolean();
+        LiftDetectionType = (LiftDetectionType) reader.ReadInt();
+        IncludeSuperseded = reader.ReadBoolean();
+        TargetLiftThickness = reader.ReadDouble();
+        AboveToleranceLiftThickness = reader.ReadDouble();
+        BelowToleranceLiftThickness = reader.ReadDouble();
+        DeadBandLowerBoundary = reader.ReadDouble();
+        DeadBandUpperBoundary = reader.ReadDouble();
+      }
     }
-
-    //TODO: refactor the BaseRequestArgument to have a base base class with just the below methods to avoid this duplication
-
-    /// <summary>
-    /// Implements the Ignite IBinarizable.WriteBinary interface Ignite will call to serialize this object.
-    /// </summary>
-    /// <param name="writer"></param>
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    /// <summary>
-    /// Implements the Ignite IBinarizable.ReadBinary interface Ignite will call to serialize this object.
-    /// </summary>
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
   }
 }

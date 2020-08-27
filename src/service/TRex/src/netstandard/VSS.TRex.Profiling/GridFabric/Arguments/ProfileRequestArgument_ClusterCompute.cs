@@ -35,10 +35,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -58,23 +57,25 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProfileStyle = (ProfileStyle) reader.ReadByte();
-      ProfileTypeRequired = (GridDataType)reader.ReadByte();
+      if (version == 1)
+      {
+        ProfileStyle = (ProfileStyle) reader.ReadByte();
+        ProfileTypeRequired = (GridDataType) reader.ReadByte();
 
-      var count = reader.ReadInt();
-      NEECoords = new XYZ[count];
-      for (int i = 0; i < count; i++)
-        NEECoords[i] = NEECoords[i].FromBinary(reader);
+        var count = reader.ReadInt();
+        NEECoords = new XYZ[count];
+        for (int i = 0; i < count; i++)
+          NEECoords[i] = NEECoords[i].FromBinary(reader);
 
-      ReturnAllPassesAndLayers = reader.ReadBoolean();
-      VolumeType = (VolumeComputationType)reader.ReadInt();
+        ReturnAllPassesAndLayers = reader.ReadBoolean();
+        VolumeType = (VolumeComputationType) reader.ReadInt();
+      }
     }
   }
 }

@@ -3,12 +3,11 @@ using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs.Models
 {
-  public class DesignDescriptor : IEquatable<DesignDescriptor>, IBinaryReaderWriter, IBinarizable, IFromToBinary
+  public class DesignDescriptor : VersionCheckedBinarizableSerializationBase, IEquatable<DesignDescriptor>, IBinaryReaderWriter
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -76,8 +75,7 @@ namespace VSS.TRex.Designs.Models
     /// <summary>
     /// Serializes content of the cell to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -89,19 +87,17 @@ namespace VSS.TRex.Designs.Models
     /// <summary>
     /// Deserializes content of the cell from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      DesignID = reader.ReadGuid() ?? Guid.Empty;
-      Folder = reader.ReadString();
-      FileName = reader.ReadString();
+      if (version == 1)
+      {
+        DesignID = reader.ReadGuid() ?? Guid.Empty;
+        Folder = reader.ReadString();
+        FileName = reader.ReadString();
+      }
     }
-
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }
 

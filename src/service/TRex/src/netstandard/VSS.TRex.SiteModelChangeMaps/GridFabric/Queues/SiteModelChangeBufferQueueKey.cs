@@ -43,7 +43,6 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// <summary>
     /// Provides string representation of the state of the key
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       var dateTime = new DateTime(InsertUTCTicks, DateTimeKind.Utc);

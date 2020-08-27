@@ -17,15 +17,18 @@ namespace VSS.TRex.Designs.GridFabric.Responses
     public double Elevation { get; set; }
     public DesignProfilerRequestResult CalcResult { get; set; }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Elevation = reader.ReadDouble();
-      CalcResult = (DesignProfilerRequestResult) reader.ReadInt();
+      if (version == 1)
+      {
+        Elevation = reader.ReadDouble();
+        CalcResult = (DesignProfilerRequestResult) reader.ReadInt();
+      }
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 

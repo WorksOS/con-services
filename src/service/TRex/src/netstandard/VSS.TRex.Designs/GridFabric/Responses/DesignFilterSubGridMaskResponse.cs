@@ -11,9 +11,9 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
     public SubGridTreeBitmapSubGridBits Bits;
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -29,19 +29,22 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+        if (reader.ReadBoolean())
+        {
+          Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
-        int[] buffer = reader.ReadIntArray();
-        for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
-          Bits.Bits[i] = unchecked((uint) buffer[i]);
+          int[] buffer = reader.ReadIntArray();
+          for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+            Bits.Bits[i] = unchecked((uint) buffer[i]);
+        }
       }
     }
   }

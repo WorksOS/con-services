@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.IO;
@@ -19,7 +18,7 @@ namespace VSS.TRex.Cells
     /// </summary>
     public struct Cell_NonStatic
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(Cell_NonStatic));
+        // private static readonly ILogger _log = Logging.Logger.CreateLogger(nameof(Cell_NonStatic));
 
         public const int PASS_COUNT_INCREMENT_STEP_SIZE = 4;
 
@@ -35,25 +34,21 @@ namespace VSS.TRex.Cells
         /// <summary>
         /// Number of cell passes recorded for this cell. It may be less than the actual size of Passes
         /// </summary>
-        /// <returns></returns>
         public int PassCount => Passes.Count;
 
         /// <summary>
         /// Determines if the cell is empty of all cell passes
         /// </summary>
-        /// <returns></returns>
         public bool IsEmpty => Passes.Count == 0;
 
         /// <summary>
         /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are no passes a null height is returned.
         /// </summary>
-        /// <returns></returns>
         public float TopMostHeight => IsEmpty ? CellPassConsts.NullHeight : Passes.Last().Height;
 
         /// <summary>
         /// Allocate or resize an array of passes to a new size, with additional space provided for expansion
         /// </summary>
-        /// <param name="capacity"></param>
         public void AllocatePasses(int capacity)
         {
           if (!Passes.IsRented)
@@ -99,7 +94,7 @@ namespace VSS.TRex.Cells
             }
 #endif
           }
-        }  
+        }
 
         /// <summary>
         /// LocateTime attempts to locate an entry in the passes list that has
@@ -108,20 +103,17 @@ namespace VSS.TRex.Cells
         /// only ever by a single pass that matches, finding an exact match
         /// aborts the binary search and returns the result. If there is no
         /// exact match the search returns the index in the list where a pass with
-        /// the given time should go. 
+        /// the given time should go.
         /// </summary>
-        /// <param name="time"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
         public bool LocateTime(DateTime time, out int index)
         {
-            int L = Passes.Offset;
-            int H = Passes.OffsetPlusCount - 1;
+            var L = Passes.Offset;
+            var H = Passes.OffsetPlusCount - 1;
 
             while (L <= H)
             {
-                int I = (L + H) >> 1;
-                int C = Passes.Elements[I].Time.CompareTo(time);
+                var I = (L + H) >> 1;
+                var C = Passes.Elements[I].Time.CompareTo(time);
 
                 if (C < 0)
                 {
@@ -148,7 +140,6 @@ namespace VSS.TRex.Cells
         /// AddPass takes a pass record containing pass information processed
         /// for a machine crossing this cell and adds it to the passes list
         /// </summary>
-        /// <param name="pass"></param>
         public void AddPass(CellPass pass)
         {
 #if CELLDEBUG
@@ -157,7 +148,7 @@ namespace VSS.TRex.Cells
 #endif
 
             // Locate the position in the list of time ordered passes to insert the new pass
-            if (LocateTime(pass.Time, out int position))
+            if (LocateTime(pass.Time, out var position))
             {
               throw new TRexException("Pass with same time being added to cell");
             }
@@ -191,11 +182,6 @@ namespace VSS.TRex.Cells
         /// Takes a cell pass stack and integrates its contents into this cell pass stack ensuring all duplicates are resolved
         /// and that cell pass ordering on time is preserved
         /// </summary>
-        /// <param name="sourcePasses"></param>
-        /// <param name="startIndex"></param>
-        /// <param name="endIndex"></param>
-        /// <param name="addedCount"></param>
-        /// <param name="modifiedCount"></param>
         public void Integrate(Cell_NonStatic sourcePasses, 
                               int startIndex,
                               int endIndex,

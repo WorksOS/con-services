@@ -59,10 +59,9 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -93,30 +92,32 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
-        Cut = reader.ReadDouble();
+      if (version == 1)
+      {
+        if (reader.ReadBoolean())
+          Cut = reader.ReadDouble();
 
-      if (reader.ReadBoolean())
-        Fill = reader.ReadDouble();
+        if (reader.ReadBoolean())
+          Fill = reader.ReadDouble();
 
-      if (reader.ReadBoolean())
-        TotalCoverageArea = reader.ReadDouble();
+        if (reader.ReadBoolean())
+          TotalCoverageArea = reader.ReadDouble();
 
-      if (reader.ReadBoolean())
-        CutArea = reader.ReadDouble();
+        if (reader.ReadBoolean())
+          CutArea = reader.ReadDouble();
 
-      if (reader.ReadBoolean())
-        FillArea = reader.ReadDouble();
+        if (reader.ReadBoolean())
+          FillArea = reader.ReadDouble();
 
-      (BoundingExtentGrid ??= new BoundingWorldExtent3D()).FromBinary(reader);
-      (BoundingExtentLLH ??= new BoundingWorldExtent3D()).FromBinary(reader);
+        (BoundingExtentGrid ??= new BoundingWorldExtent3D()).FromBinary(reader);
+        (BoundingExtentLLH ??= new BoundingWorldExtent3D()).FromBinary(reader);
+      }
     }
 
     /// <summary>

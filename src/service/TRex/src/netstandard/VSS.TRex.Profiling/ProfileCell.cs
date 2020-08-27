@@ -19,6 +19,8 @@ namespace VSS.TRex.Profiling
   {
     private static ILogger Log = Logging.Logger.CreateLogger<ProfileCell>();
 
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// A collection of layers constituting a profile through a cell.
     /// Depending on the context, the layers may be equivalent to the passes over a cell
@@ -468,10 +470,11 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
+
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       int count = Layers?.Count() ?? 0;
       writer.WriteInt(count);
@@ -529,68 +532,72 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      Layers = new ProfileLayers();      
-      var numberOfLayers = reader.ReadInt();
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      for (var i = 1; i <= numberOfLayers; i++)
+      if (version == 1)
       {
-        var layer = new ProfileLayer(this);
-        layer.FromBinary(reader);
+        Layers = new ProfileLayers();
+        var numberOfLayers = reader.ReadInt();
 
-        Layers.Add(layer, -1);
+        for (var i = 1; i <= numberOfLayers; i++)
+        {
+          var layer = new ProfileLayer(this);
+          layer.FromBinary(reader);
+
+          Layers.Add(layer, -1);
+        }
+
+        CellLowestElev = reader.ReadFloat();
+        CellHighestElev = reader.ReadFloat();
+        CellLastElev = reader.ReadFloat();
+        CellFirstElev = reader.ReadFloat();
+        CellLowestCompositeElev = reader.ReadFloat();
+        CellHighestCompositeElev = reader.ReadFloat();
+        CellLastCompositeElev = reader.ReadFloat();
+        CellFirstCompositeElev = reader.ReadFloat();
+
+        CellCCV = reader.ReadShort();
+        CellTargetCCV = reader.ReadShort();
+        CellPreviousMeasuredCCV = reader.ReadShort();
+        CellPreviousMeasuredTargetCCV = reader.ReadShort();
+
+        CellCCVElev = reader.ReadFloat();
+
+        CellMDP = reader.ReadShort();
+        CellTargetMDP = reader.ReadShort();
+        CellMDPElev = reader.ReadFloat();
+
+        CellCCA = reader.ReadByte();
+        CellTargetCCA = reader.ReadShort();
+        CellCCAElev = reader.ReadFloat();
+
+        CellTopLayerThickness = reader.ReadFloat();
+        IncludesProductionData = reader.ReadBoolean();
+
+        TopLayerPassCount = (ushort) reader.ReadInt();
+        TopLayerPassCountTargetRangeMin = (ushort) reader.ReadInt();
+        TopLayerPassCountTargetRangeMax = (ushort) reader.ReadInt();
+
+        CellMaxSpeed = (ushort) reader.ReadInt();
+        CellMinSpeed = (ushort) reader.ReadInt();
+
+        (Passes ?? (Passes = new FilteredMultiplePassInfo())).FromBinary(reader);
+
+        FilteredPassFlags = reader.ReadBooleanArray();
+        FilteredPassCount = reader.ReadInt();
+        FilteredHalfPassCount = reader.ReadInt();
+        AttributeExistenceFlags = (ProfileCellAttributeExistenceFlags) reader.ReadInt();
+
+        CellMaterialTemperature = (ushort) reader.ReadInt();
+        CellMaterialTemperatureWarnMin = (ushort) reader.ReadInt();
+        CellMaterialTemperatureWarnMax = (ushort) reader.ReadInt();
+
+        CellMaterialTemperatureElev = reader.ReadFloat();
       }
-
-      CellLowestElev = reader.ReadFloat();
-      CellHighestElev = reader.ReadFloat();
-      CellLastElev = reader.ReadFloat();
-      CellFirstElev = reader.ReadFloat();
-      CellLowestCompositeElev = reader.ReadFloat();
-      CellHighestCompositeElev = reader.ReadFloat();
-      CellLastCompositeElev = reader.ReadFloat();
-      CellFirstCompositeElev = reader.ReadFloat();
-
-      CellCCV = reader.ReadShort();
-      CellTargetCCV = reader.ReadShort();
-      CellPreviousMeasuredCCV = reader.ReadShort();
-      CellPreviousMeasuredTargetCCV = reader.ReadShort();
-
-      CellCCVElev = reader.ReadFloat();
-
-      CellMDP = reader.ReadShort();
-      CellTargetMDP = reader.ReadShort();
-      CellMDPElev = reader.ReadFloat();
-
-      CellCCA = reader.ReadByte();
-      CellTargetCCA = reader.ReadShort();
-      CellCCAElev = reader.ReadFloat();
-
-      CellTopLayerThickness = reader.ReadFloat();
-      IncludesProductionData = reader.ReadBoolean();
-
-      TopLayerPassCount = (ushort)reader.ReadInt();
-      TopLayerPassCountTargetRangeMin = (ushort)reader.ReadInt();
-      TopLayerPassCountTargetRangeMax = (ushort)reader.ReadInt();
-
-      CellMaxSpeed = (ushort)reader.ReadInt();
-      CellMinSpeed = (ushort)reader.ReadInt();
-
-      (Passes ?? (Passes = new FilteredMultiplePassInfo())).FromBinary(reader);
-
-      FilteredPassFlags = reader.ReadBooleanArray();
-      FilteredPassCount = reader.ReadInt();
-      FilteredHalfPassCount = reader.ReadInt();
-      AttributeExistenceFlags = (ProfileCellAttributeExistenceFlags)reader.ReadInt();
-
-      CellMaterialTemperature = (ushort)reader.ReadInt();
-      CellMaterialTemperatureWarnMin = (ushort)reader.ReadInt();
-      CellMaterialTemperatureWarnMax = (ushort)reader.ReadInt();
-
-      CellMaterialTemperatureElev = reader.ReadFloat();
     }
 
     /// <summary>

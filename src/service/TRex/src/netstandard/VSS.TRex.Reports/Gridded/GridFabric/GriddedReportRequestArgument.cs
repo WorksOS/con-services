@@ -51,10 +51,9 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -70,20 +69,22 @@ namespace VSS.TRex.Reports.Gridded.GridFabric
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      GridInterval = reader.ReadDouble();
-      GridReportOption = (GridReportOption) reader.ReadInt();
-      StartNorthing = reader.ReadDouble();
-      StartEasting = reader.ReadDouble();
-      EndNorthing = reader.ReadDouble();
-      EndEasting = reader.ReadDouble();
-      Azimuth = reader.ReadDouble();
+      if (version == 1)
+      {
+        GridInterval = reader.ReadDouble();
+        GridReportOption = (GridReportOption) reader.ReadInt();
+        StartNorthing = reader.ReadDouble();
+        StartEasting = reader.ReadDouble();
+        EndNorthing = reader.ReadDouble();
+        EndEasting = reader.ReadDouble();
+        Azimuth = reader.ReadDouble();
+      }
     }
   }
 }

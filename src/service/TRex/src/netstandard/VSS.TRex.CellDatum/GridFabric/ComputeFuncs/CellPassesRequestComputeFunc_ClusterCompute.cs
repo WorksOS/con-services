@@ -54,22 +54,29 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
       }
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
+
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteBoolean(Argument != null);
       Argument?.ToBinary(writer);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-      if (reader.ReadBoolean())
+      base.InternalFromBinary(reader);
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
       {
-        Argument = new CellPassesRequestArgument_ClusterCompute();
-        Argument.FromBinary(reader);
+        if (reader.ReadBoolean())
+        {
+          Argument = new CellPassesRequestArgument_ClusterCompute();
+          Argument.FromBinary(reader);
+        }
       }
     }
   }

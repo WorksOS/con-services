@@ -25,10 +25,9 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Responses
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
       writer.WriteInt((int)ReturnCode);
       writer.WriteInt((int)ReportType);
@@ -37,13 +36,17 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-      ReturnCode = (ReportReturnCode)reader.ReadInt();
-      ReportType = (ReportType)reader.ReadInt();
+      base.InternalFromBinary(reader);
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
+      {
+        ReturnCode = (ReportReturnCode) reader.ReadInt();
+        ReportType = (ReportType) reader.ReadInt();
+      }
     }
   }
 }

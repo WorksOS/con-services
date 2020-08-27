@@ -122,7 +122,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize out the state of the cell spatial filter using the Ignite IBinarizable serialisation
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
@@ -170,41 +169,43 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize in the state of the cell spatial filter using the Ignite IBinarizable serialisation
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        (Fence ?? (Fence = new Fence())).FromBinary(reader);
+        if (reader.ReadBoolean())
+        {
+          (Fence ?? (Fence = new Fence())).FromBinary(reader);
+        }
+
+        if (reader.ReadBoolean())
+        {
+          (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
+        }
+
+        PositionX = reader.ReadDouble();
+        PositionY = reader.ReadDouble();
+        PositionRadius = reader.ReadDouble();
+        IsSquare = reader.ReadBoolean();
+
+        OverrideSpatialCellRestriction = OverrideSpatialCellRestriction.FromBinary(reader);
+
+        StartStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;
+        EndStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;
+        LeftOffset = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;
+        RightOffset = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;
+
+        CoordsAreGrid = reader.ReadBoolean();
+        IsSpatial = reader.ReadBoolean();
+        IsPositional = reader.ReadBoolean();
+
+        IsDesignMask = reader.ReadBoolean();
+        SurfaceDesignMaskDesignUid = reader.ReadGuid() ?? Guid.Empty;
+        IsAlignmentMask = reader.ReadBoolean();
+        AlignmentDesignMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
       }
-
-      if (reader.ReadBoolean())
-      {
-        (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
-      }
-
-      PositionX = reader.ReadDouble();
-      PositionY = reader.ReadDouble();
-      PositionRadius = reader.ReadDouble();
-      IsSquare = reader.ReadBoolean();
-
-      OverrideSpatialCellRestriction = OverrideSpatialCellRestriction.FromBinary(reader);
-
-      StartStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;
-      EndStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
-      LeftOffset = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
-      RightOffset = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
-
-      CoordsAreGrid = reader.ReadBoolean();
-      IsSpatial = reader.ReadBoolean();
-      IsPositional = reader.ReadBoolean();
-
-      IsDesignMask = reader.ReadBoolean();
-      SurfaceDesignMaskDesignUid = reader.ReadGuid() ?? Guid.Empty;
-      IsAlignmentMask = reader.ReadBoolean();
-      AlignmentDesignMaskDesignUID = reader.ReadGuid() ?? Guid.Empty;
     }
   }
 }

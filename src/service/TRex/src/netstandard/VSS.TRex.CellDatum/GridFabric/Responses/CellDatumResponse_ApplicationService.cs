@@ -44,8 +44,7 @@ namespace VSS.TRex.CellDatum.GridFabric.Responses
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -64,18 +63,19 @@ namespace VSS.TRex.CellDatum.GridFabric.Responses
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      DisplayMode = (DisplayMode)reader.ReadInt();
-      ReturnCode = (CellDatumReturnCode)reader.ReadInt();
-      Value = reader.ReadBoolean() ? reader.ReadDouble() : (double?)null;
-      TimeStampUTC = reader.ReadBoolean() ? DateTime.FromBinary(reader.ReadLong()) : (DateTime?)null;
-      Northing = reader.ReadDouble();
-      Easting = reader.ReadDouble();
+      if (version == 1)
+      {
+        DisplayMode = (DisplayMode) reader.ReadInt();
+        ReturnCode = (CellDatumReturnCode) reader.ReadInt();
+        Value = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;
+        TimeStampUTC = reader.ReadBoolean() ? DateTime.FromBinary(reader.ReadLong()) : (DateTime?) null;
+        Northing = reader.ReadDouble();
+        Easting = reader.ReadDouble();
+      }
     }
-
   }
 }

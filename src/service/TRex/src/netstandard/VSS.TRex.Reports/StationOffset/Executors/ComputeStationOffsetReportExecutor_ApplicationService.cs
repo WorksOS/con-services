@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
