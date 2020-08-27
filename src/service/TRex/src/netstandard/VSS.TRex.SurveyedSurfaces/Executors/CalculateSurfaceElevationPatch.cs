@@ -36,16 +36,18 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     {
       var calcResult = DesignProfilerRequestResult.UnknownError;
      
-      // Try a more direct crash through null pointer reference
-      IDesignFiles crashDesignFiles = null;
-      if (crashDesignFiles.NumDesignsInCache() == 0)
-      {
-        return null;
-      }
+
 
       try
       {
         // Test effect of differing exceptions
+
+        // Try a more direct crash through null pointer reference
+        IDesignFiles crashDesignFiles = null;
+        if (crashDesignFiles.NumDesignsInCache() == 0)
+        {
+          return null;
+        }
 
         /*
         return _callCount++ switch
