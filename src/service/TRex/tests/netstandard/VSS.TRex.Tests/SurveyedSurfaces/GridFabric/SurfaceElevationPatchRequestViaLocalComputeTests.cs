@@ -25,6 +25,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(SurfaceElevationPatchRequestViaLocalCompute))]
   public class SurfaceElevationPatchRequestViaLocalComputeTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    /*
     private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
 
     [Fact]
@@ -261,5 +262,6 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       req.Execute(new SurfaceElevationPatchArgument(siteModel.ID, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset,
         siteModel.CellSize, (SurveyedSurfacePatchType) 100, SubGridTreeBitmapSubGridBits.FullMask, siteModel.SurveyedSurfaces)).Should().BeNull();
     }
+    */
   }
 }
