@@ -12,6 +12,8 @@ using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.Types;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TRex.Rendering
 {
@@ -21,7 +23,7 @@ namespace VSS.TRex.Rendering
   /// </summary>
   public class PlanViewTileRenderer : IDisposable
   {
-    //private static readonly ILogger Log = Logging.Logger.CreateLogger<PlanViewTileRenderer>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<PlanViewTileRenderer>();
 
     public double OriginX;
     public double OriginY;
@@ -238,12 +240,16 @@ namespace VSS.TRex.Rendering
       // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
       // Perform the sub grid query and processing to render the tile
+      var pipelineProcessorStopWatch = Stopwatch.StartNew();
       processor.Process();
+      _log.LogInformation($"Pipeline processor completed in {pipelineProcessorStopWatch.Elapsed}");
 
       if (processor.Response.ResultStatus == RequestErrorStatus.OK)
       {
         // Render the collection of data in the aggregator
+        var consistentRenderStopWatch = Stopwatch.StartNew();
         (Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
+        _log.LogInformation($"Consistent render complated in {consistentRenderStopWatch.Elapsed}");
 
         PerformAnyRequiredDebugLevelDisplay();
 

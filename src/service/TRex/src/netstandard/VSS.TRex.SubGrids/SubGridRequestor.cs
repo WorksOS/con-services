@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -361,7 +360,7 @@ namespace VSS.TRex.SubGrids
         // Instantiate an argument object for the surface elevation patch request. We always want to request all surface elevations to 
         // promote cacheability.
         var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
-          {
+        {
           SiteModelID = _siteModel.ID,
           OTGCellBottomLeftX = _clientGrid.OriginX,
           OTGCellBottomLeftY = _clientGrid.OriginY,

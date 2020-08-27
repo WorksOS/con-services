@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common.Exceptions;
 using System.Collections.Concurrent;
 using System.Threading;
+using VSS.TRex.Common.Interfaces.Interfaces;
 
 namespace VSS.TRex.Designs
 { 
@@ -63,7 +64,7 @@ namespace VSS.TRex.Designs
     }
 
     /// <summary>
-    /// Constructs a DesignFiles instnace with a specified maximum size for cached designs
+    /// Constructs a DesignFiles instance with a specified maximum size for cached designs
     /// </summary>
     public DesignFiles(long maxDesignsCacheSize, int maxWaitIterationsDuringDesignEviction)
     {
@@ -81,33 +82,32 @@ namespace VSS.TRex.Designs
       if (deleteFile)
         design.RemoveFromStorage(siteModelUid, Path.GetFileName(design.FileName));
 
-      return _designs.TryRemove(designUid, out _);
+      lock (_designs)
+      {
+        return _designs.TryRemove(designUid, out _);
+      }
     }
 
     /// <summary>
     /// Acquire a lock and reference to the design referenced by the given design descriptor
     /// </summary>
-    public IDesignBase Lock(Guid designUid, Guid dataModelId, double cellSize, out DesignLoadResult loadResult)
+    public IDesignBase Lock(Guid designUid, ISiteModelBase siteModelBase, double cellSize, out DesignLoadResult loadResult)
     {
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
-      if (siteModel == null)
-      {
-        _log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");
-        loadResult = DesignLoadResult.SiteModelNotFound;
-        return null;
-      }
-
-      IDesignBase design;
+      IDesignBase design = null;
       DesignCacheItemMetaData designMetaData;
+
+      var siteModel = siteModelBase as ISiteModel;
 
       lock (_designs)
       {
-        _designs.TryGetValue(designUid, out designMetaData);
-        design = designMetaData?.Design;
+        if (_designs.TryGetValue(designUid, out designMetaData))
+        {
+          design = designMetaData.Design;
+        }
 
         if (design == null)
         {
-          _log.LogDebug($"Design UID {designUid} not present in cached designs for site model {dataModelId}");
+          _log.LogDebug($"Design UID {designUid} not present in cached designs for site model {siteModel.ID}");
 
           // Verify the design does exist in either the designs, surveyed surface or alignment lists for the site model
           var designRef = siteModel.Designs.Locate(designUid);
@@ -140,7 +140,7 @@ namespace VSS.TRex.Designs
 
           if (descriptor == null)
           {
-            _log.LogWarning($"Failed to locate design {designUid} for site model with ID {dataModelId}");
+            _log.LogWarning($"Failed to locate design {designUid} for site model with ID {siteModel.ID}");
             loadResult = DesignLoadResult.DesignDoesNotExist;
             return null;
           }
@@ -148,12 +148,12 @@ namespace VSS.TRex.Designs
           _log.LogDebug($"Creating entry for design UID {designUid}, filename = {descriptor.FileName} within the in-memory cache");
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
-          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(designUid, Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelId), descriptor.FileName), cellSize, dataModelId);
+          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(designUid, Path.Combine(FilePathHelper.GetTempFolderForProject(siteModel.ID), descriptor.FileName), cellSize, siteModel.ID);
           design.IsLoading = true;
 
           // Set the initial size in cache to 0 pending the load of the design
           designMetaData = new DesignCacheItemMetaData(design, 0);
-          
+
           if (!_designs.TryAdd(designUid, designMetaData))
           {
             _log.LogError($"Failed to add the design cache entry design UID {designUid}, filename = {descriptor.FileName} to the concurrent dictionary");
@@ -174,7 +174,7 @@ namespace VSS.TRex.Designs
 
           // Touch the design metadata to make this design the MRU design (and last in the queue for eviction)
           designMetaData.Touch();
-          
+
           return design;
         }
 
@@ -183,10 +183,10 @@ namespace VSS.TRex.Designs
         {
           _log.LogDebug($"Getting design UID {designUid}, filename = {design.FileName} from persistent store (S3)");
 
-          loadResult = design.LoadFromStorage(dataModelId, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).WaitAndUnwrapException();
+          loadResult = design.LoadFromStorage(siteModel.ID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).WaitAndUnwrapException();
           if (loadResult != DesignLoadResult.Success)
           {
-            _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from persistent storage for site model with ID {dataModelId}");
+            _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from persistent storage for site model with ID {siteModel.ID}");
 
             if (!_designs.TryRemove(designUid, out _))
             {
@@ -206,7 +206,7 @@ namespace VSS.TRex.Designs
 
           if (loadResult != DesignLoadResult.Success)
           {
-            _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from local storage for site model with ID {dataModelId}, with error {loadResult}");
+            _log.LogWarning($"Failed to load design {designUid} from file {design.FileName}, from local storage for site model with ID {siteModel.ID}, with error {loadResult}");
 
             if (!_designs.TryRemove(designUid, out _))
             {
@@ -239,6 +239,22 @@ namespace VSS.TRex.Designs
         design.IsLoading = false;
         return design;
       }
+    }
+
+    /// <summary>
+    /// Acquire a lock and reference to the design referenced by the given design descriptor
+    /// </summary>
+    public IDesignBase Lock(Guid designUid, Guid dataModelId, double cellSize, out DesignLoadResult loadResult)
+    {
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
+      if (siteModel == null)
+      {
+        _log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");
+        loadResult = DesignLoadResult.SiteModelNotFound;
+        return null;
+      }
+
+      return Lock(designUid, siteModel, cellSize, out loadResult);
     }
 
     /// <summary>

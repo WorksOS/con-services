@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
@@ -528,7 +529,9 @@ namespace VSS.TRex.Rendering.Executors
                              NPixelsX, NPixelsY);
           Renderer.TileRotation = TileRotation;
 
+          var performRenderStopWatch = Stopwatch.StartNew();
           ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
+          _log.LogInformation($"Renderer.PerformRender completed in {performRenderStopWatch.Elapsed}");
 
           if (processor.Response.ResultStatus == RequestErrorStatus.OK)
           {
