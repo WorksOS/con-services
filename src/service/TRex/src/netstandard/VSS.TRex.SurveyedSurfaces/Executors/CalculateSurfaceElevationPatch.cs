@@ -35,11 +35,19 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
       Guid[] includedSurveyedSurfaces, IDesignFiles designs, ISurveyedSurfaces surveyedSurfaces, SubGridTreeBitmapSubGridBits processingMap)
     {
       var calcResult = DesignProfilerRequestResult.UnknownError;
-      
+     
+      // Try a more direct crash through null pointer reference
+      IDesignFiles crashDesignFiles = null;
+      if (crashDesignFiles.NumDesignsInCache() == 0)
+      {
+        return null;
+      }
+
       try
       {
         // Test effect of differing exceptions
 
+        /*
         return _callCount++ switch
         {
           0 => throw new ArgumentException($"Call count {_callCount}"),
@@ -51,7 +59,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           6 => throw new ArgumentNullException($"Call count {_callCount}"),
           _ => null
         };
-
+        */
 
         if (!Enum.IsDefined(typeof(SurveyedSurfacePatchType), patchType))
         {
