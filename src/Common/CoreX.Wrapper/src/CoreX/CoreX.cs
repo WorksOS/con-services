@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using CoreX.Extensions;
 using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.Extensions;
@@ -109,9 +110,9 @@ namespace CoreX.Wrapper
               }
           }
         }
-
-        return GetCSIB(csmCsibBlobContainer);
       }
+
+      return GetCSIB(csmCsibBlobContainer);
     }
 
     /// <summary>
@@ -306,11 +307,70 @@ namespace CoreX.Wrapper
       Convert.ToBase64String(
         Array.ConvertAll(Utils.IntPtrToSByte(csibBlobContainer.pCSIBData, (int)csibBlobContainer.CSIBDataLength), sb => unchecked((byte)sb)));
 
+    public Datum[] GetDatums()
+    {
+      using var returnListStruct = new CSMStringListContainer();
+
+      var resultCode = CsdManagement.csmGetListOfDatums(returnListStruct);
+
+      if (resultCode == csmErrorCode.cecSuccess)
+      {
+        var datums = returnListStruct.stringList.Split(new[] { CsdManagement.STRING_SEPARATOR }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => new Datum(
+              datumSystemId: int.Parse(s.Split(CsdManagement.ITEM_SEPERATOR)[0]),
+              datumType: int.Parse(s.Split(CsdManagement.ITEM_SEPERATOR)[1]),
+              datumName: s.Split(CsdManagement.ITEM_SEPERATOR)[3]));
+
+        if (datums == null)
+        {
+          throw new Exception($"Error attempting to retrieve list of datums, null result");
+        }
+
+        if (!datums.Any())
+        {
+          throw new Exception($"No datums found");
+        }
+
+        return datums.ToArray();
+
+
+        //foreach (var datum in datums)
+        //{
+        //  using var resultContainer = new CSMCoordinateSystemContainer();
+        //  resultCode = CsdManagement.csmGetDatumFromCSDSelection(
+        //    datum.DatumName, (csmDatumTypes)datum.DatumType, false, null, null, resultContainer);
+
+        //  //Assert.AreEqual(csmErrorCode.cecSuccess, resultCode);
+
+        //  //ValidateRecord(resultContainer.GetSelectedRecord());
+
+        //  var a = resultContainer.GetSelectedRecord();
+        //}
+      }
+
+      return null;
+    }
+
+    public ICoordinateSystem GetDatumBySystemId(int datumSystemId)
+    {
+      var datumContainer = new CSMCoordinateSystemContainer();
+
+      var resultCode = CsdManagement.csmGetDatumFromCSDSelectionById(
+        (uint)datumSystemId, false, null, null, datumContainer);
+
+      if (resultCode != csmErrorCode.cecSuccess)
+      {
+        throw new Exception($"Error attempting to retrieve datum {datumSystemId} by id.");
+      }
+
+      return datumContainer.GetSelectedRecord();
+    }
+
     public string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString)
     {
       lock (_lock)
       {
-        var retStructZoneGroups = new CSMStringListContainer();
+        using var retStructZoneGroups = new CSMStringListContainer();
         var resultCode = CsdManagement.csmGetListOfZoneGroups(retStructZoneGroups);
 
         if (resultCode != (int)csmErrorCode.cecSuccess)
@@ -358,7 +418,7 @@ namespace CoreX.Wrapper
         var zoneId = uint.Parse(items[0]);
         //var zone = items[1];
 
-        var retCsStruct = new CSMCoordinateSystemContainer();
+        using var retCsStruct = new CSMCoordinateSystemContainer();
         var result = CsdManagement.csmGetCoordinateSystemFromCSDSelectionDefaults(zoneGroupName, zoneName, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retCsStruct);
 
         if (resultCode != (int)csmErrorCode.cecSuccess)
@@ -366,33 +426,71 @@ namespace CoreX.Wrapper
           throw new Exception($"Error '{resultCode}' attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}");
         }
 
-        var record1 = retCsStruct.GetSelectedRecord();
+        var coordinateSystem = retCsStruct.GetSelectedRecord();
+        coordinateSystem.Validate();
 
-        var zoneID = unchecked((uint)record1.ZoneSystemId());
-        var datumID = unchecked((uint)record1.DatumSystemId());
-        var geoidID = unchecked((uint)record1.GeoidSystemId());
+        var zoneID = unchecked((uint)coordinateSystem.ZoneSystemId());
+        var datumID = unchecked((uint)coordinateSystem.DatumSystemId());
+        var geoidID = unchecked((uint)coordinateSystem.GeoidSystemId());
 
-        if (record1.DatumSystemId() <= 0)
+        if (coordinateSystem.DatumSystemId() > 0)
         {
-          throw new Exception($"Error attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}, no datum found");
+          return GetCSIBFrom(coordinateSystem);
+        }
+        else
+        {
+          var datumResult = GetDatumBySystemId(1034);
+
+          static void SetDatumProperty(Func<bool> funct)
+          {
+            if (!funct())
+            {
+              throw new Exception($"Failed to set datum property Func.Method: {funct.Method}, Func.Target: {funct.Target}");
+            }
+          }
+
+          SetDatumProperty(() => coordinateSystem.SetDatumHeightShiftGridFileName(datumResult.DatumHeightShiftGridFileName()));
+          SetDatumProperty(() => coordinateSystem.SetDatumName(datumResult.DatumName()));
+          SetDatumProperty(() => coordinateSystem.SetDatumRotationX(datumResult.DatumRotationX()));
+          SetDatumProperty(() => coordinateSystem.SetDatumRotationY(datumResult.DatumRotationY()));
+          SetDatumProperty(() => coordinateSystem.SetDatumRotationZ(datumResult.DatumRotationZ()));
+          SetDatumProperty(() => coordinateSystem.SetDatumScale(datumResult.DatumScale()));
+          SetDatumProperty(() => coordinateSystem.SetDatumSystemId(datumResult.DatumSystemId()));
+          SetDatumProperty(() => coordinateSystem.SetDatumTransfoEPSG(datumResult.DatumTransfoEPSG()));
+          SetDatumProperty(() => coordinateSystem.SetDatumTranslationX(datumResult.DatumTranslationX()));
+          SetDatumProperty(() => coordinateSystem.SetDatumTranslationY(datumResult.DatumTranslationY()));
+          SetDatumProperty(() => coordinateSystem.SetDatumTranslationZ(datumResult.DatumTranslationZ()));
+          SetDatumProperty(() => coordinateSystem.SetDatumType(datumResult.DatumType()));
+
+          if (coordinateSystem.DatumSystemId() > 0)
+          {
+            return GetCSIBFrom(coordinateSystem);
+          }
         }
 
-        var retStructFromICoordinateSystem = new CSMCsibBlobContainer();
-        var csibResult = CsdManagement.csmGetCSIBFromCoordinateSystem(record1, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromICoordinateSystem);
-
-        var csib = GetCSIB(retStructFromICoordinateSystem);
-
-        //// Create CSIB by zoneId, datumId, geoidId
-        //var retStructFromIds = new CSMCsibBlobContainer();
-        //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionById(zoneID, datumID, geoidID, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromIds);
-
-        //// Create CSIB by just zoneId
-        //var retStructFromZoneId = new CSMCsibBlobContainer();
-        //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionDefaultById(zoneId, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromZoneId);
-
-        return csib;
+        throw new Exception($"Error attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}, no datum found");
       }
     }
+
+    private string GetCSIBFrom(ICoordinateSystem coordinateSystem)
+    {
+      using var retStructFromICoordinateSystem = new CSMCsibBlobContainer();
+
+      var csibResultFromCS = CsdManagement.csmGetCSIBFromCoordinateSystem(coordinateSystem, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromICoordinateSystem);
+
+      var csib = GetCSIB(retStructFromICoordinateSystem);
+
+      //// Create CSIB by zoneId, datumId, geoidId
+      //using var retStructFromIds = new CSMCsibBlobContainer();
+      //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionById(zoneID, datumID, geoidID, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromIds);
+
+      //// Create CSIB by just zoneId
+      //using var retStructFromZoneId = new CSMCsibBlobContainer();
+      //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionDefaultById(zoneId, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromZoneId);
+
+      return csib;
+    }
+
 
     private bool _disposed = false;
 

@@ -1,4 +1,4 @@
-﻿using CoreX.Wrapper.Extensions;
+﻿using CoreX.Extensions;
 using FluentAssertions;
 using Xunit;
 

@@ -1,8 +1,8 @@
 ﻿using System;
+using CoreX.Extensions;
 using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
-using CoreX.Wrapper.Extensions;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 
@@ -333,7 +333,11 @@ namespace CoreX.Wrapper
     /// <inheritdoc/>
     public string GetCSIBFromDCFileContent(string fileContent) => _coreX.GetCSIBFromDCFileContent(fileContent);
 
+    /// <inheritdoc/>
     public string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString) => _coreX.GetCoordinateSystemFromCSDSelection(zoneGroupNameString, zoneNameString);
+
+    /// <inheritdoc/>
+    public Datum[] GetDatums() => _coreX.GetDatums();
 
     private bool _disposed = false;
 

@@ -78,6 +78,14 @@ namespace CoreX.Interfaces
     /// </summary>
     string GetCSIBFromDCFileContent(string fileContent);
 
+    /// <summary>
+    /// Gets the list of known datums.
+    /// </summary>
+    Datum[] GetDatums();
+
+    /// <summary>
+    /// Get the ICoordinateSystem record for a given CSD selection.
+    /// </summary>
     string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString);
   }
 }
