@@ -13,6 +13,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -26,39 +27,24 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   [ProjectVerifier]
-  public class EditDataController : Controller, IEditDataContract
+  public class EditDataController : BaseController<EditDataController>, IEditDataContract
   {
-#if RAPTOR
-    private readonly ITagProcessor tagProcessor;
-    private readonly IASNodeClient raptorClient;
-#endif
-    private readonly ILoggerFactory logger;
-    private readonly IConfigurationStore configStore;
-    private readonly IFileImportProxy fileImportProxy;
-    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
+    private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
 
-    private string CustomerUid => ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
+    private string CustomerUid => ((RaptorPrincipal) Request.HttpContext.User).CustomerUid;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     public EditDataController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-      ITagProcessor tagProcessor, 
-#endif
       ILoggerFactory logger,
       IConfigurationStore configStore,
       IFileImportProxy fileImportProxy,
-      ITRexCompactionDataProxy tRexCompactionDataProxy)
+      ITRexCompactionDataProxy tRexCompactionDataProxy,
+      ICompactionSettingsManager settingsManager)
+      : base(configStore, fileImportProxy, settingsManager)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-      this.tagProcessor = tagProcessor;
-#endif
-      this.logger = logger;
-      this.configStore = configStore;
-      this.fileImportProxy = fileImportProxy;
-      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
+      this._tRexCompactionDataProxy = tRexCompactionDataProxy;
     }
 
     /// Called by TBC only
@@ -72,28 +58,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [HttpPost]
     public async Task<EditDataResult> PostEditDataAcquireTbc([FromBody] GetEditDataRequest request)
     {
-      // todoJeannie need to pair assetId to Uid
       request.Validate();
-      return await RequestExecutorContainerFactory.Build<GetEditDataExecutor>(logger,
-#if RAPTOR
-        raptorClient,
-        tagProcessor,
-#endif
-        configStore,
-        trexCompactionDataProxy: tRexCompactionDataProxy
-        ).ProcessAsync(request) as EditDataResult;
+      return await RequestExecutorContainerFactory.Build<GetEditDataExecutor>(LoggerFactory, ConfigStore,
+        trexCompactionDataProxy: _tRexCompactionDataProxy
+      ).ProcessAsync(request) as EditDataResult;
     }
 
-    /// Called by TBC only
     /// <summary>
-    /// Applies an edit to production data to correct data that has been recorded wrongly in Machines by Operator.
+    /// Called by TBC only
     /// </summary>
-    [Obsolete("This is a BusinessCenter endpoint. It is not expected that this endpoint will have a v2")]
     [PostRequestVerifier]
     [ProjectVerifier]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
-    public async Task<ContractExecutionResult> PostEditTbc([FromBody]EditDataRequest request)
+    public async Task<ContractExecutionResult> PostEditTbc([FromBody] EditDataRequest request)
     {
       request.Validate();
 
@@ -101,21 +79,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       {
         //Validate against existing data edits
         var getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
-            request.dataEdit.assetId);
+          request.dataEdit.assetId, request.ProjectUid);
         var editResult = await PostEditDataAcquireTbc(getRequest);
         ValidateNoOverlap(editResult.dataEdits, request.dataEdit);
         //Validate request date range within production data date range
-        await ValidateDates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.ProjectUid.Value, request.dataEdit);
+        await ValidateDates(request.ProjectUid.Value, request.dataEdit);
       }
 
-      return await RequestExecutorContainerFactory.Build<EditDataExecutor>(logger,
-#if RAPTOR
-        raptorClient,
-        tagProcessor,
-#endif
-        configStore,
-        trexCompactionDataProxy: tRexCompactionDataProxy
-        ).ProcessAsync(request);
+      return await RequestExecutorContainerFactory.Build<EditDataExecutor>(LoggerFactory, ConfigStore,
+        trexCompactionDataProxy: _tRexCompactionDataProxy
+      ).ProcessAsync(request);
     }
 
     /// <summary>
@@ -126,24 +99,25 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       if (existingEdits != null && existingEdits.Count > 0)
       {
         var overlapEdits = (from e in existingEdits
-                            where
-                                ((!string.IsNullOrEmpty(e.onMachineDesignName) &&
-                                  !string.IsNullOrEmpty(newEdit.onMachineDesignName)) ||
-                                 (e.liftNumber.HasValue && newEdit.liftNumber.HasValue)) &&
-                                 e.assetId == newEdit.assetId &&
-                                !(e.endUTC <= newEdit.startUTC || e.startUTC >= newEdit.endUTC)
-                            select e).ToList();
+          where
+            ((!string.IsNullOrEmpty(e.onMachineDesignName) &&
+              !string.IsNullOrEmpty(newEdit.onMachineDesignName)) ||
+             (e.liftNumber.HasValue && newEdit.liftNumber.HasValue)) &&
+            e.assetId == newEdit.assetId &&
+            !(e.endUTC <= newEdit.startUTC || e.startUTC >= newEdit.endUTC)
+          select e).ToList();
 
         if (overlapEdits.Count > 0)
         {
-          string message = string.Empty;
+          var message = string.Empty;
           foreach (var oe in overlapEdits)
           {
             message = $"{message}\nMachine: {oe.assetId}, Override Period: {oe.startUTC}-{oe.endUTC}, Edited Value: {(string.IsNullOrEmpty(oe.onMachineDesignName) ? oe.onMachineDesignName : (oe.liftNumber?.ToString() ?? string.Empty))}";
           }
+
           throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                $"Data edit overlaps: {message}"));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              $"Data edit overlaps: {message}"));
         }
       }
     }
@@ -151,26 +125,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Validates new edit is within production data date range for the project
     /// </summary>
-    private async Task ValidateDates(long projectId, Guid projectUid, ProductionDataEdit dataEdit)
+    private async Task ValidateDates(Guid projectUid, ProductionDataEdit dataEdit)
     {
-#if RAPTOR
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy, raptorClient);
-      var stats = await projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(
-        projectUid, projectId, ((RaptorPrincipal)User).Identity.Name, Request.Headers.GetCustomHeaders());
-      if (stats == null)
+      var projectExtents = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, VelociraptorConstants.NO_PROJECT_ID, GetUserId(), CustomHeaders);
+
+      if (projectExtents == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Can not validate request - check ReportSvc configuration."));
-      if (dataEdit.startUTC < stats.startTime || dataEdit.endUTC > stats.endTime)
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Cannot obtain ProjectStatistics."));
+      if (dataEdit.startUTC < projectExtents.startTime || dataEdit.endUTC > projectExtents.endTime)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                string.Format("Data edit outside production data date range: {0}-{1}", stats.startTime, stats.endTime)));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"Data edit outside production data date range: {projectExtents.startTime}-{projectExtents.endTime}"));
       }
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
   }
 }

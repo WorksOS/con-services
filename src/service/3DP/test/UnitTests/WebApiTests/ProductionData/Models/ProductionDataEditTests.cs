@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 
       //missing machine details
       dataEdit = ProductionDataEdit.CreateProductionDataEdit(
-             -1, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), "Acme Dozer", null);
+             0, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), "Acme Dozer", null);
       Assert.IsFalse(validator.TryValidate(dataEdit, out results));
     }
 
