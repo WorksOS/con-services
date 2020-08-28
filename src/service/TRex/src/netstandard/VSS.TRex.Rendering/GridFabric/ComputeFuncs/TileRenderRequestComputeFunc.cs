@@ -12,6 +12,7 @@ using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 using SkiaSharp;
 using VSS.TRex.IO.Helpers;
+using System.Diagnostics;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
@@ -34,7 +35,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     {
       try
       {
-        var startTime = DateTime.UtcNow;
+        var requestStopWatch = Stopwatch.StartNew();
 
         _log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
@@ -90,7 +91,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         }
         finally
         {
-          _log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
+          _log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {requestStopWatch.Elapsed}");
         }
       }
       catch (Exception e)
