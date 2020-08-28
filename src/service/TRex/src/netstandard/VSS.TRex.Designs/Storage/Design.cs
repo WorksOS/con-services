@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Executors;
@@ -158,12 +159,12 @@ namespace VSS.TRex.Designs.Storage
     /// Calculates an elevation sub grid for a designated sub grid on this design
     /// </summary>
     public (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) GetDesignHeightsViaLocalCompute(
-      Guid siteModelId,
+      ISiteModelBase siteModel,
       double offset,
       SubGridCellAddress originCellAddress,
       double cellSize)
     {
-      var heightsResult = _designElevationCalculator.Execute(siteModelId, new DesignOffset(DesignDescriptor.DesignID, offset), 
+      var heightsResult = _designElevationCalculator.Execute(siteModel, new DesignOffset(DesignDescriptor.DesignID, offset), 
         cellSize, originCellAddress.X, originCellAddress.Y, out var calcResult);
 
       return (heightsResult, calcResult);
@@ -197,17 +198,17 @@ namespace VSS.TRex.Designs.Storage
     /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
     public (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) GetFilterMaskViaLocalCompute(
-      Guid siteModelId,
+      ISiteModelBase siteModel,
       SubGridCellAddress originCellAddress,
       double cellSize)
     {
       // Calculate an elevation patch for the requested location and convert it into a bitmask detailing which cells have non-null values
-      var patch = _designElevationCalculator.Execute(siteModelId, new DesignOffset(DesignDescriptor.DesignID, 0),
+      var patch = _designElevationCalculator.Execute(siteModel, new DesignOffset(DesignDescriptor.DesignID, 0),
         cellSize, originCellAddress.X, originCellAddress.Y, out var calcResult);
 
       if (patch == null)
       {
-        _log.LogWarning($"Request for design elevation patch that does not exist: Project: {siteModelId}, design {DesignDescriptor.DesignID}, location {originCellAddress.X}:{originCellAddress.Y}, calcResult: {calcResult}");
+        _log.LogWarning($"Request for design elevation patch that does not exist: Project: {siteModel.ID}, design {DesignDescriptor.DesignID}, location {originCellAddress.X}:{originCellAddress.Y}, calcResult: {calcResult}");
         return (null, calcResult); // Requestors should not ask for sub grids that don't exist in the design.
       }
 

@@ -169,8 +169,8 @@ namespace VSS.TRex.SubGrids
         if (_elevationRangeDesign != null)
         {
           // Query the design to get the patch of elevations calculated from the design
-          var getDesignHeightsResult = _elevationRangeDesign.Design.GetDesignHeightsViaLocalCompute(
-            _siteModel.ID, _elevationRangeDesign.Offset, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
+          var getDesignHeightsResult = _elevationRangeDesign.Design.GetDesignHeightsViaLocalCompute(_siteModel,
+          _elevationRangeDesign.Offset, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
           _elevationRangeDesignElevations = getDesignHeightsResult.designHeights.Cells;
 
           if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
@@ -187,7 +187,7 @@ namespace VSS.TRex.SubGrids
         // Query the DesignProfiler service to get the patch of elevations calculated
 
         //Spatial design filter - don't care about offset
-        var getDesignHeightsResult = _surfaceDesignMaskDesign.GetDesignHeightsViaLocalCompute(_siteModel.ID, 0, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
+        var getDesignHeightsResult = _surfaceDesignMaskDesign.GetDesignHeightsViaLocalCompute(_siteModel, 0, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
         _surfaceDesignMaskElevations = getDesignHeightsResult.designHeights.Cells;
 
         if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)

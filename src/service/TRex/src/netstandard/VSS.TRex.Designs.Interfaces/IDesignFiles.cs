@@ -8,11 +8,6 @@ namespace VSS.TRex.Designs.Interfaces
   {
     bool RemoveDesignFromCache(Guid designUid, IDesignBase design, Guid siteModelUid, bool deleteFile);
 
-    /// <summary>
-    /// Acquire a lock and reference to the design referenced by the given design UID
-    /// </summary>
-    IDesignBase Lock(Guid designUid, Guid dataModelId, double cellSize, out DesignLoadResult loadResult);
-
     IDesignBase Lock(Guid designUid, ISiteModelBase siteModel, double cellSize, out DesignLoadResult loadResult);
 
     /// <summary>

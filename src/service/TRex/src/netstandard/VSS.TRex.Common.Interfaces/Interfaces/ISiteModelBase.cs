@@ -6,5 +6,7 @@ namespace VSS.TRex.Common.Interfaces.Interfaces
   public interface ISiteModelBase
   {
     Guid ID { get; set; }
+
+    double CellSize { get; }
   }
 }

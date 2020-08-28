@@ -134,7 +134,7 @@ namespace VSS.TRex.Profiling
       {
         if (svDesignWrapper?.Design != null)
         {
-          var getDesignHeightsResult = svDesignWrapper.Design.GetDesignHeightsViaLocalCompute(SiteModel.ID, svDesignWrapper.Offset, address, SiteModel.CellSize);
+          var getDesignHeightsResult = svDesignWrapper.Design.GetDesignHeightsViaLocalCompute(SiteModel, svDesignWrapper.Offset, address, SiteModel.CellSize);
 
           if (getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
           {

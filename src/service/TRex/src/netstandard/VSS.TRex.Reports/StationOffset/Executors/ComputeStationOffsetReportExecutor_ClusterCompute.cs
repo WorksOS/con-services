@@ -31,6 +31,8 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
     private readonly StationOffsetReportRequestArgument_ClusterCompute requestArgument;
 
+    private ISiteModel siteModel;
+
     /// <summary>
     /// Constructs the stationOffset executor
     /// </summary>
@@ -61,7 +63,14 @@ namespace VSS.TRex.Reports.StationOffset.Executors
             return new StationOffsetReportRequestResponse_ClusterCompute{ResultStatus = RequestErrorStatus.OK, ReturnCode = ReportReturnCode.NoData };
           }
 
-          return response = GetProductionData();
+        siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
+        if (siteModel == null)
+        {
+          Log.LogError($"Failed to locate site model {requestArgument.ProjectID}");
+          return new StationOffsetReportRequestResponse_ClusterCompute { ResultStatus = RequestErrorStatus.NoSuchDataModel };
+        }
+
+        return response = GetProductionData();
         }
         finally
         {
@@ -78,13 +87,6 @@ namespace VSS.TRex.Reports.StationOffset.Executors
     private StationOffsetReportRequestResponse_ClusterCompute GetProductionData()
     {
       var result = new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.Unknown};
-
-      ISiteModel siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(requestArgument.ProjectID);
-      if (siteModel == null)
-      {
-        Log.LogError($"Failed to locate site model {requestArgument.ProjectID}");
-        return new StationOffsetReportRequestResponse_ClusterCompute {ResultStatus = RequestErrorStatus.NoSuchDataModel};
-      }
 
       IDesignWrapper cutFillDesignWrapper = null;
       if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
@@ -156,7 +158,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       if (requestArgument.ReferenceDesign != null && requestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        getDesignHeightsResult = cutFillDesignWrapper.Design.GetDesignHeightsViaLocalCompute(requestArgument.ProjectID, cutFillDesignWrapper.Offset, clientGrid.OriginAsCellAddress(), clientGrid.CellSize);
+        getDesignHeightsResult = cutFillDesignWrapper.Design.GetDesignHeightsViaLocalCompute(siteModel, cutFillDesignWrapper.Offset, clientGrid.OriginAsCellAddress(), clientGrid.CellSize);
 
         if (getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
         {

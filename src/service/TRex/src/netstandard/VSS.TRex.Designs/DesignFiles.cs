@@ -148,7 +148,7 @@ namespace VSS.TRex.Designs
           _log.LogDebug($"Creating entry for design UID {designUid}, filename = {descriptor.FileName} within the in-memory cache");
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
-          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(designUid, Path.Combine(FilePathHelper.GetTempFolderForProject(siteModel.ID), descriptor.FileName), cellSize, siteModel.ID);
+          design = DIContext.ObtainRequired<IDesignClassFactory>().NewInstance(designUid, Path.Combine(FilePathHelper.GetTempFolderForProject(siteModel.ID), descriptor.FileName), cellSize, siteModel.ID);
           design.IsLoading = true;
 
           // Set the initial size in cache to 0 pending the load of the design
@@ -246,7 +246,7 @@ namespace VSS.TRex.Designs
     /// </summary>
     public IDesignBase Lock(Guid designUid, Guid dataModelId, double cellSize, out DesignLoadResult loadResult)
     {
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(dataModelId);
+      var siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(dataModelId);
       if (siteModel == null)
       {
         _log.LogWarning($"Failed to get site model with ID {dataModelId} for design {designUid}");

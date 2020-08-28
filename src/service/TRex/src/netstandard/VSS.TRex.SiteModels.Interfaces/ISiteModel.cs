@@ -31,8 +31,6 @@ namespace VSS.TRex.SiteModels.Interfaces
     DateTime CreationDate { get; }
     DateTime LastModifiedDate { get; set; }
 
-    double CellSize { get; }
-
     /// <summary>
     /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>

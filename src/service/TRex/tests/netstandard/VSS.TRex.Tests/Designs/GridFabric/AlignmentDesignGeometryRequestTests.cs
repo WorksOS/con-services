@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
@@ -72,7 +73,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       siteModel.Alignments.AddAlignmentDetails(alignmentGuid, new DesignDescriptor(alignmentGuid, "", ""), BoundingWorldExtent3D.Full());
 
       var mockDesignFiles = new Mock<IDesignFiles>();
-      mockDesignFiles.Setup(x => x.Lock(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<double>(), out It.Ref<DesignLoadResult>.IsAny))
+      mockDesignFiles.Setup(x => x.Lock(It.IsAny<Guid>(), It.IsAny<ISiteModelBase>(), It.IsAny<double>(), out It.Ref<DesignLoadResult>.IsAny))
         .Returns(new GobbleDesignFilesLockReturns((Guid designUid, Guid datamodelUid, double cellSize, out DesignLoadResult result) =>
         {
           result = DesignLoadResult.Success;
@@ -136,7 +137,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       siteModel.Alignments.AddAlignmentDetails(alignmentGuid, new DesignDescriptor(alignmentGuid, "", ""), BoundingWorldExtent3D.Full());
 
       var mockDesignFiles = new Mock<IDesignFiles>();
-      mockDesignFiles.Setup(x => x.Lock(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<double>(), out It.Ref<DesignLoadResult>.IsAny))
+      mockDesignFiles.Setup(x => x.Lock(It.IsAny<Guid>(), It.IsAny<ISiteModelBase>(), It.IsAny<double>(), out It.Ref<DesignLoadResult>.IsAny))
         .Returns(new GobbleDesignFilesLockReturns((Guid designUid, Guid datamodelUid, double cellSize, out DesignLoadResult result) =>
         {
           result = DesignLoadResult.Success;

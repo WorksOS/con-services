@@ -288,7 +288,7 @@ namespace VSS.TRex.SubGrids.Executors
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
         var designHeightResult = new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[] { (ServerRequestResult.UnknownError, null) };
-        var getGetDesignHeights = ReferenceDesignWrapper.Design.GetDesignHeightsViaLocalCompute(localArg.ProjectID, ReferenceDesignWrapper.Offset, address, siteModel.CellSize);
+        var getGetDesignHeights = ReferenceDesignWrapper.Design.GetDesignHeightsViaLocalCompute(siteModel, ReferenceDesignWrapper.Offset, address, siteModel.CellSize);
 
         designHeightResult[0].clientGrid = getGetDesignHeights.designHeights;
         if (getGetDesignHeights.errorCode == DesignProfilerRequestResult.OK || getGetDesignHeights.errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
@@ -342,9 +342,10 @@ namespace VSS.TRex.SubGrids.Executors
           // The cut fill is defined between one production data derived height sub grid and a
           // height sub grid to be calculated from a designated design
           var computeCutFillSubGridResult = CutFillUtilities.ComputeCutFillSubGrid(
+            siteModel,
             result[0].clientGrid, // base
-            ReferenceDesignWrapper, // 'top'
-            localArg.ProjectID);
+            ReferenceDesignWrapper // 'top'
+            );
 
           if (!computeCutFillSubGridResult.executionResult)
           {

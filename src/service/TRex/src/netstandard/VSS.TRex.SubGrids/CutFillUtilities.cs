@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 
@@ -20,14 +21,14 @@ namespace VSS.TRex.SubGrids
     /// Calculates a cut/fill sub grid from a production data elevation sub grid and an elevation sub grid computed from a referenced design,
     /// replacing the elevations in the first sub grid with the resulting cut fill values
     /// </summary>
-    public static (bool executionResult, DesignProfilerRequestResult profilerRequestResult) ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid, IDesignWrapper designWrapper, Guid DataModelID)
+    public static (bool executionResult, DesignProfilerRequestResult profilerRequestResult) ComputeCutFillSubGrid(ISiteModel siteModel, IClientLeafSubGrid SubGrid, IDesignWrapper designWrapper)
     {
       (bool executionResult, DesignProfilerRequestResult profilerRequestResult) result = (false, DesignProfilerRequestResult.UnknownError);
 
       if (designWrapper?.Design == null)
         return result;
 
-      var getDesignHeightsResult = designWrapper.Design.GetDesignHeightsViaLocalCompute(DataModelID, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize);
+      var getDesignHeightsResult = designWrapper.Design.GetDesignHeightsViaLocalCompute(siteModel, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize);
 
       result.profilerRequestResult = getDesignHeightsResult.errorCode;
 
