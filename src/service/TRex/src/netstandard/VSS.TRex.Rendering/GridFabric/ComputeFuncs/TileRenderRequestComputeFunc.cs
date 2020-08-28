@@ -24,6 +24,9 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<TileRenderRequestComputeFunc>();
 
+    // Warn on tile renders that take more than this time to service (20 seconds)
+    private static TimeSpan _tileRequestTimeSpanWarnLimit = new TimeSpan(0, 0, 20);
+
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
     /// </summary>
@@ -92,6 +95,12 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         finally
         {
           _log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {requestStopWatch.Elapsed}");
+
+          // Flag tile renders that take more than 20 seconds to render...
+          if (requestStopWatch.Elapsed > _tileRequestTimeSpanWarnLimit)
+          {
+            _log.LogInformation($"Tile render request required more than {_tileRequestTimeSpanWarnLimit} to complete");
+          }
         }
       }
       catch (Exception e)
