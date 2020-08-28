@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CoreX.Interfaces;
-using CoreX.Models;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;

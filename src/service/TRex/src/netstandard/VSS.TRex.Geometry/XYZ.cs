@@ -144,6 +144,11 @@ namespace VSS.TRex.Geometry
     public bool Equals(XYZ other) => X == other.X && Y == other.Y && Z == other.Z;
 
     /// <summary>
+    /// Determine if all values are zero
+    /// </summary>
+    public bool IsZeroed() => X == 0 && Y == 0 && Z == 0;
+
+    /// <summary>
     /// Calculate 2D length between two XYZ points
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

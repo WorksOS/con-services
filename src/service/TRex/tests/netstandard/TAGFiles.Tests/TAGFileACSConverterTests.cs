@@ -54,26 +54,27 @@ namespace TAGFiles.Tests
       converter.ProcessedEpochCount.Should().Be(0);
     }
 
-
     [Fact()]
-    public void Test_ACS_Coordinate_Conversion()
+    public void Test_ACS_Coordinate_Conversion_Dimensions()
     {
       var targetSiteModel = BuildModel();
       DITAGFileAndSubGridRequestsWithIgniteFixture.AddCSIBToSiteModel(ref targetSiteModel, TestCommonConsts.DIMENSIONS_2012_DC_CSIB);
-
-      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false, ref targetSiteModel);
+      var converter = DITagFileFixture.ReadTAGFile("ACS--Dimensions--CATACOM--121030175139.tag", Guid.NewGuid(), false, ref targetSiteModel);
       Assert.True(converter.IsUTMCoordinateSystem, "Tagfile should be ACS coordinate system");
-      converter.Processor.ConvertedBladePositions.Should().HaveCount(1478);
-      converter.Processor.ConvertedBladePositions[0].Left.X.Should().Be(537675.68172357627);
-      converter.Processor.ConvertedBladePositions[0].Left.Y.Should().Be(5427402.34152853);
-      converter.Processor.ConvertedBladePositions[0].Right.X.Should().Be(537673.73485328211);
-      converter.Processor.ConvertedBladePositions[0].Right.Y.Should().Be(5427401.8836027011);
-      converter.Processor.ConvertedRearAxlePositions.Should().HaveCount(1478);
+      converter.Processor.ConvertedBladePositions.Should().NotBeNull();
+      converter.Processor.ConvertedBladePositions.Should().HaveCount(429);
+      converter.Processor.ConvertedBladePositions[0].Left.X.Should().BeApproximately(2740.5499, 0.01);
+      converter.Processor.ConvertedBladePositions[0].Left.Y.Should().BeApproximately(1171.5488, 0.01);
+      converter.Processor.ConvertedBladePositions[0].Left.Z.Should().BeApproximately(623.91649, 0.01);
+      converter.Processor.ConvertedBladePositions[0].Right.X.Should().BeApproximately(2740.592, 0.01);
+      converter.Processor.ConvertedBladePositions[0].Right.Y.Should().BeApproximately(1169.576, 0.01);
+      converter.Processor.ConvertedBladePositions[0].Right.Z.Should().BeApproximately(623.7330, 0.01);
+      converter.Processor.ConvertedRearAxlePositions.Should().HaveCount(0);
       converter.Processor.ConvertedTrackPositions.Should().HaveCount(0);
       converter.Processor.ConvertedWheelPositions.Should().HaveCount(0);
+      converter.ProcessedCellPassCount.Should().Be(1003);
+      converter.ProcessedEpochCount.Should().Be(429);
       Assert.True(converter.ReadResult == TAGReadResult.NoError, $"converter.ReadResult == TAGReadResult.NoError [= {converter.ReadResult}");
-      Assert.True(converter.ProcessedCellPassCount == 16525, $"converter.ProcessedCellPassCount != 16525 [={converter.ProcessedCellPassCount}]");
-      Assert.True(converter.ProcessedEpochCount == 1478, $"converter.ProcessedEpochCount != 1478, [= {converter.ProcessedEpochCount}]");
     }
 
     [Fact()]

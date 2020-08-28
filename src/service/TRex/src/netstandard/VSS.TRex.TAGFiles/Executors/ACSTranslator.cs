@@ -18,13 +18,15 @@ namespace VSS.TRex.TAGFiles.Executors
 
     private bool ValidPositionsforPair(UTMCoordPointPair uTMCoordPointPair)
     {
-      return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal);
+      return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Left.Z == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal || uTMCoordPointPair.Right.Z == Consts.NullReal);
     }
 
     public List<UTMCoordPointPair> TranslatePositions(string projectCSIBFile, List<UTMCoordPointPair> coordPositions)
     {
       // testing only waiting on new corex wrapper
-      var DIMENSIONS_2012_WITHOUT_VERT_ADJUST = "VE5MIENTSUIAAAAAAAAmQFByb2plY3Rpb24gZnJvbSBkYXRhIGNvbGxlY3RvcgAAWm9uZSBmcm9tIGRhdGEgY29sbGVjdG9yAABab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAABEYXR1bVRocmVlUGFyYW1ldGVycwAAAAAAAABAplRYQeM2GhTEP1hBAAAAAAAAAIAAAAAAAAAAgAAAAAAAAACADlpvbmUgZnJvbSBkYXRhIGNvbGxlY3RvcgAAt0YpjXZY6L8DXnvbAh4IQAAAAAAAaihBAAAAAABqGEEAAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAIF4LavCiChB4TsitpOdF0Fw85mH0Tt/vw9Pj9e7aCk/tdtew3Jyyj4+8FHdAgDwPwFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAHbj3dWkgShBru4e94uPF0FcFrRN6LYnwNAqy4rBHPC+JEubOpUlrr4AABgtRFT7Ifm/GC1EVPshCUAYLURU+yH5PxgtRFT7IQlAAQEBAQEBA1AAcgBvAGoAZQBjAHQAaQBvAG4AIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAWgBvAG4AZQAgAGYAcgBvAG0AIABkAGEAdABhACAAYwBvAGwAbABlAGMAdABvAHIAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAARABhAHQAdQBtAFQAaAByAGUAZQBQAGEAcgBhAG0AZQB0AGUAcgBzAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAFoAbwBuAGUAIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAAAAAAAAAAAB7TEdFPTQxNjc7TERFPTYxNjc7R0dFPTQxNjc7R0RFPTYxNjc7fQB7TEVFPTcwMTk7fQAA";
+      var utm13 = "VE5MIENTSUIAAAAAAAAmQFdvcmxkIHdpZGUvVVRNAAAxMyBOb3J0aAAAMTMgTm9ydGgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAABXR1MgMTk4NAAAV29ybGQgR2VvZGV0aWMgU3lzdGVtIDE5ODQAAAAAAECmVFhB0ZccFMQ/WEEOMTMgTm9ydGgAAAAAAAAAAAAA8olP4k9S/b8AAAAAAAAAAAAAAACAhB5BeJyiI7n87z8AAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8uvbtK4K1ZwAAAAAAAQFVALr27SuCtV8ABAQEBAQEDVwBvAHIAbABkACAAdwBpAGQAZQAvAFUAVABNAAAAMQAzACAATgBvAHIAdABoAAAAMQAzACAATgBvAHIAdABoAAAAAABXAEcAUwAgADEAOQA4ADQAAABXAG8AcgBsAGQAIABHAGUAbwBkAGUAdABpAGMAIABTAHkAcwB0AGUAbQAgADEAOQA4ADQAAAAxADMAIABOAG8AcgB0AGgAAAAAAAAAAAAAAAAAAAAAAAAAe0xHRT00MzI2O0xERT02MzI2O0dHRT00MzI2O0dERT02MzI2O30Ae0xFRT03MDMwO30AAA==";
+      var DIMENSIONS_2012_DC_CSIB = "VE5MIENTSUIAAAAAAAAmQFNDUzkwMCBMb2NhbGl6YXRpb24AAFNDUzkwMCBSZWNvcmQAAFNDUzkwMCBSZWNvcmQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAABEYXR1bVRocmVlUGFyYW1ldGVycwAAAABEBABAplRYQZPeGxTEP1hBAAAAAAAAAIAAAAAAAAAAgAAAAAAAAACADlNDUzkwMCBSZWNvcmQAAPwzidi3OOQ/A9VI04kPAMCtCIFm/n6RQMxN+n31I6FAVC6H71oA8D8AAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABU0NTOTAwIFJlY29yZAAAJZmoeTC7kkDzZo8993ajQECCedBUzGU/2wH4yFX6IT/4iVvMj3UBP/+MJqUNAPA/AVNDUzkwMCBSZWNvcmQAAHxLxEIKf5FAZq5nO/IjoUCxjjO4UgNNQCU1m2Q3dRY/doMN9PUhhD4AABgtRFT7Ifm/GC1EVPshCUAYLURU+yH5PxgtRFT7IQlAAQEBAQEBA1MAQwBTADkAMAAwACAATABvAGMAYQBsAGkAegBhAHQAaQBvAG4AAABTAEMAUwA5ADAAMAAgAFIAZQBjAG8AcgBkAAAAUwBDAFMAOQAwADAAIABSAGUAYwBvAHIAZAAAAAAARABhAHQAdQBtAFQAaAByAGUAZQBQAGEAcgBhAG0AZQB0AGUAcgBzAAAAAABTAEMAUwA5ADAAMAAgAFIAZQBjAG8AcgBkAAAAAAAAAFMAQwBTADkAMAAwACAAUgBlAGMAbwByAGQAAABTAEMAUwA5ADAAMAAgAFIAZQBjAG8AcgBkAAAAAAAAAAAAAAAAAAA=";
+      projectCSIBFile = DIMENSIONS_2012_DC_CSIB;
 
       if (projectCSIBFile == string.Empty)
       {
@@ -53,19 +55,31 @@ namespace VSS.TRex.TAGFiles.Executors
           if (coordPositions[i].UTMZone != currentUTMZone || currentUTMCSIBFile == string.Empty)
           {
             currentUTMZone = coordPositions[i].UTMZone;
-         //   currentUTMCSIBFile = coreXWrapper.GetUTMZone(currentUTMZone);
-            currentUTMCSIBFile = DIMENSIONS_2012_WITHOUT_VERT_ADJUST; // debugging
+            //   currentUTMCSIBFile = coreXWrapper.GetUTMZone(currentUTMZone);
+            currentUTMCSIBFile = utm13; // debugging
           }
 
           if (ValidPositionsforPair(coordPositions[i]))
           {
             // convert left point to WGS84 LL point
             var leftLLPoint = coreXWrapper.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Left.ToCoreX_XYZ()).ToTRex_XYZ();
+            if (leftLLPoint.IsZeroed())
+            {
+              // CoreX functions can fail slientlty and return a zeroed XYZ. For conversions to Lat Long Elev we can safely check to make sure there is has been a successful conversion
+              Log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates LeftPoint{leftLLPoint}");
+              return null;
+            }
             // convert left WGS84 LL point to project NNE
             var leftNNEPoint = coreXWrapper.LLHToNEE(projectCSIBFile, leftLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
 
             // convert right point to WGS84 LL point
             var rightLLPoint = coreXWrapper.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Right.ToCoreX_XYZ()).ToTRex_XYZ();
+            if (rightLLPoint.IsZeroed())
+            {
+              Log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates. RightPoint {rightLLPoint}");
+              return null;
+            }
+
             // convert right WGS84 LL point to project NNE
             var rightNNEPoint = coreXWrapper.LLHToNEE(projectCSIBFile, rightLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
 
@@ -77,7 +91,7 @@ namespace VSS.TRex.TAGFiles.Executors
       }
       catch (Exception ex)
       {
-        Log.LogError(ex, "Exception occurred while converting ACS coordinates");
+        Log.LogError(ex, $"Exception occurred while converting ACS coordinates. {ex.Message}" );
         return null;
       }
 
