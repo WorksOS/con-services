@@ -203,7 +203,7 @@ namespace VSS.TRex.Volumes.Executors
           // Create and configure the aggregator that contains the business logic for the underlying volume calculation
           Aggregator = new ProgressiveVolumesCalculationsAggregator
           {
-            SiteModelID = SiteModelID,
+            SiteModel = _siteModel,
             LiftParams = _liftParams,
             CellSize = _siteModel.CellSize,
             VolumeType = VolumeType,

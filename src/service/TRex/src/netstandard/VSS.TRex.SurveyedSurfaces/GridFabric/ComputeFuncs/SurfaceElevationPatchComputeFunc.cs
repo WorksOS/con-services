@@ -23,13 +23,20 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     {
       try
       {
-        // _log.LogDebug($"SurfaceElevationPatchComputeFunc: Arg = {arg}");
-
         var executor = new CalculateSurfaceElevationPatch();
-        var result = executor.Execute(arg.SiteModelID, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY,
+
+        var siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(arg.SiteModelID);
+
+        if (siteModel == null)
+        {
+          _log.LogWarning($"Failed to get site model with ID {arg.SiteModelID}");
+          return new SerialisedByteArrayWrapper(null);
+        }
+
+        var result = executor.Execute(siteModel, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY,
           arg.CellSize, arg.SurveyedSurfacePatchType, arg.IncludedSurveyedSurfaces,
           DIContext.ObtainRequired<IDesignFiles>(),
-          DIContext.ObtainRequired<ISiteModels>().GetSiteModel(arg.SiteModelID).SurveyedSurfaces,
+          siteModel.SurveyedSurfaces,
           arg.ProcessingMap);
 
         byte[] resultAsBytes = null;

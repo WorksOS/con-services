@@ -15,7 +15,7 @@ namespace VSS.TRex.Designs.Executors
 
     private IDesignFiles designs;
 
-    private IDesignFiles Designs => designs ??= DIContext.Obtain<IDesignFiles>();
+    private IDesignFiles Designs => designs ??= DIContext.ObtainRequired<IDesignFiles>();
 
     /// <summary>
     /// Default no-args constructor
@@ -27,9 +27,6 @@ namespace VSS.TRex.Designs.Executors
     /// <summary>
     /// Performs the donkey work of the boundary calculation
     /// </summary>
-    /// <param name="arg"></param>
-    /// <param name="calcResult"></param>
-    /// <returns></returns>
     private List<Fence> Calc(DesignBoundaryArgument arg, out DesignProfilerRequestResult calcResult)
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
@@ -43,7 +40,7 @@ namespace VSS.TRex.Designs.Executors
         return null;
       }
 
-      var design = Designs.Lock(arg.ReferenceDesign.DesignID, arg.ProjectID, siteModel.CellSize, out var lockResult);
+      var design = Designs.Lock(arg.ReferenceDesign.DesignID, siteModel, siteModel.CellSize, out var lockResult);
 
       if (design == null)
       {
@@ -69,9 +66,6 @@ namespace VSS.TRex.Designs.Executors
     /// <summary>
     /// Performs execution business logic for this executor.
     /// </summary>
-    /// <param name="arg"></param>
-    /// <param name="calcResult"></param>
-    /// <returns></returns>
     public List<Fence> Execute(DesignBoundaryArgument arg, out DesignProfilerRequestResult calcResult)
     {
       // Perform the design boundary calculation

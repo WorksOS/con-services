@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -22,7 +24,8 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         var executor = new CalculateDesignElevationPatch();
 
-        var patch = executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
+        var patch = executor.Execute(DIContext.ObtainRequired<ISiteModels>().GetSiteModel(args.ProjectID), 
+          args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
 
         var result = new DesignFilterSubGridMaskResponse();
 

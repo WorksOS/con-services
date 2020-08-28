@@ -17,7 +17,7 @@ namespace VSS.TRex.Designs.Executors
 
     private static IDesignFiles designs;
 
-    private IDesignFiles Designs => designs ?? (designs = DIContext.Obtain<IDesignFiles>());
+    private IDesignFiles Designs => designs ??= DIContext.ObtainRequired<IDesignFiles>();
 
     /// <summary>
     /// Default no-args constructor
@@ -29,21 +29,20 @@ namespace VSS.TRex.Designs.Executors
     /// <summary>
     /// Performs the donkey work of the profile calculation
     /// </summary>
-    /// <param name="arg"></param>
-    /// <param name="calcResult"></param>
-    /// <returns></returns>
     private List<XYZS> Calc(CalculateDesignProfileArgument arg, out DesignProfilerRequestResult calcResult)
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
-      IDesignBase Design = Designs.Lock(arg.ReferenceDesign.DesignID, arg.ProjectID, arg.CellSize, out DesignLoadResult LockResult);
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
+
+      var Design = Designs.Lock(arg.ReferenceDesign.DesignID, siteModel, arg.CellSize, out DesignLoadResult LockResult);
 
       var arg2 = new CalculateDesignProfileArgument_ClusterCompute
       {
         ProjectID = arg.ProjectID,
         CellSize = arg.CellSize,
         ReferenceDesign = arg.ReferenceDesign,
-    };
+      };
 
       if (arg.PositionsAreGrid)
       {
@@ -51,8 +50,6 @@ namespace VSS.TRex.Designs.Executors
       }
       else
       {
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
-
         if (siteModel != null)
         {
           arg2.ProfilePathNEE = DIContext.Obtain<IConvertCoordinates>().WGS84ToCalibration(
@@ -98,7 +95,6 @@ namespace VSS.TRex.Designs.Executors
     /// <summary>
     /// Performs execution business logic for this executor
     /// </summary>
-    /// <returns></returns>
     public List<XYZS> Execute(CalculateDesignProfileArgument args, out DesignProfilerRequestResult calcResult)
     {
       // Perform the design profile calculation

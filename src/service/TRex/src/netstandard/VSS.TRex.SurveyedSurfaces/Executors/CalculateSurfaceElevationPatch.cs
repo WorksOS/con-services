@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -28,7 +29,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// <summary>
     /// Performs the donkey work of the elevation patch calculation
     /// </summary>
-    public IClientLeafSubGrid Execute(Guid siteModelId, int otgCellBottomLeftX, int otgCellBottomLeftY, double cellSize, SurveyedSurfacePatchType patchType,
+    public IClientLeafSubGrid Execute(ISiteModel siteModel, int otgCellBottomLeftX, int otgCellBottomLeftY, double cellSize, SurveyedSurfacePatchType patchType,
       Guid[] includedSurveyedSurfaces, IDesignFiles designs, ISurveyedSurfaces surveyedSurfaces, SubGridTreeBitmapSubGridBits processingMap)
     {
       var calcResult = DesignProfilerRequestResult.UnknownError;
@@ -82,7 +83,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           }
 
           // Lock & load the design
-          var design = designs.Lock(thisSurveyedSurface.DesignDescriptor.DesignID, siteModelId, cellSize, out _);
+          var design = designs.Lock(thisSurveyedSurface.DesignDescriptor.DesignID, siteModel, cellSize, out _);
 
           if (design == null)
           {

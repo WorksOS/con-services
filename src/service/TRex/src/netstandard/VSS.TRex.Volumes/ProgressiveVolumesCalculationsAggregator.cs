@@ -6,6 +6,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
@@ -37,7 +38,7 @@ namespace VSS.TRex.Volumes
     // References necessary for correct calculation of aggregated state
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
-    public Guid SiteModelID { get; set; } = Guid.Empty;
+    public ISiteModel SiteModel { get; set; }
 
     // The sum of the aggregated summarized information relating to volumes summary based reports
 
@@ -79,7 +80,7 @@ namespace VSS.TRex.Volumes
       // Query the patch of elevations from the surface model for this sub grid
       if (ActiveDesign != null)
       {
-        getDesignHeightsResult = ActiveDesign.Design.GetDesignHeightsViaLocalCompute(SiteModelID, ActiveDesign.Offset, subGrid.OriginAsCellAddress(), CellSize);
+        getDesignHeightsResult = ActiveDesign.Design.GetDesignHeightsViaLocalCompute(SiteModel, ActiveDesign.Offset, subGrid.OriginAsCellAddress(), CellSize);
 
         if (getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK &&
             getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)

@@ -69,11 +69,11 @@ namespace VSS.TRex.Reports.StationOffset.Executors
           LiftParams = arg.LiftParams
         };
 
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
-        var designFiles = DIContext.Obtain<IDesignFiles>();
+        var siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(arg.ProjectID);
+        var designFiles = DIContext.ObtainRequired<IDesignFiles>();
 
         // alignment will convert interval/offsets into northing/eastings for the project
-        var alignmentDesign = designFiles.Lock(arg.AlignmentDesignUid, arg.ProjectID, siteModel.CellSize, out var loadResult) as SVLAlignmentDesign;
+        var alignmentDesign = designFiles.Lock(arg.AlignmentDesignUid, siteModel, siteModel.CellSize, out var loadResult) as SVLAlignmentDesign;
 
         if (alignmentDesign == null || loadResult != DesignLoadResult.Success)
         {
