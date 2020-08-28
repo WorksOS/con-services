@@ -13,8 +13,6 @@ namespace VSS.TRex.Analytics.Foundation
     /// <summary>
     /// Execute the analytics operation with the supplied argument synchronously.
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public TResult Execute(TArgument arg)
     {
       var request = new TRequest_ApplicationService();
@@ -25,8 +23,6 @@ namespace VSS.TRex.Analytics.Foundation
     /// <summary>
     /// Execute the analytics operation with the supplied argument asynchronously.
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public async Task<TResult> ExecuteAsync(TArgument arg)
     {
       var request = new TRequest_ApplicationService();

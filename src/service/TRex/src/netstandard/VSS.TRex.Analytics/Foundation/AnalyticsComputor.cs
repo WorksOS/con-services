@@ -66,7 +66,6 @@ namespace VSS.TRex.Analytics.Foundation
     /// <summary>
     /// Primary method called to begin analytics computation
     /// </summary>
-    /// <returns></returns>
     public async Task<bool> ComputeAnalytics(BaseAnalyticsResponse response)
     {
       using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
