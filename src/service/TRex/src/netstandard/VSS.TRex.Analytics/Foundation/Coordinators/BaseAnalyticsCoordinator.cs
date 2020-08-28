@@ -23,7 +23,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
     private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
     // Warn on analytics requests that take more than this time to service (20 seconds)
-    private static TimeSpan analyticsRequestTimeSpanWarnLimit = new TimeSpan(0, 0, 20);
+    private static readonly TimeSpan _analyticsRequestTimeSpanWarnLimit = new TimeSpan(0, 0, 20);
 
     /// <summary>
     /// The SiteModel context for computing the result of the request
@@ -79,9 +79,9 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
         _log.LogInformation($"Out: Executing Coordination logic, elapsed time = {requestStopWatch}");
 
         // Flag tile renders that take more than 20 seconds to render...
-        if (requestStopWatch.Elapsed > analyticsRequestTimeSpanWarnLimit)
+        if (requestStopWatch.Elapsed > _analyticsRequestTimeSpanWarnLimit)
         {
-          _log.LogInformation($"Analytics request required more than {analyticsRequestTimeSpanWarnLimit} to complete");
+          _log.LogInformation($"Analytics request required more than {_analyticsRequestTimeSpanWarnLimit} to complete");
         }
       }
 
