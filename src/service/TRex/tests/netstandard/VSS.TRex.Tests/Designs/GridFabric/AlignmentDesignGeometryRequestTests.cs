@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
   public class AlignmentDesignGeometryRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
     // Needed for the out parameter on the Lock function
-    delegate IDesignBase GobbleDesignFilesLockReturns(Guid designUid, Guid datamodelUid, double cellSize, out DesignLoadResult result);      
+    delegate IDesignBase GobbleDesignFilesLockReturns(Guid designUid, ISiteModelBase sitemodel, double cellSize, out DesignLoadResult result);
 
     public AlignmentDesignGeometryRequestTests(DITAGFileAndSubGridRequestsWithIgniteFixture fixture)
     {
@@ -74,7 +74,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
 
       var mockDesignFiles = new Mock<IDesignFiles>();
       mockDesignFiles.Setup(x => x.Lock(It.IsAny<Guid>(), It.IsAny<ISiteModelBase>(), It.IsAny<double>(), out It.Ref<DesignLoadResult>.IsAny))
-        .Returns(new GobbleDesignFilesLockReturns((Guid designUid, Guid datamodelUid, double cellSize, out DesignLoadResult result) =>
+        .Returns(new GobbleDesignFilesLockReturns((Guid designUid, ISiteModelBase siteModel, double cellSize, out DesignLoadResult result) =>
         {
           result = DesignLoadResult.Success;
           return testDesign;
@@ -138,7 +138,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
 
       var mockDesignFiles = new Mock<IDesignFiles>();
       mockDesignFiles.Setup(x => x.Lock(It.IsAny<Guid>(), It.IsAny<ISiteModelBase>(), It.IsAny<double>(), out It.Ref<DesignLoadResult>.IsAny))
-        .Returns(new GobbleDesignFilesLockReturns((Guid designUid, Guid datamodelUid, double cellSize, out DesignLoadResult result) =>
+        .Returns(new GobbleDesignFilesLockReturns((Guid designUid, ISiteModelBase siteModel, double cellSize, out DesignLoadResult result) =>
         {
           result = DesignLoadResult.Success;
           return testDesign;
