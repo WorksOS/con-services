@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
@@ -30,13 +31,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
     /// </summary>
     public static GetEditDataRequest CreateGetEditDataRequest(
       long projectId,
-      long assetId
+      long assetId,
+      Guid? projectUid
       )
     {
       return new GetEditDataRequest
       {
         ProjectId = projectId,
-        assetId = assetId
+        assetId = assetId,
+        ProjectUid = projectUid
       };
     }
 
