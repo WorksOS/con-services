@@ -184,7 +184,13 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SiteModelAttributesHaveChanged(ISiteModelAttributesChangedEvent message)
     {
-      _log.LogInformation($"Entering attribute change notification processor for  project {message.SiteModelID}.");
+      var messageAge = message.TimeSentUtc - DateTime.UtcNow;
+      _log.LogInformation($"Entering attribute change notification processor for project {message.SiteModelID}, change event ID {message.ChangeEventUid}, event message age {messageAge}");
+
+      if (messageAge.TotalSeconds > 1.0)
+      {
+        _log.LogWarning($"Message age more than 1 second [{messageAge}]");
+      }
 
       // Site models have immutable characteristics in TRex. Multiple requests may reference the same site model
       // concurrently, with no interlocks enforcing access serialization. Any attempt to replace or modify an already loaded
@@ -284,7 +290,7 @@ namespace VSS.TRex.SiteModels
         }
 
         // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
-        DIContext.ObtainOptional<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
+        DIContext.ObtainOptional<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, message.ChangeEventUid, mask);
 
         // Advise any registered site model change map notifier of the changes
         DIContext.ObtainOptional<ISiteModelChangeMapDeltaNotifier>()?.Notify(message.SiteModelID, DateTime.UtcNow, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);

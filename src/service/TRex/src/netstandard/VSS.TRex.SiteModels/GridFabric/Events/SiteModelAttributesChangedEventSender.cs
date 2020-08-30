@@ -21,19 +21,6 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <summary>
     /// Notify all interested nodes in the immutable grid a site model has changed attributes
     /// </summary>
-    /// <param name="targetGrids"></param>
-    /// <param name="siteModelID"></param>
-    /// <param name="existenceMapChanged"></param>
-    /// <param name="existenceMapChangeMask"></param>
-    /// <param name="designsChanged"></param>
-    /// <param name="csibChanged"></param>
-    /// <param name="machinesChanged"></param>
-    /// <param name="machineTargetValuesChanged"></param>
-    /// <param name="surveyedSurfacesChanged"></param>
-    /// <param name="machineDesignsModified"></param>
-    /// <param name="proofingRunsModified"></param>
-    /// <param name="alignmentsChanged"></param>
-    /// <param name="siteModelMarkedForDeletion"></param>
     public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
       Guid siteModelID,
       bool existenceMapChanged = false,
@@ -62,7 +49,9 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         MachineDesignsModified = machineDesignsModified,
         ProofingRunsModified = proofingRunsModified,
         AlignmentsModified = alignmentsChanged,
-        SiteModelMarkedForDeletion = siteModelMarkedForDeletion
+        SiteModelMarkedForDeletion = siteModelMarkedForDeletion,
+        ChangeEventUid = Guid.NewGuid(),
+        TimeSentUtc = DateTime.UtcNow
       };
 
       if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)

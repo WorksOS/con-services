@@ -317,7 +317,7 @@ namespace VSS.TRex.SubGrids.Executors
         var subGridResult = (requestSubGridInternalResult.requestResult, requestSubGridInternalResult.clientGrid);
 
         if (subGridResult.requestResult != ServerRequestResult.NoError)
-          _log.LogError($"Request for sub grid {address} request failed with code {result}");
+          _log.LogError($"Request for sub grid {address} request failed with code(s) {string.Join(",", result.Select(x => $"{x.requestResult}"))}");
 
         result[requestCount++] = subGridResult;
       }
