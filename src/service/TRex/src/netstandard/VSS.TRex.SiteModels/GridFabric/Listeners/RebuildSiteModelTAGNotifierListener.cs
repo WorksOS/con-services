@@ -38,7 +38,17 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
           var rebuilderManager = DIContext.Obtain<ISiteModelRebuilderManager>();
           if (rebuilderManager != null)
           {
-            Task.Run(() => rebuilderManager.TAGFileProcessed(message.ProjectUid, message.ResponseItems));
+            Task.Run(() =>
+            {
+              try
+              {
+                rebuilderManager.TAGFileProcessed(message.ProjectUid, message.ResponseItems);
+              }
+              catch (Exception e)
+              {
+                _log.LogError(e, "Exception handling TAG file processed notification event");
+              }
+            });
           }
           else
           {

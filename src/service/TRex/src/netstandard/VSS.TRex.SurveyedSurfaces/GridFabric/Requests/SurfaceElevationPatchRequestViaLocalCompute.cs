@@ -46,7 +46,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         _cache = new SurfaceElevationPatchRequestCache(cache, context, _clientLeafSubGridFactory);
     }
 
-    public Task<IClientLeafSubGrid> ExecuteAsync(ISurfaceElevationPatchArgument arg) => Task.Run(() => Execute(arg));
+    public async Task<IClientLeafSubGrid> ExecuteAsync(ISurfaceElevationPatchArgument arg) => Execute(arg); // Task.Run(() => Execute(arg));
 
     public IClientLeafSubGrid Execute(ISurfaceElevationPatchArgument arg)
     {

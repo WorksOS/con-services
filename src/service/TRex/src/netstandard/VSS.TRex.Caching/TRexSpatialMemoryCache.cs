@@ -245,7 +245,7 @@ namespace VSS.TRex.Caching
     /// Invalidates sub grids held within all cache contexts for a project that are sensitive to
     /// ingest of production data (eg: from TAG files)
     /// </summary>
-    public void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask)
+    public void InvalidateDueToProductionDataIngest(Guid projectUid, Guid changeEventUid, ISubGridTreeBitMask mask)
     {
       var numInvalidatedSubGrids = 0;
       var numScannedSubGrids = 0;
@@ -290,7 +290,7 @@ namespace VSS.TRex.Caching
         }
       }
 
-      _log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {contextCount} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
+      _log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {contextCount} contexts in {DateTime.UtcNow - startTime} [project {projectUid}, change event ID {changeEventUid}]");
     }
 
     /// <summary>
