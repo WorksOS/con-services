@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.TRex.Gateway.Common.Abstractions;
 
@@ -39,5 +44,23 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// Gets the tRex CompactionData proxy interface.
     /// </summary>
     protected ITRexCompactionDataProxy TRexCompactionDataProxy => _trexCompactionDataProxy ??= HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>();
+
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
+
+    /// <summary>
+    /// Gets the User uid/applicationID from the context.
+    /// </summary>
+    protected string GetUserId()
+    {
+      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
+      {
+        return identity.Name;
+      }
+
+      throw new ArgumentException("Incorrect UserId in request context principal.");
+    }
   }
 }

@@ -3,20 +3,17 @@ using Microsoft.Extensions.Logging;
 using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
-using System.Threading.Tasks;
-using Nito.AsyncEx.Synchronous;
 
 namespace VSS.TRex.SiteModels.GridFabric.Events
 {
   /// <summary>
   /// The listener that responds to site model change notifications emitted by actors such as TAG file processing
   /// </summary>
-  public class SiteModelAttributesChangedEventListener : IMessageListener<ISiteModelAttributesChangedEvent>, IDisposable, ISiteModelAttributesChangedEventListener, IBinarizable, IFromToBinary
+  public class SiteModelAttributesChangedEventListener : VersionCheckedBinarizableSerializationBase, IMessageListener<ISiteModelAttributesChangedEvent>, IDisposable, ISiteModelAttributesChangedEventListener
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelAttributesChangedEventListener>();
 
@@ -44,18 +41,18 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         else
         {
           Log.LogError("No ISiteModels instance available from DIContext to send attributes change message to");
-          return false;
+          return true; // Stay subscribed
         }
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occured processing site model attributes changed event");
-        return false;
+        Log.LogError(e, "Exception occurred processing site model attributes changed event");
+        return true;  // stay subscribed
       }
       finally
       {
         Log.LogInformation(
-          $"Completed handling notification of site model attributes changed for {message.SiteModelID}: ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
+          $"Completed handling notification of site model attributes changed for '{message.SiteModelID}': ExistenceMapModified={message.ExistenceMapModified}, DesignsModified={message.DesignsModified}, SurveyedSurfacesModified {message.SurveyedSurfacesModified} CsibModified={message.CsibModified}, MachinesModified={message.MachinesModified}, MachineTargetValuesModified={message.MachineTargetValuesModified}, AlignmentsModified {message.AlignmentsModified}, ExistenceMapChangeMask {message.ExistenceMapChangeMask != null}");
       }
 
       return true;
@@ -98,18 +95,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       StopListening();
     }
 
-    /// <summary>
-    /// Listener has no serializable content
-    /// </summary>
-    /// <param name="writer"></param>
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    /// <summary>
-    /// Listener has no serializable content
-    /// </summary>
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -117,12 +103,15 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       writer.WriteString(MessageTopicName);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      GridName = reader.ReadString();
-      MessageTopicName = reader.ReadString();
+      if (version == 1)
+      {
+        GridName = reader.ReadString();
+        MessageTopicName = reader.ReadString();
+      }
     }
   }
 }

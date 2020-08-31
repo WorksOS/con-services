@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Messaging;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -18,7 +17,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
   /// <summary>
   /// The listener that responds to design change notifications emitted by actions such as changing a design
   /// </summary>
-  public class DesignChangedEventListener : IMessageListener<IDesignChangedEvent>, IDisposable, IDesignChangedEventListener, IBinarizable, IFromToBinary
+  public class DesignChangedEventListener : VersionCheckedBinarizableSerializationBase, IMessageListener<IDesignChangedEvent>, IDisposable, IDesignChangedEventListener
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignChangedEventListener>();
 
@@ -49,7 +48,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           else
           {
             Log.LogWarning("No IDesignManager instance available from DIContext to send attributes change message to");
-            return false;
+            return true; // Stay subscribed
           }
         }
         else if (message.FileType == ImportedFileType.SurveyedSurface)
@@ -63,7 +62,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           else
           {
             Log.LogWarning("No ISurveyedSurfaceManager instance available from DIContext to send attributes change message to");
-            return false;
+            return true;  // Stay subscribed
           }
         }
         else if (message.FileType == ImportedFileType.Alignment)
@@ -78,7 +77,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           {
             // Note! not all listeners maybe interested in the design type removed so only log as warning 
             Log.LogWarning("No IAlignmentManager instance available from DIContext to send attributes change message to");
-            return false;
+            return true;  // Stay subscribed
           }
         }
 
@@ -88,8 +87,8 @@ namespace VSS.TRex.Designs.GridFabric.Events
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occured processing design changed event");
-        return false;
+        Log.LogError(e, "Exception occurred processing design changed event");
+        return true; // Stay subscribed
       }
       finally
       {
@@ -137,29 +136,22 @@ namespace VSS.TRex.Designs.GridFabric.Events
       StopListening();
     }
 
-    /// <summary>
-    /// Listener has no serializable content
-    /// </summary>
-    /// <param name="writer"></param>
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    /// <summary>
-    /// Listener has no serializable content
-    /// </summary>
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
       writer.WriteString(GridName);
       writer.WriteString(MessageTopicName);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-      GridName = reader.ReadString();
-      MessageTopicName = reader.ReadString();
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
+      {
+        GridName = reader.ReadString();
+        MessageTopicName = reader.ReadString();
+      }
     }
   }
 

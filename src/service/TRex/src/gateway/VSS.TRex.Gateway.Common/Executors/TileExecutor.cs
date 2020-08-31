@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
@@ -25,7 +24,6 @@ using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Requests;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Rendering.GridFabric.Responses;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -119,6 +117,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         case DisplayMode.CCA:
           convertedPalette = new CCAPalette();
+          convertedPalette.PaletteTransitions = availableTransitions;
           break;
         case DisplayMode.CCASummary:
           convertedPalette = new CCASummaryPalette();
@@ -149,29 +148,31 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           cmvPalette.PaletteTransitions = availableTransitions;
           break;
+        case DisplayMode.CCVPercent:
         case DisplayMode.CCVPercentSummary:
-          convertedPalette = new CMVSummaryPalette();
+        case DisplayMode.CCVPercentChange:
+          convertedPalette = new CCVPercentPalette();
 
-          var cmvSummaryPalette = ((CMVSummaryPalette) convertedPalette);
+          var cmvPercentPalette = ((CCVPercentPalette) convertedPalette);
 
-          cmvSummaryPalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
-          cmvSummaryPalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
+          cmvPercentPalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
+          cmvPercentPalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
 
-          cmvSummaryPalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
-          cmvSummaryPalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
+          cmvPercentPalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
+          cmvPercentPalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
 
           if (request.Palettes != null)
           {
-            cmvSummaryPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
-            cmvSummaryPalette.BelowCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
-            cmvSummaryPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
+            cmvPercentPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
+            cmvPercentPalette.BelowCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            cmvPercentPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
           }
 
           break;
         case DisplayMode.CMVChange:
-          convertedPalette = new CMVPercentChangePalette();
+          convertedPalette = new CMVChangePalette();
 
-          var cmvPercentChangePalette = ((CMVPercentChangePalette)convertedPalette);
+          var cmvPercentChangePalette = ((CMVChangePalette)convertedPalette);
           
           cmvPercentChangePalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
           cmvPercentChangePalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
@@ -188,6 +189,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
+          convertedPalette.PaletteTransitions = availableTransitions;
           break;
         case DisplayMode.Height:
           convertedPalette = request.Palettes != null ? new HeightPalette(request.Palettes.First().Value, request.Palettes.Last().Value) : new HeightPalette();
@@ -231,6 +233,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           break;
         case DisplayMode.PassCount:
           convertedPalette = new PassCountPalette();
+          convertedPalette.PaletteTransitions = availableTransitions;
           break;
         case DisplayMode.PassCountSummary:
           convertedPalette = new PassCountSummaryPalette();
@@ -250,6 +253,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           break;
         case DisplayMode.MachineSpeed:
           convertedPalette = new SpeedPalette();
+          convertedPalette.PaletteTransitions = availableTransitions;
           break;
         case DisplayMode.TargetSpeedSummary:
           convertedPalette = new SpeedSummaryPalette();
@@ -268,6 +272,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           break;
         case DisplayMode.TemperatureDetail:
           convertedPalette = new TemperaturePalette();
+          convertedPalette.PaletteTransitions = availableTransitions;
           break;
         case DisplayMode.TemperatureSummary:
           convertedPalette = new TemperatureSummaryPalette();
@@ -285,22 +290,16 @@ namespace VSS.TRex.Gateway.Common.Executors
           temperatureSummaryPalette.TemperatureLevels.Min = overrides?.OverridingTemperatureWarningLevels.Min ?? TEMPERATURE_LEVELS_MIN;
           temperatureSummaryPalette.TemperatureLevels.Max = overrides?.OverridingTemperatureWarningLevels.Max ?? TEMPERATURE_LEVELS_MAX;
           break;
-        default:
-          throw new TRexException($"No implemented colour palette for this mode ({request.Mode})");
-      }
+        case DisplayMode.CompactionCoverage:
+          convertedPalette = new CompactionCoveragePalette();
 
-      if (request.Mode != DisplayMode.Height &&
-          request.Mode != DisplayMode.CCVPercentSummary &&
-          request.Mode != DisplayMode.CMVChange &&
-          request.Mode != DisplayMode.CCV &&
-          request.Mode != DisplayMode.PassCountSummary && 
-          request.Mode != DisplayMode.CCASummary &&
-          request.Mode != DisplayMode.MDPPercentSummary &&
-          request.Mode != DisplayMode.MDP &&
-          request.Mode != DisplayMode.TargetSpeedSummary &&
-          request.Mode != DisplayMode.TemperatureSummary)
-      {
-        convertedPalette = new PaletteBase(availableTransitions);
+          var compactionCoveragePalette = ((CompactionCoveragePalette)convertedPalette);
+          compactionCoveragePalette.HasCMVData = availableTransitions[0].Color;
+          compactionCoveragePalette.HasNoCMVData = availableTransitions[1].Color;
+          break;
+        default:
+          // when adding modes, there are various other places in the code which will need work
+          throw new TRexException($"No implemented colour palette for this mode ({request.Mode})");
       }
 
       return convertedPalette;

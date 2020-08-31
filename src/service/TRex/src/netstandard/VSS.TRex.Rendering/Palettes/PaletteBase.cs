@@ -1,15 +1,16 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using Draw = System.Drawing;
 
 namespace VSS.TRex.Rendering.Palettes
 {
   // A basic palette class that defines a set of transitions covering a value range being rendered
-  public class PaletteBase : IPlanViewPalette, IFromToBinary
+  public class PaletteBase : VersionCheckedBinarizableSerializationBase, IPlanViewPalette
   {
     private const byte VERSION_NUMBER = 1;
+
+    public PaletteBase() { }
 
     public PaletteBase(Transition[] transitions)
     {
@@ -22,8 +23,6 @@ namespace VSS.TRex.Rendering.Palettes
     /// <summary>
     /// Logic to choose a colour from the set of transitions depending on the value. Slow but simple for the POC...
     /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
     public Draw.Color ChooseColour(float value)
     {
       var color = Draw.Color.Empty;
@@ -95,8 +94,6 @@ namespace VSS.TRex.Rendering.Palettes
     /// <summary>
     /// Logic to choose a colour from the set of transitions depending on the value. Slow but simple for the POC...
     /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
     public Draw.Color ChooseColour(double value)
     {
       var color = Draw.Color.Empty;
@@ -116,8 +113,7 @@ namespace VSS.TRex.Rendering.Palettes
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public virtual void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -135,19 +131,21 @@ namespace VSS.TRex.Rendering.Palettes
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public virtual void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        var numberOfTransitions = reader.ReadInt();
+        if (reader.ReadBoolean())
+        {
+          var numberOfTransitions = reader.ReadInt();
 
-        PaletteTransitions = new Transition[numberOfTransitions];
+          PaletteTransitions = new Transition[numberOfTransitions];
 
-        for (var i = 0; i < PaletteTransitions.Length; i++)
-          PaletteTransitions[i].FromBinary(reader);
+          for (var i = 0; i < PaletteTransitions.Length; i++)
+            PaletteTransitions[i].FromBinary(reader);
+        }
       }
     }
   }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
@@ -193,7 +192,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       try
       {
@@ -218,13 +217,16 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       try
       {
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+        var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-        _serviceCheckIntervalMs = reader.ReadInt();
+        if (version == 1)
+        {
+          _serviceCheckIntervalMs = reader.ReadInt();
+        }
       }
       catch (Exception e)
       {

@@ -47,7 +47,6 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <summary>
     /// Overloaded ToString to add argument properties
     /// </summary>
-    /// <returns></returns>
     string ToString();
 
     /// <summary>
@@ -56,9 +55,8 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// even though the core engine returns HeightAndTime results. This allows HeightAndTime and
     /// SurveyedSurfaceHeightAndTime results to cohabit in the same cache
     /// </summary>
-    /// <returns></returns>
     string CacheFingerprint();
 
-    void SetOTGBottomLeftLocation(int oTGCellBottomLeftX, int oTGCellBottomLeftY);
+    void SetOTGBottomLeftLocation(int otgCellBottomLeftX, int otgCellBottomLeftY);
   }
 }

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -11,6 +14,7 @@ using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.CellDatum.GridFabric.Responses;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Geometry;
@@ -29,6 +33,8 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CellPassesRequest_ApplicationService))]
   public class CellPassesRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
+    private const int expectedCount = 20;
+
     private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<CellPassesRequestComputeFunc_ApplicationService, CellPassesRequestArgument_ApplicationService, CellPassesResponse>();
 
     private void AddClusterComputeGridRouting()
@@ -86,6 +92,50 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       return siteModel;
     }
 
+    private (CellPassesRequest_ApplicationService, FilterSet, Guid) BuildTestDataAndSetAreaFilter()
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var baseTime = DateTime.UtcNow;
+      var siteModel = BuildTestSiteModel(baseTime, count: expectedCount);
+
+      var request = new CellPassesRequest_ApplicationService();
+
+      var filter = new FilterSet(new CombinedFilter());
+
+      var fence = new Fence();
+      fence.Points.Add(new FencePoint(-115.01912, 36.207522, 0.0));
+      fence.Points.Add(new FencePoint(-115.018673, 36.207501, 0.0));
+      fence.Points.Add(new FencePoint(-115.018887, 36.207213, 0.0));
+      fence.Points.Add(new FencePoint(-115.01932, 36.207325, 0.0));
+
+      filter.Filters[0].SpatialFilter.Fence = fence;
+      filter.Filters[0].SpatialFilter.IsSpatial = true;
+
+      // Mocked ConvertCoordinates expected result.
+      var neeCoords = new XYZ[fence.Points.Count];
+      neeCoords[0].X = 0;
+      neeCoords[0].Y = 0;
+      neeCoords[1].X = 0;
+      neeCoords[1].Y = 1;
+      neeCoords[2].X = 1;
+      neeCoords[2].Y = 1;
+      neeCoords[3].X = 1;
+      neeCoords[3].Y = 0;
+
+      var expectedCoordinateConversionResult = neeCoords.ToCoreX_XYZ();
+
+      var convertCoordinatesMock = new Mock<IConvertCoordinates>();
+
+      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>()))
+        .Returns(expectedCoordinateConversionResult);
+
+      DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
+
+      return (request, filter, siteModel.ID);
+    }
+
     [Fact]
     public void Test_CellPassesRequest_ClusterCompute_Creation()
     {
@@ -112,7 +162,6 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     [Fact]
     public async Task Test_CellPassesRequest_ClusterCompute_ExecuteData()
     {
-      const int expectedCount = 20;
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -190,7 +239,6 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     [Fact]
     public async Task Test_CellPassesRequest_ApplicationService_ExecuteData()
     {
-      const int expectedCount = 20;
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -226,5 +274,33 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         cellPass.GPSTolerance.Should().Be(20);
       }
     }
+    [Fact]
+    public async Task Test_CellPassesRequest_ApplicationService_AreaFilter_DataFound()
+    {
+      var (request, filter, siteModelID) = BuildTestDataAndSetAreaFilter();
+
+      var arg = new CellPassesRequestArgument_ApplicationService(siteModelID, true, new XYZ(0.1, 0.25, 0), filter);
+
+      var response = await request.ExecuteAsync(arg);
+
+      response.Should().NotBeNull();
+      response.ReturnCode.Should().Be(CellPassesReturnCode.DataFound);
+      response.CellPasses.Should().HaveCount(expectedCount);
+    }
+
+    [Fact]
+    public async Task Test_CellPassesRequest_ApplicationService_AreaFilter_NoDataFound()
+    {
+      var (request, filter, siteModelID) = BuildTestDataAndSetAreaFilter();
+
+      var arg = new CellPassesRequestArgument_ApplicationService(siteModelID, true, new XYZ(1.1, 1.1, 0), filter);
+
+      var response = await request.ExecuteAsync(arg);
+
+      response.Should().NotBeNull();
+      response.ReturnCode.Should().Be(CellPassesReturnCode.NoDataFound);
+      response.CellPasses.Should().HaveCount(0);
+    }
   }
 }
+

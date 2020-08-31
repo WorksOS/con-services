@@ -462,7 +462,7 @@ namespace VSS.TRex.SubGrids
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception occured in {nameof(RetrieveSubGrid)}");
+        Log.LogError(e, $"Exception occurred in {nameof(RetrieveSubGrid)}");
         throw;
       }
 

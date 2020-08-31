@@ -6,7 +6,10 @@ using VSS.TRex.SubGridTrees.Client.Types;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-  public class PVMDisplayer_CMVPercentChange : PVMDisplayerBase<CMVPercentChangePalette, ClientCMVLeafSubGrid, SubGridCellPassDataCMVEntryRecord>
+  /// <summary>
+  /// Plan View Map displayer renderer for CMV summary information presented as rendered tiles
+  /// </summary>
+  public class PVMDisplayer_CCVPercent : PVMDisplayerBase<CCVPercentPalette, ClientCMVLeafSubGrid, SubGridCellPassDataCMVEntryRecord>
   {
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
@@ -16,7 +19,7 @@ namespace VSS.TRex.Rendering.Displayers
     {
       var cellValue = ValueStore[east_col, north_row];
 
-      return cellValue.MeasuredCMV == CellPassConsts.NullCCV ? Color.Empty : Palette.ChooseColour(cellValue);
+      return cellValue.MeasuredCMV == CellPassConsts.NullCCV ? Color.Empty : Palette.ChooseColour(cellValue.MeasuredCMV, cellValue.TargetCMV);
     }
   }
 }

@@ -16,7 +16,7 @@ namespace VSS.TRex.SiteModelChangeMaps
   /// </summary>
   public class SiteModelChangeMapDeltaNotifier : ISiteModelChangeMapDeltaNotifier
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeMapDeltaNotifier>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelChangeMapDeltaNotifier>();
 
     private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> _queueCache;
 
@@ -28,24 +28,26 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// <summary>
     /// Creates a change map buffer queue item and places it in to the cache for the service processor to collect
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="insertUtc"></param>
-    /// <param name="changeMap"></param>
-    /// <param name="origin"></param>
-    /// <param name="operation"></param>
     public void Notify(Guid projectUid, DateTime insertUtc, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation)
     {
-      Log.LogInformation($"Adding site model change map notification for project {projectUid}");
+      try
+      {
+        _log.LogInformation($"Adding site model change map notification for project {projectUid}");
 
-      _queueCache.Put(new SiteModelChangeBufferQueueKey(projectUid, insertUtc), 
-        new SiteModelChangeBufferQueueItem
-        {
-          ProjectUID = projectUid,
-          InsertUTC = insertUtc,
-          Operation = operation,
-          Origin = origin,
-          Content = changeMap?.ToBytes()
-        });
+        _queueCache.Put(new SiteModelChangeBufferQueueKey(projectUid, insertUtc),
+          new SiteModelChangeBufferQueueItem
+          {
+            ProjectUID = projectUid,
+            InsertUTC = insertUtc,
+            Operation = operation,
+            Origin = origin,
+            Content = changeMap?.ToBytes()
+          });
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception notifying site model change map");
+      }
     }
   }
 }

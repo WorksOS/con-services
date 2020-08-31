@@ -337,7 +337,7 @@ namespace VSS.TRex.Pipelines
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception occured in asynchronous pipeline builder");
+        _log.LogError(e, "Exception occurred in asynchronous pipeline builder");
         throw;
       }
     }

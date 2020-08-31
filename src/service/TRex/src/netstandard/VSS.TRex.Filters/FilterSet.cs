@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Apache.Ignite.Core.Binary;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -13,6 +13,8 @@ namespace VSS.TRex.Filters
   /// </summary>
   public class FilterSet : IFilterSet
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<FilterSet>();
+
     private const byte VERSION_NUMBER = 1;
 
     public const int MAX_REASONABLE_NUMBER_OF_FILTERS = 10;
@@ -34,9 +36,8 @@ namespace VSS.TRex.Filters
     /// Constructor accepting a single filters to be set into the filter set
     /// Null filters are not incorporated into the resulting filter set
     /// </summary>
-    /// <param name="filter"></param>
     public FilterSet(ICombinedFilter filter)
-    {      
+    {
       Filters = filter != null ? new [] { filter } : new ICombinedFilter[0];
     }
 
@@ -44,8 +45,6 @@ namespace VSS.TRex.Filters
     /// Constructor accepting a pair of filter to be set into the filter set
     /// Null filters are not incorporated into the resulting filter set
     /// </summary>
-    /// <param name="filter1"></param>
-    /// <param name="filter2"></param>
     public FilterSet(ICombinedFilter filter1, ICombinedFilter filter2)
     {
       Filters = filter1 == null && filter2 == null 
@@ -60,7 +59,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Constructor accepting a pre-initialized array of filters to be included in the filter set
     /// </summary>
-    /// <param name="filters"></param>
     public FilterSet(ICombinedFilter[] filters)
     {
       if (filters == null || filters.Length == 0)
@@ -72,7 +70,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Applies spatial filter restrictions to the extents required to request data for.
     /// </summary>
-    /// <param name="extents"></param>
     public void ApplyFilterAndSubsetBoundariesToExtents(BoundingWorldExtent3D extents)
     {
       foreach (var filter in Filters)
@@ -96,15 +93,23 @@ namespace VSS.TRex.Filters
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      var filterCount = reader.ReadInt();
-      if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))
-        throw new TRexException($"Invalid number of filters {filterCount} in deserialisation");
-
-      Filters = new ICombinedFilter[filterCount];
-      for(var i = 0; i < Filters.Length; i++)
-        Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
+      if (version == 1)
+      {
+        var filterCount = reader.ReadInt();
+        if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))
+        {
+          _log.LogError("$Invalid number of filters { filterCount} in deserialisation. Setting to a single default filter");
+          Filters = new ICombinedFilter[] {new CombinedFilter()};
+        }
+        else
+        {
+          Filters = new ICombinedFilter[filterCount];
+          for (var i = 0; i < Filters.Length; i++)
+            Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
+        }
+      }
     }
   }
 }

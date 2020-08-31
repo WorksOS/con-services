@@ -10,6 +10,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
 
@@ -66,9 +67,13 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ITRexCompactionDataProxy trexCompactionDataProxy;
 
+    protected IFileImportProxy fileImportProxy;
+
     protected IHeaderDictionary customHeaders;
 
     protected string customerUid;
+
+    protected string userId;
 
 
     /// <summary>
@@ -162,8 +167,8 @@ namespace VSS.Productivity3D.Common.Interfaces
       ITagProcessor tagProcessor,
 #endif
       IConfigurationStore configStore, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
-      ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
-      IHeaderDictionary customHeaders, string customerUid)
+      ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy, IFileImportProxy fileImportProxy,
+      IHeaderDictionary customHeaders, string customerUid, string userId)
     {
       this.loggerFactory = loggerFactory;
       this.log = logger;
@@ -176,8 +181,10 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.profileResultHelper = profileResultHelper;
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
+      this.fileImportProxy = fileImportProxy;
       this.customHeaders = customHeaders;
       this.customerUid = customerUid;
+      this.userId = userId;
     }
     
     /// <summary>

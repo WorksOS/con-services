@@ -184,7 +184,7 @@ namespace VSS.TRex.Volumes.Executors
           // underlying volume calculation
           Aggregator = new SimpleVolumesCalculationsAggregator
           {
-            SiteModelID = SiteModelID,
+            SiteModel = siteModel,
             LiftParams = LiftParams,
             CellSize = siteModel.CellSize,
             VolumeType = VolumeType,

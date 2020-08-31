@@ -3,12 +3,11 @@ using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 
 namespace VSS.TRex.Designs.Models
 {
-  public class DesignOffset : IEquatable<DesignOffset>, IBinaryReaderWriter, IBinarizable, IFromToBinary
+  public class DesignOffset : VersionCheckedBinarizableSerializationBase, IEquatable<DesignOffset>, IBinaryReaderWriter
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -47,7 +46,7 @@ namespace VSS.TRex.Designs.Models
     }
 
 
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -55,16 +54,15 @@ namespace VSS.TRex.Designs.Models
       writer.WriteDouble(Offset);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      DesignID = reader.ReadGuid() ?? Guid.Empty;
-      Offset = reader.ReadDouble();
+      if (version == 1)
+      {
+        DesignID = reader.ReadGuid() ?? Guid.Empty;
+        Offset = reader.ReadDouble();
+      }
     }
-
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }

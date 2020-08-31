@@ -65,9 +65,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       LayerID = layerID;
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -82,21 +82,23 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         writer.WriteInt(LayerID.Value);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Undo = reader.ReadBoolean();
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      AssetID = reader.ReadGuid() ?? Guid.Empty;
-      StartUTC = DateTime.FromBinary(reader.ReadLong());
-      EndUTC = DateTime.FromBinary(reader.ReadLong());
-      MachineDesignName = reader.ReadString();
-      if (reader.ReadBoolean())
-        LayerID = (ushort)reader.ReadInt();
+      if (version == 1)
+      {
+        Undo = reader.ReadBoolean();
+        ProjectID = reader.ReadGuid() ?? Guid.Empty;
+        AssetID = reader.ReadGuid() ?? Guid.Empty;
+        StartUTC = DateTime.FromBinary(reader.ReadLong());
+        EndUTC = DateTime.FromBinary(reader.ReadLong());
+        MachineDesignName = reader.ReadString();
+        if (reader.ReadBoolean())
+          LayerID = (ushort) reader.ReadInt();
+      }
     }
-
   }
 }

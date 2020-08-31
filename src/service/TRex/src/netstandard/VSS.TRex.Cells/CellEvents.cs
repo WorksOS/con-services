@@ -148,7 +148,6 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Serializes content of the cell to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteByte((byte)EventElevationMappingMode);
@@ -171,7 +170,6 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Serializes content of the cell from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       EventElevationMappingMode = (ElevationMappingMode)reader.ReadByte();

@@ -11,27 +11,30 @@ namespace VSS.TRex.Alignments.GridFabric.Responses
 
     public Guid AlignmentUid { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(AlignmentUid);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       if (reader is null)
       {
         throw new ArgumentNullException(nameof(reader));
       }
 
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      AlignmentUid = reader.ReadGuid() ?? Guid.Empty;
+      if (version == 1)
+      {
+        AlignmentUid = reader.ReadGuid() ?? Guid.Empty;
+      }
     }
   }
 }

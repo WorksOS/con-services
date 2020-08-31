@@ -107,8 +107,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
       return SpatialCacheFingerprint.ConstructFingerprint(SiteModelID, GridDataType.SurveyedSurfaceHeightAndTime, null, IncludedSurveyedSurfaces);
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
+      base.InternalToBinary(writer);
+
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(SiteModelID);
@@ -131,28 +133,33 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Arguments
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      base.InternalFromBinary(reader);
 
-      SiteModelID = reader.ReadGuid() ?? Guid.Empty;
-      OTGCellBottomLeftX = reader.ReadInt();
-      OTGCellBottomLeftY = reader.ReadInt();
-      CellSize = reader.ReadDouble();
-      SurveyedSurfacePatchType = (SurveyedSurfacePatchType) reader.ReadByte();
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
-        ProcessingMap.FromBytes(reader.ReadByteArray());
-      }
+        SiteModelID = reader.ReadGuid() ?? Guid.Empty;
+        OTGCellBottomLeftX = reader.ReadInt();
+        OTGCellBottomLeftY = reader.ReadInt();
+        CellSize = reader.ReadDouble();
+        SurveyedSurfacePatchType = (SurveyedSurfacePatchType) reader.ReadByte();
 
-      if (reader.ReadBoolean())
-      {
-        var count = reader.ReadInt();
-        IncludedSurveyedSurfaces = new Guid[count];
-        for (int i = 0; i < count; i++)
-          IncludedSurveyedSurfaces[i] = reader.ReadGuid() ?? Guid.Empty;
+        if (reader.ReadBoolean())
+        {
+          ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+          ProcessingMap.FromBytes(reader.ReadByteArray());
+        }
+
+        if (reader.ReadBoolean())
+        {
+          var count = reader.ReadInt();
+          IncludedSurveyedSurfaces = new Guid[count];
+          for (int i = 0; i < count; i++)
+            IncludedSurveyedSurfaces[i] = reader.ReadGuid() ?? Guid.Empty;
+        }
       }
     }
   }

@@ -1,10 +1,13 @@
 ﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 using VSS.TRex.Profiling.Interfaces;
 
 namespace VSS.TRex.Profiling
 {
-  public abstract class ProfileCellBase : IProfileCellBase
+  public abstract class ProfileCellBase : VersionCheckedBinarizableSerializationBase, IProfileCellBase
   {
+    private const byte VERSION_NUMBER = 1;
+
     /// <summary>
     /// The real-world distance from the 'start' of the profile line drawn by the user;
     /// this is used to ensure that the client GUI correctly aligns the profile
@@ -35,9 +38,10 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public virtual void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteDouble(Station);
       writer.WriteDouble(InterceptLength);
 
@@ -50,16 +54,20 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public virtual void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      Station = reader.ReadDouble();
-      InterceptLength = reader.ReadDouble();
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      OTGCellX = reader.ReadInt();
-      OTGCellY = reader.ReadInt();
+      if (version == 1)
+      {
+        Station = reader.ReadDouble();
+        InterceptLength = reader.ReadDouble();
 
-      DesignElev = reader.ReadFloat();
+        OTGCellX = reader.ReadInt();
+        OTGCellY = reader.ReadInt();
+
+        DesignElev = reader.ReadFloat();
+      }
     }
   }
 }

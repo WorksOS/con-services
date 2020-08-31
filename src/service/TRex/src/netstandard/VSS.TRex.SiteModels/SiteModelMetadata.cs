@@ -1,14 +1,13 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels
 {
-  public class SiteModelMetadata : IBinarizable, IFromToBinary, ISiteModelMetadata
+  public class SiteModelMetadata : VersionCheckedBinarizableSerializationBase, ISiteModelMetadata
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -22,7 +21,7 @@ namespace VSS.TRex.SiteModels
     public int AlignmentCount { get; set; }
 
 
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -39,28 +38,27 @@ namespace VSS.TRex.SiteModels
       writer.WriteInt(AlignmentCount);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ID = reader.ReadGuid() ?? Guid.Empty;
-      CreationDate = DateTime.FromBinary(reader.ReadLong());
-      LastModifiedDate = DateTime.FromBinary(reader.ReadLong());
-
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        SiteModelExtent = new BoundingWorldExtent3D();
-        SiteModelExtent.FromBinary(reader);
+        ID = reader.ReadGuid() ?? Guid.Empty;
+        CreationDate = DateTime.FromBinary(reader.ReadLong());
+        LastModifiedDate = DateTime.FromBinary(reader.ReadLong());
+
+        if (reader.ReadBoolean())
+        {
+          SiteModelExtent = new BoundingWorldExtent3D();
+          SiteModelExtent.FromBinary(reader);
+        }
+
+        MachineCount = reader.ReadInt();
+        DesignCount = reader.ReadInt();
+        SurveyedSurfaceCount = reader.ReadInt();
+        AlignmentCount = reader.ReadInt();
       }
-
-      MachineCount = reader.ReadInt();
-      DesignCount = reader.ReadInt();
-      SurveyedSurfaceCount = reader.ReadInt();
-      AlignmentCount = reader.ReadInt();
     }
-
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }

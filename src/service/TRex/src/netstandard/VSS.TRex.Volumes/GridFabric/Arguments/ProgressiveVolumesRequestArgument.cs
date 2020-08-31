@@ -88,10 +88,9 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -116,35 +115,38 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      VolumeType = (VolumeComputationType)reader.ReadInt();
-
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        BaseDesign = new DesignOffset();
-        BaseDesign.FromBinary(reader);
+        ProjectID = reader.ReadGuid() ?? Guid.Empty;
+        VolumeType = (VolumeComputationType) reader.ReadInt();
+
+        if (reader.ReadBoolean())
+        {
+          BaseDesign = new DesignOffset();
+          BaseDesign.FromBinary(reader);
+        }
+
+        if (reader.ReadBoolean())
+        {
+          TopDesign = new DesignOffset();
+          TopDesign.FromBinary(reader);
+        }
+
+        AdditionalSpatialFilter = ReadFilter(reader);
+
+        CutTolerance = reader.ReadDouble();
+        FillTolerance = reader.ReadDouble();
+
+        StartDate = DateTime.FromBinary(reader.ReadLong());
+        EndDate = DateTime.FromBinary(reader.ReadLong());
+        Interval = TimeSpan.FromTicks(reader.ReadLong());
       }
-      if (reader.ReadBoolean())
-      {
-        TopDesign = new DesignOffset();
-        TopDesign.FromBinary(reader);
-      }
-
-      AdditionalSpatialFilter = ReadFilter(reader);
-
-      CutTolerance = reader.ReadDouble();
-      FillTolerance = reader.ReadDouble();
-
-      StartDate = DateTime.FromBinary(reader.ReadLong());
-      EndDate = DateTime.FromBinary(reader.ReadLong());
-      Interval = TimeSpan.FromTicks(reader.ReadLong());
     }
   }
 }

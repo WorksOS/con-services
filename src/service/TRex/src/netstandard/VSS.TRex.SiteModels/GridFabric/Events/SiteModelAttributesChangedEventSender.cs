@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModels.Interfaces;
@@ -16,24 +17,19 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   {
     //private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelAttributesChangedEventSender>();
 
-    private const string MessageTopicName = "SiteModelAttributesChangedEvents";
+    private const int DEFAULT_TREX_IGNITE_ORDERED_MESSAGE_SEND_TIMEOUT_SECONDS = 30;
+
+    /// <summary>
+    /// Set the message timeout for the ordered messages being sent to 30 seconds. By default this is
+    /// set to the network timeout (which is 5 seconds by default).
+    /// </summary>
+    private static readonly TimeSpan _messageSendTimeout = new TimeSpan(0, 0, (int)DIContext.Obtain<IConfigurationStore>().GetValueUint("TREX_IGNITE_ORDERED_MESSAGE_SEND_TIMEOUT", DEFAULT_TREX_IGNITE_ORDERED_MESSAGE_SEND_TIMEOUT_SECONDS));
+
+    private const string MESSAGETOPICNAME = "SiteModelAttributesChangedEvents";
 
     /// <summary>
     /// Notify all interested nodes in the immutable grid a site model has changed attributes
     /// </summary>
-    /// <param name="targetGrids"></param>
-    /// <param name="siteModelID"></param>
-    /// <param name="existenceMapChanged"></param>
-    /// <param name="existenceMapChangeMask"></param>
-    /// <param name="designsChanged"></param>
-    /// <param name="csibChanged"></param>
-    /// <param name="machinesChanged"></param>
-    /// <param name="machineTargetValuesChanged"></param>
-    /// <param name="surveyedSurfacesChanged"></param>
-    /// <param name="machineDesignsModified"></param>
-    /// <param name="proofingRunsModified"></param>
-    /// <param name="alignmentsChanged"></param>
-    /// <param name="siteModelMarkedForDeletion"></param>
     public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
       Guid siteModelID,
       bool existenceMapChanged = false,
@@ -62,14 +58,16 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         MachineDesignsModified = machineDesignsModified,
         ProofingRunsModified = proofingRunsModified,
         AlignmentsModified = alignmentsChanged,
-        SiteModelMarkedForDeletion = siteModelMarkedForDeletion
+        SiteModelMarkedForDeletion = siteModelMarkedForDeletion,
+        ChangeEventUid = Guid.NewGuid(),
+        TimeSentUtc = DateTime.UtcNow
       };
 
       if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)
-        gridFactory.Grid(StorageMutability.Immutable).GetMessaging().SendOrdered(evt, MessageTopicName);
+        gridFactory.Grid(StorageMutability.Immutable).GetMessaging().SendOrdered(evt, MESSAGETOPICNAME, _messageSendTimeout);
 
       if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyMutable) != 0)
-        gridFactory.Grid(StorageMutability.Mutable).GetMessaging().SendOrdered(evt, MessageTopicName);
+        gridFactory.Grid(StorageMutability.Mutable).GetMessaging().SendOrdered(evt, MESSAGETOPICNAME, _messageSendTimeout);
     }
   }
 }

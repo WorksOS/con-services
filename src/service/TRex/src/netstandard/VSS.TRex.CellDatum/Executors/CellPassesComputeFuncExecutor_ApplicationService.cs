@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -6,10 +7,12 @@ using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.CellDatum.GridFabric.Responses;
 using VSS.TRex.DI;
+using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.CellDatum.Executors
 {
@@ -25,6 +28,15 @@ namespace VSS.TRex.CellDatum.Executors
     public async Task<CellPassesResponse> ExecuteAsync(CellPassesRequestArgument_ApplicationService arg)
     {
       var result = new CellPassesResponse() { ReturnCode = CellPassesReturnCode.Error };
+
+      if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
+      {
+        // Prepare the filters for use in cell passes operations. Failure to prepare any filter results in this request terminating
+        if (!arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK))
+        {
+          return new CellPassesResponse { ReturnCode = CellPassesReturnCode.FailedToPrepareFilter };
+        }
+      }
 
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)

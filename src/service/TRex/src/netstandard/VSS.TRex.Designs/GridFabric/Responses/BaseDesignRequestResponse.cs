@@ -10,18 +10,21 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
     public DesignProfilerRequestResult RequestResult { get; set; } = DesignProfilerRequestResult.UnknownError;
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteByte((byte)RequestResult);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      RequestResult = (DesignProfilerRequestResult) reader.ReadByte();
+      if (version == 1)
+      {
+        RequestResult = (DesignProfilerRequestResult) reader.ReadByte();
+      }
     }
   }
 }

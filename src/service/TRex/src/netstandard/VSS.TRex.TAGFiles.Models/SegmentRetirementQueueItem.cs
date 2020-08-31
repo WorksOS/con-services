@@ -11,7 +11,7 @@ namespace VSS.TRex.TAGFiles.Models
   /// Represents a segment that has been stored in the persistent layer as a result on TAG file processing that
   /// has subsequently been updated with a later TAG file generated update.
   /// </summary>
-  public class SegmentRetirementQueueItem : IBinarizable, IFromToBinary
+  public class SegmentRetirementQueueItem : VersionCheckedBinarizableSerializationBase
   {
     public const byte VERSION_NUMBER = 1;
 
@@ -32,10 +32,7 @@ namespace VSS.TRex.TAGFiles.Models
     /// </summary>
     public ISubGridSpatialAffinityKey[] SegmentKeys;
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -52,24 +49,27 @@ namespace VSS.TRex.TAGFiles.Models
       }
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectUID = reader.ReadGuid() ?? Guid.Empty;
-      InsertUTCAsLong = reader.ReadLong();
-
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        var numKeys = reader.ReadInt();
-        SegmentKeys = new ISubGridSpatialAffinityKey[numKeys];
+        ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+        InsertUTCAsLong = reader.ReadLong();
 
-        var keyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
-
-        for (var i = 0; i < numKeys; i++)
+        if (reader.ReadBoolean())
         {
-          SegmentKeys[i] = keyFactory.NewInstance();
-          ((IFromToBinary) SegmentKeys[i]).FromBinary(reader);
+          var numKeys = reader.ReadInt();
+          SegmentKeys = new ISubGridSpatialAffinityKey[numKeys];
+
+          var keyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
+
+          for (var i = 0; i < numKeys; i++)
+          {
+            SegmentKeys[i] = keyFactory.NewInstance();
+            ((IFromToBinary) SegmentKeys[i]).FromBinary(reader);
+          }
         }
       }
     }

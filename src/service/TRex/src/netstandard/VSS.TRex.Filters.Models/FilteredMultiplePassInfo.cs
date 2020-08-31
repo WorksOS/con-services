@@ -1,7 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
@@ -374,7 +373,6 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Serializes content of the cell to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteInt(PassCount);
@@ -392,7 +390,6 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Serializes content of the cell from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       PassCount = reader.ReadInt();

@@ -95,7 +95,6 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Serializes content of the cell to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteShort(TargetCCV);
@@ -110,7 +109,6 @@ namespace VSS.TRex.Cells
     /// <summary>
     /// Serializes content of the cell from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       TargetCCV = reader.ReadShort();

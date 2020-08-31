@@ -2,14 +2,13 @@
 using Apache.Ignite.Core.Binary;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
 using VSS.TRex.SiteModels.Interfaces.Requests;
 
 namespace VSS.TRex.SiteModels.Executors
 {
-  public class RebuildSiteModelMetaData : IRebuildSiteModelMetaData, IBinarizable, IFromToBinary
+  public class RebuildSiteModelMetaData : VersionCheckedBinarizableSerializationBase, IRebuildSiteModelMetaData
   {
     private static byte VERSION_NUMBER = 1;
 
@@ -92,30 +91,33 @@ namespace VSS.TRex.SiteModels.Executors
       return $"Project: {ProjectUID}, Flags: {Flags}, Deletion selectivity: {DeletionSelectivity}, OriginTransferProxy:{OriginS3TransferProxy}, TAG files:{NumberOfTAGFilesFromS3}/{NumberOfTAGFileKeyCollections}/{NumberOfTAGFilesSubmitted}/{NumberOfTAGFilesProcessed}, Phase: {Phase}, {LastSubmittedTagFile}/{LastProcessedTagFile}";
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectUID = reader.ReadGuid() ?? Guid.Empty;
-      Flags = (RebuildSiteModelFlags)reader.ReadByte();
-      DeletionSelectivity = (DeleteSiteModelSelectivity)reader.ReadInt();
+      if (version == 1)
+      {
+        ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+        Flags = (RebuildSiteModelFlags) reader.ReadByte();
+        DeletionSelectivity = (DeleteSiteModelSelectivity) reader.ReadInt();
 
-      OriginS3TransferProxy = (TransferProxyType)reader.ReadByte();
-      NumberOfTAGFilesFromS3 = reader.ReadInt();
-      NumberOfTAGFileKeyCollections = reader.ReadInt();
-      NumberOfTAGFilesSubmitted = reader.ReadInt();
-      NumberOfTAGFilesProcessed = reader.ReadInt();
+        OriginS3TransferProxy = (TransferProxyType) reader.ReadByte();
+        NumberOfTAGFilesFromS3 = reader.ReadInt();
+        NumberOfTAGFileKeyCollections = reader.ReadInt();
+        NumberOfTAGFilesSubmitted = reader.ReadInt();
+        NumberOfTAGFilesProcessed = reader.ReadInt();
 
-      LastUpdateUtcTicks = reader.ReadLong();
-      Phase = (RebuildSiteModelPhase)reader.ReadByte();
-      LastSubmittedTagFile = reader.ReadString();
-      LastProcessedTagFile = reader.ReadString();
+        LastUpdateUtcTicks = reader.ReadLong();
+        Phase = (RebuildSiteModelPhase) reader.ReadByte();
+        LastSubmittedTagFile = reader.ReadString();
+        LastProcessedTagFile = reader.ReadString();
 
-      DeletionResult = (DeleteSiteModelResult)reader.ReadByte();
-      RebuildResult = (RebuildSiteModelResult)reader.ReadByte();
+        DeletionResult = (DeleteSiteModelResult) reader.ReadByte();
+        RebuildResult = (RebuildSiteModelResult) reader.ReadByte();
+      }
     }
 
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -137,16 +139,5 @@ namespace VSS.TRex.SiteModels.Executors
       writer.WriteByte((byte)DeletionResult);
       writer.WriteByte((byte)RebuildResult);
     }
-
-    /// <summary>
-    /// Implements the Ignite IBinarizable.WriteBinary interface Ignite will call to serialize this object.
-    /// </summary>
-    /// <param name="writer"></param>
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    /// <summary>
-    /// Implements the Ignite IBinarizable.ReadBinary interface Ignite will call to serialize this object.
-    /// </summary>
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }

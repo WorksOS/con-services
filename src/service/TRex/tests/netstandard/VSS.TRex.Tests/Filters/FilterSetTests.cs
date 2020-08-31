@@ -127,7 +127,7 @@ namespace VSS.TRex.Tests.Filters
       TestBinarizable_ReaderWriterHelper.RoundTripSerialise(data);
     }
 
-    [Fact]
+    [Fact(Skip="Cannot return exception from Ignite JNI mediated contexts as these cause untrappable SEH exceptions")]
     public void Test_FilterSet_FromToBinary_FailWithTooManyFilters()
     {
       var data = new FilterSet(Enumerable.Range(0, FilterSet.MAX_REASONABLE_NUMBER_OF_FILTERS + 1)

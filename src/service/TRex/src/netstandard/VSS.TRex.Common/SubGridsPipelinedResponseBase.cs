@@ -16,18 +16,21 @@ namespace VSS.TRex.Common
     /// </summary>
     public RequestErrorStatus ResultStatus { get; set; } = RequestErrorStatus.Unknown;
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt((int)ResultStatus);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ResultStatus = (RequestErrorStatus)reader.ReadInt();
+      if (version == 1)
+      {
+        ResultStatus = (RequestErrorStatus) reader.ReadInt();
+      }
     }
   }
 }

@@ -8,12 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.SubGrids.GridFabric.Listeners
 {
@@ -22,7 +20,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
   /// to the local context for further processing when using a progressive style of sub grid requesting. 
   /// Sub grids are sent in groups as serialized streams held in memory streams to minimize serialization/deserialization overhead
   /// </summary>
-  public class SubGridListener : IMessageListener<ISerialisedByteArrayWrapper>, IBinarizable, IFromToBinary
+  public class SubGridListener : VersionCheckedBinarizableSerializationBase, IMessageListener<ISerialisedByteArrayWrapper>
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridListener>();
 
@@ -128,14 +126,32 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// </summary>
     public bool Invoke(Guid nodeId, ISerialisedByteArrayWrapper message)
     {
-      var sw = Stopwatch.StartNew();
+      try
+      {
+        var sw = Stopwatch.StartNew();
 
-      // Todo: Check if there are more performant approaches for handing this off asynchronously
-      Task.Run(() => ProcessResponse(message));
+        // Todo: Check if there are more performant approaches for handing this off asynchronously
+        Task.Run(() =>
+        {
+          try
+          {
+            ProcessResponse(message);
+          }
+          catch (Exception e)
+          {
+            _log.LogError(e, "Exception processing sub grid listener response");
+          }
+        });
 
-      _log.LogDebug($"Processed SubGridListener.Invoke in {sw.Elapsed}");
+        _log.LogDebug($"Processed SubGridListener.Invoke in {sw.Elapsed}");
 
-      return true;
+        return true;
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception processing sub grid listener message");
+        return true; // Stay subscribed
+      }
     }
 
     public SubGridListener() { }
@@ -149,48 +165,14 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
       _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
     }
 
-    /// <summary>
-    /// The sub grid response listener has no serializable state
-    /// </summary>
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    /// <summary>
-    /// The sub grid response listener has no serializable state
-    /// </summary>
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      try
-      {
-        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
-      }
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(SubGridListener)}.ToBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(SubGridListener)}.ToBinary()");
-      }
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      try
-      {
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-      }
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(SubGridListener)}.FromBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(SubGridListener)}.FromBinary()");
-      }
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
     }
   }
 }

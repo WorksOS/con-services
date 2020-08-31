@@ -10,7 +10,6 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -58,7 +57,7 @@ namespace VSS.TRex.CellDatum.Executors
       requestors[0].CellOverrideMask = cellOverrideMask;
 
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin,  true, true);
+      var requestSubGridInternalResult = requestors[0].RequestSubGridInternal(thisSubGridOrigin,  true, true);
       if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
       {
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.SubGridNotFound)
