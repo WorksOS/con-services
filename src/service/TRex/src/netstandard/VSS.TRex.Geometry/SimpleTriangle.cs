@@ -48,7 +48,7 @@
     /// Determine the elevation on the triangle at the location given by x and y. If the location is not
     /// within the triangle this will return Consts.NullDouble
     /// </summary>
-    public double InterpolateHeight(double x, double y) => XYZ.GetTriangleHeight(V1, V2, V3, x, y);
+    public double InterpolateHeight(double x, double y) => XYZ.GetTriangleHeightEx(ref V1, ref V2, ref V3, x, y);
 
     /// <summary>
     /// Updates the vertices of the triangle with the given three vertex parameters

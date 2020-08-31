@@ -21,7 +21,7 @@ namespace VSS.TRex.Profiling
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger _log = Logging.Logger.CreateLogger("LiftFilterMask");
 
-    private static void ConstructSubGridSpatialAndPositionalMask(ISubGridTree tree, 
+    private static void ConstructSubGridSpatialAndPositionalMask(ISubGridTree tree,
       SubGridCellAddress currentSubGridOrigin, 
       List<T> profileCells, 
       SubGridTreeBitmapSubGridBits mask,
@@ -56,7 +56,7 @@ namespace VSS.TRex.Profiling
       }
     }
 
-    public static async Task<bool> ConstructSubGridCellFilterMask(ISubGridTree tree, 
+    public static bool ConstructSubGridCellFilterMask(ISiteModel siteModel, 
       SubGridCellAddress currentSubGridOrigin, 
       List<T> profileCells,
       SubGridTreeBitmapSubGridBits mask,
@@ -64,7 +64,7 @@ namespace VSS.TRex.Profiling
       ICellSpatialFilter cellFilter,
       IDesign SurfaceDesignMaskDesign)
     {
-      ConstructSubGridSpatialAndPositionalMask(tree, currentSubGridOrigin, profileCells, mask, fromProfileCellIndex, cellFilter);
+      ConstructSubGridSpatialAndPositionalMask(siteModel.Grid, currentSubGridOrigin, profileCells, mask, fromProfileCellIndex, cellFilter);
 
       // If the filter contains an alignment design mask filter then compute this and AND it with the
       // mask calculated in the step above to derive the final required filter mask
@@ -73,6 +73,8 @@ namespace VSS.TRex.Profiling
       {
         if (cellFilter.AlignmentFence.IsNull()) // Should have been done in ASNode but if not
           throw new ArgumentException($"Spatial filter does not contained pre-prepared alignment fence for design {cellFilter.AlignmentDesignMaskDesignUID}");
+
+        var tree = siteModel.Grid;
 
         // Go over set bits and determine if they are in Design fence boundary
         mask.ForEachSetBit((X, Y) =>
@@ -87,7 +89,7 @@ namespace VSS.TRex.Profiling
 
       if (SurfaceDesignMaskDesign != null)
       {
-        var getFilterMaskResult = await SurfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
+        var getFilterMaskResult = SurfaceDesignMaskDesign.GetFilterMaskViaLocalCompute(siteModel, currentSubGridOrigin, siteModel.CellSize);
 
         if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
         {
@@ -110,7 +112,7 @@ namespace VSS.TRex.Profiling
       return true;
     }
 
-    public static async Task<(bool executionResult, DesignProfilerRequestResult filterDesignErrorCode)> 
+    public static (bool executionResult, DesignProfilerRequestResult filterDesignErrorCode)
       InitialiseFilterContext(ISiteModel siteModel, ICellPassAttributeFilter passFilter, 
         ICellPassAttributeFilterProcessingAnnex passFilterAnnex, ProfileCell profileCell, IDesignWrapper passFilterElevRangeDesign)
     {
@@ -121,7 +123,7 @@ namespace VSS.TRex.Profiling
 
       if (passFilter.HasElevationRangeFilter && passFilterElevRangeDesign != null)
       {
-        var getDesignHeightsResult = await passFilterElevRangeDesign.Design.GetDesignHeights(siteModel.ID, passFilterElevRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY), siteModel.CellSize);
+        var getDesignHeightsResult = passFilterElevRangeDesign.Design.GetDesignHeightsViaLocalCompute(siteModel, passFilterElevRangeDesign.Offset, new SubGridCellAddress(profileCell.OTGCellX, profileCell.OTGCellY), siteModel.CellSize);
 
         result.filterDesignErrorCode = getDesignHeightsResult.errorCode;
 

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 #if RAPTOR
 using SVOICDecls;
 using VLPDDecls;
@@ -12,12 +15,15 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class CellDatumExecutor : RequestExecutorContainer
+  public class CellDatumExecutor : TbcExecutorHelper
   {
     private ServiceException CreateNoCellDatumReturnedException()
     {
@@ -32,7 +38,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_CELL_DATUM"))
       {
 #endif
-        var trexData = await GetTRexCellDatumData(request);
+     
+      await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+      await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+
+      log.LogDebug($"{nameof(CellDatumExecutor)} trexRequest {JsonConvert.SerializeObject(request)}");
+
+      var trexData = await GetTRexCellDatumData(request);
 
         if (trexData != null)
           return trexData;

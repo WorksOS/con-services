@@ -26,13 +26,13 @@ namespace VSS.TRex.Alignments.GridFabric.Arguments
     public DesignDescriptor DesignDescriptor { get; set; }
 
     /// <summary>
-    /// The boundaing rectangle conputed for the design
+    /// The bounding rectangle computed for the design
     /// </summary>
     public BoundingWorldExtent3D Extents { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -44,19 +44,22 @@ namespace VSS.TRex.Alignments.GridFabric.Arguments
       Extents?.ToBinary(writer);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
+      if (version == 1)
+      {
+        ProjectID = reader.ReadGuid() ?? Guid.Empty;
 
-      if (reader.ReadBoolean())
-        (DesignDescriptor = new DesignDescriptor()).FromBinary(reader);
+        if (reader.ReadBoolean())
+          (DesignDescriptor = new DesignDescriptor()).FromBinary(reader);
 
-      if (reader.ReadBoolean())
-        (Extents = new BoundingWorldExtent3D()).FromBinary(reader);
+        if (reader.ReadBoolean())
+          (Extents = new BoundingWorldExtent3D()).FromBinary(reader);
+      }
     }
   }
 }

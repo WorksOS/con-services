@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Profiling.Models;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
@@ -68,23 +69,14 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Constructs a mask using all spatial filtering elements active in the supplied filter
     /// </summary>
-    /// <param name="currentSubGridOrigin"></param>
-    /// <param name="intercepts"></param>
-    /// <param name="fromProfileCellIndex"></param>
-    /// <param name="mask"></param>
-    /// <param name="cellFilter"></param>
-    /// <param name="tree"></param>
-    /// <param name="surfaceDesignMaskDesign"></param>
-    /// <returns></returns>
-    public static async Task<bool> ConstructSubgridCellFilterMask(SubGridCellAddress currentSubGridOrigin,
+    public static bool ConstructSubgridCellFilterMask(ISiteModel siteModel, SubGridCellAddress currentSubGridOrigin,
       InterceptList intercepts,
       int fromProfileCellIndex,
       SubGridTreeBitmapSubGridBits mask,
       ICellSpatialFilter cellFilter,
-      ISubGridTree tree,
       IDesign surfaceDesignMaskDesign)
     {
-      ConstructSubgridSpatialAndPositionalMask(currentSubGridOrigin, intercepts, fromProfileCellIndex, mask, cellFilter, tree);
+      ConstructSubgridSpatialAndPositionalMask(currentSubGridOrigin, intercepts, fromProfileCellIndex, mask, cellFilter, siteModel.Grid);
 
       // If the filter contains an alignment design mask filter then compute this and AND it with the
       // mask calculated in the step above to derive the final required filter mask
@@ -94,6 +86,7 @@ namespace VSS.TRex.Profiling
           if (cellFilter.AlignmentFence.IsNull()) // Should have been done in ASNode but if not
             throw new ArgumentException($"Spatial filter does not contained pre-prepared alignment fence for design {cellFilter.AlignmentDesignMaskDesignUID}");
 
+          var tree = siteModel.Grid;
           // Go over set bits and determine if they are in Design fence boundary
           mask.ForEachSetBit((X, Y) =>
           {
@@ -110,7 +103,7 @@ namespace VSS.TRex.Profiling
 
       if (surfaceDesignMaskDesign != null)
       {
-        var getFilterMaskResult = await surfaceDesignMaskDesign.GetFilterMask(tree.ID, currentSubGridOrigin, tree.CellSize);
+        var getFilterMaskResult = surfaceDesignMaskDesign.GetFilterMaskViaLocalCompute(siteModel, currentSubGridOrigin, siteModel.CellSize);
 
         if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
         {

@@ -12,6 +12,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   /// </summary>
   public class SiteModelAttributesChangedEvent : BaseRequestResponse, ISiteModelAttributesChangedEvent
   {
+    private const byte VERSION_NUMBER = 1;
+
     public Guid SiteModelID { get; set; } = Guid.Empty;
     public bool ExistenceMapModified { get; set; }
     public bool DesignsModified { get; set; }
@@ -24,15 +26,26 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     public bool AlignmentsModified { get; set; }
     public bool SiteModelMarkedForDeletion { get; set; }
 
+    /// <summary>
+    /// A unique ID for this event communicating site model changes within the grid
+    /// </summary>
+    public Guid ChangeEventUid { get; set; }
+
+    /// <summary>
+    /// Date/time the change event was sent
+    /// </summary>
+    public DateTime TimeSentUtc { get; set; }
 
     /// <summary>
     /// A serialized bit mask sub grid tree representing the set of sub grids that have been changed in a
     /// mutating event on the site model such as TAG file processing
     /// </summary>
-    public byte[] ExistenceMapChangeMask { get; set;  }
+    public byte[] ExistenceMapChangeMask { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteGuid(SiteModelID);
       writer.WriteBoolean(ExistenceMapModified);
       writer.WriteBoolean(DesignsModified);
@@ -45,22 +58,31 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       writer.WriteByteArray(ExistenceMapChangeMask);
       writer.WriteBoolean(AlignmentsModified);
       writer.WriteBoolean(SiteModelMarkedForDeletion);
+      writer.WriteGuid(ChangeEventUid);
+      writer.WriteLong(TimeSentUtc.ToBinary());
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      SiteModelID = reader.ReadGuid() ?? Guid.Empty;
-      ExistenceMapModified = reader.ReadBoolean();
-      DesignsModified = reader.ReadBoolean();
-      SurveyedSurfacesModified = reader.ReadBoolean();
-      CsibModified = reader.ReadBoolean();
-      MachinesModified = reader.ReadBoolean();
-      MachineTargetValuesModified = reader.ReadBoolean();
-      MachineDesignsModified = reader.ReadBoolean();
-      ProofingRunsModified = reader.ReadBoolean();
-      ExistenceMapChangeMask = reader.ReadByteArray();
-      AlignmentsModified = reader.ReadBoolean();
-      SiteModelMarkedForDeletion = reader.ReadBoolean();
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
+      {
+        SiteModelID = reader.ReadGuid() ?? Guid.Empty;
+        ExistenceMapModified = reader.ReadBoolean();
+        DesignsModified = reader.ReadBoolean();
+        SurveyedSurfacesModified = reader.ReadBoolean();
+        CsibModified = reader.ReadBoolean();
+        MachinesModified = reader.ReadBoolean();
+        MachineTargetValuesModified = reader.ReadBoolean();
+        MachineDesignsModified = reader.ReadBoolean();
+        ProofingRunsModified = reader.ReadBoolean();
+        ExistenceMapChangeMask = reader.ReadByteArray();
+        AlignmentsModified = reader.ReadBoolean();
+        SiteModelMarkedForDeletion = reader.ReadBoolean();
+        ChangeEventUid = reader.ReadGuid() ?? Guid.Empty;
+        TimeSentUtc = DateTime.FromBinary(reader.ReadLong());
+      }
     }
   }
 }

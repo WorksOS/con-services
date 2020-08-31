@@ -12,6 +12,7 @@ using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
 using SkiaSharp;
 using VSS.TRex.IO.Helpers;
+using System.Diagnostics;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
@@ -22,6 +23,9 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
   public class TileRenderRequestComputeFunc : BaseComputeFunc, IComputeFunc<TileRenderRequestArgument, TileRenderResponse>
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<TileRenderRequestComputeFunc>();
+
+    // Warn on tile renders that take more than this time to service (20 seconds)
+    private static readonly TimeSpan _tileRequestTimeSpanWarnLimit = new TimeSpan(0, 0, 20);
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -34,7 +38,7 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     {
       try
       {
-        var startTime = DateTime.UtcNow;
+        var requestStopWatch = Stopwatch.StartNew();
 
         _log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");
 
@@ -90,17 +94,18 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
         }
         finally
         {
-          _log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {DateTime.UtcNow - startTime}");
+          _log.LogInformation($"Exiting TileRenderRequestComputeFunc.Invoke() in {requestStopWatch.Elapsed}");
+
+          // Flag tile renders that take more than 20 seconds to render...
+          if (requestStopWatch.Elapsed > _tileRequestTimeSpanWarnLimit)
+          {
+            _log.LogInformation($"Tile render request required more than {_tileRequestTimeSpanWarnLimit} to complete");
+          }
         }
       }
       catch (Exception e)
       {
         _log.LogError(e, "Exception occurred in TileRenderRequestComputeFunc.Invoke()");
-
-        // Put in a 5 seconds delay to see if this allows the log forwarder to catch up and shine more light on failure occurring here.
-        // TODO: Remove this once bug is triaged and solved
-        //Task.Delay(5000).WaitAndUnwrapException();
-
         return new TileRenderResponse { ResultStatus = Types.RequestErrorStatus.Exception };
       }
     }

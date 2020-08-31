@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Listeners
       };
 
       var listener = new RebuildSiteModelTAGNotifierListener();
-      listener.Invoke(Guid.Empty, message).Should().BeFalse();
+      listener.Invoke(Guid.Empty, message).Should().BeTrue();
     }
 
     [Fact]

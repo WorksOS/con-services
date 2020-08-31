@@ -24,8 +24,11 @@ namespace VSS.TRex.Rendering.Palettes
         case DisplayMode.MachineSpeed: return new SpeedPalette();
         case DisplayMode.TargetSpeedSummary: return new SpeedSummaryPalette();
         case DisplayMode.CCV: return new CMVPalette();
-        case DisplayMode.CCVPercentSummary: return new CMVSummaryPalette();
-        case DisplayMode.CMVChange: return new CMVPercentChangePalette();
+        case DisplayMode.CCVPercent:
+        case DisplayMode.CCVPercentSummary:
+        case DisplayMode.CCVPercentChange:
+          return new CCVPercentPalette();
+        case DisplayMode.CMVChange: return new CMVChangePalette();
         case DisplayMode.MDP: return new MDPPalette();
         case DisplayMode.MDPPercentSummary: return new MDPSummaryPalette();
         case DisplayMode.PassCount: return new PassCountPalette();
@@ -35,6 +38,7 @@ namespace VSS.TRex.Rendering.Palettes
         case DisplayMode.CutFill: return new CutFillPalette();
         case DisplayMode.CCA: return new CCAPalette();
         case DisplayMode.CCASummary: return new CCASummaryPalette();
+        case DisplayMode.CompactionCoverage: return new CompactionCoveragePalette();
 
         default:
           throw new TRexException($"Unknown display mode in {nameof(GetPalette)}");

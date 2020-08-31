@@ -66,7 +66,7 @@ namespace VSS.TRex.Filters
               .LLHToNEE(siteModel.CSIB(), llhCoords.ToCoreX_XYZ(), InputAs.Radians)
               .ToTRex_XYZ();
             }
-            catch
+            catch (Exception e)
             {
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }

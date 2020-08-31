@@ -73,7 +73,6 @@ namespace VSS.TRex.Common.Records
     /// <summary>
     /// Serialises content of the cell to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteInt(Min);
@@ -83,7 +82,6 @@ namespace VSS.TRex.Common.Records
     /// <summary>
     /// Serialises content of the cell from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       Min = (ushort) reader.ReadInt();

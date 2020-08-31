@@ -6,7 +6,6 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.Tests.BinaryReaderWriter;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;

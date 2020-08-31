@@ -10,29 +10,38 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
 {
   public class RebuildSiteModelTAGNotifierEvent : BaseRequestResponse, IRebuildSiteModelTAGNotifierEvent
   {
+    private const byte VERSION_NUMBER = 1;
+
     public Guid ProjectUid { get; set; }
 
     public IProcessTAGFileResponseItem[] ResponseItems { get; set; }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      ProjectUid = reader.ReadGuid() ?? Guid.Empty;
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        var count = reader.ReadInt();
-        ResponseItems = new ProcessTAGFileResponseItem[count];
+        ProjectUid = reader.ReadGuid() ?? Guid.Empty;
 
-        for (var i = 0; i < count; i++)
+        if (reader.ReadBoolean())
         {
-          ResponseItems[i] = new ProcessTAGFileResponseItem();
-          ResponseItems[i].FromBinary(reader);
+          var count = reader.ReadInt();
+          ResponseItems = new ProcessTAGFileResponseItem[count];
+
+          for (var i = 0; i < count; i++)
+          {
+            ResponseItems[i] = new ProcessTAGFileResponseItem();
+            ResponseItems[i].FromBinary(reader);
+          }
         }
       }
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      
       writer.WriteGuid(ProjectUid);
 
       writer.WriteBoolean(ResponseItems!= null);

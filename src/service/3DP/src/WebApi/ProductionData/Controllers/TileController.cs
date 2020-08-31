@@ -9,6 +9,8 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -20,7 +22,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [ProjectVerifier]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class TileController : Controller
+  public class TileController : BaseController<TileController>
   {
 #if RAPTOR
     /// <summary>
@@ -44,6 +46,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
 
+
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
@@ -59,7 +62,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy trexCompactionDataProxy, IFileImportProxy fileImportProxy)
+      : base(configStore, fileImportProxy, settingsManager)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -69,6 +73,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       TRexCompactionDataProxy = trexCompactionDataProxy;
     }
 
+    /// Called by TBC only
     /// <summary>
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
     /// elevation, compaction, temperature, cut/fill, volumes etc
@@ -79,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [PostRequestVerifier]
     [Route("api/v1/tiles")]
     [HttpPost]
-    public async Task<TileResult> Post([FromBody] TileRequest request)
+    public async Task<TileResult> PostTilesTbc([FromBody] TileRequest request)
     {
       request.Validate();
 
@@ -87,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
         raptorClient, 
 #endif
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as TileResult;
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId()).ProcessAsync(request) as TileResult;
     }
 
     /// <summary>

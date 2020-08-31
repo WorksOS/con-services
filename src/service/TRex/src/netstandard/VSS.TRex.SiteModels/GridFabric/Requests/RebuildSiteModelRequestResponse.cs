@@ -35,7 +35,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -46,12 +46,15 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectUid = reader.ReadGuid() ?? Guid.Empty;
-      RebuildResult = (RebuildSiteModelResult)reader.ReadByte();
+      if (version == 1)
+      {
+        ProjectUid = reader.ReadGuid() ?? Guid.Empty;
+        RebuildResult = (RebuildSiteModelResult) reader.ReadByte();
+      }
     }
   }
 }

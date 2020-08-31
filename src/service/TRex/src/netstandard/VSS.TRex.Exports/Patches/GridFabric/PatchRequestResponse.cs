@@ -29,10 +29,9 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -54,13 +53,14 @@ namespace VSS.TRex.Exports.Patches.GridFabric
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
+      if (version == 1)
+      {
       TotalNumberOfPagesToCoverFilteredData = reader.ReadInt();
 
       if (reader.ReadBoolean())
@@ -82,6 +82,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
             SubGrids.Add(subgrid);
           }
         }
+      }
       }
     }
   }

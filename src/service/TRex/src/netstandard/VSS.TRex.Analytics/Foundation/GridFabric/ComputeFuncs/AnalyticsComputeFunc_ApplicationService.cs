@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -23,11 +24,13 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
 
     public TResponse Invoke(TArgument arg)
     {
-      _log.LogInformation("In AnalyticsComputeFunc_ApplicationService.Invoke()");
-
+      Stopwatch invokeStopWatch = null;
       try
       {
-        TRequest request = new TRequest();
+        invokeStopWatch = Stopwatch.StartNew();
+        _log.LogInformation("In AnalyticsComputeFunc_ApplicationService.Invoke()");
+
+        var request = new TRequest();
 
         _log.LogInformation("Executing AnalyticsComputeFunc_ApplicationService.Execute()");
 
@@ -40,7 +43,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
       }
       finally
       {
-        _log.LogInformation("Exiting AnalyticsComputeFunc_ApplicationService.Invoke()");
+        _log.LogInformation($"Exiting AnalyticsComputeFunc_ApplicationService.Invoke(), elapsed time = {invokeStopWatch?.Elapsed}");
       }
     }
   }

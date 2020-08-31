@@ -14,22 +14,11 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 {
   public class SurfaceElevationPatchRequest : DesignProfilerServicePoolRequest<ISurfaceElevationPatchArgument, IClientLeafSubGrid>, ISurfaceElevationPatchRequest
   {
-    //private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchRequest>();
-
-    /// <summary>
-    /// Reference to the general sub grid result cache
-    /// </summary>
-    private readonly ITRexSpatialMemoryCache _cache;
-
-    /// <summary>
-    /// The cache context to be used for all requests made through this request instance
-    /// </summary>
-    private readonly ITRexSpatialMemoryCacheContext _context;
+    private readonly SurfaceElevationPatchRequestCache _cache;
 
     /// <summary>
     /// Reference to the client sub grid factory
     /// </summary>
-
     private readonly IClientLeafSubGridFactory _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
     /// <summary>
@@ -37,36 +26,26 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
     /// </summary>
     private readonly IComputeFunc<ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper> _computeFunc = new SurfaceElevationPatchComputeFunc();
 
+    public SurfaceElevationPatchRequest(ITRexSpatialMemoryCache cache, ITRexSpatialMemoryCacheContext context) : this()
+    {
+      if (cache != null && context != null)
+        _cache = new SurfaceElevationPatchRequestCache(cache, context, _clientLeafSubGridFactory);
+    }
+
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
-    public SurfaceElevationPatchRequest(ITRexSpatialMemoryCache cache, ITRexSpatialMemoryCacheContext context) : this()
-    {
-      _cache = cache;
-      _context = context;
-    }
-
     public SurfaceElevationPatchRequest()
     {
     }
 
     public override IClientLeafSubGrid Execute(ISurfaceElevationPatchArgument arg)
     {
-      IClientLeafSubGrid ExtractFromCachedItem(IClientLeafSubGrid cachedItem, SubGridTreeBitmapSubGridBits map)
-      {
-        var resultItem = _clientLeafSubGridFactory.GetSubGridEx
-          (arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime,
-          cachedItem.CellSize, cachedItem.Level, cachedItem.OriginX, cachedItem.OriginY);
-        resultItem.AssignFromCachedPreProcessedClientSubGrid(cachedItem, map);
-
-        return resultItem;
-      }
-
-      var cachingSupported = arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _context != null;
+      var cachingSupported = arg.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations && _cache != null;
 
       // Check the item is available in the cache
-      if (cachingSupported && _cache?.Get(_context, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
-        return ExtractFromCachedItem(cacheResult, arg.ProcessingMap);
+      if (cachingSupported && _cache?.Get(arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY) is IClientLeafSubGrid cacheResult)
+        return _cache.ExtractFromCachedItem(cacheResult, arg.ProcessingMap, arg.SurveyedSurfacePatchType);
 
       SubGridTreeBitmapSubGridBits savedMap = null;
 
@@ -77,7 +56,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         arg.ProcessingMap = SubGridTreeBitmapSubGridBits.FullMask;
       }
 
-      var subGridInvalidationVersion = cachingSupported ? _context.InvalidationVersion : 0;
+      var subGridInvalidationVersion = cachingSupported ? _cache.InvalidationVersion : 0;
 
       IClientLeafSubGrid clientResult = null;
       var result = Compute.Apply(_computeFunc, arg);
@@ -89,10 +68,10 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
 
         // For now, only cache non-composite elevation sub grids
         if (cachingSupported)
-          _cache?.Add(_context, clientResult, subGridInvalidationVersion);
+          _cache?.Add(clientResult, subGridInvalidationVersion);
 
         if (savedMap != null)
-          clientResult = ExtractFromCachedItem(clientResult, savedMap);
+          clientResult = _cache.ExtractFromCachedItem(clientResult, savedMap, arg.SurveyedSurfacePatchType);
       }
 
       return clientResult;

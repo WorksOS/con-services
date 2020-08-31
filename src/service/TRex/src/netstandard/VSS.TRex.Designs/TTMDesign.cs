@@ -438,7 +438,7 @@ namespace VSS.TRex.Designs
     {
       if (Hint != -1)
       {
-        Z = GetHeight(triangleItems[Hint], X, Y);
+        Z = GetHeight2(ref triangleItems[Hint], X, Y);
         if (Z != Common.Consts.NullDouble)
         {
           Z += Offset;
@@ -466,7 +466,7 @@ namespace VSS.TRex.Designs
       for (int i = arrayReference.TriangleArrayIndex; i < limit; i++)
       {
         int triIndex = SpatialIndexOptimisedTriangles[i];
-        Z = GetHeight(triangleItems[triIndex], X, Y);
+        Z = GetHeight2(ref triangleItems[triIndex], X, Y);
 
         if (Z != Common.Consts.NullReal)
         {
@@ -565,7 +565,7 @@ namespace VSS.TRex.Designs
               if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
                 continue; // No intersection, move to next triangle
 
-              double Z = GetHeight2(ref triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
+              var Z = GetHeight2(ref triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
               if (Z != Common.Consts.NullReal)
               {

@@ -4,7 +4,6 @@ using System.Text;
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client.Types;
 
@@ -34,7 +33,7 @@ namespace VSS.TRex.CellDatum.GridFabric.Responses
     /// </summary>
     public double Easting { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
       
@@ -58,26 +57,29 @@ namespace VSS.TRex.CellDatum.GridFabric.Responses
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ReturnCode = (CellPassesReturnCode) reader.ReadInt();
-      Northing = reader.ReadDouble();
-      Easting = reader.ReadDouble();
-
-      var numResults = reader.ReadInt();
-      CellPasses = new List<ClientCellProfileLeafSubgridRecord>(numResults);
-      var bytes = reader.ReadByteArray();
-      using (var ms = new MemoryStream(bytes))
+      if (version == 1)
       {
-        using (var br = new BinaryReader(ms, Encoding.UTF8, true))
+        ReturnCode = (CellPassesReturnCode) reader.ReadInt();
+        Northing = reader.ReadDouble();
+        Easting = reader.ReadDouble();
+
+        var numResults = reader.ReadInt();
+        CellPasses = new List<ClientCellProfileLeafSubgridRecord>(numResults);
+        var bytes = reader.ReadByteArray();
+        using (var ms = new MemoryStream(bytes))
         {
-          for (var i = 0; i < numResults; i++)
+          using (var br = new BinaryReader(ms, Encoding.UTF8, true))
           {
-            var record = new ClientCellProfileLeafSubgridRecord();
-            record.Read(br);
-            CellPasses.Add(record);
+            for (var i = 0; i < numResults; i++)
+            {
+              var record = new ClientCellProfileLeafSubgridRecord();
+              record.Read(br);
+              CellPasses.Add(record);
+            }
           }
         }
       }

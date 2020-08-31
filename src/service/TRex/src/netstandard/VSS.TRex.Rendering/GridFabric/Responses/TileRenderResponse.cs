@@ -29,55 +29,34 @@ namespace VSS.TRex.Rendering.GridFabric.Responses
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      try
-      {
-        base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
-        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-        writer.WriteBoolean(TileBitmapData != null);
-        if (TileBitmapData != null)
-        {
-          writer.WriteByteArray(TileBitmapData);
-        }
-      }
-      catch (TRexSerializationVersionException e)
+      writer.WriteBoolean(TileBitmapData != null);
+      if (TileBitmapData != null)
       {
-        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderResponse)}.ToBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(TileRenderResponse)}.ToBinary()");
+        writer.WriteByteArray(TileBitmapData);
       }
     }
 
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      try
+      base.InternalFromBinary(reader);
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
       {
-        base.FromBinary(reader);
-
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-
         if (reader.ReadBoolean())
         {
           TileBitmapData = reader.ReadByteArray();
         }
-      }
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(TileRenderResponse)}.FromBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(TileRenderResponse)}.FromBinary()");
       }
     }
   }

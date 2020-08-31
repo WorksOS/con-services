@@ -115,8 +115,8 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       result4.Should().Be(true);
 
       var type = typeof(AddCoordinateSystemArgument);
-      var typeHasReadWriteMembers = HasMethod(type, "FromBinary", new[] {typeof(IBinaryRawReader)}, true) &&
-                                    HasMethod(type, "ToBinary", new[] {typeof(IBinaryRawWriter)}, true);
+      var typeHasReadWriteMembers = HasMethod(type, "InternalFromBinary", new[] {typeof(IBinaryRawReader)}, true) &&
+                                    HasMethod(type, "InternalToBinary", new[] {typeof(IBinaryRawWriter)}, true);
       typeHasReadWriteMembers.Should().BeTrue();
     }
 
@@ -146,11 +146,19 @@ namespace VSS.TRex.Tests.BinarizableSerialization
       writer.WriteByte((byte)(versionNumber + 1));
       var reader = new TestBinaryReader(writer._stream.BaseStream as MemoryStream);
 
-      var item = Activator.CreateInstance(type) as IBinarizable;
-
+      var item = Activator.CreateInstance(type);
       item.Should().NotBeNull();
 
-      Action act = () => item.ReadBinary(reader);
+      Action act = null;
+
+      if (item is IVersionCheckedBinarizableSerializationBase versionCheckedItem)
+      {
+        act = () => versionCheckedItem.InternalFromBinary(reader);
+      }
+      else if (item is IBinarizable binarizableItem)
+      {
+        act = () => binarizableItem.ReadBinary(reader);
+      }
 
       act.Should().Throw<TRexSerializationVersionException>().WithMessage("Invalid version read during deserialization*"); //TRexSerializationVersionException.ErrorMessage(expectedVersions, versionNumber + 1));
     }
@@ -186,8 +194,9 @@ namespace VSS.TRex.Tests.BinarizableSerialization
     public void FromToBinaryVersioning(Type type)
     {
       // Determine if the class implements the IFromToBinary FromBinary/ToBinary counterparts of the IBinarizable interface
-      var typeHasReadWriteMembers = HasMethod(type, "FromBinary", new[] {typeof(IBinaryRawReader)}, true) &&
-                                    HasMethod(type, "ToBinary", new[] {typeof(IBinaryRawWriter)}, true);
+      // This test accesses the internal version of the serialization methods so version check exceptions will be seen.
+      var typeHasReadWriteMembers = HasMethod(type, "InternalFromBinary", new[] {typeof(IBinaryRawReader)}, true) &&
+                                    HasMethod(type, "InternalToBinary", new[] {typeof(IBinaryRawWriter)}, true);
 
       // The type provided either has a version number declared in its own scope, or is derived 
       // from one or more classes that do so.

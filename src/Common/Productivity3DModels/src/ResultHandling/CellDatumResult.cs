@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Models.ResultHandling
     {
       this.displayMode = displayMode;
       this.returnCode = returnCode;
-      this.value = displayMode == DisplayMode.CCV || displayMode == DisplayMode.MDP ? value / 10 : value;
+      this.value = displayMode == DisplayMode.CCV || displayMode == DisplayMode.MDP || displayMode == DisplayMode.CompactionCoverage ? value / 10 : value;
       this.timestamp = timestamp;
     }
   }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 #if RAPTOR
 using ASNodeDecls;
 using VLPDDecls;
@@ -12,8 +14,10 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -21,7 +25,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// The executor which passes the detailed pass counts request to Raptor
   /// </summary>
-  public class DetailedPassCountExecutor : RequestExecutorContainer
+  public class DetailedPassCountExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -43,13 +47,18 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_PASSCOUNT"))
         {
 #endif
-          var pcDetailsRequest = new PassCountDetailsRequest(
-            request.ProjectUid.Value, 
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+
+        var pcDetailsRequest = new PassCountDetailsRequest(
+            request.ProjectUid.Value,
             request.Filter, 
             request.passCountSettings.passCounts,
             AutoMapperUtility.Automapper.Map<OverridingTargets>(request.liftBuildSettings),
             AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings));
-          return await trexCompactionDataProxy.SendDataPostRequest<PassCountDetailedResult, PassCountDetailsRequest>(pcDetailsRequest, "/passcounts/details", customHeaders);
+        log.LogDebug($"{nameof(DetailedPassCountExecutor)} trexRequest {JsonConvert.SerializeObject(pcDetailsRequest)}");
+
+        return await trexCompactionDataProxy.SendDataPostRequest<PassCountDetailedResult, PassCountDetailsRequest>(pcDetailsRequest, "/passcounts/details", customHeaders);
 #if RAPTOR
         }
 

@@ -22,7 +22,7 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// Responsible for coordinating the retrieval of production data for a sub grid from a site model and also annotating it with
     /// surveyed surface information for requests involving height data.
     /// </summary>
-    Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> RequestSubGridInternal(
+    (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid) RequestSubGridInternal(
       SubGridCellAddress subGridAddress,
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested);

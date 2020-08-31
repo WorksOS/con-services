@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Binary;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models;
 
@@ -63,39 +62,27 @@ namespace VSS.TRex.SubGrids.Responses
     /// </summary>
     public long NumSurveyedSurfaceSubGridsExamined { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      try
-      {
-        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-        writer.WriteInt((int)ResponseCode);
-        writer.WriteString(ClusterNode);
-        writer.WriteLong(NumSubgridsProcessed);
-        writer.WriteLong(NumSubgridsExamined);
-        writer.WriteLong(NumProdDataSubGridsProcessed);
-        writer.WriteLong(NumProdDataSubGridsExamined);
-        writer.WriteLong(NumSurveyedSurfaceSubGridsProcessed);
-        writer.WriteLong(NumSurveyedSurfaceSubGridsExamined);
-      }
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(SubGridRequestsResponse)}.ToBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(SubGridRequestsResponse)}.ToBinary()");
-      }
+      writer.WriteInt((int) ResponseCode);
+      writer.WriteString(ClusterNode);
+      writer.WriteLong(NumSubgridsProcessed);
+      writer.WriteLong(NumSubgridsExamined);
+      writer.WriteLong(NumProdDataSubGridsProcessed);
+      writer.WriteLong(NumProdDataSubGridsExamined);
+      writer.WriteLong(NumSurveyedSurfaceSubGridsProcessed);
+      writer.WriteLong(NumSurveyedSurfaceSubGridsExamined);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      try
-      {
-        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-        ResponseCode = (SubGridRequestsResponseResult)reader.ReadInt();
+      if (version == 1)
+      {
+        ResponseCode = (SubGridRequestsResponseResult) reader.ReadInt();
         ClusterNode = reader.ReadString();
         NumSubgridsProcessed = reader.ReadLong();
         NumSubgridsExamined = reader.ReadLong();
@@ -103,15 +90,6 @@ namespace VSS.TRex.SubGrids.Responses
         NumProdDataSubGridsExamined = reader.ReadLong();
         NumSurveyedSurfaceSubGridsProcessed = reader.ReadLong();
         NumSurveyedSurfaceSubGridsExamined = reader.ReadLong();
-      }
-      catch (TRexSerializationVersionException e)
-      {
-        _log.LogError(e, $"Serialization version exception in {nameof(SubGridRequestsResponse)}.FromBinary()");
-        throw; // Mostly for testing purposes...
-      }
-      catch (Exception e)
-      {
-        _log.LogCritical(e, $"Exception in {nameof(SubGridRequestsResponse)}.FromBinary()");
       }
     }
 

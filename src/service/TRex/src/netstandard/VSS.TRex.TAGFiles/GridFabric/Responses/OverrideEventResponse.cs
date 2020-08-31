@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     {
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -26,12 +26,15 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
       writer.WriteString(Message);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Success = reader.ReadBoolean();
-      Message = reader.ReadString();
+      if (version == 1)
+      {
+        Success = reader.ReadBoolean();
+        Message = reader.ReadString();
+      }
     }
   }
 }
