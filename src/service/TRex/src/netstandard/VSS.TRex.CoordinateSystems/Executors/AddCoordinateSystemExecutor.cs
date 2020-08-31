@@ -26,6 +26,7 @@ namespace VSS.TRex.CoordinateSystems.Executors
       {
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectID, true);
         siteModel.SetCSIB(csib);
+        DIContext.Obtain<ISiteModels>().DropSiteModel(projectID); // drop from cache
       }
       catch (Exception e)
       {
