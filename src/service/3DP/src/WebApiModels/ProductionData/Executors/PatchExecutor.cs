@@ -1,20 +1,26 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
-using ASNodeDecls;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SVOICVolumeCalculationsDecls;
+using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Common;
-using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Filters.Utilities;
+using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
-  public class PatchExecutor : RequestExecutorContainer
+  public class PatchExecutor : TbcExecutorHelper
   {
+    private const float CONST_MIN_ELEVATION = -100000;
+
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
@@ -23,50 +29,42 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       ProcessErrorCodes();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = CastRequestObjectTo<PatchRequest>(item);
-
-      // Note: The numPatches out parameter is ignored in favour of the same value returned in the PatchResult proper. This will be removed
-      // in due course once the breaking modifications process is agreed with BC.
       try
       {
-        var filter1 = RaptorConverters.ConvertFilter(request.Filter1, request.ProjectId, raptorClient);
-        var filter2 = RaptorConverters.ConvertFilter(request.Filter2, request.ProjectId, raptorClient);
-        var volType = RaptorConverters.ConvertVolumesType(request.ComputeVolType);
+        var request = CastRequestObjectTo<PatchRequest>(item);
 
-        if (volType == TComputeICVolumesType.ic_cvtBetween2Filters)
+        var filter1 = request.Filter1;
+        var filter2 = request.Filter2;
+        if (request.ComputeVolType == VolumesType.Between2Filters)
         {
-          RaptorConverters.AdjustFilterToFilter(ref filter1, filter2);
+          (filter1, filter2) = FilterUtilities.AdjustFilterToFilter(request.Filter1, request.Filter2);
+        }
+        else
+        {
+          (filter1, filter2) = FilterUtilities.ReconcileTopFilterAndVolumeComputationMode(filter1, filter2, request.Mode, request.ComputeVolType);
         }
 
-        RaptorConverters.reconcileTopFilterAndVolumeComputationMode(ref filter1, ref filter2, request.Mode, request.ComputeVolType);
-
-        var raptorResult = raptorClient.RequestDataPatchPage(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
-          ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor(request.CallId ?? Guid.NewGuid(), 0,
-            TASNodeCancellationDescriptorType.cdtDataPatches),
-          RaptorConverters.convertDisplayMode(request.Mode),
-          RaptorConverters.convertColorPalettes(request.Palettes, request.Mode),
-          request.RenderColorValues,
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, filter1, filter2);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, request.DesignDescriptor, filter1, filter2);
+        
+        var patchDataRequest = new PatchDataRequest(
+          request.ProjectUid.Value,
           filter1,
           filter2,
-          RaptorConverters.convertOptions(null, request.LiftBuildSettings,
-                  request.ComputeVolNoChangeTolerance, request.FilterLayerMethod, request.Mode, request.SetSummaryDataLayersVisibility),
-          RaptorConverters.DesignDescriptor(request.DesignDescriptor),
-          volType,
+          request.Mode,
           request.PatchNumber,
           request.PatchSize,
-          out var patch,
-          out _);
+          AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+          AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+        log.LogDebug($"{nameof(PatchExecutor)} patchDataRequest {JsonConvert.SerializeObject(patchDataRequest)}");
 
-        if (raptorResult == TASNodeErrorStatus.asneOK)
-        {
-          return patch != null
-            ? ConvertPatchResult(patch.ToArray())
-            : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
-        }
+        var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(patchDataRequest, "/patches", customHeaders);
 
-        throw CreateServiceException<PatchExecutor>((int)raptorResult);
+        return fileResult.Length > 0
+          ? ConvertPatchResult(fileResult, request)
+          : new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
       }
       finally
       {
@@ -74,63 +72,130 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
     }
 
-    protected sealed override void ProcessErrorCodes()
+    private ContractExecutionResult CreateNullPatchReturnedResult()
     {
-      RaptorResult.AddErrorMessages(ContractExecutionStates);
+      return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
     }
 
-    private PatchResultRenderedColors ConvertPatchResult(byte[] patch)
+    protected sealed override void ProcessErrorCodes()
     {
-      var ms = new MemoryStream(patch);
+    }
 
-      var totalNumPatchesRequired = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      var valuesRenderedToColors = StreamUtils.__Global.ReadBooleanFromStream(ms);
-      var numSubgridsInPatch = StreamUtils.__Global.ReadIntegerFromStream(ms);
-      double cellSize = StreamUtils.__Global.ReadDateTimeFromStream(ms);
-      var subgrids = new PatchSubgridResultBase[numSubgridsInPatch];
+    private PatchResultRenderedColors ConvertPatchResult(Stream stream, PatchRequest request)
+    {
+      using var reader = new BinaryReader(stream);
+      var totalPatchesRequired = reader.ReadInt32();
+      var subGridsInPatch = reader.ReadInt32();
+      var cellSize = reader.ReadDouble();
+      var subGrids = new PatchSubgridResultBase[subGridsInPatch];
 
-      for (var i = 0; i < numSubgridsInPatch; i++)
+      for (var i = 0; i < subGridsInPatch; i++)
       {
-        var cellOriginX = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        var cellOriginY = StreamUtils.__Global.ReadIntegerFromStream(ms);
-        var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
-
-        log.LogDebug($"Subgrid {i + 1} in patch has cell origin of {cellOriginX}:{cellOriginY}. IsNull?:{isNull}");
+        var subGridOriginX = reader.ReadDouble();
+        var subGridOriginY = reader.ReadDouble();
+        var isNull = reader.ReadBoolean();
+        log.LogDebug($"SubGrid {i + 1} in patch has cell origin of {subGridOriginX}:{subGridOriginY}. IsNull?:{isNull}");
 
         float elevationOrigin = 0;
         PatchCellResult[,] cells = null;
 
         if (!isNull)
         {
-          elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
+          elevationOrigin = reader.ReadSingle();
+          var elevationOffsetSizeInBytes = reader.ReadByte();
 
-          log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
+          // we're going to ignore time for TBC
+          var unusedTimeOrigin = reader.ReadUInt32();
+          var timeOffsetSizeInBytes = reader.ReadByte();
 
-          // Raptor uses: [SubGridTreesDecls.__Global.kSubGridTreeDimension, SubGridTreesDecls.__Global.kSubGridTreeDimension];
           cells = new PatchCellResult[32, 32];
-
           for (var j = 0; j < 32; j++)
           {
             for (var k = 0; k < 32; k++)
             {
-              var elevOffset = StreamUtils.__Global.ReadWordFromStream(ms);
-              var elevation = elevOffset != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
-              var colour = valuesRenderedToColors ? StreamUtils.__Global.ReadLongWordFromStream(ms) : 0;
+              float elevationOffsetDelta = 0;
+              switch (elevationOffsetSizeInBytes)
+              {
+                case 1:
+                {
+                  var elevationOffset = reader.ReadByte();
+                  elevationOffsetDelta = (float) (elevationOffset != 0xff ? (elevationOrigin + (elevationOffset / 1000.0)) : CONST_MIN_ELEVATION);
+                  break;
+                }
+                case 2:
+                {
+                  var elevationOffset = reader.ReadUInt16();
+                  elevationOffsetDelta = (float) (elevationOffset != 0xffff ? (elevationOrigin + (elevationOffset / 1000.0)) : CONST_MIN_ELEVATION);
+                  break;
+                }
+                case 4:
+                {
+                  var elevationOffset = reader.ReadUInt32();
+                  elevationOffsetDelta = (float) (elevationOffset != 0xffffffff ? (elevationOrigin + (elevationOffset / 1000.0)) : CONST_MIN_ELEVATION);
+                  break;
+                }
+                default:
+                {
+                  throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                    $"Invalid elevation offset size, '{elevationOffsetSizeInBytes}'."));
+                }
+              }
 
-              cells[j, k] = PatchCellResult.Create(elevation, 0, valuesRenderedToColors ? colour : 0);
+              // timeOrigin and time Unix seconds we are going to ignore this
+              switch (timeOffsetSizeInBytes)
+              {
+                case 1:
+                {
+                  reader.ReadByte();
+                  break;
+                }
+                case 2:
+                {
+                  reader.ReadUInt16();
+                  break;
+                }
+                case 4:
+                {
+                  reader.ReadUInt32();
+                  break;
+                }
+                default:
+                {
+                  throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                    $"Invalid time offset size, '{timeOffsetSizeInBytes}'."));
+                }
+              }
+              cells[j, k] = PatchCellResult.Create(elevationOffsetDelta, 0, ConvertColor(request, elevationOffsetDelta));
             }
           }
         }
 
-        subgrids[i] = PatchSubgridResult.Create(cellOriginX, cellOriginY, isNull, elevationOrigin, cells);
+        subGrids[i] = PatchSubgridResult.Create((int) subGridOriginX, (int) subGridOriginY, isNull, elevationOrigin, cells);
       }
 
+      log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} subGridsInPatch: {subGridsInPatch} subgridsCount: {subGrids.Length}");
       return PatchResultRenderedColors.Create(
         cellSize,
-        numSubgridsInPatch,
-        totalNumPatchesRequired,
-        valuesRenderedToColors,
-        subgrids);
+        subGridsInPatch,
+        totalPatchesRequired,
+        request.RenderColorValues,
+        subGrids);
+    }
+
+    private uint ConvertColor(PatchRequest request, float elevationOffsetDelta)
+    {
+      if (request.RenderColorValues && Math.Abs(elevationOffsetDelta - CONST_MIN_ELEVATION) > 0.001)
+      {
+        for (var i = request.Palettes.Count - 1; i >= 0; i--)
+        {
+          if (elevationOffsetDelta >= request.Palettes[i].Value)
+          {
+            return request.Palettes[i].Color;
+          }
+        }
+      }
+
+      return (uint) Color.Empty.ToArgb();
     }
   }
 }

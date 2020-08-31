@@ -17,6 +17,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     [ProtoMember(1, IsRequired = true)]
     [JsonProperty(PropertyName = "elevationOrigin")]
-    protected float ElevationOrigin { get; set; }
+    public float ElevationOrigin { get; set; }
   }
 }
