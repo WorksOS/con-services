@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CoreX.Interfaces;
-using CoreX.Models;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
@@ -89,11 +87,15 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public bool IsUTMCoordinateSystem { get; set; }
 
+
+    private Guid? _targetSiteModel;
+
     /// <summary>
     /// Default no-arg constructor
     /// </summary>
-    public TAGFileConverter()
+    public TAGFileConverter(Guid? targetSiteModel = null)
     {
+      _targetSiteModel = targetSiteModel;
       Initialise();
     }
 
@@ -252,6 +254,14 @@ namespace VSS.TRex.TAGFiles.Executors
       return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal);
     }
 
+    private bool ValidSiteModelWithCoordinateSytem(Guid? projectUid)
+    {
+      if (projectUid == null) return false;
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel((Guid)projectUid, false);
+      var csib = siteModel?.CSIB();
+      return (csib != null && csib != string.Empty);
+    }
+
     /// <summary>
     /// Execute the conversion operation on the TAG file, returning a boolean success result.
     /// Sets up local state detailing the pre-scan fields retrieved from the TAG file
@@ -294,11 +304,21 @@ namespace VSS.TRex.TAGFiles.Executors
             ACSRearAxlePositions = new List<UTMCoordPointPair>();
             ACSTrackPositions = new List<UTMCoordPointPair>();
             ACSWheelPositions = new List<UTMCoordPointPair>();
-            if (!CollectAndConvertBladePostions(SiteModel.CSIB(), ref tagData, ref aCSBladePositions, ref ACSRearAxlePositions, ref ACSTrackPositions, ref ACSWheelPositions))
+            if (ValidSiteModelWithCoordinateSytem(_targetSiteModel))
             {
-              Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Failed to collect and convert blade positions for tagfile processing with ACS. TAG FILE:{filename}");
-              return false;
+              if (!CollectAndConvertBladePostions(DIContext.Obtain<ISiteModels>().GetSiteModel((Guid)_targetSiteModel, false).CSIB(), ref tagData, ref aCSBladePositions, ref ACSRearAxlePositions, ref ACSTrackPositions, ref ACSWheelPositions))
+              {
+                Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Failed to collect and convert blade positions for tagfile processing with ACS. TAG FILE:{filename}");
+                ReadResult = TAGReadResult.CoordinateConversionFailure;
+                return false;
+              }
             }
+            else
+            {
+              ReadResult = TAGReadResult.CoordinateConversionFailure;
+              Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Unable to process ACS tagfile. Requires sitemodel with loaded coordinate system. TAG FILE:{filename}");
+              return false;
+            };
           }
         }
         else

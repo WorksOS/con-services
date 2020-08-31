@@ -169,7 +169,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
       try
       {
-        using (var commonConverter = new TAGFileConverter())
+        using (var commonConverter = new TAGFileConverter(projectId))
         {
           foreach (var tagFile in tagFilesArray)
           {

@@ -18,7 +18,7 @@ namespace VSS.TRex.TAGFiles.Executors
 
     private bool ValidPositionsforPair(UTMCoordPointPair uTMCoordPointPair)
     {
-      return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal);
+      return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Left.Z == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal || uTMCoordPointPair.Right.Z == Consts.NullReal);
     }
 
     public List<UTMCoordPointPair> TranslatePositions(string projectCSIBFile, List<UTMCoordPointPair> coordPositions)
@@ -59,11 +59,23 @@ namespace VSS.TRex.TAGFiles.Executors
           {
             // convert left point to WGS84 LL point
             var leftLLPoint = coreXWrapper.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Left.ToCoreX_XYZ()).ToTRex_XYZ();
+            if (leftLLPoint.IsZeroed())
+            {
+              // CoreX functions can fail slientlty and return a zeroed XYZ. For conversions to Lat Long Elev we can safely check to make sure there is has been a successful conversion
+              Log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates LeftPoint{leftLLPoint}");
+              return null;
+            }
             // convert left WGS84 LL point to project NNE
             var leftNNEPoint = coreXWrapper.LLHToNEE(projectCSIBFile, leftLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
 
             // convert right point to WGS84 LL point
             var rightLLPoint = coreXWrapper.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Right.ToCoreX_XYZ()).ToTRex_XYZ();
+            if (rightLLPoint.IsZeroed())
+            {
+              Log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates. RightPoint {rightLLPoint}");
+              return null;
+            }
+
             // convert right WGS84 LL point to project NNE
             var rightNNEPoint = coreXWrapper.LLHToNEE(projectCSIBFile, rightLLPoint.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
 
