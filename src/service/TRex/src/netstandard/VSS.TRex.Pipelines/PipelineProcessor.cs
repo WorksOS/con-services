@@ -194,6 +194,8 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public async Task<bool> BuildAsync()
     {
+      // Todo: This method is left as async as a reminder that the GetExistenveMap workflows could either be async (as they
+      // potentially read from the persistent store), and/or they couild be cached in the site model designs/surveyed surfaces contexts
       try
       {
         // Ensure the task is initialised with the request descriptor
