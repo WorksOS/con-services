@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
@@ -21,8 +22,19 @@ namespace VSS.TRex.TAGFiles.Executors
       return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Left.Z == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal || uTMCoordPointPair.Right.Z == Consts.NullReal);
     }
 
-    public List<UTMCoordPointPair> TranslatePositions(string projectCSIBFile, List<UTMCoordPointPair> coordPositions)
+    private string GetTargetSiteModelCSIB(Guid? projectUid)
     {
+      if (projectUid == null) return string.Empty;
+      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel((Guid)projectUid, false);
+      return siteModel.CSIB() ?? string.Empty;
+    }
+
+    public List<UTMCoordPointPair> TranslatePositions(Guid? targetProjectUid, List<UTMCoordPointPair> coordPositions)
+    {
+
+      // done here so it can be mocked in unit tests without a coordinate system
+      var projectCSIBFile = GetTargetSiteModelCSIB(targetProjectUid);
+
       if (projectCSIBFile == string.Empty)
       {
         _log.LogError($"TranslatePositions. Missing project CSIB file.");
@@ -50,9 +62,9 @@ namespace VSS.TRex.TAGFiles.Executors
           if (coordPositions[i].UTMZone != currentUTMZone || currentUTMCSIBFile == string.Empty)
           {
             currentUTMZone = coordPositions[i].UTMZone;
-
             var zone = UTMZoneHelper.GetZoneDetailsFromUTMZone(currentUTMZone);
             currentUTMCSIBFile = coreXWrapper.GetCSIBFromCSDSelection(zone.zoneGroup, zone.zoneName);
+            _log.LogDebug($"Setup UTM files for Zone:{currentUTMZone}, Group:{zone.zoneGroup}, Name:{zone.zoneName}, CSIB:{currentUTMCSIBFile}");
           }
 
           if (ValidPositionsforPair(coordPositions[i]))
@@ -62,7 +74,7 @@ namespace VSS.TRex.TAGFiles.Executors
             if (leftLLPoint.IsZeroed())
             {
               // CoreX functions can fail slientlty and return a zeroed XYZ. For conversions to Lat Long Elev we can safely check to make sure there is has been a successful conversion
-              _log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates LeftPoint{leftLLPoint}");
+              _log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates LeftPoint:{leftLLPoint}");
               return null;
             }
             // convert left WGS84 LL point to project NNE
@@ -72,7 +84,7 @@ namespace VSS.TRex.TAGFiles.Executors
             var rightLLPoint = coreXWrapper.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Right.ToCoreX_XYZ()).ToTRex_XYZ();
             if (rightLLPoint.IsZeroed())
             {
-              _log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates. RightPoint {rightLLPoint}");
+              _log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates. RightPoint:{rightLLPoint}");
               return null;
             }
 

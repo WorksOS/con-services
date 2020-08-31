@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
     public static TAGFileConverter ReadTAGFile(string fileName, Guid assetUid, bool isJohnDoe , ref ISiteModel siteModel)
     {
-      var converter = new TAGFileConverter();
+      var converter = new TAGFileConverter(siteModel.ID);
       converter.SiteModel = siteModel;
       using var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read);
       converter.ExecuteLegacyTAGFile(fileName, fs, assetUid, isJohnDoe);
@@ -188,8 +188,8 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var mockACSTranslator = new Mock<IACSTranslator>();
       mockACSTranslator
-        .Setup(x => x.TranslatePositions(It.IsAny<string>(), It.IsAny<List<UTMCoordPointPair>>()))
-        .Returns((string x, List<UTMCoordPointPair> y) => y);
+        .Setup(x => x.TranslatePositions(It.IsAny<Guid?>(), It.IsAny<List<UTMCoordPointPair>>()))
+        .Returns((Guid? x, List<UTMCoordPointPair> y) => y);
 
       DIBuilder
         .Continue()

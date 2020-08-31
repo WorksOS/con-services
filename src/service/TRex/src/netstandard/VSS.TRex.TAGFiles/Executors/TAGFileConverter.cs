@@ -216,7 +216,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <summary>
     /// Scan tag file for each epoch position and convert from position's UTM zone to WGS84LL. Then back to the coordinate sytem used by project.
     /// </summary>
-    private bool CollectAndConvertBladePostions(string projectCSIBFile, ref Stream tagData, ref List<UTMCoordPointPair> aCSBladePositions, ref List<UTMCoordPointPair> aCSRearAxlePositions, ref List<UTMCoordPointPair> aCSTrackPositions, ref List<UTMCoordPointPair> aCSWheelPositions)
+    private bool CollectAndConvertBladePostions(Guid? targetProjectUid, ref Stream tagData, ref List<UTMCoordPointPair> aCSBladePositions, ref List<UTMCoordPointPair> aCSRearAxlePositions, ref List<UTMCoordPointPair> aCSTrackPositions, ref List<UTMCoordPointPair> aCSWheelPositions)
     {
 
       var tagFilePreScanACS = new TAGFilePreScanACS(); // special scanner to collect positions
@@ -234,10 +234,10 @@ namespace VSS.TRex.TAGFiles.Executors
         }
         var hold = ReadResult;
         ReadResult = TAGReadResult.CoordinateConversionFailure;
-        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSBladePositions) == null) return false;
-        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSRearAxlePositions) == null) return false;
-        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSTrackPositions) == null) return false;
-        if (acsTranslator.TranslatePositions(projectCSIBFile, aCSWheelPositions) == null) return false;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSBladePositions) == null) return false;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSRearAxlePositions) == null) return false;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSTrackPositions) == null) return false;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSWheelPositions) == null) return false;
         ReadResult = hold;
       }
       else
@@ -252,14 +252,6 @@ namespace VSS.TRex.TAGFiles.Executors
     private bool ValidPositionsforPair(UTMCoordPointPair uTMCoordPointPair)
     {
       return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal);
-    }
-
-    private bool ValidSiteModelWithCoordinateSytem(Guid? projectUid)
-    {
-      if (projectUid == null) return false;
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel((Guid)projectUid, false);
-      var csib = siteModel?.CSIB();
-      return (csib != null && csib != string.Empty);
     }
 
     /// <summary>
@@ -304,21 +296,12 @@ namespace VSS.TRex.TAGFiles.Executors
             ACSRearAxlePositions = new List<UTMCoordPointPair>();
             ACSTrackPositions = new List<UTMCoordPointPair>();
             ACSWheelPositions = new List<UTMCoordPointPair>();
-            if (ValidSiteModelWithCoordinateSytem(_targetSiteModel))
+            if (!CollectAndConvertBladePostions(_targetSiteModel, ref tagData, ref aCSBladePositions, ref ACSRearAxlePositions, ref ACSTrackPositions, ref ACSWheelPositions))
             {
-              if (!CollectAndConvertBladePostions(DIContext.Obtain<ISiteModels>().GetSiteModel((Guid)_targetSiteModel, false).CSIB(), ref tagData, ref aCSBladePositions, ref ACSRearAxlePositions, ref ACSTrackPositions, ref ACSWheelPositions))
-              {
-                Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Failed to collect and convert blade positions for tagfile processing with ACS. TAG FILE:{filename}");
-                ReadResult = TAGReadResult.CoordinateConversionFailure;
-                return false;
-              }
-            }
-            else
-            {
+              Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Failed to collect and convert blade positions for tagfile processing with ACS. TAG FILE:{filename}");
               ReadResult = TAGReadResult.CoordinateConversionFailure;
-              Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Unable to process ACS tagfile. Requires sitemodel with loaded coordinate system. TAG FILE:{filename}");
               return false;
-            };
+            }
           }
         }
         else
