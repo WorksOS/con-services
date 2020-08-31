@@ -184,7 +184,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SiteModelAttributesHaveChanged(ISiteModelAttributesChangedEvent message)
     {
-      var messageAge = message.TimeSentUtc - DateTime.UtcNow;
+      var messageAge = DateTime.UtcNow - message.TimeSentUtc;
       _log.LogInformation($"Entering attribute change notification processor for project {message.SiteModelID}, change event ID {message.ChangeEventUid}, event message age {messageAge}");
 
       if (messageAge.TotalSeconds > 1.0)
