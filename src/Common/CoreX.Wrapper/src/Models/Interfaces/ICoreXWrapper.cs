@@ -86,6 +86,6 @@ namespace CoreX.Interfaces
     /// <summary>
     /// Get the ICoordinateSystem record for a given CSD selection.
     /// </summary>
-    string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString);
+    string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameString);
   }
 }

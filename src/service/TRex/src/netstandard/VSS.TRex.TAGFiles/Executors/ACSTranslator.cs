@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
+using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Executors
 {
@@ -13,8 +14,7 @@ namespace VSS.TRex.TAGFiles.Executors
   /// </summary>
   public class ACSTranslator : IACSTranslator
   {
-
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ACSTranslator>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ACSTranslator>();
 
     private bool ValidPositionsforPair(UTMCoordPointPair uTMCoordPointPair)
     {
@@ -23,12 +23,9 @@ namespace VSS.TRex.TAGFiles.Executors
 
     public List<UTMCoordPointPair> TranslatePositions(string projectCSIBFile, List<UTMCoordPointPair> coordPositions)
     {
-      // testing only waiting on new corex wrapper
-      var DIMENSIONS_2012_WITHOUT_VERT_ADJUST = "VE5MIENTSUIAAAAAAAAmQFByb2plY3Rpb24gZnJvbSBkYXRhIGNvbGxlY3RvcgAAWm9uZSBmcm9tIGRhdGEgY29sbGVjdG9yAABab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAABEYXR1bVRocmVlUGFyYW1ldGVycwAAAAAAAABAplRYQeM2GhTEP1hBAAAAAAAAAIAAAAAAAAAAgAAAAAAAAACADlpvbmUgZnJvbSBkYXRhIGNvbGxlY3RvcgAAt0YpjXZY6L8DXnvbAh4IQAAAAAAAaihBAAAAAABqGEEAAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAIF4LavCiChB4TsitpOdF0Fw85mH0Tt/vw9Pj9e7aCk/tdtew3Jyyj4+8FHdAgDwPwFab25lIGZyb20gZGF0YSBjb2xsZWN0b3IAAHbj3dWkgShBru4e94uPF0FcFrRN6LYnwNAqy4rBHPC+JEubOpUlrr4AABgtRFT7Ifm/GC1EVPshCUAYLURU+yH5PxgtRFT7IQlAAQEBAQEBA1AAcgBvAGoAZQBjAHQAaQBvAG4AIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAWgBvAG4AZQAgAGYAcgBvAG0AIABkAGEAdABhACAAYwBvAGwAbABlAGMAdABvAHIAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAARABhAHQAdQBtAFQAaAByAGUAZQBQAGEAcgBhAG0AZQB0AGUAcgBzAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAAAAAABaAG8AbgBlACAAZgByAG8AbQAgAGQAYQB0AGEAIABjAG8AbABsAGUAYwB0AG8AcgAAAFoAbwBuAGUAIABmAHIAbwBtACAAZABhAHQAYQAgAGMAbwBsAGwAZQBjAHQAbwByAAAAAAAAAAAAAAB7TEdFPTQxNjc7TERFPTYxNjc7R0dFPTQxNjc7R0RFPTYxNjc7fQB7TEVFPTcwMTk7fQAA";
-
       if (projectCSIBFile == string.Empty)
       {
-        Log.LogError($"TranslatePositions. Missing project CSIB file.");
+        _log.LogError($"TranslatePositions. Missing project CSIB file.");
         return null;
       }
 
@@ -40,7 +37,7 @@ namespace VSS.TRex.TAGFiles.Executors
         var coreXWrapper = DIContext.Obtain<ICoreXWrapper>();
         if (coreXWrapper == null)
         {
-          Log.LogError("TranslatePositions. IConvertCoordinates not implemented");
+          _log.LogError("TranslatePositions. IConvertCoordinates not implemented");
           return null;
         }
 
@@ -53,8 +50,9 @@ namespace VSS.TRex.TAGFiles.Executors
           if (coordPositions[i].UTMZone != currentUTMZone || currentUTMCSIBFile == string.Empty)
           {
             currentUTMZone = coordPositions[i].UTMZone;
-         //   currentUTMCSIBFile = coreXWrapper.GetUTMZone(currentUTMZone);
-            currentUTMCSIBFile = DIMENSIONS_2012_WITHOUT_VERT_ADJUST; // debugging
+
+            var zone = UTMZoneHelper.GetZoneDetailsFromUTMZone(currentUTMZone);
+            currentUTMCSIBFile = coreXWrapper.GetCSIBFromCSDSelection(zone.zoneGroup, zone.zoneName);
           }
 
           if (ValidPositionsforPair(coordPositions[i]))
@@ -77,7 +75,7 @@ namespace VSS.TRex.TAGFiles.Executors
       }
       catch (Exception ex)
       {
-        Log.LogError(ex, "Exception occurred while converting ACS coordinates");
+        _log.LogError(ex, "Exception occurred while converting ACS coordinates");
         return null;
       }
 

@@ -334,7 +334,7 @@ namespace CoreX.Wrapper
     public string GetCSIBFromDCFileContent(string fileContent) => _coreX.GetCSIBFromDCFileContent(fileContent);
 
     /// <inheritdoc/>
-    public string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString) => _coreX.GetCoordinateSystemFromCSDSelection(zoneGroupNameString, zoneNameString);
+    public string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameString) => _coreX.GetCSIBFromCSDSelection(zoneGroupNameString, zoneNameString);
 
     /// <inheritdoc/>
     public Datum[] GetDatums() => _coreX.GetDatums();

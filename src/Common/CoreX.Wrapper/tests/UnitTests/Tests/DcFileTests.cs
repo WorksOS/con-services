@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
@@ -75,13 +76,19 @@ namespace CoreX.Wrapper.UnitTests.Tests
       nee.Elevation.Should().BeApproximately(elevation, GRID_CM_TOLERANCE);
     }
 
-    [Theory(Skip = "Windows only")]
+    [Theory]
     [InlineData("CTCTSITECAL.dc", CSIB.CTCT_TEST_SITE)]
     public void Should_load_CS_file_and_return_CSIB(string dcFilename, string expectedCSIB)
     {
       var csib = GetCSIBFromDC(dcFilename);
 
-      csib.Should().Be(expectedCSIB);
+      csib.Should().NotBeNull();
+
+      // Base64 string encoding varies between OS, what works on Windows doesn't work in CI env.
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      {
+        csib.Should().Be(expectedCSIB);
+      }
     }
   }
 }

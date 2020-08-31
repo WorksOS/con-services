@@ -353,7 +353,7 @@ namespace CoreX.Wrapper
 
     public ICoordinateSystem GetDatumBySystemId(int datumSystemId)
     {
-      var datumContainer = new CSMCoordinateSystemContainer();
+      using var datumContainer = new CSMCoordinateSystemContainer();
 
       var resultCode = CsdManagement.csmGetDatumFromCSDSelectionById(
         (uint)datumSystemId, false, null, null, datumContainer);
@@ -366,7 +366,7 @@ namespace CoreX.Wrapper
       return datumContainer.GetSelectedRecord();
     }
 
-    public string GetCoordinateSystemFromCSDSelection(string zoneGroupNameString, string zoneNameString)
+    public string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameQueryString)
     {
       lock (_lock)
       {
@@ -407,16 +407,17 @@ namespace CoreX.Wrapper
           throw new Exception($"The count of zones in {zoneGroupName} should be greater than 0");
         }
 
-        if (Array.IndexOf(zones, zoneNameString) < 0)
+        var zoneElement = Array.Find(zones, element => element.EndsWith(zoneNameQueryString, StringComparison.OrdinalIgnoreCase));
+
+        if (string.IsNullOrEmpty(zoneElement))
         {
-          throw new Exception($"Could not find '{zoneNameString}' in the list of zones for group '{zoneGroupName}'");
+          throw new Exception($"Could not find '{zoneNameQueryString}' in the list of zones for group '{zoneGroupName}'");
         }
 
-        var zoneName = zoneNameString.Substring(zoneNameString.IndexOf(",") + 1);
-        var items = zoneNameString.Split(CsdManagement.ITEM_SEPERATOR);
+        var zoneName = zoneElement.Substring(zoneElement.IndexOf(",") + 1);
+        var items = zoneElement.Split(CsdManagement.ITEM_SEPERATOR);
 
         var zoneId = uint.Parse(items[0]);
-        //var zone = items[1];
 
         using var retCsStruct = new CSMCoordinateSystemContainer();
         var result = CsdManagement.csmGetCoordinateSystemFromCSDSelectionDefaults(zoneGroupName, zoneName, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retCsStruct);
@@ -441,30 +442,14 @@ namespace CoreX.Wrapper
         {
           var datumResult = GetDatumBySystemId(1034);
 
-          static void SetDatumProperty(Func<bool> funct)
-          {
-            if (!funct())
-            {
-              throw new Exception($"Failed to set datum property Func.Method: {funct.Method}, Func.Target: {funct.Target}");
-            }
-          }
+          using var csibFromIDs = new CSMCsibBlobContainer();
+          CsdManagement.csmGetCSIBFromCSDSelectionById(zoneID, datumId: 1034, geoidId: 0, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, csibFromIDs);
 
-          SetDatumProperty(() => coordinateSystem.SetDatumHeightShiftGridFileName(datumResult.DatumHeightShiftGridFileName()));
-          SetDatumProperty(() => coordinateSystem.SetDatumName(datumResult.DatumName()));
-          SetDatumProperty(() => coordinateSystem.SetDatumRotationX(datumResult.DatumRotationX()));
-          SetDatumProperty(() => coordinateSystem.SetDatumRotationY(datumResult.DatumRotationY()));
-          SetDatumProperty(() => coordinateSystem.SetDatumRotationZ(datumResult.DatumRotationZ()));
-          SetDatumProperty(() => coordinateSystem.SetDatumScale(datumResult.DatumScale()));
-          SetDatumProperty(() => coordinateSystem.SetDatumSystemId(datumResult.DatumSystemId()));
-          SetDatumProperty(() => coordinateSystem.SetDatumTransfoEPSG(datumResult.DatumTransfoEPSG()));
-          SetDatumProperty(() => coordinateSystem.SetDatumTranslationX(datumResult.DatumTranslationX()));
-          SetDatumProperty(() => coordinateSystem.SetDatumTranslationY(datumResult.DatumTranslationY()));
-          SetDatumProperty(() => coordinateSystem.SetDatumTranslationZ(datumResult.DatumTranslationZ()));
-          SetDatumProperty(() => coordinateSystem.SetDatumType(datumResult.DatumType()));
+          var csib = GetCSIB(csibFromIDs);
 
-          if (coordinateSystem.DatumSystemId() > 0)
+          if (!string.IsNullOrEmpty(csib))
           {
-            return GetCSIBFrom(coordinateSystem);
+            return csib;
           }
         }
 
