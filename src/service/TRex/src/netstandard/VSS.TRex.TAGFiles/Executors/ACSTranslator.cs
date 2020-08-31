@@ -62,7 +62,7 @@ namespace VSS.TRex.TAGFiles.Executors
             if (leftLLPoint.IsZeroed())
             {
               // CoreX functions can fail slientlty and return a zeroed XYZ. For conversions to Lat Long Elev we can safely check to make sure there is has been a successful conversion
-              Log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates LeftPoint{leftLLPoint}");
+              _log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates LeftPoint{leftLLPoint}");
               return null;
             }
             // convert left WGS84 LL point to project NNE
@@ -72,7 +72,7 @@ namespace VSS.TRex.TAGFiles.Executors
             var rightLLPoint = coreXWrapper.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Right.ToCoreX_XYZ()).ToTRex_XYZ();
             if (rightLLPoint.IsZeroed())
             {
-              Log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates. RightPoint {rightLLPoint}");
+              _log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates. RightPoint {rightLLPoint}");
               return null;
             }
 
@@ -87,7 +87,7 @@ namespace VSS.TRex.TAGFiles.Executors
       }
       catch (Exception ex)
       {
-        _log.LogError(ex, "Exception occurred while converting ACS coordinates");
+        _log.LogError(ex, $"Exception occurred while converting ACS coordinates. {ex.Message}");
         return null;
       }
 
