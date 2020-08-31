@@ -28,6 +28,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.Serilog.Extensions;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 
 namespace VSS.TRex.SubGrids.Executors
 {
@@ -461,6 +462,7 @@ namespace VSS.TRex.SubGrids.Executors
         catch (Exception e)
         {
           _log.LogError(e, "Exception processing group of sub grids");
+          throw;
         }
       }));
     }
@@ -541,17 +543,19 @@ namespace VSS.TRex.SubGrids.Executors
 
       _log.LogInformation($"Waiting for {_tasks.Count} sub tasks to complete for sub grids request");
 
-      var summaryTask = Task.WhenAll(_tasks);
-      summaryTask.Wait();
-
-      if (summaryTask.Status == TaskStatus.RanToCompletion)
+      try
       {
-        _log.LogInformation($"{_tasks.Count} sub grid tasks completed (max size = {_addressBucketSize}), executing AcquireComputationResult()");
-        return AcquireComputationResult();
+        var summaryTask = Task.WhenAll(_tasks);
+        summaryTask.Wait();
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception waiting for group of sub grid tasks to complete");
+        return null;
       }
 
-      _log.LogError("Failed to process all sub grids");
-      return null;
+      _log.LogInformation($"{_tasks.Count} sub grid tasks completed (max size = {_addressBucketSize}), executing AcquireComputationResult()");
+      return AcquireComputationResult();
     }
 
     /// <summary>
