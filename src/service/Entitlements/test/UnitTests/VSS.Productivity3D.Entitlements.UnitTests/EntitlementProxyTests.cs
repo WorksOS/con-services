@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Serilog;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -45,7 +41,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       {
         // We should still get an OK Result when entitlements are checking
         // So we at least hit the entitlements service everytime
-        var response = new EntitlementResponseModel() {Feature = "test-feature", UserEmail = "test-email", OrganizationIdentifier = "test-org", IsEntitled = true};
+        var response = new EntitlementResponseModel {Feature = "test-feature", UserEmail = "test-email", UserUid = "test-uuid", OrganizationIdentifier = "test-org", IsEntitled = true};
 
         _mockConfiguration
           .Setup(m => m.GetValueBool(It.Is<string>(s => s == "ENABLE_ENTITLEMENTS_CHECKING"), It.IsAny<bool>()))
@@ -61,12 +57,15 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
           .Returns(Task.FromResult(response));
 
         var proxy = new EntitlementProxy(_mockWebRequest.Object, _mockConfiguration.Object, _loggerFactory, _dataCache, _mockServiceResolution.Object);
-        var result = proxy.IsEntitled(new EntitlementRequestModel() {Feature = "test-feature", OrganizationIdentifier = "test-org", UserEmail = "test-email"}).Result;
+        var result = proxy.IsEntitled(new EntitlementRequestModel 
+          {Feature = "test-feature", Sku = "test-sku", OrganizationIdentifier = "test-org", UserEmail = "test-email", UserUid = "test-uuid"}).Result;
 
         result.Should().NotBeNull();
         result.IsEntitled.Should().BeTrue();
         result.UserEmail.Should().Be("test-email");
+        result.UserUid.Should().Be("test-uuid");
         result.Feature.Should().Be("test-feature");
+        result.Sku.Should().Be("test-sku");
         result.OrganizationIdentifier.Should().Be("test-org");
       }
 
@@ -88,11 +87,13 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
           .Returns(Task.FromResult(response));
 
         var proxy = new EntitlementProxy(_mockWebRequest.Object, _mockConfiguration.Object, _loggerFactory, _dataCache, _mockServiceResolution.Object);
-        var result = proxy.IsEntitled(new EntitlementRequestModel()
+        var result = proxy.IsEntitled(new EntitlementRequestModel
         {
           Feature = "test-feature",
+          Sku = "test-sku",
           OrganizationIdentifier = "test-org",
-          UserEmail = "test-email"
+          UserEmail = "test-email",
+          UserUid = "test-uuid"
         }).Result;
 
         result.Should().NotBeNull();

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Common.Abstractions.Http;
 
-namespace VSS.Productivity3D.Entitlements.Authentication
+namespace VSS.Productivity3D.Entitlements.Common.Authentication
 {
   public class AuthenticationMiddleware
   {

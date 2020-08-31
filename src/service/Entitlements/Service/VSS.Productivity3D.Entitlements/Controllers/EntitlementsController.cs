@@ -3,45 +3,79 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
-using VSS.Productivity3D.Entitlements.Authentication;
+using VSS.Productivity3D.Entitlements.Common.Authentication;
+using VSS.Productivity3D.Entitlements.Common.Executors;
+using VSS.Productivity3D.Entitlements.Common.Models;
+using VSS.Serilog.Extensions;
+using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Entitlements.Controllers
+namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
 {
+  /// <summary>
+  /// API end points for entitlement checks.
+  /// </summary>
   public class EntitlementsController : Controller
   {
-    private readonly IConfigurationStore _configurationStore;
-    private readonly ILogger<EntitlementsController> _logger;
+    /// <summary> base message number for Preference service </summary>
+    private readonly int customErrorMessageOffset = 6000;
+
+    private ILogger<EntitlementsController> _logger;
+    private ILoggerFactory _loggerFactory;
+    private IServiceExceptionHandler _serviceExceptionHandler;
+    private IConfigurationStore _configurationStore;
+    private ITPaaSApplicationAuthentication _authn;
+    private IEmsClient _emsClient;
     private readonly bool _enableEntitlementCheck;
+
+    /// <summary> Gets the application logging interface. </summary>
+    private ILogger<EntitlementsController> Logger => _logger ??= HttpContext.RequestServices.GetService<ILogger<EntitlementsController>>();
+
+    /// <summary> Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders. </summary>
+    private ILoggerFactory LoggerFactory => _loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
+
+    /// <summary> Gets the service exception handler. </summary>
+    private IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
+
+    /// <summary> Gets the configuration store </summary>
+    private IConfigurationStore ConfigStore => _configurationStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+
+    /// <summary>
+    /// The TPaaS authentication for generating an application bearer token
+    /// </summary>
+    private ITPaaSApplicationAuthentication Authn => _authn ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
+
+    /// <summary>
+    /// The EMS (entitlement management system) client
+    /// </summary>
+    private IEmsClient EmsClient => _emsClient ??= HttpContext.RequestServices.GetService<IEmsClient>();
 
     private static List<string> AcceptedEmails;
 
-    public EntitlementsController(IConfigurationStore configurationStore,ILogger<EntitlementsController> logger)
+    /// <summary> Constructor </summary>
+    public EntitlementsController()
     {
-      _configurationStore = configurationStore;
-      _logger = logger;
       if (AcceptedEmails == null)
       {
-        _logger.LogInformation($"Loading testing entitlement accepted emails");
+        Logger.LogInformation($"Loading testing entitlement accepted emails");
         LoadTestingEmails();
       }
 
-      _enableEntitlementCheck = configurationStore.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false);
-    }
-
-    public EntitlementUserClaim User
-    {
-      get
-      {
-        return HttpContext?.User as EntitlementUserClaim;
-      }
+      _enableEntitlementCheck = ConfigStore.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false);
     }
 
     /// <summary>
@@ -52,58 +86,80 @@ namespace VSS.Productivity3D.Entitlements.Controllers
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpPost("api/v1/entitlement")]
-    public IActionResult GetEntitlement([FromBody] EntitlementRequestModel request)
+    public async Task<IActionResult> GetEntitlement([FromBody] EntitlementRequestModel request)
     {
+      Logger.LogInformation($"Entitlement Request: {JsonConvert.SerializeObject(request)}");
+
       if (request == null)
         return BadRequest();
 
-      var user = User;
-      if (user == null || string.IsNullOrEmpty(user.UserEmail))
+      var model = new GetEntitlementsRequest 
+        {User = User as EntitlementUserClaim, Request = request, AcceptedEmails = AcceptedEmails, EnableEntitlementCheck = _enableEntitlementCheck};
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<GetEntitlementsExecutor>(LoggerFactory, ServiceExceptionHandler, Authn, EmsClient)
+          .ProcessAsync(model)
+      );
+
+      if (result.Code == ContractExecutionStatesEnum.ValidationError)
+        return BadRequest(result.Message);
+
+      if (result.Code == ContractExecutionStatesEnum.AuthError)
+        return Forbid();
+
+      if (result.Code == ContractExecutionStatesEnum.ExecutedSuccessfully)
       {
-        var message = $"{(user == null ? "User is null" : "User email is empty.")}";
-        _logger.LogWarning(message);
-        return BadRequest(message);
+        var response = new EntitlementResponseModel
+        {
+          Feature = request.Feature,
+          Sku = request.Sku,
+          IsEntitled = true,
+          OrganizationIdentifier = request.OrganizationIdentifier,
+          UserEmail = request.UserEmail,
+          UserUid = request.UserUid
+        };
+
+        Logger.LogInformation($"Generated Entitlements Response: {JsonConvert.SerializeObject(response)}");
+
+        return Json(response);
       }
 
-      if (string.Compare(user.UserEmail, request.UserEmail, StringComparison.InvariantCultureIgnoreCase) != 0)
+      //Shouldn't get here ...
+      return BadRequest();
+    }
+
+    /// <summary>
+    /// With the service exception try execute.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="action">The action.</param>
+    private async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func
+      <Task<TResult>> action)
+      where TResult : ContractExecutionResult
+    {
+      var result = default(TResult);
+      try
       {
-        _logger.LogWarning($"Provided email {request.UserEmail} does not match JWT TID email: {user.UserEmail}");
-        return BadRequest($"Provided email does not match JWT");
+        result = await action.Invoke().ConfigureAwait(false);
+        if (Logger.IsTraceEnabled())
+          Logger.LogTrace($"Executed {action.GetMethodInfo().Name} with result {JsonConvert.SerializeObject(result)}");
+      }
+      catch (ServiceException se)
+      {
+        Logger.LogError(se, $"Execution failed for: {action.GetMethodInfo().Name}. ");
+        throw;
+      }
+      catch (Exception ex)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
+          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message, innerException: ex);
+      }
+      finally
+      {
+        Logger.LogInformation($"Executed {action.GetMethodInfo().Name} with the result {result?.Code}");
       }
 
-      if (string.IsNullOrEmpty(request.OrganizationIdentifier))
-      {
-        _logger.LogWarning("No Organization Identifier provided");
-        return BadRequest("No Organization Identifier provided");
-      }
-
-      _logger.LogInformation($"Entitlement Request: {JsonConvert.SerializeObject(request)}");
-
-      // Temporary until we have an external endpoint
-      if(string.Compare(request.Feature, "worksos", StringComparison.InvariantCultureIgnoreCase) != 0)
-        return StatusCode((int) HttpStatusCode.Forbidden);
-
-
-      var isEmailAccepted = AcceptedEmails.Contains(request.UserEmail.ToLower());
-      _logger.LogInformation($"{request.UserEmail} {(isEmailAccepted ? "is an accepted email" : "is not in the allowed list")}");
-
-      if (!_enableEntitlementCheck)
-      {
-        _logger.LogInformation($"Entitlement checking is disabled, allowing the request.");
-        isEmailAccepted = true;
-      }
-
-      var response = new EntitlementResponseModel
-      {
-        Feature = request.Feature, 
-        IsEntitled = isEmailAccepted, 
-        OrganizationIdentifier = request.OrganizationIdentifier, 
-        UserEmail = request.UserEmail
-      };
-
-      _logger.LogInformation($"Generated Entitlements Response: {JsonConvert.SerializeObject(response)}");
-
-      return Json(response);
+      return result;
     }
 
     /// <summary>
@@ -115,7 +171,7 @@ namespace VSS.Productivity3D.Entitlements.Controllers
       var data = _configurationStore.GetValueString(ConfigConstants.ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty);
       if (string.IsNullOrEmpty(data))
       {
-        _logger.LogWarning($"No Allowed Emails for Entitlements loaded");
+        Logger.LogWarning($"No Allowed Emails for Entitlements loaded");
         AcceptedEmails = new List<string>();
       }
 
@@ -123,7 +179,7 @@ namespace VSS.Productivity3D.Entitlements.Controllers
       AcceptedEmails = data.Split(';').Select(e => e.ToLower().Trim()).ToList();
       foreach (var email in AcceptedEmails)
       {
-        _logger.LogInformation($"Accepting entitlements from `{email}`");
+        Logger.LogInformation($"Accepting entitlements from `{email}`");
       }
     }
   }
