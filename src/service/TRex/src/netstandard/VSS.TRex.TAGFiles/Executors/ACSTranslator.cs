@@ -73,7 +73,7 @@ namespace VSS.TRex.TAGFiles.Executors
             var leftLLPoint = coreXWrapper.NEEToLLH(currentUTMCSIBFile, coordPositions[i].Left.ToCoreX_XYZ()).ToTRex_XYZ();
             if (leftLLPoint.IsZeroed())
             {
-              // CoreX functions can fail slientlty and return a zeroed XYZ. For conversions to Lat Long Elev we can safely check to make sure there is has been a successful conversion
+              // CoreX functions can fail silentlty and return a zeroed XYZ. For conversions to Lat Long Elev we can safely check to make sure there is has been a successful conversion
               _log.LogError($"TranslatePositions. Failed NEEToLLH conversion for ACS coordinates LeftPoint:{leftLLPoint}");
               return null;
             }

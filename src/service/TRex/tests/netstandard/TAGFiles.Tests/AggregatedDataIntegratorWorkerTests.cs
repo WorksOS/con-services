@@ -40,7 +40,7 @@ namespace TAGFiles.Tests
       return targetSiteModel;
     }
 
-    private void InjectCordinateService()
+    private void InjectCoordinateService()
     {
       DIBuilder
         .Continue()
@@ -59,7 +59,7 @@ namespace TAGFiles.Tests
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile()
     {
 
-      InjectCordinateService();
+      InjectCoordinateService();
 
       var newMachineId = Guid.NewGuid();
 
@@ -95,7 +95,7 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoe()
     {
-      InjectCordinateService();
+      InjectCoordinateService();
 
       var newMachineId = Guid.NewGuid();
 
@@ -130,7 +130,7 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoeExists()
     {
-      InjectCordinateService();
+      InjectCoordinateService();
 
       var newMachineId1 = Guid.NewGuid();
       var newMachineId2 = Guid.NewGuid();
@@ -168,7 +168,7 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFileTwice()
     {
-      InjectCordinateService();
+      InjectCoordinateService();
 
       var newMachineId = Guid.NewGuid();
 
