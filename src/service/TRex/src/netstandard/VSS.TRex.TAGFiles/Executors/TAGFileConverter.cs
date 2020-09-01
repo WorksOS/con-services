@@ -87,7 +87,9 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public bool IsUTMCoordinateSystem { get; set; }
 
-
+    /// <summary>
+    /// Target sitemodel
+    /// </summary>
     private Guid? _targetSiteModel;
 
     /// <summary>
@@ -156,7 +158,6 @@ namespace VSS.TRex.TAGFiles.Executors
       ReadResult = TAGReadResult.NoError;
 
       Log.LogInformation($"In {nameof(ExecuteVolvoEarthworksCSVFile)}: reading file {filename} for asset {assetUid}, JohnDoe: {isJohnDoe}");
-
 
       try
       {
@@ -306,7 +307,7 @@ namespace VSS.TRex.TAGFiles.Executors
         }
         else
         {
-          Log.LogWarning($"Unsuccessful prescan of tagfile. {tagFilePreScan.ReadResult}");
+          Log.LogError($"Unsuccessful prescan of tagfile. {tagFilePreScan.ReadResult}");
           return false;
         }
 
