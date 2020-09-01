@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.GridFabric.Requests;
 using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps
@@ -32,7 +31,6 @@ namespace VSS.TRex.ExistenceMaps
     /// <summary>
     /// If the calling context is directly using an IServiceCollection then obtain the DIBuilder based on it before adding...
     /// </summary>
-    /// <param name="services"></param>
     public static void AddExistenceMapFactoriesToDI(IServiceCollection services)
     {
       DIBuilder.Continue(services).Add(x => AddDIEntries());

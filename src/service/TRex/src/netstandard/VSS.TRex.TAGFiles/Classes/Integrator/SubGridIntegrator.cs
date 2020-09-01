@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -247,8 +248,16 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         tasks.Add(Task.Run(() => ProcessSubGrid(subGrid, integrationMode, subGridChangeNotifier)));
       }
 
-      var completionTask = Task.WhenAll(tasks);
-      completionTask.Wait();
+      try
+      {
+        var completionTask = Task.WhenAll(tasks);
+        completionTask.Wait();
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception integrating sub grids via parallelised tasks");
+        return false;
+      }
 
       return true;
     }

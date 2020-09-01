@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.ExistenceMaps.Interfaces
