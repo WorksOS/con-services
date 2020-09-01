@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -85,6 +84,9 @@ namespace VSS.TRex.SubGrids
               throw;
             }
           }));
+
+          if (tasks.Count < maxTasks) 
+            continue;
 
           if (!WaitForGroupToComplete(tasks))
             return false;
