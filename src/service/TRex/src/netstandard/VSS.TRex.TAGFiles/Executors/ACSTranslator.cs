@@ -64,7 +64,7 @@ namespace VSS.TRex.TAGFiles.Executors
             currentUTMZone = coordPositions[i].UTMZone;
             var zone = UTMZoneHelper.GetZoneDetailsFromUTMZone(currentUTMZone);
             currentUTMCSIBFile = coreXWrapper.GetCSIBFromCSDSelection(zone.zoneGroup, zone.zoneName);
-            _log.LogDebug($"Setup UTM files for Zone:{currentUTMZone}, Group:{zone.zoneGroup}, Name:{zone.zoneName}, CSIB:{currentUTMCSIBFile}");
+            _log.LogTrace($"Setup UTM files for Zone:{currentUTMZone}, Group:{zone.zoneGroup}, Name:{zone.zoneName}, CSIB:{currentUTMCSIBFile}");
           }
 
           if (ValidPositionsforPair(coordPositions[i]))
