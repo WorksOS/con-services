@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -59,28 +60,42 @@ namespace VSS.TRex.SubGrids
       Action<SubGridCellAddress[]> processor,
       int maxTasks)
     {
-      var tasks = new List<Task>(maxTasks);
+      var collectionCount = subGridCollections?.Count() ?? 0;
 
-      foreach (var subGridCollection in subGridCollections)
+      _log.LogInformation($"Sub grid QOS scheduler running {collectionCount} collections across {maxTasks} tasks");
+
+      try
       {
-        tasks.Add(Task.Run(() =>
+        if (collectionCount == 0)
+          return true;
+
+        var tasks = new List<Task>(maxTasks);
+
+        foreach (var subGridCollection in subGridCollections)
         {
-          try
+          tasks.Add(Task.Run(() =>
           {
-            processor(subGridCollection);
-          }
-          catch (Exception e)
-          {
-            _log.LogError(e, "Exception processing group of sub grids");
-            throw;
-          }
-        }));
+            try
+            {
+              processor(subGridCollection);
+            }
+            catch (Exception e)
+            {
+              _log.LogError(e, "Exception processing group of sub grids");
+              throw;
+            }
+          }));
 
-        if (!WaitForGroupToComplete(tasks))
-          return false;
+          if (!WaitForGroupToComplete(tasks))
+            return false;
+        }
+
+        return WaitForGroupToComplete(tasks);
       }
-
-      return WaitForGroupToComplete(tasks);
+      finally
+      {
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collection across {maxTasks} tasks");
+      }
     }
   }
 }
