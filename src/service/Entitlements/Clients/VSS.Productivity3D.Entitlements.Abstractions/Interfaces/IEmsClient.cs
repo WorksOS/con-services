@@ -7,6 +7,6 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Interfaces
 {
   public interface IEmsClient
   {
-    Task<HttpStatusCode> GetEntitlements(Guid userUid, Guid? customerUid, string wosSku, string wosFeature, IHeaderDictionary customHeaders = null);
+    Task<HttpStatusCode> GetEntitlements(Guid userUid, Guid customerUid, string wosSku, string wosFeature, IHeaderDictionary customHeaders = null);
   }
 }

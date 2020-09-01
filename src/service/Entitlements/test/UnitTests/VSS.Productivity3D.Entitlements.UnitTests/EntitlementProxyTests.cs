@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       {
         // We should still get an OK Result when entitlements are checking
         // So we at least hit the entitlements service everytime
-        var response = new EntitlementResponseModel {Feature = "test-feature", UserEmail = "test-email", UserUid = "test-uuid", OrganizationIdentifier = "test-org", IsEntitled = true};
+        var response = new EntitlementResponseModel {Feature = "test-feature", UserUid = "test-uuid", OrganizationIdentifier = "test-org", IsEntitled = true};
 
         _mockConfiguration
           .Setup(m => m.GetValueBool(It.Is<string>(s => s == "ENABLE_ENTITLEMENTS_CHECKING"), It.IsAny<bool>()))
@@ -58,11 +58,10 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
 
         var proxy = new EntitlementProxy(_mockWebRequest.Object, _mockConfiguration.Object, _loggerFactory, _dataCache, _mockServiceResolution.Object);
         var result = proxy.IsEntitled(new EntitlementRequestModel 
-          {Feature = "test-feature", Sku = "test-sku", OrganizationIdentifier = "test-org", UserEmail = "test-email", UserUid = "test-uuid"}).Result;
+          {Feature = "test-feature", Sku = "test-sku", OrganizationIdentifier = "test-org", UserUid = "test-uuid"}).Result;
 
         result.Should().NotBeNull();
         result.IsEntitled.Should().BeTrue();
-        result.UserEmail.Should().Be("test-email");
         result.UserUid.Should().Be("test-uuid");
         result.Feature.Should().Be("test-feature");
         result.Sku.Should().Be("test-sku");
@@ -92,7 +91,6 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
           Feature = "test-feature",
           Sku = "test-sku",
           OrganizationIdentifier = "test-org",
-          UserEmail = "test-email",
           UserUid = "test-uuid"
         }).Result;
 

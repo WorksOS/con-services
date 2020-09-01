@@ -17,11 +17,6 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     public string OrganizationIdentifier { get; set; }
 
     /// <summary>
-    /// The email of the user requesting the entitlement
-    /// </summary>
-    public string UserEmail { get; set; }
-
-    /// <summary>
     /// The identifier of the user
     /// </summary>
     public string UserUid { get; set; }
@@ -45,7 +40,7 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     {
       return new List<string>
       {
-        OrganizationIdentifier, UserEmail, EntitlementCacheTag
+        OrganizationIdentifier, UserUid, EntitlementCacheTag
       };
     }
   }

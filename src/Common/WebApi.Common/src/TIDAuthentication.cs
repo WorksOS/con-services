@@ -162,7 +162,6 @@ namespace VSS.WebApi.Common
                 Feature = DefaultEntitlementFeature, 
                 Sku = DefaultEntitlementSku,
                 OrganizationIdentifier = customerUid, 
-                UserEmail = userEmail,
                 UserUid = userUid
               };
 

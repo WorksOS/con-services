@@ -58,7 +58,6 @@ namespace VSS.Productivity3D.Entitlements.Proxy
           Feature = request.Feature,
           Sku = request.Sku,
           OrganizationIdentifier = request.OrganizationIdentifier,
-          UserEmail = request.UserEmail,
           UserUid = request.UserUid
         };
       }
@@ -66,7 +65,7 @@ namespace VSS.Productivity3D.Entitlements.Proxy
       try
       {
         await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request)));
-        var result = await PostMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserEmail, customHeaders, null, ms);
+        var result = await PostMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserUid, customHeaders, null, ms);
         if (result == null)
         {
           log.LogInformation($"No Entitlement returned from the Entitlement Service, returned a failed entitlement request to the caller.");
@@ -76,11 +75,10 @@ namespace VSS.Productivity3D.Entitlements.Proxy
             Feature = request.Feature,
             Sku = request.Sku,
             OrganizationIdentifier = request.OrganizationIdentifier,
-            UserEmail = request.UserEmail,
             UserUid = request.UserUid
           };
         }
-        log.LogInformation($"User `{result.UserEmail}` for Customer: `{request.OrganizationIdentifier}` {(result.IsEntitled ? "is" : "is not")} entitled to use the `{request.Feature}` feature.");
+        log.LogInformation($"User `{result.UserUid}` for Customer: `{request.OrganizationIdentifier}` {(result.IsEntitled ? "is" : "is not")} entitled to use the `{request.Feature}` feature for the `{request.Sku}` product.");
         return result;
       }
       catch (HttpRequestException e)

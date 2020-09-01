@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Entitlements.Common.Authentication
     public EntitlementUserClaim(GenericIdentity identity, 
       string userEmail, 
       string applicationName, 
-      in bool isApplicationContext)
+      bool isApplicationContext) : base(identity)
     {
       UserEmail = userEmail;
       ApplicationName = applicationName;

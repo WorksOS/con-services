@@ -34,19 +34,18 @@ namespace VSS.Productivity3D.Entitlements.Common.Clients
     /// <summary>
     /// Determine if the user is entitled to use the specified feature
     /// </summary>
-    protected Task<HttpStatusCode> GetEntitlements(Guid userUid, Guid? customerUid, string wosSku, string wosFeature,  IHeaderDictionary customHeaders = null)
+    protected Task<HttpStatusCode> GetEntitlements(Guid userUid, Guid customerUid, string wosSku, string wosFeature,  IHeaderDictionary customHeaders = null)
     {
       log.LogDebug($"{nameof(GetEntitlements)}: userUid={userUid}, customerUid={customerUid}, wosSku={wosSku}, wosFeature={wosFeature}");
 
       var queryParams = new List<KeyValuePair<string, string>>
       {
+        new KeyValuePair<string, string>("customerid", customerUid.ToString()),
         new KeyValuePair<string, string>("fields", "full"),
         new KeyValuePair<string, string>("featurePrefixes", wosFeature),
         new KeyValuePair<string, string>("skus", wosSku),
         new KeyValuePair<string, string>("states", "ACTIVATED"),
       };
-      if (customerUid.HasValue)
-        queryParams.Add(new KeyValuePair<string, string>("customerid", customerUid.Value.ToString()));
       return SendMasterDataItemServiceDiscoveryNoCache($"entitlements/members/{userUid}/activations", customHeaders, HttpMethod.Get, queryParams);
     }
   }
