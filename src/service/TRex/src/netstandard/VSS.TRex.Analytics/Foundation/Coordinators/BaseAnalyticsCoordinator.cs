@@ -76,7 +76,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
       }
       finally
       {
-        _log.LogInformation($"Out: Executing Coordination logic, elapsed time = {requestStopWatch}");
+        _log.LogInformation($"Out: Executing Coordination logic, elapsed time = {requestStopWatch.Elapsed}");
 
         // Flag tile renders that take more than 20 seconds to render...
         if (requestStopWatch.Elapsed > _analyticsRequestTimeSpanWarnLimit)
