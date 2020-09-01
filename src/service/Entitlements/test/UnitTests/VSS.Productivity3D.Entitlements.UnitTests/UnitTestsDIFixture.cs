@@ -7,7 +7,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Productivity3D.Entitlements.UnitTests
 {

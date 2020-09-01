@@ -1,4 +1,6 @@
-﻿namespace VSS.Productivity3D.Entitlements.Abstractions
+﻿using System.Threading;
+
+namespace VSS.Productivity3D.Entitlements.Abstractions
 {
   public class ConfigConstants
   {
@@ -15,5 +17,9 @@
     /// </summary>
     public const string ENABLE_ENTITLEMENTS_CONFIG_KEY = "ENABLE_ENTITLEMENTS_CHECKING";
     public const string ENTITLEMENTS_ACCEPT_EMAIL_KEY = "ENTITLEMENTS_ALLOWED_EMAILS";
+
+    //The feature and product code for WorksOS for EMS
+    public const string ENTITLEMENTS_SKU_CONFIG_KEY = "ENTITLEMENTS_SKU";
+    public const string ENTITLEMENTS_FEATURE_CONFIG_KEY = "ENTITLEMENTS_FEATURE";
   }
 }

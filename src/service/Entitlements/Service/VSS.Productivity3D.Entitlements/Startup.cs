@@ -18,7 +18,7 @@ using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Entitlements
+namespace VSS.Productivity3D.Entitlements.WebApi
 {
     /// <summary>
     /// VSS.Productivity3D.Entitlements application startup.

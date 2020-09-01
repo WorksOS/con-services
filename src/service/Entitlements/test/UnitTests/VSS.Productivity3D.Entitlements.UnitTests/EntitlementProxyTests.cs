@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Cache.MemoryCache;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Entitlements.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
 using VSS.Productivity3D.Entitlements.Proxy;
@@ -44,7 +45,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
         var response = new EntitlementResponseModel {Feature = "test-feature", UserUid = "test-uuid", OrganizationIdentifier = "test-org", IsEntitled = true};
 
         _mockConfiguration
-          .Setup(m => m.GetValueBool(It.Is<string>(s => s == "ENABLE_ENTITLEMENTS_CHECKING"), It.IsAny<bool>()))
+          .Setup(m => m.GetValueBool(It.Is<string>(s => s == ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY), It.IsAny<bool>()))
           .Returns(false);
 
         _mockWebRequest.Setup(m => m.ExecuteRequest<EntitlementResponseModel>(It.IsAny<string>(),
@@ -73,7 +74,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       {
         var response = new EntitlementResponseModel();
         _mockConfiguration
-          .Setup(m => m.GetValueBool(It.Is<string>(s => s == "ENABLE_ENTITLEMENTS_CHECKING"), It.IsAny<bool>()))
+          .Setup(m => m.GetValueBool(It.Is<string>(s => s == ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY), It.IsAny<bool>()))
           .Returns(true);
 
         _mockWebRequest.Setup(m => m.ExecuteRequest<EntitlementResponseModel>(It.IsAny<string>(),

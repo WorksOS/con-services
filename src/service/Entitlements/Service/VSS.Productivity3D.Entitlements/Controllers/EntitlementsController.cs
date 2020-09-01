@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
@@ -52,7 +51,7 @@ namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
     /// Attempt to request an entitlement for the request feature and user
     /// </summary>
     [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(typeof(EntitlementResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpPost("api/v1/entitlement")]
@@ -84,7 +83,6 @@ namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
         isEntitled = true;
       }
 
-      //TODO: Should we return Forbid(); for HttpStatusCode.NoContent as per #502 ?
       var response = new EntitlementResponseModel
         {
           Feature = request.Feature,
