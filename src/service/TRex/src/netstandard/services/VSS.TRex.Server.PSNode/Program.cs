@@ -231,6 +231,16 @@ namespace VSS.TRex.Server.PSNode
       {
         Console.WriteLine($"TRex service starting at {DateTime.Now}");
 
+        ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
+        ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
+        Console.WriteLine($"Initial thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
+
+        // Create a much larger pool of system threads to allow QOS channels with groups of sub-tasks room to take advantage of all system resources while also allowing
+        // other requests to run concurrently
+        ThreadPool.SetMinThreads(minWorkerThreads * SubGridQOSTaskScheduler.DEFAULT_THREAD_POOL_FRACTION_DIVISOR, minCompletionPortThreads);
+
+        Console.WriteLine($"Operating thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
+
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 
