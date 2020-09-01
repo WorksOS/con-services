@@ -56,17 +56,17 @@ namespace VSS.TRex.SubGrids
     /// <param name="subGridCollections">The group of sub grid address collections to be processed</param>
     /// <param name="processor">The lambda responsible for processing them</param>
     /// <param name="maxTasks">The maximum number of tasks that may be used</param>
-    public static bool Schedule(IEnumerable<SubGridCellAddress[]> subGridCollections,
+    public static bool Schedule(List<SubGridCellAddress[]> subGridCollections,
       Action<SubGridCellAddress[]> processor,
       int maxTasks)
     {
-      var collectionCount = subGridCollections?.Count() ?? 0;
+      var collectionCount = subGridCollections?.Count ?? 0;
 
       _log.LogInformation($"Sub grid QOS scheduler running {collectionCount} collections across {maxTasks} tasks");
 
       try
       {
-        if (collectionCount == 0)
+        if (collectionCount == 0 || subGridCollections == null)
           return true;
 
         var tasks = new List<Task>(maxTasks);
