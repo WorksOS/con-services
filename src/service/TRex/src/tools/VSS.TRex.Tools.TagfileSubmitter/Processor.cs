@@ -171,6 +171,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       catch (Exception e)
       {
         Log.LogError(e, "Exception submitting TAG files");
+        Console.WriteLine($"Failure submitting TAG files: {string.Join(",", files)}");
       }
     }
 

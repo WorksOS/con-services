@@ -256,6 +256,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       catch (Exception e)
       {
         _log.LogError(e, "Exception integrating sub grids via parallelised tasks");
+        return false;
       }
 
       return true;
