@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using Apache.Ignite.Core.Cache;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.Models;
@@ -15,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SegmentRetirementQueueItemHandler>();
 
-    private static readonly bool _reportDetailedSegmentRetirementActivityToLog = false;
+    private readonly bool _reportDetailedSegmentRetirementActivityToLog = DIContext.ObtainRequired<IConfigurationStore>().GetValueBool("TREX_REPORT_DETAILED_SEGMENT_RETIREMENT_ACTIVITY_TO_LOG", true);
 
     /// <summary>
     /// Takes a set of segment retirees and removes them from grid storage in both the mutable grid (the 'local' grid) and
@@ -91,7 +93,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 
         _log.LogInformation($"Prepared {count} retirees for removal in {sw.Elapsed}");
 
-        sw = Stopwatch.StartNew();        
+        sw = Stopwatch.StartNew();
 
         // Commit all the deletes for this retiree group
         if (storageProxy.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten))

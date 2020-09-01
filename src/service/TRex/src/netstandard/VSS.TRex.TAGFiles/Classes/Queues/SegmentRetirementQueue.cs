@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -49,7 +50,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
           Name = TRexCaches.SegmentRetirementQueueCacheName(),
 
-          // Replicate the maps across nodes
           CacheMode = CacheMode.Partitioned,
 
           // TODO: No backups for now
@@ -59,7 +59,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     }
 
     /// <summary>
-    /// Finds all the items in the retirement queue ready for removal and returns them
+    /// Finds all the items in the retirement queue ready for removal and removes them
     /// </summary>
     public void Remove(DateTime earlierThan)
     {
@@ -90,8 +90,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     /// <summary>
     /// Finds all the items in the retirement queue ready for removal and returns them
     /// </summary>
-    /// <param name="earlierThan"></param>
-    /// <returns></returns>
     public List<SegmentRetirementQueueItem> Query(DateTime earlierThan)
     {
       // Do it the simple scan query way
