@@ -198,6 +198,10 @@ namespace VSS.TRex.Server.MutableData
       {
         Console.WriteLine($"TRex service starting at {DateTime.Now}");
 
+        ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
+        ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
+        Console.WriteLine($"Thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
+
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
 

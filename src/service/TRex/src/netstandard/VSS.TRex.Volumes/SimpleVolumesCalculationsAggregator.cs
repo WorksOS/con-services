@@ -352,10 +352,8 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Summarizes the client height grids derived from sub grid processing into the running volumes aggregation state
     /// </summary>
-    public void SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
+    public void SummarizeSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      //var taskList = new List<Task>(subGrids.Length);
-
       foreach (var subGridResult in subGrids)
       {
         if (subGridResult != null)
@@ -376,21 +374,9 @@ namespace VSS.TRex.Volumes
             var topSubGrid = subGridResult.Length > 1 ? subGridResult[1] : _nullHeightSubGrid;
 
             ProcessVolumeInformationForSubGrid(baseSubGrid as ClientHeightLeafSubGrid, topSubGrid as ClientHeightLeafSubGrid);
-            //taskList.Add(ProcessVolumeInformationForSubGrid(baseSubGrid as ClientHeightLeafSubGrid, topSubGrid as ClientHeightLeafSubGrid));
           }
         }
       }
-
-      /*
-      try
-      {
-        await Task.WhenAll(taskList);
-      }
-      catch (Exception e)
-      {
-        _log.LogError(e, "Exception: SimpleVolumesCalculationsAggregator: WhenAll() failed");
-      }
-      */
     }
 
     /// <summary>
@@ -442,7 +428,7 @@ namespace VSS.TRex.Volumes
     /// </summary
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummarizeSubGridResultAsync(subGrids); //.WaitAndUnwrapException();
+      SummarizeSubGridResult(subGrids);
     }
 
     protected virtual void Dispose(bool disposing)

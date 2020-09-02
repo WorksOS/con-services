@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
@@ -195,8 +195,13 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public async Task<bool> BuildAsync()
     {
+      // Todo: This method is left as async as a reminder that the GetExistenveMap workflows could either be async (as they
+      // potentially read from the persistent store), and/or they couild be cached in the site model designs/surveyed surfaces contexts
+      // See Jira CCSSSCON-1481
       try
       {
+        var stopWatch = Stopwatch.StartNew();
+
         // Ensure the task is initialised with the request descriptor
         Task.RequestDescriptor = RequestDescriptor;
 
@@ -313,7 +318,7 @@ namespace VSS.TRex.Pipelines
             return false;
           }
 
-          DesignSubGridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
+          DesignSubGridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(DataModelID, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, CutFillDesign.DesignID);
 
           if (DesignSubGridOverlayMap == null)
           {
@@ -334,11 +339,13 @@ namespace VSS.TRex.Pipelines
 
         ConfigurePipeline();
 
+        _log.LogInformation($"Pipeline processor build phase completed in {stopWatch.Elapsed}");
+
         return true;
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception occurred in asynchronous pipeline builder");
+        _log.LogError(e, "Exception occurred in pipeline builder");
         throw;
       }
     }
@@ -382,7 +389,7 @@ namespace VSS.TRex.Pipelines
           Pipeline.MaxNumberOfPassesToReturn = CellPassConsts.MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
       } 
       */
-     
+
       Pipeline.OverallExistenceMap = OverallExistenceMap;
       Pipeline.ProdDataExistenceMap = ProdDataExistenceMap;
       Pipeline.DesignSubGridOverlayMap = DesignSubGridOverlayMap;
