@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
@@ -420,7 +421,7 @@ namespace VSS.TRex.Pipelines
             .ContinueWith(x =>
             {
               _log.LogInformation(x.Result ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
-            }).Wait();
+            }).WaitAndUnwrapException();
         }
 
         PipelineAborted = Pipeline.Aborted;

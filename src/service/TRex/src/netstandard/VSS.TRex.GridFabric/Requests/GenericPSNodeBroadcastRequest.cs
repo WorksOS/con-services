@@ -20,8 +20,6 @@ namespace VSS.TRex.GridFabric.Requests
     /// <summary>
     /// Executes a request through it's generic types
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public override TResponse Execute(TArgument arg)
     {
       // Construct the function to be used
@@ -36,10 +34,8 @@ namespace VSS.TRex.GridFabric.Requests
     }
 
     /// <summary>
-    /// Executes a request through it's generic types asynchronously
+    /// Executes a request through its generic types asynchronously
     /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
     public override Task<TResponse> ExecuteAsync(TArgument arg)
     {
       // Construct the function to be used

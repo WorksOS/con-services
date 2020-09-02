@@ -80,6 +80,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// </summary>
         public override TSubGridRequestsResponse Execute()
         {
+            const int TIME_LIMIT_MS = 30000;
+
             PrepareForExecution();
 
             Task<ICollection<TSubGridRequestsResponse>> taskResult = null;
@@ -92,7 +94,16 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 var func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
                 taskResult = Compute.BroadcastAsync(func, arg);
-                taskResult.Wait(30000);
+                taskResult.Wait(TIME_LIMIT_MS);
+
+                if (taskResult.Status != TaskStatus.RanToCompletion)
+                {
+                  Log.LogWarning($"Progressive sub grid request from node {TRexTask.TRexNodeID}, project {TRexTask.PipeLine.DataModelID}, failed to complete inside its time limit ({TIME_LIMIT_MS}ms). Status is {taskResult.Status}. IsFaulted = {taskResult.IsFaulted}");
+                  if (taskResult.Exception != null)
+                  {
+                    Log.LogError(taskResult.Exception, "Exception raised in Compute.BroadcastAsync()");
+                  }
+                }
             }
             finally
             {

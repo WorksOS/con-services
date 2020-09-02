@@ -171,7 +171,6 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// Constructor accepting an identifier for the pipeline and a task for the pipeline to operate with
         /// </summary>
-        /// <param name="task"></param>
         public SubGridPipelineBase(ITRexTask task) : this()
         {
             PipelineTask = task;
@@ -264,8 +263,8 @@ namespace VSS.TRex.Pipelines
             return Task.FromResult(true);
           }
 
-          // Todo: Make the 2 minute limit configurable
-          return PipelineSignalEvent.WaitAsync(120000); // Don't wait for more than two minutes...
+          // Todo: Make the time limit configurable
+          return PipelineSignalEvent.WaitAsync(30000); // Don't wait for more than 30 seconds...
         }
     }
 }
