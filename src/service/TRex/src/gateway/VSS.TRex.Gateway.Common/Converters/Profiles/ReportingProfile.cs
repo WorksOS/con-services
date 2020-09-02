@@ -1,7 +1,6 @@
 ﻿using System;
 using AutoMapper;
 using VSS.Productivity3D.Models.Models.Reports;
-using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
@@ -33,7 +32,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.ReferenceDesign,
           opt => opt.MapFrom<CustomStationOffsetReferenceDesignResolver>())
         .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides))
-        .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings));
+        .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings))
+        .ForMember(x => x.IsOutsideTPaaSTimeout, opt => opt.Ignore())
+        .ForMember(x => x.RequestEmissionDateUtc, opt => opt.Ignore());
 
       CreateMap<CompactionReportGridTRexRequest, GriddedReportData>()
         .ForMember(x => x.NumberOfRows,
@@ -55,7 +56,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.ReferenceDesign,
           opt => opt.MapFrom<CustomGridReferenceDesignResolver>())
         .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides))
-        .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings));
+        .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings))
+        .ForMember(x => x.IsOutsideTPaaSTimeout, opt => opt.Ignore())
+        .ForMember(x => x.RequestEmissionDateUtc, opt => opt.Ignore());
     }
 
 

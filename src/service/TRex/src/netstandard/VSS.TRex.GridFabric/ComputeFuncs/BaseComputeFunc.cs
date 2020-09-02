@@ -6,7 +6,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
   /// <summary>
   /// The base class for compute functions. This provides common aspects such as the injected Ignite instance
   /// </summary>
-  public class BaseComputeFunc : VersionCheckedBinarizableSerializationBase 
+  public class BaseComputeFunc : VersionCheckedBinarizableSerializationBase
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -21,8 +21,6 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     /// for execution of the function. Thus, IBinarizable serialization for base compute func in TRex is a
     /// null function.
     /// </summary>
-
-
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
       // Version the serialization, even if nothing additional is serialized
