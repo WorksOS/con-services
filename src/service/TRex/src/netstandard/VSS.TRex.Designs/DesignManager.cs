@@ -44,16 +44,11 @@ namespace VSS.TRex.Designs
     /// </summary>
     private IDesigns Load(Guid siteModelId)
     {
+      _log.LogInformation($"Loading designs for project {siteModelId}");
+
+      var designs = DIContext.ObtainRequired<IDesigns>();
       try
       {
-        var designs = DIContext.ObtainRequired<IDesigns>();
-
-        if (designs == null)
-        {
-          _log.LogError("Unable to access designs factory from DI");
-          return null;
-        }
-
         _readStorageProxy.ReadStreamFromPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out var ms);
 
         if (ms != null)
@@ -63,19 +58,19 @@ namespace VSS.TRex.Designs
             designs.FromStream(ms);
           }
         }
-
-        return designs;
       }
       catch (KeyNotFoundException)
       {
-        /* This is OK, the element is not present in the cache yet */
+        // This is OK, the element is not present in the cache yet - return an empty design list
       }
       catch (Exception e)
       {
         throw new TRexException("Exception reading designs cache element from Ignite", e);
       }
 
-      return null;
+      _log.LogInformation($"Loaded {designs.Count} designs for project {siteModelId}");
+
+      return designs;
     }
 
     /// <summary>
