@@ -90,7 +90,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)

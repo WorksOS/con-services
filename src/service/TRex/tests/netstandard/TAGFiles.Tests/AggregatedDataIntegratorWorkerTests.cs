@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -37,6 +40,14 @@ namespace TAGFiles.Tests
       return targetSiteModel;
     }
 
+    private void InjectCoordinateService()
+    {
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
+        .Complete();
+    }
+
     [Fact()]
     public void Test_AggregatedDataIntegratorWorker_AggregatedDataIntegratorWorkerTest()
     {
@@ -47,6 +58,9 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile()
     {
+
+      InjectCoordinateService();
+
       var newMachineId = Guid.NewGuid();
 
       // Convert a TAG file using a TAGFileConverter into a mini-site model
@@ -81,6 +95,8 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoe()
     {
+      InjectCoordinateService();
+
       var newMachineId = Guid.NewGuid();
 
       // Convert a TAG file using a TAGFileConverter into a mini-site model
@@ -114,6 +130,8 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoeExists()
     {
+      InjectCoordinateService();
+
       var newMachineId1 = Guid.NewGuid();
       var newMachineId2 = Guid.NewGuid();
 
@@ -150,6 +168,8 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFileTwice()
     {
+      InjectCoordinateService();
+
       var newMachineId = Guid.NewGuid();
 
       // Convert a TAG file using a TAGFileConverter into a mini-site model

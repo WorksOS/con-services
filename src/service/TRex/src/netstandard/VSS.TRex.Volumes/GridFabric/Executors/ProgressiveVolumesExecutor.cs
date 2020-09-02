@@ -20,7 +20,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
 
     private ProgressiveVolumesResponse ConvertBoundaryFromGridToWGS84(Guid projectUid, ProgressiveVolumesResponse response)
     {
-      var convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
+      var convertCoordinates = DIContext.Obtain<ICoreXWrapper>();
 
       if (response.Volumes != null)
       {

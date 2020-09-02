@@ -126,7 +126,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       var expectedCoordinateConversionResult = neeCoords.ToCoreX_XYZ();
 
-      var convertCoordinatesMock = new Mock<IConvertCoordinates>();
+      var convertCoordinatesMock = new Mock<ICoreXWrapper>();
 
       convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>()))
         .Returns(expectedCoordinateConversionResult);

@@ -394,7 +394,7 @@ namespace VSS.TRex.Rendering.Executors
       else
       {
         NEECoords = DIContext
-          .Obtain<IConvertCoordinates>()
+          .Obtain<ICoreXWrapper>()
           .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians)
           .ToTRex_XYZ();
       }

@@ -1,9 +1,9 @@
 ﻿using System.Linq;
+using CoreX.Extensions;
 using CoreX.Models;
-using CoreX.Wrapper.Extensions;
 using Xunit;
 
-namespace CoreX.Wrapper.UnitTests.Tests.Extensions
+namespace CoreX.Wrapper.UnitTests.Tests
 {
   public class CoordinateConversionExtensionsTests
   {

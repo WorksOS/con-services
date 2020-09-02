@@ -1,8 +1,8 @@
 ﻿using System;
+using CoreX.Extensions;
 using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
-using CoreX.Wrapper.Extensions;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 
@@ -15,18 +15,20 @@ namespace CoreX.Wrapper
   /// <remarks>
   /// While these methods can be called directly, it's recommended to utilize the static ConvertCoordinates helper.
   /// </remarks>
-  public class ConvertCoordinates : IConvertCoordinates, IDisposable
+  public class CoreXWrapper : ICoreXWrapper, IDisposable
   {
     private readonly CoreX _coreX;
     private readonly ILogger _log;
 
-    public ConvertCoordinates(ILoggerFactory loggerFactory, IConfigurationStore configStore)
+    public CoreX GetCoreX() => _coreX;
+
+    public CoreXWrapper(ILoggerFactory loggerFactory, IConfigurationStore configStore)
     {
-      _log = loggerFactory.CreateLogger<ConvertCoordinates>();
+      _log = loggerFactory.CreateLogger<CoreXWrapper>();
       _coreX = new CoreX(loggerFactory, configStore);
     }
 
-    public ConvertCoordinates()
+    public CoreXWrapper()
     { }
 
     public string GeodeticDatabasePath => _coreX.GeodeticDatabasePath;
@@ -330,6 +332,12 @@ namespace CoreX.Wrapper
 
     /// <inheritdoc/>
     public string GetCSIBFromDCFileContent(string fileContent) => _coreX.GetCSIBFromDCFileContent(fileContent);
+
+    /// <inheritdoc/>
+    public string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameString) => _coreX.GetCSIBFromCSDSelection(zoneGroupNameString, zoneNameString);
+
+    /// <inheritdoc/>
+    public Datum[] GetDatums() => _coreX.GetDatums();
 
     private bool _disposed = false;
 

@@ -151,7 +151,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(x => x.AddSingleton<Func<StorageMutability, IgniteMock>>(mutability =>
         {
           return mutability switch

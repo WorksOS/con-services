@@ -84,7 +84,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       llhCoords[6].X = Math.Round(-115.02063908350371, DECIMALS);
       llhCoords[6].Y = Math.Round(36.20750448242144, DECIMALS);
 
-      var convertCoordinatesMock = new Mock<IConvertCoordinates>();
+      var convertCoordinatesMock = new Mock<ICoreXWrapper>();
 
       var expectedCoordinateConversionResult = llhCoords.ToCoreX_XYZ();
 

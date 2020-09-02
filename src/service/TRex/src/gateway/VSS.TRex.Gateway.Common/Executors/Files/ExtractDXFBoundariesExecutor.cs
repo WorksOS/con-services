@@ -73,14 +73,14 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
         return ConstructResponse();
       }
 
-      var csib = DIContext.Obtain<IConvertCoordinates>().GetCSIBFromDCFileContent(coordinateSystemFileData);
+      var csib = DIContext.Obtain<ICoreXWrapper>().GetCSIBFromDCFileContent(coordinateSystemFileData);
 
       // Convert grid coordinates into WGS: assemble and convert. Note: 2D conversion only, elevation is set to 0
       //Note YXZ is correct here as it's treated as NEE
       var coordinates = boundaries.Boundaries.SelectMany(x => x.Boundary.Points).Select(pt => new XYZ(x: pt.X, y: pt.Y, z: 0.0)).ToArray();
 
       // Perform conversion
-      var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ(), ReturnAs.Degrees);
+      var LLHCoords = DIContext.Obtain<ICoreXWrapper>().NEEToLLH(csib, coordinates.ToCoreX_XYZ(), ReturnAs.Degrees);
 
       // Recopy converted coordinates into boundaries
       var indexer = 0;

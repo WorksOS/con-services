@@ -37,7 +37,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
 
       if (NEECoords.Count > 0)
       {
-        var LLHCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(CSIB, NEECoords.ToArray().ToCoreX_XYZ());
+        var LLHCoords = DIContext.Obtain<ICoreXWrapper>().NEEToLLH(CSIB, NEECoords.ToArray().ToCoreX_XYZ());
 
         // if the count returned is different to that sent, then we can't match with the machines list
         if (NEECoords.Count == LLHCoords.Length)
