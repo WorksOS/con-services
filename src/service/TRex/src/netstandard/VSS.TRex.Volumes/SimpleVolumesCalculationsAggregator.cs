@@ -9,6 +9,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -50,7 +51,7 @@ namespace VSS.TRex.Volumes
     // References necessary for correct summarization of aggregated state
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
-    public Guid SiteModelID { get; set; } = Guid.Empty;
+    public ISiteModel SiteModel { get; set; }
 
     // The sum of the aggregated summarized information relating to volumes summary based reports
 
@@ -127,7 +128,7 @@ namespace VSS.TRex.Volumes
       // Query the patch of elevations from the surface model for this sub grid
       if (ActiveDesign != null)
       {
-        getDesignHeightsResult = ActiveDesign.Design.GetDesignHeightsViaLocalCompute(SiteModelID, ActiveDesign.Offset, baseScanSubGrid.OriginAsCellAddress(), CellSize);
+        getDesignHeightsResult = ActiveDesign.Design.GetDesignHeightsViaLocalCompute(SiteModel, ActiveDesign.Offset, baseScanSubGrid.OriginAsCellAddress(), CellSize);
 
         if (getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK &&
             getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
@@ -351,10 +352,8 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Summarizes the client height grids derived from sub grid processing into the running volumes aggregation state
     /// </summary>
-    public void SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
+    public void SummarizeSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      //var taskList = new List<Task>(subGrids.Length);
-
       foreach (var subGridResult in subGrids)
       {
         if (subGridResult != null)
@@ -375,21 +374,9 @@ namespace VSS.TRex.Volumes
             var topSubGrid = subGridResult.Length > 1 ? subGridResult[1] : _nullHeightSubGrid;
 
             ProcessVolumeInformationForSubGrid(baseSubGrid as ClientHeightLeafSubGrid, topSubGrid as ClientHeightLeafSubGrid);
-            //taskList.Add(ProcessVolumeInformationForSubGrid(baseSubGrid as ClientHeightLeafSubGrid, topSubGrid as ClientHeightLeafSubGrid));
           }
         }
       }
-
-      /*
-      try
-      {
-        await Task.WhenAll(taskList);
-      }
-      catch (Exception e)
-      {
-        _log.LogError(e, "Exception: SimpleVolumesCalculationsAggregator: WhenAll() failed");
-      }
-      */
     }
 
     /// <summary>
@@ -441,7 +428,7 @@ namespace VSS.TRex.Volumes
     /// </summary
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummarizeSubGridResultAsync(subGrids); //.WaitAndUnwrapException();
+      SummarizeSubGridResult(subGrids);
     }
 
     protected virtual void Dispose(bool disposing)

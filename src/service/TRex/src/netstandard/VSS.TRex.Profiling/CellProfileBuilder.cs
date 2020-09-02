@@ -284,13 +284,13 @@ namespace VSS.TRex.Profiling
 
           CurrentSubgridOrigin = ThisSubgridOrigin;
 
-          if (!ProfileFilterMask.ConstructSubgridCellFilterMask(CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, SiteModel.Grid, 
+          if (!ProfileFilterMask.ConstructSubgridCellFilterMask(SiteModel, CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, 
             SurfaceDesignMaskDesign))
             continue;
 
           if (ReturnDesignElevation && CutFillDesignWrapper?.Design != null) // cut fill profile request then get elevation at same spot along design
           {
-            var getDesignHeightsResult = CutFillDesignWrapper.Design.GetDesignHeightsViaLocalCompute(SiteModel.ID, CutFillDesignWrapper.Offset, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize);
+            var getDesignHeightsResult = CutFillDesignWrapper.Design.GetDesignHeightsViaLocalCompute(SiteModel, CutFillDesignWrapper.Offset, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize);
             
             DesignElevations = getDesignHeightsResult.designHeights;
             DesignResult = getDesignHeightsResult.errorCode;

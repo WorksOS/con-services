@@ -28,7 +28,7 @@ namespace VSS.TRex.Caching.Interfaces
     ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, GridDataType gridDataType, string contextFingerPrint);
     ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, GridDataType gridDataType, string contextFingerPrint, TimeSpan cacheDuration);
 
-    void InvalidateDueToProductionDataIngest(Guid projectUid, ISubGridTreeBitMask mask);
+    void InvalidateDueToProductionDataIngest(Guid projectUid, Guid changeEventUid, ISubGridTreeBitMask mask);
     void InvalidateDueToDesignChange(Guid projectUid, Guid designUid);
 
     void RemoveContextsMarkedForRemoval();

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
@@ -14,20 +15,15 @@ namespace VSS.TRex.Designs.Executors
     /// <summary>
     /// Performs execution business logic for this executor
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="referenceDesignUid"></param>
-    /// <returns></returns>
-    public (double StartStation, double EndStation) Execute(Guid projectUid, Guid referenceDesignUid)
+    public (double StartStation, double EndStation) Execute(ISiteModelBase siteModel, Guid referenceDesignUid)
     {
       try
       {
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, false);
-
         if (siteModel == null)
         {
           return (double.MaxValue, double.MinValue);
         }
-        var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUid, projectUid, siteModel.CellSize, out var lockResult);
+        var design = DIContext.ObtainRequired<IDesignFiles>()?.Lock(referenceDesignUid, siteModel, siteModel.CellSize, out var lockResult);
 
         if (design == null)
         {
@@ -44,7 +40,7 @@ namespace VSS.TRex.Designs.Executors
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Failed to compute alignment design station station range. Site Model ID: {projectUid} design ID: {referenceDesignUid}");
+        Log.LogError(e, $"Failed to compute alignment design station station range. Site Model ID: {siteModel.ID} design ID: {referenceDesignUid}");
         return (double.MaxValue, double.MinValue);
       }
     }

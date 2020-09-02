@@ -46,7 +46,7 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        var designs = DIContext.Obtain<IDesigns>();
+        var designs = DIContext.ObtainRequired<IDesigns>();
 
         if (designs == null)
         {

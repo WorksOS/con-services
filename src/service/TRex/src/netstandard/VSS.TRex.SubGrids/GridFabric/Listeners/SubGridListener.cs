@@ -131,7 +131,17 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
         var sw = Stopwatch.StartNew();
 
         // Todo: Check if there are more performant approaches for handing this off asynchronously
-        Task.Run(() => ProcessResponse(message));
+        Task.Run(() =>
+        {
+          try
+          {
+            ProcessResponse(message);
+          }
+          catch (Exception e)
+          {
+            _log.LogError(e, "Exception processing sub grid listener response");
+          }
+        });
 
         _log.LogDebug($"Processed SubGridListener.Invoke in {sw.Elapsed}");
 

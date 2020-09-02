@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Geometry;
@@ -16,7 +17,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels.Interfaces
 {
-  public interface ISiteModel : IDisposable
+  public interface ISiteModel : ISiteModelBase, IDisposable
   {
     /// <summary>
     /// Governs which TRex storage representation (mutable or immutable) the Grid member within the site model instance will supply
@@ -27,12 +28,8 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     IStorageProxy PrimaryStorageProxy { get; }
 
-    Guid ID { get; set; }
-
     DateTime CreationDate { get; }
     DateTime LastModifiedDate { get; set; }
-
-    double CellSize { get; }
 
     /// <summary>
     /// Gets/sets transient state for this site model. Transient site models are not persisted.

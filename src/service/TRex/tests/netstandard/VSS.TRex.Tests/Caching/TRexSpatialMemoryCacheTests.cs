@@ -545,7 +545,7 @@ namespace VSS.TRex.Tests.Caching
 
         cache.MRUList.TokenCount.Should().Be(context.TokenCount);
 
-        cache.InvalidateDueToProductionDataIngest(Guid.Empty, mask);
+        cache.InvalidateDueToProductionDataIngest(Guid.Empty, Guid.NewGuid(), mask);
 
         cache.MRUList.TokenCount.Should().Be(0);
       }

@@ -29,7 +29,7 @@ namespace VSS.TRex.Common
     public S3FileTransfer(TransferProxyType type)
     {
       _type = type;
-      Proxy = DIContext.Obtain<ITransferProxyFactory>().NewProxy(_type);
+      Proxy = DIContext.ObtainRequired<ITransferProxyFactory>().NewProxy(_type);
     }
     
     /// <summary>

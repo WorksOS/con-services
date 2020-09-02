@@ -27,6 +27,11 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
     private IDesignFiles _designFiles;
 
     /// <summary>
+    /// Site model reference kept for the duration of the request utilizing this local compute scope
+    /// </summary>
+    private ISiteModel _sitemodel;
+
+    /// <summary>
     /// Surveyed surfaces references kept for the duration of the request utilizing this local compute scope
     /// </summary>
     private ISurveyedSurfaces _surveyedSurfaces;
@@ -41,7 +46,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         _cache = new SurfaceElevationPatchRequestCache(cache, context, _clientLeafSubGridFactory);
     }
 
-    public Task<IClientLeafSubGrid> ExecuteAsync(ISurfaceElevationPatchArgument arg) => Task.Run(() => Execute(arg));
+    public async Task<IClientLeafSubGrid> ExecuteAsync(ISurfaceElevationPatchArgument arg) => Execute(arg); // Task.Run(() => Execute(arg));
 
     public IClientLeafSubGrid Execute(ISurfaceElevationPatchArgument arg)
     {
@@ -68,11 +73,14 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
       var subGridInvalidationVersion = cachingSupported ? _cache.InvalidationVersion : 0;
 
       var executor = new CalculateSurfaceElevationPatch();
-      var clientResult = executor.Execute(arg.SiteModelID, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY,
+
+      _sitemodel ??= DIContext.ObtainRequired<ISiteModels>().GetSiteModel(arg.SiteModelID);
+      _designFiles ??= DIContext.ObtainRequired<IDesignFiles>();
+      _surveyedSurfaces ??= _sitemodel.SurveyedSurfaces;
+
+      var clientResult = executor.Execute(_sitemodel, arg.OTGCellBottomLeftX, arg.OTGCellBottomLeftY,
         arg.CellSize, arg.SurveyedSurfacePatchType, arg.IncludedSurveyedSurfaces,
-        _designFiles ??= DIContext.ObtainRequired<IDesignFiles>(),
-        _surveyedSurfaces ??= DIContext.ObtainRequired<ISiteModels>().GetSiteModel(arg.SiteModelID).SurveyedSurfaces,
-        arg.ProcessingMap);
+        _designFiles, _surveyedSurfaces, arg.ProcessingMap);
 
       if (clientResult != null)
       {

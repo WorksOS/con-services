@@ -38,7 +38,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <summary>
         /// Overrides the base Execute() semantics to add a listener available for aggregated processing of sub grids in the request engine.
         /// </summary>
-        /// <returns></returns>
         public override TSubGridRequestsResponse Execute()
         {
             CheckArguments();
@@ -83,7 +82,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <summary>
         /// Overrides the base Execute() semantics to add a listener available for aggregated processing of sub grids in the request engine.
         /// </summary>
-        /// <returns></returns>
         public override Task<TSubGridRequestsResponse> ExecuteAsync()
         {
             CheckArguments();
@@ -96,13 +94,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} sub grids");
                 
             // Construct the function to be used
-            IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(TRexTask);
+            var func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(TRexTask);
 
             // Invoke it
             return Task.Run(() => func.Invoke(arg)).ContinueWith(result =>
-            {        
-                // Advise the pipeline of all the sub grids that were examined in the aggregated processing
-                TRexTask.PipeLine.SubGridsProcessed(result.Result?.NumSubgridsExamined ?? 0);
+            {
+               // Advise the pipeline of all the sub grids that were examined in the aggregated processing
+               TRexTask.PipeLine.SubGridsProcessed(result.Result?.NumSubgridsExamined ?? 0);
            
                // Notify the pipeline that all processing has been completed for it
                TRexTask.PipeLine.PipelineCompleted = true;
@@ -110,5 +108,5 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                return result.Result;
             });
         }
-  }
+    }
 }

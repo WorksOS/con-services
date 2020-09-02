@@ -7,6 +7,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Common.Interfaces.Interfaces;
 
 namespace VSS.TRex.Designs.Interfaces
 {
@@ -60,7 +61,7 @@ namespace VSS.TRex.Designs.Interfaces
     /// <summary>
     /// Calculates an elevation sub grid for a design sub grid on this design by performing the design elevation query locally in the same process
     /// </summary>
-    (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) GetDesignHeightsViaLocalCompute(Guid siteModelID, double offset, SubGridCellAddress originCellAddress, double cellSize);
+    (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) GetDesignHeightsViaLocalCompute(ISiteModelBase siteModel, double offset, SubGridCellAddress originCellAddress, double cellSize);
     
     /// <summary>
     /// Calculates a filter mask for a designated sub grid on this design
@@ -70,7 +71,7 @@ namespace VSS.TRex.Designs.Interfaces
     /// <summary>
     /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
-    (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) GetFilterMaskViaLocalCompute(Guid siteModelID, SubGridCellAddress originCellAddress, double cellSize);
+    (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) GetFilterMaskViaLocalCompute(ISiteModelBase siteModel, SubGridCellAddress originCellAddress, double cellSize);
 
     DesignDescriptor DesignDescriptor { get; }
 

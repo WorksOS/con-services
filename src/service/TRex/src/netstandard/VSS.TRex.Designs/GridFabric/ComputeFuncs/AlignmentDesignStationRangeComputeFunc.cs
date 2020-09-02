@@ -5,7 +5,9 @@ using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
@@ -19,7 +21,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       {
         var executor = new CalculateAlignmentDesignStationRange();
 
-        var stationRange = executor.Execute(args.ProjectID, args.ReferenceDesign.DesignID);
+        var stationRange = executor.Execute(DIContext.ObtainRequired<ISiteModels>().GetSiteModel(args.ProjectID), args.ReferenceDesign.DesignID);
 
         if (stationRange.StartStation == double.MaxValue || stationRange.EndStation == double.MinValue)
           return new AlignmentDesignStationRangeResponse()
