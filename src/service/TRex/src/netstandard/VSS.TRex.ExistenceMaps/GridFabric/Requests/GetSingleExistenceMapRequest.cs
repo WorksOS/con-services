@@ -21,7 +21,7 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     }
 
     /// <summary>
-    /// Executes the request to retrieve an existence map given it's key and returns a deserialised bit mask subgrid tree
+    /// Executes the request to retrieve an existence map given it's key and returns a deserialised bit mask sub grid tree
     /// representing the existence map
     /// </summary>
     public ISubGridTreeBitMask Execute(INonSpatialAffinityKey key) => _server.GetExistenceMap(key);

@@ -46,7 +46,6 @@ namespace VSS.TRex.ExistenceMaps.GridFabric.Requests
     /// <summary>
     /// Executes the request to retrieve a combined existence map given a list of type descriptors and IDs
     /// </summary>
-    /// <returns></returns>
     public ISubGridTreeBitMask Execute(Guid siteModelID, Tuple<long, Guid>[] IDs) => Execute(IDs.Select(x => CacheKey(siteModelID, x.Item1, x.Item2)).ToArray());
   }
 }

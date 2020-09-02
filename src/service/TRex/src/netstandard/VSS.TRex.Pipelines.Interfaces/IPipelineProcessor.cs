@@ -72,7 +72,6 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// <summary>
     /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
-    /// <returns></returns>
     Task<bool> BuildAsync();
 
     /// <summary>
