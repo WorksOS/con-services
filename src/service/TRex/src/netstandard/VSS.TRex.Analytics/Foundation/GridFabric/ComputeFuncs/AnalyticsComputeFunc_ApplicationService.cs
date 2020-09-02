@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
+using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Requests;
@@ -14,7 +15,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
   /// perform sub grid processing.
   /// </summary>
   public class AnalyticsComputeFunc_ApplicationService<TArgument, TResponse, TRequest> : BaseComputeFunc, IComputeFunc<TArgument, TResponse>
-      where TArgument : class
+      where TArgument : BaseApplicationServiceRequestArgument
       where TResponse : BaseAnalyticsResponse, IAggregateWith<TResponse>, new()
       where TRequest : BaseRequest<TArgument, TResponse>, new()
   {
@@ -26,6 +27,9 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
       Stopwatch invokeStopWatch = null;
       try
       {
+        // Analytics requests can be a significant resource commitment. Ensure TPaaS will be listening...
+        PerformTPaaSRequestLivelinessCheck(arg);
+
         invokeStopWatch = Stopwatch.StartNew();
         _log.LogInformation("In AnalyticsComputeFunc_ApplicationService.Invoke()");
 

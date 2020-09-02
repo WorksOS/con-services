@@ -29,6 +29,9 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 
       try
       {
+        // Volumes requests can be a significant resource commitment. Ensure TPaaS will be listening...
+        PerformTPaaSRequestLivelinessCheck(arg);
+
         var executor = new ProgressiveVolumesExecutor();
         return executor.ExecuteAsync(arg).WaitAndUnwrapException();
       }

@@ -23,6 +23,9 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
 
       try
       {
+        // Quantized mesh requests can be a significant resource commitment. Ensure TPaaS will be listening...
+        PerformTPaaSRequestLivelinessCheck(arg);
+
         var executor = new ComputeProfileExecutor_ClusterCompute<T>(arg.ProfileStyle, arg.ProjectID, arg.ProfileTypeRequired, arg.NEECoords, arg.Filters,
           arg.ReferenceDesign, arg.ReturnAllPassesAndLayers, arg.VolumeType, arg.Overrides, arg.LiftParams);
 
