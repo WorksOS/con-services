@@ -16,7 +16,7 @@ using VSS.TRex.Common;
 
 namespace VSS.TRex.GridFabric
 {
-  public class BaseIgniteClass : VersionCheckedBinarizableSerializationBase 
+  public class BaseIgniteClass : VersionCheckedBinarizableSerializationBase
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<BaseIgniteClass>();
 
