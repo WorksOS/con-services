@@ -45,7 +45,7 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     {
       if (arg.IsOutsideTPaaSTimeout)
       {
-        throw new TRexColorPaletteException($"Request '{arg.ExternalDescriptor}' failed liveliness check. Request emitted at {arg.RequestEmissionDateUtc}, which is {DateTime.UtcNow - arg.RequestEmissionDateUtc}");
+        throw new TRexRequestLivelinessException($"Request '{arg.ExternalDescriptor}' failed liveliness check. Request emitted at {arg.RequestEmissionDateUtc}, which is {DateTime.UtcNow - arg.RequestEmissionDateUtc}");
       }
     }
   }
