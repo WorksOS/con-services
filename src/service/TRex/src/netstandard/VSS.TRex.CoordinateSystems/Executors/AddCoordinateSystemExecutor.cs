@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 
 namespace VSS.TRex.CoordinateSystems.Executors
 {
@@ -26,7 +27,11 @@ namespace VSS.TRex.CoordinateSystems.Executors
       {
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectID, true);
         siteModel.SetCSIB(csib);
-        DIContext.Obtain<ISiteModels>().DropSiteModel(projectID); // drop from cache
+
+        // Notify the  grid listeners that attributes of this site model have changed.
+        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModel.ID, CsibChanged: true);
+
       }
       catch (Exception e)
       {
