@@ -50,8 +50,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.Overrides,
           opt => opt.MapFrom(o => o.Overrides))
         .ForMember(x => x.LiftParams,
-          opt => opt.MapFrom(o => o.LiftSettings));
-
+          opt => opt.MapFrom(o => o.LiftSettings))
+        .ForMember(x => x.IsOutsideTPaaSTimeout, opt => opt.Ignore())
+        .ForMember(x => x.RequestEmissionDateUtc, opt => opt.Ignore());
     }
   }
 }
