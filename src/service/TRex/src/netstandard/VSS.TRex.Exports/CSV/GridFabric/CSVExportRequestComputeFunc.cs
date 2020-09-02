@@ -30,6 +30,9 @@ namespace VSS.TRex.Exports.CSV.GridFabric
 
       try
       {
+        // Export requests can be a significant resource commitment. Ensure TPaaS will be listening...
+        PerformTPaaSRequestLivelinessCheck(arg);
+
         // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
         // sub grid results to it.
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);

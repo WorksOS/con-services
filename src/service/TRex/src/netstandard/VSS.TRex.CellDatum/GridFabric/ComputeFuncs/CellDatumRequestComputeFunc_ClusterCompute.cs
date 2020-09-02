@@ -16,7 +16,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 {
   /// <summary>
   /// This compute func operates in the context of an application server that reaches out to the compute cluster to 
-  /// perform subgrid processing.
+  /// perform sub grid processing.
   /// </summary>
   public class CellDatumRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFuncArgument<CellDatumRequestArgument_ClusterCompute>, IComputeFunc<CellDatumResponse_ClusterCompute>
   {
@@ -32,6 +32,9 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
       try
       {
+        // Ensure TPaaS will be listening as this is usually supporting user UX centric mouse hover requests
+        PerformTPaaSRequestLivelinessCheck(Argument);
+
         var request = new CellDatumComputeFuncExecutor_ClusterCompute();
 
         _log.LogInformation("Executing CellDatumRequestComputeFunc_ClusterCompute.ExecuteAsync()");
