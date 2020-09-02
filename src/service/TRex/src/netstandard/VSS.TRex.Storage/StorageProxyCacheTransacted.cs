@@ -196,6 +196,7 @@ namespace VSS.TRex.Storage
                   catch (Exception e)
                   {
                     _log.LogError(e, $"Exception in RemoveAsync removing element with key {x} in cache {Name}");
+                    throw;
                   }
                 });
 
@@ -222,6 +223,7 @@ namespace VSS.TRex.Storage
                 catch (Exception e)
                 {
                   _log.LogError(e, $"Exception in PutAsync putting element with key {x.Key} and value {x.Value} in cache {Name}");
+                  throw;
                 }
               });
 
