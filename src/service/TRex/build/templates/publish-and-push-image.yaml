@@ -29,7 +29,7 @@ steps:
     # Run this task by default on non Master branches (can be overridden on a manual queue of the build pipeline).
     # Should save time and space by not pushing built container images to ECR on every feature branch.
     - task: PowerShell@2
-      condition: and(succeeded(), eq(variables['isMasterBranch'], false), eq(variables['pushServiceImages'], false))
+      condition: and(succeeded(), eq(variables['isMasterBranch'], false), eq(variables['pushImages'], true))
       displayName: "Publish Image: ${{ service }}"
       inputs:
         filePath: build/azure-build-pipeline.ps1
