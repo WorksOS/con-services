@@ -86,8 +86,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             Task<ICollection<TSubGridRequestsResponse>> taskResult = null;
 
-            var sw = new Stopwatch();
-            sw.Start();
+            var sw = Stopwatch.StartNew();
             try
             {
                 // Construct the function to be used
@@ -107,8 +106,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
             finally
             {
-                sw.Stop();
-                Log.LogInformation($"TaskResult {taskResult?.Status}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
+              Log.LogInformation($"TaskResult {taskResult?.Status}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
             // Send the appropriate response to the caller
