@@ -98,7 +98,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
                 if (taskResult.Status != TaskStatus.RanToCompletion)
                 {
-                  Log.LogWarning($"Progressive sub grid request from node {TRexTask.TRexNodeID}, project {TRexTask.PipeLine.DataModelID}, failed to complete inside its time limit ({TIME_LIMIT_MS}ms). Status is {taskResult.Status}");
+                  Log.LogWarning($"Progressive sub grid request from node {TRexTask.TRexNodeID}, project {TRexTask.PipeLine.DataModelID}, failed to complete inside its time limit ({TIME_LIMIT_MS}ms). Status is {taskResult.Status}. IsFaulted = {taskResult.IsFaulted}");
+                  if (taskResult.Exception != null)
+                  {
+                    Log.LogError(taskResult.Exception, "Exception raised in Compute.BroadcastAsync()");
+                  }
                 }
             }
             finally
