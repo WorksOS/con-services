@@ -33,25 +33,25 @@ jobs:
         parameters:
           buildId: $(Build.BuildId)
 
-      # - task: PowerShell@2
-      #   displayName: "Build"
-      #   inputs:
-      #     filePath: build/azure-build-pipeline.ps1
-      #     arguments: "-service $(serviceName) -action build"
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action build"
 
-      # - task: PowerShell@2
-      #   displayName: "Run unit tests"
-      #   inputs:
-      #     filePath: build/azure-build-pipeline.ps1
-      #     arguments: "-service $(serviceName) -action unittest -collectCoverage $(isMasterBranch)"
+      - task: PowerShell@2
+        displayName: "Run unit tests"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action unittest -collectCoverage $(isMasterBranch)"
 
-      # - task: PublishTestResults@2
-      #   displayName: "Publish Unit Test Results"
-      #   inputs:
-      #     testResultsFormat: "VSTest"
-      #     testResultsFiles: "**/*.trx"
-      #     searchFolder: "$(rootServiceFolder)/UnitTestResults"
-      #     failTaskOnFailedTests: true
+      - task: PublishTestResults@2
+        displayName: "Publish Unit Test Results"
+        inputs:
+          testResultsFormat: "VSTest"
+          testResultsFiles: "**/*.trx"
+          searchFolder: "$(rootServiceFolder)/UnitTestResults"
+          failTaskOnFailedTests: true
 
       # - task: PublishCodeCoverageResults@1
       #   displayName: 'Publish Code Coverage'
@@ -62,65 +62,65 @@ jobs:
       #     failIfCoverageEmpty: true
 
       # We need to push individual images for each TRex service, that's done using this template.
-  #     - template: templates/publish-and-push-image.yaml
-  #       parameters:
-  #         serviceName: $(serviceName)
-  #         sourceBranchName: $(Build.SourceBranchName)
-  #         buildId: $(Build.BuildId)
-  #         ecrRepositoryName: $(ecrRepositoryName)
-  #         trexServices:
-  #           [
-  #             "ProjectRebuilder",
-  #             "Utils",
-  #             "MutableGateway",
-  #             "Gateway",
-  #             "Reports",
-  #             "TINSurfaceExport",
-  #             "TileRendering",
-  #             "QMesh",
-  #             "PSNode",
-  #             "MutableData",
-  #             "DesignElevation",
-  #             "ApplicationServer",
-  #           ]
+      - template: templates/publish-and-push-image.yaml
+        parameters:
+          serviceName: $(serviceName)
+          sourceBranchName: $(Build.SourceBranchName)
+          buildId: $(Build.BuildId)
+          ecrRepositoryName: $(ecrRepositoryName)
+          trexServices:
+            [
+              "ProjectRebuilder",
+              "Utils",
+              "MutableGateway",
+              "Gateway",
+              "Reports",
+              "TINSurfaceExport",
+              "TileRendering",
+              "QMesh",
+              "PSNode",
+              "MutableData",
+              "DesignElevation",
+              "ApplicationServer",
+            ]
 
-  #     - task: PublishBuildArtifacts@1
-  #       displayName: "Publish Artifact: Charts"
-  #       inputs:
-  #         PathtoPublish: $(rootServiceFolder)/deploy
-  #         ArtifactName: Charts
-  #       condition: succeededOrFailed()
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifact: Charts"
+        inputs:
+          PathtoPublish: $(rootServiceFolder)/deploy
+          ArtifactName: Charts
+        condition: succeededOrFailed()
 
-  # - job: webtools
-  #   displayName: "Build, test and Deploy: Webtools"
-  #   timeoutInMinutes: 60
+  - job: webtools
+    displayName: "Build, test and Deploy: Webtools"
+    timeoutInMinutes: 60
 
-  #   steps:
-  #     - checkout: self
-  #       fetchDepth: 1
+    steps:
+      - checkout: self
+        fetchDepth: 1
 
-  #     - template: ${{variables['System.DefaultWorkingDirectory']}}/build/templates/update-buildnumber.yaml
-  #       parameters:
-  #         buildId: $(Build.BuildId)
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/build/templates/update-buildnumber.yaml
+        parameters:
+          buildId: $(Build.BuildId)
 
-  #     - task: PowerShell@2
-  #       displayName: "Build"
-  #       inputs:
-  #         filePath: build/azure-build-pipeline.ps1
-  #         arguments: "-service $(serviceName) -action build -dockerfile Dockerfile.webtools.build"
+      - task: PowerShell@2
+        displayName: "Build"
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: "-service $(serviceName) -action build -dockerfile Dockerfile.webtools.build"
 
-  #     # We need to push individual images for each TRex service, that's done using this template.
-  #     - template: templates/publish-and-push-image.yaml
-  #       parameters:
-  #         serviceName: $(serviceName)
-  #         sourceBranchName: $(Build.SourceBranchName)
-  #         buildId: $(Build.BuildId)
-  #         ecrRepositoryName: $(ecrRepositoryName)
-  #         trexServices: ["Webtools"]
+      # We need to push individual images for each TRex service, that's done using this template.
+      - template: templates/publish-and-push-image.yaml
+        parameters:
+          serviceName: $(serviceName)
+          sourceBranchName: $(Build.SourceBranchName)
+          buildId: $(Build.BuildId)
+          ecrRepositoryName: $(ecrRepositoryName)
+          trexServices: ["Webtools"]
 
-  #     # - task: PublishBuildArtifacts@1
-  #     #   displayName: "Publish Artifact: Charts"
-  #     #   inputs:
-  #     #     PathtoPublish: $(rootServiceFolder)/deploy
-  #     #     ArtifactName: Charts
-  #     #   condition: succeededOrFailed()
+      # - task: PublishBuildArtifacts@1
+      #   displayName: "Publish Artifact: Charts"
+      #   inputs:
+      #     PathtoPublish: $(rootServiceFolder)/deploy
+      #     ArtifactName: Charts
+      #   condition: succeededOrFailed()
