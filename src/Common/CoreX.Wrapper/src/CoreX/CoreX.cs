@@ -332,20 +332,6 @@ namespace CoreX.Wrapper
         }
 
         return datums.ToArray();
-
-
-        //foreach (var datum in datums)
-        //{
-        //  using var resultContainer = new CSMCoordinateSystemContainer();
-        //  resultCode = CsdManagement.csmGetDatumFromCSDSelection(
-        //    datum.DatumName, (csmDatumTypes)datum.DatumType, false, null, null, resultContainer);
-
-        //  //Assert.AreEqual(csmErrorCode.cecSuccess, resultCode);
-
-        //  //ValidateRecord(resultContainer.GetSelectedRecord());
-
-        //  var a = resultContainer.GetSelectedRecord();
-        //}
       }
 
       return null;
@@ -463,17 +449,7 @@ namespace CoreX.Wrapper
 
       var csibResultFromCS = CsdManagement.csmGetCSIBFromCoordinateSystem(coordinateSystem, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromICoordinateSystem);
 
-      var csib = GetCSIB(retStructFromICoordinateSystem);
-
-      //// Create CSIB by zoneId, datumId, geoidId
-      //using var retStructFromIds = new CSMCsibBlobContainer();
-      //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionById(zoneID, datumID, geoidID, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromIds);
-
-      //// Create CSIB by just zoneId
-      //using var retStructFromZoneId = new CSMCsibBlobContainer();
-      //csibResult = CsdManagement.csmGetCSIBFromCSDSelectionDefaultById(zoneId, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromZoneId);
-
-      return csib;
+      return GetCSIB(retStructFromICoordinateSystem);
     }
 
 
