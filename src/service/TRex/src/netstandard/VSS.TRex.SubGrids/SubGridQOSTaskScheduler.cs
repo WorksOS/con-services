@@ -85,7 +85,7 @@ namespace VSS.TRex.SubGrids
             }
           }));
 
-          if (tasks.Count < maxTasks) 
+          if (tasks.Count < maxTasks)
             continue;
 
           if (!WaitForGroupToComplete(tasks))
@@ -96,7 +96,7 @@ namespace VSS.TRex.SubGrids
       }
       finally
       {
-        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collection across {maxTasks} tasks");
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks");
       }
     }
   }
