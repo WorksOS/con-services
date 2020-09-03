@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -28,7 +27,6 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.Serilog.Extensions;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 
 namespace VSS.TRex.SubGrids.Executors
 {
@@ -49,7 +47,7 @@ namespace VSS.TRex.SubGrids.Executors
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     /// <summary>
-    /// Denotses the request 'style' in use. 
+    /// Denotes the request 'style' in use. 
     /// </summary>
     public SubGridsRequestComputeStyle SubGridsRequestComputeStyle { get; set; } = SubGridsRequestComputeStyle.Normal;
 
@@ -332,7 +330,7 @@ namespace VSS.TRex.SubGrids.Executors
       // Convert the computed intermediary grids into the client grid form expected by the caller
       if (result[0].clientGrid?.GridDataType != localArg.GridDataType)
       {
-        ConvertIntermediarySubGridsToResult(localArg.GridDataType, ref result); //ref clientArray);
+        ConvertIntermediarySubGridsToResult(localArg.GridDataType, ref result);
       }
 
       // If the requested data is cut fill derived from elevation data previously calculated, 
@@ -397,9 +395,9 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     private void PerformSubGridRequestList(SubGridCellAddress[] addressList)
     {
-      if (_log.IsTraceEnabled())
+      if (_log.IsDebugEnabled())
       {
-        _log.LogTrace($"Starting processing of {addressList.Length} sub grids");
+        _log.LogDebug($"Starting processing of {addressList.Length} sub grids");
       }
 
       try
@@ -436,9 +434,9 @@ namespace VSS.TRex.SubGrids.Executors
       }
       finally
       {
-        if (_log.IsTraceEnabled())
+        if (_log.IsDebugEnabled())
         {
-          _log.LogTrace($"Completed processing {addressList.Length} sub grids");
+          _log.LogDebug($"Completed processing {addressList.Length} sub grids");
         }
       }
     }

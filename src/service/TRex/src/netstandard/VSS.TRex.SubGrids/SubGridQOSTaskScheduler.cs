@@ -60,6 +60,7 @@ namespace VSS.TRex.SubGrids
       int maxTasks)
     {
       var collectionCount = subGridCollections?.Count ?? 0;
+      var taskIndex = 0;
 
       _log.LogInformation($"Sub grid QOS scheduler running {collectionCount} collections across {maxTasks} tasks");
 
@@ -76,7 +77,13 @@ namespace VSS.TRex.SubGrids
           {
             try
             {
+              // ReSharper disable once AccessToModifiedClosure
+              _log.LogDebug($"Processor for task index {taskIndex} starting");
+
               processor(subGridCollection);
+
+              // ReSharper disable once AccessToModifiedClosure
+              _log.LogDebug($"Processor for task index {taskIndex} completed");
             }
             catch (Exception e)
             {
@@ -90,6 +97,8 @@ namespace VSS.TRex.SubGrids
 
           if (!WaitForGroupToComplete(tasks))
             return false;
+
+          taskIndex++;
         }
 
         return WaitForGroupToComplete(tasks);
