@@ -1,5 +1,5 @@
-﻿using CoreX.Models;
-using CoreX.Types;
+﻿using CoreX.Types;
+using CoreXModels;
 
 namespace CoreX.Interfaces
 {
@@ -87,5 +87,10 @@ namespace CoreX.Interfaces
     /// Get the ICoordinateSystem record for a given CSD selection.
     /// </summary>
     string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameString);
+
+    /// <summary>
+    /// Return the coordinate system for a given DC file string.
+    /// </summary>
+    CoordinateSystem GetCSDFromDCFileContent(string fileContent);
   }
 }

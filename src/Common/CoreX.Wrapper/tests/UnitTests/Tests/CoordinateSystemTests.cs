@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using CoreX.Interfaces;
 using CoreX.Wrapper.UnitTests.Types;
 using FluentAssertions;
@@ -9,6 +10,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
   public class CoordinateSystemTests : IClassFixture<UnitTestBaseFixture>
   {
     private readonly ICoreXWrapper _coreX;
+    private string GetFileContent(string dcFilename) => File.ReadAllText(DCFile.GetFilePath(dcFilename));
 
     public CoordinateSystemTests(UnitTestBaseFixture testFixture)
     {
@@ -38,6 +40,25 @@ namespace CoreX.Wrapper.UnitTests.Tests
       {
         csib.Should().Be(expectedCsib);
       }
+    }
+
+    [Theory]
+    [InlineData(null, "DC file string cannot be null (Parameter 'dcFileStr')")]
+    [InlineData(DCFile.DIMENSIONS_2012_DC_FILE_WITHOUT_VERT_ADJUST, "Error 'cecDCParseLineNotEndingWithLF' attempting to retrieve the DC file's CSD")]
+    public void Should_throw_for_badly_formatted_file_string(string dcFileString, string expectedErrorMessage)
+    {
+      var ex = Record.Exception(() => _coreX.GetCSDFromDCFileContent(dcFileString));
+
+      ex.Message.Should().Be(expectedErrorMessage);
+    }
+
+    [Theory]
+    [InlineData(DCFile.DIMENSIONS_2012_DC_FILE_WITHOUT_VERT_ADJUST)]
+    public void Should_return_CoordinateSystem_for_valid_DC_file_string(string dcFileString)
+    {
+      var result = _coreX.GetCSDFromDCFileContent(GetFileContent(dcFileString));
+
+      result.Should().NotBeNull();
     }
   }
 }

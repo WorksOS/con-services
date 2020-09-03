@@ -1,8 +1,8 @@
 ﻿using System;
 using CoreX.Extensions;
 using CoreX.Interfaces;
-using CoreX.Models;
 using CoreX.Types;
+using CoreXModels;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 
@@ -338,6 +338,9 @@ namespace CoreX.Wrapper
 
     /// <inheritdoc/>
     public Datum[] GetDatums() => _coreX.GetDatums();
+
+    /// <inheritdoc/> 
+    public CoordinateSystem GetCSDFromDCFileContent(string fileContent) => _coreX.GetCSDFromDCFileContent(fileContent);
 
     private bool _disposed = false;
 

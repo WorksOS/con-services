@@ -3,10 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CoreX.Extensions;
-using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.Extensions;
 using CoreX.Wrapper.Types;
+using CoreXModels;
 using Microsoft.Extensions.Logging;
 using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
@@ -49,12 +49,8 @@ namespace CoreX.Wrapper
 
       using var reader = new StreamReader(xmlFilePath);
       var xmlData = reader.ReadToEnd();
-      var resultCode = CsdManagement.csmLoadCoordinateSystemDatabase(xmlData);
-
-      if (resultCode != (int)csmErrorCode.cecSuccess)
-      {
-        throw new Exception($"Error '{resultCode}' attempting to load coordinate system database '{xmlFilePath}'");
-      }
+      CsdManagement.csmLoadCoordinateSystemDatabase(xmlData)
+        .Validate($"attempting to load coordinate system database '{xmlFilePath}'");
 
       _log.LogInformation($"CoreX {nameof(SetupTGL)}: GeodeticDatabasePath='{GeodeticDatabasePath}'");
 
@@ -252,7 +248,7 @@ namespace CoreX.Wrapper
       }
 
       var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
-      var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
+      using var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
 
       if (geoCsibBlobContainer.Length < 1)
       {
@@ -267,12 +263,8 @@ namespace CoreX.Wrapper
       using var geoCsibBlobContainer = CreateCsibBlobContainer(csib);
       using var transformer = new PointerPointer_IGeodeticXTransformer();
 
-      var result = GeodeticX.geoCreateTransformer(geoCsibBlobContainer, transformer);
-
-      if (result != geoErrorCode.gecSuccess)
-      {
-        throw new Exception($"Failed to create GeodeticX transformer, error '{result}'");
-      }
+      GeodeticX.geoCreateTransformer(geoCsibBlobContainer, transformer)
+        .Validate($"attempting to create GeodeticX transformer");
 
       return transformer.get();
     }
@@ -296,16 +288,12 @@ namespace CoreX.Wrapper
         data[index++] = (sbyte)Convert.ToByte(b);
       }
 
-      var csmCsibData = new CSMCsibBlobContainer(data);
-      var csFromCSIB = new CSMCoordinateSystemContainer();
+      using var csmCsibData = new CSMCsibBlobContainer(data);
+      using var csFromCSIB = new CSMCoordinateSystemContainer();
       var csmErrorCode = CsdManagement.csmImportCoordSysFromCsib(csmCsibData, csFromCSIB);
 
       return csmErrorCode == csmErrorCode.cecSuccess;
     }
-
-    private string GetCSIB(CSMCsibBlobContainer csibBlobContainer) =>
-      Convert.ToBase64String(
-        Array.ConvertAll(Utils.IntPtrToSByte(csibBlobContainer.pCSIBData, (int)csibBlobContainer.CSIBDataLength), sb => unchecked((byte)sb)));
 
     public Datum[] GetDatums()
     {
@@ -337,32 +325,25 @@ namespace CoreX.Wrapper
       return null;
     }
 
+    /// <inheritdoc/> 
     public ICoordinateSystem GetDatumBySystemId(int datumSystemId)
     {
       using var datumContainer = new CSMCoordinateSystemContainer();
 
-      var resultCode = CsdManagement.csmGetDatumFromCSDSelectionById(
-        (uint)datumSystemId, false, null, null, datumContainer);
-
-      if (resultCode != csmErrorCode.cecSuccess)
-      {
-        throw new Exception($"Error attempting to retrieve datum {datumSystemId} by id.");
-      }
+      CsdManagement.csmGetDatumFromCSDSelectionById((uint)datumSystemId, false, null, null, datumContainer)
+        .Validate($"attempting to retrieve datum {datumSystemId} by id.");
 
       return datumContainer.GetSelectedRecord();
     }
 
+    /// <inheritdoc/> 
     public string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameQueryString)
     {
       lock (_lock)
       {
         using var retStructZoneGroups = new CSMStringListContainer();
-        var resultCode = CsdManagement.csmGetListOfZoneGroups(retStructZoneGroups);
-
-        if (resultCode != (int)csmErrorCode.cecSuccess)
-        {
-          throw new Exception($"Error '{resultCode}' attempting to retrieve list of zone groups");
-        }
+        CsdManagement.csmGetListOfZoneGroups(retStructZoneGroups)
+          .Validate("attempting to retrieve list of zone groups");
 
         var zoneGroups = retStructZoneGroups
           .stringList
@@ -375,14 +356,10 @@ namespace CoreX.Wrapper
         }
 
         var zoneGroupName = zoneGroupNameString.Substring(zoneGroupNameString.IndexOf(",") + 1);
-        var retStructListOfZones = new CSMStringListContainer();
+        using var retStructListOfZones = new CSMStringListContainer();
 
-        resultCode = CsdManagement.csmGetListOfZones(zoneGroupName, retStructListOfZones);
-
-        if (resultCode != (int)csmErrorCode.cecSuccess)
-        {
-          throw new Exception($"Error '{resultCode}' attempting to retrieve list of zones for group '{zoneGroupName}'");
-        }
+        CsdManagement.csmGetListOfZones(zoneGroupName, retStructListOfZones)
+          .Validate($"attempting to retrieve list of zones for group '{zoneGroupName}'");
 
         var zones = retStructListOfZones
           .stringList
@@ -406,12 +383,8 @@ namespace CoreX.Wrapper
         var zoneId = uint.Parse(items[0]);
 
         using var retCsStruct = new CSMCoordinateSystemContainer();
-        var result = CsdManagement.csmGetCoordinateSystemFromCSDSelectionDefaults(zoneGroupName, zoneName, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retCsStruct);
-
-        if (resultCode != (int)csmErrorCode.cecSuccess)
-        {
-          throw new Exception($"Error '{resultCode}' attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}");
-        }
+        CsdManagement.csmGetCoordinateSystemFromCSDSelectionDefaults(zoneGroupName, zoneName, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retCsStruct)
+          .Validate($"attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}");
 
         var coordinateSystem = retCsStruct.GetSelectedRecord();
         coordinateSystem.Validate();
@@ -443,6 +416,45 @@ namespace CoreX.Wrapper
       }
     }
 
+    /// <inheritdoc/>
+    public CoordinateSystem GetCSDFromDCFileContent(string dcFileStr)
+    {
+      if (string.IsNullOrEmpty(dcFileStr))
+      {
+        throw new ArgumentNullException(nameof(dcFileStr), "DC file string cannot be null");
+      }
+
+      // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
+      var fileContent = dcFileStr.DecodeFromBase64();
+
+      lock (_lock)
+      {
+        using var retCsStruct = new CSMCoordinateSystemContainer();
+
+        CsdManagement.csmGetCoordinateSystemFromDCFile(fileContent, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retCsStruct)
+          .Validate("attempting to retrieve the DC file's CSD");
+
+        var csRecord = retCsStruct.GetSelectedRecord();
+        csRecord.Validate();
+
+        var coordinateSystem = new CoordinateSystem
+        {
+          //      Id= unchecked((uint)coordinateSystem.ZoneSystemId()), //  CSIB?
+          DatumSystemId = csRecord.DatumSystemId(),
+          GeoidInfo = new GeoidInfo()
+          {
+            GeoidFileName = csRecord.GeoidFileName(),
+            GeoidName = csRecord.GeoidName(),
+            GeoidSystemId = csRecord.GeoidSystemId()
+          }
+        };
+
+        return coordinateSystem;
+      }
+
+      throw new Exception($"Error attempting to retrieve coordinate system from DC file content");
+    }
+
     private string GetCSIBFrom(ICoordinateSystem coordinateSystem)
     {
       using var retStructFromICoordinateSystem = new CSMCsibBlobContainer();
@@ -452,6 +464,10 @@ namespace CoreX.Wrapper
       return GetCSIB(retStructFromICoordinateSystem);
     }
 
+    private string GetCSIB(CSMCsibBlobContainer csibBlobContainer) =>
+      Convert.ToBase64String(Array.ConvertAll(Utils.IntPtrToSByte(csibBlobContainer.pCSIBData, (int)csibBlobContainer.CSIBDataLength), sb => unchecked((byte)sb)));
+
+    #region Dispose pattern
 
     private bool _disposed = false;
 
@@ -469,5 +485,7 @@ namespace CoreX.Wrapper
 
       _disposed = true;
     }
+
+    #endregion
   }
 }

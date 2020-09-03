@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using CoreX.Interfaces;
-using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;
+using CoreXModels;
 using FluentAssertions;
 using Xunit;
 
