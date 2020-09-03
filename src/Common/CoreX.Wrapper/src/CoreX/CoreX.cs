@@ -248,7 +248,7 @@ namespace CoreX.Wrapper
       }
 
       var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
-      using var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
+      var geoCsibBlobContainer = new GEOCsibBlobContainer(bytes);
 
       if (geoCsibBlobContainer.Length < 1)
       {
