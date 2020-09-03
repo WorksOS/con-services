@@ -18,6 +18,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.SiteModels.Interfaces.Requests;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Utilities;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -82,7 +83,8 @@ namespace VSS.TRex.SiteModels.Executors
       {
         ProjectUID = projectUid,
         Flags = flags,
-        OriginS3TransferProxy = originS3TransferProxy
+        OriginS3TransferProxy = originS3TransferProxy,
+        DeletionSelectivity = DeleteSiteModelSelectivity.TagFileDerivedData
       };
     }
 
