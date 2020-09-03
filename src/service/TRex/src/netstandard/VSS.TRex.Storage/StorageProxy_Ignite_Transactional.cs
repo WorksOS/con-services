@@ -117,7 +117,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Commits all unsaved changes in the spatial and non-spatial stores. Each store is committed asynchronously.
     /// </summary>
-    /// <returns></returns>
     public override bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
       var commitOk = _useAsyncTasksForStorageProxyIgniteTransactionalCommits

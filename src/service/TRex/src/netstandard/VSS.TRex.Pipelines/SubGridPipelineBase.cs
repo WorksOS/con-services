@@ -228,23 +228,23 @@ namespace VSS.TRex.Pipelines
                 SubGridsRequestComputeStyle = SubGridsRequestComputeStyle
               };
 
-              var Response = requestor.Execute();
-              if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
+              var response = requestor.Execute();
+              if (response.ResponseCode != SubGridRequestsResponseResult.OK)
               {
-                Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
+                Log.LogWarning($"Sub Grid Task failed with error {response.ResponseCode}");
                 return false;
               }
 
               Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
               TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
-              return true;
             }
             else
             {
               Log.LogInformation("SKIPPED: Requested no sub grids to process.");
               TotalSubGridsToProcess = 0;
-              return true;
             }
+
+            return true;
           }
 
           Log.LogWarning($"RequestAnalyser failed execution - cannot process any sub grids (if any).");
