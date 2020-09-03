@@ -76,6 +76,8 @@ namespace VSS.TRex.SiteModels.Executors
 
       var flags = archiveTagFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
 
+      _log.LogInformation($"Constructing metadata for rebuilder: Project = {projectUid}, Flags = {flags}, OriginS3TransferProxy = {originS3TransferProxy}");
+
       _metadata = new RebuildSiteModelMetaData
       {
         ProjectUID = projectUid,
@@ -218,7 +220,7 @@ namespace VSS.TRex.SiteModels.Executors
 
         _log.LogInformation($"Requesting block of TAG file names for project {ProjectUid}, continuation token = '{continuationToken}'");
 
-        var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuationToken);
+        var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"{ProjectUid}", 1000, continuationToken);
         continuationToken = nextContinuation;
 
         // Put the candidate TAG files into the cache
