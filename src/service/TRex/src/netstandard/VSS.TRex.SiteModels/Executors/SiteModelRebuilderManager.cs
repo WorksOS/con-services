@@ -74,20 +74,19 @@ namespace VSS.TRex.SiteModels.Executors
     /// <summary>
     /// Start a rebuild given the existing metadata of a previous rebuild
     /// </summary>
-    public bool Rebuild(IRebuildSiteModelMetaData metadata)
+    public void Rebuild(IRebuildSiteModelMetaData metadata)
     {
-      var rebuilder = new SiteModelRebuilder(metadata);
+      var rebuilder = new SiteModelRebuilder(metadata)
+      {
+        MetadataCache = MetadataCache, 
+        FilesCache = FilesCache
+      };
 
       // Inject caches
-      rebuilder.MetadataCache = MetadataCache;
-      rebuilder.FilesCache = FilesCache;
-
       lock (Rebuilders)
       {
         Rebuilders.Add(metadata.ProjectUID, (rebuilder, rebuilder.ExecuteAsync()));
       }
-
-      return true;
     }
 
     /// <summary>
@@ -100,14 +99,14 @@ namespace VSS.TRex.SiteModels.Executors
     public bool AddRebuilder(ISiteModelRebuilder rebuilder)
     {
       // Check if there is an existing rebuilder 
-      if (Rebuilders.TryGetValue(rebuilder.ProjectUid, out var existingRebuilder))
-      {
-        _log.LogError($"A site model rebuilder for project {rebuilder.ProjectUid} is already present, current phase is {existingRebuilder.Item1.Metadata.Phase}");
-        return false;
-      }
-
       lock (Rebuilders)
       {
+        if (Rebuilders.TryGetValue(rebuilder.ProjectUid, out var existingRebuilder))
+        {
+          _log.LogError($"A site model rebuilder for project {rebuilder.ProjectUid} is already present, current phase is {existingRebuilder.Item1.Metadata.Phase}");
+          return false;
+        }
+
         Rebuilders.Add(rebuilder.ProjectUid, (rebuilder, null));
       }
 
@@ -188,6 +187,8 @@ namespace VSS.TRex.SiteModels.Executors
     /// </summary>
     public Task BeginOperations()
     {
+      _log.LogInformation("Beginning operations");
+
       return Task.Run(async () =>
       {
         var values = await MetadataCache.GetAllValuesAsync();
@@ -198,6 +199,8 @@ namespace VSS.TRex.SiteModels.Executors
             _log.LogInformation("Recommencing operations for {x.Value}");
             Rebuild(x.Value);
           });
+
+        _log.LogInformation("All rebuilder recommencing operations complete");
       });
     }
   }

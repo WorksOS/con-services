@@ -228,23 +228,23 @@ namespace VSS.TRex.Pipelines
                 SubGridsRequestComputeStyle = SubGridsRequestComputeStyle
               };
 
-              var Response = requestor.Execute();
-              if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
+              var response = requestor.Execute();
+              if (response.ResponseCode != SubGridRequestsResponseResult.OK)
               {
-                Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
+                Log.LogWarning($"Sub Grid Task failed with error {response.ResponseCode}");
                 return false;
               }
 
               Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
               TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
-              return true;
             }
             else
             {
               Log.LogInformation("SKIPPED: Requested no sub grids to process.");
               TotalSubGridsToProcess = 0;
-              return true;
             }
+
+            return true;
           }
 
           Log.LogWarning($"RequestAnalyser failed execution - cannot process any sub grids (if any).");
@@ -254,6 +254,11 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// Waits until the set of requests injected into the pipeline have yielded all required results
         /// (passed into the relevant Task and signaled), or the pipeline timeout has expired
+        /// The requests in question are progressive sub grid response requests sent from the cache compute
+        /// cluster to a client (eg: tile rendering, surface export etc). At this point, if all sub grid responses
+        /// have not been received, then the only remaining activity is for the task created to process one or
+        /// more responses to complete, which are typically very fast (small numbers of milliseconds).
+        /// Due to this, the timeout used to wait for this remaining processing to take place is short, just 1 second.
         /// </summary>
         public Task<bool> WaitForCompletion()
         {
@@ -263,8 +268,7 @@ namespace VSS.TRex.Pipelines
             return Task.FromResult(true);
           }
 
-          // Todo: Make the time limit configurable
-          return PipelineSignalEvent.WaitAsync(30000); // Don't wait for more than 30 seconds...
+          return PipelineSignalEvent.WaitAsync(1000); // Don't wait for more than 30 seconds...
         }
     }
 }

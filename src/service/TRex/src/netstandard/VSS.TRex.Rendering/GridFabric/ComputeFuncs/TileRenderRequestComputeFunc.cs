@@ -38,6 +38,9 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
     {
       try
       {
+        // Tile requests can be a significant resource commitment. Ensure TPaaS will be listening...
+        PerformTPaaSRequestLivelinessCheck(arg);
+
         var requestStopWatch = Stopwatch.StartNew();
 
         _log.LogInformation("In TileRenderRequestComputeFunc.Invoke()");

@@ -30,6 +30,9 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
       try
       {
+        // Ensure TPaaS will be listening as this is usually supporting user UX centric DDV requests
+        PerformTPaaSRequestLivelinessCheck(Argument);
+
         var request = new CellPassesComputeFuncExecutor_ClusterCompute();
 
         _log.LogInformation($"Executing {nameof(CellPassesRequestComputeFunc_ClusterCompute)}.ExecuteAsync()");

@@ -18,6 +18,7 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
+using VSS.TRex.SiteModels.Interfaces.Requests;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Utilities;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;
@@ -76,11 +77,14 @@ namespace VSS.TRex.SiteModels.Executors
 
       var flags = archiveTagFiles ? RebuildSiteModelFlags.AddProcessedTagFileToArchive : 0;
 
+      _log.LogInformation($"Constructing metadata for rebuilder: Project = {projectUid}, Flags = {flags}, OriginS3TransferProxy = {originS3TransferProxy}");
+
       _metadata = new RebuildSiteModelMetaData
       {
         ProjectUID = projectUid,
         Flags = flags,
-        OriginS3TransferProxy = originS3TransferProxy
+        OriginS3TransferProxy = originS3TransferProxy,
+        DeletionSelectivity = DeleteSiteModelSelectivity.TagFileDerivedData
       };
     }
 
@@ -125,7 +129,16 @@ namespace VSS.TRex.SiteModels.Executors
         _log.LogDebug($"Updating metadata for project: {_metadata}");
 
         _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
-        MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, MetadataKeyName), _metadata);
+
+        try
+        {
+          MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, MetadataKeyName), _metadata);
+        }
+        catch (Exception e)
+        {
+          _log.LogError(e, "Exception occurred updating metadata cache entry");
+          throw;
+        }
       }
     }
 
@@ -218,7 +231,7 @@ namespace VSS.TRex.SiteModels.Executors
 
         _log.LogInformation($"Requesting block of TAG file names for project {ProjectUid}, continuation token = '{continuationToken}'");
 
-        var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"/{_metadata.ProjectUID}", 1000, continuationToken);
+        var (candidateTagFiles, nextContinuation) = await _s3FileTransfer.ListKeys($"{ProjectUid}", 1000, continuationToken);
         continuationToken = nextContinuation;
 
         // Put the candidate TAG files into the cache

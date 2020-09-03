@@ -1,5 +1,8 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions.Exceptions;
+using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs
 {
@@ -31,6 +34,19 @@ namespace VSS.TRex.GridFabric.ComputeFuncs
     {
       // Version the serialization, even if nothing additional is serialized
       var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+    }
+
+    /// <summary>
+    /// Check the argument supplied to the compute func to ensure that it is received within the TPaaS request timeout of 60 seconds
+    /// from the point in time the request was created.
+    /// This is an optional check for requests to perform based on their business rules and use cases.
+    /// </summary>
+    public void PerformTPaaSRequestLivelinessCheck(BaseRequestArgument arg)
+    {
+      if (arg.IsOutsideTPaaSTimeout)
+      {
+        throw new TRexRequestLivelinessException($"Request '{arg.ExternalDescriptor}' failed liveliness check. Request emitted at {arg.RequestEmissionDateUtc}, which is {DateTime.UtcNow - arg.RequestEmissionDateUtc} ago");
+      }
     }
   }
 }
