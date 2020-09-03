@@ -22,6 +22,11 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     public string UserUid { get; set; }
 
     /// <summary>
+    /// The email address of the user
+    /// </summary>
+    public string UserEmail { get; set; }
+
+    /// <summary>
     /// The feature the Entitlement represents, e.g WorksOS-Basic, WorksOS-Advanced etc - free text as can be extending external to our service.
     /// </summary>
     public string Feature { get; set; }

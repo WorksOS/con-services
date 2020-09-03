@@ -41,7 +41,8 @@ namespace VSS.Productivity3D.Entitlements.Common.Clients
 
       var queryParams = new List<KeyValuePair<string, string>>
       {
-        new KeyValuePair<string, string>("customerid", customerUid.ToString()),
+        // TEMPORARY until we sort out CWS account id vs EMS account id
+        //new KeyValuePair<string, string>("customerid", customerUid.ToString()),
         new KeyValuePair<string, string>("fields", "full"),
         new KeyValuePair<string, string>("featurePrefixes", wosFeature),
         new KeyValuePair<string, string>("skus", wosSku),

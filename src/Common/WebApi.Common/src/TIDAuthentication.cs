@@ -162,7 +162,8 @@ namespace VSS.WebApi.Common
                 Feature = EntitlementFeature, 
                 Sku = EntitlementSku,
                 OrganizationIdentifier = customerUid, 
-                UserUid = userUid
+                UserUid = userUid,
+                UserEmail = userEmail
               };
 
               var result = await _entitlementProxy.IsEntitled(entitlementRequest, customHeaders);

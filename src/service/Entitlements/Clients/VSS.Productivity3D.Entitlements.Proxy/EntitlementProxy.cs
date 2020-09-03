@@ -58,7 +58,8 @@ namespace VSS.Productivity3D.Entitlements.Proxy
           Feature = request.Feature,
           Sku = request.Sku,
           OrganizationIdentifier = request.OrganizationIdentifier,
-          UserUid = request.UserUid
+          UserUid = request.UserUid,
+          UserEmail = request.UserEmail
         };
       }
 
@@ -75,7 +76,8 @@ namespace VSS.Productivity3D.Entitlements.Proxy
             Feature = request.Feature,
             Sku = request.Sku,
             OrganizationIdentifier = request.OrganizationIdentifier,
-            UserUid = request.UserUid
+            UserUid = request.UserUid,
+            UserEmail = request.UserEmail
           };
         }
         log.LogInformation($"User `{result.UserUid}` for Customer: `{request.OrganizationIdentifier}` {(result.IsEntitled ? "is" : "is not")} entitled to use the `{request.Feature}` feature for the `{request.Sku}` product.");

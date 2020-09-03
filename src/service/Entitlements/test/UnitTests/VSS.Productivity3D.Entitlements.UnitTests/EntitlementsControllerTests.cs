@@ -27,6 +27,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       {
         OrganizationIdentifier = customerUid.ToString(),
         UserUid = userUid.ToString(),
+        UserEmail = "someone@somwhere.com",
         Sku = "some sku",
         Feature = "some feature"
       };
@@ -44,6 +45,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       Assert.NotNull(response);
       Assert.Equal(request.OrganizationIdentifier, response.OrganizationIdentifier);
       Assert.Equal(request.UserUid, response.UserUid);
+      Assert.Equal(request.UserEmail, response.UserEmail);
       Assert.Equal(request.Sku, response.Sku);
       Assert.Equal(request.Feature, response.Feature);
       Assert.True(response.IsEntitled);
@@ -59,6 +61,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       {
         OrganizationIdentifier = customerUid.ToString(),
         UserUid = userUid.ToString(),
+        UserEmail = "someone@somwhere.com",
         Sku = "some sku",
         Feature = "some feature"
       };
@@ -76,9 +79,40 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       Assert.NotNull(response);
       Assert.Equal(request.OrganizationIdentifier, response.OrganizationIdentifier);
       Assert.Equal(request.UserUid, response.UserUid);
+      Assert.Equal(request.UserEmail, response.UserEmail);
       Assert.Equal(request.Sku, response.Sku);
       Assert.Equal(request.Feature, response.Feature);
       Assert.False(response.IsEntitled);
+    }
+
+    [Fact]
+    public async Task GetEntitlement_AllowedEmail()
+    {
+      var userUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+
+      var request = new EntitlementRequestModel
+      {
+        OrganizationIdentifier = customerUid.ToString(),
+        UserUid = userUid.ToString(),
+        UserEmail = "allowed@nowhere.com",
+        Sku = "some sku",
+        Feature = "some feature"
+      };
+
+      mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty)).Returns("allowed@nowhere.com");
+
+      var controller = CreateEntitlementsController(userUid.ToString());
+      var result = await controller.GetEntitlement(request);
+      Assert.NotNull(result);
+      var response = (result as JsonResult)?.Value as EntitlementResponseModel;
+      Assert.NotNull(response);
+      Assert.Equal(request.OrganizationIdentifier, response.OrganizationIdentifier);
+      Assert.Equal(request.UserUid, response.UserUid);
+      Assert.Equal(request.UserEmail, response.UserEmail);
+      Assert.Equal(request.Sku, response.Sku);
+      Assert.Equal(request.Feature, response.Feature);
+      Assert.True(response.IsEntitled);
     }
 
     [Fact]
@@ -91,6 +125,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       {
         OrganizationIdentifier = customerUid.ToString(),
         UserUid = userUid.ToString(),
+        UserEmail = "someone@somwhere.com",
         Sku = "some sku",
         Feature = "some feature"
       };
@@ -104,6 +139,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       Assert.NotNull(response);
       Assert.Equal(request.OrganizationIdentifier, response.OrganizationIdentifier);
       Assert.Equal(request.UserUid, response.UserUid);
+      Assert.Equal(request.UserEmail, response.UserEmail);
       Assert.Equal(request.Sku, response.Sku);
       Assert.Equal(request.Feature, response.Feature);
       Assert.True(response.IsEntitled);
