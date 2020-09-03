@@ -233,6 +233,9 @@ namespace VSS.TRex.Server.PSNode
       {
         Console.WriteLine($"TRex service starting at {DateTime.Now}");
 
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
+
         ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
         ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
 
@@ -241,9 +244,6 @@ namespace VSS.TRex.Server.PSNode
         ThreadPool.SetMinThreads(minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor, minCompletionPortThreads);
 
         Console.WriteLine($"Operating thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
-
-        EnsureAssemblyDependenciesAreLoaded();
-        DependencyInjection();
 
         var cancelTokenSource = new CancellationTokenSource();
         AppDomain.CurrentDomain.ProcessExit += (s, e) =>
