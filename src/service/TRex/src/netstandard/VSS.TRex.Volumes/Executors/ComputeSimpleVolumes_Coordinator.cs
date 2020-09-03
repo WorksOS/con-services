@@ -153,7 +153,7 @@ namespace VSS.TRex.Volumes.Executors
     /// <summary>
     /// Executes the simple volumes computation returning a SimpleVolumesResponse with the results
     /// </summary>
-    public async Task<SimpleVolumesResponse> ExecuteAsync()
+    public SimpleVolumesResponse Execute()
     {
       var volumesResult = new SimpleVolumesResponse();
       var resultBoundingExtents = BoundingWorldExtent3D.Null();
