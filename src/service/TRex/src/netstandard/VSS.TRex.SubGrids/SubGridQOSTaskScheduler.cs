@@ -20,6 +20,11 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     private static int _currentExecutingTaskCount = 0;
 
+    /// <summary>
+    /// The count of scheduler sessions representing sets of sub grid requests required for various TRex requests.
+    /// </summary>
+    private static int _currentSchedulerSessionsCount = 0;
+
     public const int DEFAULT_THREAD_POOL_FRACTION_DIVISOR = 8;
 
     /// <summary>
@@ -51,6 +56,8 @@ namespace VSS.TRex.SubGrids
       if (tasks.Count == 0)
         return true;
 
+      var taskCount = tasks.Count;
+
       try
       {
         try
@@ -72,7 +79,7 @@ namespace VSS.TRex.SubGrids
       }
       finally
       {
-        Interlocked.Add(ref _currentExecutingTaskCount, -tasks.Count);
+        Interlocked.Add(ref _currentExecutingTaskCount, -taskCount);
       }
     }
 
@@ -105,7 +112,9 @@ namespace VSS.TRex.SubGrids
       var collectionCount = subGridCollections?.Count ?? 0;
       var taskIndex = 0;
 
-      _log.LogInformation($"Sub grid QOS scheduler running {collectionCount} collections across {maxTasks} tasks");
+      var preActiveContexts = Interlocked.Increment(ref _currentSchedulerSessionsCount);
+
+      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {preActiveContexts} sessions are active");
 
       try
       {
@@ -161,7 +170,8 @@ namespace VSS.TRex.SubGrids
       }
       finally
       {
-        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks");
+        var postActiveContexts = Interlocked.Decrement(ref _currentSchedulerSessionsCount);
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {postActiveContexts} sessions are active.");
       }
     }
   }
