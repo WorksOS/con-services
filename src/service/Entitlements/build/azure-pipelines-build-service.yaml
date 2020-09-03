@@ -13,7 +13,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   serviceName: Entitlements
-  rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service/Push'
+  rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service/Entitlements'
   ecrRepositoryName: 'rpd-ccss-entitlements-webapi'
   isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
@@ -40,7 +40,7 @@ jobs:
         displayName: 'Run unit tests'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action unittest -collectCoverage true'
+          arguments: '-service $(serviceName) -action unittest -collectCoverage $(isMasterBranch)'
 
       - task: PublishTestResults@2
         displayName: 'Publish Unit Test Results'
@@ -52,7 +52,7 @@ jobs:
 
       - task: PublishCodeCoverageResults@1
         # Only run for /master branch
-        #condition: and(succeeded(), eq(variables['isMasterBranch'], true))
+        condition: and(succeeded(), eq(variables['isMasterBranch'], true))
         displayName: 'Publish Code Coverage'
         inputs:
           codeCoverageTool: Cobertura
