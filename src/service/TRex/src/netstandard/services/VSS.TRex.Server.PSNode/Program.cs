@@ -162,6 +162,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<ISubGridRetrieverFactory>(new SubGridRetrieverFactory()))
         .Add(x => x.AddSingleton<ISiteModelChangeMapDeltaNotifier>(new SiteModelChangeMapDeltaNotifier()))
 
+        .Add(x => x.AddSingleton<ISubGridQOSTaskScheduler, SubGridQOSTaskScheduler>())
         .Complete();
     }
 
@@ -237,7 +238,7 @@ namespace VSS.TRex.Server.PSNode
 
         // Create a much larger pool of system threads to allow QOS channels with groups of sub-tasks room to take advantage of all system resources while also allowing
         // other requests to run concurrently
-        ThreadPool.SetMinThreads(minWorkerThreads * SubGridQOSTaskScheduler.DEFAULT_THREAD_POOL_FRACTION_DIVISOR, minCompletionPortThreads);
+        ThreadPool.SetMinThreads(minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor, minCompletionPortThreads);
 
         Console.WriteLine($"Operating thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
 
