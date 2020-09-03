@@ -15,6 +15,7 @@ variables:
   serviceName: TRex
   rootServiceFolder: "$(System.DefaultWorkingDirectory)/src/service/TRex"
   ecrRepositoryName: "rpd-ccss-trex"
+  pushImages: $(pushServiceImages) # Should be as variable pushServiceImages=false against the TRex build pipeline.
   isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 jobs:
@@ -23,6 +24,8 @@ jobs:
     timeoutInMinutes: 60
 
     steps:
+      - script: echo "pushImages=$(pushImages)"
+
       - checkout: self
         fetchDepth: 1
 

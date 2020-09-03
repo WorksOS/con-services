@@ -12,8 +12,6 @@ namespace VSS.TRex.GridFabric.Requests
     /// <summary>
     /// Constructor accepting a role for the request that may identify a cluster group of nodes in the grid
     /// </summary>
-    /// <param name="gridName"></param>
-    /// <param name="role"></param>
     public BaseRequest(string gridName, string role) : base(gridName, role)
     {
     }

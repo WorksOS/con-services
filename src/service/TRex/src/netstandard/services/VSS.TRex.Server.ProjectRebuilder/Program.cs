@@ -99,10 +99,11 @@ namespace VSS.TRex.Server.ProjectRebuilder
       }
     }
 
-    private static async void DoServiceInitialisation(ILogger log, CancellationTokenSource cancelTokenSource)
+    private static async Task DoServiceInitialisation(ILogger log, CancellationTokenSource cancelTokenSource)
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelRebuilderHeartbeatLogger());
 
@@ -172,7 +173,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
         AppDomain.CurrentDomain.UnhandledException += TRexAppDomainUnhandledExceptionHandler.Handler;
 
-        DoServiceInitialisation(log, cancelTokenSource);
+        await DoServiceInitialisation(log, cancelTokenSource);
 
         await Task.Delay(-1, cancelTokenSource.Token);
         return 0;

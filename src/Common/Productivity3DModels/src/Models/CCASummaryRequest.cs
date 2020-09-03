@@ -29,6 +29,5 @@ namespace VSS.Productivity3D.Models.Models
       Overrides = overrides;
       LiftSettings = liftSettings;
     }
-
   }
 }

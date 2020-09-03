@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -41,23 +43,32 @@ namespace VSS.TRex.SurveyedSurfaces
     /// </summary>
     private ISurveyedSurfaces Load(Guid siteModelUid)
     {
-      var ss = DIContext.Obtain<ISurveyedSurfaces>();
+      _log.LogInformation($"Loading surveyed surfaces for project {siteModelUid}");
 
-      if (ss == null)
+      var ss = DIContext.ObtainRequired<ISurveyedSurfaces>();
+
+      try
       {
-        _log.LogError("Unable to access surveyed surfaces factory from DI");
-        return null;
-      }
+        _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out var ms);
 
-      _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME, FileSystemStreamType.SurveyedSurfaces, out var ms);
-
-      if (ms != null)
-      {
-        using (ms)
+        if (ms != null)
         {
-          ss.FromStream(ms);
+          using (ms)
+          {
+            ss.FromStream(ms);
+          }
         }
       }
+      catch (KeyNotFoundException)
+      {
+        /* This is OK, the element is not present in the cache yet */
+      }
+      catch (Exception e)
+      {
+        throw new TRexException("Exception reading Alignment cache element from Ignite", e);
+      }
+
+      _log.LogInformation($"Loaded {ss.Count} surveyed surfaces for project {siteModelUid}");
 
       return ss;
     }

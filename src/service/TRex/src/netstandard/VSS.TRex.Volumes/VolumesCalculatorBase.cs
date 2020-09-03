@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -295,8 +296,8 @@ namespace VSS.TRex.Volumes
                             if (x.Result)
                               Log.LogInformation("WaitForCompletion successful");
                             else // No signal was received, the wait timed out...            
-                              Log.LogInformation($"WaitForCompletion timed out with {PipeLine.SubGridsRemainingToProcess} subgrids remaining to be processed");
-                          }).Wait();
+                              Log.LogInformation($"WaitForCompletion timed out with {PipeLine.SubGridsRemainingToProcess} sub grids remaining to be processed");
+                          }).WaitAndUnwrapException();
                         }
 
                         /*

@@ -103,16 +103,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="tRexTask"></param>
-        /// <param name="siteModelID"></param>
-        /// <param name="requestID"></param>
-        /// <param name="trexNodeId"></param>
-        /// <param name="requestedGridDataType"></param>
-        /// <param name="includeSurveyedSurfaceInformation"></param>
-        /// <param name="prodDataMask"></param>
-        /// <param name="surveyedSurfaceOnlyMask"></param>
-        /// <param name="filters"></param>
-        /// <param name="referenceDesign"></param>
         public SubGridRequestsBase(ITRexTask tRexTask,
                                    Guid siteModelID, 
                                    Guid requestID, 
@@ -189,14 +179,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
       /// Executes a request for a number of sub grids to be processed according to filters and other
       /// parameters
       /// </summary>
-      /// <returns></returns>
       public abstract TSubGridRequestsResponse Execute();
 
       /// <summary>
       /// Executes a request for a number of sub grids to be processed according to filters and other
       /// parameters
       /// </summary>
-      /// <returns></returns>
       public abstract Task<TSubGridRequestsResponse> ExecuteAsync();
   }
 }
