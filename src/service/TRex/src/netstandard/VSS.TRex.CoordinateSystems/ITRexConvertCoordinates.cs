@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using CoreX.Models;
+using CoreXModels;
 
 namespace VSS.TRex.CoordinateSystems
 {

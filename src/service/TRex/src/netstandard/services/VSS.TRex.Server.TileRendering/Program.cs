@@ -156,7 +156,7 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.Storage.StorageProxy),
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.ExistenceMaps.ExistenceMaps),
         typeof(VSS.TRex.Filters.CellPassAttributeFilter),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),

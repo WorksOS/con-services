@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CoreX.Models;
+using CoreXModels;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Tpaas.Client.Abstractions;

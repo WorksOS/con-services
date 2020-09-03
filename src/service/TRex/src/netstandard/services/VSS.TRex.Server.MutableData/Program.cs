@@ -138,7 +138,7 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
@@ -151,7 +151,7 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.TAGFiles.Executors.SubmitTAGFileExecutor),
-        typeof(CoreX.Models.CoordinateSystemResponse),
+        typeof(CoreXModels.CoordinateSystemResponse),
         typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
       };
 

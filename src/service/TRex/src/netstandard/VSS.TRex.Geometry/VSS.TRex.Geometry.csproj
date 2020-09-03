@@ -24,4 +24,8 @@
     <ProjectReference Include="..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CoreX\" />
+  </ItemGroup>
+
 </Project>
