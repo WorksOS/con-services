@@ -35,6 +35,7 @@ enum ReturnCode {
 
 $services = @{
     Common         = 'Common'
+    Entitlements   = 'service/Entitlements'
     ThreeDNow      = 'service/3dNow'
     Productivity3d = 'service/3DP'
     Mock           = 'service/MockProjectWebApi'
@@ -273,6 +274,13 @@ function Docker-Image-Prune {
     Write-Host "`nPrune all images created more than 48 hours ago..." -ForegroundColor Green
     docker image prune -a --force --filter "until=48h"
 }
+
+function Docker-Container-Prune {
+    # Remove any running or stopped containers on this build agent.
+    Write-Host "`nRemoving old application containers...`n" -ForegroundColor Green
+    docker ps
+    docker container prune --force --filter "until=5m"
+}
 function Exit-With-Code {
     param(
         [ReturnCode][Parameter(Mandatory = $true)]$code
@@ -325,6 +333,7 @@ $timeStart = Get-Date
 switch ($action) {
     'build' {
         Docker-Image-Prune
+        Docker-Container-Prune
         Build-Solution
         continue
     }
