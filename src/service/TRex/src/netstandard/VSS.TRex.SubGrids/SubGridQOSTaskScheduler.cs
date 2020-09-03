@@ -19,6 +19,11 @@ namespace VSS.TRex.SubGrids
     public const int DEFAULT_THREAD_POOL_FRACTION_DIVISOR = 8;
 
     /// <summary>
+    /// The number of seconds the QOS scheduler will wait for a group of tasks responsible for processing sub grids
+    /// </summary>
+    public const int TASK_GROUP_TIMEOUT_SECONDS = 10;
+
+    /// <summary>
     /// Provides an estimation of the default maximum number of tasks that may be used to provide service to other
     /// requests active at the same time when using the default system thread pool. This number is based on the
     /// minimum number of threads specified for the thread pool.
@@ -37,7 +42,7 @@ namespace VSS.TRex.SubGrids
 
       try
       {
-        Task.WhenAll(tasks).WaitAndUnwrapException();
+        Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(TASK_GROUP_TIMEOUT_SECONDS));
         tasks.Clear();
 
         return true;
@@ -60,6 +65,7 @@ namespace VSS.TRex.SubGrids
       int maxTasks)
     {
       var collectionCount = subGridCollections?.Count ?? 0;
+      var taskIndex = 0;
 
       _log.LogInformation($"Sub grid QOS scheduler running {collectionCount} collections across {maxTasks} tasks");
 
@@ -76,7 +82,13 @@ namespace VSS.TRex.SubGrids
           {
             try
             {
+              // ReSharper disable once AccessToModifiedClosure
+              _log.LogDebug($"Processor for task index {taskIndex} starting");
+
               processor(subGridCollection);
+
+              // ReSharper disable once AccessToModifiedClosure
+              _log.LogDebug($"Processor for task index {taskIndex} completed");
             }
             catch (Exception e)
             {
@@ -90,6 +102,8 @@ namespace VSS.TRex.SubGrids
 
           if (!WaitForGroupToComplete(tasks))
             return false;
+
+          taskIndex++;
         }
 
         return WaitForGroupToComplete(tasks);
