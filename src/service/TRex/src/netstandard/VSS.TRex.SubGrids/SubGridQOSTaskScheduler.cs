@@ -15,12 +15,24 @@ namespace VSS.TRex.SubGrids
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger("SubGridQOSTaskScheduler");
 
+    /// <summary>
+    /// The count of tasks the QOS scheduler has scheduled or execution on the .Net task thread pool.
+    /// </summary>
+    private static int _currentExecutingTaskCount = 0;
+
     public const int DEFAULT_THREAD_POOL_FRACTION_DIVISOR = 8;
 
     /// <summary>
     /// The number of seconds the QOS scheduler will wait for a group of tasks responsible for processing sub grids
     /// </summary>
     public const int TASK_GROUP_TIMEOUT_SECONDS = 10;
+
+    private static readonly object _capacityLock = new object();
+
+    /// <summary>
+    /// The flag to indicate the service has been terminated (eg: via a SIG_TERM message), and so should abort active operations
+    /// </summary>
+    public static bool Terminated = false;
 
     /// <summary>
     /// Provides an estimation of the default maximum number of tasks that may be used to provide service to other
@@ -41,20 +53,43 @@ namespace VSS.TRex.SubGrids
 
       try
       {
-        if (!Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(TASK_GROUP_TIMEOUT_SECONDS)))
+        try
         {
-          _log.LogError($"Task group failed to complete within {TASK_GROUP_TIMEOUT_SECONDS} seconds");
+          if (!Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(TASK_GROUP_TIMEOUT_SECONDS)))
+          {
+            _log.LogError($"Task group failed to complete within {TASK_GROUP_TIMEOUT_SECONDS} seconds");
+          }
+
+          tasks.Clear();
+
+          return true;
         }
-
-        tasks.Clear();
-
-        return true;
+        catch (Exception e)
+        {
+          _log.LogError(e, "Exception waiting for group of sub grid tasks to complete");
+          return false;
+        }
       }
-      catch (Exception e)
+      finally
       {
-        _log.LogError(e, "Exception waiting for group of sub grid tasks to complete");
-        return false;
+        Interlocked.Add(ref _currentExecutingTaskCount, -tasks.Count);
       }
+    }
+
+    /// <summary>
+    /// Determine if there is sufficient capacity to create another task
+    /// </summary>
+    private static bool WaitForCapacity()
+    {
+      ThreadPool.GetMinThreads(out var capacityCap, out _);
+
+      while (!Terminated && _currentExecutingTaskCount >= capacityCap)
+      {
+        // Sleep for 10 milliseconds and check again
+        Thread.Sleep(10);
+      }
+
+      return !Terminated;
     }
 
     /// <summary>
@@ -81,6 +116,19 @@ namespace VSS.TRex.SubGrids
 
         foreach (var subGridCollection in subGridCollections)
         {
+          if (Terminated)
+          {
+            return false;
+          }
+
+          lock (_capacityLock)
+          {
+            if (!WaitForCapacity())
+              return false;
+
+            Interlocked.Increment(ref _currentExecutingTaskCount);
+          }
+
           tasks.Add(Task.Run(() =>
           {
             try
