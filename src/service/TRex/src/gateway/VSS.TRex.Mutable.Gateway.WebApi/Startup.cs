@@ -49,7 +49,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     {
       DIBuilder.New(services)
          .Build()
-         .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
          .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)

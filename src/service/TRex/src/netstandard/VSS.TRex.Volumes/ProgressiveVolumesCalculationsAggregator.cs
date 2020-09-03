@@ -117,10 +117,8 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Summarizes the client height grid derived from sub grid processing into the running volumes aggregation state
     /// </summary>
-    private void SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
+    private void SummarizeSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      //var taskList = new List<Task>(subGrids.Length);
-
       foreach (var subGridResult in subGrids)
       {
         if (subGridResult != null)
@@ -132,12 +130,9 @@ namespace VSS.TRex.Volumes
           else
           {
             ProcessVolumeInformationForSubGrid(baseSubGrid as ClientProgressiveHeightsLeafSubGrid);
-            //taskList.Add( ProcessVolumeInformationForSubGrid(baseSubGrid as ClientProgressiveHeightsLeafSubGrid));
           }
         }
       }
-
-      //await Task.WhenAll(taskList);
     }
 
     /// <summary>
@@ -174,7 +169,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummarizeSubGridResultAsync(subGrids); //.WaitAndUnwrapException();
+      SummarizeSubGridResult(subGrids); //.WaitAndUnwrapException();
     }
 
     /// <summary>

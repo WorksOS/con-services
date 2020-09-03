@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
@@ -79,6 +80,7 @@ namespace VSS.TRex.Reports.Gridded
       writer.Write(ReportMdp);
       writer.Write(ReportPassCount);
       writer.Write(ReportTemperature);
+      writer.Write(RequestEmissionDateUtc.ToBinary());
     }
 
     public void Read(BinaryReader reader)
@@ -89,6 +91,7 @@ namespace VSS.TRex.Reports.Gridded
       ReportMdp = reader.ReadBoolean();
       ReportPassCount = reader.ReadBoolean();
       ReportTemperature = reader.ReadBoolean();
+      RequestEmissionDateUtc = DateTime.FromBinary(reader.ReadInt64());
     }
   }
 }

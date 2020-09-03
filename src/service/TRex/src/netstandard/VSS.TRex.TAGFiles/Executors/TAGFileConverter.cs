@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Models;
+using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
+using VSS.TRex.Geometry;
 using VSS.TRex.Logging;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
@@ -80,10 +83,21 @@ namespace VSS.TRex.TAGFiles.Executors
     public TAGProcessor Processor { get; set; }
 
     /// <summary>
+    /// Is coordinate system of type UTM
+    /// </summary>
+    public bool IsUTMCoordinateSystem { get; set; }
+
+    /// <summary>
+    /// Target sitemodel
+    /// </summary>
+    private Guid? _targetSiteModel;
+
+    /// <summary>
     /// Default no-arg constructor
     /// </summary>
-    public TAGFileConverter()
+    public TAGFileConverter(Guid? targetSiteModel = null)
     {
+      _targetSiteModel = targetSiteModel;
       Initialise();
     }
 
@@ -145,7 +159,6 @@ namespace VSS.TRex.TAGFiles.Executors
 
       Log.LogInformation($"In {nameof(ExecuteVolvoEarthworksCSVFile)}: reading file {filename} for asset {assetUid}, JohnDoe: {isJohnDoe}");
 
-
       try
       {
         var fileDescriptor = new VolvoEarthworksFileNameDescriptor(filename);
@@ -202,14 +215,59 @@ namespace VSS.TRex.TAGFiles.Executors
     }
 
     /// <summary>
+    /// Scan tag file for each epoch position and convert from position's UTM zone to WGS84LL. Then back to the coordinate sytem used by project.
+    /// </summary>
+    private bool CollectAndConvertBladePostions(Guid? targetProjectUid, ref Stream tagData, ref List<UTMCoordPointPair> aCSBladePositions, ref List<UTMCoordPointPair> aCSRearAxlePositions, ref List<UTMCoordPointPair> aCSTrackPositions, ref List<UTMCoordPointPair> aCSWheelPositions)
+    {
+
+      var tagFilePreScanACS = new TAGFilePreScanACS(); // special scanner to collect positions
+      tagFilePreScanACS.Execute(tagData, ref aCSBladePositions, ref aCSRearAxlePositions, ref aCSTrackPositions, ref aCSWheelPositions);
+      tagData.Position = 0; // reset
+
+      if (tagFilePreScanACS.ReadResult == TAGReadResult.NoError)
+      {
+        Log.LogInformation($"Successful ACS prescan of tagfile. {tagFilePreScanACS.ReadResult}. # Blade positions to convert:{aCSBladePositions.Count}, RearAxle:{aCSRearAxlePositions.Count}, Track:{aCSTrackPositions.Count}, Wheel:{aCSWheelPositions.Count}");
+        var acsTranslator = DIContext.Obtain<IACSTranslator>();
+        if (acsTranslator == null)
+        {
+          Log.LogError($"IACSTranslator not implemented");
+          return false;
+        }
+        var hold = ReadResult;
+        ReadResult = TAGReadResult.CoordinateConversionFailure;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSBladePositions) == null) return false;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSRearAxlePositions) == null) return false;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSTrackPositions) == null) return false;
+        if (acsTranslator.TranslatePositions(targetProjectUid, aCSWheelPositions) == null) return false;
+        ReadResult = hold;
+      }
+      else
+      {
+        Log.LogWarning($"Unsuccessful PrescanACS of tagfile. {tagFilePreScanACS.ReadResult}");
+        return false;
+      }
+
+      return true;
+    }
+
+    private bool ValidPositionsforPair(UTMCoordPointPair uTMCoordPointPair)
+    {
+      return !(uTMCoordPointPair.Left.X == Consts.NullReal || uTMCoordPointPair.Left.Y == Consts.NullReal || uTMCoordPointPair.Right.X == Consts.NullReal || uTMCoordPointPair.Right.Y == Consts.NullReal);
+    }
+
+    /// <summary>
     /// Execute the conversion operation on the TAG file, returning a boolean success result.
-    /// Sets up local state detailing the pre-scan fields retried from the ATG file
+    /// Sets up local state detailing the pre-scan fields retrieved from the TAG file
     /// </summary>
     public bool ExecuteLegacyTAGFile(string filename, Stream tagData, Guid assetUid, bool isJohnDoe)
     {
-      ReadResult = TAGReadResult.NoError;
-
       Log.LogInformation($"In {nameof(ExecuteLegacyTAGFile)}: reading file {filename} for asset {assetUid}, JohnDoe: {isJohnDoe}");
+
+      ReadResult = TAGReadResult.NoError;
+      List<UTMCoordPointPair> aCSBladePositions = null;
+      List<UTMCoordPointPair> ACSRearAxlePositions = null;
+      List<UTMCoordPointPair> ACSTrackPositions = null;
+      List<UTMCoordPointPair> ACSWheelPositions = null;
 
       try
       {
@@ -222,20 +280,35 @@ namespace VSS.TRex.TAGFiles.Executors
         var machineHardwareId = string.Empty;
         var machineId = string.Empty;
 
-        if (Machine == null || Machine.MachineType == MachineType.Unknown)
+        //Prescan to get all relevant information necessary for processing the tag file. e.g. Machinetype for swather, Type of coordinate system (ACS)
+        var tagFilePreScan = new TAGFilePreScan();
+        tagFilePreScan.Execute(tagData);
+        tagData.Position = 0; // reset
+        if (tagFilePreScan.ReadResult == TAGReadResult.NoError)
         {
-          // Unknown machine. Prescan to determine machinetype for swather creation
-          var tagFilePreScan = new TAGFilePreScan();
-          tagFilePreScan.Execute(tagData);
-          tagData.Position = 0; // reset
-          if (tagFilePreScan.ReadResult == TAGReadResult.NoError)
+          machineType = tagFilePreScan.MachineType; // used in creation of swather
+          machineHardwareId = tagFilePreScan.HardwareID;
+          machineId = tagFilePreScan.MachineID;
+          IsUTMCoordinateSystem = !tagFilePreScan.IsCSIBCoordSystemTypeOnly; // do we need to convert UTM coordinates to project coordinates
+          if (IsUTMCoordinateSystem && tagFilePreScan.ProcessedEpochCount > 0)
           {
-            machineType = tagFilePreScan.MachineType;
-            machineHardwareId = tagFilePreScan.HardwareID;
-            machineId = tagFilePreScan.MachineID;
+            Log.LogInformation($"{nameof(ExecuteLegacyTAGFile)}: ACS coordinate system detected. {filename}");
+            aCSBladePositions = new List<UTMCoordPointPair>();
+            ACSRearAxlePositions = new List<UTMCoordPointPair>();
+            ACSTrackPositions = new List<UTMCoordPointPair>();
+            ACSWheelPositions = new List<UTMCoordPointPair>();
+            if (!CollectAndConvertBladePostions(_targetSiteModel, ref tagData, ref aCSBladePositions, ref ACSRearAxlePositions, ref ACSTrackPositions, ref ACSWheelPositions))
+            {
+              Log.LogError($"{nameof(ExecuteLegacyTAGFile)}: Failed to collect and convert blade positions for tagfile processing with ACS. TAG FILE:{filename}");
+              ReadResult = TAGReadResult.CoordinateConversionFailure;
+              return false;
+            }
           }
-          else
-            return false;
+        }
+        else
+        {
+          Log.LogError($"Unsuccessful prescan of tagfile. {tagFilePreScan.ReadResult}");
+          return false;
         }
 
         if (Machine == null)
@@ -265,6 +338,20 @@ namespace VSS.TRex.TAGFiles.Executors
         }
 
         Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, machineTargetValueChangesAggregator);
+
+        // If ACS coordinate system populate converted UTM coordinates
+        if (IsUTMCoordinateSystem && tagFilePreScan.ProcessedEpochCount > 0)
+        {
+          if (aCSBladePositions != null && aCSBladePositions.Count > 0)
+            Processor.ConvertedBladePositions.AddRange(aCSBladePositions);
+          if (ACSRearAxlePositions != null && ACSRearAxlePositions.Count > 0)
+            Processor.ConvertedRearAxlePositions.AddRange(ACSRearAxlePositions);
+          if (ACSTrackPositions != null && ACSTrackPositions.Count > 0)
+            Processor.ConvertedTrackPositions.AddRange(ACSTrackPositions);
+          if (ACSWheelPositions != null && ACSWheelPositions.Count > 0)
+            Processor.ConvertedWheelPositions.AddRange(ACSWheelPositions);
+        }
+
         var sink = new TAGValueSink(Processor);
         using (var reader = new TAGReader(tagData))
         {

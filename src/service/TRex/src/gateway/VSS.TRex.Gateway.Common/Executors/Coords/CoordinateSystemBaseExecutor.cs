@@ -1,5 +1,5 @@
 ﻿using CoreX.Models;
-using CoreX.Wrapper.Models;
+using CoreX.Models.CoordinateSystems;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;

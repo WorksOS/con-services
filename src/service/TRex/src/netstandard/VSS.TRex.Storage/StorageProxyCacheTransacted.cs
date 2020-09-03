@@ -94,8 +94,10 @@ namespace VSS.TRex.Storage
         /// </summary>
         public override bool Remove(TK key)
         {
+          // ReSharper disable once InconsistentlySynchronizedField
           if (_log.IsTraceEnabled())
           {
+            // ReSharper disable once InconsistentlySynchronizedField
             _log.LogTrace($"Removing item from pending transacted writes, cache = {Name}, key = {key}");
           }
 
@@ -121,8 +123,6 @@ namespace VSS.TRex.Storage
         /// Removes the given keys from the cache. If there has been a previous un-committed remove for the key
         /// then an argument exception is thrown
         /// </summary>
-        /// <param name="keys"></param>
-        /// <returns></returns>
         public override void RemoveAll(IEnumerable<TK> keys) => keys.ForEach(x => Remove(x));
 
         /// <summary>
@@ -131,8 +131,10 @@ namespace VSS.TRex.Storage
         /// </summary>
         public override void Put(TK key, TV value)
         {
+            // ReSharper disable once InconsistentlySynchronizedField
             if (_log.IsTraceEnabled())
             {
+              // ReSharper disable once InconsistentlySynchronizedField
               _log.LogTrace($"Adding item (Put) to pending transacted writes, cache = {Name}, key = {key}");
             }
 
@@ -186,7 +188,7 @@ namespace VSS.TRex.Storage
             {
                 numDeleted = PendingTransactedDeletes.Count;
 
-                // TODO: Can (should) this be pooled into a collection of tasks run concurrently?
+                // TODO: Can (should) this be pooled into a collection of tasks run concurrently as it does not require large amounts of memory for the elements being committed
                 PendingTransactedDeletes.ForEach(async x =>
                 {
                   try
@@ -196,6 +198,7 @@ namespace VSS.TRex.Storage
                   catch (Exception e)
                   {
                     _log.LogError(e, $"Exception in RemoveAsync removing element with key {x} in cache {Name}");
+                    throw; // Ensure this task is faulted in the calling context
                   }
                 });
 
@@ -210,18 +213,21 @@ namespace VSS.TRex.Storage
               // Write all elements one at a time, calculating the cumulative bytes written in the Commit()
               PendingTransactedWrites.ForEach(async x =>
               {
-                // TODO: Can (should) this be pooled into a collection of tasks run concurrently?
+                // TODO: Can (should) this be pooled into a collection of tasks run concurrently? This does cause large memory spikes due to buffering of all elements to be saved...
 
                 try
                 {
                   await base.PutAsync(x.Key, x.Value);
 
                   if (x.Value is ISerialisedByteArrayWrapper wrapper)
+                  {
                     localBytesWritten += wrapper.Count;
+                  }
                 }
                 catch (Exception e)
                 {
                   _log.LogError(e, $"Exception in PutAsync putting element with key {x.Key} and value {x.Value} in cache {Name}");
+                  throw; // Ensure this task is faulted in the calling context
                 }
               });
 

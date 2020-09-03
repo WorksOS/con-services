@@ -1,5 +1,4 @@
 ﻿using CoreX.Models.CoordinateSystems;
-using CoreX.Wrapper.Models;
 
 namespace CoreX.Models
 {

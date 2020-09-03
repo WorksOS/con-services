@@ -357,7 +357,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       }
 
       Log.LogInformation($"Network timeout set to {cfg.NetworkTimeout}");
-
+       
       // Wait until the grid is active
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.ImmutableGridName());
 

@@ -164,7 +164,15 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         taskList.Add(SubmitSingleTAGFile(projectId, machineId, file, treatAsJohnDoe, originSource));
       }
 
-      Task.WhenAll(taskList);
+      try
+      {
+        Task.WhenAll(taskList).Wait();
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Exception submitting TAG files");
+        Console.WriteLine($"Failure submitting TAG files: {string.Join(",", files)}");
+      }
     }
 
     public void CollectTAGFilesInFolder(string folder, List<List<string>> fileNamesFromFolders, string fileSkeleton)

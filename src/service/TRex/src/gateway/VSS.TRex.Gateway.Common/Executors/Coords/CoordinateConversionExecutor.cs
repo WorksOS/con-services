@@ -56,10 +56,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       switch (request.ConversionType)
       {
         case TwoDCoordinateConversionType.NorthEastToLatLon:
-          resultCoordinates = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, coordinates.ToCoreX_XYZ()).ToTRex_XYZ();
+          resultCoordinates = DIContext.Obtain<ICoreXWrapper>().NEEToLLH(csib, coordinates.ToCoreX_XYZ()).ToTRex_XYZ();
           break;
         case TwoDCoordinateConversionType.LatLonToNorthEast:
-          resultCoordinates = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(csib, coordinates.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
+          resultCoordinates = DIContext.Obtain<ICoreXWrapper>().LLHToNEE(csib, coordinates.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
           break;
         default:
           throw new ArgumentException($"Unknown TwoDCoordinateConversionType {Convert.ToInt16(request.ConversionType)}");

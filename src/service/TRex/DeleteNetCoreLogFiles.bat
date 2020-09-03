@@ -1,4 +1,5 @@
-del "..\TRex\src\gateway\VSS.TRex.Gateway.WebApi\logs\VSS.TRex.Gateway.WebApi.log"
+del "..\TRex\src\gateway\VSS.TRex.Gateway.WebApi\logs\VSS.TRex.Server.Gateway.log"
+del "..\TRex\src\gateway\VSS.TRex.Mutable.Gateway.WebApi\logs\VSS.TRex.Mutable.Gateway.WebApi.log"
 del "..\TRex\src\netstandard\services\VSS.TRex.Server.Application\bin\Debug\netcoreapp3.1\logs\VSS.TRex.Server.Application.log"
 del "..\TRex\src\netstandard\services\VSS.TRex.Server.DesignElevation\bin\Debug\netcoreapp3.1\logs\VSS.TRex.Server.DesignElevation.log"
 del "..\TRex\src\netstandard\services\VSS.TRex.Server.MutableData\bin\Debug\netcoreapp3.1\logs\VSS.TRex.Server.MutableData.log"

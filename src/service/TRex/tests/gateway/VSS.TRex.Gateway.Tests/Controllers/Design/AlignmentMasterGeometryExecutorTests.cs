@@ -129,7 +129,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       llhCoords.Add(new XYZ(-115.01956106916795, 36.206990121295007, -1.4714815735321082E-05));
       llhCoords.Add(new XYZ(-115.01948437671714, 36.207000796998024, -1.4714823752735629E-05));
 
-      var convertCoordinatesMock = new Mock<IConvertCoordinates>();
+      var convertCoordinatesMock = new Mock<ICoreXWrapper>();
 
       var expectedCoordinateConversionResult = llhCoords.ToArray().ToCoreX_XYZ();
 

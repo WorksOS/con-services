@@ -39,20 +39,13 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Loads the set of Alignments for a site model. If none exist and empty list is returned.
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <returns></returns>
     private IAlignments Load(Guid siteModelUid)
     {
+      _log.LogInformation($"Loading alignments for project {siteModelUid}");
+
+      var alignments = DIContext.ObtainRequired<IAlignments>();
       try
       {
-        var alignments = DIContext.Obtain<IAlignments>();
-
-        if (alignments == null)
-        {
-          _log.LogError("Unable to access IAlignments factory from DI");
-          return null;
-        }
-
         _readStorageProxy.ReadStreamFromPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, out var ms);
 
         if (ms != null)
@@ -62,8 +55,6 @@ namespace VSS.TRex.Alignments
             alignments.FromStream(ms);
           }
         }
-
-        return alignments;
       }
       catch (KeyNotFoundException)
       {
@@ -74,14 +65,14 @@ namespace VSS.TRex.Alignments
         throw new TRexException("Exception reading Alignment cache element from Ignite", e);
       }
 
-      return null;
+      _log.LogInformation($"Loaded {alignments.Count} alignments for project {siteModelUid}");
+
+      return alignments;
     }
 
     /// <summary>
     /// Stores the list of Alignments for a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="alignments"></param>
     private void Store(Guid siteModelUid, IAlignments alignments)
     {
       try
@@ -104,9 +95,6 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Add a new Alignment to a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="designDescriptor"></param>
-    /// <param name="extents"></param>
     public IAlignment Add(Guid siteModelUid, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
       if (extents == null)
@@ -132,9 +120,6 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Remove a given Alignment from a site model
     /// </summary>
-    /// <param name="siteModelUid"></param>
-    /// <param name="alignmentUid"></param>
-    /// <returns></returns>
     public bool Remove(Guid siteModelUid, Guid alignmentUid)
     {
       var alignments = Load(siteModelUid);
@@ -147,9 +132,6 @@ namespace VSS.TRex.Alignments
     /// <summary>
     /// Remove the alignments list for a site model from the persistent store
     /// </summary>
-    /// <param name="siteModelId"></param>
-    /// <param name="storageProxy"></param>
-    /// <returns></returns>
     public bool Remove(Guid siteModelId, IStorageProxy storageProxy)
     {
       var result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.Designs, ALIGNMENTS_STREAM_NAME);
