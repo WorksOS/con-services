@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.SubGrids
@@ -42,7 +41,11 @@ namespace VSS.TRex.SubGrids
 
       try
       {
-        Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(TASK_GROUP_TIMEOUT_SECONDS));
+        if (!Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(TASK_GROUP_TIMEOUT_SECONDS)))
+        {
+          _log.LogError($"Task group failed to complete within {TASK_GROUP_TIMEOUT_SECONDS} seconds");
+        }
+
         tasks.Clear();
 
         return true;
