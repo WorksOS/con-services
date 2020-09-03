@@ -129,7 +129,16 @@ namespace VSS.TRex.SiteModels.Executors
         _log.LogDebug($"Updating metadata for project: {_metadata}");
 
         _metadata.LastUpdateUtcTicks = DateTime.UtcNow.Ticks;
-        MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, MetadataKeyName), _metadata);
+
+        try
+        {
+          MetadataCache.Put(new NonSpatialAffinityKey(ProjectUid, MetadataKeyName), _metadata);
+        }
+        catch (Exception e)
+        {
+          _log.LogError(e, "Exception occurred updating metadata cache entry");
+          throw;
+        }
       }
     }
 
