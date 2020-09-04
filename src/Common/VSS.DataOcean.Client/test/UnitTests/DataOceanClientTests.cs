@@ -10,6 +10,7 @@ using System.IO;
 using VSS.DataOcean.Client.ResultHandling;
 using VSS.DataOcean.Client.Models;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Serilog;
@@ -310,7 +311,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Returns(Task.FromResult(expectedFileBrowseResult));
       gracefulMock
         .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 0, false))
-        .Returns(Task.CompletedTask);
+        .Returns(Task.FromResult(HttpStatusCode.Accepted));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
@@ -710,7 +711,7 @@ namespace VSS.DataOcean.Client.UnitTests
         .Returns(Task.FromResult(expectedFileResult));
       gracefulMock
         .Setup(g => g.ExecuteRequest(deleteFileUrl, null, null, HttpMethod.Delete, null, 0, false))
-        .Returns(Task.CompletedTask);
+        .Returns(Task.FromResult(HttpStatusCode.Accepted));
 
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();

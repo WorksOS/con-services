@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{F077C52D-518D-41BE-9D38-B5917FE472F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements", "Service\VSS.Productivity3D.Entitlements\VSS.Productivity3D.Entitlements.csproj", "{633B1E2D-78C6-455D-BCA5-50CA2EBB5B75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.WebApi", "Service\VSS.Productivity3D.Entitlements\VSS.Productivity3D.Entitlements.WebApi.csproj", "{633B1E2D-78C6-455D-BCA5-50CA2EBB5B75}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FB5609CE-CA95-437E-A4AD-5B8B729F46B0} = {FB5609CE-CA95-437E-A4AD-5B8B729F46B0}
 	EndProjectSection
@@ -96,6 +96,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Abstractions", "Clients\VSS.Productivity3D.Entitlements.Abstractions\VSS.Productivity3D.Entitlements.Abstractions.csproj", "{1CCE75DA-3720-42E0-8368-F1EB9BC42DC7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Entitlements.Proxy", "Clients\VSS.Productivity3D.Entitlements.Proxy\VSS.Productivity3D.Entitlements.Proxy.csproj", "{247A8B91-A7CE-4359-B0E9-B6AC486859D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Productivity3D.Entitlements.Common", "Service\VSS.Productivity3D.Entitlements.Common\VSS.Productivity3D.Entitlements.Common.csproj", "{59E71663-94D6-4FCC-8B69-464EF85EDE51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -369,6 +371,14 @@ Global
 		{247A8B91-A7CE-4359-B0E9-B6AC486859D1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{247A8B91-A7CE-4359-B0E9-B6AC486859D1}.Release|x64.ActiveCfg = Release|Any CPU
 		{247A8B91-A7CE-4359-B0E9-B6AC486859D1}.Release|x64.Build.0 = Release|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Debug|x64.Build.0 = Debug|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Release|x64.ActiveCfg = Release|Any CPU
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -414,6 +424,7 @@ Global
 		{54548E7A-123A-40B5-B537-4D7CBAF837F2} = {BA4E8712-7AD0-4DF1-80A8-80E014E080CE}
 		{1CCE75DA-3720-42E0-8368-F1EB9BC42DC7} = {8E4B1B81-064E-4D02-A39B-9ACA3837D50D}
 		{247A8B91-A7CE-4359-B0E9-B6AC486859D1} = {8E4B1B81-064E-4D02-A39B-9ACA3837D50D}
+		{59E71663-94D6-4FCC-8B69-464EF85EDE51} = {8E4B1B81-064E-4D02-A39B-9ACA3837D50D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BFE4CFD0-6FE9-49B2-9465-9D9778699F4A}

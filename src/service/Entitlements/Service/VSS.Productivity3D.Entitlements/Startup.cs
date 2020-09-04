@@ -10,13 +10,15 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Entitlements.Authentication;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
+using VSS.Productivity3D.Entitlements.Abstractions.ResultsHandling;
+using VSS.Productivity3D.Entitlements.Common.Authentication;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Entitlements
+namespace VSS.Productivity3D.Entitlements.WebApi
 {
     /// <summary>
     /// VSS.Productivity3D.Entitlements application startup.
@@ -41,17 +43,19 @@ namespace VSS.Productivity3D.Entitlements
         /// <inheritdoc />
         protected override void ConfigureAdditionalServices(IServiceCollection services)
         {
-
-            // Required for authentication
+          // Required for authentication
             services.AddSingleton<IConfigurationStore, GenericConfiguration>();
             services.AddTransient<IWebRequest, GracefulWebRequest>();
 
             services.AddServiceDiscovery();
             services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-            services.AddScoped<IErrorCodesProvider, EntitlementsExecutionStates>();
+            services.AddScoped<IErrorCodesProvider, EntitlementsErrorCodesProvider>();
 
             services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
             services.AddSingleton<CacheInvalidationService>();
+
+            services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
+            services.AddTransient<IEmsClient, IEmsClient>();
 
             services.AddOpenTracing(builder =>
             {

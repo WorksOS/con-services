@@ -52,11 +52,13 @@ namespace VSS.Productivity3D.Entitlements.Proxy
       if (!configurationStore.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false))
       {
         log.LogInformation($"Entitlements checking is disabled for request {JsonConvert.SerializeObject(request)}");
-        return new EntitlementResponseModel()
+        return new EntitlementResponseModel
         {
           IsEntitled = true,
           Feature = request.Feature,
+          Sku = request.Sku,
           OrganizationIdentifier = request.OrganizationIdentifier,
+          UserUid = request.UserUid,
           UserEmail = request.UserEmail
         };
       }
@@ -64,19 +66,21 @@ namespace VSS.Productivity3D.Entitlements.Proxy
       try
       {
         await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request)));
-        var result = await PostMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserEmail, customHeaders, null, ms);
+        var result = await PostMasterDataItemServiceDiscovery<EntitlementResponseModel>("/entitlement", request.OrganizationIdentifier, request.UserUid, customHeaders, null, ms);
         if (result == null)
         {
           log.LogInformation($"No Entitlement returned from the Entitlement Service, returned a failed entitlement request to the caller.");
-          return new EntitlementResponseModel()
+          return new EntitlementResponseModel
           {
             IsEntitled = false,
             Feature = request.Feature,
+            Sku = request.Sku,
             OrganizationIdentifier = request.OrganizationIdentifier,
+            UserUid = request.UserUid,
             UserEmail = request.UserEmail
           };
         }
-        log.LogInformation($"User `{result.UserEmail}` for Customer: `{request.OrganizationIdentifier}` {(result.IsEntitled ? "is" : "is not")} entitled to use the `{request.Feature}` feature.");
+        log.LogInformation($"User `{result.UserUid}` for Customer: `{request.OrganizationIdentifier}` {(result.IsEntitled ? "is" : "is not")} entitled to use the `{request.Feature}` feature for the `{request.Sku}` product.");
         return result;
       }
       catch (HttpRequestException e)
