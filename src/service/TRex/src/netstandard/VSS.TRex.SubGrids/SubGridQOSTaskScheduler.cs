@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     private readonly int _taskGroupTimeoutSeconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", 10);
 
-    private readonly int _maxConcurrentSchedulerSessions = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", 32);
+    private readonly int _maxConcurrentSchedulerSessions = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", -1);
     public int MaxConcurrentSchedulerSessions => _maxConcurrentSchedulerSessions;
 
     private readonly int _maxConcurrentSchedulerTasks;
@@ -71,6 +71,14 @@ namespace VSS.TRex.SubGrids
     public SubGridQOSTaskScheduler()
     {
       ThreadPool.GetMinThreads(out _maxConcurrentSchedulerTasks, out _);
+
+      // If the maximum number of concurrent sessions is not configured in the options,
+      // set the maximum number of concurrent sessions to half the number of concurrent tasks
+      if (_maxConcurrentSchedulerSessions == -1)
+      {
+        _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / 2;
+      }
+
       CreateGatewaySemaphores();
     }
 
