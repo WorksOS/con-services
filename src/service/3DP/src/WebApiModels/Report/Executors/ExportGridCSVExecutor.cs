@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   {
     private const string STR_NORTHING = "Northing";
     private const string STR_EASTING = "Easting";
-    private const string STR_INSERT_LINE = "/n";
+    private const string STR_INSERT_LINE = "\n";
     private const string STR_ELEVATION = "Elevation";
     private const string STR_CUT_FILL = "Cut/Fill";
     private const string STR_CMV = "CMV";
