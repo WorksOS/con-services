@@ -7,7 +7,7 @@ trigger:
     include:
       - 'src/Common/*'
 
-pool: fsm-merino-services
+pool: PDXA-CSD-EKS01
 
 variables:
   buildPlatform: 'Any CPU'
