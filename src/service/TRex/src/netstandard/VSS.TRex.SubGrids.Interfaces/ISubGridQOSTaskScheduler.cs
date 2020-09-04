@@ -13,5 +13,14 @@ namespace VSS.TRex.SubGrids.Interfaces
     int DefaultMaxTasks();
 
     int DefaultThreadPoolFractionDivisor { get; }
+
+    int MaxConcurrentSchedulerSessions { get; }
+    int MaxConcurrentSchedulerTasks { get; }
+
+    int CurrentExecutingSessionCount { get; }
+
+    int CurrentExecutingTaskCount { get; }
+
+    int TotalSchedulerSessions { get; }
   }
 }

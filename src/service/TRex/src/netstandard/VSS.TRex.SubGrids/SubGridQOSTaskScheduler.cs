@@ -20,16 +20,6 @@ namespace VSS.TRex.SubGrids
     private static readonly ILogger _log = Logging.Logger.CreateLogger("SubGridQOSTaskScheduler");
 
     /// <summary>
-    /// The count of tasks the QOS scheduler has scheduled or execution on the .Net task thread pool.
-    /// </summary>
-    private int _currentExecutingTaskCount = 0;
-
-    /// <summary>
-    /// The count of scheduler sessions representing sets of sub grid requests required for various TRex requests.
-    /// </summary>
-    private int _currentSchedulerSessionsCount = 0;
-
-    /// <summary>
     /// The divisor used to indicate the largest fraction of task thread pool resources that may be applied to a single scheduler session
     /// This is also used as a multiplier against the default number of threads for that thread pool at system start up
     /// </summary>
@@ -41,16 +31,37 @@ namespace VSS.TRex.SubGrids
     private readonly int _taskGroupTimeoutSeconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", 10);
 
     private readonly int _maxConcurrentSchedulerSessions = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", 32);
+    public int MaxConcurrentSchedulerSessions => _maxConcurrentSchedulerSessions;
+
+    private readonly int _maxConcurrentSchedulerTasks;
+    public int MaxConcurrentSchedulerTasks => _maxConcurrentSchedulerTasks;
 
     /// <summary>
     /// The semaphore used to restrict the number of concurrent scheduler sessions
     /// </summary>
-    private readonly SemaphoreSlim _sessionGatewaySemaphore;
+    private SemaphoreSlim _sessionGatewaySemaphore;
 
     /// <summary>
     /// The semaphore used to restrict the number of concurrent tasks scheduled by separate sessions
     /// </summary>
-    private readonly SemaphoreSlim _taskGatewaySemaphore;
+    private SemaphoreSlim _taskGatewaySemaphore;
+
+    /// <summary>
+    /// The number of scheduler sessions that are concurrently executing
+    /// </summary>
+    public int CurrentExecutingSessionCount => _maxConcurrentSchedulerSessions - _sessionGatewaySemaphore.CurrentCount;
+
+    /// <summary>
+    /// The number of tasks being utilised by the concurrently running scheduler sessions
+    /// </summary>
+    public int CurrentExecutingTaskCount => _maxConcurrentSchedulerTasks - _taskGatewaySemaphore.CurrentCount;
+
+    private int _totalSchedulerSessions = 0;
+
+    /// <summary>
+    /// The total number of scheduler sessions active, either pending execution, or being executed
+    /// </summary>
+    public int TotalSchedulerSessions => _totalSchedulerSessions;
 
     /// <summary>
     /// The flag to indicate the service has been terminated (eg: via a SIG_TERM message), and so should abort active operations
@@ -59,10 +70,22 @@ namespace VSS.TRex.SubGrids
 
     public SubGridQOSTaskScheduler()
     {
-      ThreadPool.GetMinThreads(out var maxConcurrentSchedulerTasks, out _);
+      ThreadPool.GetMinThreads(out _maxConcurrentSchedulerTasks, out _);
+      CreateGatewaySemaphores();
+    }
 
-      _sessionGatewaySemaphore = new SemaphoreSlim(_maxConcurrentSchedulerSessions, _maxConcurrentSchedulerSessions);
-      _taskGatewaySemaphore = new SemaphoreSlim(maxConcurrentSchedulerTasks, maxConcurrentSchedulerTasks);
+    public SubGridQOSTaskScheduler(int maxSchedulerSessions, int maxSchedulerTasks)
+    {
+      _maxConcurrentSchedulerSessions = maxSchedulerSessions;
+      _maxConcurrentSchedulerTasks = maxSchedulerTasks;
+
+      CreateGatewaySemaphores();
+    }
+
+    private void CreateGatewaySemaphores()
+    {
+      _sessionGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerSessions, MaxConcurrentSchedulerSessions);
+      _taskGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerTasks, MaxConcurrentSchedulerTasks);
     }
 
     /// <summary>
@@ -105,7 +128,6 @@ namespace VSS.TRex.SubGrids
       {
         tasks.Clear();
         _taskGatewaySemaphore.Release(taskCount);
-        Interlocked.Add(ref _currentExecutingTaskCount, -taskCount);
       }
     }
 
@@ -128,10 +150,11 @@ namespace VSS.TRex.SubGrids
         return true;
 
       var taskIndex = 0;
-      var preActiveSessions = Interlocked.Increment(ref _currentSchedulerSessionsCount);
       var tasks = new List<Task>(maxTasks);
 
-      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {preActiveSessions} sessions are active using {_currentExecutingTaskCount} tasks");
+      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
+
+      Interlocked.Increment(ref _totalSchedulerSessions);
 
       _sessionGatewaySemaphore.Wait();
       try
@@ -144,8 +167,6 @@ namespace VSS.TRex.SubGrids
           }
 
           _taskGatewaySemaphore.Wait();
-
-          Interlocked.Increment(ref _currentExecutingTaskCount);
 
           tasks.Add(Task.Run(() =>
           {
@@ -166,7 +187,7 @@ namespace VSS.TRex.SubGrids
             }
           }));
 
-          if (tasks.Count >= maxTasks || subGridCollectionIndex >= collectionCount)
+          if (tasks.Count >= maxTasks || (subGridCollectionIndex + 1) >= collectionCount)
           {
             if (!WaitForGroupToComplete(tasks))
               return;
@@ -185,13 +206,17 @@ namespace VSS.TRex.SubGrids
       finally
       {
         // Ensure any pending tasks are removed from the task gateway semaphore
-        _taskGatewaySemaphore.Release(tasks.Count);
+        if (tasks.Count > 0)
+        {
+          _taskGatewaySemaphore.Release(tasks.Count);
+        }
 
         // Release the gateway semaphore to allow another scheduler to enter
         _sessionGatewaySemaphore.Release();
 
-        var postActiveSessions = Interlocked.Decrement(ref _currentSchedulerSessionsCount);
-        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {postActiveSessions} sessions are active using {_currentExecutingTaskCount} tasks");
+        Interlocked.Decrement(ref _totalSchedulerSessions);
+
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
       }
     }
   }
