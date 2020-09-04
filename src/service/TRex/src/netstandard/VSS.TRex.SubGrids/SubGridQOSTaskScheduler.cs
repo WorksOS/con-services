@@ -74,7 +74,7 @@ namespace VSS.TRex.SubGrids
 
       // If the maximum number of concurrent sessions is not configured in the options,
       // set the maximum number of concurrent sessions to half the number of concurrent tasks
-      if (_maxConcurrentSchedulerSessions == -1)
+      if (_maxConcurrentSchedulerSessions < 0)
       {
         _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / 2;
       }
