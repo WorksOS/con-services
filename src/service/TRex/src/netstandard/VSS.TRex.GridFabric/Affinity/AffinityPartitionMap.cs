@@ -4,6 +4,7 @@ using System.Linq;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Events;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -16,6 +17,8 @@ namespace VSS.TRex.GridFabric.Affinity
   /// </summary>
   public class AffinityPartitionMap<TK, TV> : IEventListener<CacheRebalancingEvent>, IEventListener<CacheEvent>, IDisposable
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<AffinityPartitionMap<TK, TV>>();
+
     /// <summary>
     /// Backing variable for PrimaryPartitions
     /// </summary>
@@ -102,11 +105,18 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public bool Invoke(CacheRebalancingEvent evt)
     {
-      if (evt.CacheName.Equals(Cache.Name))
+      try
       {
-        // Assign primary and backup partition maps to null to force them to be recalculated
-        _primaryPartitions = null;
-        backupPartitions = null;
+        if (evt.CacheName.Equals(Cache.Name))
+        {
+          // Assign primary and backup partition maps to null to force them to be recalculated
+          _primaryPartitions = null;
+          backupPartitions = null;
+        }
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Exception invoking cache rebalancing event for cache {evt?.CacheName}");
       }
 
       return true;
