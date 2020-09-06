@@ -116,6 +116,7 @@ namespace VSS.TRex.GridFabric.Affinity
       }
       catch (Exception e)
       {
+        // Note: We can't rethrow here as this may cause SEHExceptions in the Ignite/JNI layer. Returning false unsubscribes the listener (which is not desirable).
         _log.LogError(e, $"Exception invoking cache rebalancing event for cache {evt?.CacheName}");
       }
 
