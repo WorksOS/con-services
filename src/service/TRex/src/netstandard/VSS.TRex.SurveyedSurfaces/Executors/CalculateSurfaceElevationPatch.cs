@@ -48,12 +48,6 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
           return null;
         }
 
-        if (processingMap == null)
-        {
-          _log.LogError("Supplied processing map is null, returning null");
-          return null;
-        }
-
         var patch = _clientLeafSubGridFactory.GetSubGridEx(
           patchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime,
           cellSize, SubGridTreeConsts.SubGridTreeLevels,
