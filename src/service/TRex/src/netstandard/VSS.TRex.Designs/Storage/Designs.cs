@@ -54,14 +54,14 @@ namespace VSS.TRex.Designs.Storage
                                     DesignDescriptor ADesignDescriptor,
                                     BoundingWorldExtent3D AExtents)
     {
-      IDesign match = Find(x => x.ID == ADesignID);
+      var match = Find(x => x.ID == ADesignID);
 
       if (match != null)
       {
         return match;
       }
 
-      Design design = new Design(ADesignID, ADesignDescriptor, AExtents);
+      var design = new Design(ADesignID, ADesignDescriptor, AExtents);
       Add(design);
 
       return design;
@@ -72,7 +72,7 @@ namespace VSS.TRex.Designs.Storage
     /// </summary>
     public bool RemoveDesign(Guid ADesignID)
     {
-      IDesign match = Find(x => x.ID == ADesignID);
+      var match = Find(x => x.ID == ADesignID);
 
       return match != null && Remove(match);
     }

@@ -15,8 +15,6 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
         /// Register a type implementing IClientLeafSubGrid against a grid data type for the factory to 
         /// create on demand
         /// </summary>
-        /// <param name="gridDataType"></param>
-        /// <param name="constructor"></param>
         void RegisterClientLeafSubGridType(GridDataType gridDataType, Func<IClientLeafSubGrid> constructor);
 
         /// <summary>
@@ -25,7 +23,6 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
         /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
         /// of the caller or a derived factory class
         /// </summary>
-        /// <param name="gridDataType"></param>
         /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
         IClientLeafSubGrid GetSubGrid(GridDataType gridDataType);
 
@@ -35,11 +32,6 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
         /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
         /// of the caller or a derived factory class
         /// </summary>
-        /// <param name="gridDataType"></param>
-        /// <param name="cellSize"></param>
-        /// <param name="level"></param>
-        /// <param name="originX"></param>
-        /// <param name="originY"></param>
         /// <returns>An appropriate instance derived from ClientLeafSubGrid configured with supplied cell size, tree level and origin</returns>
         IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, int originX, int originY);
 

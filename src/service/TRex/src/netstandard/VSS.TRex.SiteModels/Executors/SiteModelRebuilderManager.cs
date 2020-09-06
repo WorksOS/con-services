@@ -46,6 +46,9 @@ namespace VSS.TRex.SiteModels.Executors
          as IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>;
     }
 
+    /// <summary>
+    /// Start operations to rebuild a project 
+    /// </summary>
     public bool Rebuild(Guid projectUid, bool archiveTAGFiles, TransferProxyType proxyType)
     {
       _log.LogInformation($"Site model rebuilder executing rebuild for project {projectUid}, archiving tag files = {archiveTAGFiles}");

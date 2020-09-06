@@ -28,7 +28,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
   {
     private static ILogger _log = Logging.Logger.CreateLogger<CSVExportSubGridProcessor>();
 
-    private ICoreXWrapper _convertCoordinates = DIContext.Obtain<ICoreXWrapper>();
+    private ICoreXWrapper _convertCoordinates = DIContext.ObtainRequired<ICoreXWrapper>();
 
     private readonly int _maxExportRows;
     private int _totalRowCountSoFar;
@@ -101,7 +101,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       var rows = new List<string>();
       if (RecordCountLimitReached())
         return rows;
-
+      
       int runningIndexLLHCoords = 0;
       if (_requestArgument.CoordType == CoordType.LatLon)
         _llhCoords = SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid);

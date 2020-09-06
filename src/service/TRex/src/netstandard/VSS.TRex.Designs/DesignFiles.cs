@@ -23,21 +23,21 @@ namespace VSS.TRex.Designs
     public const ulong DEFAULT_DESIGN_ELEVATION_CACHE_SIZE = 1 * 1024 * 1024 * 1024;
 
     /// <summary>
-    /// The lock specifically used to serialise operations that evict designs from the cache in order to make space for others
+    /// The lock specifically used to serialize operations that evict designs from the cache in order to make space for others
     /// </summary>
-    private object _freeSpaceAssuranceLock = new object();
+    private readonly object _freeSpaceAssuranceLock = new object();
 
     /// <summary>
-    /// The lock specifically used to serialise the core design file loading operation
+    /// The lock specifically used to serialize the core design file loading operation
     /// </summary>
-    private object _designFileLoadExclusivityLock = new object();
+    private readonly object _designFileLoadExclusivityLock = new object();
 
     /// <summary>
     /// The collection of designs that are currently present in the cache
     /// </summary>
     private readonly ConcurrentDictionary<Guid, DesignCacheItemMetaData> _designs = new ConcurrentDictionary<Guid, DesignCacheItemMetaData>();
 
-    private long _designsCacheSize = 0;
+    private long _designsCacheSize;
 
     /// <summary>
     /// The total size of all cached items present
@@ -93,10 +93,15 @@ namespace VSS.TRex.Designs
     /// </summary>
     public IDesignBase Lock(Guid designUid, ISiteModelBase siteModelBase, double cellSize, out DesignLoadResult loadResult)
     {
+      loadResult = DesignLoadResult.UnknownFailure;
+
       IDesignBase design = null;
       DesignCacheItemMetaData designMetaData;
 
-      var siteModel = siteModelBase as ISiteModel;
+      if (!(siteModelBase is ISiteModel siteModel))
+      {
+        return null;
+      }
 
       lock (_designs)
       {
@@ -119,7 +124,7 @@ namespace VSS.TRex.Designs
           }
           else
           {
-            var surveyedSurfaceRef = siteModel.SurveyedSurfaces?.Locate(designUid);
+            var surveyedSurfaceRef = siteModel.SurveyedSurfaces.Locate(designUid);
             descriptor = surveyedSurfaceRef?.DesignDescriptor;
 
             if (descriptor != null)
@@ -128,7 +133,7 @@ namespace VSS.TRex.Designs
             }
             else
             {
-              var alignmentDesignRef = siteModel.Alignments?.Locate(designUid);
+              var alignmentDesignRef = siteModel.Alignments.Locate(designUid);
               descriptor = alignmentDesignRef?.DesignDescriptor;
 
               if (descriptor != null)
@@ -219,11 +224,11 @@ namespace VSS.TRex.Designs
           // Ensure there is enough space in the cache to accomodate the newly loaded file
           if (!EnsureSufficientSpaceToLoadDesign(design.SizeInCache()))
           {
-            _log.LogError($"Unable to ensure sufficient free space to add the design to the cache - removing it and failing the Lock()_ operation");
+            _log.LogError("Unable to ensure sufficient free space to add the design to the cache - removing it and failing the Lock()_ operation");
 
             if (!_designs.TryRemove(designUid, out _))
             {
-              _log.LogError($"Failed to remove design from dictionary after failure to acquire sufficient memory");
+              _log.LogError("Failed to remove design from dictionary after failure to acquire sufficient memory");
             }
 
             loadResult = DesignLoadResult.InsufficientMemory;
@@ -289,7 +294,7 @@ namespace VSS.TRex.Designs
             if (_designs.Count == 0) // If there are no designs in the cache then permit the cache to be loaded, even if it exceeds the cache available
               return true;
 
-            // No? Then find some designs to victimise
+            // No? Then find some designs to victimize
             var removedDesign = false;
 
             lock (_designs)

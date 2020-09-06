@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
 {
   public class SiteModelDesignList : List<ISiteModelDesign>, ISiteModelDesignList
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelDesignList>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelDesignList>();
 
     private const byte VERSION_NUMBER = 1;
     public const string LIST_STREAM_NAME = "SiteModelDesigns";
@@ -21,13 +21,11 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Indexer supporting locating designs by the design name
     /// </summary>
-    /// <param name="designName"></param>
-    /// <returns></returns>
     public ISiteModelDesign this[string designName]
     {
       get
       {
-        int index = IndexOf(designName);
+        var index = IndexOf(designName);
         return index > 0 ? this[index] : null;
       }
     }
@@ -36,11 +34,11 @@ namespace VSS.TRex.SiteModels
 
     public ISiteModelDesign CreateNew(string name, BoundingWorldExtent3D extents)
     {
-      int index = IndexOf(name);
+      var index = IndexOf(name);
 
       if (index != -1)
       {
-        Log.LogError($"An identical design ({name}) already exists in the designs for this site.");
+        _log.LogError($"An identical design ({name}) already exists in the designs for this site.");
         return this[index];
       }
 
@@ -83,7 +81,7 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void LoadFromPersistentStore(Guid projectUid, IStorageProxy storageProxy)
     {
-      storageProxy.ReadStreamFromPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, out MemoryStream ms);
+      storageProxy.ReadStreamFromPersistentStore(projectUid, LIST_STREAM_NAME, FileSystemStreamType.MachineDesigns, out var ms);
       if (ms == null)
         return;
 
@@ -96,22 +94,24 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Deserializes the list of proofing runs using the given reader
     /// </summary>
-    /// <param name="reader"></param>
 
     public void Read(BinaryReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      int count = reader.ReadInt32();
-      Capacity = count;
-
-      for (int i = 0; i < count; i++)
+      if (version == 1)
       {
-        string name = reader.ReadString();
-        BoundingWorldExtent3D extents = new BoundingWorldExtent3D();
-        extents.Read(reader);
+        var count = reader.ReadInt32();
+        Capacity = count;
 
-        Add(new SiteModelDesign(name, extents));
+        for (var i = 0; i < count; i++)
+        {
+          var name = reader.ReadString();
+          var extents = new BoundingWorldExtent3D();
+          extents.Read(reader);
+
+          Add(new SiteModelDesign(name, extents));
+        }
       }
     }
 
@@ -119,9 +119,9 @@ namespace VSS.TRex.SiteModels
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.Write((int)Count);
+      writer.Write(Count);
 
-      for (int i = 0; i < Count; i++)
+      for (var i = 0; i < Count; i++)
       {
         writer.Write(this[i].Name);
         this[i].Extents.Write(writer);
