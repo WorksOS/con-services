@@ -39,7 +39,7 @@ namespace VSS.TRex.SubGrids.Executors
   {
     public const string SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE = "SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE";
 
-    private readonly int _addressBucketSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE, 50);
+    private readonly int _addressBucketSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE, 25);
 
     private readonly IRequestorUtilities _requestorUtilities = DIContext.Obtain<IRequestorUtilities>();
 
@@ -524,7 +524,10 @@ namespace VSS.TRex.SubGrids.Executors
         });
       }
 
-      ProcessSubGridAddressGroup(addresses, listCount); // Process the remaining sub grids...
+      if (listCount > 0)
+      {
+        ProcessSubGridAddressGroup(addresses, listCount); // Process the remaining sub grids...
+      }
 
       _log.LogInformation($"Scheduling for {_taskAddresses.Count} sub tasks to complete for sub grids request");
       try
