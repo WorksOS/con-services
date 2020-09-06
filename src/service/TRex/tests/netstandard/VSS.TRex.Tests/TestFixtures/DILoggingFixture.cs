@@ -129,6 +129,13 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueUlong("TREX_DESIGN_ELEVATION_CACHE_SIZE", It.IsAny<ulong>())).Returns((ulong)10 * 1024 * 1024);
 
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_DEFAULT_THREAD_POOL_FRACTION_DIVISOR")).Returns(4);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_DEFAULT_THREAD_POOL_FRACTION_DIVISOR", It.IsAny<int>())).Returns(4);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS")).Returns(10);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", It.IsAny<int>())).Returns(10);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS")).Returns(4);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", It.IsAny<int>())).Returns(4);
+
           return config;
         }))
         .Build()

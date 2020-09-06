@@ -529,7 +529,8 @@ namespace VSS.TRex.SubGrids.Executors
       _log.LogInformation($"Scheduling for {_taskAddresses.Count} sub tasks to complete for sub grids request");
       try
       {
-        if (!SubGridQOSTaskScheduler.Schedule(_taskAddresses, PerformSubGridRequestList, SubGridQOSTaskScheduler.DefaultMaxTasks()))
+        var scheduler = DIContext.ObtainRequired<ISubGridQOSTaskScheduler>();
+        if (!scheduler.Schedule(_taskAddresses, PerformSubGridRequestList, scheduler.DefaultMaxTasks()))
         {
           _log.LogError($"Failed to schedule {_taskAddresses.Count} groups of sub grids to be processed");
         }
