@@ -375,12 +375,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ContractExecutionResult> DeleteImportedFileV6(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid? importedFileUid, // for 3dpm imported files
-      [FromQuery] ImportedFileType? importedFileType, // for CWS project configuration files
-      [FromQuery] string filename, // for CWS project configuration files
       [FromServices] IPegasusClient pegasusClient,
       [FromServices] IWebClientWrapper webClient)
     {
-      Logger.LogInformation($"{nameof(DeleteImportedFileV6)}: projectUid {projectUid} importedFileUid: {importedFileUid} importedFileType: {importedFileType} filename: {filename}");
+      Logger.LogInformation($"{nameof(DeleteImportedFileV6)}: projectUid {projectUid} importedFileUid: {importedFileUid}");
 
       await ValidateProjectId(projectUid.ToString());
 

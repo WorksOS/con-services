@@ -88,7 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileDescriptorSingleResult importedFileResult;
       using (var ms = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo))
       {
-        importedFileResult = await UpsertFileInternal(importedFileTbc.Name, ms, new Guid(projectUid), 
+        importedFileResult = await UpsertFileInternal(importedFileTbc.Name, ms, new Guid(projectUid),
           importedFileTbc.ImportedFileTypeId,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
             ? importedFileTbc.LineworkFile.DxfUnitsTypeId

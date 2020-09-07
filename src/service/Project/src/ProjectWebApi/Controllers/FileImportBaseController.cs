@@ -134,7 +134,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return changedUids;
     }
 
-    protected bool IsDesignFileType(ImportedFileType importedFileType)
+    protected bool IsTRexDesignFileType(ImportedFileType importedFileType)
     {
       return importedFileType == ImportedFileType.DesignSurface ||
              importedFileType == ImportedFileType.SurveyedSurface ||
@@ -187,7 +187,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       else
       {
-        if (IsDesignFileType(importedFileType))
+        if (IsTRexDesignFileType(importedFileType))
         {
           fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
             fileStream, projectUid.ToString(), filename,

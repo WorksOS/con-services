@@ -4,12 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.AWS.TransferProxy;
+using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -45,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
         (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo);
       ImportedFileInternalResult importedFileInternalResult = null;
-      if (deleteImportedFile.IsDesignFileType)
+      if (deleteImportedFile.IsTRexDesignFileType)
       {
         //Now delete in TRex
         await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid,
@@ -54,7 +57,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             deleteImportedFile.SurveyedUtc,
             log, customHeaders, serviceExceptionHandler,
             tRexImportFileProxy);
+        //and from s3 bucket
+        ProjectRequestHelper.DeleteFileFromS3Repository(
+          deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.FileDescriptor.FileName,
+          deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface, deleteImportedFile.SurveyedUtc,
+          log, serviceExceptionHandler, persistantTransferProxyFactory.NewProxy(TransferProxyType.DesignImport));
       }
+     
       if (deleteImportedFile.ImportedFileType == ImportedFileType.Linework || 
           deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff)
       {
