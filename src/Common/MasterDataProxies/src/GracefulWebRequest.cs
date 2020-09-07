@@ -206,7 +206,7 @@ namespace VSS.MasterData.Proxies
           var contents = await result.Content.ReadAsStringAsync();
           if (!_okCodes.Contains(result.StatusCode))
           {
-            _log.LogError($"Request returned non-ok code {result.StatusCode} with response {contents.Truncate(_logMaxChar)}");
+            _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents.Truncate(_logMaxChar)}");
 
             var serviceException = ParseServiceError(result.StatusCode, contents);
             throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
