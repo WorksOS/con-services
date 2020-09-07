@@ -51,8 +51,8 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(string.Empty, firstProject.ProjectTimeZone);
       Assert.Equal(0, firstProject.ProjectType);                          // only historical 'standard project' supported
       Assert.Equal("Standard", firstProject.ProjectTypeName);
-      Assert.Equal(DateTime.MinValue.ToString(), firstProject.StartDate); // no longer supported
-      Assert.Equal(DateTime.MaxValue.ToString(), firstProject.EndDate);   // no longer supported
+      //Assert.Equal(DateTime.MinValue.ToString(), firstProject.StartDate); // no longer supported
+      //Assert.Equal(DateTime.MaxValue.ToString(), firstProject.EndDate);   // no longer supported
       Assert.True(Guid.TryParse(firstProject.ProjectUid, out _));
       Assert.Equal(projectGeofenceWKT, firstProject.ProjectGeofenceWKT);
       Assert.Equal(returnLongV5Result.Id, firstProject.LegacyProjectId);
