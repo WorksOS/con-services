@@ -31,8 +31,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // don't send our timezone, we only need it for WorksOS. WM has their own, calculated from the boundary, for their own uses.
         var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(projectValidation);
-        createProjectRequestModel.Boundary = GeometryConversion.MapProjectBoundary(projectValidation.ProjectBoundaryWKT);
-
         response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
         if (response == null || string.IsNullOrEmpty(response.Id))
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
