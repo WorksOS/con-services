@@ -84,7 +84,7 @@ namespace VSS.TRex.SiteModels
         // Dump the Grid reference as this will need to be re-created
         grid = null;
         StorageRepresentationToSupply = mutability;
-        PrimaryStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(mutability);
+        PrimaryStorageProxy = DIContext.ObtainRequired<ISiteModels>().PrimaryStorageProxy(mutability);
       }
     }
 
@@ -123,7 +123,7 @@ namespace VSS.TRex.SiteModels
 
       // Advise the grid that this site model is being deleted
 
-      var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+      var sender = DIContext.ObtainRequired<ISiteModelAttributesChangedEventSender>();
       sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, ID, siteModelMarkedForDeletion: true);
     }
 
@@ -233,7 +233,7 @@ namespace VSS.TRex.SiteModels
     public bool SetCSIB(string csib)
     {
       // Add the coordinate system to the cache
-      var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+      var storageProxy = DIContext.ObtainRequired<IStorageProxyFactory>().MutableGridStorage();
 
       using (var csibStream = new MemoryStream(Encoding.ASCII.GetBytes(csib)))
       {
@@ -248,7 +248,7 @@ namespace VSS.TRex.SiteModels
         return false;
 
       // Notify the  grid listeners that attributes of this site model have changed.
-      var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+      var sender = DIContext.ObtainRequired<ISiteModelAttributesChangedEventSender>();
       sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, ID, CsibChanged: true);
 
       return true;
@@ -328,7 +328,7 @@ namespace VSS.TRex.SiteModels
     /// This is a list of TTM descriptors which indicate designs
     /// that can be used as a snapshot of an actual ground surface at a specific point in time
     /// </summary>
-    public ISurveyedSurfaces SurveyedSurfaces => _surveyedSurfaces ??= DIContext.Obtain<ISurveyedSurfaceManager>().List(ID);
+    public ISurveyedSurfaces SurveyedSurfaces => _surveyedSurfaces ??= DIContext.ObtainRequired<ISurveyedSurfaceManager>().List(ID);
 
     public bool SurveyedSurfacesLoaded => _surveyedSurfaces != null;
 
@@ -337,7 +337,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// alignments records all the alignment files that have been imported into the site model
     /// </summary>
-    public IAlignments Alignments => _alignments ??= DIContext.Obtain<IAlignmentManager>().List(ID);
+    public IAlignments Alignments => _alignments ??= DIContext.ObtainRequired<IAlignmentManager>().List(ID);
 
     public bool AlignmentsLoaded => _alignments != null;
 
@@ -452,7 +452,7 @@ namespace VSS.TRex.SiteModels
       LastModifiedDate = CreationDate;
       StorageRepresentationToSupply = storageRepresentationToSupply;
 
-      PrimaryStorageProxy = DIContext.Obtain<ISiteModels>().PrimaryStorageProxy(StorageRepresentationToSupply);
+      PrimaryStorageProxy = DIContext.ObtainRequired<ISiteModels>().PrimaryStorageProxy(StorageRepresentationToSupply);
     }
 
     /// <summary>
