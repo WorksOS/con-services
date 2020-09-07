@@ -4,4 +4,4 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish $SERVICE_PATH/src/VSS.Tile.Service.WebApi/VSS.Tile.Service.WebApi.csproj --configuration Release --output /build/artifacts/Push --framework netcoreapp3.1 --runtime linux-x64 -nowarn:NU1701 -nowarn:CS1591
+RUN dotnet publish $SERVICE_PATH/src/VSS.Tile.Service.WebApi/VSS.Tile.Service.WebApi.csproj --configuration Release --output /build/artifacts --framework netcoreapp3.1 --runtime linux-x64 -nowarn:NU1701 -nowarn:CS1591
