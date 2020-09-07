@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -14,8 +13,6 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.Extensions;
-using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -443,129 +440,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
       }
     }
-
-    /// <summary>
-    /// Common file processing method used by all importedFile endpoints.
-    /// </summary>
-    private async Task<ImportedFileDescriptorSingleResult> UpsertFileInternal(
-      string filename,
-      Stream fileStream,
-      Guid projectUid,
-      ImportedFileType importedFileType,
-      DxfUnitsType dxfUnitsType,
-      DateTime fileCreatedUtc,
-      DateTime fileUpdatedUtc,
-      DateTime? surveyedUtc,
-      ISchedulerProxy schedulerProxy,
-      Guid? parentUid = null,
-      double? offset = null)
-    {
-      ImportedFileDescriptorSingleResult importedFile = null;
-
-      var existing = await ImportedFileRequestDatabaseHelper
-        .GetImportedFileForProject
-        (projectUid.ToString(), filename, importedFileType, surveyedUtc,
-          Logger, ProjectRepo, offset, parentUid)
-        .ConfigureAwait(false);
-
-      var creating = existing == null;
-
-      Logger.LogInformation(
-        creating
-          ? $"{nameof(UpsertFileInternal)}. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
-          : $"{nameof(UpsertFileInternal)}. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
-
-      FileDescriptor fileDescriptor = null;
-
-      var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
-      var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(filename,
-        importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff,
-        importedFileUid, surveyedUtc);
-
-      if (importedFileType == ImportedFileType.ReferenceSurface)
-      {
-        //FileDescriptor not used for reference surface but validation requires values
-        fileDescriptor = FileDescriptor.CreateFileDescriptor("Not applicable", "Not applicable", filename);
-      }
-      else
-      {
-        if (IsDesignFileType(importedFileType))
-        {
-          fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-            fileStream, projectUid.ToString(), filename,
-            importedFileType == ImportedFileType.SurveyedSurface, surveyedUtc,
-            Logger, ServiceExceptionHandler, persistantTransferProxyFactory.NewProxy(TransferProxyType.DesignImport));
-        }
-
-        //This is needed for ATs.
-        fileDescriptor = FileDescriptor.CreateFileDescriptor(
-          FileSpaceId,
-          $"/{CustomerUid}/{projectUid}",
-          filename);
-
-        if (importedFileType == ImportedFileType.Linework || importedFileType == ImportedFileType.GeoTiff)
-        {
-          //save copy to DataOcean      
-          await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, DataOceanRootFolderId, CustomerUid, projectUid.ToString(), dataOceanFileName,
-              Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
-        }
-      }
-
-      if (creating)
-      {
-        var createImportedFile = new CreateImportedFile(
-          projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolderId, parentUid, offset, importedFileUid, dataOceanFileName);
-
-        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
-            .Build<CreateImportedFileExecutor>(
-              LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-              productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-              persistantTransferProxyFactory: persistantTransferProxyFactory, tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
-              cwsProjectClient: CwsProjectClient)
-            .ProcessAsync(createImportedFile)
-        ) as ImportedFileDescriptorSingleResult;
-
-        Logger.LogInformation(
-          $"{nameof(UpsertFileInternal)}: Create completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
-      }
-      else
-      {
-        // this also validates that this customer has access to the projectUid
-        var project = await ProjectRequestHelper.GetProject(projectUid, new Guid(CustomerUid), new Guid(UserId), Logger, ServiceExceptionHandler, CwsProjectClient, customHeaders);
-
-        var importedFileUpsertEvent = new UpdateImportedFile(
-          projectUid, project.ShortRaptorProjectId, importedFileType,
-          (importedFileType == ImportedFileType.SurveyedSurface || importedFileType == ImportedFileType.GeoTiff)
-            ? surveyedUtc
-            : null,
-          dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
-          Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolderId, offset, dataOceanFileName);
-
-        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
-            .Build<UpdateImportedFileExecutor>(
-              LoggerFactory, ConfigStore, ServiceExceptionHandler, CustomerUid, UserId, UserEmailAddress, customHeaders,
-              productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-              tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy,
-              cwsProjectClient: CwsProjectClient)
-            .ProcessAsync(importedFileUpsertEvent)
-        ) as ImportedFileDescriptorSingleResult;
-
-        Logger.LogInformation(
-          $"{nameof(UpsertFileInternal)}: Update completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
-      }
-
-      await NotificationHubClient.Notify(new ProjectChangedNotification(projectUid));
-
-      return importedFile;
-    }
-
 
     /// <summary>
     /// Validate that the uploaded file doesn't already exist in the database.
