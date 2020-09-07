@@ -67,7 +67,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
         if (design != null)
         {
-          designFiles.RemoveDesignFromCache(message.DesignUid, design, message.SiteModelUid, message.DesignRemoved);
+          designFiles.RemoveDesignFromCache(message.DesignUid, design, message.SiteModelUid, true);
         }
         else
         {
