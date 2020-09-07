@@ -318,7 +318,7 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Designs records all the design surfaces that have been imported into the site model
     /// </summary>
-    public IDesigns Designs => _designs ??= DIContext.Obtain<IDesignManager>().List(ID);
+    public IDesigns Designs => _designs ??= DIContext.ObtainRequired<IDesignManager>().List(ID);
 
     public bool DesignsLoaded => _designs != null;
 
@@ -458,8 +458,6 @@ namespace VSS.TRex.SiteModels
     /// <summary>
     /// Constructs a site model from an 'origin' site model that provides select information to seed the new site model
     /// </summary>
-    /// <param name="originModel"></param>
-    /// <param name="originFlags"></param>
     public SiteModel(ISiteModel originModel, SiteModelOriginConstructionFlags originFlags) : this(originModel.StorageRepresentationToSupply)
     {
       if (originModel.IsTransient)
@@ -673,8 +671,6 @@ versionMap = null;
     /// <summary>
     /// Saves only the core metadata about the site model to the persistent store
     /// </summary>
-    /// <param name="storageProxy"></param>
-    /// <returns></returns>
     public bool RemoveMetadataFromPersistentStore(IStorageProxy storageProxy)
     {
       if (storageProxy.RemoveStreamFromPersistentStore(ID, FileSystemStreamType.ProductionDataXML, SiteModelXMLFileName) == FileSystemErrorStatus.OK)
@@ -689,7 +685,6 @@ versionMap = null;
     /// <summary>
     /// Save the site model metadata and core mutated state driven by TAG file ingest
     /// </summary>
-    /// <param name="storageProxy"></param>
     public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
     {
       var result = true;
@@ -765,7 +760,6 @@ Result = false;
     /// <summary>
     /// Saves the content of the existence map to storage
     /// </summary>
-    /// <returns></returns>
     private FileSystemErrorStatus SaveProductionDataExistenceMapToStorage(IStorageProxy storageProxy)
     {
       var result = FileSystemErrorStatus.OK;
@@ -783,7 +777,6 @@ Result = false;
     /// <summary>
     /// Removes the existence map from persistent storage for the site model
     /// </summary>
-    /// <returns></returns>
     public bool RemoveProductionDataExistenceMapFromStorage(IStorageProxy storageProxy)
     {
        var result = storageProxy.RemoveStreamFromPersistentStore(ID, FileSystemStreamType.SubGridExistenceMap, SubGridExistenceMapFileName);
@@ -799,7 +792,6 @@ Result = false;
     /// <summary>
     /// Retrieves the content of the existence map from storage
     /// </summary>
-    /// <returns></returns>
     private ISubGridTreeBitMask LoadProductionDataExistenceMapFromStorage()
     {
       var existenceMapCopy = _existenceMap;
@@ -842,7 +834,6 @@ Result = false;
     /// <summary>
     /// Saves the content of the existence map to storage
     /// </summary>
-    /// <returns></returns>
     private FileSystemErrorStatus SaveProductionDataVersionMapToStorage(IStorageProxy storageProxy)
     {
     var result = FileSystemErrorStatus.OK;
@@ -856,7 +847,6 @@ Result = false;
     /// <summary>
     /// Retrieves the content of the existence map from storage
     /// </summary>
-    /// <returns></returns>
     private IGenericSubGridTree_Long LoadProductionDataVersionMapFromStorage()
     {
     var versionMapCopy = versionMap;
@@ -894,7 +884,6 @@ Result = false;
     /// data model expanded to include the bounding extents of the surveyed surfaces associated with the 
     /// datamodel, excepting those identified in the SurveyedSurfaceExclusionList
     /// </summary>
-    /// <returns></returns>
     public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] surveyedSurfaceExclusionList)
     {
 // Start with the data model extents
@@ -926,7 +915,6 @@ Result = false;
     /// if no production data exists, then surveyed dates of surveyed surfaces, if any, 
     /// should be used to set min/max dates, otherwise - min = MaxValue and max and MinValue.
     /// </summary>
-    /// <returns></returns>
     public (DateTime startUtc, DateTime endUtc) GetDateRange()
     {
       DateTime minDate = Consts.MAX_DATETIME_AS_UTC;
@@ -974,7 +962,6 @@ Result = false;
     ///    We remove any duplicates (occurs at start, where a period of time is missing between tag files)
     /// C:\VSS\Gen3\NonMerinoApps\VSS.Velociraptor\Velociraptor\VLPD\PS\PSNode.MachineDesigns.RPC.Execute.pas
     /// </summary>
-    /// <returns></returns>
     public List<AssetOnDesignPeriod> GetAssetOnDesignPeriods()
     {
       var assetOnDesignPeriods = new List<AssetOnDesignPeriod>();
@@ -1029,7 +1016,6 @@ Result = false;
     ///                 AND there will be NO events outside of these pairs
     ///                 AND at startEnd, status of all event types will be recited e.g. last on layer1 and designA
     /// </summary>
-    /// <returns></returns>
     public List<AssetOnDesignLayerPeriod> GetAssetOnDesignLayerPeriods()
     {
       var assetOnDesignLayerPeriods = new List<AssetOnDesignLayerPeriod>();
@@ -1184,7 +1170,6 @@ Result = false;
     /// <summary>
     /// Returns simple metadata about the site model
     /// </summary>
-    /// <returns></returns>
     private SiteModelMetadata GetMetaData()
     {
       return new SiteModelMetadata

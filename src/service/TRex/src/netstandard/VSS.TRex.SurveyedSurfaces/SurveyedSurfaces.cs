@@ -115,8 +115,10 @@ namespace VSS.TRex.SurveyedSurfaces
       // Note: This happens a lot and the for loop is faster than foreach or Find(x => x.ID)
       // If numbers of surveyed surfaces become large a Dictionary<Guid, SS> would be good...
       for (var i = 0; i < Count; i++)
+      {
         if (this[i].ID == surveyedSurfaceUid)
           return this[i];
+      }
 
       return null;
     }

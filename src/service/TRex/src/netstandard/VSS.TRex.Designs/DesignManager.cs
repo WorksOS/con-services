@@ -107,11 +107,11 @@ namespace VSS.TRex.Designs
       if (existenceMap == null)
         throw new ArgumentNullException(nameof(existenceMap));
 
-      // Add the desin to the designs list
+      // Add the design to the designs list
       var designs = Load(siteModelId);
       var result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
 
-      // Store the existance map into the cache
+      // Store the existence map into the cache
       using var stream = existenceMap.ToStream();
       var fileName = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designDescriptor.DesignID);
       if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelId, fileName,
@@ -174,7 +174,7 @@ namespace VSS.TRex.Designs
         var filename = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, x.ID);
         if ((result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
         {
-          _log.LogWarning($"Unable to remove existance map for design {x.ID}, filename = {filename}, with result: {result}");
+          _log.LogWarning($"Unable to remove existence map for design {x.ID}, filename = {filename}, with result: {result}");
         }
       });
 
