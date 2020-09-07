@@ -10,7 +10,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
 {
   public class ConvertCoordinatesTests : IClassFixture<UnitTestBaseFixture>
   {
-    private readonly IConvertCoordinates _convertCoordinates;
+    private readonly ICoreXWrapper _convertCoordinates;
 
     private const double LL_CM_TOLERANCE = 0.00000001;
     private const double GRID_CM_TOLERANCE = 0.01;
@@ -19,7 +19,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
     public ConvertCoordinatesTests(UnitTestBaseFixture testFixture)
     {
-      _convertCoordinates = testFixture.ConvertCoordinates;
+      _convertCoordinates = testFixture.CoreXWrapper;
       _csib = testFixture.CSIB;
     }
 
@@ -39,6 +39,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Theory]
+    [InlineData(4053785.077162, -402116.655216, 565.886004, 0.6319317472283847, -2.0074810299268475, 565.886004, ReturnAs.Radians, CSIB.WORLD_WIDE_UTM_GROUP_ZONE_13_NORTH)]
     [InlineData(804954.336119, 388234.958576, 0, -0.7600188962232834, 3.0121130490077275, 11.395071419290979, ReturnAs.Radians, CSIB.CTCT_TEST_SITE)]
     public void CoordinateService_SimpleXYZToLLH(double northing, double easting, double elevation, double lat, double lon, double height, ReturnAs returnAs, string csib)
     {
@@ -248,20 +249,21 @@ namespace CoreX.Wrapper.UnitTests.Tests
       xyzCoords.Z.Should().Be(0);
     }
 
-    [Fact]
-    public void WGS84Point_with_ZERO_height_should_return_valid_result()
+    [Theory]
+    [InlineData(0.8596927023775642, 0.14729266728569143, 0, 5457893.789346485, 3459255.4981716694, -50.61838511098176, CSIB.PHILIPSBURG)]
+    [InlineData(0.631931, -2.007481, 0, 4053780.289981133, -402116.9755452665, 0, CSIB.WORLD_WIDE_UTM_GROUP_ZONE_13_NORTH)]
+    public void WGS84Point_with_ZERO_height_should_return_valid_result(double lat, double lon, double height, double toY, double toX, double toZ, string csib)
     {
-      var points = new WGS84Point(lon: 0.14729266728569143, lat: 0.8596927023775642, height: 0);
+      var points = new WGS84Point(lon, lat, height);
 
-      var xyzCoords = _convertCoordinates.WGS84ToCalibration(CSIB.PHILIPSBURG, points, InputAs.Radians);
+      var xyzCoords = _convertCoordinates.WGS84ToCalibration(csib, points, InputAs.Radians);
 
       xyzCoords.Should().NotBeNull();
 
-      xyzCoords.Y.Should().BeApproximately(5457893.789346485, GRID_CM_TOLERANCE);
-      xyzCoords.X.Should().BeApproximately(3459255.4981716694, GRID_CM_TOLERANCE);
-      xyzCoords.Z.Should().BeApproximately(-50.61838511098176, GRID_CM_TOLERANCE);
+      xyzCoords.Y.Should().BeApproximately(toY, GRID_CM_TOLERANCE);
+      xyzCoords.X.Should().BeApproximately(toX, GRID_CM_TOLERANCE);
+      xyzCoords.Z.Should().BeApproximately(toZ, GRID_CM_TOLERANCE);
     }
-
 
     [Fact]
     public void ManyWGS84Point_with_null_height_to_XYZNEE()

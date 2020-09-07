@@ -52,6 +52,9 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     public DateTime? LastDataTime { get; set; }
 
+
+    public bool IsCSIBCoordSystemTypeOnly = true;
+
     /// <summary>
     /// Set the state of the executor to an initialised state
     /// </summary>
@@ -193,6 +196,8 @@ namespace VSS.TRex.TAGFiles.Executors
 
           if (ReadResult != TAGReadResult.NoError)
             return false;
+
+          IsCSIBCoordSystemTypeOnly = Processor.IsCSIBCoordSystemTypeOnly;
 
           SetPublishedState(Processor);
         }

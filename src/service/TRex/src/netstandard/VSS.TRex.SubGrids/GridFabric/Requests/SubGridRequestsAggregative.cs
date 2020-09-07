@@ -1,5 +1,4 @@
 ﻿using System;
-using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -51,13 +50,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             TSubGridRequestsResponse taskResult = null;
 
-            var sw = new Stopwatch();
-            sw.Start();
+            var sw = Stopwatch.StartNew();
             try
             {
                 // Construct the function to be used
                 var func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(TRexTask);
-                
+
                 // Invoke it.
                 // Note that this is NOT asking the grid to perform a remote invocation of the request as this aggregative
                 // processing is already executing on the cluster node containing sub grids.
@@ -65,7 +63,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
             finally
             {
-                sw.Stop();
                 Log.LogInformation($"TaskResult {(taskResult == null ? "<NullResult>" : taskResult.ResponseCode.ToString())}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
@@ -84,6 +81,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// </summary>
         public override Task<TSubGridRequestsResponse> ExecuteAsync()
         {
+            return Task.Run(Execute);
+
+            /*
             CheckArguments();
          
             // Construct the argument to be supplied to the compute cluster
@@ -107,6 +107,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
            
                return result.Result;
             });
+            */
         }
     }
 }

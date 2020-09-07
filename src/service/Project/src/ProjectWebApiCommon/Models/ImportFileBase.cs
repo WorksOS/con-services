@@ -24,9 +24,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </remarks>
     [JsonIgnore]
     public bool IsDesignFileType =>
+      IsTRexDesignFileType ||
+      ImportedFileType == ImportedFileType.ReferenceSurface;
+
+    /// <summary>
+    /// Types of design files in TRex
+    /// </summary>
+    public bool IsTRexDesignFileType =>
       ImportedFileType == ImportedFileType.DesignSurface ||
       ImportedFileType == ImportedFileType.SurveyedSurface ||
-      ImportedFileType == ImportedFileType.Alignment ||
-      ImportedFileType == ImportedFileType.ReferenceSurface;
+      ImportedFileType == ImportedFileType.Alignment;
   }
 }

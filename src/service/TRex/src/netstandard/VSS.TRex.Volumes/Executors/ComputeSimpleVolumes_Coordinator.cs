@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
@@ -25,7 +24,7 @@ namespace VSS.TRex.Volumes.Executors
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeSimpleVolumes_Coordinator>();
 
     /// <summary>
-    /// The ID of the site model the volume is being calculated for 
+    /// The ID of the site model the volume is being calculated for
     /// </summary>
     public Guid SiteModelID;
 
@@ -97,7 +96,6 @@ namespace VSS.TRex.Volumes.Executors
     /// Performs functional initialization of ComputeVolumes state that is dependent on the initial state
     /// set via the constructor
     /// </summary>
-    /// <param name="computeVolumes"></param>
     private void InitialiseVolumesCalculator(VolumesCalculator computeVolumes)
     {
       // Set up the volumes calc parameters
@@ -154,8 +152,7 @@ namespace VSS.TRex.Volumes.Executors
     /// <summary>
     /// Executes the simple volumes computation returning a SimpleVolumesResponse with the results
     /// </summary>
-    /// <returns></returns>
-    public async Task<SimpleVolumesResponse> ExecuteAsync()
+    public SimpleVolumesResponse Execute()
     {
       var volumesResult = new SimpleVolumesResponse();
       var resultBoundingExtents = BoundingWorldExtent3D.Null();

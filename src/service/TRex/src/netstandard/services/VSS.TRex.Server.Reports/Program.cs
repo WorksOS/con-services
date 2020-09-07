@@ -75,7 +75,7 @@ namespace VSS.TRex.Server.Reports
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
@@ -96,7 +96,7 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
         .Build()
-        .Add(x => x.AddSingleton(new GriddedReportRequestServer()))
+        .Add(x => x.AddSingleton(new GriddedReportRequestServer())) // TODO: No need to create two server instances here, this creates two Ignite JVMs...
         .Add(x => x.AddSingleton(new CSVExportRequestServer()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
@@ -159,8 +159,10 @@ namespace VSS.TRex.Server.Reports
     {
       // Start listening to design state change notifications
       DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 

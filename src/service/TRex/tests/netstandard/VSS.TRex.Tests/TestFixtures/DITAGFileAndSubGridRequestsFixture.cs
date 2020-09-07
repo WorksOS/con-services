@@ -107,7 +107,10 @@ namespace VSS.TRex.Tests.TestFixtures
         // partial responses of sub grids
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
+
+        .Add(x => x.AddSingleton<ISubGridQOSTaskScheduler, SubGridQOSTaskScheduler>())
+
         .Complete();
     }
 

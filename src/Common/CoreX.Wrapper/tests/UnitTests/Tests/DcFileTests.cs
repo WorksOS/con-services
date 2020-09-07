@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using CoreX.Interfaces;
 using CoreX.Models;
 using CoreX.Types;
@@ -12,13 +13,13 @@ namespace CoreX.Wrapper.UnitTests.Tests
   [Category("Slow")]
   public class DcFileTests : IClassFixture<UnitTestBaseFixture>
   {
-    private readonly IConvertCoordinates _convertCoordinates;
+    private readonly ICoreXWrapper _convertCoordinates;
     private const double LL_CM_TOLERANCE = 0.00000001;
     private const double GRID_CM_TOLERANCE = 0.01;
 
     public DcFileTests(UnitTestBaseFixture testFixture)
     {
-      _convertCoordinates = testFixture.ConvertCoordinates;
+      _convertCoordinates = testFixture.CoreXWrapper;
     }
 
     public string GetCSIBFromDC(string dcFilename) => _convertCoordinates.DCFileToCSIB(DCFile.GetFilePath(dcFilename));
@@ -75,13 +76,19 @@ namespace CoreX.Wrapper.UnitTests.Tests
       nee.Elevation.Should().BeApproximately(elevation, GRID_CM_TOLERANCE);
     }
 
-    [Theory(Skip = "Windows only")]
+    [Theory]
     [InlineData("CTCTSITECAL.dc", CSIB.CTCT_TEST_SITE)]
     public void Should_load_CS_file_and_return_CSIB(string dcFilename, string expectedCSIB)
     {
       var csib = GetCSIBFromDC(dcFilename);
 
-      csib.Should().Be(expectedCSIB);
+      csib.Should().NotBeNull();
+
+      // Base64 string encoding varies between OS, what works on Windows doesn't work in CI env.
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      {
+        csib.Should().Be(expectedCSIB);
+      }
     }
   }
 }

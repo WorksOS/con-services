@@ -208,7 +208,7 @@ namespace VSS.TRex.Tests.Volumes
         new CoreX.Models.XYZ(1, 1, 0)
       };
 
-      var csMock = new Mock<IConvertCoordinates>();
+      var csMock = new Mock<ICoreXWrapper>();
       csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>()))
         .Returns(result);
 

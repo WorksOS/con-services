@@ -9,6 +9,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DataSmoothing;
@@ -91,7 +92,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .AddLogging()
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
       .Build()
-      .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+      .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
       .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
       .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
       .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -174,6 +175,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       DIContext.Obtain<IDesignChangedEventListener>().StartListening();
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
     }
 
     static async Task<int> Main(string[] args)

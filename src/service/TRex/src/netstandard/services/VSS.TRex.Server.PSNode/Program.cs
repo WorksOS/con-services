@@ -9,6 +9,8 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -90,7 +92,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
@@ -124,8 +126,10 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
+
 
         // Create the cache to store the general sub grid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
@@ -162,6 +166,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<ISubGridRetrieverFactory>(new SubGridRetrieverFactory()))
         .Add(x => x.AddSingleton<ISiteModelChangeMapDeltaNotifier>(new SiteModelChangeMapDeltaNotifier()))
 
+        .Add(x => x.AddSingleton<ISubGridQOSTaskScheduler, SubGridQOSTaskScheduler>())
         .Complete();
     }
 
@@ -222,6 +227,7 @@ namespace VSS.TRex.Server.PSNode
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SpatialMemoryCacheHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
@@ -231,12 +237,17 @@ namespace VSS.TRex.Server.PSNode
       {
         Console.WriteLine($"TRex service starting at {DateTime.Now}");
 
-        ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
-        ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
-        Console.WriteLine($"Thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
-
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
+
+        ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
+        ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
+
+        // Create a much larger pool of system threads to allow QOS channels with groups of sub-tasks room to take advantage of all system resources while also allowing
+        // other requests to run concurrently
+        ThreadPool.SetMinThreads(minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor, minCompletionPortThreads);
+
+        Console.WriteLine($"Operating thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
 
         var cancelTokenSource = new CancellationTokenSource();
         AppDomain.CurrentDomain.ProcessExit += (s, e) =>

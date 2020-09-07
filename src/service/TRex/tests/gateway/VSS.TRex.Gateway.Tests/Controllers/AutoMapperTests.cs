@@ -172,7 +172,6 @@ namespace VSS.TRex.Gateway.Tests.Controllers
         Assert.Equal(expectedColors[i], palette[i].Color);
         Assert.Equal(transitions[i].Value, palette[i].Value);
       }
-      
     }
 
     [Theory]

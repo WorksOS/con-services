@@ -13,7 +13,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 {
   public class QuantizedMeshRequestComputeFunc : BaseComputeFunc, IComputeFunc<QuantizedMeshRequestArgument, QuantizedMeshResponse>
   {
-
     private static readonly ILogger _log = Logging.Logger.CreateLogger<QuantizedMeshRequestComputeFunc>();
 
     /// <summary>
@@ -28,12 +27,13 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
     /// </summary>
     public QuantizedMeshResponse Invoke(QuantizedMeshRequestArgument arg)
     {
-
       _log.LogInformation("In QuantizedMeshRequestComputeFunc.Invoke()");
 
       try
       {
-        
+        // Quantized mesh requests can be a significant resource commitment. Ensure TPaaS will be listening...
+        PerformTPaaSRequestLivelinessCheck(arg);
+
         // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
         // subgrid results to it.
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
@@ -57,7 +57,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
       }
       finally
       {
-        _log.LogDebug($"Exiting QuantizedMeshRequestComputeFunc.Invoke()");
+        _log.LogDebug("Exiting QuantizedMeshRequestComputeFunc.Invoke()");
       }
     }
   }

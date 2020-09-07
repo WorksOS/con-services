@@ -3,7 +3,7 @@
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
   /// <summary>
-  /// A structured representation of the data retruned by the Patch request
+  /// A structured representation of the data returned by the Patch request
   /// </summary>
   public class PatchResultRenderedColors : PatchResult
   {

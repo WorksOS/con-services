@@ -82,7 +82,7 @@ namespace VSS.TRex.Gateway.Common.Helpers
             neeCoords[i] = new XYZ(fence.Points[i].X, fence.Points[i].Y, 0.0);
         }
 
-        var llhCoords = DIContext.Obtain<IConvertCoordinates>().NEEToLLH(csib, neeCoords.ToCoreX_XYZ());
+        var llhCoords = DIContext.Obtain<ICoreXWrapper>().NEEToLLH(csib, neeCoords.ToCoreX_XYZ());
         var fencePoints = new List<double[]>();
 
         for (var fencePointIdx = 0; fencePointIdx < llhCoords.Length; fencePointIdx++)

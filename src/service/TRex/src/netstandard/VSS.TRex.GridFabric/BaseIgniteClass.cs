@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Common;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
@@ -13,10 +12,11 @@ using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Extensions;
 using System.Linq;
 using System;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.GridFabric
 {
-  public class BaseIgniteClass : IBinarizable, IFromToBinary
+  public class BaseIgniteClass : VersionCheckedBinarizableSerializationBase
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<BaseIgniteClass>();
 
@@ -191,24 +191,14 @@ namespace VSS.TRex.GridFabric
         _log.LogTrace($"Completed acquisition of TRex topology projections for grid {_gridName}");
     }
 
-    public virtual void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       // No implementation for base class (and none may ever be required...)
     }
 
-    public virtual void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       // No implementation for base class (and none may ever be required...)
     }
-
-    /// <summary>
-    /// Implements the Ignite IBinarizable.WriteBinary interface Ignite will call to serialise this object.
-    /// </summary>
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    /// <summary>
-    /// Implements the Ignite IBinarizable.ReadBinary interface Ignite will call to serialise this object.
-    /// </summary>
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
   }
 }

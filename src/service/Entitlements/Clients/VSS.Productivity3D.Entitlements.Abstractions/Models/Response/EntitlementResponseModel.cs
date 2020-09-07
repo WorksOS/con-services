@@ -17,7 +17,12 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     public string OrganizationIdentifier { get; set; }
 
     /// <summary>
-    /// The Users email requesting the entitlement
+    /// The identifier of the user
+    /// </summary>
+    public string UserUid { get; set; }
+
+    /// <summary>
+    /// The email address of the user
     /// </summary>
     public string UserEmail { get; set; }
 
@@ -25,6 +30,11 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     /// The feature the Entitlement represents, e.g WorksOS-Basic, WorksOS-Advanced etc - free text as can be extending external to our service.
     /// </summary>
     public string Feature { get; set; }
+
+    /// <summary>
+    /// The SKU (Stock Keeping Unit) or product code the Entitlement represents.
+    /// </summary>
+    public string Sku { get; set; }
 
     /// <summary>
     /// Is the user entitled to the feature described.
@@ -35,7 +45,7 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     {
       return new List<string>
       {
-        OrganizationIdentifier, UserEmail, EntitlementCacheTag
+        OrganizationIdentifier, UserUid, EntitlementCacheTag
       };
     }
   }

@@ -44,16 +44,11 @@ namespace VSS.TRex.Designs
     /// </summary>
     private IDesigns Load(Guid siteModelId)
     {
+      _log.LogInformation($"Loading designs for project {siteModelId}");
+
+      var designs = DIContext.ObtainRequired<IDesigns>();
       try
       {
-        var designs = DIContext.ObtainRequired<IDesigns>();
-
-        if (designs == null)
-        {
-          _log.LogError("Unable to access designs factory from DI");
-          return null;
-        }
-
         _readStorageProxy.ReadStreamFromPersistentStore(siteModelId, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out var ms);
 
         if (ms != null)
@@ -63,19 +58,19 @@ namespace VSS.TRex.Designs
             designs.FromStream(ms);
           }
         }
-
-        return designs;
       }
       catch (KeyNotFoundException)
       {
-        /* This is OK, the element is not present in the cache yet */
+        // This is OK, the element is not present in the cache yet - return an empty design list
       }
       catch (Exception e)
       {
         throw new TRexException("Exception reading designs cache element from Ignite", e);
       }
 
-      return null;
+      _log.LogInformation($"Loaded {designs.Count} designs for project {siteModelId}");
+
+      return designs;
     }
 
     /// <summary>
@@ -112,11 +107,11 @@ namespace VSS.TRex.Designs
       if (existenceMap == null)
         throw new ArgumentNullException(nameof(existenceMap));
 
-      // Add the desin to the designs list
+      // Add the design to the designs list
       var designs = Load(siteModelId);
       var result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
 
-      // Store the existance map into the cache
+      // Store the existence map into the cache
       using var stream = existenceMap.ToStream();
       var fileName = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, designDescriptor.DesignID);
       if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelId, fileName,
@@ -179,7 +174,7 @@ namespace VSS.TRex.Designs
         var filename = BaseExistenceMapRequest.CacheKeyString(ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, x.ID);
         if ((result = storageProxy.RemoveStreamFromPersistentStore(siteModelId, FileSystemStreamType.DesignTopologyExistenceMap, filename)) != FileSystemErrorStatus.OK)
         {
-          _log.LogWarning($"Unable to remove existance map for design {x.ID}, filename = {filename}, with result: {result}");
+          _log.LogWarning($"Unable to remove existence map for design {x.ID}, filename = {filename}, with result: {result}");
         }
       });
 

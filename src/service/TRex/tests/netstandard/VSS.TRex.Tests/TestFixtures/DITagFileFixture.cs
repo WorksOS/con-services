@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Apache.Ignite.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Factories;
@@ -49,6 +51,16 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       var converter = new TAGFileConverter();
 
+      using var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read);
+      converter.ExecuteLegacyTAGFile(fileName, fs, assetUid, isJohnDoe);
+
+      return converter;
+    }
+
+    public static TAGFileConverter ReadTAGFile(string fileName, Guid assetUid, bool isJohnDoe , ref ISiteModel siteModel)
+    {
+      var converter = new TAGFileConverter(siteModel.ID);
+      converter.SiteModel = siteModel;
       using var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read);
       converter.ExecuteLegacyTAGFile(fileName, fs, assetUid, isJohnDoe);
 
@@ -167,6 +179,21 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register the hook used to capture cell pass mutation events while processing TAG files.
         .Add(x => x.AddSingleton<ICell_NonStatic_MutationHook>(new Cell_NonStatic_MutationHook()))
 
+        .Complete();
+
+        MockACSDependencies(); // default mocking behaviour for ACS tagfiles
+    }
+
+    private void MockACSDependencies()
+    {
+      var mockACSTranslator = new Mock<IACSTranslator>();
+      mockACSTranslator
+        .Setup(x => x.TranslatePositions(It.IsAny<Guid?>(), It.IsAny<List<UTMCoordPointPair>>()))
+        .Returns((Guid? x, List<UTMCoordPointPair> y) => y);
+
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton<IACSTranslator>(mockACSTranslator.Object))
         .Complete();
     }
 

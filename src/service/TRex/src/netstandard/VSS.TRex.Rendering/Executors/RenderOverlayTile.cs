@@ -394,7 +394,7 @@ namespace VSS.TRex.Rendering.Executors
       else
       {
         NEECoords = DIContext
-          .Obtain<IConvertCoordinates>()
+          .Obtain<ICoreXWrapper>()
           .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians)
           .ToTRex_XYZ();
       }
@@ -507,6 +507,7 @@ namespace VSS.TRex.Rendering.Executors
           // cannot meaningfully render the data). If the size of s sub grid is smaller than
           // the size of a pixel in the requested tile then do this. Just check the X dimension
           // as the data display is isotropic.
+          // TODO: Could this be done before creation of the pipeline processor?
           if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
             return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
 

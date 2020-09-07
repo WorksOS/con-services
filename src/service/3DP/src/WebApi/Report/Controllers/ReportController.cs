@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -103,17 +100,22 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/export/gridded/csv")]
     [HttpPost]
-    public ExportResult PostExportCsvReport([FromBody] ExportGridCSV request)
+    public async Task<ExportResult> PostExportCsvReport([FromBody] ExportGridCSV request)
     {
       _log.LogDebug($"{nameof(PostExportCsvReport)}: {JsonConvert.SerializeObject(request)}");
 
+      if (request.liftBuildSettings == null)
+      {
+        var projectSettings = await GetProjectSettingsTargets(request.ProjectUid.Value);
+        request.liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      }
+      
       request.Validate();
-#if RAPTOR
-      return RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
+
+      return await RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(
+        _logger,
+        configStore: configStore,
+        trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request) as ExportResult;
     }
 
     [PostRequestVerifier]

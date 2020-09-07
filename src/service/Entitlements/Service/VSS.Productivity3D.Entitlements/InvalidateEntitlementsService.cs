@@ -7,7 +7,7 @@ using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Entitlements
+namespace VSS.Productivity3D.Entitlements.WebApi
 {
   public class InvalidateEntitlementsService : BaseHostedService
   {

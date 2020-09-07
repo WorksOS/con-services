@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -28,7 +27,6 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.Serilog.Extensions;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 
 namespace VSS.TRex.SubGrids.Executors
 {
@@ -41,7 +39,7 @@ namespace VSS.TRex.SubGrids.Executors
   {
     public const string SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE = "SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE";
 
-    private readonly int _addressBucketSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE, 50);
+    private readonly int _addressBucketSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE, 25);
 
     private readonly IRequestorUtilities _requestorUtilities = DIContext.Obtain<IRequestorUtilities>();
 
@@ -49,7 +47,7 @@ namespace VSS.TRex.SubGrids.Executors
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     /// <summary>
-    /// Denotses the request 'style' in use. 
+    /// Denotes the request 'style' in use. 
     /// </summary>
     public SubGridsRequestComputeStyle SubGridsRequestComputeStyle { get; set; } = SubGridsRequestComputeStyle.Normal;
 
@@ -332,7 +330,7 @@ namespace VSS.TRex.SubGrids.Executors
       // Convert the computed intermediary grids into the client grid form expected by the caller
       if (result[0].clientGrid?.GridDataType != localArg.GridDataType)
       {
-        ConvertIntermediarySubGridsToResult(localArg.GridDataType, ref result); //ref clientArray);
+        ConvertIntermediarySubGridsToResult(localArg.GridDataType, ref result);
       }
 
       // If the requested data is cut fill derived from elevation data previously calculated, 
@@ -395,16 +393,16 @@ namespace VSS.TRex.SubGrids.Executors
     /// <summary>
     /// Process a subset of the full set of sub grids in the request
     /// </summary>
-    private void PerformSubGridRequestList(SubGridCellAddress[] addressList, int addressCount)
+    private void PerformSubGridRequestList(SubGridCellAddress[] addressList)
     {
-      if (_log.IsTraceEnabled())
+      if (_log.IsDebugEnabled())
       {
-        _log.LogTrace($"Starting processing of {addressCount} sub grids");
+        _log.LogDebug($"Starting processing of {addressList.Length} sub grids");
       }
 
       try
       {
-        if (addressCount == 0)
+        if (addressList.Length == 0)
           return;
 
         // Construct the set of requester objects to be used for the filters present in the request
@@ -414,7 +412,7 @@ namespace VSS.TRex.SubGrids.Executors
         //Log.LogInformation("Sending {0} sub grids to caller for processing", count);
         //Log.LogInformation($"Requester list contains {Requestors.Length} items");
 
-        var clientGridResults = new List<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[]>(addressCount);
+        var clientGridResults = new List<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[]>(addressList.Length);
 
         // Execute a client grid request for each requester and create an array of the results
         foreach (var address in addressList)
@@ -426,24 +424,24 @@ namespace VSS.TRex.SubGrids.Executors
 
         try
         {
-          ProcessSubGridRequestResult(clientGrids, addressCount);
+          ProcessSubGridRequestResult(clientGrids, addressList.Length);
         }
         finally
         {
           // Return the client grid to the factory for recycling now its role is complete here...
-          ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, addressCount);
+          ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, addressList.Length);
         }
       }
       finally
       {
-        if (_log.IsTraceEnabled())
+        if (_log.IsDebugEnabled())
         {
-          _log.LogTrace($"Completed processing {addressCount} sub grids");
+          _log.LogDebug($"Completed processing {addressList.Length} sub grids");
         }
       }
     }
 
-    private readonly List<Task> _tasks = new List<Task>();
+    private readonly List<SubGridCellAddress[]> _taskAddresses = new List<SubGridCellAddress[]>();
 
     /// <summary>
     /// Processes a bucket of sub grids by creating a task for it and adding it to the tasks list for the request
@@ -453,18 +451,7 @@ namespace VSS.TRex.SubGrids.Executors
       var addressListCopy = new SubGridCellAddress[addressCount];
       Array.Copy(addressList, addressListCopy, addressCount);
 
-      _tasks.Add(Task.Run(() =>
-      {
-        try
-        {
-          PerformSubGridRequestList(addressListCopy, addressCount);
-        }
-        catch (Exception e)
-        {
-          _log.LogError(e, "Exception processing group of sub grids");
-          throw;
-        }
-      }));
+      _taskAddresses.Add(addressListCopy);
     }
 
     /// <summary>
@@ -537,16 +524,19 @@ namespace VSS.TRex.SubGrids.Executors
         });
       }
 
-      ProcessSubGridAddressGroup(addresses, listCount); // Process the remaining sub grids...
+      if (listCount > 0)
+      {
+        ProcessSubGridAddressGroup(addresses, listCount); // Process the remaining sub grids...
+      }
 
-      // Wait for all the sub-tasks to complete
-
-      _log.LogInformation($"Waiting for {_tasks.Count} sub tasks to complete for sub grids request");
-
+      _log.LogInformation($"Scheduling for {_taskAddresses.Count} sub tasks to complete for sub grids request");
       try
       {
-        var summaryTask = Task.WhenAll(_tasks);
-        summaryTask.Wait();
+        var scheduler = DIContext.ObtainRequired<ISubGridQOSTaskScheduler>();
+        if (!scheduler.Schedule(_taskAddresses, PerformSubGridRequestList, scheduler.DefaultMaxTasks()))
+        {
+          _log.LogError($"Failed to schedule {_taskAddresses.Count} groups of sub grids to be processed");
+        }
       }
       catch (Exception e)
       {
@@ -554,7 +544,7 @@ namespace VSS.TRex.SubGrids.Executors
         return null;
       }
 
-      _log.LogInformation($"{_tasks.Count} sub grid tasks completed (max size = {_addressBucketSize}), executing AcquireComputationResult()");
+      _log.LogInformation($"{_taskAddresses.Count} sub grid tasks completed (max size = {_addressBucketSize}), executing AcquireComputationResult()");
       return AcquireComputationResult();
     }
 

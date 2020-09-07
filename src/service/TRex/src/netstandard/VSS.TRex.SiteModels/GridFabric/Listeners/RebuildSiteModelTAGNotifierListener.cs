@@ -59,7 +59,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Listeners
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception occurred processing site model attributes changed event");
+        _log.LogError(e, "Exception handling TAG file processed notification event");
         return true;  // Stay subscribed
       }
       finally
