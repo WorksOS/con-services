@@ -26,7 +26,8 @@ namespace VSS.TRex.Designs.Storage
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<Design>();
 
-    private CalculateDesignElevationPatch _designElevationCalculator = new CalculateDesignElevationPatch();
+    private readonly CalculateDesignElevationPatch _designElevationCalculator = new CalculateDesignElevationPatch();
+
     /// <summary>
     /// Binary serialization logic
     /// </summary>
@@ -72,10 +73,13 @@ namespace VSS.TRex.Designs.Storage
           CellSize = cellSize,
           StartPoint = startPoint,
           EndPoint = endPoint,
-          PositionsAreGrid = arePositionsGrid
+          PositionsAreGrid = arePositionsGrid,
+          ReferenceDesign =
+          {
+            DesignID = DesignDescriptor.DesignID,
+            Offset = offset
+          }
         };
-        arg.ReferenceDesign.DesignID = DesignDescriptor.DesignID;
-        arg.ReferenceDesign.Offset = offset;
 
         var profileResult = await profileRequest.ExecuteAsync(arg);
         return (profileResult.Profile, profileResult.RequestResult);
@@ -247,7 +251,7 @@ namespace VSS.TRex.Designs.Storage
         ProjectID = siteModelId
       });
 
-      return (maskResponse?.Bits, maskResponse.RequestResult);
+      return (maskResponse?.Bits, maskResponse?.RequestResult ?? DesignProfilerRequestResult.UnknownError);
     }
   }
 }

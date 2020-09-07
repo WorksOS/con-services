@@ -18,8 +18,6 @@ namespace VSS.TRex.Pipelines.Tasks
         /// <summary>
         /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
         public override bool TransferResponse(object response)
         {
             bool result = PipeLine != null && !PipeLine.Aborted;
@@ -60,11 +58,9 @@ namespace VSS.TRex.Pipelines.Tasks
         /// <summary>
         /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
-        /// <param name="responses"></param>
-        /// <returns></returns>
         public override bool TransferResponses(object[] responses)
         {
-          bool result = PipeLine != null && !PipeLine.Aborted;
+          var result = PipeLine != null && !PipeLine.Aborted;
 
           if (!result)
             Log.LogInformation($" WARNING: {nameof(TransferResponses)}: No pipeline available to submit grouped result for request {RequestDescriptor}");

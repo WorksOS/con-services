@@ -169,7 +169,6 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Provides a human readable form of the aggregator state
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return $"CellSize:{CellSize}, CoverageArea:{CoverageArea}, Bounding:{BoundingExtents}, " +

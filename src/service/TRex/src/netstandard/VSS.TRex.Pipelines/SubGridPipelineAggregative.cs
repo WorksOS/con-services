@@ -25,7 +25,6 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Creates a pip
     /// </summary>
-    /// <param name="task"></param>
     public SubGridPipelineAggregative( /*int AID, */ ITRexTask task) : base( /*AID, */ task)
     {
     }

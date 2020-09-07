@@ -40,6 +40,7 @@ $services = @{
     Megalodon      = 'service/Megalodon'
     Mock           = 'service/MockProjectWebApi'
     Productivity3d = 'service/3DP'
+    Project        = 'service/Project'
     Push           = 'service/Push'
     ThreeDNow      = 'service/3dNow'
     TRex           = 'service/TRex'
@@ -280,7 +281,7 @@ function Docker-Container-Prune {
     # Remove any running or stopped containers on this build agent.
     Write-Host "`nRemoving old application containers...`n" -ForegroundColor Green
     docker ps
-    docker container prune --force --filter "until=5m"
+    docker container prune --force --filter "until=12h"
 }
 function Exit-With-Code {
     param(
@@ -332,9 +333,15 @@ $timeStart = Get-Date
 
 # Run the appropriate action.
 switch ($action) {
-    'build' {
+    'dockerImagePrune' {
         Docker-Image-Prune
+        continue
+    }
+    'dockerContainerPrune' {
         Docker-Container-Prune
+        continue
+    }
+    'build' {
         Build-Solution
         continue
     }

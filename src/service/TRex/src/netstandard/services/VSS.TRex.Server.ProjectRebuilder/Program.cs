@@ -35,7 +35,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
 {
   class Program
   {
-    static private IStorageProxyCacheCommit CacheFactory(RebuildSiteModelCacheType cacheType)
+    private static IStorageProxyCacheCommit CacheFactory(RebuildSiteModelCacheType cacheType)
     {
       return cacheType switch
       {
