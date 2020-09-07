@@ -160,7 +160,7 @@ namespace VSS.TRex.SubGrids
       var taskIndex = 0;
       var tasks = new List<Task>(maxTasks);
 
-      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
+      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {CurrentExecutingSessionCount} sessions (of {_totalSchedulerSessions}) are active using {CurrentExecutingTaskCount} tasks");
 
       Interlocked.Increment(ref _totalSchedulerSessions);
 
@@ -178,15 +178,16 @@ namespace VSS.TRex.SubGrids
 
           tasks.Add(Task.Run(() =>
           {
+            var localTaskindex = taskIndex;
             try
             {
               // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {taskIndex} starting");
+              _log.LogDebug($"Processor for task index {localTaskindex} starting");
 
               processor(subGridCollection);
 
               // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {taskIndex} completed");
+              _log.LogDebug($"Processor for task index {localTaskindex} completed");
             }
             catch (Exception e)
             {
@@ -224,7 +225,7 @@ namespace VSS.TRex.SubGrids
 
         Interlocked.Decrement(ref _totalSchedulerSessions);
 
-        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {CurrentExecutingSessionCount} sessions (of {_totalSchedulerSessions}) are active using {CurrentExecutingTaskCount} tasks");
       }
     }
   }
