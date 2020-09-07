@@ -43,14 +43,17 @@ namespace VSS.TRex.SurveyedSurfaces
 
     public void Read(BinaryReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      var theCount = reader.ReadInt32();
-      for (var i = 0; i < theCount; i++)
+      if (version == 1)
       {
-        var surveyedSurface = new SurveyedSurface();
-        surveyedSurface.Read(reader);
-        Add(surveyedSurface);
+        var theCount = reader.ReadInt32();
+        for (var i = 0; i < theCount; i++)
+        {
+          var surveyedSurface = new SurveyedSurface();
+          surveyedSurface.Read(reader);
+          Add(surveyedSurface);
+        }
       }
     }
 
