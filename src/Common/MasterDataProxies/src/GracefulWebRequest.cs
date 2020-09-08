@@ -249,7 +249,7 @@ namespace VSS.MasterData.Proxies
     /// <exception cref="ArgumentException">If the Method is POST/PUT and the Payload is null.</exception>
     /// <exception cref="HttpRequestException">If the Status Code from the request is not any code in the 200's.</exception>
     /// <returns></returns>
-    public async Task ExecuteRequest(string endpoint, Stream payload = null,
+    public async Task<HttpStatusCode> ExecuteRequest(string endpoint, Stream payload = null,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
     {
@@ -267,13 +267,14 @@ namespace VSS.MasterData.Proxies
         retries = 0;
       }
 
+      HttpResponseMessage result = null;
       var policyResult = await Policy
         .Handle<Exception>()
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
           _log.LogDebug($"Trying to execute {method} request {endpoint}");
-          var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
+          result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           _log.LogDebug($"Request to {endpoint} completed");
 
           if (!_okCodes.Contains(result.StatusCode))
@@ -298,6 +299,8 @@ namespace VSS.MasterData.Proxies
 
         throw policyResult.FinalException;
       }
+
+      return result.StatusCode;
     }
 
     /// <summary>

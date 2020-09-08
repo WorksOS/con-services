@@ -48,7 +48,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public IDesignWrapper ActiveDesign { get; set; }
 
-    // References necessary for correct summarization of aggregated state
+    // References necessary for correct summary of aggregated state
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
     public ISiteModel SiteModel { get; set; }
@@ -106,6 +106,7 @@ namespace VSS.TRex.Volumes
 
     public SimpleVolumesCalculationsAggregator() { }
 
+    // ReSharper disable once IdentifierTypo
     public void Finalise()
     {
       CoverageArea = CellsUsed * CellSize * CellSize;
@@ -126,7 +127,7 @@ namespace VSS.TRex.Volumes
       var cellArea = CellSize * CellSize;
 
       // Query the patch of elevations from the surface model for this sub grid
-      if (ActiveDesign != null)
+      if (ActiveDesign?.Design != null)
       {
         getDesignHeightsResult = ActiveDesign.Design.GetDesignHeightsViaLocalCompute(SiteModel, ActiveDesign.Offset, baseScanSubGrid.OriginAsCellAddress(), CellSize);
 
@@ -425,7 +426,7 @@ namespace VSS.TRex.Volumes
 
     /// <summary>
     /// Implement the sub grids request aggregator method to process sub grid results...
-    /// </summary
+    /// </summary>
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
       SummarizeSubGridResult(subGrids);

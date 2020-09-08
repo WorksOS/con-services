@@ -108,6 +108,9 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
+
+        .Add(x => x.AddSingleton<ISubGridQOSTaskScheduler, SubGridQOSTaskScheduler>())
+
         .Complete();
     }
 

@@ -26,6 +26,7 @@ data:
   cws_designmanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-designmanager-dev/1.0
   cws_profilesettings_public_v1: https://api-stg.trimble.com/t/trimble.com/connectedsiteprofilesettings-dev/1.0
   cws_devicegateway_public_v2: https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-dev/2.0
+  entitlements_public_v3: https://api-stg.trimble.com/t/trimble.com/entitlements-core/3.0
   tpaasemail_public_v1: https://api-stg.trimble.com/t/trimble.com/tpaas-email-service/1.0/emails/
   #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
@@ -42,6 +43,8 @@ data:
   CORECLR_ENABLE_PROFILING: "0"
   ENABLE_ENTITLEMENTS_CHECKING: "false"
   ENABLE_ENTITLEMENTS_SERVICE_CHECKING: "false"
+  ENTITLEMENTS_SKU: "HCC-WOS-MO"
+  ENTITLEMENTS_FEATURE: "FEA-CEC-WORKSOS"
   ENTITLEMENTS_ALLOWED_EMAILS: "elspeth_jeet@trimble.com;elspeth_jeet+dev@trimble.com;karthikeyan_dakshanamurthy+dev@trimble.com;stephen_post@trimble.com;stephen_post+dev@trimble.com;david_glassenbury+dev@trimble.com;josh_nimmo@trimble.com;josh_nimmo+dev@trimble.com;kirankumar_potnuru@trimble.com;jeannie_may@trimble.com;jeannie_may+dev@trimble.com"
 #AWS configuration  
   AWS_DESIGNIMPORT_BUCKET_NAME: s3-pdxa-rpd-trex-designfiles

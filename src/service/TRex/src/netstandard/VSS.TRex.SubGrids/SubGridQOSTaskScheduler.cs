@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Common.Extensions;
+using VSS.TRex.DI;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
 
 namespace VSS.TRex.SubGrids
@@ -11,92 +15,128 @@ namespace VSS.TRex.SubGrids
   /// Implements a very simple task scheduler that takes a collection of collections of sub grids to be processed and
   /// provides a bound on the number of tasks used to process them
   /// </summary>
-  public static class SubGridQOSTaskScheduler
+  public class SubGridQOSTaskScheduler : ISubGridQOSTaskScheduler
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger("SubGridQOSTaskScheduler");
 
     /// <summary>
-    /// The count of tasks the QOS scheduler has scheduled or execution on the .Net task thread pool.
+    /// The divisor used to indicate the largest fraction of task thread pool resources that may be applied to a single scheduler session
+    /// This is also used as a multiplier against the default number of threads for that thread pool at system start up
     /// </summary>
-    private static int _currentExecutingTaskCount = 0;
-
-    /// <summary>
-    /// The count of scheduler sessions representing sets of sub grid requests required for various TRex requests.
-    /// </summary>
-    private static int _currentSchedulerSessionsCount = 0;
-
-    public const int DEFAULT_THREAD_POOL_FRACTION_DIVISOR = 8;
+    public int DefaultThreadPoolFractionDivisor { get; } = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_DEFAULT_THREAD_POOL_FRACTION_DIVISOR", 8);
 
     /// <summary>
     /// The number of seconds the QOS scheduler will wait for a group of tasks responsible for processing sub grids
     /// </summary>
-    public const int TASK_GROUP_TIMEOUT_SECONDS = 10;
+    private readonly int _taskGroupTimeoutSeconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", 10);
 
-    private static readonly object _capacityLock = new object();
+    private readonly int _maxConcurrentSchedulerSessions = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", -1);
+    public int MaxConcurrentSchedulerSessions => _maxConcurrentSchedulerSessions;
+
+    private readonly int _maxConcurrentSchedulerTasks;
+    public int MaxConcurrentSchedulerTasks => _maxConcurrentSchedulerTasks;
+
+    /// <summary>
+    /// The semaphore used to restrict the number of concurrent scheduler sessions
+    /// </summary>
+    private SemaphoreSlim _sessionGatewaySemaphore;
+
+    /// <summary>
+    /// The semaphore used to restrict the number of concurrent tasks scheduled by separate sessions
+    /// </summary>
+    private SemaphoreSlim _taskGatewaySemaphore;
+
+    /// <summary>
+    /// The number of scheduler sessions that are concurrently executing
+    /// </summary>
+    public int CurrentExecutingSessionCount => _maxConcurrentSchedulerSessions - _sessionGatewaySemaphore.CurrentCount;
+
+    /// <summary>
+    /// The number of tasks being utilised by the concurrently running scheduler sessions
+    /// </summary>
+    public int CurrentExecutingTaskCount => _maxConcurrentSchedulerTasks - _taskGatewaySemaphore.CurrentCount;
+
+    private int _totalSchedulerSessions = 0;
+
+    /// <summary>
+    /// The total number of scheduler sessions active, either pending execution, or being executed
+    /// </summary>
+    public int TotalSchedulerSessions => _totalSchedulerSessions;
 
     /// <summary>
     /// The flag to indicate the service has been terminated (eg: via a SIG_TERM message), and so should abort active operations
     /// </summary>
-    public static bool Terminated = false;
+    public bool Terminated = false;
+
+    public SubGridQOSTaskScheduler()
+    {
+      ThreadPool.GetMinThreads(out _maxConcurrentSchedulerTasks, out _);
+
+      // If the maximum number of concurrent sessions is not configured in the options,
+      // set the maximum number of concurrent sessions to half the number of concurrent tasks
+      if (_maxConcurrentSchedulerSessions < 0)
+      {
+        _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / 2;
+      }
+
+      CreateGatewaySemaphores();
+    }
+
+    public SubGridQOSTaskScheduler(int maxSchedulerSessions, int maxSchedulerTasks)
+    {
+      _maxConcurrentSchedulerSessions = maxSchedulerSessions;
+      _maxConcurrentSchedulerTasks = maxSchedulerTasks;
+
+      CreateGatewaySemaphores();
+    }
+
+    private void CreateGatewaySemaphores()
+    {
+      _sessionGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerSessions, MaxConcurrentSchedulerSessions);
+      _taskGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerTasks, MaxConcurrentSchedulerTasks);
+    }
 
     /// <summary>
     /// Provides an estimation of the default maximum number of tasks that may be used to provide service to other
     /// requests active at the same time when using the default system thread pool. This number is based on the
     /// minimum number of threads specified for the thread pool.
     /// </summary>
-    public static int DefaultMaxTasks()
+    public int DefaultMaxTasks()
     {
       ThreadPool.GetMinThreads(out var minWorkerThreads, out _);
 
-      return minWorkerThreads / DEFAULT_THREAD_POOL_FRACTION_DIVISOR;
+      return minWorkerThreads / DefaultThreadPoolFractionDivisor;
     }
 
-    private static bool WaitForGroupToComplete(List<Task> tasks)
+    private bool WaitForGroupToComplete(List<Task> tasks)
     {
-      if (tasks.Count == 0)
+      if (tasks == null)
         return true;
 
       var taskCount = tasks.Count;
 
+      if (taskCount == 0)
+        return true;
+
       try
       {
-        try
+        if (!Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(_taskGroupTimeoutSeconds)))
         {
-          if (!Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(TASK_GROUP_TIMEOUT_SECONDS)))
-          {
-            _log.LogError($"Task group failed to complete within {TASK_GROUP_TIMEOUT_SECONDS} seconds");
-          }
-
-          tasks.Clear();
-
-          return true;
+          _log.LogError($"Task group failed to complete within {_taskGroupTimeoutSeconds} seconds");
         }
-        catch (Exception e)
-        {
-          _log.LogError(e, "Exception waiting for group of sub grid tasks to complete");
-          return false;
-        }
+
+        return true;
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception waiting for group of sub grid tasks to complete");
+        return false;
       }
       finally
       {
-        Interlocked.Add(ref _currentExecutingTaskCount, -taskCount);
+        tasks.Clear();
+        _taskGatewaySemaphore.Release(taskCount);
       }
-    }
-
-    /// <summary>
-    /// Determine if there is sufficient capacity to create another task
-    /// </summary>
-    private static bool WaitForCapacity()
-    {
-      ThreadPool.GetMinThreads(out var capacityCap, out _);
-
-      while (!Terminated && _currentExecutingTaskCount >= capacityCap)
-      {
-        // Sleep for 10 milliseconds and check again
-        Thread.Sleep(10);
-      }
-
-      return !Terminated;
     }
 
     /// <summary>
@@ -105,38 +145,36 @@ namespace VSS.TRex.SubGrids
     /// <param name="subGridCollections">The group of sub grid address collections to be processed</param>
     /// <param name="processor">The lambda responsible for processing them</param>
     /// <param name="maxTasks">The maximum number of tasks that may be used</param>
-    public static bool Schedule(List<SubGridCellAddress[]> subGridCollections,
+    public bool Schedule(List<SubGridCellAddress[]> subGridCollections,
       Action<SubGridCellAddress[]> processor,
       int maxTasks)
     {
-      var collectionCount = subGridCollections?.Count ?? 0;
+      if (subGridCollections == null)
+        return true;
+
+      var collectionCount = subGridCollections.Count;
+
+      if (collectionCount == 0)
+        return true;
+
       var taskIndex = 0;
+      var tasks = new List<Task>(maxTasks);
 
-      var preActiveContexts = Interlocked.Increment(ref _currentSchedulerSessionsCount);
+      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
 
-      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {preActiveContexts} sessions are active");
+      Interlocked.Increment(ref _totalSchedulerSessions);
 
+      _sessionGatewaySemaphore.Wait();
       try
       {
-        if (collectionCount == 0 || subGridCollections == null)
-          return true;
-
-        var tasks = new List<Task>(maxTasks);
-
-        foreach (var subGridCollection in subGridCollections)
+        subGridCollections.ForEach((subGridCollection, subGridCollectionIndex) =>
         {
           if (Terminated)
           {
-            return false;
+            return;
           }
 
-          lock (_capacityLock)
-          {
-            if (!WaitForCapacity())
-              return false;
-
-            Interlocked.Increment(ref _currentExecutingTaskCount);
-          }
+          _taskGatewaySemaphore.Wait();
 
           tasks.Add(Task.Run(() =>
           {
@@ -157,21 +195,36 @@ namespace VSS.TRex.SubGrids
             }
           }));
 
-          if (tasks.Count < maxTasks)
-            continue;
-
-          if (!WaitForGroupToComplete(tasks))
-            return false;
+          if (tasks.Count >= maxTasks || (subGridCollectionIndex + 1) >= collectionCount)
+          {
+            if (!WaitForGroupToComplete(tasks))
+              return;
+          }
 
           taskIndex++;
-        }
+        });
 
-        return WaitForGroupToComplete(tasks);
+        return !Terminated;
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception processing QOS scheduler tasks");
+        throw;
       }
       finally
       {
-        var postActiveContexts = Interlocked.Decrement(ref _currentSchedulerSessionsCount);
-        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {postActiveContexts} sessions are active.");
+        // Ensure any pending tasks are removed from the task gateway semaphore
+        if (tasks.Count > 0)
+        {
+          _taskGatewaySemaphore.Release(tasks.Count);
+        }
+
+        // Release the gateway semaphore to allow another scheduler to enter
+        _sessionGatewaySemaphore.Release();
+
+        Interlocked.Decrement(ref _totalSchedulerSessions);
+
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
       }
     }
   }

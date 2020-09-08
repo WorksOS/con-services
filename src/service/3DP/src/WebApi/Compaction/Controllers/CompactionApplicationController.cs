@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var errorMessage = $"Unable to identify a unique project or customer. Result: {JsonConvert.SerializeObject(tfaResult)}";
         Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionResult(tfaResult.Code, errorMessage));
+        return BadRequest(new ContractExecutionResult(tfaResult.Code, tfaResult.Message));
       }
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 

@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.TRex.Interfaces;
+﻿using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
@@ -23,11 +22,9 @@ namespace VSS.TRex.Pipelines.Tasks
         /// <summary>
         /// Transfers a single sub grid response from a query context into the task processing context
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
         public override bool TransferResponse(object response)
         {
-            bool result = false;
+            var result = false;
 
             if (base.TransferResponse(response))
             {

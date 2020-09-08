@@ -13,7 +13,7 @@ namespace VSS.TRex.Designs.Executors
     {
         private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationPatch>();
 
-        private static IDesignFiles _designs;
+        private IDesignFiles _designs;
 
         private IDesignFiles Designs => _designs ??= DIContext.ObtainRequired<IDesignFiles>();
 
@@ -24,10 +24,10 @@ namespace VSS.TRex.Designs.Executors
         {
         }
 
-      /// <summary>
-      /// Performs the donkey work of the elevation patch calculation
-      /// </summary>
-      private IClientHeightLeafSubGrid Calc(ISiteModelBase siteModel, DesignOffset referenceDesign, double cellSize, int originX, int originY,
+        /// <summary>
+        /// Performs the donkey work of the elevation patch calculation
+        /// </summary>
+        private IClientHeightLeafSubGrid Calc(ISiteModelBase siteModel, DesignOffset referenceDesign, double cellSize, int originX, int originY,
           out DesignProfilerRequestResult calcResult)
         {
             calcResult = DesignProfilerRequestResult.UnknownError;
@@ -38,7 +38,7 @@ namespace VSS.TRex.Designs.Executors
             {
                 _log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
 
-                calcResult = lockResult == DesignLoadResult.DesignDoesNotExist 
+                calcResult = lockResult == DesignLoadResult.DesignDoesNotExist
                 ? DesignProfilerRequestResult.DesignDoesNotExist
                 : DesignProfilerRequestResult.FailedToLoadDesignFile;
 

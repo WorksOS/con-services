@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using VSS.Productivity3D.Entitlements;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Entitlements
+namespace VSS.Productivity3D.Entitlements.WebApi
 {
     /// <summary>
     /// VSS.Productivity3D.Entitlements program.
