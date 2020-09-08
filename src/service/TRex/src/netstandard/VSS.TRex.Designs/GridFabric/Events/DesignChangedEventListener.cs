@@ -117,10 +117,10 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
       // Create a messaging group the cluster can use to send messages back to and establish a local listener
       // All nodes (client and server) want to know about design state change
-      var MsgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
+      var msgGroup = DIContext.Obtain<ITRexGridFactory>()?.Grid(GridName)?.GetCluster().GetMessaging();
 
-      if (MsgGroup != null)
-        MsgGroup.LocalListen(this, MessageTopicName);
+      if (msgGroup != null)
+        msgGroup.LocalListen(this, MessageTopicName);
       else
         Log.LogError("Unable to get messaging projection to add design state change event to");
     }

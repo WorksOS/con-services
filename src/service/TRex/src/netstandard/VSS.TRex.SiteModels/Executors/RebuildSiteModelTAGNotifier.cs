@@ -12,8 +12,8 @@ namespace VSS.TRex.SiteModels.Executors
 {
   public class RebuildSiteModelTAGNotifier : IRebuildSiteModelTAGNotifier
   {
-    private IIgnite ignite;
-    private IIgnite Ignite => ignite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
+    private IIgnite _ignite;
+    private IIgnite Ignite => _ignite ??= DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable);
 
     private string _roleAttribute;
 

@@ -95,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       try
       {
         // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
-        if (IsDesignFileType(importedFileTbc.ImportedFileTypeId))
+        if (IsTRexDesignFileType(importedFileTbc.ImportedFileTypeId))
         {
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
@@ -128,9 +128,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         {
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
         }
-        await DataOceanHelper.WriteFileToDataOcean(
-          memStream, DataOceanRootFolderId, CustomerUid, projectUid, dataOceanFileName,
-          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+
+        if (importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff)
+        {
+          await DataOceanHelper.WriteFileToDataOcean(
+            memStream, DataOceanRootFolderId, CustomerUid, projectUid, dataOceanFileName,
+            Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+        }
 
         var fileEntry = await fileEntryTask;
         ImportedFileDescriptorSingleResult importedFile;
