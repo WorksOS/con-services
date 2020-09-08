@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
 {

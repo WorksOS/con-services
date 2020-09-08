@@ -32,7 +32,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets the target project settings for a project and user.
+    /// Gets the target project settings for a project and user. Returns the raw json for the settings.
     /// </summary>
     [Route("api/v4/projectsettings/{projectUid}")]
     [Route("api/v6/projectsettings/{projectUid}")]
@@ -43,16 +43,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets the target settings for a project and user.
+    /// Gets the project color settings for a project and user.  Returns the raw json for the settings.
     /// </summary>
     [Route("api/v4/projectcolors/{projectUid}")]
     [Route("api/v6/projectcolors/{projectUid}")]
     [HttpGet]
-    public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid)
+    public async Task<ProjectSettingsResult> GetProjectSettingsColors(string projectUid)
     {
       return await GetProjectSettingsForType(projectUid, ProjectSettingsType.Colors);
     }
-
 
     /// <summary>
     /// Upserts the target project settings for a project and user.
