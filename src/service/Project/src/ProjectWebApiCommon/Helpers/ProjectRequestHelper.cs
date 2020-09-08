@@ -244,11 +244,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler,
       ITransferProxy persistantTransferProxy)
     {
-      string finalFilename = filename;
-      if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
-        finalFilename = finalFilename.IncludeSurveyedUtcInName(surveyedUtc.Value);
-
-      var s3FullPath = $"{projectUid}/{finalFilename}";
+      var s3FullPath = GetS3FullPath(projectUid, filename, isSurveyedSurface, surveyedUtc);
       try
       {
         persistantTransferProxy.Upload(fileContents, s3FullPath);
@@ -259,8 +255,41 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           e.Message);
       }
 
-      log.LogInformation($"WriteFileToS3Repository. Process add design :{finalFilename}, for Project:{projectUid}");
+      log.LogInformation($"WriteFileToS3Repository. Process add design :{s3FullPath}, for Project:{projectUid}");
+      var finalFilename = s3FullPath.Split("/")[1];
       return FileDescriptor.CreateFileDescriptor(string.Empty, string.Empty, finalFilename);
+    }
+
+    /// <summary>
+    /// Deletes the imported file from S3.
+    /// </summary>
+    public static void DeleteFileFromS3Repository(string projectUid, string filename,
+      bool isSurveyedSurface, DateTime? surveyedUtc,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
+      ITransferProxy persistantTransferProxy)
+    {
+      var s3FullPath = GetS3FullPath(projectUid, filename, isSurveyedSurface, surveyedUtc);
+      try
+      {
+        persistantTransferProxy.RemoveFromBucket(s3FullPath);
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "transferProxy.RemoveFromBucket()",
+          e.Message);
+      }
+
+      log.LogInformation($"DeleteFileFromS3Repository. Process delete design :{s3FullPath}, for Project:{projectUid}");
+    }
+
+    private static string GetS3FullPath(string projectUid, string filename,
+      bool isSurveyedSurface, DateTime? surveyedUtc)
+    {
+      var finalFilename = filename;
+      if (isSurveyedSurface && surveyedUtc != null) // validation should prevent this
+        finalFilename = finalFilename.IncludeSurveyedUtcInName(surveyedUtc.Value);
+
+      return $"{projectUid}/{finalFilename}";
     }
     #endregion S3
 

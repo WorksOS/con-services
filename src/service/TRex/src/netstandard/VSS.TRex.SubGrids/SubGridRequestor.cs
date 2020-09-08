@@ -456,6 +456,8 @@ namespace VSS.TRex.SubGrids
 
       if (_prodDataRequested)
       {
+        _log.LogDebug("Performing data extraction");
+
         if ((result.requestResult = PerformDataExtraction()) != ServerRequestResult.NoError)
         {
           ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
@@ -465,6 +467,8 @@ namespace VSS.TRex.SubGrids
 
       if (_surveyedSurfaceDataRequested)
       {
+        _log.LogDebug("Performing height annotation");
+
         if ((result.requestResult = PerformHeightAnnotation()) != ServerRequestResult.NoError)
         {
           ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);

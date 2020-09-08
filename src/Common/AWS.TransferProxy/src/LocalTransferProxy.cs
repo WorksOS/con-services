@@ -17,7 +17,11 @@ namespace VSS.AWS.TransferProxy
     /// <summary>
     /// The location in the local temp folder to create buckets representing S3 buckets local S3 clients will access in place of AWS::S3
     /// </summary>
+#if DEBUG
+    private readonly string _rootLocalTransferProxyFolder = Path.Combine(Path.GetTempPath(), $"MockLocalS3Store");
+#else
     private readonly string _rootLocalTransferProxyFolder = Path.Combine(Path.GetTempPath(), $"MockLocalS3Store-{DateTime.UtcNow.Ticks}");
+#endif
 
     private readonly string _awsBucketName;
     private readonly ILogger _logger;
@@ -30,6 +34,14 @@ namespace VSS.AWS.TransferProxy
         throw new ArgumentException($"Missing environment variable {storageKey}", nameof(storageKey));
       }
       _awsBucketName = configStore.GetValueString(storageKey);
+
+#if DEBUG
+      //Create mock s3 root to make it easier for debugging adding/removing designs
+      if (!Directory.Exists(_rootLocalTransferProxyFolder))
+      {
+        Directory.CreateDirectory(_rootLocalTransferProxyFolder);
+      }
+#endif
 
       _logger.LogInformation($"AWS S3 using local storage in {_rootLocalTransferProxyFolder} with default bucket folder {_awsBucketName}");
     }
@@ -92,7 +104,7 @@ namespace VSS.AWS.TransferProxy
         Directory.CreateDirectory(directory);
       }
 
-      using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+      using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Write))
       {
         stream.CopyTo(fs);
       }
