@@ -3,6 +3,7 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
@@ -37,7 +38,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         displayMode,
         elevExtents,
         null,
-        CompactionProjectSettingsColors.Create());
+        new CompactionProjectSettingsColors());
 
       Assert.IsNotNull(palette);
       Assert.AreEqual(31, palette.Count);

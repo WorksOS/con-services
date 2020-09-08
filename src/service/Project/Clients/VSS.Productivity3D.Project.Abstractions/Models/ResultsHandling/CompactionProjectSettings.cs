@@ -3,20 +3,28 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
-using VSS.Productivity3D.Productivity3D.Models.Utilities;
-using VSS.Productivity3D.Productivity3D.Models.Validation;
+using VSS.Productivity3D.Project.Abstractions.Models.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models.Validation;
 
-namespace VSS.Productivity3D.Productivity3D.Models.Compaction
+namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
   /// <summary>
   /// 3D Productivity project settings. Used in Raptor calculations.
   /// </summary>
-  public class CompactionProjectSettings 
+  public class CompactionProjectSettings : IValidatable, IDefaultSettings
   {
+    /// <summary>
+    /// Value to convert from km/h to cm/s
+    /// </summary>
+    private static readonly double KM_HR_TO_CM_SEC = 27.77777778; //1.0 / 3600 * 100000;
+
     #region Properties
 
     /// <summary>
@@ -191,15 +199,15 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
 
     #region Construction
     /// <summary>
-    /// Default private constructor
+    /// Default constructor
     /// </summary>
-    private CompactionProjectSettings()
+    public CompactionProjectSettings()
     { }
 
     /// <summary>
-    /// Static constructor.
+    /// Constructor with parameters.
     /// </summary>
-    public static CompactionProjectSettings CreateProjectSettings(
+    public CompactionProjectSettings(
       bool? useMachineTargetPassCount = null,
       int? customTargetPassCountMinimum = null,
       int? customTargetPassCountMaximum = null,
@@ -231,75 +239,105 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
       bool? useDefaultTemperatureTargets = null,
       List<double> customTemperatureTargets = null)
     {
-      return new CompactionProjectSettings
-      {
-        useMachineTargetPassCount = useMachineTargetPassCount,
-        customTargetPassCountMinimum = customTargetPassCountMinimum,
-        customTargetPassCountMaximum = customTargetPassCountMaximum,
-        useMachineTargetTemperature = useMachineTargetTemperature,
-        customTargetTemperatureMinimum = customTargetTemperatureMinimum,
-        customTargetTemperatureMaximum = customTargetTemperatureMaximum,
-        useMachineTargetCmv = useMachineTargetCmv,
-        customTargetCmv = customTargetCmv,
-        useMachineTargetMdp = useMachineTargetMdp,
-        customTargetMdp = customTargetMdp,
-        useDefaultTargetRangeCmvPercent = useDefaultTargetRangeCmvPercent,
-        customTargetCmvPercentMinimum = customTargetCmvPercentMinimum,
-        customTargetCmvPercentMaximum = customTargetCmvPercentMaximum,
-        useDefaultTargetRangeMdpPercent = useDefaultTargetRangeMdpPercent,
-        customTargetMdpPercentMinimum = customTargetMdpPercentMinimum,
-        customTargetMdpPercentMaximum = customTargetMdpPercentMaximum,
-        useDefaultTargetRangeSpeed = useDefaultTargetRangeSpeed,
-        customTargetSpeedMinimum = customTargetSpeedMinimum,
-        customTargetSpeedMaximum = customTargetSpeedMaximum,
-        useDefaultCutFillTolerances = useDefaultCutFillTolerances,
-        customCutFillTolerances = customCutFillTolerances,
-        useDefaultVolumeShrinkageBulking = useDefaultVolumeShrinkageBulking,
-        customShrinkagePercent = customShrinkagePercent,
-        customBulkingPercent = customBulkingPercent,
-        useDefaultPassCountTargets = useDefaultPassCountTargets,
-        customPassCountTargets = customPassCountTargets,
-        useDefaultCMVTargets = useDefaultCMVTargets,
-        customCMVTargets = customCMVTargets,
-        useDefaultTemperatureTargets = useDefaultTemperatureTargets,
-        customTemperatureTargets = customTemperatureTargets
-      };
+      this.useMachineTargetPassCount = useMachineTargetPassCount;
+      this.customTargetPassCountMinimum = customTargetPassCountMinimum;
+      this.customTargetPassCountMaximum = customTargetPassCountMaximum;
+      this.useMachineTargetTemperature = useMachineTargetTemperature;
+      this.customTargetTemperatureMinimum = customTargetTemperatureMinimum;
+      this.customTargetTemperatureMaximum = customTargetTemperatureMaximum;
+      this.useMachineTargetCmv = useMachineTargetCmv;
+      this.customTargetCmv = customTargetCmv;
+      this.useMachineTargetMdp = useMachineTargetMdp;
+      this.customTargetMdp = customTargetMdp;
+      this.useDefaultTargetRangeCmvPercent = useDefaultTargetRangeCmvPercent;
+      this.customTargetCmvPercentMinimum = customTargetCmvPercentMinimum;
+      this.customTargetCmvPercentMaximum = customTargetCmvPercentMaximum;
+      this.useDefaultTargetRangeMdpPercent = useDefaultTargetRangeMdpPercent;
+      this.customTargetMdpPercentMinimum = customTargetMdpPercentMinimum;
+      this.customTargetMdpPercentMaximum = customTargetMdpPercentMaximum;
+      this.useDefaultTargetRangeSpeed = useDefaultTargetRangeSpeed;
+      this.customTargetSpeedMinimum = customTargetSpeedMinimum;
+      this.customTargetSpeedMaximum = customTargetSpeedMaximum;
+      this.useDefaultCutFillTolerances = useDefaultCutFillTolerances;
+      this.customCutFillTolerances = customCutFillTolerances;
+      this.useDefaultVolumeShrinkageBulking = useDefaultVolumeShrinkageBulking;
+      this.customShrinkagePercent = customShrinkagePercent;
+      this.customBulkingPercent = customBulkingPercent;
+      this.useDefaultPassCountTargets = useDefaultPassCountTargets;
+      this.customPassCountTargets = customPassCountTargets;
+      this.useDefaultCMVTargets = useDefaultCMVTargets;
+      this.customCMVTargets = customCMVTargets;
+      this.useDefaultTemperatureTargets = useDefaultTemperatureTargets;
+      this.customTemperatureTargets = customTemperatureTargets;
     }
 
-    public static readonly CompactionProjectSettings DefaultSettings =
+    public static CompactionProjectSettings DefaultSettings =>
         new CompactionProjectSettings
-        {
-          useMachineTargetPassCount = true,
-          customTargetPassCountMinimum = 6,
-          customTargetPassCountMaximum = 6,
-          useMachineTargetTemperature = true,
-          customTargetTemperatureMinimum = 65.0,
-          customTargetTemperatureMaximum = 175.0,
-          useMachineTargetCmv = true,
-          customTargetCmv = 70,
-          useMachineTargetMdp = true,
-          customTargetMdp = 70,
-          useDefaultTargetRangeCmvPercent = true,
-          customTargetCmvPercentMinimum = 80.0,
-          customTargetCmvPercentMaximum = 130.0,
-          useDefaultTargetRangeMdpPercent = true,
-          customTargetMdpPercentMinimum = 80.0,
-          customTargetMdpPercentMaximum = 130.0,
-          useDefaultTargetRangeSpeed = true,
-          customTargetSpeedMinimum = 5.0,
-          customTargetSpeedMaximum = 10.0,
-          useDefaultCutFillTolerances = true,
-          customCutFillTolerances = new List<double> { 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2 },
-          useDefaultVolumeShrinkageBulking = true,
-          customShrinkagePercent = 0.0,
-          customBulkingPercent = 0.0,
-          useDefaultPassCountTargets = true,
-          customPassCountTargets = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 },
-          useDefaultCMVTargets = true,
-          customCMVTargets = new List<int> { 0, 40, 80, 120, 150 },
-          useDefaultTemperatureTargets = true,
-          customTemperatureTargets = new List<double> { 0, 50, 100, 150, 200, 250, 300 }
-        };
+        (
+          useMachineTargetPassCount: true,
+          customTargetPassCountMinimum: 6,
+          customTargetPassCountMaximum: 6,
+          useMachineTargetTemperature: true,
+          customTargetTemperatureMinimum: 65.0,
+          customTargetTemperatureMaximum: 175.0,
+          useMachineTargetCmv: true,
+          customTargetCmv: 70,
+          useMachineTargetMdp: true,
+          customTargetMdp: 70,useDefaultTargetRangeCmvPercent: true,
+          customTargetCmvPercentMinimum: 80.0,
+          customTargetCmvPercentMaximum: 130.0,
+          useDefaultTargetRangeMdpPercent: true,
+          customTargetMdpPercentMinimum: 80.0,
+          customTargetMdpPercentMaximum: 130.0,
+          useDefaultTargetRangeSpeed: true,
+          customTargetSpeedMinimum: 5.0,
+          customTargetSpeedMaximum: 10.0,
+          useDefaultCutFillTolerances: true,
+          customCutFillTolerances: new List<double> { 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2 },
+          useDefaultVolumeShrinkageBulking: true,
+          customShrinkagePercent: 0.0,
+          customBulkingPercent: 0.0,
+          useDefaultPassCountTargets: true,
+          customPassCountTargets: new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 },
+          useDefaultCMVTargets: true,
+          customCMVTargets: new List<int> { 0, 40, 80, 120, 150 },
+          useDefaultTemperatureTargets: true,
+          customTemperatureTargets: new List<double> { 0, 50, 100, 150, 200, 250, 300 }
+        );
+
+    public void Defaults()
+    {
+      this.useMachineTargetPassCount = DefaultSettings.useMachineTargetPassCount;
+      this.customTargetPassCountMinimum = DefaultSettings.customTargetPassCountMinimum;
+      this.customTargetPassCountMaximum = DefaultSettings.customTargetPassCountMaximum;
+      this.useMachineTargetTemperature = DefaultSettings.useMachineTargetTemperature;
+      this.customTargetTemperatureMinimum = DefaultSettings.customTargetTemperatureMinimum;
+      this.customTargetTemperatureMaximum = DefaultSettings.customTargetTemperatureMaximum;
+      this.useMachineTargetCmv = DefaultSettings.useMachineTargetCmv;
+      this.customTargetCmv = DefaultSettings.customTargetCmv;
+      this.useMachineTargetMdp = DefaultSettings.useMachineTargetMdp;
+      this.customTargetMdp = DefaultSettings.customTargetMdp;
+      this.useDefaultTargetRangeCmvPercent = DefaultSettings.useDefaultTargetRangeCmvPercent;
+      this.customTargetCmvPercentMinimum = DefaultSettings.customTargetCmvPercentMinimum;
+      this.customTargetCmvPercentMaximum = DefaultSettings.customTargetCmvPercentMaximum;
+      this.useDefaultTargetRangeMdpPercent = DefaultSettings.useDefaultTargetRangeMdpPercent;
+      this.customTargetMdpPercentMinimum = DefaultSettings.customTargetMdpPercentMinimum;
+      this.customTargetMdpPercentMaximum = DefaultSettings.customTargetMdpPercentMaximum;
+      this.useDefaultTargetRangeSpeed = DefaultSettings.useDefaultTargetRangeSpeed;
+      this.customTargetSpeedMinimum = DefaultSettings.customTargetSpeedMinimum;
+      this.customTargetSpeedMaximum = DefaultSettings.customTargetSpeedMaximum;
+      this.useDefaultCutFillTolerances = DefaultSettings.useDefaultCutFillTolerances;
+      this.customCutFillTolerances = DefaultSettings.customCutFillTolerances;
+      this.useDefaultVolumeShrinkageBulking = DefaultSettings.useDefaultVolumeShrinkageBulking;
+      this.customShrinkagePercent = DefaultSettings.customShrinkagePercent;
+      this.customBulkingPercent = DefaultSettings.customBulkingPercent;
+      this.useDefaultPassCountTargets = DefaultSettings.useDefaultPassCountTargets;
+      this.customPassCountTargets = DefaultSettings.customPassCountTargets;
+      this.useDefaultCMVTargets = DefaultSettings.useDefaultCMVTargets;
+      this.customCMVTargets = DefaultSettings.customCMVTargets;
+      this.useDefaultTemperatureTargets = DefaultSettings.useDefaultTemperatureTargets;
+      this.customTemperatureTargets = DefaultSettings.customTemperatureTargets;
+    }
     #endregion
 
     #region Getters 
@@ -402,12 +440,12 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
     /// Get the minimum speed target as a value for Raptor in cm/s
     /// </summary>
     public ushort CustomTargetSpeedMinimum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMinimum.HasValue ?
-      customTargetSpeedMinimum.Value : (double)DefaultSettings.customTargetSpeedMinimum) * ConversionConstants.KM_HR_TO_CM_SEC);
+      customTargetSpeedMinimum.Value : (double)DefaultSettings.customTargetSpeedMinimum) * KM_HR_TO_CM_SEC);
     /// <summary>
     /// Get the maximum speed target as a value for Raptor in cm/s
     /// </summary>
     public ushort CustomTargetSpeedMaximum => (ushort)Math.Round((OverrideDefaultTargetRangeSpeed && customTargetSpeedMaximum.HasValue ?
-      customTargetSpeedMaximum.Value : (double)DefaultSettings.customTargetSpeedMaximum) * ConversionConstants.KM_HR_TO_CM_SEC);
+      customTargetSpeedMaximum.Value : (double)DefaultSettings.customTargetSpeedMaximum) * KM_HR_TO_CM_SEC);
     /// <summary>
     /// Get the pass count details targets as a value for Raptor
     /// </summary>
@@ -479,7 +517,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public void Validate()
+    public void Validate(IServiceExceptionHandler serviceExceptionHandler)
     {
       var validator = new DataAnnotationsValidator();
       validator.TryValidate(this, out ICollection<ValidationResult> results);
@@ -609,7 +647,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                $"CMV targets must be between {MIN_CMV_MDP_VALUE} and {MAX_CMV_MDP_VALUE/10}"));
+                $"CMV targets must be between {MIN_CMV_MDP_VALUE} and {MAX_CMV_MDP_VALUE / 10}"));
           }
         }
 
@@ -755,3 +793,4 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
     private const short MAX_CMV_MDP_VALUE = 5000;
   }
 }
+
