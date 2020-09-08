@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ namespace VSS.MasterData.Proxies.Interfaces
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false);
 
-    Task ExecuteRequest(string endpoint, Stream payload = null,
+    Task<HttpStatusCode> ExecuteRequest(string endpoint, Stream payload = null,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false);
   }

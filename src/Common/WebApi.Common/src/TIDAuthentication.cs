@@ -157,10 +157,12 @@ namespace VSS.WebApi.Common
             // do we need to check entitlements? If so, this will call out to an another service to check.
             if (RequireEntitlementValidation(context))
             {
-              var entitlementRequest = new EntitlementRequestModel()
+              var entitlementRequest = new EntitlementRequestModel
               {
-                Feature = DefaultEntitlementFeature, 
+                Feature = EntitlementFeature, 
+                Sku = EntitlementSku,
                 OrganizationIdentifier = customerUid, 
+                UserUid = userUid,
                 UserEmail = userEmail
               };
 
@@ -168,11 +170,11 @@ namespace VSS.WebApi.Common
               if (result == null || !result.IsEntitled)
               {
                 log.LogWarning($"No entitlement for the request");
-                await SetResult($"User is not entitled to use feature `{DefaultEntitlementFeature}`", context);
+                await SetResult($"User is not entitled to use feature `{EntitlementFeature}` for product `{EntitlementSku}`", context);
                 return;
               }
 
-              log.LogInformation($"User is entitled to use feature `{DefaultEntitlementFeature}`");
+              log.LogInformation($"User is entitled to use feature `{EntitlementFeature}` for product `{EntitlementSku}`");
             }
             customerName = customer.Name;
           }
@@ -197,7 +199,8 @@ namespace VSS.WebApi.Common
       await _next.Invoke(context);
     }
 
-    public virtual string DefaultEntitlementFeature => "worksos";
+    public virtual string EntitlementFeature => store.GetValueString(ConfigConstants.ENTITLEMENTS_FEATURE_CONFIG_KEY, "FEA-CEC-WORKSOS");
+    public virtual string EntitlementSku => store.GetValueString(ConfigConstants.ENTITLEMENTS_SKU_CONFIG_KEY, "HCC-WOS-MO");
 
     /// <summary>
     /// If true, bypasses authentication. Override in a service if required.

@@ -54,9 +54,9 @@ namespace VSS.TRex.GridFabric.Arguments
         OriginatingIgniteNodeId = reader.ReadGuid() ?? Guid.Empty;
         ExternalDescriptor = reader.ReadGuid() ?? Guid.Empty;
         RequestEmissionDateUtc = DateTime.FromBinary(reader.ReadLong());
-      }
 
-      IsOutsideTPaaSTimeout = RequestEmissionDateUtc.AddSeconds(TPAAS_REQUEST_TIMEOUT_SECONDS) < DateTime.UtcNow;
+        IsOutsideTPaaSTimeout = RequestEmissionDateUtc.AddSeconds(TPAAS_REQUEST_TIMEOUT_SECONDS) < DateTime.UtcNow;
+      }
     }
   }
 }

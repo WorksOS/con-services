@@ -21,7 +21,11 @@ namespace VSS.TRex.GridFabric.Affinity
     /// The version number of this spatial element when it is stored in the persistent layer, defined
     /// as the number of ticks in DateTime.UtcNow at the time it is written.
     /// </summary>
-    public long Version { get => _version; set => _version = value; }
+    public long Version
+    {
+      get => _version;
+      set => _version = value;
+    }
 
     public const long DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS = 1;
 
@@ -30,27 +34,49 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// The GUID for the project the sub grid data belongs to.
     /// </summary>
-    public Guid ProjectUID { get => _projectUid; set => _projectUid = value; }
+    public Guid ProjectUID
+    {
+      get => _projectUid;
+      set => _projectUid = value;
+    }
 
     private int _subGridX;
 
     /// <summary>
     /// The X ordinate cell address of the origin cell for the sub grid
     /// </summary>
-    public int SubGridX { get => _subGridX; set => _subGridX = value; }
+    public int SubGridX
+    {
+      get => _subGridX;
+      set => _subGridX = value;
+    }
 
     private int _subGridY;
 
     /// <summary>
     /// The Y ordinate cell address of the origin cell for the sub grid
     /// </summary>
-    public int SubGridY { get => _subGridY; set => _subGridY = value; }
+    public int SubGridY
+    {
+      get => _subGridY;
+      set => _subGridY = value;
+    }
 
     private long _segmentStartDateTicks;
-    public long SegmentStartDateTicks { get => _segmentStartDateTicks; set => _segmentStartDateTicks= value; } // in ticks
+
+    public long SegmentStartDateTicks
+    {
+      get => _segmentStartDateTicks;
+      set => _segmentStartDateTicks = value;
+    } // in ticks
 
     private long _segmentEndDateTicks;
-    public long SegmentEndDateTicks { get => _segmentEndDateTicks; set => _segmentEndDateTicks = value; } // in ticks
+
+    public long SegmentEndDateTicks
+    {
+      get => _segmentEndDateTicks;
+      set => _segmentEndDateTicks = value;
+    } // in ticks
 
     /// <summary>
     /// A constructor for the sub grid spatial affinity key that accepts the project and sub grid origin location
@@ -125,14 +151,17 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      _projectUid = reader.ReadGuid() ?? Guid.Empty;
-      _subGridX = reader.ReadInt();
-      _subGridY = reader.ReadInt();
-      _segmentStartDateTicks = reader.ReadLong();
-      _segmentEndDateTicks = reader.ReadLong();
-      _version = reader.ReadLong();
+      if (version == 1)
+      {
+        _projectUid = reader.ReadGuid() ?? Guid.Empty;
+        _subGridX = reader.ReadInt();
+        _subGridY = reader.ReadInt();
+        _segmentStartDateTicks = reader.ReadLong();
+        _segmentEndDateTicks = reader.ReadLong();
+        _version = reader.ReadLong();
+      }
     }
   }
 }

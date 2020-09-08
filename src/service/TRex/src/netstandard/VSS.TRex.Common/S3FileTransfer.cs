@@ -37,7 +37,7 @@ namespace VSS.TRex.Common
     /// </summary>
     public async Task<bool> ReadFile(Guid siteModelUid, string fileName, string targetPath)
     {
-      var s3Path = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+      var s3Path = GetS3FullPath(siteModelUid, fileName);
       FileStreamResult fileStreamResult;
 
       try
@@ -125,7 +125,7 @@ namespace VSS.TRex.Common
       if (destinationFileName != null)
         fileName = destinationFileName;
 
-      var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+      var s3FullPath = GetS3FullPath(siteModelUid, fileName);
       return WriteFile(localFullPath, s3FullPath);
     }
 
@@ -136,7 +136,7 @@ namespace VSS.TRex.Common
     {
       preSignedUrl = string.Empty;
       var fileName = $"{Path.GetFileNameWithoutExtension(localFullPath)}-{Guid.NewGuid()}{Path.GetExtension(localFullPath)}";
-      var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+      var s3FullPath = GetS3FullPath(siteModelUid, fileName);
       var ret = WriteFile(localFullPath, s3FullPath);
       if (ret)
         preSignedUrl = GeneratePreSignedUrl(s3FullPath);
@@ -151,7 +151,7 @@ namespace VSS.TRex.Common
       bool res;
       try
       {
-        var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+        var s3FullPath = GetS3FullPath(siteModelUid, fileName);
         res = Proxy.RemoveFromBucket(s3FullPath);
       }
       catch (Exception e)
@@ -186,5 +186,8 @@ namespace VSS.TRex.Common
         return Task.FromResult((new string[0], ""));
       }
     }
+
+    private string GetS3FullPath(Guid siteModelUid, string fileName) => $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+
   }
 }

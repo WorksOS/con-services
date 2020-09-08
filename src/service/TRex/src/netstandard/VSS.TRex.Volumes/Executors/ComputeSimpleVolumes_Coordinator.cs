@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
@@ -153,7 +152,7 @@ namespace VSS.TRex.Volumes.Executors
     /// <summary>
     /// Executes the simple volumes computation returning a SimpleVolumesResponse with the results
     /// </summary>
-    public async Task<SimpleVolumesResponse> ExecuteAsync()
+    public SimpleVolumesResponse Execute()
     {
       var volumesResult = new SimpleVolumesResponse();
       var resultBoundingExtents = BoundingWorldExtent3D.Null();
