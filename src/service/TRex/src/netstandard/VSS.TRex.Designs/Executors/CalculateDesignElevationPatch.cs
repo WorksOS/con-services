@@ -32,6 +32,8 @@ namespace VSS.TRex.Designs.Executors
         {
             calcResult = DesignProfilerRequestResult.UnknownError;
 
+            _log.LogDebug("About to lock design");
+
             var design = Designs.Lock(referenceDesign.DesignID, siteModel, cellSize, out var lockResult);
 
             if (design == null)
@@ -46,7 +48,9 @@ namespace VSS.TRex.Designs.Executors
             }
 
             try
-            {
+            {  
+                _log.LogDebug("Computing sub grid elevation patch");
+
                 // Check to see if this sub grid has any design surface underlying it
                 // from which to calculate an elevation patch. If not, don't bother...
                 if (!design.HasElevationDataForSubGridPatch(originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
@@ -66,13 +70,19 @@ namespace VSS.TRex.Designs.Executors
                   ? DesignProfilerRequestResult.OK 
                   : DesignProfilerRequestResult.NoElevationsInRequestedPatch;
 
+                _log.LogDebug("Computed sub grid elevation patch");
+
                 return result;
             }
             finally
             {
+                _log.LogDebug("Unlocking design");
+
                 Designs.UnLock(referenceDesign.DesignID, design);
+
+                _log.LogDebug("Completed calculating design elevations");
             }
-        }
+    }
 
         /// <summary>
         /// Performs execution business logic for this executor
