@@ -8,6 +8,7 @@ using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.SubGrids
 {
@@ -76,7 +77,7 @@ namespace VSS.TRex.SubGrids
       // set the maximum number of concurrent sessions to half the number of concurrent tasks
       if (_maxConcurrentSchedulerSessions < 0)
       {
-        _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / 2;
+        _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / DefaultThreadPoolFractionDivisor;
       }
 
       CreateGatewaySemaphores();
@@ -103,9 +104,7 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     public int DefaultMaxTasks()
     {
-      ThreadPool.GetMinThreads(out var minWorkerThreads, out _);
-
-      return minWorkerThreads / DefaultThreadPoolFractionDivisor;
+      return _maxConcurrentSchedulerTasks / DefaultThreadPoolFractionDivisor;
     }
 
     private bool WaitForGroupToComplete(List<Task> tasks)
@@ -123,6 +122,16 @@ namespace VSS.TRex.SubGrids
         if (!Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(_taskGroupTimeoutSeconds)))
         {
           _log.LogError($"Task group failed to complete within {_taskGroupTimeoutSeconds} seconds");
+
+          tasks.ForEach((task, index) =>
+          {
+            _log.LogDebug($"Task {index}: Status = {task.Status}, IsFaulted = {task.IsFaulted}, IsCancelled = {task.IsCanceled}, IsCompleted = {task.IsCompleted}");
+
+            if (task.Exception != null)
+            {
+              _log.LogError(task.Exception, "Task faulted with exception");
+            }
+          });
         }
 
         return true;
@@ -160,11 +169,15 @@ namespace VSS.TRex.SubGrids
       var taskIndex = 0;
       var tasks = new List<Task>(maxTasks);
 
-      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
+      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {CurrentExecutingSessionCount} sessions (of {_totalSchedulerSessions}) are active using {CurrentExecutingTaskCount} tasks");
 
       Interlocked.Increment(ref _totalSchedulerSessions);
 
       _sessionGatewaySemaphore.Wait();
+
+      // For now, override any provided maxTasks with the DefaultMaxTasks() value
+      maxTasks = DefaultMaxTasks();
+
       try
       {
         subGridCollections.ForEach((subGridCollection, subGridCollectionIndex) =>
@@ -178,15 +191,16 @@ namespace VSS.TRex.SubGrids
 
           tasks.Add(Task.Run(() =>
           {
+            var localTaskIndex = taskIndex;
             try
             {
               // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {taskIndex} starting");
+              _log.LogDebug($"Processor for task index {localTaskIndex} starting");
 
               processor(subGridCollection);
 
               // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {taskIndex} completed");
+              _log.LogDebug($"Processor for task index {localTaskIndex} completed");
             }
             catch (Exception e)
             {
@@ -224,7 +238,7 @@ namespace VSS.TRex.SubGrids
 
         Interlocked.Decrement(ref _totalSchedulerSessions);
 
-        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {CurrentExecutingSessionCount} sessions (of {_totalSchedulerSessions}) are active using {CurrentExecutingTaskCount} tasks");
       }
     }
   }
