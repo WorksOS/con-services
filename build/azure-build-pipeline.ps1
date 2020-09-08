@@ -43,6 +43,7 @@ $services = @{
     Project        = 'service/Project'
     Push           = 'service/Push'
     TagFileGateway = 'service/TagFileGateway'
+    Tile           = 'service/TileService'
     ThreeDNow      = 'service/3dNow'
     TRex           = 'service/TRex'
     TRexWebTools   = 'service/TRex' # placeholder
