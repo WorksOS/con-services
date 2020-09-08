@@ -93,6 +93,8 @@ namespace VSS.TRex.SubGrids
 
     private void CreateGatewaySemaphores()
     {
+      _log.LogDebug($"Creating gateway semaphores: MaxConcurrentSchedulerSessions={MaxConcurrentSchedulerSessions}, MaxConcurrentSchedulerTasks={MaxConcurrentSchedulerTasks}");
+
       _sessionGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerSessions, MaxConcurrentSchedulerSessions);
       _taskGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerTasks, MaxConcurrentSchedulerTasks);
     }
