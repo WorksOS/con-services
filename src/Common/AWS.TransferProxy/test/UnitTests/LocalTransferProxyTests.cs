@@ -61,9 +61,11 @@ namespace VSS.AWS.TransferProxy.UnitTests
     [Fact]
     public async void TestListKeys()
     {
+      var rootPath = $"/unittests/listkeys_{new Random().Next()}";
+
       const string originalFileContents = "test-data-please-ignore";
-      var s3Key1 = "/unittests/listkeys/Upload-test-s3Key" + DateTime.Now.Ticks + Guid.NewGuid();
-      var s3Key2 = "/unittests/listkeys/Upload-test-s3Key" + DateTime.Now.Ticks + Guid.NewGuid();
+      var s3Key1 = $"{rootPath}/Upload-test-s3Key" + DateTime.Now.Ticks + Guid.NewGuid();
+      var s3Key2 = $"{rootPath}/Upload-test-s3Key" + DateTime.Now.Ticks + Guid.NewGuid();
       var result = TimeSpan.FromHours(1);
 
       var mockStore = new Mock<IConfigurationStore>();
@@ -79,7 +81,7 @@ namespace VSS.AWS.TransferProxy.UnitTests
         transferProxy.Upload(ms, s3Key2);
       }
 
-      var (resultKeys, nextContinuationToken) = await transferProxy.ListKeys("/unittests/listkeys", 1000, "");
+      var (resultKeys, nextContinuationToken) = await transferProxy.ListKeys(rootPath, 1000, "");
 
       Assert.True(resultKeys.Length == 2);
       Assert.True(string.IsNullOrEmpty(nextContinuationToken));
