@@ -8,7 +8,6 @@ using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;
-using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.SubGrids
 {
@@ -131,7 +130,7 @@ namespace VSS.TRex.SubGrids
 
             if (task.Exception != null)
             {
-              _log.LogError(task.Exception, "Task faulted with exception");
+              _log.LogError(task.Exception, $"Task {index} faulted with exception");
             }
           });
         }
@@ -148,6 +147,32 @@ namespace VSS.TRex.SubGrids
         tasks.Clear();
         _taskGatewaySemaphore.Release(taskCount);
       }
+    }
+
+    /// <summary>
+    /// Creates and starts running a task processing a collection of sub grids. This wraps the state the task lambda will capture
+    /// without risk of modification from the calling context.
+    /// </summary>
+    private static void InstantiateProcessorTask(List<Task> tasks, int taskIndex, Action<SubGridCellAddress[]> processor, SubGridCellAddress[] subGridCollection)
+    {
+      tasks.Add(Task.Run(() =>
+      {
+        try
+        {
+          // ReSharper disable once AccessToModifiedClosure
+          _log.LogDebug($"Processor for task index {taskIndex} starting");
+
+          processor(subGridCollection);
+
+          // ReSharper disable once AccessToModifiedClosure
+          _log.LogDebug($"Processor for task index {taskIndex} completed");
+        }
+        catch (Exception e)
+        {
+          _log.LogError(e, "Exception processing group of sub grids");
+          throw;
+        }
+      }));
     }
 
     /// <summary>
@@ -191,25 +216,7 @@ namespace VSS.TRex.SubGrids
 
           _taskGatewaySemaphore.Wait();
 
-          tasks.Add(Task.Run(() =>
-          {
-            var localTaskIndex = taskIndex;
-            try
-            {
-              // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {localTaskIndex} starting");
-
-              processor(subGridCollection);
-
-              // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {localTaskIndex} completed");
-            }
-            catch (Exception e)
-            {
-              _log.LogError(e, "Exception processing group of sub grids");
-              throw;
-            }
-          }));
+          InstantiateProcessorTask(tasks, taskIndex, processor, subGridCollection);
 
           if (tasks.Count >= maxTasks || (subGridCollectionIndex + 1) >= collectionCount)
           {

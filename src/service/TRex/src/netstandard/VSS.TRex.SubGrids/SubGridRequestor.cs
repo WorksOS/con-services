@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -30,6 +31,8 @@ namespace VSS.TRex.SubGrids
   public class SubGridRequestor : ISubGridRequestor
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridRequestor>();
+
+    private readonly bool _isTraceLoggingEnabled = _log.IsTraceEnabled();
 
     /// <summary>
     /// Local reference to the client sub grid factory
@@ -456,7 +459,8 @@ namespace VSS.TRex.SubGrids
 
       if (_prodDataRequested)
       {
-        _log.LogDebug("Performing data extraction");
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("Performing data extraction");
 
         if ((result.requestResult = PerformDataExtraction()) != ServerRequestResult.NoError)
         {
@@ -467,7 +471,8 @@ namespace VSS.TRex.SubGrids
 
       if (_surveyedSurfaceDataRequested)
       {
-        _log.LogDebug("Performing height annotation");
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("Performing height annotation");
 
         if ((result.requestResult = PerformHeightAnnotation()) != ServerRequestResult.NoError)
         {

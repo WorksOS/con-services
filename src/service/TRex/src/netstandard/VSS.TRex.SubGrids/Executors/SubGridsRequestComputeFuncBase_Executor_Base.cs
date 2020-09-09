@@ -46,6 +46,8 @@ namespace VSS.TRex.SubGrids.Executors
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
+    private readonly bool _isTraceLoggingEnabled = _log.IsTraceEnabled();
+
     /// <summary>
     /// Denotes the request 'style' in use. 
     /// </summary>
@@ -280,7 +282,8 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     private (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[] PerformSubGridRequest(ISubGridRequestor[] requesters, SubGridCellAddress address)
     {
-      _log.LogDebug("In: PerformSubGridRequest");
+      if (_isTraceLoggingEnabled)
+        _log.LogTrace("In: PerformSubGridRequest");
 
       //################################################
       // Special case for DesignHeight sub grid requests
@@ -289,7 +292,8 @@ namespace VSS.TRex.SubGrids.Executors
 
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
-        _log.LogDebug("In: Special case for DesignHeight sub grid requests");
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("In: Special case for DesignHeight sub grid requests");
 
         try
         {
@@ -311,7 +315,8 @@ namespace VSS.TRex.SubGrids.Executors
         }
         finally
         {
-          _log.LogDebug("Out: Special case for DesignHeight sub grid requests");
+          if (_isTraceLoggingEnabled)
+            _log.LogTrace("Out: Special case for DesignHeight sub grid requests");
         }
       }
 
@@ -349,7 +354,8 @@ namespace VSS.TRex.SubGrids.Executors
       // then perform the conversion here
       if (localArg.GridDataType == GridDataType.CutFill)
       {
-        _log.LogDebug("In: Special case for cut/fill sub grid requests");
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("In: Special case for cut/fill sub grid requests");
 
         try
         {
@@ -388,11 +394,13 @@ namespace VSS.TRex.SubGrids.Executors
         }
         finally
         {
-          _log.LogDebug("Out: Special case for cut/fill sub grid requests");
+          if (_isTraceLoggingEnabled)
+            _log.LogTrace("Out: Special case for cut/fill sub grid requests");
         }
       }
 
-      _log.LogDebug("Out: PerformSubGridRequest");
+      if (_isTraceLoggingEnabled)
+        _log.LogTrace("Out: PerformSubGridRequest");
 
       return result;
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -86,7 +87,9 @@ namespace VSS.TRex.Common
 
       try
       {
+        var sw = Stopwatch.StartNew();
         fileStreamResult = Proxy.DownloadSync(s3Path);
+        _log.LogDebug($"Time to download {s3Path} from S3 as file stream: {sw.Elapsed}");
       }
       catch (Exception e)
       {
@@ -102,10 +105,14 @@ namespace VSS.TRex.Common
 
       try
       {
+        var sw = Stopwatch.StartNew();
+
         var targetFullPath = Path.Combine(targetPath, fileName);
         using var stream = fileStreamResult.FileStream;
         using var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length);
         fileStreamResult.FileStream.CopyTo(targetFileStream);
+
+        _log.LogDebug($"Time to write {s3Path} from file stream to {targetFullPath}: {sw.Elapsed}");
       }
       catch (Exception e)
       {
