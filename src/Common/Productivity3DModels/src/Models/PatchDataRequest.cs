@@ -1,6 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using VSS.MasterData.Models.Utilities;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models.Utilities;
 

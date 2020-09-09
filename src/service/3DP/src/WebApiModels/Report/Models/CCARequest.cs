@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
 

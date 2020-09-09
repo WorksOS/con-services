@@ -1,6 +1,4 @@
-﻿using VSS.MasterData.Models.Utilities;
-
-namespace VSS.Productivity3D.Productivity3D.Models.Utilities
+﻿namespace VSS.MasterData.Models.Utilities
 {
   /// <summary>
   /// Utility class that defines constants used by data validation.

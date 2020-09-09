@@ -9,11 +9,8 @@ using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Productivity3D.Models.Utilities;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
   /// <summary>
   /// Defines all the filter parameters that may be supplied as a part of a request. Filters control spatial, temporal and attribute aspects of the info
@@ -227,7 +224,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The GPS accuracy.
     /// </value>
     [JsonProperty(PropertyName = "gpsAccuracy", Required = Required.Default)]
-    public GPSAccuracy? GpsAccuracy { get; private set; }
+    public GPSAccuracyType? GpsAccuracy { get; private set; }
 
     /// <summary>
     /// Determines if the GPS accuracy filter is inclusive or not. If the value is true then each GPS accuracy level
@@ -397,7 +394,7 @@ namespace VSS.Productivity3D.Models.Models
       List<MachineDetails> contributingMachines=null,
       List<long> surveyedSurfaceExclusionList=null,
       bool? returnEarliest=null,
-      GPSAccuracy? accuracy=null,
+      GPSAccuracyType? accuracy=null,
       bool? inclusive=null,
       bool? bladeOnGround=null,
       bool? trackMapping=null,
@@ -543,7 +540,7 @@ namespace VSS.Productivity3D.Models.Models
     public FilterResult
     (
       Guid? uid = null,
-      Filter.Abstractions.Models.Filter filter = null,
+      Filter filter = null,
       List<WGSPoint> polygonLL = null,
       DesignDescriptor alignmentFile = null,
       FilterLayerMethod? layerType = null,
