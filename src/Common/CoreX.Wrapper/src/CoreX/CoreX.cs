@@ -17,8 +17,8 @@ namespace CoreX.Wrapper
   public class CoreX : IDisposable
   {
     public string GeodeticDatabasePath;
+    public CSDResolver CSDResolver;
 
-    private static readonly object _lock = new object();
     private readonly ILogger _log;
 
     public CoreX(ILoggerFactory loggerFactory, IConfigurationStore configStore)
@@ -26,12 +26,14 @@ namespace CoreX.Wrapper
       _log = loggerFactory.CreateLogger<CoreX>();
 
       // CoreX static classes aren't thread safe singletons.
-      lock (_lock)
+      lock (TGLLock.CsdManagementLock)
       {
         GeodeticDatabasePath = configStore.GetValueString("TGL_GEODATA_PATH", "Geodata");
         _log.LogInformation($"CoreX {nameof(SetupTGL)}: TGL_GEODATA_PATH='{GeodeticDatabasePath}'");
 
         SetupTGL();
+
+        CSDResolver = new CSDResolver();
       }
     }
 
@@ -81,7 +83,7 @@ namespace CoreX.Wrapper
       // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
       fileContent = fileContent.DecodeFromBase64();
 
-      lock (_lock)
+      lock (TGLLock.CsdManagementLock)
       {
         var csmCsibBlobContainer = new CSMCsibBlobContainer();
 
@@ -260,18 +262,6 @@ namespace CoreX.Wrapper
       return csibBlobContainer;
     }
 
-    private CSMCsibBlobContainer CreateCSMCsibBlobContainer(string csibStr)
-    {
-      if (string.IsNullOrEmpty(csibStr))
-      {
-        throw new ArgumentNullException(csibStr, $"{nameof(CreateGeoCsibBlobContainer)}: csibStr cannot be null");
-      }
-
-      var bytes = Array.ConvertAll(Convert.FromBase64String(csibStr), b => unchecked((sbyte)b));
-      return new CSMCsibBlobContainer(bytes);
-    }
-
-
     private IGeodeticXTransformer GeodeticXTransformer(string csib)
     {
       using var geoCsibBlobContainer = CreateGeoCsibBlobContainer(csib);
@@ -305,7 +295,7 @@ namespace CoreX.Wrapper
       using var csmCsibData = new CSMCsibBlobContainer(data);
       using var csFromCSIB = new CSMCoordinateSystemContainer();
 
-      lock (_lock)
+      lock (TGLLock.CsdManagementLock)
       {
         CsdManagement.csmImportCoordSysFromCsib(csmCsibData, csFromCSIB)
           .Validate("attempting to import coordinate system from CSMCsibBlobContainer");
@@ -318,7 +308,7 @@ namespace CoreX.Wrapper
     {
       using var returnListStruct = new CSMStringListContainer();
 
-      lock (_lock)
+      lock (TGLLock.CsdManagementLock)
       {
         var resultCode = CsdManagement.csmGetListOfDatums(returnListStruct);
 
@@ -352,7 +342,7 @@ namespace CoreX.Wrapper
     {
       using var datumContainer = new CSMCoordinateSystemContainer();
 
-      lock (_lock)
+      lock (TGLLock.CsdManagementLock)
       {
         CsdManagement.csmGetDatumFromCSDSelectionById((uint)datumSystemId, false, null, null, datumContainer)
           .Validate($"attempting to retrieve datum {datumSystemId} by id.");
@@ -364,7 +354,7 @@ namespace CoreX.Wrapper
     /// <inheritdoc/> 
     public string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameQueryString)
     {
-      lock (_lock)
+      lock (TGLLock.CsdManagementLock)
       {
         using var retStructZoneGroups = new CSMStringListContainer();
 
@@ -446,92 +436,11 @@ namespace CoreX.Wrapper
       }
     }
 
-    /// <inheritdoc/>
-    public CoordinateSystem GetCSDFromCSIB(string csibString)
-    {
-      if (string.IsNullOrEmpty(csibString))
-      {
-        throw new ArgumentNullException(nameof(csibString), "CSIB string cannot be null");
-      }
-
-      using var csContainer = new CSMCoordinateSystemContainer();
-
-      var csmCsibData = CreateCSMCsibBlobContainer(csibString);
-
-      lock (_lock)
-      {
-        CsdManagement.csmImportCoordSysFromCsib(csmCsibData, csContainer).
-          Validate("attempting to import coordinate system from CSIB");
-      }
-
-      return ConvertICoordinateSystem(csContainer.GetSelectedRecord());
-    }
-
-    /// <inheritdoc/>
-    public CoordinateSystem GetCSDFromDCFileContent(string dcFileStr)
-    {
-      if (string.IsNullOrEmpty(dcFileStr))
-      {
-        throw new ArgumentNullException(nameof(dcFileStr), "DC file string cannot be null");
-      }
-
-      // We may receive coordinate system file content that's been uploaded (encoded) from a web api, must decode first.
-      var fileContent = dcFileStr.DecodeFromBase64();
-
-      using var csContainer = new CSMCoordinateSystemContainer();
-
-      lock (_lock)
-      {
-        CsdManagement.csmGetCoordinateSystemFromDCFile(fileContent, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, csContainer)
-          .Validate("attempting to retrieve the DC file's CSD");
-      }
-
-      return ConvertICoordinateSystem(csContainer.GetSelectedRecord());
-    }
-
-    private CoordinateSystem ConvertICoordinateSystem(ICoordinateSystem csRecord)
-    {
-      // Many of our test calibration files fail validation; is this expected or do we have a parsing problem? 
-      // This validation logic was taken from TGL unit test classes, may not be correctly implemented.
-      // csRecord.Validate();
-
-      var coordinateSystem = new CoordinateSystem
-      {
-        SystemName = csRecord.SystemName(),
-        DatumSystemId = csRecord.DatumSystemId(),
-        GeoidInfo = new GeoidInfo()
-        {
-          GeoidFileName = csRecord.GeoidFileName(),
-          GeoidName = csRecord.GeoidName()
-        },
-        ZoneInfo = new ZoneInfo()
-        {
-          ShiftGridFileName = csRecord.ZoneShiftGridFileName(),
-          SnakeGridFileName = csRecord.SnakeGridFileName()
-        },
-        DatumInfo = new DatumInfo()
-        {
-          DatumName = csRecord.DatumName(),
-          DatumType = Enum.GetName(typeof(csmDatumTypes), csRecord.DatumType()).Substring("cdt".Length),
-          DatumSystemId = csRecord.DatumSystemId()
-          // Vertical Datum Name ?
-        }
-      };
-
-      if (csRecord.HasGeoid())
-      {
-        // Taken from CoreX.UnitTests.TestSelectRecords.cs.
-        coordinateSystem.GeoidInfo.GeoidSystemId = csRecord.GeoidSystemId() < 0 ? 0 : csRecord.GeoidSystemId();
-      }
-
-      return coordinateSystem;
-    }
-
     private string GetCSIBFromCSD(ICoordinateSystem coordinateSystem)
     {
       using var retStructFromICoordinateSystem = new CSMCsibBlobContainer();
 
-      lock (_lock)
+      lock (TGLLock.CsdManagementLock)
       {
         CsdManagement.csmGetCSIBFromCoordinateSystem(coordinateSystem, false, Utils.FileListCallBack, Utils.EmbeddedDataCallback, retStructFromICoordinateSystem)
           .Validate("attempting to get CSMCsibBlobContainer from ICoordinateSystem");

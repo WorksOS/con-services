@@ -340,10 +340,10 @@ namespace CoreX.Wrapper
     public Datum[] GetDatums() => _coreX.GetDatums();
 
     /// <inheritdoc/> 
-    public CoordinateSystem GetCSDFromCSIB(string csib) => _coreX.GetCSDFromCSIB(csib);
+    public CoordinateSystem GetCSDFromCSIB(string csib) => _coreX.CSDResolver.GetCSDFromCSIB(csib);
 
     /// <inheritdoc/> 
-    public CoordinateSystem GetCSDFromDCFileContent(string fileContent) => _coreX.GetCSDFromDCFileContent(fileContent);
+    public CoordinateSystem GetCSDFromDCFileContent(string fileContent) => _coreX.CSDResolver.GetCSDFromDCFileContent(fileContent);
 
     private bool _disposed = false;
 
