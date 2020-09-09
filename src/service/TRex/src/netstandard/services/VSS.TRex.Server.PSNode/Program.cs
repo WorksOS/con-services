@@ -243,9 +243,14 @@ namespace VSS.TRex.Server.PSNode
         ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
         ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
 
+        var requiredMinThreads = minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor;
+
         // Create a much larger pool of system threads to allow QOS channels with groups of sub-tasks room to take advantage of all system resources while also allowing
         // other requests to run concurrently
-        ThreadPool.SetMinThreads(minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor, minCompletionPortThreads);
+        if (!ThreadPool.SetMinThreads(requiredMinThreads, minCompletionPortThreads))
+        {
+          Console.WriteLine($"Failed to set minWorkerThreads to {requiredMinThreads}. This will remain at the original value of {minWorkerThreads}");
+        }
 
         Console.WriteLine($"Operating thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
 

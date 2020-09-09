@@ -76,9 +76,9 @@ namespace IntegrationTests.ExecutorTests
       var projectSettingsResult = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.NotNull(projectSettingsResult);
-      Assert.Equal(project.Id, projectSettingsResult.projectUid);
-      Assert.Null(projectSettingsResult.settings);
-      Assert.Equal(settingsType, projectSettingsResult.projectSettingsType);
+      Assert.Equal(project.Id, projectSettingsResult.ProjectUid);
+      Assert.Null(projectSettingsResult.Settings);
+      Assert.Equal(settingsType, projectSettingsResult.ProjectSettingsType);
     }
 
     [Theory]
@@ -105,25 +105,25 @@ namespace IntegrationTests.ExecutorTests
           projectRepo: ExecutorTestFixture.ProjectRepo, cwsProjectClient: ExecutorTestFixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(project.Id, result.projectUid);
-      Assert.Equal(settingsType, result.projectSettingsType);
+      Assert.Equal(project.Id, result.ProjectUid);
+      Assert.Equal(settingsType, result.ProjectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
 
-        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
-        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
+        Assert.Equal(tempSettings["firstValue"], result.Settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.Settings["lastValue"]);
       }
       else
       {
         var tempObj = JsonConvert.DeserializeObject<JArray>(settings);
         var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.Settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.Settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.Settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.Settings["importedFiles"][1]["lastValue"]);
       }
     }
 
@@ -193,25 +193,25 @@ namespace IntegrationTests.ExecutorTests
         projectRepo: ExecutorTestFixture.ProjectRepo, cwsProjectClient: ExecutorTestFixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(project.Id, result.projectUid);
-      Assert.Equal(settingsType, result.projectSettingsType);
+      Assert.Equal(project.Id, result.ProjectUid);
+      Assert.Equal(settingsType, result.ProjectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
 
-        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
-        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
+        Assert.Equal(tempSettings["firstValue"], result.Settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.Settings["lastValue"]);
       }
       else
       {
         var tempObj = JsonConvert.DeserializeObject<JArray>(settings);
         var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.Settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.Settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.Settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.Settings["importedFiles"][1]["lastValue"]);
       }
     }
 
@@ -243,25 +243,25 @@ namespace IntegrationTests.ExecutorTests
         projectRepo: ExecutorTestFixture.ProjectRepo, cwsProjectClient: ExecutorTestFixture.CwsProjectClient);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
-      Assert.Equal(project.Id, result.projectUid);
-      Assert.Equal(settingsType, result.projectSettingsType);
+      Assert.Equal(project.Id, result.ProjectUid);
+      Assert.Equal(settingsType, result.ProjectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settingsUpdated);
 
-        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
-        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
+        Assert.Equal(tempSettings["firstValue"], result.Settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.Settings["lastValue"]);
       }
       else
       {
         var tempObj = JsonConvert.DeserializeObject<JArray>(settingsUpdated);
         var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.Settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.Settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.Settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.Settings["importedFiles"][1]["lastValue"]);
       }
     }
   }
