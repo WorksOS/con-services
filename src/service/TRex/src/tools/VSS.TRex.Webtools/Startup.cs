@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CoreX.Interfaces;
+using CoreX.Wrapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using VSS.AWS.TransferProxy;
@@ -14,7 +16,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -34,8 +35,6 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using CoreX.Interfaces;
-using CoreX.Wrapper;
 
 namespace VSS.TRex.Webtools
 {
@@ -98,7 +97,6 @@ namespace VSS.TRex.Webtools
       DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<ICoreXWrapper, CoreXWrapper>();
-      services.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates());
       TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 

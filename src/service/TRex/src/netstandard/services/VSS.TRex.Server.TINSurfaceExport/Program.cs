@@ -11,7 +11,6 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Events;
@@ -93,7 +92,6 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
       .Build()
       .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-      .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
       .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
       .Add(TRexGridFactory.AddGridFactoriesToDI)
       .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)

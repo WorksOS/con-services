@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Coords;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
 using VSS.TRex.CoordinateSystems.GridFabric.Requests;
 using VSS.TRex.DI;
@@ -21,33 +21,33 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
   {
     public CoordinateSystemPostExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler)
       : base(configStore, logger, exceptionHandler)
-    {
-    }
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public CoordinateSystemPostExecutor()
-    {
-    }
+    { }
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CoordinateSystemFile;
+      var request = CastRequestObjectTo<CoordinateSystemFile>(item);
 
-      if (request == null)
-        ThrowRequestTypeCastException<CoordinateSystemFile>();
+      var dcFileContentString = System.Text.Encoding.UTF8.GetString(request.CSFileContent, 0, request.CSFileContent.Length);
+      var coreXWrapper = DIContext.Obtain<ICoreXWrapper>();
 
-      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
+      var coordinateSystem = coreXWrapper.GetCSDFromDCFileContent(dcFileContentString);
 
-      if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
+      if (coordinateSystem== null || coordinateSystem.ZoneInfo == null || coordinateSystem.DatumInfo == null)
+      {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));
+      }
 
       var projectUid = request.ProjectUid ?? Guid.Empty;
-      var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
+      var csib = coreXWrapper.GetCSIBFromDCFileContent(dcFileContentString);
 
-      var csib = Convert.ToBase64String(Array.ConvertAll<int, byte>(csd.CSIB, sb => unchecked((byte)sb)));
+      var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
 
       var addCoordSystemResponse = await addCoordinateSystemRequest.ExecuteAsync(new AddCoordinateSystemArgument()
       {
@@ -56,7 +56,9 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       });
 
       if (addCoordSystemResponse?.Succeeded ?? false)
-        return ConvertResult(request.CSFileName, csd.CoordinateSystem);
+      {
+        return ConvertResult(request.CSFileName, coordinateSystem);
+      }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         $"Failed to post Coordinate System definition data. Project UID: {projectUid}"));

@@ -89,6 +89,11 @@ namespace CoreX.Interfaces
     string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameString);
 
     /// <summary>
+    /// Return the coordinate system for a given CSIB string.
+    /// </summary>
+    CoordinateSystem GetCSDFromCSIB(string csib);
+
+    /// <summary>
     /// Return the coordinate system for a given DC file string.
     /// </summary>
     CoordinateSystem GetCSDFromDCFileContent(string fileContent);

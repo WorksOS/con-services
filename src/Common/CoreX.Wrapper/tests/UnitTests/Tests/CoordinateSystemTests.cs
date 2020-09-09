@@ -60,5 +60,14 @@ namespace CoreX.Wrapper.UnitTests.Tests
 
       result.Should().NotBeNull();
     }
+
+    [Theory]
+    [InlineData(CSIB.DIMENSIONS_2012_WITHOUT_VERT_ADJUST)]
+    public void Should_return_CoordinateSystem_for_valid_CSIB_string(string csib)
+    {
+      var result = _coreX.GetCSDFromCSIB(csib);
+
+      result.Should().NotBeNull();
+    }
   }
 }
