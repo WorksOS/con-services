@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,9 +77,19 @@ namespace VSS.AWS.TransferProxy
 
     public FileStreamResult DownloadFromBucketSync(string s3Key, string bucketName)
     {
+      FileStreamResult fsr = null;
+
+      var sw = Stopwatch.StartNew();
+
       using (var transferUtil = GetTransferUtility())
       {
+        logger.LogDebug($"Time to GetTransferUtility: {sw.Elapsed}");
+        sw.Restart();
+
         var stream = transferUtil.OpenStream(bucketName, s3Key);
+        logger.LogDebug($"Time to transferUtil.OpenStream: {sw.Elapsed}");
+        sw.Restart();
+
         string mimeType;
         try
         {
@@ -92,10 +103,15 @@ namespace VSS.AWS.TransferProxy
           mimeType = ContentTypeConstants.ApplicationOctetStream; // binary data....
         }
 
-        return new FileStreamResult(stream, mimeType);
+        fsr = new FileStreamResult(stream, mimeType);
+        logger.LogDebug($"Time to create file stream: {sw.Elapsed}");
+        sw.Restart();
       }
+
+      logger.LogDebug($"Time to dispose transfer utility and return file stream: {sw.Elapsed}");
+      return fsr;
     }
-    
+
     /// <summary>
     /// Create a task to download a file from S3 storage
     /// </summary>
