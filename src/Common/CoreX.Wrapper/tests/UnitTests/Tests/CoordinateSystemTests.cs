@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using CoreX.Interfaces;
-using CoreX.Wrapper.UnitTests.TestResults;
+using CoreX.Wrapper.UnitTests.ExpectedTestResultObjects;
 using CoreX.Wrapper.UnitTests.Types;
 using CoreXModels;
 using FluentAssertions;
@@ -56,7 +56,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Theory]
-    [MemberData(nameof(GetData))]
+    [MemberData(nameof(GetCSDData))]
     public void Should_return_CoordinateSystem_for_valid_DC_file_string(string dcFileString, CoordinateSystem expectedCS)
     {
       var result = _coreX.GetCSDFromDCFileContent(GetFileContent(dcFileString));
@@ -77,10 +77,11 @@ namespace CoreX.Wrapper.UnitTests.Tests
       result.DatumInfo.DatumSystemId.Should().Be(expectedCS.DatumInfo.DatumSystemId);
     }
 
-    public static IEnumerable<object[]> GetData() =>
+    public static IEnumerable<object[]> GetCSDData() =>
       new List<object[]>
       {
-        new object[] { DCFile.NETHERLANDS_DE_MIN, ExpectedCSDResults.Netherlaneds_With_Geoid }
+        new object[] { DCFile.NETHERLANDS_DE_MIN, ExpectedCSDResults.Netherlaneds_With_Geoid },
+        new object[] { DCFile.FLORIDA_EAST_0901_NAD_1983, ExpectedCSDResults.Florida_East_0901_NAD_1983_No_Geoid }
       };
   }
 }
