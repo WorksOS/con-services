@@ -11,9 +11,9 @@ namespace VSS.TRex.Designs.Executors
 {
   public class CalculateDesignElevationSpot
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationSpot>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationSpot>();
 
-    private readonly IDesignFiles designs = DIContext.ObtainRequired<IDesignFiles>();
+    private readonly IDesignFiles _designs = DIContext.ObtainRequired<IDesignFiles>();
 
     /// <summary>
     /// Default no-args constructor
@@ -31,33 +31,33 @@ namespace VSS.TRex.Designs.Executors
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
-      var design = designs.Lock(referenceDesign.DesignID, siteModel, SubGridTreeConsts.DefaultCellSize, out var LockResult);
+      var design = _designs.Lock(referenceDesign.DesignID, siteModel, SubGridTreeConsts.DefaultCellSize, out var lockResult);
 
       if (design == null)
       {
-        Log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
+        _log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
         calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
         return Common.Consts.NullDouble;
       }
 
       try
       {
-        var Hint = -1;
-        if (design.InterpolateHeight(ref Hint, spotX, spotY, referenceDesign.Offset, out var Z))
+        var hint = -1;
+        if (design.InterpolateHeight(ref hint, spotX, spotY, referenceDesign.Offset, out var z))
         {
           calcResult = DesignProfilerRequestResult.OK;
         }
         else
         {
           calcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
-          Z = Common.Consts.NullDouble;
+          z = Common.Consts.NullDouble;
         }
 
-        return Z;
+        return z;
       }
       finally
       {
-        designs.UnLock(referenceDesign.DesignID, design);
+        _designs.UnLock(referenceDesign.DesignID, design);
       }
     }
 
@@ -77,9 +77,9 @@ namespace VSS.TRex.Designs.Executors
           CalcResult = calcResult
         };
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Execute: Exception: ");
+        _log.LogError(e, "Execute: Exception: ");
         return new CalculateDesignElevationSpotResponse
         {
           Elevation = Common.Consts.NullDouble

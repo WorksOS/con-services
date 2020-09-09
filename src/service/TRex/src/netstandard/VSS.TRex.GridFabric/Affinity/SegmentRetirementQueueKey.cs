@@ -32,10 +32,13 @@ namespace VSS.TRex.GridFabric.Affinity
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectUID = reader.ReadGuid() ?? Guid.Empty;
-      InsertUTCAsLong = reader.ReadLong();
+      if (version == 1)
+      {
+        ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+        InsertUTCAsLong = reader.ReadLong();
+      }
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -7,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace TestUtility
 {
@@ -25,19 +25,12 @@ namespace TestUtility
 
       var _testConfig = new TestConfig("CCSS-Project");
 
-      if (Debugger.IsAttached || _testConfig.operatingSystem == "Windows_NT")
-      {
-        ServiceBaseUrl = _testConfig.debugWebApiUri;
-      }
-      else
-      {
-        ServiceBaseUrl = _testConfig.webApiUri;
-      }
+      ServiceBaseUrl = _testConfig.webApiUri.TrimEnd('/');
     }
 
     public static async Task<string> SendHttpClientRequest(string route, HttpMethod method, string acceptHeader, string contentType, string customerUid = null, object payloadData = null, string jwtToken = null, HttpStatusCode expectedHttpCode = HttpStatusCode.OK)
     {
-      var requestMessage = new HttpRequestMessage(method, new Uri($"{ServiceBaseUrl}{route}"));
+      var requestMessage = new HttpRequestMessage(method, new Uri($"{ServiceBaseUrl}/{route}"));
 
       if (payloadData != null)
       {
@@ -60,7 +53,7 @@ namespace TestUtility
       requestMessage.Headers.Add("X-VisionLink-CustomerUid", customerUid);
       requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
 
-      Console.WriteLine($"[{method}] {requestMessage.RequestUri.AbsoluteUri}");
+      Log.Logger.Information($"[{method}] {requestMessage.RequestUri.AbsoluteUri}");
 
       using (var httpResponseMessage = await httpClient.SendAsync(requestMessage))
       {
@@ -79,7 +72,7 @@ namespace TestUtility
           {
             case MediaTypes.JSON:
               {
-                Console.WriteLine($"SendHttpClientRequest. response: {JsonConvert.SerializeObject(responseStream)}");
+                Log.Logger.Debug($"SendHttpClientRequest. response: {JsonConvert.SerializeObject(responseStream)}");
 
                 return responseStream;
               }

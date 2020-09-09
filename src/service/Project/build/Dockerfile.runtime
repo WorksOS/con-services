@@ -1,0 +1,21 @@
+ARG FROM_IMAGE
+FROM ${FROM_IMAGE} as build_container
+
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-runtime
+
+ARG SOURCE_PATH=/build/artifacts/Project
+ARG DEST_PATH=.
+
+#This is required for the webpi to run properly
+RUN apt-get update && apt-get install -y \
+    libunwind8 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+ENV ASPNETCORE_URLS http://*:80
+EXPOSE 80
+
+COPY --from=build_container ${SOURCE_PATH} ${DEST_PATH}
+
+ENTRYPOINT ["dotnet", "VSS.MasterData.Project.WebAPI.dll"]

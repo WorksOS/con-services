@@ -16,6 +16,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -72,7 +73,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var errorMessage = $"Unable to identify a unique project or customer. Result: {JsonConvert.SerializeObject(tfaResult)}";
         Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionResult(tfaResult.Code, errorMessage));
+        return BadRequest(new ContractExecutionResult(tfaResult.Code, tfaResult.Message));
       }
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 

@@ -7,7 +7,7 @@ trigger:
     include:
       - "src/service/MockProjectWebApi/*"
 
-pool: fsm-merino-services
+pool: PDXA-CSD-EKS01
 
 variables:
   buildPlatform: "Any CPU"

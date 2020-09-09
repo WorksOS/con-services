@@ -19,7 +19,7 @@ namespace VSS.TRex.Designs.Executors
     {
       try
       {
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, false);
+        var siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(projectUid, false);
 
         if (siteModel == null)
         {
@@ -27,12 +27,12 @@ namespace VSS.TRex.Designs.Executors
           return DesignProfilerRequestResult.NoSelectedSiteModel;
         }
 
-        var removed = DIContext.Obtain<IDesignManager>().Remove(projectUid, designUid);
+        var removed = DIContext.ObtainRequired<IDesignManager>().Remove(projectUid, designUid);
 
         if (removed)
         {
           // Broadcast to listeners that design has changed
-          var sender = DIContext.Obtain<IDesignChangedEventSender>();
+          var sender = DIContext.ObtainRequired<IDesignChangedEventSender>();
           sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, projectUid, designUid, ImportedFileType.DesignSurface, designRemoved: true);
         }
         else

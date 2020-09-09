@@ -31,6 +31,7 @@ using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -295,60 +296,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the project settings targets for the project.
     /// </summary>
-    protected async Task<CompactionProjectSettings> GetProjectSettingsTargets(Guid projectUid)
+    protected Task<CompactionProjectSettings> GetProjectSettingsTargets(Guid projectUid)
     {
-      CompactionProjectSettings ps;
-      var jsonSettings = await ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Targets);
-      if (jsonSettings != null)
-      {
-        try
-        {
-          ps = jsonSettings.ToObject<CompactionProjectSettings>();
-          ps.Validate();
-        }
-        catch (Exception ex)
-        {
-          Log.LogInformation(
-            $"JObject conversion to Project Settings targets or validation failure for projectUid {projectUid}. Error is {ex.Message}");
-          ps = CompactionProjectSettings.DefaultSettings;
-        }
-      }
-      else
-      {
-        Log.LogDebug($"No Project Settings targets for projectUid {projectUid}. Using defaults.");
-        ps = CompactionProjectSettings.DefaultSettings;
-      }
-      return ps;
+      return ProjectSettingsProxy.GetProjectSettingsTargets(projectUid.ToString(), GetUserId(), CustomHeaders, ServiceExceptionHandler);
     }
 
     /// <summary>
     /// Gets the project settings colors for the project.
     /// </summary>
-    protected async Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
-    {
-      CompactionProjectSettingsColors ps;
-      var jsonSettings = await ProjectSettingsProxy.GetProjectSettings(projectUid.ToString(), GetUserId(), CustomHeaders, ProjectSettingsType.Colors);
-      if (jsonSettings != null)
-      {
-        try
-        {
-          ps = jsonSettings.ToObject<CompactionProjectSettingsColors>();
-          ps.UpdateCmvDetailsColorsIfRequired();
-          ps.Validate();
-        }
-        catch (Exception ex)
-        {
-          Log.LogInformation(
-            $"JObject conversion to Project Settings colours or validation failure for projectUid {projectUid}. Error is {ex.Message}");
-          ps = CompactionProjectSettingsColors.DefaultSettings;
-        }
-      }
-      else
-      {
-        Log.LogDebug($"No Project Settings colours for projectUid {projectUid}. Using defaults.");
-        ps = CompactionProjectSettingsColors.DefaultSettings;
-      }
-      return ps;
+    protected Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
+    { ;
+      return ProjectSettingsProxy.GetProjectSettingsColors(projectUid.ToString(), GetUserId(), CustomHeaders, ServiceExceptionHandler);
     }
 
     protected FilterResult SetupCompactionFilter(Guid projectUid, BoundingBox2DGrid boundingBox)

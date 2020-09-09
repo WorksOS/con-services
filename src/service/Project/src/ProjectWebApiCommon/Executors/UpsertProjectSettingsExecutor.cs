@@ -54,13 +54,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           case ProjectSettingsType.Targets:
           case ProjectSettingsType.Colors:
             result = projectSettings == null ?
-              ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, null, request.ProjectSettingsType) :
-              ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
+              new ProjectSettingsResult(request.projectUid, null, request.ProjectSettingsType) :
+              new ProjectSettingsResult(request.projectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
             break;
           case ProjectSettingsType.ImportedFiles:
             var tempObj = JsonConvert.DeserializeObject<JArray>(projectSettings.Settings);
             var tempJObject = new JObject { ["importedFiles"] = tempObj };
-            result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, tempJObject, projectSettings.ProjectSettingsType);
+            result = new ProjectSettingsResult(request.projectUid, tempJObject, projectSettings.ProjectSettingsType);
             break;
           default:
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 77);

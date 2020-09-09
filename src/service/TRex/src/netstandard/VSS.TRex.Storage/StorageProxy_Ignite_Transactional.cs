@@ -64,7 +64,7 @@ namespace VSS.TRex.Storage
 
       if (commitResults.IsFaulted || commitTasks.Any(x => x.IsFaulted))
       {
-        _log.LogError(commitResults.Exception, $"Asynchronous Commit() faulted");
+        _log.LogError(commitResults.Exception, "Asynchronous Commit() faulted");
         return false;
       }
       

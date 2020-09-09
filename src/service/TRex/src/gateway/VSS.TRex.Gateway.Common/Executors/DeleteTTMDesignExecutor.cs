@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -7,21 +6,17 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.TRex.Common;
-using VSS.TRex.Designs.GridFabric.Arguments;
-using VSS.TRex.Designs.GridFabric.Requests;
-using VSS.TRex.Designs.Models;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Arguments;
-using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.Types;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
-  public class DeleteTTMDesignExecutor : BaseExecutor
+  /// <summary>
+  /// Executor for deleting designs and surveyed surfaces
+  /// </summary>
+  public class DeleteTTMDesignExecutor : BaseDesignExecutor<DeleteTTMDesignExecutor>
   {
     /// <summary>
-    /// TagFileExecutor
+    /// 
     /// </summary>
     public DeleteTTMDesignExecutor(IConfigurationStore configStore,
         ILoggerFactory logger, IServiceExceptionHandler exceptionHandler) : base(configStore, logger, exceptionHandler)
@@ -54,60 +49,8 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         log.LogInformation($"#In# DeleteTTMDesignExecutor. Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
 
-        bool removedOk = false;
-        if (request.FileType == ImportedFileType.DesignSurface)
-        {
-          // Remove the designSurface
-          var tRexRequest = new RemoveTTMDesignRequest();
-          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveTTMDesignArgument
-          {
-            ProjectID = request.ProjectUid,
-            DesignID = request.DesignUid
-          });
+        await RemoveDesign(request, "DeleteTTMDesignExecutor");
 
-          removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
-        }
-
-        if (request.FileType == ImportedFileType.SurveyedSurface)
-        {
-          // Remove the new surveyedSurface
-          var tRexRequest = new RemoveSurveyedSurfaceRequest();
-          var removeResponse = await tRexRequest.ExecuteAsync(new RemoveSurveyedSurfaceArgument
-          {
-            ProjectID = request.ProjectUid,
-            DesignID = request.DesignUid
-          });
-
-          removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
-        }
-
-        if (!removedOk)
-        {
-          log.LogError($"#Out# DeleteTTMDesignExecutor. Deletion failed, of design:{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
-          throw CreateServiceException<DeleteTTMDesignExecutor>
-            (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError,
-              RequestErrorStatus.DesignImportUnableToDeleteDesign);
-        }
-
-        var localPathAndFileName = Path.Combine(new[] { TRexServerConfig.PersistentCacheStoreLocation, request.ProjectUid.ToString(), request.FileName });
-        if (File.Exists(localPathAndFileName))
-        {
-          try
-          {
-            File.Delete(localPathAndFileName);
-
-            if (File.Exists(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION))
-              File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
-            if (File.Exists(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION))
-              File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
-            if (File.Exists(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION))
-              File.Delete(localPathAndFileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
-          }
-          catch (Exception e)
-          {
-            log.LogError(e, $"Failed to delete files related to design/surveyed surface {request.DesignUid} in project {request.ProjectUid}");
-          }
-        }
         log.LogInformation($"#Out# DeleteTTMDesignExecutor. Process Delete design :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}");
       }
       catch (Exception e)

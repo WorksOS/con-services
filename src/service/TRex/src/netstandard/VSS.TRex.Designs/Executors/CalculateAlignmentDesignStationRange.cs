@@ -23,7 +23,7 @@ namespace VSS.TRex.Designs.Executors
         {
           return (double.MaxValue, double.MinValue);
         }
-        var design = DIContext.ObtainRequired<IDesignFiles>()?.Lock(referenceDesignUid, siteModel, siteModel.CellSize, out var lockResult);
+        var design = DIContext.ObtainRequired<IDesignFiles>().Lock(referenceDesignUid, siteModel, siteModel.CellSize, out var lockResult);
 
         if (design == null)
         {
