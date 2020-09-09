@@ -67,17 +67,6 @@ namespace VSS.Tile.Service.Common.Executors
         ThrowRequestTypeCastException<DxfTileRequest>();
       }
 
-      //Fallback here
-      if (files.Any(f => f.ImportedUtc < configStore.GetValueDateTime("TCC_TILE_FALLBACK_DATE", DateTime.Parse("11/22/2019", CultureInfo.CreateSpecificCulture("en-US")))))
-      {
-        var projectUid = files.First().ProjectUid;
-        if (bbox == null && item is DxfTile3dRequest request3d)
-          bbox = WebMercatorProjection.FromXyzToBoundingBox2DLatLon(request3d.xTile, request3d.yTile, request3d.zoomLevel);
-
-        var tileData = await productivity3DProxyCompactionTile.GetLineworkTile(Guid.Parse(projectUid), 256, 256, bboxHelper.GetBoundingBox(bbox), files.First().ImportedFileType.ToString(), customHeaders);
-        return new TileResult(tileData);
-      }
-
       log.LogDebug($"DxfTileExecutor: {files?.Count ?? 0} files");
 
       //Short circuit overlaying if there no files to overlay as ForAll is an expensive operation
@@ -120,7 +109,6 @@ namespace VSS.Tile.Service.Common.Executors
         //foreach (var file in request.files)
         //Check file type to see if it has tiles
         if (file.ImportedFileType == ImportedFileType.Linework ||
-            file.ImportedFileType == ImportedFileType.Alignment ||
             file.ImportedFileType == ImportedFileType.GeoTiff)
         {
           var fullPath = DataOceanFileUtil.DataOceanPath(dataOceanRootFolder, file.CustomerUid, file.ProjectUid);
