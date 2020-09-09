@@ -34,8 +34,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var projectSettings = await projectRepo.GetProjectSettings(projectSettingsRequest.projectUid, userId, projectSettingsRequest.ProjectSettingsType).ConfigureAwait(false);
 
         result = projectSettings == null ?
-          ProjectSettingsResult.CreateProjectSettingsResult(projectSettingsRequest.projectUid, null, projectSettingsRequest.ProjectSettingsType) :
-          ProjectSettingsResult.CreateProjectSettingsResult(projectSettings.ProjectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
+          new ProjectSettingsResult(projectSettingsRequest.projectUid, null, projectSettingsRequest.ProjectSettingsType) :
+          new ProjectSettingsResult(projectSettings.ProjectUid, JsonConvert.DeserializeObject<JObject>(projectSettings.Settings), projectSettings.ProjectSettingsType);
       }
       catch (Exception e)
       {

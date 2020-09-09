@@ -3,127 +3,145 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Entitlements.Abstractions;
+using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Request;
 using VSS.Productivity3D.Entitlements.Abstractions.Models.Response;
-using VSS.Productivity3D.Entitlements.Authentication;
+using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Entitlements.Controllers
+namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
 {
+  /// <summary>
+  /// API end points for entitlement checks.
+  /// </summary>
   public class EntitlementsController : Controller
   {
-    private readonly IConfigurationStore _configurationStore;
-    private readonly ILogger<EntitlementsController> _logger;
-    private readonly bool _enableEntitlementCheck;
+    private ILogger<EntitlementsController> _logger;
+    private IConfigurationStore _configurationStore;
+    private ITPaaSApplicationAuthentication _authn;
+    private IEmsClient _emsClient;
 
+    /// <summary> Gets the application logging interface. </summary>
+    private ILogger<EntitlementsController> Logger => _logger ??= HttpContext.RequestServices.GetService<ILogger<EntitlementsController>>();
+
+    /// <summary> Gets the configuration store </summary>
+    private IConfigurationStore ConfigStore => _configurationStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+
+    /// <summary> The TPaaS authentication for generating an application bearer token </summary>
+    private ITPaaSApplicationAuthentication Authn => _authn ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
+
+    /// <summary> The EMS (entitlement management system) client </summary>
+    private IEmsClient EmsClient => _emsClient ??= HttpContext.RequestServices.GetService<IEmsClient>();
+
+    /// <summary> List of users who automatically have entitlement e.g. Team Merino users </summary>
     private static List<string> AcceptedEmails;
 
-    public EntitlementsController(IConfigurationStore configurationStore,ILogger<EntitlementsController> logger)
+    /// <summary> Constructor </summary>
+    public EntitlementsController()
     {
-      _configurationStore = configurationStore;
-      _logger = logger;
-      if (AcceptedEmails == null)
-      {
-        _logger.LogInformation($"Loading testing entitlement accepted emails");
-        LoadTestingEmails();
-      }
-
-      _enableEntitlementCheck = configurationStore.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false);
-    }
-
-    public EntitlementUserClaim User
-    {
-      get
-      {
-        return HttpContext?.User as EntitlementUserClaim;
-      }
+     
     }
 
     /// <summary>
     /// Attempt to request an entitlement for the request feature and user
     /// </summary>
     [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(typeof(EntitlementResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [HttpPost("api/v1/entitlement")]
-    public IActionResult GetEntitlement([FromBody] EntitlementRequestModel request)
+    public async Task<IActionResult> GetEntitlement([FromBody] EntitlementRequestModel request)
     {
+      Logger.LogInformation($"Entitlement Request: {JsonConvert.SerializeObject(request)}");
+
       if (request == null)
         return BadRequest();
 
-      var user = User;
-      if (user == null || string.IsNullOrEmpty(user.UserEmail))
+      var validationResult = request.Validate(User.Identity.Name);
+      if (validationResult.Code == ContractExecutionStatesEnum.ValidationError)
       {
-        var message = $"{(user == null ? "User is null" : "User email is empty.")}";
-        _logger.LogWarning(message);
-        return BadRequest(message);
+        Logger.LogWarning(validationResult.Message);
+        return BadRequest(validationResult.Message);
       }
 
-      if (string.Compare(user.UserEmail, request.UserEmail, StringComparison.InvariantCultureIgnoreCase) != 0)
+      var isEntitled = false;
+      if (!string.IsNullOrEmpty(request.UserEmail))
       {
-        _logger.LogWarning($"Provided email {request.UserEmail} does not match JWT TID email: {user.UserEmail}");
-        return BadRequest($"Provided email does not match JWT");
+        if (AcceptedEmails == null)
+        {
+          Logger.LogInformation($"Loading testing entitlement accepted emails");
+          LoadTestingEmails();
+        }
+        isEntitled = AcceptedEmails.Contains(request.UserEmail.ToLower());
+        _logger.LogInformation($"{request.UserEmail} {(isEntitled ? "is an accepted email" : "is not in the allowed list")}");
       }
 
-      if (string.IsNullOrEmpty(request.OrganizationIdentifier))
+      if (!isEntitled)
       {
-        _logger.LogWarning("No Organization Identifier provided");
-        return BadRequest("No Organization Identifier provided");
-      }
-
-      _logger.LogInformation($"Entitlement Request: {JsonConvert.SerializeObject(request)}");
-
-      // Temporary until we have an external endpoint
-      if(string.Compare(request.Feature, "worksos", StringComparison.InvariantCultureIgnoreCase) != 0)
-        return StatusCode((int) HttpStatusCode.Forbidden);
-
-
-      var isEmailAccepted = AcceptedEmails.Contains(request.UserEmail.ToLower());
-      _logger.LogInformation($"{request.UserEmail} {(isEmailAccepted ? "is an accepted email" : "is not in the allowed list")}");
-
-      if (!_enableEntitlementCheck)
-      {
-        _logger.LogInformation($"Entitlement checking is disabled, allowing the request.");
-        isEmailAccepted = true;
+        var enableEntitlementCheck = ConfigStore.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false);
+        if (enableEntitlementCheck)
+        {
+          var statusCode = await EmsClient.GetEntitlements(Guid.Parse(request.UserUid), Guid.Parse(request.OrganizationIdentifier), request.Sku, request.Feature, CustomHeaders);
+          isEntitled = statusCode == HttpStatusCode.Accepted;
+        }
+        else
+        {
+          Logger.LogInformation($"Entitlement checking is disabled, allowing the request.");
+          isEntitled = true;
+        }
       }
 
       var response = new EntitlementResponseModel
-      {
-        Feature = request.Feature, 
-        IsEntitled = isEmailAccepted, 
-        OrganizationIdentifier = request.OrganizationIdentifier, 
-        UserEmail = request.UserEmail
-      };
+        {
+          Feature = request.Feature,
+          Sku = request.Sku,
+          IsEntitled = isEntitled,
+          OrganizationIdentifier = request.OrganizationIdentifier,
+          UserUid = request.UserUid,
+          UserEmail = request.UserEmail
+        };
 
-      _logger.LogInformation($"Generated Entitlements Response: {JsonConvert.SerializeObject(response)}");
+      Logger.LogInformation($"Generated Entitlements Response: {JsonConvert.SerializeObject(response)}");
 
       return Json(response);
     }
 
+    private IHeaderDictionary CustomHeaders =>
+      new HeaderDictionary
+      {
+        {"Content-Type", ContentTypeConstants.ApplicationJson},
+        {"Authorization", $"Bearer {Authn.GetApplicationBearerToken()}"}
+      };
+
     /// <summary>
-    /// While we wait for a real entitlement server, we will use a list of hardcoded emails
+    /// A list of hardcoded emails of users, primarily developers, who automatically have entitlement to use WorksOS.
+    /// This is to bypass calling EMS and to avoid having to set up licenses for them.
     /// These will be loaded from env, once.
     /// </summary>
     private void LoadTestingEmails()
     {
-      var data = _configurationStore.GetValueString(ConfigConstants.ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty);
+      var data = ConfigStore.GetValueString(ConfigConstants.ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty);
       if (string.IsNullOrEmpty(data))
       {
-        _logger.LogWarning($"No Allowed Emails for Entitlements loaded");
+        Logger.LogWarning($"No Allowed Emails for Entitlements loaded");
         AcceptedEmails = new List<string>();
       }
-
-        
-      AcceptedEmails = data.Split(';').Select(e => e.ToLower().Trim()).ToList();
-      foreach (var email in AcceptedEmails)
+      else
       {
-        _logger.LogInformation($"Accepting entitlements from `{email}`");
+        AcceptedEmails = data.Split(';').Select(e => e.ToLower().Trim()).ToList();
+        foreach (var email in AcceptedEmails)
+        {
+          Logger.LogInformation($"Accepting entitlements from `{email}`");
+        }
       }
     }
   }

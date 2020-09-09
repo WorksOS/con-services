@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -13,7 +14,9 @@ namespace VSS.TRex.Designs.Executors
     {
         private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationPatch>();
 
-        private static IDesignFiles _designs;
+        private readonly bool _isTraceLoggingEnabled = _log.IsTraceEnabled();
+
+        private IDesignFiles _designs;
 
         private IDesignFiles Designs => _designs ??= DIContext.ObtainRequired<IDesignFiles>();
 
@@ -24,13 +27,16 @@ namespace VSS.TRex.Designs.Executors
         {
         }
 
-      /// <summary>
-      /// Performs the donkey work of the elevation patch calculation
-      /// </summary>
-      private IClientHeightLeafSubGrid Calc(ISiteModelBase siteModel, DesignOffset referenceDesign, double cellSize, int originX, int originY,
+        /// <summary>
+        /// Performs the donkey work of the elevation patch calculation
+        /// </summary>
+        private IClientHeightLeafSubGrid Calc(ISiteModelBase siteModel, DesignOffset referenceDesign, double cellSize, int originX, int originY,
           out DesignProfilerRequestResult calcResult)
         {
             calcResult = DesignProfilerRequestResult.UnknownError;
+
+            if (_isTraceLoggingEnabled)
+              _log.LogTrace("About to lock design");
 
             var design = Designs.Lock(referenceDesign.DesignID, siteModel, cellSize, out var lockResult);
 
@@ -38,7 +44,7 @@ namespace VSS.TRex.Designs.Executors
             {
                 _log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
 
-                calcResult = lockResult == DesignLoadResult.DesignDoesNotExist 
+                calcResult = lockResult == DesignLoadResult.DesignDoesNotExist
                 ? DesignProfilerRequestResult.DesignDoesNotExist
                 : DesignProfilerRequestResult.FailedToLoadDesignFile;
 
@@ -47,6 +53,9 @@ namespace VSS.TRex.Designs.Executors
 
             try
             {
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Computing sub grid elevation patch");
+
                 // Check to see if this sub grid has any design surface underlying it
                 // from which to calculate an elevation patch. If not, don't bother...
                 if (!design.HasElevationDataForSubGridPatch(originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
@@ -66,11 +75,20 @@ namespace VSS.TRex.Designs.Executors
                   ? DesignProfilerRequestResult.OK 
                   : DesignProfilerRequestResult.NoElevationsInRequestedPatch;
 
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Computed sub grid elevation patch");
+
                 return result;
             }
             finally
             {
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Unlocking design");
+
                 Designs.UnLock(referenceDesign.DesignID, design);
+
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Completed calculating design elevations");
             }
         }
 

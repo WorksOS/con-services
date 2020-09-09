@@ -2,7 +2,6 @@
 using AutoMapper;
 using CCSS.Geometry;
 using VSS.Common.Abstractions.Clients.CWS;
-using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -101,10 +100,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.CustomerUid))
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Timezone, opt => opt.Ignore())
-            .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.Boundary, opt => opt.MapFrom(src => GeometryConversion.MapProjectBoundary(src.ProjectBoundaryWKT)))
             .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
             .ForMember(dest => dest.CalibrationFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
-            .ForMember(dest => dest.CalibrationFileBase64Content, opt => opt.MapFrom(src => src.CoordinateSystemFileContent))
+            .ForMember(dest => dest.CalibrationFileBase64Content, opt => opt.MapFrom(src => System.Text.Encoding.ASCII.GetString(src.CoordinateSystemFileContent)))
             ;
 
           cfg.CreateMap<AccountResponseModel, CustomerData>()

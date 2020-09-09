@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +8,9 @@ namespace VSS.AWS.TransferProxy.Interfaces
   {
     Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName);
     Task<FileStreamResult> Download(string s3Key);
+
+    FileStreamResult DownloadFromBucketSync(string s3Key, string bucketName);
+    FileStreamResult DownloadSync(string s3Key);
 
     void UploadToBucket(Stream stream, string s3Key, string bucketName);
     void Upload(Stream stream, string s3Key);

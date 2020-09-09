@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Models
 { 
@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// A collection of parameters and configuration information relating to analysis and determination of material layers.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; protected set; }
+    public LiftBuildSettings liftBuildSettings { get; set; }
 
     /// <summary>
     /// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// *** Currently unclear, related to alignment based gridded CSV exports
     /// </summary>
     [JsonProperty(PropertyName = "reportOption", Required = Required.Default)]
-    public GriddedCSVReportOption reportOption { get; protected set; }
+    public GridReportOption reportOption { get; protected set; }
 
     /// <summary>
     /// The Northing ordinate of the location to start gridding from
@@ -174,9 +174,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
 
       if (reportType == GriddedCSVReportType.Alignment)
       {
-        if (!(reportOption == GriddedCSVReportOption.Automatic ||
-              reportOption == GriddedCSVReportOption.Direction ||
-              reportOption == GriddedCSVReportOption.EndPoint))
+        if (!(reportOption == GridReportOption.Automatic ||
+              reportOption == GridReportOption.Direction ||
+              reportOption == GridReportOption.EndPoint))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
                              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

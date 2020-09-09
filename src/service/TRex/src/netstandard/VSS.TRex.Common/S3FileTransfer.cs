@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,7 @@ namespace VSS.TRex.Common
     /// </summary>
     public async Task<bool> ReadFile(Guid siteModelUid, string fileName, string targetPath)
     {
-      var s3Path = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+      var s3Path = GetS3FullPath(siteModelUid, fileName);
       FileStreamResult fileStreamResult;
 
       try
@@ -66,6 +67,52 @@ namespace VSS.TRex.Common
             fileStreamResult.FileStream.CopyTo(targetFileStream);
           }
         }
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception writing design file locally:");
+        return false;
+      }
+
+      return true;
+    }
+
+    /// <summary>
+    /// Reads a file from S3 and places it locally
+    /// </summary>
+    public bool ReadFileSync(Guid siteModelUid, string fileName, string targetPath)
+    {
+      var s3Path = GetS3FullPath(siteModelUid, fileName);
+      FileStreamResult fileStreamResult;
+
+      try
+      {
+        var sw = Stopwatch.StartNew();
+        fileStreamResult = Proxy.DownloadSync(s3Path);
+        _log.LogDebug($"Time to download {s3Path} from S3 as file stream: {sw.Elapsed}");
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception reading design from s3:");
+        return false;
+      }
+
+      if (string.IsNullOrEmpty(fileStreamResult.ContentType))
+      {
+        _log.LogInformation("Exception setting up download from S3.ContentType unknown, i.e. file doesn't exist.");
+        return false;
+      }
+
+      try
+      {
+        var sw = Stopwatch.StartNew();
+
+        var targetFullPath = Path.Combine(targetPath, fileName);
+        using var stream = fileStreamResult.FileStream;
+        using var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length);
+        fileStreamResult.FileStream.CopyTo(targetFileStream);
+
+        _log.LogDebug($"Time to write {s3Path} from file stream to {targetFullPath}: {sw.Elapsed}");
       }
       catch (Exception e)
       {
@@ -125,7 +172,7 @@ namespace VSS.TRex.Common
       if (destinationFileName != null)
         fileName = destinationFileName;
 
-      var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+      var s3FullPath = GetS3FullPath(siteModelUid, fileName);
       return WriteFile(localFullPath, s3FullPath);
     }
 
@@ -136,7 +183,7 @@ namespace VSS.TRex.Common
     {
       preSignedUrl = string.Empty;
       var fileName = $"{Path.GetFileNameWithoutExtension(localFullPath)}-{Guid.NewGuid()}{Path.GetExtension(localFullPath)}";
-      var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+      var s3FullPath = GetS3FullPath(siteModelUid, fileName);
       var ret = WriteFile(localFullPath, s3FullPath);
       if (ret)
         preSignedUrl = GeneratePreSignedUrl(s3FullPath);
@@ -151,7 +198,7 @@ namespace VSS.TRex.Common
       bool res;
       try
       {
-        var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+        var s3FullPath = GetS3FullPath(siteModelUid, fileName);
         res = Proxy.RemoveFromBucket(s3FullPath);
       }
       catch (Exception e)
@@ -186,5 +233,8 @@ namespace VSS.TRex.Common
         return Task.FromResult((new string[0], ""));
       }
     }
+
+    private string GetS3FullPath(Guid siteModelUid, string fileName) => $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+
   }
 }

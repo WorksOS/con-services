@@ -26,7 +26,7 @@ namespace VSS.TRex.TAGFiles.Executors
     {
       if (projectUid == null) return string.Empty;
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel((Guid)projectUid, false);
-      return siteModel.CSIB() ?? string.Empty;
+      return siteModel?.CSIB() ?? string.Empty;
     }
 
     public List<UTMCoordPointPair> TranslatePositions(Guid? targetProjectUid, List<UTMCoordPointPair> coordPositions)

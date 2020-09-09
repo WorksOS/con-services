@@ -50,7 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log, serviceExceptionHandler, projectRepo, importedFile.ParentUid, importedFile.Offset,
         importedFile.ImportedFileUid);
 
-      if (importedFile.IsDesignFileType)
+      if (importedFile.IsTRexDesignFileType) 
       {
         await ImportedFileRequestHelper.NotifyTRexAddFile(importedFile.ProjectUid,
           importedFile.ImportedFileType, importedFile.FileName, createImportedFileEvent.ImportedFileUID,

@@ -1,54 +1,54 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
-  public class ProjectSettingsResult : ContractExecutionResult
+  public class ProjectSettingsResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The projectUid
     /// </summary>
     [JsonProperty(PropertyName = "projectUid")]
-    public string projectUid { get;  set; }
+    public string ProjectUid { get;  set; }
 
     /// <summary>
     /// The projects settings
     /// </summary>
     [JsonProperty(PropertyName = "settings")]
-    public JObject settings { get; set; }
+    public JObject Settings { get; set; }
 
     /// <summary>
     /// The type of project settings
     /// </summary>
     [JsonIgnore]//So existing contract is not broken
-    public ProjectSettingsType projectSettingsType { get; set; }
+    public ProjectSettingsType ProjectSettingsType { get; set; }
 
     /// <summary>
-    /// Private constructor
+    /// Default constructor
     /// </summary>
-    private ProjectSettingsResult()
+    public ProjectSettingsResult()
     { }
 
 
     /// <summary>
-    /// ProjectSettingsResult create instance
+    /// Constructor with parameters
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="settings"></param>
-    /// <param name="projectSettingsType"></param>
-    /// <returns></returns>
-    public static ProjectSettingsResult CreateProjectSettingsResult(
+    public ProjectSettingsResult(
       string projectUid, JObject settings, ProjectSettingsType projectSettingsType)
     {
-      return new ProjectSettingsResult
-      {
-        projectUid = projectUid,
-        settings = settings,
-        projectSettingsType = projectSettingsType
-      };
+      ProjectUid = projectUid;
+      ProjectSettingsType = projectSettingsType;
+      Settings = settings;
     }
-    
+
+    public List<string> GetIdentifiers() => new List<string>()
+    {
+      ProjectUid
+    };
+
   }
 }

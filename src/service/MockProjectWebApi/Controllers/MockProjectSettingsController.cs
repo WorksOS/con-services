@@ -23,7 +23,7 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The mocked settings</returns>
     [Route("api/v4/projectsettings/{projectUid}")]
     [HttpGet]
-    public ProjectSettingsDataResult GetMockProjectSettingsTargets(string projectUid)
+    public ProjectSettingsResult GetMockProjectSettingsTargets(string projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockProjectSettingsTargets)}: projectUid={projectUid}");
 
@@ -34,7 +34,7 @@ namespace MockProjectWebApi.Controllers
       else if (projectUid == ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2)
         settings = JsonConvert.DeserializeObject<JObject>(ProjectService.PROJECT_SETTINGS_TARGETS_EX);
 
-      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
+      return new ProjectSettingsResult { ProjectUid = projectUid, Settings = settings };
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The mocked settings</returns>
     [Route("api/v4/projectcolors/{projectUid}")]
     [HttpGet]
-    public ProjectSettingsDataResult GetMockProjectSettingsColors(string projectUid)
+    public ProjectSettingsResult GetMockProjectSettingsColors(string projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockProjectSettingsColors)}: projectUid={projectUid}");
 
@@ -64,7 +64,7 @@ namespace MockProjectWebApi.Controllers
           }
       }
 
-      return new ProjectSettingsDataResult { ProjectUid = projectUid, Settings = settings };
+      return new ProjectSettingsResult { ProjectUid = projectUid, Settings = settings };
     }
   }
 }
