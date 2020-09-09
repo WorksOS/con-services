@@ -364,8 +364,9 @@ namespace VSS.TRex.Designs
             if (!removedDesign)
             {
               _log.LogDebug($"Spinning waiting for design to be released, iterationsLeft = {iterationsLeft}");
+
               // Still no joy? Spin until a design is released
-              Task.Delay(1000).WaitAndUnwrapException();
+              Thread.Sleep(1000);
             }
 
             if (iterationsLeft-- <= 0)
