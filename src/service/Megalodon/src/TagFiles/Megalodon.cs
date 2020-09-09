@@ -26,6 +26,7 @@ namespace TagFiles
     private DateTime lastLogfileCheckTime = DateTime.MinValue;
     private string _logPath;
     private bool _DebugTraceToLog = false;
+    private string _appVersion = string.Empty;
 
     /// <summary>
     /// Configure Megalodon
@@ -37,7 +38,7 @@ namespace TagFiles
     {
       _log = log.CreateLogger<MegalodonService>();
 
-      _log.LogInformation($"Configuring {TagConstants.APP_NAME}.");
+      _log.LogInformation($"Configuration Setup {TagConstants.APP_NAME}.");
 
       _config = configStore;
       _socketManager = socketManager;
@@ -94,8 +95,9 @@ namespace TagFiles
       tagFile.MachineID = configStore.GetValueString("MachineName");
 
       tagFile.SendTagFilesDirect = configStore.GetValueBool("SendTagFilesDirect") ?? false;
+      _log.LogInformation($"SendTagFilesDirect: {tagFile.SendTagFilesDirect}");
 
-      tagFile.TransmissionProtocolVersion = Convert.ToByte(configStore.GetValueString("TransmissionProtocolVersion", "1"));
+      tagFile.TransmissionProtocolVersion = Convert.ToByte(configStore.GetValueString("TransmissionProtocolVersion", TagConstants.CURRENT_TRANSMISSION_PROTOCOL_VERSION.ToString()));
       tagFile.Parser.TransmissionProtocolVersion = tagFile.TransmissionProtocolVersion;
 
       var fBOG = configStore.GetValueBool("ForceBOG") ?? false;
@@ -103,6 +105,7 @@ namespace TagFiles
 
       tagFile.Log = _log;
       tagFile.Parser.Log = _log;
+
       _log.LogInformation($"Socket Settings: {_TCIP}:{_Port}");
 
       var _TagFileIntervalSecs = configStore.GetValueString("TagFileIntervalSecs");
@@ -113,6 +116,14 @@ namespace TagFiles
 
       _DebugTraceToLog = configStore.GetValueBool("DebugTraceToLog") ?? false;
       tagFile.Parser.DebugTraceToLog = _DebugTraceToLog;
+
+      _appVersion = configStore.GetValueString("ApplicationVersion") ?? string.Empty;
+      tagFile.ApplicationVersion = _appVersion;
+      _log.LogInformation($"#Result# Application Version: {_appVersion}");
+
+      var prodHost = configStore.GetValueString("production-host") ?? string.Empty;
+      var prodBase = configStore.GetValueString("production-base") ?? string.Empty;
+      _log.LogInformation($"RemoteHost: {prodHost}, Base:{prodBase}");
 
     }
 
@@ -161,7 +172,7 @@ namespace TagFiles
     {
       new Thread(() =>
       {
-        _log.LogInformation($"Starting {TagConstants.APP_NAME}");
+        _log.LogInformation($"Starting {TagConstants.APP_NAME}. Version:{_appVersion}");
         SetupPort();
         _timer = new Timer(TimerDoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
       }).Start();
@@ -239,7 +250,7 @@ namespace TagFiles
       }
       else if (mode == TagConstants.CALLBACK_CONNECTION_MADE)
       {
-        _log.LogInformation("Connection made by client");
+        _log.LogInformation("#Result# Connection made by client");
         tagFile.EnableTagFileCreationTimer = true;
       }
     }

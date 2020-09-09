@@ -31,8 +31,9 @@ namespace TagFiles
     public double SeedLat = 0;
     public double SeedLon = 0;
     public double TagFileIntervalMilliSecs = 60000; // default 60 seconds
-    public byte TransmissionProtocolVersion = TagConstants.Version1; 
+    public byte TransmissionProtocolVersion = TagConstants.CURRENT_TRANSMISSION_PROTOCOL_VERSION; 
     public ILogger Log;
+    public string ApplicationVersion = string.Empty;
 
     /// <summary>
     /// Tagfile cutoff controlled by timer
@@ -89,7 +90,7 @@ namespace TagFiles
       var hertz = 0.0;
       if (epochCount > 0)
         hertz = epochCount / (TagTimer.Interval / 1000);
-      Log.LogInformation($"TimerInterval:{(TagTimer.Interval / 1000)}s, Epochs:{epochCount}, Hertz:{hertz.ToString("#.#")}");
+      Log.LogInformation($"TimerInterval:{(TagTimer.Interval / 1000)}s, Epochs:{epochCount}, Hertz:{hertz.ToString("#.#")}. AppVersion:{ApplicationVersion}");
       epochCount = 0;
       ReadyToWrite = true;
       lock (updateLock)
@@ -120,6 +121,7 @@ namespace TagFiles
     /// </summary>
     public void WriteTagFileToDisk()
     {
+      Log.LogInformation($"{nameof(WriteTagFileToDisk)}. #Start#");
 
       if (Parser.HeaderRequired)
       {
@@ -132,9 +134,7 @@ namespace TagFiles
         Log.LogInformation($"{nameof(WriteTagFileToDisk)}. No new blade positions reported.");
         return;
       }
-
-      Log.LogInformation($"{nameof(WriteTagFileToDisk)}. Start.");
-
+ 
       Parser.TrailerRequired = true;
       Parser.CloneLastEpoch(); // used as first epoc in new tagfile. Helps prevents gaps when processing tagfiles 
 
@@ -178,11 +178,11 @@ namespace TagFiles
         if (Write(outStream)) // write tagfile to stream
         {
           tagFileCount++;
-          Log.LogInformation($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} successfully written to disk. Updates:{Parser.EpochCount}, Total Tagfiles:{tagFileCount}");
+          Log.LogInformation($"{nameof(WriteTagFileToDisk)}. #Result# {toSendFilePath} successfully written to disk. EpochCount:{Parser.EpochCount}, Total Tagfiles:{tagFileCount}");
           Parser.Reset();
         }
         else
-          Log.LogWarning($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} failed to write to disk.");
+          Log.LogWarning($"{nameof(WriteTagFileToDisk)}. #Result# {toSendFilePath} failed to write to disk.");
         ReadyToWrite = false;
         Parser.HeaderRequired = true;
       }
@@ -196,7 +196,14 @@ namespace TagFiles
           {
             FileInfo f = new FileInfo(toSendFilePath);
             f.MoveTo(directFilePath); // move tagfile up one folder for direct send
+            var fileCount = Directory.GetFiles(TagFileFolder, "*.tag", SearchOption.TopDirectoryOnly).Length;
+            Log.LogInformation($"{nameof(WriteTagFileToDisk)}. #End#. {fileCount} tagfile(s) awaiting to be sent to host.");
           }
+        }
+        else
+        {
+          var fileCount = Directory.GetFiles(toSendFolder, "*.tag", SearchOption.TopDirectoryOnly).Length;
+          Log.LogInformation($"{nameof(WriteTagFileToDisk)}. #End#. {fileCount} tagfile(s) located ToSend folder.");
         }
       }
     }
@@ -214,7 +221,7 @@ namespace TagFiles
         epochCount++;
         if (!Parser.ParseText(txt))
         {
-          Log.LogWarning($"Failed to parse data packet:{txt}");
+          Log.LogWarning($"#Result# Failed to parse data packet:{txt}");
           return false;
         }
       }
