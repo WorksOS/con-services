@@ -10,6 +10,8 @@ using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using System.IO;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Designs.GridFabric.Events
 {
@@ -67,7 +69,14 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
         if (design != null)
         {
-          designFiles.RemoveDesignFromCache(message.DesignUid, design, message.SiteModelUid, true);
+          var localStorage = Path.Combine(FilePathHelper.GetTempFolderForProject(siteModel.ID), design.FileName);
+          if (designFiles.RemoveDesignFromCache(message.DesignUid, design, message.SiteModelUid, false))
+          {
+            if (File.Exists(localStorage))
+            {
+              File.Delete(localStorage);
+            }
+          }
         }
         else
         {
