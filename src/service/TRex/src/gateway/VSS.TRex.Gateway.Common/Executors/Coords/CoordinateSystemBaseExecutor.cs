@@ -1,5 +1,4 @@
-﻿using CoreX.Models;
-using CoreX.Models.CoordinateSystems;
+﻿using CoreXModels;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
@@ -82,10 +81,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         DatumScaleFactor = coordSystem.DatumInfo.Scale,
         DatumParametersFileName = string.Empty, // datumParametersFileName
         // Geoid...
-        GeoidName = coordSystem.GeooidInfo?.GeoidName,
+        GeoidName = coordSystem.GeoidInfo?.GeoidName,
         GeoidMethod = string.Empty, // geoidMethod
         GeoidMethodType = CoordinateSystemGeoidMethodType.Unknown, // datumMethodType, convert to CoordinateSystemGeoidMethodType
-        GeoidFileName = coordSystem.GeooidInfo?.GeoidFileName,
+        GeoidFileName = coordSystem.GeoidInfo?.GeoidFileName,
         GeoidConstantSeparation = 0.0, // geoidConstantSeparation 
         GeoidOriginX = 0.0, // geoidOriginX
         GeoidOriginY = 0.0, // geoidOriginY

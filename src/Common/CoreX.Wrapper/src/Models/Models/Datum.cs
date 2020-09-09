@@ -1,4 +1,4 @@
-﻿namespace CoreX.Models
+﻿namespace CoreXModels
 {
   public struct Datum
   {

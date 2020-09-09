@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -10,12 +12,15 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.Exports.CSV.Executors.Tasks;
+using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -28,23 +33,17 @@ using VSS.TRex.Reports.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SurveyedSurfaces;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Exports.CSV.Executors.Tasks;
-using VSS.TRex.Exports.Servers.Client;
-using VSS.TRex.Storage.Models;
-using VSS.TRex.SubGrids.GridFabric.Arguments;
-using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Designs.GridFabric.Events;
-using CoreX.Interfaces;
-using CoreX.Wrapper;
-using VSS.TRex.Common.Exceptions;
+using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.Server.Reports
 {
@@ -76,7 +75,6 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -130,7 +128,7 @@ namespace VSS.TRex.Server.Reports
         typeof(SiteModel),
         typeof(Cells.CellEvents),
         typeof(Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(DesignBase),
         typeof(Designs.TTM.HashOrdinate),
         typeof(Designs.TTM.Optimised.HeaderConsts),

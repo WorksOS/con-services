@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +24,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
-#if RAPTOR
-    private readonly IASNodeClient raptorClient;
-#endif
     private readonly ILogger _log;
     private readonly ILoggerFactory logger;
     private readonly IConfigurationStore configStore;
@@ -38,15 +34,8 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public CoordinateSystemController(
-#if RAPTOR
-      IASNodeClient raptorClient, 
-#endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+    public CoordinateSystemController(ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
-#if RAPTOR
-      this.raptorClient = raptorClient;
-#endif
       this.logger = logger;
       _log = logger.CreateLogger<CoordinateSystemController>();
       this.configStore = configStore;
@@ -66,9 +55,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
-#if RAPTOR
-        raptorClient,
-#endif
         configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
@@ -87,53 +73,38 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorPost>(logger,
-#if RAPTOR
-        raptorClient,
-#endif
         configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
     /// Gets a coordinate system (CS) definition assigned to a Raptor's data model/project.
     /// </summary>
-    [Route("api/v1/projects/{projectId}/coordsystem")]
     [ProjectVerifier]
-    [HttpGet]
+    [HttpGet("api/v1/projects/{projectId}/coordsystem")]
     public async Task<CoordinateSystemSettings> Get([FromRoute] long projectId)
     {
-#if !RAPTOR
       var projectUid = await ((RaptorPrincipal)User).GetProjectUid(projectId);
       var request = new ProjectID(projectId, projectUid);
-#else
-      var request = new ProjectID(projectId);
-#endif
 
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
-#if RAPTOR
-        raptorClient,
-#endif
         configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
     /// <summary>
     /// Gets a coordinate system (CS) definition assigned to a Raptor's data model/project with a unique identifier.
     /// </summary>
-    [Route("api/v2/projects/{projectUid}/coordsystem")]
     [ProjectVerifier]
-    [HttpGet]
+    [HttpGet("api/v2/projects/{projectUid}/coordsystem")]
     public async Task<CoordinateSystemSettings> Get([FromRoute] Guid projectUid)
     {
-      long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      long projectId = await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var request = new ProjectID(projectId, projectUid);
 
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<CoordinateSystemExecutorGet>(logger,
-#if RAPTOR
-        raptorClient,
-#endif
         configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateSystemSettings;
     }
 
@@ -149,9 +120,6 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<CoordinateConversionExecutor>(logger,
-#if RAPTOR
-        raptorClient,
-#endif
         configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CoordinateConversionResult;
     }
   }
