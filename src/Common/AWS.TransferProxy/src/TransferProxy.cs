@@ -74,12 +74,41 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
+    public FileStreamResult DownloadFromBucketSync(string s3Key, string bucketName)
+    {
+      using (var transferUtil = GetTransferUtility())
+      {
+        var stream = transferUtil.OpenStream(bucketName, s3Key);
+        string mimeType;
+        try
+        {
+          var extension = Path.GetExtension(s3Key);
+
+          mimeType = MimeTypeMap.GetMimeType(extension);
+        }
+        catch (ArgumentException)
+        {
+          // Unknown or invalid extension, not bad but we don't know the content type
+          mimeType = ContentTypeConstants.ApplicationOctetStream; // binary data....
+        }
+
+        return new FileStreamResult(stream, mimeType);
+      }
+    }
+    
     /// <summary>
     /// Create a task to download a file from S3 storage
     /// </summary>
     /// <param name="s3Key">Key to the data to be downloaded</param>
     /// <returns>FileStreamResult if the file exists</returns>
     public Task<FileStreamResult> Download(string s3Key) => DownloadFromBucket(s3Key, awsBucketName);
+
+    /// <summary>
+    /// Create a task to download a file from S3 storage
+    /// </summary>
+    /// <param name="s3Key">Key to the data to be downloaded</param>
+    /// <returns>FileStreamResult if the file exists</returns>
+    public FileStreamResult DownloadSync(string s3Key) => DownloadFromBucketSync(s3Key, awsBucketName);
 
     public void UploadToBucket(Stream stream, string s3Key, string bucketName)
     {

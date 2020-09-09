@@ -192,7 +192,7 @@ namespace VSS.TRex.Designs
 
             try
             {
-              loadResult = design.LoadFromStorage(siteModel.ID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).WaitAndUnwrapException();
+              loadResult = design.LoadFromStorage(siteModel.ID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true);
             }
             catch (Exception e)
             {
