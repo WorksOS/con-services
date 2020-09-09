@@ -11,6 +11,7 @@ using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common.Exceptions;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using VSS.TRex.Common.Interfaces.Interfaces;
 
@@ -96,7 +97,6 @@ namespace VSS.TRex.Designs
       loadResult = DesignLoadResult.UnknownFailure;
 
       IDesignBase design = null;
-      DesignCacheItemMetaData designMetaData;
 
       try
       {
@@ -105,6 +105,7 @@ namespace VSS.TRex.Designs
           return null;
         }
 
+        DesignCacheItemMetaData designMetaData;
         lock (_designs)
         {
           if (_designs.TryGetValue(designUid, out designMetaData))
@@ -192,7 +193,9 @@ namespace VSS.TRex.Designs
 
             try
             {
+              var sw = Stopwatch.StartNew();
               loadResult = design.LoadFromStorage(siteModel.ID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true);
+              _log.LogDebug($"design.LoadFromStorage() completed in {sw.Elapsed}");
             }
             catch (Exception e)
             {
@@ -218,6 +221,7 @@ namespace VSS.TRex.Designs
 
           lock (_designFileLoadExclusivityLock)
           {
+            var sw = Stopwatch.StartNew();
             loadResult = design.LoadFromFile(design.FileName);
 
             if (loadResult != DesignLoadResult.Success)
@@ -232,7 +236,7 @@ namespace VSS.TRex.Designs
               return null;
             }
 
-            _log.LogInformation($"Design {designUid} successfully loaded from file {design.FileName}");
+            _log.LogInformation($"Design {designUid} successfully loaded from file {design.FileName} in {sw.Elapsed}");
 
             // Ensure there is enough space in the cache to accomodate the newly loaded file
             if (!EnsureSufficientSpaceToLoadDesign(design.SizeInCache()))
