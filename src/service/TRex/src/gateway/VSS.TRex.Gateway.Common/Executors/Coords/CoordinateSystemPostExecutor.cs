@@ -38,7 +38,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
       var coordinateSystem = coreXWrapper.GetCSDFromDCFileContent(dcFileContentString);
 
-      if (coordinateSystem== null || coordinateSystem.ZoneInfo == null || coordinateSystem.DatumInfo == null)
+      if (coordinateSystem == null || coordinateSystem.ZoneInfo == null || coordinateSystem.DatumInfo == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));

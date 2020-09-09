@@ -1,7 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using CoreX.Interfaces;
+using CoreX.Wrapper.UnitTests.TestResults;
 using CoreX.Wrapper.UnitTests.Types;
+using CoreXModels;
 using FluentAssertions;
 using Xunit;
 
@@ -53,21 +56,31 @@ namespace CoreX.Wrapper.UnitTests.Tests
     }
 
     [Theory]
-    [InlineData(DCFile.DIMENSIONS_2012_DC_FILE_WITHOUT_VERT_ADJUST)]
-    public void Should_return_CoordinateSystem_for_valid_DC_file_string(string dcFileString)
+    [MemberData(nameof(GetData))]
+    public void Should_return_CoordinateSystem_for_valid_DC_file_string(string dcFileString, CoordinateSystem expectedCS)
     {
       var result = _coreX.GetCSDFromDCFileContent(GetFileContent(dcFileString));
 
       result.Should().NotBeNull();
+      result.GeoidInfo.Should().NotBeNull();
+      result.DatumInfo.Should().NotBeNull();
+      result.ZoneInfo.Should().NotBeNull();
+
+      result.SystemName.Should().Be(expectedCS.SystemName);
+
+      result.GeoidInfo.GeoidFileName.Should().Be(expectedCS.GeoidInfo.GeoidFileName);
+      result.GeoidInfo.GeoidName.Should().Be(expectedCS.GeoidInfo.GeoidName);
+      result.GeoidInfo.GeoidSystemId.Should().Be(expectedCS.GeoidInfo.GeoidSystemId);
+
+      result.DatumInfo.DatumName.Should().Be(expectedCS.DatumInfo.DatumName);
+      result.DatumInfo.DatumType.Should().Be(expectedCS.DatumInfo.DatumType);
+      result.DatumInfo.DatumSystemId.Should().Be(expectedCS.DatumInfo.DatumSystemId);
     }
 
-    [Theory]
-    [InlineData(CSIB.DIMENSIONS_2012_WITHOUT_VERT_ADJUST)]
-    public void Should_return_CoordinateSystem_for_valid_CSIB_string(string csib)
-    {
-      var result = _coreX.GetCSDFromCSIB(csib);
-
-      result.Should().NotBeNull();
-    }
+    public static IEnumerable<object[]> GetData() =>
+      new List<object[]>
+      {
+        new object[] { DCFile.NETHERLANDS_DE_MIN, ExpectedCSDResults.Netherlaneds_With_Geoid }
+      };
   }
 }

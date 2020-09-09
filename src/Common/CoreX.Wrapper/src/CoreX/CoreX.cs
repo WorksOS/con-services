@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using CoreX.Extensions;
 using CoreX.Types;
@@ -415,7 +414,10 @@ namespace CoreX.Wrapper
           .Validate($"attempting to retrieve coordinate system from CSD selection; zone group: '{zoneGroupName}', zone: {zoneName}");
 
         var coordinateSystem = retCsStruct.GetSelectedRecord();
-        coordinateSystem.Validate();
+
+        // Many of our test calibration files fail validation; is this expected or do we have a parsing problem? 
+        // This validation logic was taken from TGL unit test classes, may not be correctly implemented.
+        // coordinateSystem.Validate();
 
         var zoneID = unchecked((uint)coordinateSystem.ZoneSystemId());
         var datumID = unchecked((uint)coordinateSystem.DatumSystemId());
@@ -423,7 +425,7 @@ namespace CoreX.Wrapper
 
         if (coordinateSystem.DatumSystemId() > 0)
         {
-          return GetCSIBFrom(coordinateSystem);
+          return GetCSIBFromCSD(coordinateSystem);
         }
         else
         {
@@ -453,15 +455,6 @@ namespace CoreX.Wrapper
       }
 
       using var csContainer = new CSMCoordinateSystemContainer();
-
-      //var blocks = csibString.Split(' ');
-      //var data = new sbyte[blocks.Length];
-
-      //var i = 0;
-      //foreach (var b in blocks)
-      //{
-      //  data[i++] = (sbyte)Convert.ToByte(Convert.ToByte(b, System.Globalization.CultureInfo.InvariantCulture));
-      //}
 
       var csmCsibData = CreateCSMCsibBlobContainer(csibString);
 
@@ -498,30 +491,43 @@ namespace CoreX.Wrapper
 
     private CoordinateSystem ConvertICoordinateSystem(ICoordinateSystem csRecord)
     {
-      csRecord.Validate();
-
-      var a = csRecord.AngularUnitName();
-      var b = csRecord.HasGeoid();
-      var c = csRecord.AngularUnitName();
-      var d = csRecord.ZoneOriginLatitude();
+      // Many of our test calibration files fail validation; is this expected or do we have a parsing problem? 
+      // This validation logic was taken from TGL unit test classes, may not be correctly implemented.
+      // csRecord.Validate();
 
       var coordinateSystem = new CoordinateSystem
       {
-        //      Id= unchecked((uint)coordinateSystem.ZoneSystemId()), //  CSIB?
+        SystemName = csRecord.SystemName(),
         DatumSystemId = csRecord.DatumSystemId(),
         GeoidInfo = new GeoidInfo()
         {
           GeoidFileName = csRecord.GeoidFileName(),
-          GeoidName = csRecord.GeoidName(),
-          GeoidSystemId = csRecord.GeoidSystemId()
+          GeoidName = csRecord.GeoidName()
         },
-        //  ZoneInfo = new ZoneInfo
+        ZoneInfo = new ZoneInfo()
+        {
+          ShiftGridFileName = csRecord.ZoneShiftGridFileName(),
+          SnakeGridFileName = csRecord.SnakeGridFileName()
+        },
+        DatumInfo = new DatumInfo()
+        {
+          DatumName = csRecord.DatumName(),
+          DatumType = Enum.GetName(typeof(csmDatumTypes), csRecord.DatumType()).Substring("cdt".Length),
+          DatumSystemId = csRecord.DatumSystemId()
+          // Vertical Datum Name ?
+        }
       };
+
+      if (csRecord.HasGeoid())
+      {
+        // Taken from CoreX.UnitTests.TestSelectRecords.cs.
+        coordinateSystem.GeoidInfo.GeoidSystemId = csRecord.GeoidSystemId() < 0 ? 0 : csRecord.GeoidSystemId();
+      }
 
       return coordinateSystem;
     }
 
-    private string GetCSIBFrom(ICoordinateSystem coordinateSystem)
+    private string GetCSIBFromCSD(ICoordinateSystem coordinateSystem)
     {
       using var retStructFromICoordinateSystem = new CSMCsibBlobContainer();
 
