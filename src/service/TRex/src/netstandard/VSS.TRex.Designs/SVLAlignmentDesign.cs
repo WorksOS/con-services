@@ -260,10 +260,10 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Loads the SVL design file/s, from storage
     /// </summary>
-    public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
+    public override DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
       var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
-      var isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
+      var isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, fileName, localPath);
       return !isDownloaded ? DesignLoadResult.UnknownFailure : DesignLoadResult.Success;
     }
 

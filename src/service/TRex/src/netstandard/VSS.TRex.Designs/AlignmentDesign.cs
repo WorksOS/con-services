@@ -59,13 +59,13 @@ namespace VSS.TRex.Designs
     /// Loads the Alignment file/s, from storage
     /// Includes design file and 2 index files (if they exist)
     /// </summary>
-    public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
+    public override DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
       bool loadIndices = false)
     {
       var a3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
-      var isDownloaded = await a3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
+      var isDownloaded = a3FileTransfer.ReadFileSync(siteModelUid, fileName, localPath);
 
-      return await Task.FromResult(isDownloaded ? DesignLoadResult.Success : DesignLoadResult.UnknownFailure);
+      return isDownloaded ? DesignLoadResult.Success : DesignLoadResult.UnknownFailure;
     }
 
 
