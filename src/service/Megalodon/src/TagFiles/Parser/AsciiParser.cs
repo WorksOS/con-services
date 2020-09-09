@@ -36,7 +36,7 @@ namespace TagFiles.Parser
     public TagContentList TagContent; // tagfile data content
     public ILogger Log;
     public bool NotSeenNewPosition = true;
-    public byte TransmissionProtocolVersion = TagConstants.Version1;
+    public byte TransmissionProtocolVersion = TagConstants.CURRENT_TRANSMISSION_PROTOCOL_VERSION;
 
     // hacks
     public bool ForceBOG = false;
@@ -223,7 +223,7 @@ namespace TagFiles.Parser
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.TempMax, DataType = TAGDataType.t12bitUInt, Data = eRecord.TempMax });
         eRecord.TempMax = uint.MaxValue; 
       }
-      if (TransmissionProtocolVersion < TagConstants.Version1) 
+      if (TransmissionProtocolVersion < TagConstants.TRANSMISSION_PROTOCOL_VERSION_ONE) 
         HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
       else 
         HeaderRequired = !eRecord.HasHeader;

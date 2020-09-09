@@ -57,29 +57,31 @@ namespace MegalodonSvc
         {
           if (t.Result.Code == 0)
           {
-            _log.LogInformation($"Tagfile successfully sent. Deleting Tagfile {f}");
+            _log.LogInformation($"#Result# Tagfile successfully sent. Deleting Tagfile {f}");
             File.Delete(f);
           }
           else
-            _log.LogWarning($"Tagfile cannot be sent. {f} {t.Result.Message}");
+            _log.LogError($"#Result# Tagfile cannot be sent. {f} {t.Result.Message}");
         }
         else
         {
           if (t.Result == null)
           {
-            _log.LogInformation($"(NullResult) Tagfile successfully sent. Deleting Tagfile {f}");
+            _log.LogInformation($"#Result# (NullResult) Tagfile successfully sent. Deleting Tagfile {f}");
             File.Delete(f);
           }
           else
-            _log.LogWarning($"Can not submit Tagfile {f}. {t.Result.Message}");
+            _log.LogWarning($"#Result# Can not submit Tagfile {f}. {t.Result.Message}");
         }
       })));
     }
 
-
     private async Task<ContractExecutionResult> UploadFile(string filename)
     {
-      _log.LogInformation($"Uploading Tagfile {filename}");
+      var prodHost = _config.GetValueString("production-host") ?? TagConstants.DEFAULT_HOST;
+      var prodBase = _config.GetValueString("production-base") ?? TagConstants.DEFAULT_BASE;
+
+      _log.LogInformation($"Uploading Tagfile {filename}. Host:{prodHost}, Base:{prodBase}");
 
       var fileData = File.ReadAllBytes(filename);
       var compactionTagFileRequest = new CompactionTagFileRequest
@@ -90,16 +92,13 @@ namespace MegalodonSvc
 
       try
       {
-        // default if keys missing
-        var prodHost = _config.GetValueString("production-host") ?? "https://api.trimble.com";
-        var prodBase = _config.GetValueString("production-base") ?? "/t/trimble.com/ccss-tagfile-gateway/1.0";
         var res = await tagFileTransfer.SendTagFile(compactionTagFileRequest, prodHost, prodBase);
         _log.LogInformation($"Tagfile upload result: {res.Message}");
         return res;
       }
       catch (Exception e)
       {
-        _log.LogError(e, $"Can not submit file {filename}. {e.Message}");
+        _log.LogError(e, $"Can not submit file {filename}");
         return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, e.Message); 
       }
     }
@@ -113,7 +112,6 @@ namespace MegalodonSvc
       fileSystemWatcher.Path = path;
       fileSystemWatcher.Created += async (s, e) => await FileSystemWatcher_Created(s,e);
       fileSystemWatcher.EnableRaisingEvents = true;
-
     }
 
     private Task FileSystemWatcher_Created(object sender, FileSystemEventArgs e)
