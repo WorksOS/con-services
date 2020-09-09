@@ -17,7 +17,11 @@ namespace VSS.AWS.TransferProxy
     /// <summary>
     /// The location in the local temp folder to create buckets representing S3 buckets local S3 clients will access in place of AWS::S3
     /// </summary>
+#if DEBUG
+    private readonly string _rootLocalTransferProxyFolder = Path.Combine(Path.GetTempPath(), $"MockLocalS3Store");
+#else
     private readonly string _rootLocalTransferProxyFolder = Path.Combine(Path.GetTempPath(), $"MockLocalS3Store-{DateTime.UtcNow.Ticks}");
+#endif
 
     private readonly string _awsBucketName;
     private readonly ILogger _logger;
@@ -31,10 +35,26 @@ namespace VSS.AWS.TransferProxy
       }
       _awsBucketName = configStore.GetValueString(storageKey);
 
+#if DEBUG
+      //Create mock s3 root to make it easier for debugging adding/removing designs
+      if (!Directory.Exists(_rootLocalTransferProxyFolder))
+      {
+        Directory.CreateDirectory(_rootLocalTransferProxyFolder);
+      }
+#endif
+
       _logger.LogInformation($"AWS S3 using local storage in {_rootLocalTransferProxyFolder} with default bucket folder {_awsBucketName}");
     }
 
     public async Task<FileStreamResult> DownloadFromBucket(string s3Key, string bucketName)
+    {
+      var localKey = (s3Key.StartsWith("/") ? s3Key.Substring(1) : s3Key).Replace('/', Path.DirectorySeparatorChar);
+      var fileName = Path.Combine(_rootLocalTransferProxyFolder, bucketName, localKey);
+
+      return new FileStreamResult(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read), ContentTypeConstants.ApplicationOctetStream);
+    }
+
+    public FileStreamResult DownloadFromBucketSync(string s3Key, string bucketName)
     {
       var localKey = (s3Key.StartsWith("/") ? s3Key.Substring(1) : s3Key).Replace('/', Path.DirectorySeparatorChar);
       var fileName = Path.Combine(_rootLocalTransferProxyFolder, bucketName, localKey);
@@ -48,6 +68,13 @@ namespace VSS.AWS.TransferProxy
     /// <param name="s3Key">Key to the data to be downloaded</param>
     /// <returns>FileStreamResult if the file exists</returns>
     public async Task<FileStreamResult> Download(string s3Key) => await DownloadFromBucket(s3Key, _awsBucketName);
+
+    /// <summary>
+    /// Create a task to download a file from the local S3 storage
+    /// </summary>
+    /// <param name="s3Key">Key to the data to be downloaded</param>
+    /// <returns>FileStreamResult if the file exists</returns>
+    public FileStreamResult DownloadSync(string s3Key) => DownloadFromBucketSync(s3Key, _awsBucketName);
 
     public string GeneratePreSignedUrl(string s3Key)
     {
@@ -92,7 +119,7 @@ namespace VSS.AWS.TransferProxy
         Directory.CreateDirectory(directory);
       }
 
-      using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+      using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Write))
       {
         stream.CopyTo(fs);
       }

@@ -82,6 +82,8 @@
     public const string TAGFILE_FOLDER_TOSEND = "ToSend";
     public const string LOG_FOLDER = "Logs";
     public const string APP_NAME = "Tagfile Service";
+    public const string DEFAULT_HOST = "https://api.trimble.com";
+    public const string DEFAULT_BASE = "/t/trimble.com/ccss-tagfile-gateway/1.0";
 
     public const ushort DEFAULT_COORDSYS = 3;
     public const ushort DEFAULT_MAPPINGMODE = 1;
@@ -90,6 +92,10 @@
     public const ushort DEFAULT_VALID_POSITION = 1;
 
     public const byte HEADER_RECORD = 1;
-    public const byte Version1 = 1;
+    public const byte TRANSMISSION_PROTOCOL_VERSION_ONE = 1;
+    public const byte CURRENT_TRANSMISSION_PROTOCOL_VERSION = 1;
+
+
+
   }
 }

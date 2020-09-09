@@ -133,7 +133,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
 
       var expectedCoordinateConversionResult = llhCoords.ToArray().ToCoreX_XYZ();
 
-      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>())).Returns(expectedCoordinateConversionResult);
+      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>())).Returns(expectedCoordinateConversionResult);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
       // Convert all coordinates from grid to lat/lon

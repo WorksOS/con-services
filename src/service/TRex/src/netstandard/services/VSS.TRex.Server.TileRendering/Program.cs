@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
+using CoreX.Wrapper;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
@@ -10,13 +12,14 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.RequestHandlers;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.DataSmoothing;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Grids;
@@ -38,12 +41,8 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Designs.GridFabric.Events;
-using CoreX.Interfaces;
-using CoreX.Wrapper;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.Common.Exceptions;
 
 namespace VSS.TRex.Server.TileRendering
 {
@@ -78,8 +77,8 @@ namespace VSS.TRex.Server.TileRendering
         return null;
       }
 
-      var convolutionMaskSize = (ConvolutionMaskSize) config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE", (int) DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE);
-      var nullInfillMode = (NullInfillMode) config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int) DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
+      var convolutionMaskSize = (ConvolutionMaskSize)config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE", (int)DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE);
+      var nullInfillMode = (NullInfillMode)config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int)DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
 
       return key switch
       {
@@ -88,7 +87,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    private static void DependencyInjection() 
+    private static void DependencyInjection()
     {
       DIBuilder
         .New()
@@ -96,7 +95,6 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -136,8 +134,7 @@ namespace VSS.TRex.Server.TileRendering
 
         .AddHttpClient<TPaaSClient>(client => client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token"))
           .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
-        .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
-          .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
+
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
@@ -161,7 +158,7 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.Storage.StorageProxy),
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.ExistenceMaps.ExistenceMaps),
         typeof(VSS.TRex.Filters.CellPassAttributeFilter),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),

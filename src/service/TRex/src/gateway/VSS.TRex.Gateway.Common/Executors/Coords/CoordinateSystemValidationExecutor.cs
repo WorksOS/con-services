@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using CSFileValidationRequest = VSS.Productivity3D.Models.Models.Coords.CoordinateSystemFileValidationRequest;
 
@@ -19,27 +19,26 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
   {
     public CoordinateSystemValidationExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler)
       : base(configStore, logger, exceptionHandler)
-    {
-    }
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public CoordinateSystemValidationExecutor()
-    {
-    }
+    { }
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CSFileValidationRequest;
+      var request = CastRequestObjectTo<CSFileValidationRequest>(item);
 
-      if (request == null)
-        ThrowRequestTypeCastException<CSFileValidationRequest>();
+      var coordinateSystem = DIContext
+        .Obtain<ICoreXWrapper>()
+        .GetCSDFromDCFileContent(System.Text.Encoding.UTF8.GetString(request.CSFileContent, 0, request.CSFileContent.Length));
 
-      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
-
-      if (csd.CoordinateSystem != null && csd.CoordinateSystem.ZoneInfo != null && csd.CoordinateSystem.DatumInfo != null)
-        return ConvertResult(request.CSFileName, csd.CoordinateSystem);
+      if (coordinateSystem != null && coordinateSystem.ZoneInfo != null && coordinateSystem.DatumInfo != null)
+      {
+        return ConvertResult(request.CSFileName, coordinateSystem);
+      }
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         $"Failed to convert DC File {request.CSFileName} content to Coordinate System definition data."));

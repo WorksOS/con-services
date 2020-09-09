@@ -41,7 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(122),
             ProjectErrorCodesProvider.FirstNameWithOffset(122)));
 
-      if (importedFile.IsDesignFileType)
+      if (importedFile.IsTRexDesignFileType)
       {
         await ImportedFileRequestHelper.NotifyTRexUpdateFile(importedFile.ProjectUid,
           importedFile.ImportedFileType, importedFile.FileDescriptor.FileName, importedFile.ImportedFileUid,

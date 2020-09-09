@@ -54,9 +54,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.NotNull(result);
-      Assert.Equal(_projectUid.ToString(), result.projectUid);
-      Assert.Null(result.settings);
-      Assert.Equal(settingsType, result.projectSettingsType);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUid);
+      Assert.Null(result.Settings);
+      Assert.Equal(settingsType, result.ProjectSettingsType);
     }
 
     [Theory]
@@ -87,9 +87,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.NotNull(result);
-      Assert.Equal(_projectUid.ToString(), result.projectUid);
-      Assert.Null(result.settings);
-      Assert.Equal(settingsType, result.projectSettingsType);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUid);
+      Assert.Null(result.Settings);
+      Assert.Equal(settingsType, result.ProjectSettingsType);
     }
 
     [Fact]
@@ -125,11 +125,11 @@ namespace VSS.MasterData.ProjectTests.Executors
       var tempSettings = JsonConvert.DeserializeObject<JObject>(settings2);
 
       Assert.NotNull(result);
-      Assert.Equal(_projectUid.ToString(), result.projectUid);
-      Assert.NotNull(result.settings);
-      Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
-      Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
-      Assert.Equal(settingsType2, result.projectSettingsType);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUid);
+      Assert.NotNull(result.Settings);
+      Assert.Equal(tempSettings["firstValue"], result.Settings["firstValue"]);
+      Assert.Equal(tempSettings["lastValue"], result.Settings["lastValue"]);
+      Assert.Equal(settingsType2, result.ProjectSettingsType);
     }
 
     [Fact]
@@ -193,26 +193,26 @@ namespace VSS.MasterData.ProjectTests.Executors
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.NotNull(result);
-      Assert.Equal(_projectUid.ToString(), result.projectUid);
-      Assert.NotNull(result.settings);
-      Assert.Equal(settingsType, result.projectSettingsType);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUid);
+      Assert.NotNull(result.Settings);
+      Assert.Equal(settingsType, result.ProjectSettingsType);
 
       if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
       {
         var tempSettings = JsonConvert.DeserializeObject<JObject>(settings);
 
-        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
-        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
+        Assert.Equal(tempSettings["firstValue"], result.Settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.Settings["lastValue"]);
       }
       else
       {
         var tempObj = JsonConvert.DeserializeObject<JArray>(settings);
         var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
-        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.Settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.Settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.Settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.Settings["importedFiles"][1]["lastValue"]);
       }
     }
 
@@ -254,11 +254,11 @@ namespace VSS.MasterData.ProjectTests.Executors
       var tempSettings = JsonConvert.DeserializeObject<JObject>(settings1);
 
       Assert.NotNull(result);
-      Assert.Equal(_projectUid.ToString(), result.projectUid);
-      Assert.NotNull(result.settings);
-      Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
-      Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
-      Assert.Equal(settingsType1, result.projectSettingsType);
+      Assert.Equal(_projectUid.ToString(), result.ProjectUid);
+      Assert.NotNull(result.Settings);
+      Assert.Equal(tempSettings["firstValue"], result.Settings["firstValue"]);
+      Assert.Equal(tempSettings["lastValue"], result.Settings["lastValue"]);
+      Assert.Equal(settingsType1, result.ProjectSettingsType);
     }
 
     [Fact]
@@ -276,7 +276,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     {
       var settings = @"{firstValue: 10, lastValue: 20}";
 
-      var result = ProjectSettingsResult.CreateProjectSettingsResult(_projectUid.ToString(), JsonConvert.DeserializeObject<JObject>(settings), ProjectSettingsType.Targets);
+      var result = new ProjectSettingsResult(_projectUid.ToString(), JsonConvert.DeserializeObject<JObject>(settings), ProjectSettingsType.Targets);
       var json = JsonConvert.SerializeObject(result);
       Assert.DoesNotContain("ProjectSettingsType", json);
     }
