@@ -19,6 +19,6 @@ namespace VSS.AWS.TransferProxy.Interfaces
     Task<bool> FileExists(string s3Key);
     string Upload(Stream stream, string s3Key, string contentType);
     string GeneratePreSignedUrl(string s3Key);
-    Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = "");
+    Task<(string[], string)> ListKeys(string prefix, int maxKeys, string continuationToken = null);
   }
 }
