@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common.Interfaces;
@@ -193,7 +192,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
-    public async Task<bool> BuildAsync()
+    public bool Build()
     {
       // Todo: This method is left as async as a reminder that the GetExistenveMap workflows could either be async (as they
       // potentially read from the persistent store), and/or they couild be cached in the site model designs/surveyed surfaces contexts

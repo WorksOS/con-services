@@ -114,7 +114,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
             _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
             _griddedReportRequestArgument.Azimuth);
 
-        if (!await processor.BuildAsync())
+        if (!processor.Build())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {_griddedReportRequestArgument.ProjectID}");
           return false;
