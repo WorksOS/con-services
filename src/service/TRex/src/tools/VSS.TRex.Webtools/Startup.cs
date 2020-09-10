@@ -97,6 +97,7 @@ namespace VSS.TRex.Webtools
       DIContext.Inject(services.BuildServiceProvider());
 
       services.AddSingleton<ICoreXWrapper, CoreXWrapper>();
+      services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
       TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
@@ -126,7 +127,6 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable));
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable));
-      services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
 
       ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI(services);
 

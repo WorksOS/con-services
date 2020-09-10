@@ -65,6 +65,7 @@ namespace VSS.TRex.Server.MutableData
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(x => x.AddSingleton<IACSTranslator, ACSTranslator>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
@@ -122,7 +123,6 @@ namespace VSS.TRex.Server.MutableData
             DIContext.Obtain<IConfigurationStore>(),
             DIContext.Obtain<IHttpClientFactory>())))
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
-        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
         .Complete();
     }
 

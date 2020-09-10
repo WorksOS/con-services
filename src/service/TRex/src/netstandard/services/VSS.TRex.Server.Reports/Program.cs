@@ -62,7 +62,7 @@ namespace VSS.TRex.Server.Reports
     {
       return key switch
       {
-        PipelineProcessorTaskStyle.GriddedReport => (ITRexTask) new GriddedReportTask(),
+        PipelineProcessorTaskStyle.GriddedReport => new GriddedReportTask(),
         PipelineProcessorTaskStyle.CSVExport => new CSVExportTask(),
         _ => null
       };
@@ -74,6 +74,7 @@ namespace VSS.TRex.Server.Reports
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
+        .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
@@ -97,6 +98,7 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddSingleton(new GriddedReportRequestServer())) // TODO: No need to create two server instances here, this creates two Ignite JVMs...
         .Add(x => x.AddSingleton(new CSVExportRequestServer()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
@@ -105,8 +107,6 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
-
-        .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
 
         .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
