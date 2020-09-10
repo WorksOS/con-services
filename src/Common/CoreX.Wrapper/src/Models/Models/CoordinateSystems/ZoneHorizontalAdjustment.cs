@@ -1,4 +1,4 @@
-﻿namespace CoreX.Models.CoordinateSystems
+﻿namespace CoreXModels
 {
   public class ZoneHorizontalAdjustment
   {

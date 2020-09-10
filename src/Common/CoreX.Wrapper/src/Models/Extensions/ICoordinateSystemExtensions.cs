@@ -5,8 +5,7 @@ namespace CoreX.Extensions
 {
   public static class ICoordinateSystemExtensions
   {
-    public static void ThrowError(string errorMessage) =>
-      new Exception(errorMessage);
+    public static void ThrowError(string errorMessage) => throw new Exception(errorMessage);
 
     public static void Validate(this ICoordinateSystem record)
     {

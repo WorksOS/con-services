@@ -128,7 +128,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       var convertCoordinatesMock = new Mock<ICoreXWrapper>();
 
-      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>()))
+      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>()))
         .Returns(expectedCoordinateConversionResult);
 
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();

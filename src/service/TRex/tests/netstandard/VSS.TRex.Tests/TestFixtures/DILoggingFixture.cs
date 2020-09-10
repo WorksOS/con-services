@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.TRex.CoordinateSystems;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.IO;
 using VSS.TRex.IO.Helpers;
@@ -16,11 +20,6 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using Consts = VSS.TRex.Common.Consts;
-using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces.Interfaces;
-using VSS.AWS.TransferProxy.Interfaces;
-using System.Collections.Generic;
-using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -98,9 +97,6 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("UnitTestAWSBucketKey");
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME", It.IsAny<string>())).Returns("UnitTestAWSBucketKey");
-
-          config.Setup(c => c.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY, It.IsAny<string>())).Returns("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0");
-          config.Setup(c => c.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY)).Returns("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0");
 
           config.Setup(c => c.GetValueBool("SURFACE_EXPORT_DATA_SMOOTHING_ACTIVE", It.IsAny<bool>())).Returns(false);
           config.Setup(c => c.GetValueInt("SURFACE_EXPORT_DATA_SMOOTHING_NULL_INFILL_MODE", It.IsAny<int>())).Returns((int)NullInfillMode.NoInfill);
