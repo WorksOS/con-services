@@ -12,12 +12,7 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
     Task<byte[]> GetProductionDataTile(Guid projectUid, Guid? filterUid, Guid? cutFillDesignUid, ushort width,
       ushort height, string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType,
       IHeaderDictionary customHeaders = null, bool explicitFilters = false);
-
-    Task<byte[]> GetLineworkTile(Guid projectUid, ushort width, ushort height,
-      string bbox, string filetype, IHeaderDictionary customHeaders = null);
-
     Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IHeaderDictionary customHeaders = null);
-
     Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid,
       IHeaderDictionary customHeaders = null);
 

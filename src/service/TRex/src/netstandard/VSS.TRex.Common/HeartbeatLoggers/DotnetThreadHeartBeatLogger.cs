@@ -20,7 +20,7 @@ namespace VSS.TRex.Common.HeartbeatLoggers
       ThreadPool.GetMinThreads(out int minWorkers, out int minCompletionPortThreads);
       return $"Dotnet Threadpool Max[workers={maxWorkers} completion={maxCompletionPortThreads}] " +
         $"Available [workers={availableWorkers}, completion={availableCompletionPortThreads}] " +
-        $"Min [wokers={minWorkers} completion{minCompletionPortThreads}]";
+        $"Min [workers={minWorkers} completion={minCompletionPortThreads}]";
     }
   }
 }

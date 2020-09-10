@@ -199,8 +199,8 @@ namespace VSS.TRex.QuantizedMesh.Tests
 
       // LL to NEE
       var convertCoordinatesMock = new Mock<ICoreXWrapper>();
-      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), CoreX.Types.InputAs.Radians)).Returns(expectedCoordinateConversionResult);
-      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), CoreX.Types.ReturnAs.Radians)).Returns(expectedCoordinateConversionResult2);
+      convertCoordinatesMock.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), CoreX.Types.InputAs.Radians)).Returns(expectedCoordinateConversionResult);
+      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), CoreX.Types.ReturnAs.Radians)).Returns(expectedCoordinateConversionResult2);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
       filter = new FilterSet(new CombinedFilter());

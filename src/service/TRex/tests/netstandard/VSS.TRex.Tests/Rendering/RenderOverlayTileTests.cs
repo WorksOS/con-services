@@ -192,12 +192,12 @@ namespace VSS.TRex.Tests.Rendering
         GeometryHelper.RotatePointAbout(rot, 100, 0, out var rotatedBottomRightPointX, out var rotatedBottomRightPointY, rotateAboutX, rotateAboutY);
 
         var mockConvertCoordinates = new Mock<ICoreXWrapper>();
-        mockConvertCoordinates.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>())).Returns(new CoreX.Models.XYZ[]
+        mockConvertCoordinates.Setup(x => x.LLHToNEE(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), It.IsAny<CoreX.Types.InputAs>())).Returns(new CoreXModels.XYZ[]
         {
-          new CoreX.Models.XYZ(rotatedBottomLeftPointX, rotatedBottomLeftPointY,  0.0),
-          new CoreX.Models.XYZ(rotatedTopRightPointX, rotatedTopRightPointY, 0.0),
-          new CoreX.Models.XYZ(rotatedTopLeftPointX, rotatedTopLeftPointY, 0.0),
-          new CoreX.Models.XYZ(rotatedBottomRightPointX, rotatedBottomRightPointY, 0.0)
+          new CoreXModels.XYZ(rotatedBottomLeftPointX, rotatedBottomLeftPointY,  0.0),
+          new CoreXModels.XYZ(rotatedTopRightPointX, rotatedTopRightPointY, 0.0),
+          new CoreXModels.XYZ(rotatedTopLeftPointX, rotatedTopLeftPointY, 0.0),
+          new CoreXModels.XYZ(rotatedBottomRightPointX, rotatedBottomRightPointY, 0.0)
         }
         );
 

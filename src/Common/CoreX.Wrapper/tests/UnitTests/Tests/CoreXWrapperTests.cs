@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using CoreX.Interfaces;
-using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;
+using CoreXModels;
 using FluentAssertions;
 using Xunit;
 
@@ -62,7 +62,7 @@ namespace CoreX.Wrapper.UnitTests.Tests
     {
       var ex = Record.Exception(() => _convertCoordinates.LLHToNEE(TestConsts.DIMENSIONS_2012_DC_COORDINATE_SYSTEM_ID, new LLH(), InputAs.Degrees));
 
-      ex.Message.Should().Be("Failed to create GeodeticX transformer, error 'gecCSIB_INVALID_CSIB'");
+      ex.Message.Should().Be("Error 'gecCSIB_INVALID_CSIB' attempting to create GeodeticX transformer");
     }
 
     [Fact]

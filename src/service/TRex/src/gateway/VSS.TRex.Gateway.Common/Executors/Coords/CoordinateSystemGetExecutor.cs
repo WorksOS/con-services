@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Productivity3D.Models;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
@@ -29,28 +29,27 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as ProjectID;
-
-      if (request == null)
-        ThrowRequestTypeCastException<ProjectID>();
-
+      var request = CastRequestObjectTo<ProjectID>(item);
       var siteModel = GetSiteModel(request.ProjectUid);
-
       var csib = siteModel.CSIB();
 
       if (csib == string.Empty)
+      {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           $"The project does not have Coordinate System definition data. Project UID: {siteModel.ID}"));
+      }
 
-      var coordinateSystemId = await DIContext.Obtain<ITRexConvertCoordinates>().CSIBContentToCoordinateServiceId(csib);
+      var coordinateSystem = DIContext
+        .Obtain<ICoreXWrapper>()
+        .GetCSDFromCSIB(csib);
 
-      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().CoordinateSystemIdToCSD(coordinateSystemId);
-
-      if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
+      if (coordinateSystem == null || coordinateSystem.ZoneInfo == null || coordinateSystem.DatumInfo == null)
+      {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
           "Failed to convert CSIB content to Coordinate System definition data."));
+      }
 
-      return ConvertResult("", csd.CoordinateSystem);
+      return ConvertResult("", coordinateSystem);
     }
 
     /// <summary>

@@ -1,5 +1,5 @@
-﻿using CoreX.Models;
-using CoreX.Types;
+﻿using CoreX.Types;
+using CoreXModels;
 
 namespace CoreX.Extensions
 {
