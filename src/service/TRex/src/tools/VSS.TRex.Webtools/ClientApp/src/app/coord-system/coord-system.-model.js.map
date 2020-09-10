@@ -1,0 +1,1 @@
+{"version":3,"file":"coord-system.-model.js","sourceRoot":"","sources":["coord-system.-model.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,oBAAoB;IAK/B,YAAmB,UAAe,EAAE,aAAqB,EAAE,UAAkB;QAC3E,IAAI,CAAC,UAAU,GAAG,UAAU,CAAC;QAC7B,IAAI,CAAC,aAAa,GAAG,aAAa,CAAC;QACnC,IAAI,CAAC,UAAU,GAAG,UAAU,CAAC;IAC/B,CAAC;CACF"}
