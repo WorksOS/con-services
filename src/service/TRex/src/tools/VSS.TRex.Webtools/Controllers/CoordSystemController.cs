@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using CoreX.Models;
+using CoreX.Interfaces;
+using CoreXModels;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Models.Coords;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.CoordinateSystems.GridFabric.Arguments;
 using VSS.TRex.CoordinateSystems.GridFabric.Requests;
 using VSS.TRex.DI;
@@ -29,7 +29,7 @@ namespace VSS.TRex.Webtools.Controllers
     /// <param name="projectUid"></param>
     /// <returns></returns>
     [HttpGet("api/projects/{siteModelID}/coordsystem")]
-    public async Task<JsonResult> GetCoordinateSystem([FromRoute] string siteModelID)
+    public JsonResult GetCoordinateSystem([FromRoute] string siteModelID)
     {
       string resultToReturn;
 
@@ -52,22 +52,22 @@ namespace VSS.TRex.Webtools.Controllers
             resultToReturn = $"<b>The project does not have Coordinate System definition data. Project UID: {UID}.</b>";
           else
           {
-            var coordinateSystemId = await DIContext.Obtain<ITRexConvertCoordinates>().CSIBContentToCoordinateServiceId(csib);
+            var coreXWrapper = DIContext.Obtain<ICoreXWrapper>();
 
-            var csd = await DIContext.Obtain<ITRexConvertCoordinates>().CoordinateSystemIdToCSD(coordinateSystemId);
+            var csd = coreXWrapper.GetCSDFromCSIB(csib);
 
-            if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
+            if (csd == null || csd.ZoneInfo == null || csd.DatumInfo == null)
               resultToReturn = $"<b>Failed to convert CSIB content to Coordinate System definition data.</b>";
             else
             {
               resultToReturn = $"<b>Coordinate System Settings (in {sw.Elapsed}) :</b><br/>";
               resultToReturn += "<b>================================================</b><br/>";
-              resultToReturn += ConvertCSResult(string.Empty, csd.CoordinateSystem);
+              resultToReturn += ConvertCSResult(string.Empty, csd);
             }
           }
         }
       }
-      
+
       return new JsonResult(resultToReturn);
     }
 
@@ -80,10 +80,13 @@ namespace VSS.TRex.Webtools.Controllers
     public async Task<JsonResult> PostCoordinateSystem([FromBody] CoordinateSystemFile request)
     {
       string resultToReturn = null;
-   
-      var csd = await DIContext.Obtain<ITRexConvertCoordinates>().DCFileContentToCSD(request.CSFileName, request.CSFileContent);
 
-      if (csd.CoordinateSystem == null || csd.CoordinateSystem.ZoneInfo == null || csd.CoordinateSystem.DatumInfo == null)
+      var dcFileContentString = System.Text.Encoding.UTF8.GetString(request.CSFileContent, 0, request.CSFileContent.Length);
+      var coreXWrapper = DIContext.Obtain<ICoreXWrapper>();
+
+      var csd = coreXWrapper.GetCSDFromDCFileContent(dcFileContentString);
+
+      if (csd == null || csd.ZoneInfo == null || csd.DatumInfo == null)
         resultToReturn = $"<b>Failed to convert DC File {request.CSFileName} content to Coordinate System definition data.</b>";
       else
       {
@@ -93,7 +96,7 @@ namespace VSS.TRex.Webtools.Controllers
         var projectUid = request.ProjectUid ?? Guid.Empty;
         var addCoordinateSystemRequest = new AddCoordinateSystemRequest();
 
-        var csib = Convert.ToBase64String(Array.ConvertAll<int, byte>(csd.CSIB, sb => unchecked((byte)sb)));
+        var csib = coreXWrapper.GetCSIBFromDCFileContent(dcFileContentString);
 
         var addCoordSystemResponse = await addCoordinateSystemRequest.ExecuteAsync(new AddCoordinateSystemArgument()
         {
@@ -105,7 +108,7 @@ namespace VSS.TRex.Webtools.Controllers
         {
           resultToReturn = $"<b>Coordinate System Settings (in {sw.Elapsed}) :</b><br/>";
           resultToReturn += "<b>================================================</b><br/>";
-          resultToReturn = ConvertCSResult(request.CSFileName, csd.CoordinateSystem);
+          resultToReturn = ConvertCSResult(request.CSFileName, csd);
         }
       }
 
@@ -160,13 +163,13 @@ namespace VSS.TRex.Webtools.Controllers
       resultString += $"<b>Parameters File Name: </b> {string.Empty}<br/>";
       // Geoid...
       resultString += "<b>============= Coordinate System Geoid =============</b><br/>";
-      if (coordSystem.GeooidInfo == null)
+      if (coordSystem.GeoidInfo == null)
         resultString += "<b>                 No Geoid                 </b><br/>";
       else
       {
-        resultString += $"<b>Name: </b> {coordSystem.GeooidInfo.GeoidName}<br/>";
+        resultString += $"<b>Name: </b> {coordSystem.GeoidInfo.GeoidName}<br/>";
         resultString += $"<b>Method: </b> {string.Empty}<br/>";
-        resultString += $"<b>File Name: </b> {coordSystem.GeooidInfo.GeoidFileName}<br/>";
+        resultString += $"<b>File Name: </b> {coordSystem.GeoidInfo.GeoidFileName}<br/>";
       }
       // Projection
       resultString += "<b>============= Coordinate System Projection =============</b><br/>";
