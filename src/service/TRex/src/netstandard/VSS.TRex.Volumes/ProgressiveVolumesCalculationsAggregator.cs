@@ -169,7 +169,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummarizeSubGridResult(subGrids); //.WaitAndUnwrapException();
+      SummarizeSubGridResult(subGrids); 
     }
 
     /// <summary>
