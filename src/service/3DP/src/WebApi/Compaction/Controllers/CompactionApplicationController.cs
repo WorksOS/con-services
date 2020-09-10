@@ -16,6 +16,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using CoreX.Interfaces;
-using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;
+using CoreXModels;
 using FluentAssertions;
 using Xunit;
 

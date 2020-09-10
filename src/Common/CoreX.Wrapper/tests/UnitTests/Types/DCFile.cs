@@ -11,6 +11,7 @@ namespace CoreX.Wrapper.UnitTests.Types
     public const string NETHERLANDS_NO_GEOID = "Netherlands (No geoid).dc";
     public const string NN2000_NORWAY18A = "Haaneskrysset.dc";
     public const string PHILIPSBURG = "Philipsburg TVN_Z3_Bessel.dc";
+    public const string FLORIDA_EAST_0901_NAD_1983 = "Florida_East_0901_NAD_1983.dc"; // AKA 7e752f8a-1b27-420a-92e6-5a78125450f0.cal
 
     public static string GetFilePath(string filename) => Path.Combine("CoordinateSystems", filename);
   }

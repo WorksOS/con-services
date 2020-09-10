@@ -12,7 +12,6 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -84,7 +83,6 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -139,7 +137,7 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),

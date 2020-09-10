@@ -57,7 +57,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         design = new SVLAlignmentDesign();
       else
         design = new TTMDesign(SubGridTreeConsts.DefaultCellSize);
-      var designLoadResult = await  design.LoadFromStorage(request.ProjectUid, request.FileName, localPath);
+      var designLoadResult = design.LoadFromStorage(request.ProjectUid, request.FileName, localPath);
       if (designLoadResult != DesignLoadResult.Success)
       {
         log.LogError($"#Out# {executorName}. Addition of design failed :{request.FileName}, Project:{request.ProjectUid}, DesignUid:{request.DesignUid}, designLoadResult: {designLoadResult}");

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
@@ -590,25 +589,25 @@ namespace VSS.TRex.Designs
     /// Loads the TTM design file/s, from storage
     /// Includes design file, 2 index files and a boundary file (if they exist)
     /// </summary>
-    public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
+    public override DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
       var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
 
-      var isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
+      var isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, fileName, localPath);
       if (!isDownloaded)
         return DesignLoadResult.UnknownFailure;
 
       if (loadIndices)
       {
-        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), localPath);
+        isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), localPath);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadSubGridIndex;
 
-        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), localPath);
+        isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), localPath);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadSpatialIndex;
 
-        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), localPath);
+        isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), localPath);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadBoundary;
       }

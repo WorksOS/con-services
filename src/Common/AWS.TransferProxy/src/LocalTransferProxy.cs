@@ -54,12 +54,27 @@ namespace VSS.AWS.TransferProxy
       return new FileStreamResult(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read), ContentTypeConstants.ApplicationOctetStream);
     }
 
+    public FileStreamResult DownloadFromBucketSync(string s3Key, string bucketName)
+    {
+      var localKey = (s3Key.StartsWith("/") ? s3Key.Substring(1) : s3Key).Replace('/', Path.DirectorySeparatorChar);
+      var fileName = Path.Combine(_rootLocalTransferProxyFolder, bucketName, localKey);
+
+      return new FileStreamResult(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read), ContentTypeConstants.ApplicationOctetStream);
+    }
+
     /// <summary>
     /// Create a task to download a file from the local S3 storage
     /// </summary>
     /// <param name="s3Key">Key to the data to be downloaded</param>
     /// <returns>FileStreamResult if the file exists</returns>
     public async Task<FileStreamResult> Download(string s3Key) => await DownloadFromBucket(s3Key, _awsBucketName);
+
+    /// <summary>
+    /// Create a task to download a file from the local S3 storage
+    /// </summary>
+    /// <param name="s3Key">Key to the data to be downloaded</param>
+    /// <returns>FileStreamResult if the file exists</returns>
+    public FileStreamResult DownloadSync(string s3Key) => DownloadFromBucketSync(s3Key, _awsBucketName);
 
     public string GeneratePreSignedUrl(string s3Key)
     {
@@ -104,7 +119,7 @@ namespace VSS.AWS.TransferProxy
         Directory.CreateDirectory(directory);
       }
 
-      using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+      using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Write))
       {
         stream.CopyTo(fs);
       }

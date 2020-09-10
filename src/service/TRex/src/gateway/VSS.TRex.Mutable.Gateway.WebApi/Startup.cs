@@ -10,7 +10,6 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.ServiceDiscovery;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
@@ -50,7 +49,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       DIBuilder.New(services)
          .Build()
          .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-         .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
          .Build()

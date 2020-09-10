@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,52 @@ namespace VSS.TRex.Common
             fileStreamResult.FileStream.CopyTo(targetFileStream);
           }
         }
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception writing design file locally:");
+        return false;
+      }
+
+      return true;
+    }
+
+    /// <summary>
+    /// Reads a file from S3 and places it locally
+    /// </summary>
+    public bool ReadFileSync(Guid siteModelUid, string fileName, string targetPath)
+    {
+      var s3Path = GetS3FullPath(siteModelUid, fileName);
+      FileStreamResult fileStreamResult;
+
+      try
+      {
+        var sw = Stopwatch.StartNew();
+        fileStreamResult = Proxy.DownloadSync(s3Path);
+        _log.LogDebug($"Time to download {s3Path} from S3 as file stream: {sw.Elapsed}");
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception reading design from s3:");
+        return false;
+      }
+
+      if (string.IsNullOrEmpty(fileStreamResult.ContentType))
+      {
+        _log.LogInformation("Exception setting up download from S3.ContentType unknown, i.e. file doesn't exist.");
+        return false;
+      }
+
+      try
+      {
+        var sw = Stopwatch.StartNew();
+
+        var targetFullPath = Path.Combine(targetPath, fileName);
+        using var stream = fileStreamResult.FileStream;
+        using var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length);
+        fileStreamResult.FileStream.CopyTo(targetFileStream);
+
+        _log.LogDebug($"Time to write {s3Path} from file stream to {targetFullPath}: {sw.Elapsed}");
       }
       catch (Exception e)
       {
