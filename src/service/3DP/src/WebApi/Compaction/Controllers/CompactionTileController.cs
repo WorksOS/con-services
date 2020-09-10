@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Productivity3D.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   [ProjectVerifier]
-  public class CompactionTileController : BaseTileController<CompactionTileController>
+  public class CompactionTileController : BaseController<CompactionTileController>
   {
     /// <summary>
     /// The tile generator

@@ -1,13 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.TRex.Common;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.Common.Filters.Utilities
+namespace CCSS.Productivity3D.Service.Common
 {
   public static class FilterUtilities
   {
+    private static readonly MemoryCacheEntryOptions _filterCacheOptions = new MemoryCacheEntryOptions
+    {
+      SlidingExpiration = TimeSpan.FromDays(3)
+    };
 
     public static (FilterResult baseFilter, FilterResult topFilter) AdjustFilterToFilter(FilterResult baseFilter, FilterResult topFilter)
     {
@@ -140,6 +159,138 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
       }
 
       return (baseFilter, topFilter);
+    }
+
+    /// <summary>
+    /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
+    /// </summary>
+    public static async Task<FilterResult> GetCompactionFilter(
+      Guid projectUid, string projectTimeZone, string userUid, Guid? filterUid, IDataCache filterCache, IHeaderDictionary customHeaders, 
+      ILogger log, IFilterServiceProxy filterServiceProxy, IFileImportProxy fileImportProxy, IConfigurationStore configStore, bool filterMustExist = false)
+    {
+      var filterKey = filterUid.HasValue ? $"{nameof(FilterResult)} {filterUid.Value}" : string.Empty;
+      // Filter models are immutable except for their Name.
+      // This service doesn't consider the Name in any of it's operations so we don't mind if our
+      // cached object is out of date in this regard.
+      var cachedFilter = filterUid.HasValue ? filterCache.Get<FilterResult>(filterKey) : null;
+      if (cachedFilter != null)
+      {
+        cachedFilter.ApplyDateRange(projectTimeZone, true);
+
+        return cachedFilter;
+      }
+
+      var excludedSs = await GetExcludedSurveyedSurfaceIds(projectUid, userUid, customHeaders, fileImportProxy);
+      var excludedIds = excludedSs?.Select(e => e.Item1).ToList();
+      var excludedUids = excludedSs?.Select(e => e.Item2).ToList();
+      bool haveExcludedSs = excludedSs != null && excludedSs.Count > 0;
+
+      if (!filterUid.HasValue)
+      {
+        return haveExcludedSs
+          ? FilterResult.CreateFilter(excludedIds, excludedUids)
+          : null;
+      }
+
+      try
+      {
+        DesignDescriptor designDescriptor = null;
+        DesignDescriptor alignmentDescriptor = null;
+
+        var filterData = await GetFilterDescriptor(projectUid, filterUid.Value, filterServiceProxy, customHeaders);
+
+        if (filterMustExist && filterData == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Invalid Filter UID."));
+        }
+
+        if (filterData != null)
+        {
+          log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
+          if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
+          {
+            designDescriptor = await DesignUtilities.GetAndValidateDesignDescriptor(projectUid, designUidGuid, userUid, customHeaders, fileImportProxy, configStore, log);
+          }
+
+          if (filterData.AlignmentUid != null && Guid.TryParse(filterData.AlignmentUid, out Guid alignmentUidGuid))
+          {
+            alignmentDescriptor = await DesignUtilities.GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid, userUid, customHeaders, fileImportProxy, configStore, log);
+          }
+
+          if (filterData.HasData() || haveExcludedSs || designDescriptor != null)
+          {
+            filterData.ApplyDateRange(projectTimeZone, true);
+
+            var layerMethod = filterData.LayerNumber.HasValue
+              ? FilterLayerMethod.TagfileLayerNumber
+              : FilterLayerMethod.None;
+
+            bool? returnEarliest = null;
+            if (filterData.ElevationType == ElevationType.First)
+            {
+              returnEarliest = true;
+            }
+
+            var raptorFilter = new FilterResult(filterUid, filterData, filterData.PolygonLL, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
+
+            log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
+
+            // The filter will be removed from memory and recalculated to ensure we have the latest filter on any relevant changes
+            var filterTags = new List<string>()
+            {
+              filterUid.Value.ToString(),
+              projectUid.ToString()
+            };
+
+            filterCache.Set(filterKey, raptorFilter, filterTags, _filterCacheOptions);
+
+            return raptorFilter;
+          }
+        }
+      }
+      catch (ServiceException ex)
+      {
+        log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}");
+        throw;
+      }
+      catch (Exception ex)
+      {
+        log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
+        throw;
+      }
+
+      return haveExcludedSs ? FilterResult.CreateFilter(excludedIds, excludedUids) : null;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="Microsoft.AspNetCore.Mvc.Filters.FilterDescriptor"/> for a given Filter FileUid (by project).
+    /// </summary>
+    public static async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid, IFilterServiceProxy filterServiceProxy, IHeaderDictionary customHeaders)
+    {
+      var filterDescriptor = await filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
+
+      return filterDescriptor == null
+        ? null
+        : JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterJson);
+    }
+
+    /// <summary>
+    /// Gets the ids and uids of the surveyed surfaces to exclude from TRex calculations. 
+    /// This is the deactivated ones.
+    /// </summary>
+    public static async Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IHeaderDictionary customHeaders, IFileImportProxy fileImportProxy)
+    {
+      var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
+      if (fileList == null || fileList.Count == 0)
+        return null;
+
+      var results = fileList
+        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
+        .Select(f => (f.LegacyFileId, Guid.Parse(f.ImportedFileUid))).ToList();
+
+      return results;
     }
   }
 }
