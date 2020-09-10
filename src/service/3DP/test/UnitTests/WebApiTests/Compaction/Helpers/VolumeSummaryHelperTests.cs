@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
+using VSS.TRex.Types;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {
@@ -24,7 +26,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           0, null, "name", "desc", DateTime.Now, DateTime.Now, 1, "designName", null, false, false, ElevationType.Highest,
           new List<WGSPoint>(), new List<Point>(), false, null, 0, 0, 0, 0, 
           FilterLayerMethod.None, null, 0, 0, 0, new List<MachineDetails>(), new List<long>(),
-          true, GPSAccuracy.Coarse, false, false, false, false);
+          true, GPSAccuracyType.Coarse, false, false, false, false);
       }
 
       [TestMethod]

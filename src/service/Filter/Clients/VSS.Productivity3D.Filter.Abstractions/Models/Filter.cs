@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// Optional as it is not used in the proper functioning of a filter.
     /// </summary>
     [JsonProperty(PropertyName = "contributingMachines", Required = Required.Default)]
-    public List<MachineDetails> ContributingMachines { get; private set; }
+    public List<MachineDetails> ContributingMachines { get; protected set; }
 
     /// <summary>
     /// A machine reported design.
@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     ///             then to send to Raptor, we need to obtain the correct Ids from the OnMachineDesignName,
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignId", Required = Required.Default)]
-    public long? OnMachineDesignId { get; private set; } // Raptor/Trex not VSS ID
+    public long? OnMachineDesignId { get; set; } // Raptor/Trex not VSS ID
 
     /// <summary>
     /// A machine reported design.
@@ -86,13 +86,13 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// May be null/empty, which indicates no restriction. 
     /// </summary>
     [JsonProperty(PropertyName = "onMachineDesignName", Required = Required.Default)]
-    public string OnMachineDesignName { get; private set; } // Raptor/Trex not VSS Design
+    public string OnMachineDesignName { get; protected set; } // Raptor/Trex not VSS Design
 
     /// <summary>
     /// Controls the cell pass from which to determine data based on its elevation.
     /// </summary>
     [JsonProperty(PropertyName = "elevationType", Required = Required.Default)]
-    public ElevationType? ElevationType { get; private set; }
+    public ElevationType? ElevationType { get; set; }
 
     /// <summary>
     /// Only filter cell passes recorded when the vibratory drum was 'on'.  
@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// If false, returns only cell passes with the cell pass parameter and the drum was off.
     /// </summary>
     [JsonProperty(PropertyName = "vibeStateOn", Required = Required.Default)]
-    public bool? VibeStateOn { get; private set; }
+    public bool? VibeStateOn { get; protected set; }
 
     /// <summary>
     /// The boundary/geofence unique identifier. Used as a spatial filter.
@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// A polygon to be used as a spatial filter boundary. The vertices are WGS84 positions
     /// </summary>
     [JsonProperty(PropertyName = "polygonLL", Required = Required.Default)]
-    public List<WGSPoint> PolygonLL { get; private set; }
+    public List<WGSPoint> PolygonLL { get; protected set; }
 
     /// <summary>
     /// The type of polygon. 'Filter' is 3dpm custom boundary. Other types are geofences.
@@ -131,7 +131,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.
     /// </summary>
     [JsonProperty(PropertyName = "forwardDirection", Required = Required.Default)]
-    public bool? ForwardDirection { get; private set; }
+    public bool? ForwardDirection { get; protected set; }
 
     /// <summary>
     /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. 
@@ -139,7 +139,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// </summary>
     [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
     [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
-    public int? LayerNumber { get; private set; }
+    public int? LayerNumber { get; protected set; }
 
     /// <summary>
     /// The alignmentFile unique identifier. Used as a spatial filter along with station and offset.

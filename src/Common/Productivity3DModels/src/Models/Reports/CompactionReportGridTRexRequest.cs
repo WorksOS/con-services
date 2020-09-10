@@ -3,6 +3,8 @@ using System;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Models.Utilities;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 

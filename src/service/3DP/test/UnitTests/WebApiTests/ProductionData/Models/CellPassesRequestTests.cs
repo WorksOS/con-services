@@ -4,9 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Productivity3D.Models.Validation;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
           0, 0, 0,
           new List<MachineDetails>(),
           new List<long>(),
-          false, GPSAccuracy.Medium, false, null, null, null,
+          false, GPSAccuracyType.Medium, false, null, null, null,
           new DesignDescriptor(1, FileDescriptor.EmptyFileDescriptor, 0));
 
       cpRequest = CellPassesRequest.CreateCellPassRequest(544, cellAddress, point, wgsPoint, settings, 0, 0, filterResult);
