@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.Models.Models.Coords
     /// <summary>
     /// The content of the CS definition file as an array of bytes.
     /// </summary>
-    /// 
+    ///
     [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
     [Required]
     public byte[] CSFileContent { get; private set; }
@@ -23,30 +23,29 @@ namespace VSS.Productivity3D.Models.Models.Coords
     /// <summary>
     /// The name of the CS definition file.
     /// </summary>
-    /// 
+    ///
     [JsonProperty(PropertyName = "csFileName", Required = Required.Always)]
     [Required]
     [ValidFilename(MAX_FILE_NAME_LENGTH)]
     [MaxLength(MAX_FILE_NAME_LENGTH)]
     public string CSFileName { get; private set; }
 
-
     /// <summary>
     /// Default private constructor.
     /// </summary>
-    /// 
+    ///
     private CoordinateSystemFileValidationRequest()
     {
       // ...
     }
-    
+
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
     /// <param name="csFileContent">The content of the file.</param>
     /// <param name="csFileName">The file's name.</param>
     /// <returns>An instance of the CoordinateSystemFile class.</returns>
-    /// 
+    ///
     public CoordinateSystemFileValidationRequest(byte[] csFileContent, string csFileName)
     {
       CSFileName = csFileName;
