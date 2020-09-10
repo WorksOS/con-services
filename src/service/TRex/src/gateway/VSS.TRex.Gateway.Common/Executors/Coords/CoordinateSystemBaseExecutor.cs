@@ -1,5 +1,6 @@
 ﻿using CoreXModels;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
@@ -42,6 +43,8 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
     protected ContractExecutionResult ConvertResult(string csFileName, CoordinateSystem coordSystem)
     {
+      log.LogDebug($"#In# {nameof(CoordinateSystemBaseExecutor)}: {nameof(csFileName)}: {csFileName}, {nameof(coordSystem)}: {JsonConvert.SerializeObject(coordSystem)}");
+
       var azimuthDirection = coordSystem.ZoneInfo.IsSouthAzimuth ? SOUTH_STR : NORTH_STR;
 
       var latAxis = coordSystem.ZoneInfo.IsSouthGrid ? SOUTH_STR : NORTH_STR;
