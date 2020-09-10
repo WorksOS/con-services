@@ -5,7 +5,7 @@ using CoreX.Wrapper.Types;
 
 namespace CoreX.Wrapper
 {
-  public class CalibrationFileHelper
+  public static class CalibrationFileHelper
   {
     public static (string id, string name) GetProjectionTypeCode(byte[] dcFileArray)
     {
@@ -26,7 +26,7 @@ namespace CoreX.Wrapper
         }
       }
 
-      throw new Exception($"Calibration file doesn't contain Projection data");
+      throw new Exception("Calibration file doesn't contain Projection data");
     }
 
     public static string GetGeoidModelName(byte[] dcFileArray)
@@ -46,7 +46,7 @@ namespace CoreX.Wrapper
         }
       }
 
-      throw new Exception($"Calibration file doesn't contain Projection data");
+      throw new Exception("Calibration file doesn't contain Projection data");
     }
   }
 }
