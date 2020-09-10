@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -96,7 +92,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
         _lastEventVibrationStateString = _lastPassValidTemperatureString = _csvExportFormatter.NullString;
     }
 
-    public async Task<List<string>> ProcessSubGrid(ClientCellProfileLeafSubgrid lastPassSubGrid)
+    public List<string> ProcessSubGrid(ClientCellProfileLeafSubgrid lastPassSubGrid)
     {
       var rows = new List<string>();
       if (RecordCountLimitReached())
@@ -106,7 +102,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (_requestArgument.CoordType == CoordType.LatLon)
         _llhCoords = SetupLLPositions(_siteModel.CSIB(), lastPassSubGrid);
 
-      lastPassSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+      lastPassSubGrid.CalculateWorldOrigin(out var subGridWorldOriginX, out var subGridWorldOriginY);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
@@ -138,7 +134,7 @@ namespace VSS.TRex.Exports.CSV.Executors.Tasks
       if (_requestArgument.CoordType == CoordType.LatLon)
         _llhCoords = SetupLLPositions(_siteModel.CSIB(), allPassesSubGrid);
 
-      allPassesSubGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+      allPassesSubGrid.CalculateWorldOrigin(out var subGridWorldOriginX, out var subGridWorldOriginY);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {

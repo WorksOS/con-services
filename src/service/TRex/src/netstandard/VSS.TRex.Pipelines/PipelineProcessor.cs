@@ -417,15 +417,13 @@ namespace VSS.TRex.Pipelines
       {
         if (Pipeline.Initiate())
         {
-          Pipeline.WaitForCompletion()
-            .ContinueWith(x =>
-            {
-              _log.LogInformation(x.Result ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
-              if (Pipeline.SubGridsRemainingToProcess > 0)
-              {
-                _log.LogInformation($"Pipeline completed with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
-              }
-            }).WaitAndUnwrapException();
+          var completionResult = Pipeline.WaitForCompletion();
+          _log.LogInformation(completionResult ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
+
+          if (Pipeline.SubGridsRemainingToProcess > 0)
+          {
+            _log.LogInformation($"Pipeline completed with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
+          }
         }
 
         PipelineAborted = Pipeline.Aborted;
