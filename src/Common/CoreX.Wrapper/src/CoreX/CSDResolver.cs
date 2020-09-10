@@ -8,8 +8,6 @@ namespace CoreX.Wrapper
 {
   public class CSDResolver
   {
-    
-
     /// <inheritdoc/>
     public CoordinateSystem GetCSDFromCSIB(string csibString)
     {
