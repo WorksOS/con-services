@@ -431,5 +431,91 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       return Ok(volumesSummaryResult);
     }
+
+    /// <summary>
+    /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
+    /// </summary>
+    /// <param name="summaryDataHelper">Volume Summary helper.</param>
+    /// <param name="projectUid">The project uid.</param>
+    /// <param name="baseUid">The uid for the base surface, either a filter or design.</param>
+    /// <param name="topUid">The uid for the top surface, either a filter or design.</param>
+    /// <param name="startDate">The start date for the series of progressive volumes to be calculated from</param>
+    /// <param name="endDate">The end date for the series of progressive volumes to be calculated to</param>
+    /// <param name="intervalSeconds">The interval between each calculated volume expressed as a whole number of seconds</param>
+    [ProjectVerifier]
+    [Route("api/v2/volumes/summary/progressive")]
+    [HttpGet]
+    public async Task<ActionResult<ContractExecutionResult>> GetProgressiveSummaryVolumes(
+      [FromServices] ISummaryDataHelper summaryDataHelper,
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid baseUid,
+      [FromQuery] Guid topUid,
+      [FromQuery] DateTime startDate,
+      [FromQuery] DateTime endDate,
+      [FromQuery] int intervalSeconds)
+    {
+      Log.LogInformation($"{nameof(GetSummaryVolumes)}: " + Request.QueryString);
+
+      if (baseUid == Guid.Empty || topUid == Guid.Empty)
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid surface parameter(s)."));
+
+      DesignDescriptor baseDesign = null;
+      DesignDescriptor topDesign = null;
+      FilterResult baseFilter = null;
+      FilterResult topFilter = null;
+
+      // Base filter...
+      var baseFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
+      if (baseFilterDescriptor == null)
+        baseDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
+      else
+        baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
+
+      // Top filter...
+      var topFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
+      if (topFilterDescriptor == null)
+        topDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
+      else
+        topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+
+      if (baseFilter == null && baseDesign == null || topFilter == null && topDesign == null)
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
+
+      var volumeCalcType = summaryDataHelper.GetVolumesType(baseFilter, topFilter);
+
+      if (volumeCalcType == VolumesType.None)
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
+
+      var projectId = await GetLegacyProjectId(projectUid);
+      var request = ProgressiveSummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter ?? topFilter, baseDesign, topDesign, volumeCalcType, startDate, endDate, intervalSeconds);
+
+      CompactionProgressiveVolumesSummaryResult volumesSummaryResult;
+
+      try
+      {
+        var result = await RequestExecutorContainerFactory
+                     .Build<ProgressiveSummaryVolumesExecutor>(LoggerFactory,
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+                     .ProcessAsync(request) as ProgressiveSummaryVolumesResult;
+
+        if (result == null) return Ok(new CompactionProgressiveVolumesSummaryResult(0, "No production data found"));
+
+        volumesSummaryResult = CompactionProgressiveVolumesSummaryResult.Create(result, await GetProjectSettingsTargets(projectUid));
+      }
+      catch (ServiceException exception)
+      {
+        Log.LogError($"{nameof(GetProgressiveSummaryVolumes)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
+        return BadRequest(new ContractExecutionResult(exception.GetResult.Code, exception.GetResult.Message));
+      }
+      finally
+      {
+        Log.LogInformation($"{nameof(GetProgressiveSummaryVolumes)} returned: " + Response.StatusCode);
+      }
+
+      if (Log.IsTraceEnabled())
+        Log.LogTrace($"{nameof(GetProgressiveSummaryVolumes)} result: " + JsonConvert.SerializeObject(volumesSummaryResult));
+
+      return Ok(volumesSummaryResult);
+    }
   }
 }
