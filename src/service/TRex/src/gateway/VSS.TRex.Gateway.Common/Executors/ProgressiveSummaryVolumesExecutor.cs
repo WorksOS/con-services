@@ -62,7 +62,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         TopDesign = new DesignOffset(request.TopDesignUid ?? Guid.Empty, request.TopDesignOffset ?? 0),
         VolumeType = ConvertVolumesType(request.VolumeCalcType),
         CutTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE,
-        FillTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE
+        FillTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE,
+        StartDate = request.StartDate,
+        EndDate = request.EndDate,
+        Interval = TimeSpan.FromSeconds(request.IntervalSeconds)
       });
 
       if (response != null)

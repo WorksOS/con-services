@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.Models.Models
       VolumesType volumeCalcType,
       DateTime startDate,
       DateTime endDate,
-      TimeSpan interval)
+      int intervalSeconds)
     {
       ProjectUid = projectUid;
       Filter = filter;
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Models.Models
       VolumeCalcType = volumeCalcType;
       StartDate = startDate;
       EndDate = endDate;
-      Interval = interval;
+      IntervalSeconds = intervalSeconds;
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The time interval between calculated progressive volumes
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public TimeSpan Interval { get; private set; }
+    public int IntervalSeconds { get; private set; }
 
     /// <summary>
     /// Validates all properties.
@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.Models.Models
             "Start date must be earlier than end date"));
       }
 
-      if (Interval.Seconds < 10)
+      if (IntervalSeconds < 10)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
