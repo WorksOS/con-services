@@ -15,7 +15,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
 {
   /// <summary>
   /// Controller for getting coordinate system definition data from a site model/project
-  /// and performing coordinates conversion. 
+  /// and performing coordinates conversion.
   /// </summary>
   public class CoordinateSystemController : BaseController
   {

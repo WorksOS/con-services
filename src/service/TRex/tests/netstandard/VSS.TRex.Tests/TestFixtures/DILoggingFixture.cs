@@ -117,6 +117,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueString("AWS_TAGFILE_BUCKET_NAME", It.IsAny<string>())).Returns("AWS_TAGFILE_BUCKET");
           config.Setup(c => c.GetValueString("AWS_TAGFILE_BUCKET_NAME")).Returns("AWS_TAGFILE_BUCKET");
+          config.Setup(c => c.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME", It.IsAny<string>())).Returns("AWS_DESIGNIMPORT_BUCKET");
+          config.Setup(c => c.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME")).Returns("AWS_DESIGNIMPORT_BUCKET");
 
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS")).Returns(1000);
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", It.IsAny<int>())).Returns(1000);

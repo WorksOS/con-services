@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -22,7 +21,7 @@ namespace VSS.TRex.Profiling
     private static readonly ILogger _log = Logging.Logger.CreateLogger("LiftFilterMask");
 
     private static void ConstructSubGridSpatialAndPositionalMask(ISubGridTree tree,
-      SubGridCellAddress currentSubGridOrigin, 
+      SubGridCellAddress currentSubGridOrigin,
       List<T> profileCells, 
       SubGridTreeBitmapSubGridBits mask,
       int fromProfileCellIndex, 
@@ -31,38 +30,38 @@ namespace VSS.TRex.Profiling
       mask.Clear();
 
       // From current position to end...
-      for (int CellIdx = fromProfileCellIndex; CellIdx < profileCells.Count; CellIdx++)
+      for (var cellIdx = fromProfileCellIndex; cellIdx < profileCells.Count; cellIdx++)
       {
-        T profileCell = profileCells[CellIdx];
-        SubGridCellAddress ThisSubGridOrigin = new SubGridCellAddress(
+        var profileCell = profileCells[cellIdx];
+        var thisSubGridOrigin = new SubGridCellAddress(
           profileCell.OTGCellX & ~SubGridTreeConsts.SubGridLocalKeyMask,
           profileCell.OTGCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
 
-        if (!currentSubGridOrigin.Equals(ThisSubGridOrigin))
+        if (!currentSubGridOrigin.Equals(thisSubGridOrigin))
           break;
 
-        byte CellX = (byte)(profileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask);
-        byte CellY = (byte)(profileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
+        var cellX = (byte)(profileCell.OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask);
+        var cellY = (byte)(profileCell.OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
         if (cellFilter.HasSpatialOrPositionalFilters)
         {
           tree.GetCellCenterPosition(profileCell.OTGCellX, profileCell.OTGCellY,
-            out double CellCenterX, out double CellCenterY);
-          if (cellFilter.IsCellInSelection(CellCenterX, CellCenterY))
-            mask.SetBit(CellX, CellY);
+            out var cellCenterX, out var cellCenterY);
+          if (cellFilter.IsCellInSelection(cellCenterX, cellCenterY))
+            mask.SetBit(cellX, cellY);
         }
         else
-          mask.SetBit(CellX, CellY);
+          mask.SetBit(cellX, cellY);
       }
     }
 
-    public static bool ConstructSubGridCellFilterMask(ISiteModel siteModel, 
-      SubGridCellAddress currentSubGridOrigin, 
+    public static bool ConstructSubGridCellFilterMask(ISiteModel siteModel,
+      SubGridCellAddress currentSubGridOrigin,
       List<T> profileCells,
       SubGridTreeBitmapSubGridBits mask,
       int fromProfileCellIndex,
       ICellSpatialFilter cellFilter,
-      IDesign SurfaceDesignMaskDesign)
+      IDesign surfaceDesignMaskDesign)
     {
       ConstructSubGridSpatialAndPositionalMask(siteModel.Grid, currentSubGridOrigin, profileCells, mask, fromProfileCellIndex, cellFilter);
 
@@ -79,23 +78,23 @@ namespace VSS.TRex.Profiling
         // Go over set bits and determine if they are in Design fence boundary
         mask.ForEachSetBit((X, Y) =>
         {
-          tree.GetCellCenterPosition(currentSubGridOrigin.X + X, currentSubGridOrigin.Y + Y, out var CX, out var CY);
-          if (!cellFilter.AlignmentFence.IncludesPoint(CX, CY))
+          tree.GetCellCenterPosition(currentSubGridOrigin.X + X, currentSubGridOrigin.Y + Y, out var cx, out var cy);
+          if (!cellFilter.AlignmentFence.IncludesPoint(cx, cy))
           {
             mask.ClearBit(X, Y); // remove interest as its not in design boundary
           }
         });
       }
 
-      if (SurfaceDesignMaskDesign != null)
+      if (surfaceDesignMaskDesign != null)
       {
-        var getFilterMaskResult = SurfaceDesignMaskDesign.GetFilterMaskViaLocalCompute(siteModel, currentSubGridOrigin, siteModel.CellSize);
+        var getFilterMaskResult = surfaceDesignMaskDesign.GetFilterMaskViaLocalCompute(siteModel, currentSubGridOrigin, siteModel.CellSize);
 
-        if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
+        if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK || getFilterMaskResult.errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
         {
           if (getFilterMaskResult.filterMask == null)
           {
-            _log.LogError("FilterMask null in response from surfaceDesignMaskDesign.GetFilterMask, ignoring it's contribution to filter mask");
+            _log.LogWarning("FilterMask null in response from surfaceDesignMaskDesign.GetFilterMask, ignoring it's contribution to filter mask");
           }
           else
           {
@@ -113,7 +112,7 @@ namespace VSS.TRex.Profiling
     }
 
     public static (bool executionResult, DesignProfilerRequestResult filterDesignErrorCode)
-      InitialiseFilterContext(ISiteModel siteModel, ICellPassAttributeFilter passFilter, 
+      InitialiseFilterContext(ISiteModel siteModel, ICellPassAttributeFilter passFilter,
         ICellPassAttributeFilterProcessingAnnex passFilterAnnex, ProfileCell profileCell, IDesignWrapper passFilterElevRangeDesign)
     {
       (bool executionResult, DesignProfilerRequestResult filterDesignErrorCode) result = (false, DesignProfilerRequestResult.UnknownError);
@@ -138,7 +137,7 @@ namespace VSS.TRex.Profiling
           return result;
         }
 
-        passFilterAnnex.InitializeElevationRangeFilter(passFilter, getDesignHeightsResult.designHeights.Cells);    
+        passFilterAnnex.InitializeElevationRangeFilter(passFilter, getDesignHeightsResult.designHeights.Cells);
       }
 
       result.executionResult = true;

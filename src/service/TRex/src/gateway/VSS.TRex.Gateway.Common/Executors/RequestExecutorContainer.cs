@@ -92,7 +92,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Injected constructor.
     /// </summary>
-    protected RequestExecutorContainer(IConfigurationStore configStore, ILoggerFactory logger, 
+    protected RequestExecutorContainer(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler) : this()
     {
       this.configStore = configStore;
@@ -115,18 +115,16 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam Name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
     public static TExecutor
-      Build<TExecutor>(IConfigurationStore configStore, ILoggerFactory logger, 
+      Build<TExecutor>(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor
+      return new TExecutor
       {
         configStore = configStore,
         log = logger.CreateLogger<TExecutor>(),
         serviceExceptionHandler = serviceExceptionHandler,
       };
-
-      return executor;
     }
   }
 }

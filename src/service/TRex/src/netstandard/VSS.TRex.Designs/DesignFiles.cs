@@ -1,18 +1,19 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.SiteModels.Interfaces;
-using Nito.AsyncEx.Synchronous;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common.Exceptions;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using Nito.AsyncEx.Synchronous;
+using VSS.AWS.TransferProxy;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces.Interfaces;
 
 namespace VSS.TRex.Designs
@@ -62,6 +63,20 @@ namespace VSS.TRex.Designs
     /// </summary>
     public DesignFiles()
     {
+      // Perform an initial S3 activity to prime the S3 layer with authentication and other information so that 
+      // first-time design downloads from S3 don't suffer unacceptable latencies. This activity is just to list the
+      // first key present in the bucket
+      // Note: This call an async API as there is no synchronous version of this available in the S3 proxy
+
+      try
+      {
+        var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
+        s3FileTransfer.Proxy.ListKeys("", 1).WaitAndUnwrapException();
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Failed to list keys from design import file transfer proxy");
+      }
     }
 
     /// <summary>

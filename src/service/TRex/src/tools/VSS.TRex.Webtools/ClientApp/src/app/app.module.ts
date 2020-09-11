@@ -15,6 +15,7 @@ import { UploadDataComponent } from './upload-data/upload-data.component';
 import { SandboxComponent } from './sandbox/sandbox-component';
 import { ProjectComponent } from './project/project-component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { CoordSystemComponent } from './coord-system/coord-system.component';
 import { DeleteProjectComponent } from './delete-project/delete-project-component';
 import { RebuildProjectComponent } from './rebuild-project/rebuild-project-component';
 
@@ -29,6 +30,7 @@ import { RebuildProjectComponent } from './rebuild-project/rebuild-project-compo
     SandboxComponent,
     ProjectComponent,
     FetchDataComponent,
+    CoordSystemComponent,
     DeleteProjectComponent,
     RebuildProjectComponent
   ],
@@ -45,6 +47,7 @@ import { RebuildProjectComponent } from './rebuild-project/rebuild-project-compo
       { path: 'project', component: ProjectComponent },
       { path: 'sandbox', component: SandboxComponent },
       { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'coord-system', component: CoordSystemComponent },
       { path: 'delete-project', component: DeleteProjectComponent },
       { path: 'rebuild-project', component: RebuildProjectComponent }
     ])

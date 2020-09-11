@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
@@ -7,6 +6,7 @@ using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Types;
+// ReSharper disable InvalidXmlDocComment
 
 namespace VSS.TRex.Pipelines.Interfaces
 {
@@ -17,7 +17,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// of pipelined requests
     /// </summary>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    Task<IPipelineProcessor> NewInstance<TSubGridsRequestArgument>(Guid requestDescriptor,
+    IPipelineProcessor NewInstance<TSubGridsRequestArgument>(Guid requestDescriptor,
       Guid dataModelID,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,

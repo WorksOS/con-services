@@ -114,7 +114,7 @@ namespace VSS.TRex.Exports.Patches.Executors
         processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;
         processor.RequestAnalyser.SubmitSinglePageOfRequests = true;
 
-        if (!await processor.BuildAsync())
+        if (!processor.Build())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
           return false;

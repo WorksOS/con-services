@@ -182,9 +182,12 @@ namespace VSS.AWS.TransferProxy
         }
         else
         {
-          foreach (var f in Directory.GetDirectories(folder))
-            ProcessFilesInFolder(f);
-          AddFilesForFolder(folder);
+          if (Directory.Exists(folder))
+          {
+            foreach (var f in Directory.GetDirectories(folder))
+              ProcessFilesInFolder(f);
+            AddFilesForFolder(folder);
+          }
         }
       }
 

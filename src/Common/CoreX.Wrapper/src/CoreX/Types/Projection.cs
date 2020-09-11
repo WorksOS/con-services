@@ -1,6 +1,6 @@
 ﻿namespace CoreX.Wrapper.Types
 {
-  public class Projection
+  public static class Projection
   {
     public static string GetProjectionName(string typeId)
     {

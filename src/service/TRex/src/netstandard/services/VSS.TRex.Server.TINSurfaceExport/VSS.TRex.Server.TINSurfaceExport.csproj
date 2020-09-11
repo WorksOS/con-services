@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps.Interfaces\VSS.TRex.ExistenceMaps.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.ExistenceMaps\VSS.TRex.ExistenceMaps.csproj" />
