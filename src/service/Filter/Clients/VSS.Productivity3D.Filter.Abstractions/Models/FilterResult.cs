@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
   /// Filter will override filter ID, if both are selected.
   /// </summary>
   [DataContract(Name = "Filter")]
-  public class FilterResult : IEquatable<FilterResult>
+  public class FilterResult : Filter, IEquatable<FilterResult>
   {
     /// <summary>
     /// The ID for a filter if stored in the Filters service. Not required or used in the proper functioning of a filter.
@@ -45,41 +45,11 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public string Description { get; private set; }
 
     /// <summary>
-    /// The 'start' time for a time based filter. Data recorded earlier to this time is not considered.
-    /// Optional. If not present then there is no start time bound.
-    /// </summary>
-    [JsonProperty(PropertyName = "startUTC", Required = Required.Default)]
-    public DateTime? StartUtc { get; set; }
-
-    /// <summary>
-    /// The 'end' time for a time based filter. Data recorded after this time is not considered.
-    /// Optional. If not present there is no end time bound.
-    /// </summary>
-    [JsonProperty(PropertyName = "endUTC", Required = Required.Default)]
-    public DateTime? EndUtc { get; set; }
-
-    /// <summary>
-    /// A machine reported design.
-    /// This filter is used to select Cell passes recorded when a machine had this design loaded.
-    /// May be null/empty, which indicates no restriction.
-    ///   This is obtained by Trex/Raptor from tagFiles.
-    ///   There is no direct relationship to VSS designs i.e. ImportedFile 
-    /// </summary>
-    [JsonProperty(PropertyName = "onMachineDesignID", Required = Required.Default)]
-    public long? OnMachineDesignId { get; set; } // Raptor/Trex not VSS ID
-    
-    /// <summary>
     ///  A list of machine IDs. Cell passes recorded by machine other than those in this list are not considered.
     ///  May be null/empty, which indicates no restriction.
     /// </summary>
     [JsonProperty(PropertyName = "assetIDs", Required = Required.Default)]
     public List<long> AssetIDs { get; private set; }
-
-    /// <summary>
-    /// Only filter cell passes recorded when the vibratory drum was 'on'.  If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and the drum was on.  If false, returns only cell passes with the cell pass parameter and the drum was off.
-    /// </summary>
-    [JsonProperty(PropertyName = "vibeStateOn", Required = Required.Default)]
-    public bool? VibeStateOn { get; private set; }
 
     /// <summary>
     /// Only use cell passes recorded by compaction machines. If true, only return data recorded by compaction machines.  If false or null, returns all machines.
@@ -88,71 +58,16 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public bool? CompactorDataOnly { get; private set; }
 
     /// <summary>
-    /// Controls the cell pass from which to determine data based on its elevation.
-    /// </summary>
-    [JsonProperty(PropertyName = "elevationType", Required = Required.Default)]
-    public ElevationType? ElevationType { get; set; }
-
-    /// <summary>
-    /// A polygon to be used as a spatial filter boundary. The vertices are WGS84 positions
-    /// </summary>
-    [JsonProperty(PropertyName = "polygonLL", Required = Required.Default)]
-    public List<WGSPoint> PolygonLL { get; private set; }
-
-    /// <summary>
     /// A polygon to be used as a spatial filter boundary. The vertices are grid positions within the project grid coordinate system
     /// </summary>
     [JsonProperty(PropertyName = "polygonGrid", Required = Required.Default)]
     public List<Point> PolygonGrid { get; private set; }
 
     /// <summary>
-    /// Only use cell passes recorded when the machine was driving in the forwards direction. If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.
-    /// </summary>
-    [JsonProperty(PropertyName = "forwardDirection", Required = Required.Default)]
-    public bool? ForwardDirection { get; private set; }
-
-    /// <summary>
     /// The alignment file to be used as an alignment spatial filter
     /// </summary>
     [JsonProperty(PropertyName = "alignmentFile", Required = Required.Default)]
     public DesignDescriptor AlignmentFile { get; private set; }
-
-    /// <summary>
-    /// The starting station position on a alignment being used as a spatial filter. The value is expressed in meters.
-    /// </summary>
-    [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
-    [JsonProperty(PropertyName = "startStation", Required = Required.Default)]
-    public double? StartStation { get; private set; }
-
-    /// <summary>
-    /// The ending station position on a alignment being used as a spatial filter. The value is expressed in meters.
-    /// </summary>
-    [Range(ValidationConstants3D.MIN_STATION, ValidationConstants3D.MAX_STATION)]
-    [JsonProperty(PropertyName = "endStation", Required = Required.Default)]
-    public double? EndStation { get; private set; }
-
-    /// <summary>
-    /// The left offset position on a alignment being used as a spatial filter. The value is expressed in meters.
-    /// This value may be negative, in which case it will be to the right of the alignment.
-    /// </summary>
-    [Range(ValidationConstants3D.MIN_OFFSET, ValidationConstants3D.MAX_OFFSET)]
-    [JsonProperty(PropertyName = "leftOffset", Required = Required.Default)]
-    public double? LeftOffset { get; private set; }
-
-    /// <summary>
-    /// The right offset position on a alignment being used as a spatial filter. The value is expressed in meters.
-    /// This value may be negative, in which case it will be to the left of the alignment.
-    /// </summary>
-    [Range(ValidationConstants3D.MIN_OFFSET, ValidationConstants3D.MAX_OFFSET)]
-    [JsonProperty(PropertyName = "rightOffset", Required = Required.Default)]
-    public double? RightOffset { get; private set; }
-
-    /// <summary>
-    /// A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
-    /// May be null/empty, which indicates no restriction.
-    /// </summary>
-    [JsonProperty(PropertyName = "machineDesignName", Required = Required.Default)]
-    public string OnMachineDesignName { get; private set; } // Raptor/Trex not VSS Design
 
     /// <summary>
     /// layerType indicates the layer analysis method to be used for determining layers from cell passes. Some of the layer types are implemented as a 
@@ -177,26 +92,11 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public double? BenchElevation { get; private set; }
 
     /// <summary>
-    /// The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file) to be used as the layer type filter. Layer 3 is then the third layer from the
-    /// datum elevation where each layer has a thickness defined by the layerThickness member.
-    /// </summary>
-    [Range(ValidationConstants.MIN_LAYER_NUMBER, ValidationConstants.MAX_LAYER_NUMBER)]
-    [JsonProperty(PropertyName = "layerNumber", Required = Required.Default)]
-    public int? LayerNumber { get; private set; }
-
-    /// <summary>
     /// The layer thickness to be used for layers determined spatially vie the layerType member. The value is expressed in meters.
     /// </summary>
     [Range(ValidationConstants3D.MIN_THICKNESS, ValidationConstants3D.MAX_THICKNESS)]
     [JsonProperty(PropertyName = "layerThickness", Required = Required.Default)]
     public double? LayerThickness { get; private set; }
-
-    /// <summary>
-    /// Cell passes are only considered if the machines that recorded them are included in this list of machines. Use machine ID (historically VL Asset ID), or Machine Name from tagfile, not both.
-    /// This may be null, which is no restriction on machines. 
-    /// </summary>
-    [JsonProperty(PropertyName = "contributingMachines", Required = Required.Default)]
-    public List<MachineDetails> ContributingMachines { get; private set; }
 
     /// <summary>
     /// A list of surveyed surfaces that have been added to the project which are to be excluded from consideration in Raptor.
@@ -266,51 +166,10 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
     public DesignDescriptor DesignFile { get; private set; }
 
-    /// <summary>
-    /// Filter cell passes recorded when the guidance mode is automatics, manual or unknown.
-    /// If set to null, returns all cell passes.  If set to an automatics type, returns only cell passes with the 
-    /// guidance mode set to the specified automatics type.  
-    /// </summary>
-    [JsonProperty(PropertyName = "automaticsType", Required = Required.Default)]
-    public AutomaticsType? AutomaticsType { get; protected set; }
-
-    /// <summary>
-    /// The minimum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
-    /// </summary>
-    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
-    [JsonProperty(PropertyName = "temperatureRangeMin", Required = Required.Default)]
-    public double? TemperatureRangeMin { get; private set; }
-
-    /// <summary>
-    /// The maximum temperature in °C for a temperature range filter. Only cell passes within the range will be selected.
-    /// </summary>
-    [Range(ValidationConstants.MIN_TEMPERATURE, ValidationConstants.MAX_TEMPERATURE)]
-    [JsonProperty(PropertyName = "temperatureRangeMax", Required = Required.Default)]
-    public double? TemperatureRangeMax { get; private set; }
-
-    /// <summary>
-    /// The minimum pass count for a  pass count range filter. Only cell passes within the range will be selected.
-    /// </summary>
-    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
-    [JsonProperty(PropertyName = "passCountRangeMin", Required = Required.Default)]
-    public int? PassCountRangeMin { get; private set; }
-
-    /// <summary>
-    /// The maximum pass count for a  pass count range filter. Only cell passes within the range will be selected.
-    /// </summary>
-    [Range(ValidationConstants.MIN_PASS_COUNT, ValidationConstants.MAX_PASS_COUNT)]
-    [JsonProperty(PropertyName = "passCountRangeMax", Required = Required.Default)]
-    public int? PassCountRangeMax { get; private set; }
-
     public bool isFilterContainsSSOnly { get; private set; }
 
     public bool IsFilterEmpty => isFilterEmpty();
 
-    [JsonIgnore]
-    public DateRangeType? DateRangeType { get; }
-
-    [JsonIgnore]
-    public bool? AsAtDate { get; protected set; }
 
     /// <summary>
     /// Default public constructor.
