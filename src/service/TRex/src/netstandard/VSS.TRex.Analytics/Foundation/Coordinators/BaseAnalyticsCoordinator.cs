@@ -61,7 +61,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
         using var aggregator = ConstructAggregator(arg);
         var computor = ConstructComputor(arg, aggregator);
 
-        if (await computor.ComputeAnalytics(response))
+        if (computor.ComputeAnalytics(response))
         {
           // Instruct the aggregator to perform any finalisation logic before returning results
           aggregator.Finalise();

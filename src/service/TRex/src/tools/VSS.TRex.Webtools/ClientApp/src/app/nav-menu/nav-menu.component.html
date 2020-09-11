@@ -9,53 +9,58 @@
     </div>
     <div class='clearfix p-2'></div>
     <div id="navbarNav" class='navbar-collapse collapse p-0' [ngClass]='{ "in": isExpanded }'>
-      <ul class='nav navbar-nav flex-column'>
-        <li class="nav-item" [routerLinkActive]='["link-active"]' [routerLinkActiveOptions]='{ exact: true }'>
-          <a [routerLink]='["/"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-home'></span> Home
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/grid-status"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-sort-amount-up'></span> Grid status
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/grid-service-deployer"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-sort-amount-up'></span> Grid service deployer
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/upload-data"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-sort-amount-up'></span> Upload data
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/fetch-data"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-database'></span> Fetch data
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/project"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-sort-amount-up'></span> Project
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/sandbox"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-sort-amount-up'></span> Sandbox
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/delete-project"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-sort-amount-up'></span> Delete Project
-          </a>
-        </li>
-        <li class="nav-item" [routerLinkActive]='["link-active"]'>
-          <a [routerLink]='["/rebuild-project"]' class="nav-link" (click)='collapse()'>
-            <span class='fas fa-sort-amount-up'></span> Rebuild Project
-          </a>
-        </li>
-      </ul>
+        <ul class='nav navbar-nav flex-column'>
+            <li class="nav-item" [routerLinkActive]='["link-active"]' [routerLinkActiveOptions]='{ exact: true }'>
+                <a [routerLink]='["/"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-home'></span> Home
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/grid-status"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-sort-amount-up'></span> Grid status
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/grid-service-deployer"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-sort-amount-up'></span> Grid service deployer
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/upload-data"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-sort-amount-up'></span> Upload data
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/fetch-data"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-database'></span> Fetch data
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/project"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-sort-amount-up'></span> Project
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/coord-system"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-database'></span> Coordinate System
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/sandbox"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-sort-amount-up'></span> Sandbox
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/delete-project"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-sort-amount-up'></span> Delete Project
+                </a>
+            </li>
+            <li class="nav-item" [routerLinkActive]='["link-active"]'>
+                <a [routerLink]='["/rebuild-project"]' class="nav-link" (click)='collapse()'>
+                    <span class='fas fa-sort-amount-up'></span> Rebuild Project
+                </a>
+            </li>
+        </ul>
     </div>
   </nav>
 </div>

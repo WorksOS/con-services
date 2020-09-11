@@ -93,7 +93,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 var func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
                 taskResult = Compute.BroadcastAsync(func, arg);
-                taskResult.Wait(TIME_LIMIT_MS);
+
+                if (!taskResult.Wait(TIME_LIMIT_MS))
+                {
+                  Log.LogWarning($"Progressive sub grid request from node {TRexTask.TRexNodeID} timeout out after {TIME_LIMIT_MS}ms");
+                }
 
                 if (taskResult.Status != TaskStatus.RanToCompletion)
                 {

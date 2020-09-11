@@ -247,7 +247,7 @@ namespace VSS.TRex.Pipelines
             return true;
           }
 
-          Log.LogWarning($"RequestAnalyser failed execution - cannot process any sub grids (if any).");
+          Log.LogWarning("RequestAnalyser failed execution - cannot process any sub grids (if any).");
           return false;
         }
 
@@ -260,15 +260,15 @@ namespace VSS.TRex.Pipelines
         /// more responses to complete, which are typically very fast (small numbers of milliseconds).
         /// Due to this, the timeout used to wait for this remaining processing to take place is short, just 1 second.
         /// </summary>
-        public Task<bool> WaitForCompletion()
+        public bool WaitForCompletion()
         {
           // If we have nothing to process, no point in waiting.
           if (TotalSubGridsToProcess == 0)
           {
-            return Task.FromResult(true);
+            return true;
           }
 
-          return PipelineSignalEvent.WaitAsync(1000); // Don't wait for more than 30 seconds...
+          return PipelineSignalEvent.Wait(1000); // Don't wait for more than 1 second...
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -64,7 +63,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// </summary>
     protected TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = action.Invoke();
@@ -132,7 +131,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       }
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(method, projectUid.Value);
 
-      if (filterResult != null && filterResult.ContributingMachines != null)
+      if (filterResult?.ContributingMachines != null)
         GatewayHelper.ValidateMachines(filterResult.ContributingMachines.Select(m => m.AssetUid).ToList(), siteModel);
 
       if (filterResult != null && !string.IsNullOrEmpty(filterResult.OnMachineDesignName))

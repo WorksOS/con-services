@@ -40,7 +40,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
       catch (Exception e)
       {
         _log.LogError(e, "Exception in cluster compute generic analytics compute func");
-        return new TResponse() { ResultStatus = Types.RequestErrorStatus.Exception};
+        return new TResponse { ResultStatus = Types.RequestErrorStatus.Exception};
       }
       finally
       {
