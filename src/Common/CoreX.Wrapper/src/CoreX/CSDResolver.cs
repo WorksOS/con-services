@@ -8,8 +8,6 @@ namespace CoreX.Wrapper
 {
   public class CSDResolver
   {
-    
-
     /// <inheritdoc/>
     public CoordinateSystem GetCSDFromCSIB(string csibString)
     {
@@ -65,20 +63,41 @@ namespace CoreX.Wrapper
         DatumSystemId = csRecord.DatumSystemId(),
         GeoidInfo = new GeoidInfo()
         {
-          GeoidFileName = csRecord.GeoidFileName(),
-          GeoidName = csRecord.GeoidName()
+          GeoidName = csRecord.GeoidName(),
+          GeoidFileName = csRecord.GeoidFileName()
         },
         ZoneInfo = new ZoneInfo()
         {
+          ZoneType = Enum.GetName(typeof(csmZoneTypes), csRecord.ZoneType()).Substring("czt".Length),
           ShiftGridFileName = csRecord.ZoneShiftGridFileName(),
-          SnakeGridFileName = csRecord.SnakeGridFileName()
+          SnakeGridFileName = csRecord.SnakeGridFileName(),
+          IsSouthGrid = csRecord.ZoneIsSouthGrid(),
+          IsWestGrid = csRecord.ZoneIsWestGrid(),
+          OriginLatitude = csRecord.ZoneOriginLatitude(),
+          OriginLongitude = csRecord.ZoneOriginLongitude(),
+          OriginNorth = csRecord.ZoneOriginNorth(),
+          OriginEast = csRecord.ZoneOriginEast(),
+          OriginScale = csRecord.ZoneOriginScale()
         },
         DatumInfo = new DatumInfo()
         {
           DatumName = csRecord.DatumName(),
           DatumType = Enum.GetName(typeof(csmDatumTypes), csRecord.DatumType()).Substring("cdt".Length),
-          DatumSystemId = csRecord.DatumSystemId()
-          // Vertical Datum Name ?
+          DatumSystemId = csRecord.DatumSystemId(),
+          EllipseName = csRecord.EllipseName(),
+          EllipseA = csRecord.EllipseA(),
+          EllipseInverseFlat = csRecord.EllipseInverseFlat(),
+          LatitudeShiftGridFileName = csRecord.DatumLatitudeShiftGridFileName(),
+          LongitudeShiftGridFileName = csRecord.DatumLongitudeShiftGridFileName(),
+          HeightShiftGridFileName = csRecord.DatumHeightShiftGridFileName(),
+          //DirectionIsLocalToWGS84 =
+          TranslationX = csRecord.DatumTranslationX(),
+          TranslationY = csRecord.DatumTranslationY(),
+          TranslationZ = csRecord.DatumTranslationZ(),
+          RotationX = csRecord.DatumRotationX(),
+          RotationY = csRecord.DatumRotationY(),
+          RotationZ = csRecord.DatumRotationZ(),
+          Scale = csRecord.DatumScale()
         }
       };
 
@@ -86,6 +105,33 @@ namespace CoreX.Wrapper
       {
         // Taken from CoreX.UnitTests.TestSelectRecords.cs.
         coordinateSystem.GeoidInfo.GeoidSystemId = csRecord.GeoidSystemId() < 0 ? 0 : csRecord.GeoidSystemId();
+      }
+
+      if (csRecord.HasHorizAdjustment())
+      {
+        coordinateSystem.ZoneInfo.HorizontalAdjustment = new ZoneHorizontalAdjustment
+        {
+          IsNullAdjustment = false,
+          OriginEast = csRecord.HorizAdjustmentOriginEast(),
+          OriginNorth = csRecord.HorizAdjustmentOriginNorth(),
+          Rotation = csRecord.HorizAdjustmentRotation(),
+          Scale = csRecord.HorizAdjustmentScale(),
+          TranslationEast = csRecord.HorizAdjustmentTranslationEast(),
+          TranslationNorth = csRecord.HorizAdjustmentTranslationNorth()
+        };
+      }
+
+      if (csRecord.HasVertAdjustment())
+      {
+        coordinateSystem.ZoneInfo.VerticalAdjustment = new ZoneVerticalAdjustment
+        {
+          IsNullAdjustment = false,
+          ConstantAdjustment = csRecord.VertAdjustmentConstantAdjustment(),
+          OriginEast = csRecord.VertAdjustmentOriginEast(),
+          OriginNorth = csRecord.VertAdjustmentOriginNorth(),
+          SlopeEast = csRecord.VertAdjustmentSlopeEast(),
+          SlopeNorth = csRecord.VertAdjustmentSlopeNorth()
+        };
       }
 
       return coordinateSystem;

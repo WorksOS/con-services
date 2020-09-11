@@ -1,0 +1,23 @@
+﻿<div class="container">
+  <header>
+    <div class="title">Coordinate System</div>
+  </header>
+
+  <div class="row" id="coordSystemRow">
+    <div class="coordSystemPanel col-lg-3">
+      <div class="panel-heading">Add/Update</div>
+      <div class="panel-default">
+        <div class="spacer"></div>
+        <button class="browseButton" (click)="fileInput.click()">Browse</button>
+        <input hidden type="file" accept=".dc,.cal" value="" (change)="addUpdateCoordSystem($event.target.files)" #fileInput />
+      </div>
+
+    </div>
+
+    <div class="coordSystemPanel col-lg-9">
+      <div class="panel-heading">Settings</div>
+      <div class="panel-default" [innerHTML]="coordSystemSettings" style="padding-left: 10px; padding-top: 10px; font-size: small"></div>
+    </div>
+  </div>
+</div>
+

@@ -4,6 +4,8 @@ using CoreX.Wrapper.UnitTests.ExpectedTestResultObjects;
 using CoreX.Wrapper.UnitTests.Types;
 using CoreXModels;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Org.BouncyCastle.Asn1.Misc;
 using Xunit;
 
 namespace CoreX.Wrapper.UnitTests.Tests
@@ -49,6 +51,39 @@ namespace CoreX.Wrapper.UnitTests.Tests
       result.DatumInfo.DatumName.Should().Be(expectedCS.DatumInfo.DatumName);
       result.DatumInfo.DatumType.Should().Be(expectedCS.DatumInfo.DatumType);
       result.DatumInfo.DatumSystemId.Should().Be(expectedCS.DatumInfo.DatumSystemId);
+
+      result.ZoneInfo.ZoneType.Should().Be(expectedCS.ZoneInfo.ZoneType);
+      result.ZoneInfo.ShiftGridFileName.Should().Be(expectedCS.ZoneInfo.ShiftGridFileName);
+      result.ZoneInfo.SnakeGridFileName.Should().Be(expectedCS.ZoneInfo.SnakeGridFileName);
+      result.ZoneInfo.IsSouthGrid.Should().Be(expectedCS.ZoneInfo.IsSouthGrid);
+      result.ZoneInfo.IsWestGrid.Should().Be(expectedCS.ZoneInfo.IsWestGrid);
+      result.ZoneInfo.OriginLatitude.Should().Be(expectedCS.ZoneInfo.OriginLatitude);
+      result.ZoneInfo.OriginLongitude.Should().Be(expectedCS.ZoneInfo.OriginLongitude);
+      result.ZoneInfo.OriginNorth.Should().Be(expectedCS.ZoneInfo.OriginNorth);
+      result.ZoneInfo.OriginEast.Should().Be(expectedCS.ZoneInfo.OriginEast);
+      result.ZoneInfo.OriginScale.Should().Be(expectedCS.ZoneInfo.OriginScale);
+
+      if (result.ZoneInfo.HorizontalAdjustment != null)
+      {
+        result.ZoneInfo.HorizontalAdjustment.OriginEast.Should().Be(expectedCS.ZoneInfo.HorizontalAdjustment.OriginEast);
+        result.ZoneInfo.HorizontalAdjustment.OriginNorth.Should().Be(expectedCS.ZoneInfo.HorizontalAdjustment.OriginNorth);
+        result.ZoneInfo.HorizontalAdjustment.Rotation.Should().Be(expectedCS.ZoneInfo.HorizontalAdjustment.Rotation);
+        result.ZoneInfo.HorizontalAdjustment.Scale.Should().Be(expectedCS.ZoneInfo.HorizontalAdjustment.Scale);
+        result.ZoneInfo.HorizontalAdjustment.TranslationEast.Should().Be(expectedCS.ZoneInfo.HorizontalAdjustment.TranslationEast);
+        result.ZoneInfo.HorizontalAdjustment.TranslationNorth.Should().Be(expectedCS.ZoneInfo.HorizontalAdjustment.TranslationNorth);
+        result.ZoneInfo.HorizontalAdjustment.IsNullAdjustment.Should().Be(expectedCS.ZoneInfo.HorizontalAdjustment.IsNullAdjustment);
+      }
+
+      if (result.ZoneInfo.VerticalAdjustment != null)
+      {
+        result.ZoneInfo.VerticalAdjustment.Should().NotBeNull();
+        result.ZoneInfo.VerticalAdjustment.ConstantAdjustment.Should().Be(expectedCS.ZoneInfo.VerticalAdjustment.ConstantAdjustment);
+        result.ZoneInfo.VerticalAdjustment.OriginEast.Should().Be(expectedCS.ZoneInfo.VerticalAdjustment.OriginEast);
+        result.ZoneInfo.VerticalAdjustment.OriginNorth.Should().Be(expectedCS.ZoneInfo.VerticalAdjustment.OriginNorth);
+        result.ZoneInfo.VerticalAdjustment.SlopeEast.Should().Be(expectedCS.ZoneInfo.VerticalAdjustment.SlopeEast);
+        result.ZoneInfo.VerticalAdjustment.SlopeNorth.Should().Be(expectedCS.ZoneInfo.VerticalAdjustment.SlopeNorth);
+        result.ZoneInfo.VerticalAdjustment.IsNullAdjustment.Should().Be(expectedCS.ZoneInfo.VerticalAdjustment.IsNullAdjustment);
+      }
     }
 
     public static IEnumerable<object[]> GetCSDData() =>

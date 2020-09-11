@@ -79,26 +79,17 @@ namespace VSS.TRex.Gateway.Common.Executors
     protected LiftParameters ConvertLift(LiftSettings liftSettings, FilterLayerMethod? layerMethod)
     {
       var liftParams = liftSettings != null ? AutoMapperUtility.Automapper.Map<LiftParameters>(liftSettings) : new LiftParameters();
+
       if (layerMethod.HasValue && layerMethod.Value != FilterLayerMethod.Invalid)
       {
-        switch (layerMethod.Value)
+        liftParams.LiftDetectionType = layerMethod.Value switch
         {
-          case FilterLayerMethod.AutoMapReset:
-            liftParams.LiftDetectionType = LiftDetectionType.AutoMapReset;
-            break;
-          case FilterLayerMethod.Automatic:
-            liftParams.LiftDetectionType = LiftDetectionType.Automatic;
-            break;
-          case FilterLayerMethod.MapReset:
-            liftParams.LiftDetectionType = LiftDetectionType.MapReset;
-            break;
-          case FilterLayerMethod.TagfileLayerNumber:
-            liftParams.LiftDetectionType = LiftDetectionType.Tagfile;
-            break;
-          default:
-            liftParams.LiftDetectionType = LiftDetectionType.None;
-            break;
-        }
+          FilterLayerMethod.AutoMapReset => LiftDetectionType.AutoMapReset,
+          FilterLayerMethod.Automatic => LiftDetectionType.Automatic,
+          FilterLayerMethod.MapReset => LiftDetectionType.MapReset,
+          FilterLayerMethod.TagfileLayerNumber => LiftDetectionType.Tagfile,
+          _ => LiftDetectionType.None,
+        };
       }
 
       return liftParams;
