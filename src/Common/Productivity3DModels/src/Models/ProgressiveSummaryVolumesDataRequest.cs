@@ -1,27 +1,47 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models;
 
 namespace VSS.Productivity3D.Models.Models
 {
-  /// <summary>
-  /// The representation of a summary volumes request
-  /// </summary>
-  public class SummaryVolumesDataRequest : ProjectID
+  public class ProgressiveSummaryVolumesDataRequest : ProjectID
   {
     /// <summary>
-    /// The base or earliest filter to be used for filter-filter and filter-design volumes.
+    /// Overload constructor with parameters.
     /// </summary>
-    [JsonProperty(Required = Required.Default)]
-    public FilterResult BaseFilter { get; private set; }
+    public ProgressiveSummaryVolumesDataRequest(
+      Guid? projectUid,
+      FilterResult filter,
+      Guid? baseDesignUid,
+      double? baseDesignOffset,
+      Guid? topDesignUid,
+      double? topDesignOffset,
+      VolumesType volumeCalcType,
+      DateTime startDate,
+      DateTime endDate,
+      TimeSpan interval)
+    {
+      ProjectUid = projectUid;
+      Filter = filter;
+      BaseDesignUid = baseDesignUid;
+      BaseDesignOffset = baseDesignOffset;
+      TopDesignUid = topDesignUid;
+      TopDesignOffset = topDesignOffset;
+      VolumeCalcType = volumeCalcType;
+      StartDate = startDate;
+      EndDate = endDate;
+      Interval = interval;
+    }
 
     /// <summary>
-    /// The top or latest filter to be used for filter-filter and design-filter volumes
+    /// The prime filter to be use in progressive volume calculations
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public FilterResult TopFilter { get; private set; }
+    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// An additional spatial constraining filter that may be used to provide additional control over the area the summary volumes are being calculated over.
@@ -33,9 +53,8 @@ namespace VSS.Productivity3D.Models.Models
     /// The type of volume computation to be performed as a summary volumes request
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    [Required]
     public VolumesType VolumeCalcType { get; private set; }
-    
+
     /// <summary>
     /// The unique identifier of the design surface to be used as the base or earliest surface for design-filter volumes
     /// </summary>
@@ -78,34 +97,27 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(Required = Required.Default)]
     public double? FillTolerance { get; private set; }
 
-    /// <summary>
-    /// Prevents a default instance of the <see cref="SummaryVolumesDataRequest"/> class from being created.
-    /// </summary>
-    private SummaryVolumesDataRequest()
-    { }
 
     /// <summary>
-    /// Overload constructor with parameters.
+    /// The date/time at which to start calculating progressive volumes.
+    /// The first progressive volume will be calculated at this date
     /// </summary>
-    public SummaryVolumesDataRequest(
-      Guid? projectUid,
-      FilterResult baseFilter,
-      FilterResult topFilter,
-      Guid? baseDesignUid,
-      double? baseDesignOffset,
-      Guid? topDesignUid,
-      double? topDesignOffset,
-      VolumesType volumeCalcType)
-    {
-      ProjectUid = projectUid;
-      BaseFilter = baseFilter;
-      TopFilter = topFilter;
-      BaseDesignUid = baseDesignUid;
-      BaseDesignOffset = baseDesignOffset;
-      TopDesignUid = topDesignUid;
-      TopDesignOffset = topDesignOffset;
-      VolumeCalcType = volumeCalcType;
-    }
+    [JsonProperty(Required = Required.Always)]
+    public DateTime StartDate { get; private set; }
+
+    /// <summary>
+    /// The date/time at which to stop calculating progressive volumes.
+    /// The last progressive volume will be calculated at or before this date according
+    /// to the progressive volumes interval specified
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public DateTime EndDate { get; private set; }
+
+    /// <summary>
+    /// The time interval between calculated progressive volumes
+    /// </summary>
+    [JsonProperty(Required = Required.Always)]
+    public TimeSpan Interval { get; private set; }
 
     /// <summary>
     /// Validates all properties.
@@ -113,8 +125,21 @@ namespace VSS.Productivity3D.Models.Models
     public override void Validate()
     {
       AdditionalSpatialFilter?.Validate();
-      TopFilter?.Validate();
-      BaseFilter?.Validate();
+      Filter?.Validate();
+
+      if (StartDate >= EndDate)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Start date must be earlier than end date"));
+      }
+
+      if (Interval.Seconds < 10)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Cannot query intervals less than 10 seconds"));
+      }
     }
   }
 }

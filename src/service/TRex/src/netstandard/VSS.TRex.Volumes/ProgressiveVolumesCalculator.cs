@@ -136,7 +136,7 @@ namespace VSS.TRex.Volumes
         }
 
         // Note: The execution context is on a compute cluster node already. However, the processor still performs the same function
-        // within the local context. TODO: Check this is a valid statement and we are not multiple dipping out to the whole compute cluster 'n' times
+        // within the local context. 
         using var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
         (requestDescriptor: RequestDescriptor,
           dataModelID: SiteModel.ID,
@@ -156,7 +156,7 @@ namespace VSS.TRex.Volumes
         // Assign the aggregator into the volumes computation task
         if (!(processor.Task is VolumesComputationTask volumesComputationTask))
         {
-          throw new ArgumentException($"Processor task for progressive volumes is not a {nameof(VolumesComputationTask)}, if is {processor.Task}");
+          throw new ArgumentException($"Processor task for progressive volumes is not a {nameof(VolumesComputationTask)}, it is {processor.Task}");
         }
 
         volumesComputationTask.Aggregator = Aggregator;
@@ -165,7 +165,7 @@ namespace VSS.TRex.Volumes
         // pipeline processor execution context.
         if (processor is IPipelineProcessor<ProgressiveVolumesSubGridsRequestArgument> customProcessor)
         {
-          customProcessor.CustomArgumentInitializer = (arg) =>
+          customProcessor.CustomArgumentInitializer = arg =>
           {
             arg.StartDate = StartDate;
             arg.EndDate = EndDate;
