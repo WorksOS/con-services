@@ -253,7 +253,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
 
-      var projectStatisticsHelper = new ProjectStatisticsHelper(_logger, configStore, FileImportProxy, tRexCompactionDataProxy
+      var projectStatisticsHelper = new ProjectStatisticsHelper(_logger, configStore, FileImportProxy, tRexCompactionDataProxy, _log
 #if RAPTOR
         , raptorClient
 #endif

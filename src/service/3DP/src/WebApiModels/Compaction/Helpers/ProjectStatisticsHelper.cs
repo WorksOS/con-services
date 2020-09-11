@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CCSS.Productivity3D.Service.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -11,7 +12,6 @@ using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -25,13 +25,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     private readonly IConfigurationStore _configStore;
     private readonly IFileImportProxy _fileImportProxy;
     private readonly ITRexCompactionDataProxy _tRexCompactionDataProxy;
+    private readonly DesignUtilities _designUtilities;
 
 #if RAPTOR
     private readonly IASNodeClient _raptorClient;
 #endif
 
     public ProjectStatisticsHelper(ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IFileImportProxy fileImportProxy, ITRexCompactionDataProxy tRexCompactionDataProxy
+      IFileImportProxy fileImportProxy, ITRexCompactionDataProxy tRexCompactionDataProxy, ILogger log
 #if RAPTOR
         , IASNodeClient raptorClient
 #endif
@@ -41,6 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       _configStore = configStore;
       _fileImportProxy = fileImportProxy;
       _tRexCompactionDataProxy = tRexCompactionDataProxy;
+      _designUtilities = new DesignUtilities(log, configStore, fileImportProxy);
 #if RAPTOR
       _raptorClient = raptorClient;
 #endif
@@ -50,17 +52,9 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// Gets the ids and uids of the surveyed surfaces to exclude from Raptor/TRex calculations. 
     /// This is the deactivated ones.
     /// </summary>
-    public async Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IHeaderDictionary customHeaders)
+    public Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IHeaderDictionary customHeaders)
     {
-      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
-      if (fileList == null || fileList.Count == 0)
-        return null;
-
-      var results = fileList
-        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => (f.LegacyFileId, Guid.Parse(f.ImportedFileUid))).ToList();
-
-      return results;
+      return _designUtilities.GetExcludedSurveyedSurfaceIds(projectUid, userId, customHeaders);
     }
 
     /// <summary>

@@ -7,8 +7,6 @@ using CCSS.Productivity3D.Service.Common;
 using CCSS.Productivity3D.Service.Common.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -47,6 +45,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private ITagFileAuthProjectV5Proxy _tagFileAuthProjectV5Proxy;
     private IServiceExceptionHandler _serviceExceptionHandler;
     private ProjectStatisticsHelper _projectStatisticsHelper;
+    private DesignUtilities _designUtilities;
+    private FilterUtilities _filterUtilities;
+    private VolumesUtilities _volumesUtilities;
 
     /// <summary>
     /// Gets the filter service proxy interface.
@@ -71,7 +72,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// helper methods for getting project statistics from Raptor/TRex
     /// </summary>
-    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ??= new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileImportProxy, TRexCompactionDataProxy);
+    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ??= new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileImportProxy, TRexCompactionDataProxy, Log);
+
+    protected DesignUtilities DesignUtilities => _designUtilities ??= new DesignUtilities(Log, ConfigStore, FileImportProxy);
+    protected FilterUtilities FilterUtilities => _filterUtilities ??= new FilterUtilities(Log, ConfigStore, FileImportProxy, FilterServiceProxy, FilterCache);
+    protected VolumesUtilities VolumesUtilities => _volumesUtilities ??= new VolumesUtilities(Log, ConfigStore, FileImportProxy, FilterServiceProxy, FilterCache);
 
     /// <summary>
     /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
@@ -112,11 +117,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the custom headers for the request.
     /// </summary>
     protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
-
-    private readonly MemoryCacheEntryOptions _filterCacheOptions = new MemoryCacheEntryOptions
-    {
-      SlidingExpiration = TimeSpan.FromDays(3)
-    };
 
     /// <summary>
     /// Indicates whether to use the TRex Gateway instead of calling to the Raptor client.
@@ -225,7 +225,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected Task<DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, OperationType operation = OperationType.General)
     {
-      return DesignUtilities.GetAndValidateDesignDescriptor(projectUid, fileUid, GetUserId(), CustomHeaders, FileImportProxy, ConfigStore, Log);
+      return DesignUtilities.GetAndValidateDesignDescriptor(projectUid, fileUid, GetUserId(), CustomHeaders);
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
     {
       var projectTimeZone = await ProjectTimeZone(projectUid);
-      return await FilterUtilities.GetCompactionFilter(projectUid, projectTimeZone, GetUserId(), filterUid, FilterCache, CustomHeaders, Log, FilterServiceProxy, FileImportProxy, ConfigStore, filterMustExist);
+      return await FilterUtilities.GetCompactionFilter(projectUid, projectTimeZone, GetUserId(), filterUid, CustomHeaders, filterMustExist);
     }
 
     /// <summary>
@@ -297,13 +297,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the <see cref="FilterDescriptor"/> for a given Filter FileUid (by project).
     /// </summary>
-    protected async Task<Filter.Abstractions.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
+    protected Task<Filter.Abstractions.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
-      var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders());
-
-      return filterDescriptor == null
-        ? null
-        : JsonConvert.DeserializeObject<Filter.Abstractions.Models.Filter>(filterDescriptor.FilterJson);
+      return FilterUtilities.GetFilterDescriptor(projectUid, filterUid, CustomHeaders);
     }
 
     /// <summary>
@@ -319,7 +315,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = await ((RaptorPrincipal)User).GetProject(projectUid);
 
       return await VolumesUtilities.GetSummaryVolumesParameters(
-        projectUid, volumeCalcType, volumeBaseUid, volumeTopUid, GetUserId(), CustomHeaders, FileImportProxy, ConfigStore, Log, FilterServiceProxy, FilterCache, project.IanaTimeZone);
+        projectUid, volumeCalcType, volumeBaseUid, volumeTopUid, GetUserId(), CustomHeaders, project.IanaTimeZone);
     }
   }
 }

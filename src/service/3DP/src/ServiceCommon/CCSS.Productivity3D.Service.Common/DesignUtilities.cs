@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CCSS.Productivity3D.Service.Common.Enums;
@@ -18,21 +20,35 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace CCSS.Productivity3D.Service.Common
 {
-  public static class DesignUtilities
+  /// <summary>
+  /// Utility methods for designs
+  /// </summary>
+  public class DesignUtilities
   {
+    private readonly ILogger _log;
+    private readonly IConfigurationStore _configStore;
+    private readonly IFileImportProxy _fileImportProxy;
+
+    public DesignUtilities(ILogger log, IConfigurationStore configStore, IFileImportProxy fileImportProxy)
+    {
+      _configStore = configStore;
+      _fileImportProxy = fileImportProxy;
+      _log = log;
+    }
+
     /// <summary>
     /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
     /// </summary>
-    public static async Task<DesignDescriptor> GetAndValidateDesignDescriptor(
+    public async Task<DesignDescriptor> GetAndValidateDesignDescriptor(
       Guid projectUid, Guid? fileUid, string userUid, IHeaderDictionary customHeaders, 
-      IFileImportProxy fileImportProxy, IConfigurationStore configStore, ILogger log, OperationType operation = OperationType.General)
+      OperationType operation = OperationType.General)
     {
       if (!fileUid.HasValue)
       {
         return null;
       }
 
-      var fileList = await fileImportProxy.GetFiles(projectUid.ToString(), userUid, customHeaders);
+      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userUid, customHeaders);
       if (fileList == null || fileList.Count == 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -78,17 +94,34 @@ namespace CCSS.Productivity3D.Service.Common
                       Path.GetExtension(tccFileName);
       }
 
-      string fileSpaceId = configStore.GetValueString("TCCFILESPACEID");
+      string fileSpaceId = _configStore.GetValueString("TCCFILESPACEID");
 
       if (string.IsNullOrEmpty(fileSpaceId))
       {
         var errorString = "Your application is missing an environment variable TCCFILESPACEID";
-        log.LogError(errorString);
+        _log.LogError(errorString);
         throw new InvalidOperationException(errorString);
       }
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
       return new DesignDescriptor(file.LegacyFileId, fileDescriptor, file.Offset ?? 0.0, fileUid);
+    }
+
+    /// <summary>
+    /// Gets the ids and uids of the surveyed surfaces to exclude from TRex calculations. 
+    /// This is the deactivated ones.
+    /// </summary>
+    public async Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IHeaderDictionary customHeaders)
+    {
+      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
+      if (fileList == null || fileList.Count == 0)
+        return null;
+
+      var results = fileList
+        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
+        .Select(f => (f.LegacyFileId, Guid.Parse(f.ImportedFileUid))).ToList();
+
+      return results;
     }
   }
 }
