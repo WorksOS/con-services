@@ -36,7 +36,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.VolumeCalcType,
           request.StartDate,
           request.EndDate,
-          TimeSpan.FromSeconds(request.IntervalSeconds));
+          request.IntervalSeconds);
 
         return await trexCompactionDataProxy.SendDataPostRequest<ProgressiveSummaryVolumesResult, ProgressiveSummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary/progressive", customHeaders);
       }
