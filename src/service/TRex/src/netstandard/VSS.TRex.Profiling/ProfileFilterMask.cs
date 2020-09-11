@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -22,61 +21,55 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Constructs a mask using polygonal and positional spatial filtering aspects of a filter.
     /// </summary>
-    /// <param name="currentSubGridOrigin"></param>
-    /// <param name="Intercepts"></param>
-    /// <param name="fromProfileCellIndex"></param>
-    /// <param name="Mask"></param>
-    /// <param name="cellFilter"></param>
-    /// <param name="SubGridTree"></param>
-    private static void ConstructSubgridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
-      InterceptList Intercepts,
+    private static void ConstructSubGridSpatialAndPositionalMask(SubGridCellAddress currentSubGridOrigin,
+      InterceptList intercepts,
       int fromProfileCellIndex,
-      SubGridTreeBitmapSubGridBits Mask,
+      SubGridTreeBitmapSubGridBits mask,
       ICellSpatialFilter cellFilter,
-      ISubGridTree SubGridTree)
+      ISubGridTree subGridTree)
     {
-      bool cellFilter_HasSpatialOrPositionalFilters = cellFilter.HasSpatialOrPositionalFilters;
-      int Intercepts_Count = Intercepts.Count;
+      var cellFilterHasSpatialOrPositionalFilters = cellFilter.HasSpatialOrPositionalFilters;
+      var interceptsCount = intercepts.Count;
 
-      Mask.Clear();
+      mask.Clear();
 
-      for (int InterceptIdx = fromProfileCellIndex; InterceptIdx < Intercepts_Count; InterceptIdx++)
+      for (var interceptIdx = fromProfileCellIndex; interceptIdx < interceptsCount; interceptIdx++)
       {
         // Determine the on-the-ground cell underneath the midpoint of each cell on the intercept line
-        SubGridTree.CalculateIndexOfCellContainingPosition(Intercepts.Items[InterceptIdx].MidPointX,
-          Intercepts.Items[InterceptIdx].MidPointY, out int OTGCellX, out int OTGCellY);
+        subGridTree.CalculateIndexOfCellContainingPosition(intercepts.Items[interceptIdx].MidPointX,
+          intercepts.Items[interceptIdx].MidPointY, out var otgCellX, out var otgCellY);
 
-        SubGridCellAddress ThisSubgridOrigin = new SubGridCellAddress(OTGCellX & ~SubGridTreeConsts.SubGridLocalKeyMask, OTGCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
+        var thisSubGridOrigin = new SubGridCellAddress(otgCellX & ~SubGridTreeConsts.SubGridLocalKeyMask, otgCellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
 
-        if (!currentSubGridOrigin.Equals(ThisSubgridOrigin))
+        if (!currentSubGridOrigin.Equals(thisSubGridOrigin))
           break;
 
-        int CellX = OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask;
-          int CellY = OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask;
+        var cellX = otgCellX & SubGridTreeConsts.SubGridLocalKeyMask;
+        var cellY = otgCellY & SubGridTreeConsts.SubGridLocalKeyMask;
 
-          if (cellFilter_HasSpatialOrPositionalFilters)
-          {
-            SubGridTree.GetCellCenterPosition(OTGCellX, OTGCellY, out double CellCenterX, out double CellCenterY);
+        if (cellFilterHasSpatialOrPositionalFilters)
+        {
+          subGridTree.GetCellCenterPosition(otgCellX, otgCellY, out var cellCenterX, out var cellCenterY);
 
-            if (cellFilter.IsCellInSelection(CellCenterX, CellCenterY))
-              Mask.SetBit(CellX, CellY);
-          }
-          else
-            Mask.SetBit(CellX, CellY);
+          if (cellFilter.IsCellInSelection(cellCenterX, cellCenterY))
+            mask.SetBit(cellX, cellY);
+        }
+        else
+          mask.SetBit(cellX, cellY);
       }
     }
 
     /// <summary>
     /// Constructs a mask using all spatial filtering elements active in the supplied filter
     /// </summary>
-    public static bool ConstructSubgridCellFilterMask(ISiteModel siteModel, SubGridCellAddress currentSubGridOrigin,
+    public static bool ConstructSubGridCellFilterMask(ISiteModel siteModel, SubGridCellAddress currentSubGridOrigin,
       InterceptList intercepts,
       int fromProfileCellIndex,
       SubGridTreeBitmapSubGridBits mask,
       ICellSpatialFilter cellFilter,
       IDesign surfaceDesignMaskDesign)
     {
-      ConstructSubgridSpatialAndPositionalMask(currentSubGridOrigin, intercepts, fromProfileCellIndex, mask, cellFilter, siteModel.Grid);
+      ConstructSubGridSpatialAndPositionalMask(currentSubGridOrigin, intercepts, fromProfileCellIndex, mask, cellFilter, siteModel.Grid);
 
       // If the filter contains an alignment design mask filter then compute this and AND it with the
       // mask calculated in the step above to derive the final required filter mask
@@ -88,12 +81,12 @@ namespace VSS.TRex.Profiling
 
           var tree = siteModel.Grid;
           // Go over set bits and determine if they are in Design fence boundary
-          mask.ForEachSetBit((X, Y) =>
+          mask.ForEachSetBit((x, y) =>
           {
-            tree.GetCellCenterPosition(currentSubGridOrigin.X + X, currentSubGridOrigin.Y + Y, out var CX, out var CY);
-            if (!cellFilter.AlignmentFence.IncludesPoint(CX, CY))
+            tree.GetCellCenterPosition(currentSubGridOrigin.X + x, currentSubGridOrigin.Y + y, out var cx, out var cy);
+            if (!cellFilter.AlignmentFence.IncludesPoint(cx, cy))
             {
-              mask.ClearBit(X, Y); // remove interest as its not in design boundary
+              mask.ClearBit(x, y); // remove interest as its not in design boundary
             }
           });
       }
@@ -118,7 +111,7 @@ namespace VSS.TRex.Profiling
         }
         else
         {
-          _log.LogError($"Call (A2) to {nameof(ConstructSubgridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
+          _log.LogError($"Call (A2) to {nameof(ConstructSubGridCellFilterMask)} returned error result {getFilterMaskResult.errorCode} for {cellFilter.SurfaceDesignMaskDesignUid}");
           return false;
         }
       }

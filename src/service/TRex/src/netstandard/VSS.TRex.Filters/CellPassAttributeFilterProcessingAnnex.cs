@@ -1,7 +1,6 @@
 ﻿using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Interfaces;
 
