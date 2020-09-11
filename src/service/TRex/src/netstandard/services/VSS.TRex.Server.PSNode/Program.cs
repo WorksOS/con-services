@@ -9,6 +9,8 @@ using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -16,7 +18,6 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.GridFabric.Events;
@@ -91,7 +92,6 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
         .Build()
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -124,8 +124,10 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
-        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
+
 
         // Create the cache to store the general sub grid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
@@ -183,7 +185,7 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
@@ -239,9 +241,14 @@ namespace VSS.TRex.Server.PSNode
         ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
         ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
 
+        var requiredMinThreads = minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor;
+
         // Create a much larger pool of system threads to allow QOS channels with groups of sub-tasks room to take advantage of all system resources while also allowing
         // other requests to run concurrently
-        ThreadPool.SetMinThreads(minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor, minCompletionPortThreads);
+        if (!ThreadPool.SetMinThreads(requiredMinThreads, minCompletionPortThreads))
+        {
+          Console.WriteLine($"Failed to set minWorkerThreads to {requiredMinThreads}. This will remain at the original value of {minWorkerThreads}");
+        }
 
         Console.WriteLine($"Operating thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// The number of seconds the QOS scheduler will wait for a group of tasks responsible for processing sub grids
     /// </summary>
-    private readonly int _taskGroupTimeoutSeconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", 10);
+    private readonly int _taskGroupTimeoutSeconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", 20);
 
     private readonly int _maxConcurrentSchedulerSessions = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", -1);
     public int MaxConcurrentSchedulerSessions => _maxConcurrentSchedulerSessions;
@@ -76,7 +77,11 @@ namespace VSS.TRex.SubGrids
       // set the maximum number of concurrent sessions to half the number of concurrent tasks
       if (_maxConcurrentSchedulerSessions < 0)
       {
-        _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / 2;
+        _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / DefaultThreadPoolFractionDivisor;
+
+        // Set a minimum level of 2...
+        if (_maxConcurrentSchedulerSessions < 2)
+          _maxConcurrentSchedulerSessions = 2;
       }
 
       CreateGatewaySemaphores();
@@ -92,6 +97,8 @@ namespace VSS.TRex.SubGrids
 
     private void CreateGatewaySemaphores()
     {
+      _log.LogDebug($"Creating gateway semaphores: MaxConcurrentSchedulerSessions={MaxConcurrentSchedulerSessions}, MaxConcurrentSchedulerTasks={MaxConcurrentSchedulerTasks}");
+
       _sessionGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerSessions, MaxConcurrentSchedulerSessions);
       _taskGatewaySemaphore = new SemaphoreSlim(MaxConcurrentSchedulerTasks, MaxConcurrentSchedulerTasks);
     }
@@ -103,9 +110,7 @@ namespace VSS.TRex.SubGrids
     /// </summary>
     public int DefaultMaxTasks()
     {
-      ThreadPool.GetMinThreads(out var minWorkerThreads, out _);
-
-      return minWorkerThreads / DefaultThreadPoolFractionDivisor;
+      return _maxConcurrentSchedulerTasks / DefaultThreadPoolFractionDivisor;
     }
 
     private bool WaitForGroupToComplete(List<Task> tasks)
@@ -123,6 +128,16 @@ namespace VSS.TRex.SubGrids
         if (!Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(_taskGroupTimeoutSeconds)))
         {
           _log.LogError($"Task group failed to complete within {_taskGroupTimeoutSeconds} seconds");
+
+          tasks.ForEach((task, index) =>
+          {
+            _log.LogDebug($"Task {index}: Status = {task.Status}, IsFaulted = {task.IsFaulted}, IsCancelled = {task.IsCanceled}, IsCompleted = {task.IsCompleted}");
+
+            if (task.Exception != null)
+            {
+              _log.LogError(task.Exception, $"Task {index} faulted with exception");
+            }
+          });
         }
 
         return true;
@@ -137,6 +152,33 @@ namespace VSS.TRex.SubGrids
         tasks.Clear();
         _taskGatewaySemaphore.Release(taskCount);
       }
+    }
+
+    /// <summary>
+    /// Creates and starts running a task processing a collection of sub grids. This wraps the state the task lambda will capture
+    /// without risk of modification from the calling context.
+    /// </summary>
+    private static void InstantiateProcessorTask(List<Task> tasks, int taskIndex, Action<SubGridCellAddress[]> processor, SubGridCellAddress[] subGridCollection)
+    {
+      tasks.Add(Task.Run(() =>
+      {
+        try
+        {
+          // ReSharper disable once AccessToModifiedClosure
+          _log.LogDebug($"Processor for task index {taskIndex} starting");
+
+          var sw = Stopwatch.StartNew();
+          processor(subGridCollection);
+
+          // ReSharper disable once AccessToModifiedClosure
+          _log.LogDebug($"Processor for task index {taskIndex} completed in {sw.Elapsed}");
+        }
+        catch (Exception e)
+        {
+          _log.LogError(e, "Exception processing group of sub grids");
+          throw;
+        }
+      }));
     }
 
     /// <summary>
@@ -160,11 +202,15 @@ namespace VSS.TRex.SubGrids
       var taskIndex = 0;
       var tasks = new List<Task>(maxTasks);
 
-      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
+      _log.LogInformation($"Sub grid QOS scheduler starting {collectionCount} collections across {maxTasks} tasks. {CurrentExecutingSessionCount} sessions (of {_totalSchedulerSessions}) are active using {CurrentExecutingTaskCount} tasks");
 
       Interlocked.Increment(ref _totalSchedulerSessions);
 
       _sessionGatewaySemaphore.Wait();
+
+      // For now, override any provided maxTasks with the DefaultMaxTasks() value
+      maxTasks = DefaultMaxTasks();
+
       try
       {
         subGridCollections.ForEach((subGridCollection, subGridCollectionIndex) =>
@@ -176,24 +222,7 @@ namespace VSS.TRex.SubGrids
 
           _taskGatewaySemaphore.Wait();
 
-          tasks.Add(Task.Run(() =>
-          {
-            try
-            {
-              // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {taskIndex} starting");
-
-              processor(subGridCollection);
-
-              // ReSharper disable once AccessToModifiedClosure
-              _log.LogDebug($"Processor for task index {taskIndex} completed");
-            }
-            catch (Exception e)
-            {
-              _log.LogError(e, "Exception processing group of sub grids");
-              throw;
-            }
-          }));
+          InstantiateProcessorTask(tasks, taskIndex, processor, subGridCollection);
 
           if (tasks.Count >= maxTasks || (subGridCollectionIndex + 1) >= collectionCount)
           {
@@ -224,7 +253,7 @@ namespace VSS.TRex.SubGrids
 
         Interlocked.Decrement(ref _totalSchedulerSessions);
 
-        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {_sessionGatewaySemaphore.CurrentCount} sessions (of {_totalSchedulerSessions}) are active using {_taskGatewaySemaphore.CurrentCount} tasks");
+        _log.LogInformation($"Sub grid QOS scheduler completed {collectionCount} collections across {maxTasks} tasks. {CurrentExecutingSessionCount} sessions (of {_totalSchedulerSessions}) are active using {CurrentExecutingTaskCount} tasks");
       }
     }
   }

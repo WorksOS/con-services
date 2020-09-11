@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
-using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;
+using CoreXModels;
 using Xunit;
 
 namespace CoreX.Wrapper.UnitTests.Tests

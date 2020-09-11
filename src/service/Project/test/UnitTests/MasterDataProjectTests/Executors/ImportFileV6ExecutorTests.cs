@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -332,12 +334,17 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var pegasusClient = new Mock<IPegasusClient>();
 
+      var transferProxy = new Mock<ITransferProxy>();
+      transferProxy.Setup(t => t.RemoveFromBucket(It.IsAny<string>())).Returns(true);
+      var transferProxyFactory = new Mock<ITransferProxyFactory>();
+      transferProxyFactory.Setup(t => t.NewProxy(TransferProxyType.DesignImport)).Returns(transferProxy.Object);
+
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, null, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
-          customHeaders,
-          filterServiceProxy: filterServiceProxy.Object,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
+          customHeaders, filterServiceProxy: filterServiceProxy.Object, tRexImportFileProxy: tRexImportFileProxy.Object, 
+          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object,
+          persistantTransferProxyFactory: transferProxyFactory.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 
@@ -603,9 +610,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, null, serviceExceptionHandler, _customerUid.ToString(), _userUid.ToString(), _userEmailAddress,
-          customHeaders,
-          filterServiceProxy: filterServiceProxy.Object,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
+          customHeaders, filterServiceProxy: filterServiceProxy.Object, tRexImportFileProxy: tRexImportFileProxy.Object, 
+          projectRepo: projectRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 

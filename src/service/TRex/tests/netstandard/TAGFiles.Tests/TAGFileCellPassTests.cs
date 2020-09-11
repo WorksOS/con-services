@@ -249,7 +249,7 @@ namespace TAGFiles.Tests
     public void Test_TAGFileCellPassGeneration_CompareKnownCellPassConstruction_Dimensions2018CaseMachine(string tagFileName, string mutationLogFileName)
     {
       var Lines = new List<string>();
-      ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+      ICell_NonStatic_MutationHook Hook = DIContext.ObtainRequired<ICell_NonStatic_MutationHook>();
 
       Hook.SetActions(new CellPassWriter(x => Lines.Add(x)));
       try
@@ -279,7 +279,7 @@ namespace TAGFiles.Tests
         var mutationLogFileName = Path.Combine(Path.GetDirectoryName(tagFileName), $"CellMutationLog-{Path.GetFileName(tagFileName)}.txt");
 
         var Lines = new List<string>();
-        ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+        ICell_NonStatic_MutationHook Hook = DIContext.ObtainRequired<ICell_NonStatic_MutationHook>();
 
         Hook.SetActions(new CellPassWriter(x => Lines.Add(x)));
         try

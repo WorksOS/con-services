@@ -1,13 +1,13 @@
-﻿using CoreX.Models;
-using CoreX.Models.CoordinateSystems;
+﻿using CoreXModels;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.TRex.Gateway.Common.Utilities;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords
 {
@@ -33,18 +33,18 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
 
     public CoordinateSystemBaseExecutor(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler exceptionHandler)
       : base(configStore, logger, exceptionHandler)
-    {
-    }
+    { }
 
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
     public CoordinateSystemBaseExecutor()
-    {
-    }
+    { }
 
     protected ContractExecutionResult ConvertResult(string csFileName, CoordinateSystem coordSystem)
     {
+      log.LogDebug($"#In# {nameof(CoordinateSystemBaseExecutor)}: {nameof(csFileName)}: {csFileName}, {nameof(coordSystem)}: {JsonConvert.SerializeObject(coordSystem)}");
+
       var azimuthDirection = coordSystem.ZoneInfo.IsSouthAzimuth ? SOUTH_STR : NORTH_STR;
 
       var latAxis = coordSystem.ZoneInfo.IsSouthGrid ? SOUTH_STR : NORTH_STR;
@@ -55,8 +55,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         // Coordinate System...
         CSName = coordSystem.SystemName,
         CSFileName = csFileName,
-        CSGroup = coordSystem.ZoneInfo.ZoneGroupName,
-        CSIB = CoordinateSystemUtility.FromCSIBKeyToBytes(coordSystem.Id),
+        //CSGroup = coordSystem.ZoneInfo.ZoneGroupName,
         // Ellipsoid...
         EllipsoidName = coordSystem.DatumInfo.EllipseName,
         EllipsoidSemiMajorAxis = coordSystem.DatumInfo.EllipseA,
@@ -72,7 +71,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         LongitudeShiftDatumGridFileName = coordSystem.DatumInfo.LongitudeShiftGridFileName,
         IsDatumGridHeightShiftDefined = coordSystem.DatumInfo.HeightShiftGridFileName != string.Empty,
         HeightShiftDatumGridFileName = coordSystem.DatumInfo.HeightShiftGridFileName,
-        DatumDirection = coordSystem.DatumInfo.DirectionIsLocalToWGS84 ? STR_DATUM_DIRECTION_TO_WGS84 : STR_DATUM_DIRECTION_TO_LOCAL,
+        //DatumDirection = coordSystem.DatumInfo.DirectionIsLocalToWGS84 ? STR_DATUM_DIRECTION_TO_WGS84 : STR_DATUM_DIRECTION_TO_LOCAL,
         DatumTranslationX = coordSystem.DatumInfo.TranslationX,
         DatumTranslationY = coordSystem.DatumInfo.TranslationY,
         DatumTranslationZ = coordSystem.DatumInfo.TranslationZ,
@@ -82,10 +81,10 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
         DatumScaleFactor = coordSystem.DatumInfo.Scale,
         DatumParametersFileName = string.Empty, // datumParametersFileName
         // Geoid...
-        GeoidName = coordSystem.GeooidInfo?.GeoidName,
+        GeoidName = coordSystem.GeoidInfo?.GeoidName,
         GeoidMethod = string.Empty, // geoidMethod
         GeoidMethodType = CoordinateSystemGeoidMethodType.Unknown, // datumMethodType, convert to CoordinateSystemGeoidMethodType
-        GeoidFileName = coordSystem.GeooidInfo?.GeoidFileName,
+        GeoidFileName = coordSystem.GeoidInfo?.GeoidFileName,
         GeoidConstantSeparation = 0.0, // geoidConstantSeparation 
         GeoidOriginX = 0.0, // geoidOriginX
         GeoidOriginY = 0.0, // geoidOriginY
@@ -108,30 +107,25 @@ namespace VSS.TRex.Gateway.Common.Executors.Coords
       };
     }
 
-    private ProjectionParameter[] GetProjectionParameters(ZoneInfo coordSystemZoneInfo)
-    {
-      return new[]
+    private ProjectionParameter[] GetProjectionParameters(ZoneInfo coordSystemZoneInfo) =>
+      new[]
       {
-        new ProjectionParameter() { Name = ORIGIN_LATITUDE, Value = coordSystemZoneInfo.OriginLatitude},
-        new ProjectionParameter() { Name = ORIGIN_LONGITUDE, Value = coordSystemZoneInfo.OriginLongitude},
+        new ProjectionParameter() { Name = ORIGIN_LATITUDE, Value = coordSystemZoneInfo.OriginLatitude.LatRadiansToDegrees()},
+        new ProjectionParameter() { Name = ORIGIN_LONGITUDE, Value = coordSystemZoneInfo.OriginLongitude.LonRadiansToDegrees()},
         new ProjectionParameter() { Name = ORIGIN_NORTH, Value = coordSystemZoneInfo.OriginNorth},
         new ProjectionParameter() { Name = ORIGIN_EAST, Value = coordSystemZoneInfo.OriginEast},
         new ProjectionParameter() { Name = ORIGIN_SCALE, Value = coordSystemZoneInfo.OriginScale}
       };
-    }
 
-    private CoordinateSystemDatumMethodType ConvertCoordinateSystemDatumMethodType(string datumInfoDatumType)
-    {
-      switch (datumInfoDatumType)
+    private CoordinateSystemDatumMethodType ConvertCoordinateSystemDatumMethodType(string datumInfoDatumType) =>
+      datumInfoDatumType switch
       {
-        case MOLODENSKY_DATUM: return CoordinateSystemDatumMethodType.MolodenskyDatum;
-        case SEVEN_PARAMETER_DATUM: return CoordinateSystemDatumMethodType.SevenParameterDatum;
-        case MULTIPLE_REGRESSION_DATUM: return CoordinateSystemDatumMethodType.MultipleRegressionDatum;
-        case GRID_DATUM: return CoordinateSystemDatumMethodType.GridDatum;
-        case WGS84_DATUM: return CoordinateSystemDatumMethodType.WGS84Datum;
-        default: return CoordinateSystemDatumMethodType.Unknown;
-      }
-    }
-
+        MOLODENSKY_DATUM => CoordinateSystemDatumMethodType.MolodenskyDatum,
+        SEVEN_PARAMETER_DATUM => CoordinateSystemDatumMethodType.SevenParameterDatum,
+        MULTIPLE_REGRESSION_DATUM => CoordinateSystemDatumMethodType.MultipleRegressionDatum,
+        GRID_DATUM => CoordinateSystemDatumMethodType.GridDatum,
+        WGS84_DATUM => CoordinateSystemDatumMethodType.WGS84Datum,
+        _ => CoordinateSystemDatumMethodType.Unknown,
+      };
   }
 }

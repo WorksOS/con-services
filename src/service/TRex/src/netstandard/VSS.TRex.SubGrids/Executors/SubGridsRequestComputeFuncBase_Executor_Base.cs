@@ -46,6 +46,8 @@ namespace VSS.TRex.SubGrids.Executors
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
+    private readonly bool _isTraceLoggingEnabled = _log.IsTraceEnabled();
+
     /// <summary>
     /// Denotes the request 'style' in use. 
     /// </summary>
@@ -280,6 +282,9 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     private (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[] PerformSubGridRequest(ISubGridRequestor[] requesters, SubGridCellAddress address)
     {
+      if (_isTraceLoggingEnabled)
+        _log.LogTrace("In: PerformSubGridRequest");
+
       //################################################
       // Special case for DesignHeight sub grid requests
       // Todo: This should be refactored out into another method
@@ -287,20 +292,32 @@ namespace VSS.TRex.SubGrids.Executors
 
       if (localArg.GridDataType == GridDataType.DesignHeight)
       {
-        var designHeightResult = new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[] { (ServerRequestResult.UnknownError, null) };
-        var getGetDesignHeights = ReferenceDesignWrapper.Design.GetDesignHeightsViaLocalCompute(siteModel, ReferenceDesignWrapper.Offset, address, siteModel.CellSize);
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("In: Special case for DesignHeight sub grid requests");
 
-        designHeightResult[0].clientGrid = getGetDesignHeights.designHeights;
-        if (getGetDesignHeights.errorCode == DesignProfilerRequestResult.OK || getGetDesignHeights.errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+        try
         {
-          designHeightResult[0].requestResult = ServerRequestResult.NoError;
+          var designHeightResult = new (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)[] {(ServerRequestResult.UnknownError, null)};
+          var getGetDesignHeights = ReferenceDesignWrapper.Design.GetDesignHeightsViaLocalCompute(siteModel, ReferenceDesignWrapper.Offset, address, siteModel.CellSize);
+
+          designHeightResult[0].clientGrid = getGetDesignHeights.designHeights;
+          if (getGetDesignHeights.errorCode == DesignProfilerRequestResult.OK || getGetDesignHeights.errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+          {
+            designHeightResult[0].requestResult = ServerRequestResult.NoError;
+            return designHeightResult;
+          }
+
+          _log.LogError($"Design profiler sub grid elevation request for {address} failed with error {getGetDesignHeights.errorCode}");
+
+          designHeightResult[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
+
           return designHeightResult;
         }
-
-        _log.LogError($"Design profiler sub grid elevation request for {address} failed with error {getGetDesignHeights.errorCode}");
-
-        designHeightResult[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
-        return designHeightResult;
+        finally
+        {
+          if (_isTraceLoggingEnabled)
+            _log.LogTrace("Out: Special case for DesignHeight sub grid requests");
+        }
       }
 
       // ##################################
@@ -337,39 +354,53 @@ namespace VSS.TRex.SubGrids.Executors
       // then perform the conversion here
       if (localArg.GridDataType == GridDataType.CutFill)
       {
-        if (result.Length == 1)
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("In: Special case for cut/fill sub grid requests");
+
+        try
         {
-          // The cut fill is defined between one production data derived height sub grid and a
-          // height sub grid to be calculated from a designated design
-          var computeCutFillSubGridResult = CutFillUtilities.ComputeCutFillSubGrid(
-            siteModel,
-            result[0].clientGrid, // base
-            ReferenceDesignWrapper // 'top'
+          if (result.Length == 1)
+          {
+            // The cut fill is defined between one production data derived height sub grid and a
+            // height sub grid to be calculated from a designated design
+            var computeCutFillSubGridResult = CutFillUtilities.ComputeCutFillSubGrid(
+              siteModel,
+              result[0].clientGrid, // base
+              ReferenceDesignWrapper // 'top'
             );
 
-          if (!computeCutFillSubGridResult.executionResult)
+            if (!computeCutFillSubGridResult.executionResult)
+            {
+              ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[0].clientGrid);
+              result[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
+            }
+          }
+
+          // If the requested data is cut fill derived from two elevation data sub grids previously calculated, 
+          // then perform the conversion here
+          if (result.Length == 2)
           {
-            ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[0].clientGrid);
-            result[0].requestResult = ServerRequestResult.FailedToComputeDesignElevationPatch;
+            // The cut fill is defined between two production data derived height sub grids
+            // depending on volume type work out height difference
+            CutFillUtilities.ComputeCutFillSubGrid((IClientHeightLeafSubGrid) result[0].clientGrid, // 'base'
+              (IClientHeightLeafSubGrid) result[1].clientGrid); // 'top'
+
+            // ComputeCutFillSubGrid has placed the result of the cut fill computation into clientGrids[0],
+            // so clientGrids[1] can be discarded
+            ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[1].clientGrid);
+
+            result = new[] {(ServerRequestResult.NoError, result[0].clientGrid)};
           }
         }
-
-        // If the requested data is cut fill derived from two elevation data sub grids previously calculated, 
-        // then perform the conversion here
-        if (result.Length == 2)
+        finally
         {
-          // The cut fill is defined between two production data derived height sub grids
-          // depending on volume type work out height difference
-          CutFillUtilities.ComputeCutFillSubGrid((IClientHeightLeafSubGrid)result[0].clientGrid, // 'base'
-                                                 (IClientHeightLeafSubGrid)result[1].clientGrid); // 'top'
-
-          // ComputeCutFillSubGrid has placed the result of the cut fill computation into clientGrids[0],
-          // so clientGrids[1] can be discarded
-          ClientLeafSubGridFactory.ReturnClientSubGrid(ref result[1].clientGrid);
-
-          result = new [] {(ServerRequestResult.NoError, result[0].clientGrid)};
+          if (_isTraceLoggingEnabled)
+            _log.LogTrace("Out: Special case for cut/fill sub grid requests");
         }
       }
+
+      if (_isTraceLoggingEnabled)
+        _log.LogTrace("Out: PerformSubGridRequest");
 
       return result;
     }
@@ -424,6 +455,8 @@ namespace VSS.TRex.SubGrids.Executors
 
         try
         {
+          _log.LogDebug("About to process sub grid request result");
+
           ProcessSubGridRequestResult(clientGrids, addressList.Length);
         }
         finally

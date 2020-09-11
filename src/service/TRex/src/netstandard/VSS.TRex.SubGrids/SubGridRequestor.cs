@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -30,6 +31,8 @@ namespace VSS.TRex.SubGrids
   public class SubGridRequestor : ISubGridRequestor
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridRequestor>();
+
+    private readonly bool _isTraceLoggingEnabled = _log.IsTraceEnabled();
 
     /// <summary>
     /// Local reference to the client sub grid factory
@@ -171,7 +174,7 @@ namespace VSS.TRex.SubGrids
           // Query the design to get the patch of elevations calculated from the design
           var getDesignHeightsResult = _elevationRangeDesign.Design.GetDesignHeightsViaLocalCompute(_siteModel,
           _elevationRangeDesign.Offset, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
-          _elevationRangeDesignElevations = getDesignHeightsResult.designHeights.Cells;
+          _elevationRangeDesignElevations = getDesignHeightsResult.designHeights?.Cells;
 
           if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               || _elevationRangeDesignElevations == null)
@@ -188,7 +191,7 @@ namespace VSS.TRex.SubGrids
 
         //Spatial design filter - don't care about offset
         var getDesignHeightsResult = _surfaceDesignMaskDesign.GetDesignHeightsViaLocalCompute(_siteModel, 0, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
-        _surfaceDesignMaskElevations = getDesignHeightsResult.designHeights.Cells;
+        _surfaceDesignMaskElevations = getDesignHeightsResult.designHeights?.Cells;
 
         if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
              || _surfaceDesignMaskElevations == null)
@@ -456,6 +459,9 @@ namespace VSS.TRex.SubGrids
 
       if (_prodDataRequested)
       {
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("Performing data extraction");
+
         if ((result.requestResult = PerformDataExtraction()) != ServerRequestResult.NoError)
         {
           ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
@@ -465,6 +471,9 @@ namespace VSS.TRex.SubGrids
 
       if (_surveyedSurfaceDataRequested)
       {
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("Performing height annotation");
+
         if ((result.requestResult = PerformHeightAnnotation()) != ServerRequestResult.NoError)
         {
           ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);

@@ -24,7 +24,6 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
@@ -32,8 +31,8 @@ using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
-using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
@@ -661,7 +660,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         colors.Add((uint)i << 16 | (uint)i << 8 | (uint)i << 0);
       }
 
-      return Task.FromResult(CompactionProjectSettingsColors.Create(false, colors));
+      return Task.FromResult(new CompactionProjectSettingsColors(false, colors));
     }
   }
 }

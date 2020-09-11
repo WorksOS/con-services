@@ -1,4 +1,5 @@
-﻿using CoreX.Interfaces;
+﻿using System;
+using CoreX.Interfaces;
 using CoreX.Wrapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,20 +19,18 @@ using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.WebApi.Common;
-using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.CoordinateSystems;
-using System;
-using VSS.TRex.SubGridTrees.Client;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -57,7 +56,6 @@ namespace VSS.TRex.Gateway.WebApi
       DIBuilder.New(services)
         .Build()
         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
         .Add(IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)

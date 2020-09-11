@@ -121,11 +121,10 @@ namespace VSS.TRex.Alignments
 
       return null;
     }
-    
+
     /// <summary>
     /// Determine if the Alignments in this list are the same as the Alignments in the other list, based on ID comparison
     /// </summary>
-    /// <param name="other"></param>
     public bool IsSameAs(Alignments other)
     {
       if (Count != other.Count)
