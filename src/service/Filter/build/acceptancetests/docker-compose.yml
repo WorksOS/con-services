@@ -1,0 +1,37 @@
+version: "3.2"
+services:
+  webapi:
+    build: ../artifacts/Filter
+    env_file: ./docker-compose.env
+    volumes:
+      - /artifacts/logs:/app/logs
+    ports:
+      - "3001:80"
+    depends_on:
+      - schema
+  mockprojectwebapi:
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-mock-webapi:latest-linux
+    env_file: ./docker-compose.env
+    ports:
+      - "5001:5001"
+  schema:
+    build: ../../database
+    env_file: ./docker-compose.env
+    depends_on:
+      - db
+  db:
+    image: mysql/mysql-server:5.7.15
+    command:
+      [
+        mysqld,
+        --character-set-server=utf8mb4,
+        --collation-server=utf8mb4_unicode_ci,
+      ]
+    env_file: ./docker-compose.env
+    ports:
+      - "3306:3306"
+  accepttest:
+    build: ../../AcceptanceTests/deploy
+    env_file: ./docker-compose.env
+    depends_on:
+      - webapi
