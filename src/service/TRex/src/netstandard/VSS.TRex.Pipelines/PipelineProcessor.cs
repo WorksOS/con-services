@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common.Interfaces;
@@ -193,7 +192,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Builds the pipeline configured per the supplied state ready to execute the request
     /// </summary>
-    public async Task<bool> BuildAsync()
+    public bool Build()
     {
       // Todo: This method is left as async as a reminder that the GetExistenveMap workflows could either be async (as they
       // potentially read from the persistent store), and/or they couild be cached in the site model designs/surveyed surfaces contexts
@@ -417,15 +416,13 @@ namespace VSS.TRex.Pipelines
       {
         if (Pipeline.Initiate())
         {
-          Pipeline.WaitForCompletion()
-            .ContinueWith(x =>
-            {
-              _log.LogInformation(x.Result ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
-              if (Pipeline.SubGridsRemainingToProcess > 0)
-              {
-                _log.LogInformation($"Pipeline completed with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
-              }
-            }).WaitAndUnwrapException();
+          var completionResult = Pipeline.WaitForCompletion();
+          _log.LogInformation(completionResult ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
+
+          if (Pipeline.SubGridsRemainingToProcess > 0)
+          {
+            _log.LogInformation($"Pipeline completed with {Pipeline.SubGridsRemainingToProcess} sub grids remaining to be processed");
+          }
         }
 
         PipelineAborted = Pipeline.Aborted;

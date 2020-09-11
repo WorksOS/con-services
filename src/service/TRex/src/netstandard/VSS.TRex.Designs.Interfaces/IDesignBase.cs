@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;

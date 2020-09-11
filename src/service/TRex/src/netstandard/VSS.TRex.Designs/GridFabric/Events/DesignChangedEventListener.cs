@@ -8,18 +8,19 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Common;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
+using System.IO;
+using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Designs.GridFabric.Events
 {
-
   /// <summary>
   /// The listener that responds to design change notifications emitted by actions such as changing a design
   /// </summary>
   public class DesignChangedEventListener : VersionCheckedBinarizableSerializationBase, IMessageListener<IDesignChangedEvent>, IDisposable, IDesignChangedEventListener
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<DesignChangedEventListener>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<DesignChangedEventListener>();
 
     private const byte VERSION_NUMBER = 1;
 
@@ -33,66 +34,68 @@ namespace VSS.TRex.Designs.GridFabric.Events
     {
       try
       {
-        Log.LogInformation(
+        _log.LogInformation(
           $"Received notification of design changed for site:{message.SiteModelUid}, design:{message.DesignUid}, DesignType:{message.FileType}, DesignRemoved:{message.DesignRemoved}, ImportedFileType:{message.FileType}");
 
+        var designFiles = DIContext.ObtainOptional<IDesignFiles>();
+
+        if (designFiles == null)
+        {
+          // No cache, leave early...
+          return true;
+        }
+
+        var siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(message.SiteModelUid);
+        if (siteModel == null)
+        {
+          _log.LogWarning($"No site model found for ID {message.SiteModelUid}");
+          return true;
+        }
+
         // Tell the DesignManager instance to remove the designated design
-        if (message.FileType == ImportedFileType.DesignSurface)
+        var designFileName = message.FileType switch
         {
-          var designs = DIContext.Obtain<IDesignManager>();
-          if (designs != null)
+          ImportedFileType.DesignSurface => DIContext.Obtain<IDesignManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
+          ImportedFileType.SurveyedSurface => DIContext.Obtain<ISurveyedSurfaceManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
+          ImportedFileType.Alignment => DIContext.Obtain<ISurveyedSurfaceManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
+          _ => string.Empty
+        };
+
+        IDesignBase design = null;
+        if (!string.IsNullOrEmpty(designFileName))
+        {
+          design = DIContext.ObtainRequired<IDesignClassFactory>().NewInstance(message.DesignUid, designFileName, siteModel.CellSize, message.SiteModelUid);
+        }
+
+        if (design != null)
+        {
+          var localStorage = Path.Combine(FilePathHelper.GetTempFolderForProject(siteModel.ID), design.FileName);
+          if (designFiles.RemoveDesignFromCache(message.DesignUid, design, message.SiteModelUid, false))
           {
-            if (message.DesignRemoved)
-              designs.Remove(message.SiteModelUid, message.DesignUid);
-          }
-          else
-          {
-            Log.LogWarning("No IDesignManager instance available from DIContext to send attributes change message to");
-            return true; // Stay subscribed
+            if (File.Exists(localStorage))
+            {
+              File.Delete(localStorage);
+            }
           }
         }
-        else if (message.FileType == ImportedFileType.SurveyedSurface)
+        else
         {
-          var surveyedSurface = DIContext.Obtain<ISurveyedSurfaceManager>();
-          if (surveyedSurface != null)
-          {
-            if (message.DesignRemoved)
-              surveyedSurface.Remove(message.SiteModelUid, message.DesignUid);
-          }
-          else
-          {
-            Log.LogWarning("No ISurveyedSurfaceManager instance available from DIContext to send attributes change message to");
-            return true;  // Stay subscribed
-          }
-        }
-        else if (message.FileType == ImportedFileType.Alignment)
-        {
-          var alignment = DIContext.Obtain<IAlignmentManager>();
-          if (alignment != null)
-          {
-            if (message.DesignRemoved)
-              alignment.Remove(message.SiteModelUid, message.DesignUid);
-          }
-          else
-          {
-            // Note! not all listeners maybe interested in the design type removed so only log as warning 
-            Log.LogWarning("No IAlignmentManager instance available from DIContext to send attributes change message to");
-            return true;  // Stay subscribed
-          }
+          // No current record of the design
+          _log.LogWarning($"Design {message.DesignUid} not present in designs for project {message.SiteModelUid} when responding to design change event");
+          return true;
         }
 
         // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
-        DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToDesignChange(message.SiteModelUid, message.DesignUid);
-
+        DIContext.ObtainOptional<ITRexSpatialMemoryCache>()?.InvalidateDueToDesignChange(message.SiteModelUid, message.DesignUid);
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception occurred processing design changed event");
+        _log.LogError(e, "Exception occurred processing design changed event");
         return true; // Stay subscribed
       }
       finally
       {
-        Log.LogInformation(
+        _log.LogInformation(
           $"Completed handling notification of design changed for Site:{message.SiteModelUid}, Design:{message.DesignUid}, DesignRemoved:{message.DesignRemoved}, ImportedFileType:{message.FileType}");
       }
 
@@ -113,7 +116,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
     public void StartListening()
     {
-      Log.LogInformation($"Start listening for design state notification events on {MessageTopicName}");
+      _log.LogInformation($"Start listening for design state notification events on {MessageTopicName}");
 
       // Create a messaging group the cluster can use to send messages back to and establish a local listener
       // All nodes (client and server) want to know about design state change
@@ -122,7 +125,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
       if (msgGroup != null)
         msgGroup.LocalListen(this, MessageTopicName);
       else
-        Log.LogError("Unable to get messaging projection to add design state change event to");
+        _log.LogError("Unable to get messaging projection to add design state change event to");
     }
 
     public void StopListening()

@@ -105,11 +105,11 @@ namespace VSS.TRex.Profiling
       {
         var getFilterMaskResult = surfaceDesignMaskDesign.GetFilterMaskViaLocalCompute(siteModel, currentSubGridOrigin, siteModel.CellSize);
 
-        if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK)
+        if (getFilterMaskResult.errorCode == DesignProfilerRequestResult.OK || getFilterMaskResult.errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
         {
           if (getFilterMaskResult.filterMask == null)
           {
-            _log.LogError("FilterMask null in response from surfaceDesignMaskDesign.GetFilterMask, ignoring it's contribution to filter mask");
+            _log.LogWarning("FilterMask null in response from surfaceDesignMaskDesign.GetFilterMask, ignoring it's contribution to filter mask");
           }
           else
           {

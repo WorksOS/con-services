@@ -453,7 +453,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       //    processor.Pipeline.AreaControlSet =
       //     new AreaControlSet(false, GridIntervalX, GridIntervalY, StartEasting, StartNorthing, Azimuth);
 
-      if (!await processor.BuildAsync())
+      if (!processor.Build())
       {
         _log.LogError($"Tile.({TileX},{TileY}) Failed to build pipeline processor for request to model {DataModelUid}");
         return false;

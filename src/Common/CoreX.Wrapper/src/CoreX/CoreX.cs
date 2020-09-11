@@ -8,8 +8,8 @@ using CoreX.Wrapper.Extensions;
 using CoreX.Wrapper.Types;
 using CoreXModels;
 using Microsoft.Extensions.Logging;
-using Trimble.CsdManagementWrapper;
 using Trimble.GeodeticXWrapper;
+using Trimble.CsdManagementWrapper;
 using VSS.Common.Abstractions.Configuration;
 
 namespace CoreX.Wrapper
@@ -268,7 +268,7 @@ namespace CoreX.Wrapper
       using var transformer = new PointerPointer_IGeodeticXTransformer();
 
       GeodeticX.geoCreateTransformer(geoCsibBlobContainer, transformer)
-        .Validate($"attempting to create GeodeticX transformer");
+        .Validate("attempting to create GeodeticX transformer");
 
       return transformer.get();
     }
@@ -280,7 +280,7 @@ namespace CoreX.Wrapper
 
       for (var i = 0; i < bytes.Length; i++)
       {
-        sb.Append(bytes[i] + " ");
+        sb.Append(bytes[i]).Append(' ');
       }
 
       var blocks = sb.ToString().TrimEnd().Split(' ');
@@ -322,12 +322,12 @@ namespace CoreX.Wrapper
 
           if (datums == null)
           {
-            throw new Exception($"Error attempting to retrieve list of datums, null result");
+            throw new Exception("Error attempting to retrieve list of datums, null result");
           }
 
           if (!datums.Any())
           {
-            throw new Exception($"No datums found");
+            throw new Exception("No datums found");
           }
 
           return datums.ToArray();
@@ -337,7 +337,7 @@ namespace CoreX.Wrapper
       return null;
     }
 
-    /// <inheritdoc/> 
+    /// <inheritdoc/>
     private ICoordinateSystem GetDatumBySystemId(int datumSystemId)
     {
       using var datumContainer = new CSMCoordinateSystemContainer();
@@ -351,7 +351,7 @@ namespace CoreX.Wrapper
       return datumContainer.GetSelectedRecord();
     }
 
-    /// <inheritdoc/> 
+    /// <inheritdoc/>
     public string GetCSIBFromCSDSelection(string zoneGroupNameString, string zoneNameQueryString)
     {
       lock (TGLLock.CsdManagementLock)
@@ -381,7 +381,7 @@ namespace CoreX.Wrapper
           .stringList
           .Split(new[] { CsdManagement.STRING_SEPARATOR }, StringSplitOptions.RemoveEmptyEntries);
 
-        if (!zones.Any())
+        if (zones.Length == 0)
         {
           throw new Exception($"The count of zones in {zoneGroupName} should be greater than 0");
         }

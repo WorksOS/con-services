@@ -495,7 +495,7 @@ namespace VSS.TRex.Rendering.Executors
           processor.OverrideSpatialExtents.Assign(RotatedTileBoundingExtents);
 
           // Prepare the processor
-          if (!await processor.BuildAsync())
+          if (!processor.Build())
           {
             _log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
             ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;

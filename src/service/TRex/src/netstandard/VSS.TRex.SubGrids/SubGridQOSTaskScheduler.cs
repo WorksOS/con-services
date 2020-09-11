@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// The number of seconds the QOS scheduler will wait for a group of tasks responsible for processing sub grids
     /// </summary>
-    private readonly int _taskGroupTimeoutSeconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", 10);
+    private readonly int _taskGroupTimeoutSeconds = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", 20);
 
     private readonly int _maxConcurrentSchedulerSessions = DIContext.Obtain<IConfigurationStore>().GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", -1);
     public int MaxConcurrentSchedulerSessions => _maxConcurrentSchedulerSessions;
@@ -77,6 +78,10 @@ namespace VSS.TRex.SubGrids
       if (_maxConcurrentSchedulerSessions < 0)
       {
         _maxConcurrentSchedulerSessions = _maxConcurrentSchedulerTasks == 1 ? 1 : _maxConcurrentSchedulerTasks / DefaultThreadPoolFractionDivisor;
+
+        // Set a minimum level of 2...
+        if (_maxConcurrentSchedulerSessions < 2)
+          _maxConcurrentSchedulerSessions = 2;
       }
 
       CreateGatewaySemaphores();
@@ -162,10 +167,11 @@ namespace VSS.TRex.SubGrids
           // ReSharper disable once AccessToModifiedClosure
           _log.LogDebug($"Processor for task index {taskIndex} starting");
 
+          var sw = Stopwatch.StartNew();
           processor(subGridCollection);
 
           // ReSharper disable once AccessToModifiedClosure
-          _log.LogDebug($"Processor for task index {taskIndex} completed");
+          _log.LogDebug($"Processor for task index {taskIndex} completed in {sw.Elapsed}");
         }
         catch (Exception e)
         {
