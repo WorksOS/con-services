@@ -1,6 +1,5 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
-using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -67,7 +66,9 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
 
       if (version == 1)
       {
+        NEECoords = new XYZ();
         NEECoords = NEECoords.FromBinary(reader);
+
         OTGCellX = reader.ReadInt();
         OTGCellY = reader.ReadInt();
       }
