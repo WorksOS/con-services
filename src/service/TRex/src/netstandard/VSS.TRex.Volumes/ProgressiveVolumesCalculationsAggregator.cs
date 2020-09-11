@@ -19,7 +19,7 @@ namespace VSS.TRex.Volumes
   /// </summary>
   public class ProgressiveVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<ProgressiveVolumesCalculationsAggregator>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculationsAggregator>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculationsAggregator>();
 
     private readonly object _lockObj = new object();
 
@@ -67,7 +67,7 @@ namespace VSS.TRex.Volumes
       if (subGrid == null)
       {
         // This is kind of a bad thing, make a note of it for now
-        Log.LogDebug("Sub grid passed to ProcessVolumeInformationForSubGrid is null, ignoring");
+        _log.LogDebug("Sub grid passed to ProcessVolumeInformationForSubGrid is null, ignoring");
         return;
       }
 
@@ -85,7 +85,7 @@ namespace VSS.TRex.Volumes
         if (getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK &&
             getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
         {
-          Log.LogError($"Design profiler sub grid elevation request for {subGrid.OriginAsCellAddress()} failed with error {getDesignHeightsResult.profilerRequestResult}");
+          _log.LogError($"Design profiler sub grid elevation request for {subGrid.OriginAsCellAddress()} failed with error {getDesignHeightsResult.profilerRequestResult}");
           return;
         }
       }
@@ -126,7 +126,9 @@ namespace VSS.TRex.Volumes
           var baseSubGrid = subGridResult[0];
 
           if (baseSubGrid == null)
-            Log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
+          {
+            _log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
+          }
           else
           {
             ProcessVolumeInformationForSubGrid(baseSubGrid as ClientProgressiveHeightsLeafSubGrid);
@@ -169,20 +171,20 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummarizeSubGridResult(subGrids); 
+      SummarizeSubGridResult(subGrids);
     }
 
     /// <summary>
-    /// Instructs each individual aggregator in the progressive set of volumes to finalise itself
+    /// Instructs each individual aggregator in the progressive set of volumes to finalize itself
     /// </summary>
     public void Finalise()
     {
-      if (AggregationStates != null)
+      if (AggregationStates == null)
+        return;
+
+      foreach (var aggregator in AggregationStates)
       {
-        foreach (var aggregator in AggregationStates)
-        {
-          aggregator.Finalise();
-        }
+        aggregator.Finalise();
       }
     }
   }

@@ -1,5 +1,4 @@
 ﻿using VSS.TRex.Cells;
-using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Filters.Interfaces
 {

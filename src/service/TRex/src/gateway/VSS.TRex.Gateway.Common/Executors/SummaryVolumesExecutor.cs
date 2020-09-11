@@ -82,8 +82,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Converts values of the VolumesType to ones of the VolumeComputationType.
     /// </summary>
-    /// <param name="volumesType"></param>
-    /// <returns></returns>
     private VolumeComputationType ConvertVolumesType(VolumesType volumesType)
     {
       switch (volumesType)
@@ -102,8 +100,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Converts SimpleVolumesResponse data into SummaryVolumesResult data.
     /// </summary>
-    /// <param name="result"></param>
-    /// <returns></returns>
     private SummaryVolumesResult ConvertResult(SimpleVolumesResponse result)
     {
       return SummaryVolumesResult.Create(
@@ -118,8 +114,6 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <summary>
     /// Converts BoundingWorldExtent3D data into BoundingBox3DGrid data.
     /// </summary>
-    /// <param name="extents"></param>
-    /// <returns></returns>
     private BoundingBox3DGrid ConvertExtents(BoundingWorldExtent3D extents)
     {
       return new BoundingBox3DGrid(

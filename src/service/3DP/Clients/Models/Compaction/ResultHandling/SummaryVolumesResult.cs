@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
     public double FillArea { get; private set; }
 
     /// <summary>
-    /// Total coverage area (cut + fill + no change) in m2. 
+    /// Total coverage area (cut + fill + no change) in m2.
     /// </summary>
     [JsonProperty("totalCoverageArea")]
     public double TotalCoverageArea { get; private set; }
