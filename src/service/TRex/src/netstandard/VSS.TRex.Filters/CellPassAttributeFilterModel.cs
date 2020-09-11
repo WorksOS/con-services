@@ -14,7 +14,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Contains all of the model state relevant to describing the parameters of a cell attribute filter
   /// </summary>
-  public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
+  public class CellPassAttributeFilterModel : VersionCheckedBinarizableSerializationBase, ICellPassAttributeFilterModel
   {
     const byte VERSION_NUMBER = 1;
 
@@ -359,8 +359,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
-    /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -434,7 +433,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Deserialize the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
