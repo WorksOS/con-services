@@ -18,6 +18,10 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling
     {
     }
 
+    public FilterDescriptorSingleResult() 
+    {
+    }
+
     /// <summary>
     /// Gets or sets the filter descriptor.
     /// </summary>
