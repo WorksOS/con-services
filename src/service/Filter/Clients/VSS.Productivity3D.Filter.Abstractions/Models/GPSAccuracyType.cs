@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Models.Enums
+﻿namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
   public enum GPSAccuracyType
   {

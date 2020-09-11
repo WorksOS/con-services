@@ -2,6 +2,7 @@
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace VSS.Productivity3D.Models.Models
 {

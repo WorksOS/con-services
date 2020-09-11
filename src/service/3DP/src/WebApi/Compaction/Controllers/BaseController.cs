@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ??= new ProjectStatisticsHelper(LoggerFactory, ConfigStore, FileImportProxy, TRexCompactionDataProxy);
 
     /// <summary>
-    /// Gets the memory cache of previously fetched, and valid, <see cref="FilterResult"/> objects
+    /// Gets the memory cache of previously fetched, and valid, <see cref="Filter.Abstractions.Models.FilterResult"/> objects
     /// </summary>
     private IDataCache FilterCache => HttpContext.RequestServices.GetService<IDataCache>();
 
@@ -229,9 +229,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets the <see cref="DesignDescriptor"/> from a given project's fileUid.
+    /// Gets the <see cref="Filter.Abstractions.Models.DesignDescriptor"/> from a given project's fileUid.
     /// </summary>
-    protected async Task<DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, OperationType operation = OperationType.General)
+    protected async Task<Filter.Abstractions.Models.DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, OperationType operation = OperationType.General)
     {
       if (!fileUid.HasValue)
       {
@@ -290,7 +290,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var fileSpaceId = FileDescriptorExtensions.GetFileSpaceId(ConfigStore, Log);
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, file.Path, tccFileName);
 
-      return new DesignDescriptor(file.LegacyFileId, fileDescriptor, file.Offset ?? 0.0, fileUid);
+      return new Filter.Abstractions.Models.DesignDescriptor(file.LegacyFileId, fileDescriptor, file.Offset ?? 0.0, fileUid);
     }
 
     /// <summary>
@@ -309,9 +309,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return ProjectSettingsProxy.GetProjectSettingsColors(projectUid.ToString(), GetUserId(), CustomHeaders, ServiceExceptionHandler);
     }
 
-    protected FilterResult SetupCompactionFilter(Guid projectUid, BoundingBox2DGrid boundingBox)
+    protected Filter.Abstractions.Models.FilterResult SetupCompactionFilter(Guid projectUid, BoundingBox2DGrid boundingBox)
     {
-      var filterResult = new FilterResult();
+      var filterResult = new Filter.Abstractions.Models.FilterResult();
       filterResult.SetBoundary(new List<Point>
       {
         new Point(boundingBox.BottomleftY, boundingBox.BottomLeftX),
@@ -323,15 +323,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
+    /// Creates an instance of the <see cref="Filter.Abstractions.Models.FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
     /// </summary>
-    protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
+    protected async Task<Filter.Abstractions.Models.FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
     {
-      var filterKey = filterUid.HasValue ? $"{nameof(FilterResult)} {filterUid.Value}" : string.Empty;
+      var filterKey = filterUid.HasValue ? $"{nameof(Filter.Abstractions.Models.FilterResult)} {filterUid.Value}" : string.Empty;
       // Filter models are immutable except for their Name.
       // This service doesn't consider the Name in any of it's operations so we don't mind if our
       // cached object is out of date in this regard.
-      var cachedFilter = filterUid.HasValue ? FilterCache.Get<FilterResult>(filterKey) : null;
+      var cachedFilter = filterUid.HasValue ? FilterCache.Get<Filter.Abstractions.Models.FilterResult>(filterKey) : null;
       if (cachedFilter != null)
       {
         await ApplyDateRange(projectUid, cachedFilter);
@@ -347,14 +347,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (!filterUid.HasValue)
       {
         return haveExcludedSs
-          ? FilterResult.CreateFilter(excludedIds, excludedUids)
+          ? Filter.Abstractions.Models.FilterResult.CreateFilter(excludedIds, excludedUids)
           : null;
       }
 
       try
       {
-        DesignDescriptor designDescriptor = null;
-        DesignDescriptor alignmentDescriptor = null;
+        Filter.Abstractions.Models.DesignDescriptor designDescriptor = null;
+        Filter.Abstractions.Models.DesignDescriptor alignmentDescriptor = null;
 
         var filterData = await GetFilterDescriptor(projectUid, filterUid.Value);
 
@@ -392,7 +392,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               returnEarliest = true;
             }
 
-            var raptorFilter = new FilterResult(filterUid, filterData, filterData.PolygonLL, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
+            var raptorFilter = new Filter.Abstractions.Models.FilterResult(filterUid, filterData, filterData.PolygonLL, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
 
             Log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 
@@ -420,7 +420,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         throw;
       }
 
-      return haveExcludedSs ? FilterResult.CreateFilter(excludedIds, excludedUids) : null;
+      return haveExcludedSs ? Filter.Abstractions.Models.FilterResult.CreateFilter(excludedIds, excludedUids) : null;
     }
 
     /// <summary>
@@ -442,7 +442,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       filter.ApplyDateRange(project.IanaTimeZone, true);
     }
 
-    private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
+    private async Task ApplyDateRange(Guid projectUid, Filter.Abstractions.Models.FilterResult filter)
     {
       var project = await ((RaptorPrincipal)User).GetProject(projectUid);
       if (project == null)

@@ -30,6 +30,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using Microsoft.AspNetCore.Http;
 using Point = VSS.MasterData.Models.Models.Point;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {

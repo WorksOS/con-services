@@ -17,9 +17,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -32,6 +30,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using Microsoft.AspNetCore.Http;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

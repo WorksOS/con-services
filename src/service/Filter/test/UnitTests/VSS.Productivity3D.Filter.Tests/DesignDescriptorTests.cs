@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Productivity3D.Models.Validation;
 
-namespace VSS.Productivity3D.Models.UnitTests
+namespace VSS.Productivity3D.Filter.Tests
 {
   [TestClass]
   public class DesignDescriptorTests

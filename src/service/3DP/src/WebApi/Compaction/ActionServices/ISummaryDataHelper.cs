@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 
