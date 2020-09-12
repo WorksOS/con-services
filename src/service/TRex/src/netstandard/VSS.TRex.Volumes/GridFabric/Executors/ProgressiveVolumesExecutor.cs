@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
-using CoreX.Types;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
@@ -18,32 +17,41 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<ProgressiveVolumesExecutor>();
 
-    private ProgressiveVolumesResponse ConvertBoundaryFromGridToWGS84(Guid projectUid, ProgressiveVolumesResponse response)
+    private static ProgressiveVolumesResponse ConvertBoundaryFromGridToWGS84(Guid projectUid, ProgressiveVolumesResponse response)
     {
-      var convertCoordinates = DIContext.Obtain<ICoreXWrapper>();
-
-      if (response.Volumes != null)
+      try
       {
-        foreach (var aggregator in response.Volumes)
+        var convertCoordinates = DIContext.ObtainRequired<ICoreXWrapper>();
+
+        if (response.Volumes != null)
         {
-          if (!aggregator.Volume.BoundingExtentGrid.IsValidPlanExtent) // No conversion possible
-            continue;
-
-          var neeCoords = new[]
+          foreach (var aggregator in response.Volumes)
           {
-            new XYZ(
-              aggregator.Volume.BoundingExtentGrid.MinX, aggregator.Volume.BoundingExtentGrid.MinY,
-              aggregator.Volume.BoundingExtentGrid.MinZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MinZ),
-            new XYZ(
-              aggregator.Volume.BoundingExtentGrid.MaxX, aggregator.Volume.BoundingExtentGrid.MaxY,
-              aggregator.Volume.BoundingExtentGrid.MaxZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MaxZ)
-          };
+            if (!aggregator.Volume.BoundingExtentGrid.IsValidPlanExtent) // No conversion possible
+              continue;
 
-          var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid);
-          var llhCoords = convertCoordinates.NEEToLLH(siteModel.CSIB(), neeCoords.ToCoreX_XYZ()).ToTRex_XYZ();
+            var neeCoords = new[]
+            {
+              new XYZ(
+                aggregator.Volume.BoundingExtentGrid.MinX, aggregator.Volume.BoundingExtentGrid.MinY,
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                aggregator.Volume.BoundingExtentGrid.MinZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MinZ),
+              new XYZ(
+                aggregator.Volume.BoundingExtentGrid.MaxX, aggregator.Volume.BoundingExtentGrid.MaxY,
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                aggregator.Volume.BoundingExtentGrid.MaxZ == Consts.NullDouble ? 0.0 : aggregator.Volume.BoundingExtentGrid.MaxZ)
+            };
 
-          aggregator.Volume.BoundingExtentLLH = new BoundingWorldExtent3D { MinX = MathUtilities.RadiansToDegrees(llhCoords[0].X), MinY = MathUtilities.RadiansToDegrees(llhCoords[0].Y), MaxX = MathUtilities.RadiansToDegrees(llhCoords[1].X), MaxY = MathUtilities.RadiansToDegrees(llhCoords[1].Y) };
+            var siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(projectUid);
+            var llhCoords = convertCoordinates.NEEToLLH(siteModel.CSIB(), neeCoords.ToCoreX_XYZ()).ToTRex_XYZ();
+
+            aggregator.Volume.BoundingExtentLLH = new BoundingWorldExtent3D {MinX = MathUtilities.RadiansToDegrees(llhCoords[0].X), MinY = MathUtilities.RadiansToDegrees(llhCoords[0].Y), MaxX = MathUtilities.RadiansToDegrees(llhCoords[1].X), MaxY = MathUtilities.RadiansToDegrees(llhCoords[1].Y)};
+          }
         }
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Exception converting coordinates for progressive volumes. Response will contain null boundaries");
       }
 
       return response;
