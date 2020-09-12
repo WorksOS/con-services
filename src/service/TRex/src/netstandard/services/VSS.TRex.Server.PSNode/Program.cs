@@ -58,6 +58,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 
 namespace VSS.TRex.Server.PSNode
@@ -79,6 +80,8 @@ namespace VSS.TRex.Server.PSNode
       return key switch
       {
         PipelineProcessorTaskStyle.AggregatedPipelined => new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.SimpleVolumes => new VolumesComputationTask(),
+        PipelineProcessorTaskStyle.ProgressiveVolumes => new VolumesComputationTask(),
         _ => null
       };
     }
@@ -127,7 +130,6 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
-
 
         // Create the cache to store the general sub grid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
