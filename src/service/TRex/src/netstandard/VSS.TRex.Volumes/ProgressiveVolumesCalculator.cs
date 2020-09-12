@@ -137,26 +137,26 @@ namespace VSS.TRex.Volumes
 
         // Note: The execution context is on a compute cluster node already. However, the processor still performs the same function
         // within the local context. 
-        using var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
+        using var processor = DIContext.ObtainRequired<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
         (requestDescriptor: RequestDescriptor,
           dataModelID: SiteModel.ID,
           gridDataType: GridDataType.ProgressiveVolumes,
           response: VolumesRequestResponse,
           cutFillDesign: null,
           filters: new FilterSet(Filter),
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
+          task: DIContext.ObtainRequired<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
+          pipeline: DIContext.ObtainRequired<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
+          requestAnalyser: DIContext.ObtainRequired<IRequestAnalyser>(),
           requestRequiresAccessToDesignFileExistenceMap: false, // Note: RefDesign != null || RefOriginal != null,
           requireSurveyedSurfaceInformation: false, //UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted(),
-          liftParams: null //LiftParams
+          liftParams: null
         );
 
         // Assign the aggregator into the volumes computation task
         if (!(processor.Task is VolumesComputationTask volumesComputationTask))
         {
-          throw new ArgumentException($"Processor task for progressive volumes is not a {nameof(VolumesComputationTask)}, it is {processor.Task}");
+          throw new ArgumentException($"Processor task for progressive volumes is not a {nameof(VolumesComputationTask)}, it is '{processor.Task}'");
         }
 
         volumesComputationTask.Aggregator = Aggregator;
