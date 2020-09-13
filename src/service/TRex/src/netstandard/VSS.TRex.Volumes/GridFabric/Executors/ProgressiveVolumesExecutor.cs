@@ -51,7 +51,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Exception converting coordinates for progressive volumes. Response will contain null boundaries");
+        _log.LogError(e, "Exception converting coordinates for progressive volumes. Response will contain grid coordinate extents.");
       }
 
       return response;
