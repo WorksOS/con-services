@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApi.Models.Extensions
     {
       // DesignDescriptors which come from TBC requests will only have legacy fileId
       designDescriptors = designDescriptors.Where(d => d != null).ToList();
-      if (!designDescriptors.Any())
+      if (designDescriptors.Count == 0)
         return;
 
       var filesList = await fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
