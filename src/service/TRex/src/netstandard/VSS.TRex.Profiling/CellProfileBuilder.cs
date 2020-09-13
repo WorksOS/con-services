@@ -284,7 +284,7 @@ namespace VSS.TRex.Profiling
 
           CurrentSubgridOrigin = ThisSubgridOrigin;
 
-          if (!ProfileFilterMask.ConstructSubgridCellFilterMask(SiteModel, CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, 
+          if (!ProfileFilterMask.ConstructSubGridCellFilterMask(SiteModel, CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, 
             SurfaceDesignMaskDesign))
             continue;
 
