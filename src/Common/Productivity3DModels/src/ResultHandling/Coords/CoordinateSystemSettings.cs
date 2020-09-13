@@ -9,7 +9,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
   /// <summary>
   /// Coordinate system settings result object.
   /// </summary>
-  ///    
+  ///
   public class CoordinateSystemSettings : ContractExecutionResult, IMasterDataModel
   {
     #region Coordinate System details
@@ -72,7 +72,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
     /// 0 - Unknown
     /// 1 - WGS84
     /// 2 - Molodensky
-    /// 3 - Multiple Regression 
+    /// 3 - Multiple Regression
     /// 4 - Seven Parameters
     /// 5 - Grid
     /// </summary>
@@ -155,13 +155,13 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
     public string GeoidMethod { get; set; }
     /// <summary>
     /// The coordinate system geoid model method's type.
-    /// 0 - Unknown 
-    /// 1 - Grid CwsGeoid 
-    /// 2 - Constant Separation CwsGeoid 
+    /// 0 - Unknown
+    /// 1 - Grid CwsGeoid
+    /// 2 - Constant Separation CwsGeoid
     /// 3 - Site Calibrated CwsGeoid Record
     /// </summary>
     public CoordinateSystemGeoidMethodType GeoidMethodType { get; set; }
-    /// <summary> 
+    /// <summary>
     /// The coordinate system grid geoid model file name.
     /// Grid CwsGeoid method.
     /// </summary>
@@ -247,7 +247,7 @@ namespace VSS.Productivity3D.Models.ResultHandling.Coords
     /// <summary>
     /// The flag indicates whether or not an assigned coordinate system projection is supported by the application.
     /// </summary>
-    /// 
+    ///
     public bool UnsupportedProjection { get; set; }
     #endregion
 

@@ -17,7 +17,7 @@ namespace VSS.TRex.TAGFiles.Classes.Swather
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TerrainSwather>();
 
-        private static readonly ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+        private static readonly ICell_NonStatic_MutationHook Hook = DIContext.ObtainOptional<ICell_NonStatic_MutationHook>();
 
         /// <summary>
         /// The maximum number of cell passes that may be generated when swathing a single interval between

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.Models.ResultHandling

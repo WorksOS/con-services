@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
@@ -29,7 +28,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
   /// </summary>
   public class TINSurfaceExportExecutor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<TINSurfaceExportExecutor>();
 
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
@@ -67,8 +66,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// <summary>
     /// Computes a tight bounding extent around the elevation values stored in the sub grid tree
     /// </summary>
-    /// <param name="dataStore"></param>
-    /// <returns></returns>
     private static BoundingWorldExtent3D DataStoreExtents(ISubGridTree dataStore)
     {
       var computedGridExtent = BoundingWorldExtent3D.Inverted();
@@ -103,7 +100,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     /// <summary>
     /// Executor that implements creation of the TIN surface
     /// </summary>
-    /// <returns></returns>
     public async Task<bool> ExecuteAsync()
     {
       Log.LogInformation($"Performing Execute for DataModel:{_dataModelId}");
@@ -141,7 +137,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           // Set the surface TRexTask parameters for progressive processing
           processor.Task.TRexNodeID = RequestingTRexNodeID;
 
-          if (!await processor.BuildAsync())
+          if (!processor.Build())
           {
             Log.LogError($"Failed to build pipeline processor for request to model {_dataModelId}");
             return false;

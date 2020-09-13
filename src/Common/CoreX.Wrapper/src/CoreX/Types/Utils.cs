@@ -3,7 +3,7 @@ using Trimble.CsdManagementWrapper;
 
 namespace CoreX.Wrapper.Types
 {
-  public class Utils
+  public static class Utils
   {
     internal static CSharpEmbeddedDataCallback EmbeddedDataCallback = new CSharpEmbeddedDataCallback();
     internal static CSharpFileListCallback FileListCallBack = new CSharpFileListCallback();

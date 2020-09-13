@@ -37,7 +37,6 @@ namespace VSS.TRex.Exports.CSV.Executors
     /// <summary>
     /// Executor that implements requesting and rendering grid information to create the grid rows
     /// </summary>
-    /// <returns></returns>
     public async Task<bool> ExecuteAsync()
     {
       Log.LogInformation($"Performing Execute for DataModel:{_CSVExportRequestArgument.ProjectID}");
@@ -72,7 +71,7 @@ namespace VSS.TRex.Exports.CSV.Executors
 
           ((CSVExportTask) _processor.Task).SubGridExportProcessor = new CSVExportSubGridProcessor(_CSVExportRequestArgument);
 
-          if (!await _processor.BuildAsync())
+          if (!_processor.Build())
           {
             Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
             CSVExportRequestResponse.ResultStatus = _processor.Response.ResultStatus;

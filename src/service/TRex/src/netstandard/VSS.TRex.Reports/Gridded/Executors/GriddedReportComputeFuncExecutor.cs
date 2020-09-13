@@ -114,7 +114,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
             _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
             _griddedReportRequestArgument.Azimuth);
 
-        if (!await processor.BuildAsync())
+        if (!processor.Build())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {_griddedReportRequestArgument.ProjectID}");
           return false;
@@ -142,7 +142,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         if (cutFillDesign == null)
           throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesign.DesignID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
 
-        getDesignHeightsResult = cutFillDesign.GetDesignHeightsViaLocalCompute(_siteModel, _griddedReportRequestArgument.ReferenceDesign.Offset, 
+        getDesignHeightsResult = cutFillDesign.GetDesignHeightsViaLocalCompute(_siteModel, _griddedReportRequestArgument.ReferenceDesign.Offset,
           subGrid.OriginAsCellAddress(), subGrid.CellSize);
 
         if (getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
