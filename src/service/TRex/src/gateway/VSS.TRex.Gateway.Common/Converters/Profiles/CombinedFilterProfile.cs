@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;

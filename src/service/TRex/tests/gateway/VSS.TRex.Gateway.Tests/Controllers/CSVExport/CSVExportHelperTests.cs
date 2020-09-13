@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;

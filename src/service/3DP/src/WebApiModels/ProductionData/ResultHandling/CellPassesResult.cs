@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SVOICDecls;
 #endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
