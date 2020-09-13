@@ -9,7 +9,7 @@ using VSS.TRex.Geometry;
 namespace VSS.TRex.Filters
 {
   /// <summary>
-  /// FilterSet represents a set of filters to be applied to each subgrid in a query within a single operation
+  /// FilterSet represents a set of filters to be applied to each sub grid in a query within a single operation
   /// </summary>
   public class FilterSet : IFilterSet
   {
@@ -47,12 +47,12 @@ namespace VSS.TRex.Filters
     /// </summary>
     public FilterSet(ICombinedFilter filter1, ICombinedFilter filter2)
     {
-      Filters = filter1 == null && filter2 == null 
-        ? new ICombinedFilter[0] 
-        : filter2 == null 
-          ? new[] { filter1 } 
-          : filter1 == null 
-            ? new [] {filter2} 
+      Filters = filter1 == null && filter2 == null
+        ? new ICombinedFilter[0]
+        : filter2 == null
+          ? new[] { filter1 }
+          : filter1 == null
+            ? new [] {filter2}
             : new [] { filter1, filter2 };
     }
 
