@@ -40,7 +40,7 @@ jobs:
         displayName: 'Run unit tests'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action unittest -collectCoverage $(isMasterBranch)'
+          arguments: '-service $(serviceName) -action unittest -collectCoverage true'
 
       - task: PublishTestResults@2
         displayName: 'Publish Unit Test Results'
@@ -59,16 +59,10 @@ jobs:
           failIfCoverageEmpty: true
 
       - task: PowerShell@2
-        displayName: 'Publish Service'
+        displayName: 'Publish & Push Image'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action publish'
-
-      - task: PowerShell@2
-        displayName: 'Push Docker Image'
-        inputs:
-          filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action pushImage -branch $(Build.SourceBranchName) -imageSuffix $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)'
+          arguments: '-service $(serviceName) -action publishAndPushImage -branch $(Build.SourceBranchName) -imageSuffix $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: Charts'
