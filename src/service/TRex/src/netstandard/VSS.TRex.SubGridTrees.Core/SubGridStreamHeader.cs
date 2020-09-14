@@ -8,9 +8,9 @@ namespace VSS.TRex.SubGridTrees
     /// <summary>
     /// Defines the header written at the start of a stream containing sub grid information, either sub grid directory or sub grid segment.
     /// </summary>
-    public struct SubGridStreamHeader : INonBinaryReaderWriterMimicable
+    public struct SubGridStreamHeader : IBinaryReaderWriter
   {
-        public const byte VERSION_NUMBER = 1;
+        public const byte VERSION = 2;
 
         public const int kSubGridHeaderFlag_IsSubGridDirectoryFile = 0x1;
         public const int kSubGridHeaderFlag_IsSubGridSegmentFile = 0x2;
@@ -35,24 +35,27 @@ namespace VSS.TRex.SubGridTrees
 
         public void Read(BinaryReader reader)
         {
-            Version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+            Version = VersionSerializationHelper.CheckVersionByte(reader, VERSION);
 
-            Identifier = reader.ReadBytes(8);
+            if (Version >= 1)
+            {
+              Identifier = reader.ReadBytes(8);
 
-            Flags = reader.ReadInt32();
+              Flags = reader.ReadInt32();
 
-            StartTime = DateTime.FromBinary(reader.ReadInt64());
-            EndTime = DateTime.FromBinary(reader.ReadInt64());
-            LastUpdateTimeUTC = DateTime.FromBinary(reader.ReadInt64());
+              StartTime = DateTime.FromBinary(reader.ReadInt64());
+              EndTime = DateTime.FromBinary(reader.ReadInt64());
+              LastUpdateTimeUTC = DateTime.FromBinary(reader.ReadInt64());
+            }
         }
 
         public void Write(BinaryWriter writer)
         {
-            VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+            VersionSerializationHelper.EmitVersionByte(writer, VERSION);
 
             writer.Write(Identifier);
 
-            writer.Write(Flags);
+            writer.Write(Flags); // | kSubGridHeaderFlag_SubGridContentIsVersioned);
 
             writer.Write(StartTime.ToBinary());
             writer.Write(EndTime.ToBinary());
@@ -67,17 +70,15 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Determines if the header moniker in the stream matches the expected moniker for the context the stream is being read into
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
         public bool IdentifierMatches(byte[] identifier)
         {
-            bool result = Identifier.Length == identifier.Length;
+            var result = Identifier.Length == identifier.Length;
 
             if (result)
             {
-              for (int I = 0; I < Identifier.Length; I++)
+              for (var i = 0; i < Identifier.Length; i++)
               {
-                result &= Identifier[I] == identifier[I];
+                result &= Identifier[i] == identifier[i];
               }
             }
 

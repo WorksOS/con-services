@@ -730,7 +730,6 @@ namespace VSS.TRex.SubGridTrees.Server
       /// <summary>
       /// Generates the affinity key for this sub grid that identifies this element in the persistent data store
       /// </summary>
-      /// <returns></returns>
       public ISubGridSpatialAffinityKey AffinityKey() => new SubGridSpatialAffinityKey(_version, Owner.ID, OriginX, OriginY);
 
       public bool LoadDirectoryFromStream(Stream stream)
@@ -754,6 +753,12 @@ namespace VSS.TRex.SubGridTrees.Server
               "Sub grid directory file does not identify itself as such in extended header flags");
           }
 
+          if (header.Version != 1 && header.Version != 2)
+          {
+            _log.LogError($"Sub grid directory file version or header mismatch (expected [Version in: [1..{SubGridStreamHeader.VERSION}], found {header.Version}]");
+            return false;
+          }
+
           //  FLastUpdateTimeUTC := Header.LastUpdateTimeUTC;
           _leafStartTime = header.StartTime;
           _leafEndTime = header.EndTime;
@@ -770,10 +775,9 @@ namespace VSS.TRex.SubGridTrees.Server
           _directory.AllocateGlobalLatestCells();
 
           if (header.Version == 1)
-            _directory.Read(reader); //, Directory.GlobalLatestCells.PassData, out LatestCellPassDataSize, out CellPassStacksDataSize);
+            _directory.ReadUnversioned(reader);
           else
-            _log.LogError(
-              $"Sub grid directory file version or header mismatch (expected [Version: {SubGridStreamHeader.VERSION_NUMBER}, found {header.Version}] [Header: {SubGridStreamHeader.kICServerSubGridDirectoryFileMoniker}, found {header.Identifier}]).");
+            _directory.Read(reader);
 
           return true;
         }

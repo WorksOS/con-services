@@ -176,14 +176,14 @@ namespace VSS.TRex.SubGridTrees.Server
         return false;
       }
 
-      bool Result = false;
+      var result = false;
 
-      if (Header.Version == 1)
-        Result = LoadPayloadFromStream(reader, loadLatestData, loadAllPasses);
+      if (Header.Version == 1 || Header.Version == 2)
+        result = LoadPayloadFromStream(reader, loadLatestData, loadAllPasses);
       else
-        Log.LogError($"Sub grid segment file version mismatch (expected {SubGridStreamHeader.VERSION_NUMBER}, found {Header.Version}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+        Log.LogError($"Sub grid segment file version mismatch (expected {SubGridStreamHeader.VERSION}, found {Header.Version}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
 
-      return Result;
+      return result;
     }
 
     public bool Write(BinaryWriter writer)

@@ -9,6 +9,8 @@ namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegmentInfo : ISubGridCellPassesDataSegmentInfo
   {
+        private static byte SERIALIZATION_VERSION = 1;
+
         /// <summary>
         /// The version number of this segment when it is stored in the persistent layer, defined
         /// as the number of ticks in DateTime.UtcNow at the time it is written.
@@ -22,9 +24,9 @@ namespace VSS.TRex.SubGridTrees.Server
         public double MinElevation { get; set; } = Consts.NullDouble;
         public double MaxElevation { get; set; } = Consts.NullDouble;
 
-        public ISubGridSpatialAffinityKey AffinityKey(Guid projectUID)
+        public ISubGridSpatialAffinityKey AffinityKey(Guid projectUid)
         {
-          return new SubGridSpatialAffinityKey(Version, projectUID, Segment.Owner.OriginX, Segment.Owner.OriginY, 
+          return new SubGridSpatialAffinityKey(Version, projectUid, Segment.Owner.OriginX, Segment.Owner.OriginY,
                                                Segment.SegmentInfo.StartTime.Ticks, Segment.SegmentInfo.EndTime.Ticks);
         }
 
@@ -65,20 +67,21 @@ namespace VSS.TRex.SubGridTrees.Server
 
         /// <summary>
         /// Returns the 'filename', and string that encodes the segment version, spatial location and time range it 
-        /// is responsible for. 
+        /// is responsible for.
         /// </summary>
-        public string FileName(int OriginX, int OriginY) => $"{Version}-{OriginX:d10}-{OriginY:d10}-{SegmentIdentifier()}";
+        public string FileName(int originX, int originY) => $"{Version}-{originX:d10}-{originY:d10}-{SegmentIdentifier()}";
 
         public void Write(BinaryWriter writer)
         {
+            VersionSerializationHelper.EmitVersionByte(writer, SERIALIZATION_VERSION);
             writer.Write(Version);
             writer.Write(StartTime.ToBinary());
             writer.Write(EndTime.ToBinary());
             writer.Write(MinElevation);
             writer.Write(MaxElevation);
-       }
+        }
 
-        public void Read(BinaryReader reader)
+        public void ReadUnversioned(BinaryReader reader)
         {
             Version = reader.ReadInt64();
             StartTime = DateTime.FromBinary(reader.ReadInt64());
@@ -87,10 +90,24 @@ namespace VSS.TRex.SubGridTrees.Server
             MaxElevation = reader.ReadDouble();
         }
 
-        /// <summary>
-        /// Updates the version of the segment to reflect the current date time
-        /// </summary>
-        public void Touch()
+        public void Read(BinaryReader reader)
+        {
+          var serializationVersion = VersionSerializationHelper.CheckVersionByte(reader, SERIALIZATION_VERSION);
+
+          if (serializationVersion == 1)
+          {
+            Version = reader.ReadInt64();
+            StartTime = DateTime.FromBinary(reader.ReadInt64());
+            EndTime = DateTime.FromBinary(reader.ReadInt64());
+            MinElevation = reader.ReadDouble();
+            MaxElevation = reader.ReadDouble();
+          }
+        }
+
+    /// <summary>
+    /// Updates the version of the segment to reflect the current date time
+    /// </summary>
+    public void Touch()
         {
           Version = DateTime.UtcNow.Ticks;
         }
