@@ -13,6 +13,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Entitlements.Abstractions.Interfaces;
 using VSS.Productivity3D.Entitlements.Abstractions.ResultsHandling;
 using VSS.Productivity3D.Entitlements.Common.Authentication;
+using VSS.Productivity3D.Entitlements.Common.Clients;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
@@ -55,7 +56,7 @@ namespace VSS.Productivity3D.Entitlements.WebApi
             services.AddSingleton<CacheInvalidationService>();
 
             services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
-            services.AddTransient<IEmsClient, IEmsClient>();
+            services.AddScoped<IEmsClient, EmsClient>();
 
             services.AddOpenTracing(builder =>
             {
