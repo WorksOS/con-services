@@ -37,9 +37,9 @@ namespace VSS.TRex.Volumes
     private ISubGridSegmentIterator _reversingSegmentIterator;
     private SubGridSegmentCellPassIterator_NonStatic _reversingCellPassIterator;
 
-    private CellPass _firstCellPass; 
-    private CellPass _priorToFirstCellPass; 
-    private CellPass _currentCellPass; 
+    private CellPass _firstCellPass;
+    private CellPass _priorToFirstCellPass;
+    private CellPass _currentCellPass;
 
     /// <summary>
     /// Constructor for the sub grid retriever helper
@@ -151,7 +151,6 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Custom implementation for retrieving stripes of progressive volume cells
     /// </summary>
-    /// <param name="stripeIndex"></param>
     protected override void RetrieveSubGridStripe(byte stripeIndex)
     {
       // Iterate over the cells in the sub grid applying the filter and assigning the requested information into the sub grid
