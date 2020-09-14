@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-#if RAPTOR
-using ASNodeDecls;
-#endif
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -13,8 +10,6 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -28,7 +23,7 @@ using VSS.Serilog.Extensions;
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
   /// <summary>
-  /// Controller for getting Raptor production data for summary data requests
+  /// Controller for getting production data for summary data requests
   /// </summary>
   /// <remarks>
   /// There is no response caching for this provided because at the moment the caching middleware doesn't handle requests with more than one filter.
@@ -44,7 +39,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     { }
 
     /// <summary>
-    /// Get CMV summary from Raptor for the specified project and date range.
+    /// Get CMV summary for the specified project and date range.
     /// </summary>
     [ProjectVerifier]
     [Route("api/v2/cmv/summary")]
@@ -63,13 +58,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (!validationResult.isValidFilterForProjectExtents)
         return Ok(new CompactionCmvSummaryResult());
       
-      Log.LogDebug($"{nameof(GetCmvSummary)} request for Raptor: " + JsonConvert.SerializeObject(request));
+      Log.LogDebug($"{nameof(GetCmvSummary)} request: " + JsonConvert.SerializeObject(request));
       try
       {
         var result = await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(LoggerFactory,
-#if RAPTOR
-            RaptorClient,
-#endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
               .ProcessAsync(request) as CMVSummaryResult;
 
@@ -80,12 +72,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(cmvSummaryResult);
       }
-#if RAPTOR
-      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
-      {
-        return NoContent();
-      }
-#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetCmvSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -98,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Get MDP summary from Raptor for the specified project and date range.
+    /// Get MDP summary for the specified project and date range.
     /// </summary>
     /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.
     [ProjectVerifier]
@@ -131,9 +117,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = await RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(LoggerFactory,
-#if RAPTOR
-            RaptorClient,
-#endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .ProcessAsync(request) as MDPSummaryResult;
 
@@ -144,12 +127,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(mdpSummaryResult);
       }
-#if RAPTOR
-      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
-      {
-        return NoContent();
-      }
-#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetMdpSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -162,7 +139,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Get pass count summary from Raptor for the specified project and date range.
+    /// Get pass count summary for the specified project and date range.
     /// </summary>
     [ProjectVerifier]
     [Route("api/v2/passcounts/summary")]
@@ -185,9 +162,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummaryPassCountsExecutor>(LoggerFactory,
-#if RAPTOR
-            RaptorClient,
-#endif
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .ProcessAsync(request) as PassCountSummaryResult;
 
@@ -199,12 +173,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(passCountSummaryResult);
       }
-#if RAPTOR
-      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
-      {
-        return NoContent();
-      }
-#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetPassCountSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -217,7 +185,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Get Temperature summary from Raptor for the specified project and date range.
+    /// Get Temperature summary for the specified project and date range.
     /// </summary>
     [ProjectVerifier]
     [Route("api/v2/temperature/summary")]
@@ -249,9 +217,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummaryTemperatureExecutor>(LoggerFactory,
-#if RAPTOR
-            RaptorClient,
-#endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .ProcessAsync(request) as TemperatureSummaryResult;
 
@@ -262,12 +227,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(temperatureSummaryResult);
       }
-#if RAPTOR
-      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
-      {
-        return NoContent();
-      }
-#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetTemperatureSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -280,7 +239,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Get Speed summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
+    /// Get Speed summary for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
     [ProjectVerifier]
     [Route("api/v2/speed/summary")]
@@ -311,9 +270,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummarySpeedExecutor>(LoggerFactory,
-#if RAPTOR
-            RaptorClient,
-#endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .ProcessAsync(request) as SpeedSummaryResult;
 
@@ -324,12 +280,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         return Ok(speedSummaryResult);
       }
-#if RAPTOR
-      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
-      {
-        return NoContent();
-      }
-#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetSpeedSummary)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -339,6 +289,34 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         Log.LogInformation($"{nameof(GetSpeedSummary)} returned: " + Response.StatusCode);
       }
+    }
+
+    /// <summary>
+    /// Queries design and filter information from the project given undifferentiated UID identifiers for base and top contexts
+    /// </summary>
+    private async Task<(DesignDescriptor, DesignDescriptor, FilterResult, FilterResult)> 
+      ResolveDesignAndFilterReferences(ISummaryDataHelper summaryDataHelper, Guid projectUid, Guid baseUid, Guid topUid)
+    {
+      DesignDescriptor baseDesign = null;
+      DesignDescriptor topDesign = null;
+      FilterResult baseFilter = null;
+      FilterResult topFilter = null;
+
+      // Base filter...
+      var baseFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
+      if (baseFilterDescriptor == null)
+        baseDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
+      else
+        baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
+
+      // Top filter...
+      var topFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
+      if (topFilterDescriptor == null)
+        topDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
+      else
+        topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+
+      return (baseDesign, topDesign, baseFilter, topFilter);
     }
 
     /// <summary>
@@ -364,24 +342,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (baseUid == Guid.Empty || topUid == Guid.Empty)
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid surface parameter(s)."));
 
-      DesignDescriptor baseDesign = null;
-      DesignDescriptor topDesign = null;
-      FilterResult baseFilter = null;
-      FilterResult topFilter = null;
-
-      // Base filter...
-      var baseFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
-      if (baseFilterDescriptor == null)
-        baseDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
-      else
-        baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
-
-      // Top filter...
-      var topFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
-      if (topFilterDescriptor == null)
-        topDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
-      else
-        topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+      var (baseDesign, topDesign, baseFilter, topFilter) = await ResolveDesignAndFilterReferences(summaryDataHelper, projectUid, baseUid, topUid);
 
       if (baseFilter == null && baseDesign == null || topFilter == null && topDesign == null)
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
@@ -400,9 +361,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummaryVolumesExecutorV2>(LoggerFactory,
-#if RAPTOR
-            RaptorClient,
-#endif
             configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
                      .ProcessAsync(request) as SummaryVolumesResult;
 
@@ -410,12 +368,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
         volumesSummaryResult = CompactionVolumesSummaryResult.Create(result, await GetProjectSettingsTargets(projectUid));
       }
-#if RAPTOR
-      catch (ServiceException exception) when ((TASNodeErrorStatus)exception.GetResult.Code == TASNodeErrorStatus.asneFailedToRequestDatamodelStatistics)
-      {
-        return NoContent();
-      }
-#endif
       catch (ServiceException exception)
       {
         Log.LogError($"{nameof(GetSummaryVolumes)}: {exception.GetResult.Message} ({exception.GetResult.Code})");
@@ -439,8 +391,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">The project uid.</param>
     /// <param name="baseUid">The uid for the base surface, either a filter or design.</param>
     /// <param name="topUid">The uid for the top surface, either a filter or design.</param>
-    /// <param name="startDate">The start date for the series of progressive volumes to be calculated from</param>
-    /// <param name="endDate">The end date for the series of progressive volumes to be calculated to</param>
+    /// <param name="startDateUtc">The start date for the series of progressive volumes to be calculated from</param>
+    /// <param name="endDateUtc">The end date for the series of progressive volumes to be calculated to</param>
     /// <param name="intervalSeconds">The interval between each calculated volume expressed as a whole number of seconds</param>
     [ProjectVerifier]
     [Route("api/v2/volumes/summary/progressive")]
@@ -450,8 +402,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] Guid projectUid,
       [FromQuery] Guid baseUid,
       [FromQuery] Guid topUid,
-      [FromQuery] DateTime startDate,
-      [FromQuery] DateTime endDate,
+      [FromQuery] double? cutTolerance,
+      [FromQuery] double? fillTolerance,
+      [FromQuery] Guid additionalSpatialFilterUid,
+      [FromQuery] DateTime startDateUtc,
+      [FromQuery] DateTime endDateUtc,
       [FromQuery] int intervalSeconds)
     {
       Log.LogInformation($"{nameof(GetSummaryVolumes)}: " + Request.QueryString);
@@ -459,24 +414,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (baseUid == Guid.Empty || topUid == Guid.Empty)
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Invalid surface parameter(s)."));
 
-      DesignDescriptor baseDesign = null;
-      DesignDescriptor topDesign = null;
-      FilterResult baseFilter = null;
-      FilterResult topFilter = null;
-
-      // Base filter...
-      var baseFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, baseUid));
-      if (baseFilterDescriptor == null)
-        baseDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, baseUid));
-      else
-        baseFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, baseUid));
-
-      // Top filter...
-      var topFilterDescriptor = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetFilterDescriptor(projectUid, topUid));
-      if (topFilterDescriptor == null)
-        topDesign = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetAndValidateDesignDescriptor(projectUid, topUid));
-      else
-        topFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, topUid));
+      var (baseDesign, topDesign, baseFilter, topFilter) = await ResolveDesignAndFilterReferences(summaryDataHelper, projectUid, baseUid, topUid);
 
       if (baseFilter == null && baseDesign == null || topFilter == null && topDesign == null)
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Can not resolve either baseSurface or topSurface"));
@@ -486,8 +424,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       if (volumeCalcType == VolumesType.None)
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing volumes calculation type"));
 
+      var additionalSpatialFilter = await summaryDataHelper.WithSwallowExceptionExecute(async () => await GetCompactionFilter(projectUid, additionalSpatialFilterUid));
+
       var projectId = await GetLegacyProjectId(projectUid);
-      var request = ProgressiveSummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter ?? topFilter, baseDesign, topDesign, volumeCalcType, startDate, endDate, intervalSeconds);
+      var request = ProgressiveSummaryVolumesRequest.CreateAndValidate(projectId, projectUid, baseFilter ?? topFilter, baseDesign, topDesign, volumeCalcType, cutTolerance, fillTolerance, additionalSpatialFilter, startDateUtc, endDateUtc, intervalSeconds);
 
       CompactionProgressiveVolumesSummaryResult volumesSummaryResult;
 
