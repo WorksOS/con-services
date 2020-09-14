@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// </summary>
     /// <returns>New instance of <see cref="ProgressiveSummaryVolumesRequest"/>.</returns>
     public static ProgressiveSummaryVolumesRequest CreateAndValidate(long projectId, Guid? projectUid, FilterResult filter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, VolumesType volumeCalcType,
-      DateTime startDate, DateTime endDate, int intervalSeconds)
+      double? cutTolerance, double? fillTolerance, FilterResult additionalSpatialFilter, DateTime startDate, DateTime endDate, int intervalSeconds)
     {
       var request = new ProgressiveSummaryVolumesRequest
       {
@@ -104,6 +104,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         VolumeCalcType = volumeCalcType,
         BaseFilterId = -1,
         TopFilterId = -1,
+        CutTolerance = cutTolerance,
+        FillTolerance = fillTolerance,
+        AdditionalSpatialFilter = additionalSpatialFilter,
         StartDate = startDate,
         EndDate = endDate,
         IntervalSeconds = intervalSeconds

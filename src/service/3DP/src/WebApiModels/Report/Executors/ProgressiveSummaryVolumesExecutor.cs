@@ -34,6 +34,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
           request.TopDesignDescriptor?.FileUid,
           request.TopDesignDescriptor?.Offset,
           request.VolumeCalcType,
+          request.CutTolerance,
+          request.FillTolerance,
+          request.AdditionalSpatialFilter,
           request.StartDate,
           request.EndDate,
           request.IntervalSeconds);

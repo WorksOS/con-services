@@ -51,6 +51,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
       }
       catch (Exception e)
       {
+        // Don't rethrow here, doing so will terminate the otherwise valid request (with valid response). Leave the grid boundary extents in place with null LLH extents
         _log.LogError(e, "Exception converting coordinates for progressive volumes. Response will contain grid coordinate extents.");
       }
 

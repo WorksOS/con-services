@@ -25,10 +25,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Productivity3D.Models;
-using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -72,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected ITRexCompactionDataProxy TRexCompactionDataProxy => _tRexCompactionDataProxy ??= HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>();
 
     /// <summary>
-    /// Gets the tagfile authorization proxy interface.
+    /// Gets the tag file authorization proxy interface.
     /// </summary>
     protected ITagFileAuthProjectV5Proxy TagFileAuthProjectV5Proxy => _tagFileAuthProjectV5Proxy ??= HttpContext.RequestServices.GetService<ITagFileAuthProjectV5Proxy>();
 
@@ -131,9 +128,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected bool UseTRexGateway(string key) => ConfigStore.GetValueBool(key) ?? false;
 
-    /// <summary>
-    /// 
-    /// </summary>
     protected BaseController(IConfigurationStore configStore)
     {
       ConfigStore = configStore;
@@ -175,7 +169,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = action.Invoke();
@@ -204,7 +198,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = await action.Invoke();
@@ -250,7 +244,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       foreach (var f in fileList)
       {
-        bool operationSupported = true;
+        var operationSupported = true;
         switch (operation)
         {
           case OperationType.Profiling:
@@ -281,7 +275,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tccFileName = file.Name;
       if (file.ImportedFileType == ImportedFileType.SurveyedSurface)
       {
-        //Note: ':' is an invalid character for filenames in Windows so get rid of them
+        //Note: ':' is an invalid character for file names in Windows so get rid of them
         tccFileName = Path.GetFileNameWithoutExtension(tccFileName) +
                       "_" + file.SurveyedUtc.Value.ToIso8601DateTimeString().Replace(":", string.Empty) +
                       Path.GetExtension(tccFileName);
@@ -305,7 +299,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the project settings colors for the project.
     /// </summary>
     protected Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
-    { ;
+    { 
       return ProjectSettingsProxy.GetProjectSettingsColors(projectUid.ToString(), GetUserId(), CustomHeaders, ServiceExceptionHandler);
     }
 
@@ -342,7 +336,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var excludedSs = await ProjectStatisticsHelper.GetExcludedSurveyedSurfaceIds(projectUid, GetUserId(), CustomHeaders);
       var excludedIds = excludedSs?.Select(e => e.Item1).ToList();
       var excludedUids = excludedSs?.Select(e => e.Item2).ToList();
-      bool haveExcludedSs = excludedSs != null && excludedSs.Count > 0;
+      var haveExcludedSs = excludedSs != null && excludedSs.Count > 0;
 
       if (!filterUid.HasValue)
       {
@@ -368,12 +362,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         if (filterData != null)
         {
           Log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
-          if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
+          if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out var designUidGuid))
           {
             designDescriptor = await GetAndValidateDesignDescriptor(projectUid, designUidGuid);
           }
 
-          if (filterData.AlignmentUid != null && Guid.TryParse(filterData.AlignmentUid, out Guid alignmentUidGuid))
+          if (filterData.AlignmentUid != null && Guid.TryParse(filterData.AlignmentUid, out var alignmentUidGuid))
           {
             alignmentDescriptor = await GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid);
           }

@@ -22,6 +22,9 @@ namespace VSS.Productivity3D.Models.Models
       Guid? topDesignUid,
       double? topDesignOffset,
       VolumesType volumeCalcType,
+      double? cutTolerance,
+      double? fillTolerance,
+      FilterResult additionalSpatialFilter,
       DateTime startDate,
       DateTime endDate,
       int intervalSeconds)
@@ -33,6 +36,9 @@ namespace VSS.Productivity3D.Models.Models
       TopDesignUid = topDesignUid;
       TopDesignOffset = topDesignOffset;
       VolumeCalcType = volumeCalcType;
+      CutTolerance = cutTolerance;
+      FillTolerance = fillTolerance;
+      AdditionalSpatialFilter = additionalSpatialFilter;
       StartDate = startDate;
       EndDate = endDate;
       IntervalSeconds = intervalSeconds;
@@ -97,7 +103,6 @@ namespace VSS.Productivity3D.Models.Models
     /// </value>
     [JsonProperty(Required = Required.Default)]
     public double? FillTolerance { get; private set; }
-
 
     /// <summary>
     /// The date/time at which to start calculating progressive volumes.
