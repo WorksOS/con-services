@@ -131,7 +131,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         sumVolParameters.Result.Item2, 
         sumVolParameters.Result.Item3,
         volumeCalcType, 
-        CustomHeaders, 
+        CustomHeaders,
+        GetUserId(),
         explicitFilters));
     }
 
@@ -215,7 +216,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         sumVolParameters.Result.Item2, 
         sumVolParameters.Result.Item3,
         volumeCalcType, 
-        CustomHeaders, 
+        CustomHeaders,
+        GetUserId(), 
         explicitFilters));
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());

@@ -185,7 +185,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       await Task.WhenAll(projectSettingsTask, filterTask, projectIdTask);
 
-      var elevExtents = await elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders);
+      var elevExtents = await elevProxy.GetElevationRange(projectIdTask.Result, projectUid, filterTask.Result, projectSettingsTask.Result, CustomHeaders, GetUserId());
 
       var compactionPalette = SettingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettingsTask.Result, projectSettingsColorsTask.Result);
       
