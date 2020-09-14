@@ -115,7 +115,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       return await RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(
         _logger,
         configStore: configStore,
-        trexCompactionDataProxy: tRexCompactionDataProxy).ProcessAsync(request) as ExportResult;
+        trexCompactionDataProxy: tRexCompactionDataProxy,
+        userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request) as ExportResult;
     }
 
     [PostRequestVerifier]
@@ -134,7 +135,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           null,
 #endif
           configStore: configStore,
-          trexCompactionDataProxy: tRexCompactionDataProxy)
+          trexCompactionDataProxy: tRexCompactionDataProxy,
+          userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(request) as ExportResult;
     }
 

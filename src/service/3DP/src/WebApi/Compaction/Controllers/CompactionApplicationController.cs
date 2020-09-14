@@ -107,8 +107,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionSinglePatchExecutor>(LoggerFactory,
-          ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        .Build<CompactionSinglePatchExecutor>(LoggerFactory, ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, 
+          customHeaders: CustomHeaders, userId: GetUserId(), fileImportProxy: FileImportProxy)
         .ProcessAsync(patchRequest));
 
       return Ok(v2PatchRequestResponse);

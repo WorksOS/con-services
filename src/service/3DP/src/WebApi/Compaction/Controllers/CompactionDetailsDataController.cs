@@ -75,7 +75,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(request) as CMVChangeSummaryResult;
         var returnResult = new CompactionCmvPercentChangeResult(result);
         Log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
@@ -127,7 +128,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(request) as CMVDetailedResult;
 
         var returnResult = new CompactionCmvDetailedResult(result, null);
@@ -173,7 +175,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(request) as CMVDetailedResult;
 
         if (result1 != null && result1.ConstantTargetCmv == -1)
@@ -182,7 +185,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
               RaptorClient,
 #endif
-              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+              userId: GetUserId(), fileImportProxy: FileImportProxy)
             .ProcessAsync(request) as CMVSummaryResult;
 
           if (result2 != null && result2.HasData())
@@ -236,7 +240,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
                      .ProcessAsync(passCountsRequest) as PassCountDetailedResult;
 
         var returnResult = new CompactionPassCountDetailedResult(result);
@@ -297,7 +302,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(cutFillRequest)) as CompactionCutFillDetailedResult;
     }
 
@@ -342,7 +348,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
               RaptorClient,
 #endif
-              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+              userId: GetUserId(), fileImportProxy: FileImportProxy)
             .ProcessAsync(detailsRequest)) as CompactionTemperatureDetailResult;
 
         //When TRex done for temperature details, assume it will set target in details call
@@ -354,7 +361,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
               RaptorClient,
 #endif
               configStore: ConfigStore,
-              trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+              trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+              userId: GetUserId(), fileImportProxy: FileImportProxy)
             .ProcessAsync(summaryRequest) as TemperatureSummaryResult;
           result1.SetTargets(result2?.TargetData);
         }
