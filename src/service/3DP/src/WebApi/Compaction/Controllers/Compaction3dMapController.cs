@@ -207,7 +207,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders, false));
+          CustomHeaders,
+          GetUserId(),
+          false));
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
@@ -547,7 +549,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders, false));
+          CustomHeaders,
+          GetUserId(), 
+          false));
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
