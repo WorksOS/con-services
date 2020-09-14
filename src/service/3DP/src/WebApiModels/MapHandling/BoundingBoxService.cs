@@ -52,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// helper methods for getting project statistics from Raptor/TRex
     /// </summary>
     private ProjectStatisticsHelper _projectStatisticsHelper = null;
-    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy
+    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy, log
 #if RAPTOR
          , raptorClient
 #endif
