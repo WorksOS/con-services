@@ -25,8 +25,8 @@ namespace VSS.Productivity3D.Models.Models
       double? cutTolerance,
       double? fillTolerance,
       FilterResult additionalSpatialFilter,
-      DateTime startDate,
-      DateTime endDate,
+      DateTime startDateUtc,
+      DateTime endDateUtc,
       int intervalSeconds)
     {
       ProjectUid = projectUid;
@@ -39,8 +39,8 @@ namespace VSS.Productivity3D.Models.Models
       CutTolerance = cutTolerance;
       FillTolerance = fillTolerance;
       AdditionalSpatialFilter = additionalSpatialFilter;
-      StartDate = startDate;
-      EndDate = endDate;
+      StartDate = startDateUtc;
+      EndDate = endDateUtc;
       IntervalSeconds = intervalSeconds;
     }
 

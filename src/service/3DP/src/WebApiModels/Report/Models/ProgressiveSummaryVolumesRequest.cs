@@ -59,14 +59,14 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     [Required]
-    public DateTime StartDate { get; private set; }
+    public DateTime StartDateUtc { get; private set; }
 
     /// <summary>
     /// The end date for the progressive volumes series
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     [Required]
-    public DateTime EndDate { get; private set; }
+    public DateTime EndDateUtc { get; private set; }
 
     /// <summary>
     /// The interval between successive volume requests specified in seconds
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
     /// </summary>
     /// <returns>New instance of <see cref="ProgressiveSummaryVolumesRequest"/>.</returns>
     public static ProgressiveSummaryVolumesRequest CreateAndValidate(long projectId, Guid? projectUid, FilterResult filter, DesignDescriptor baseDesignDescriptor, DesignDescriptor topDesignDescriptor, VolumesType volumeCalcType,
-      double? cutTolerance, double? fillTolerance, FilterResult additionalSpatialFilter, DateTime startDate, DateTime endDate, int intervalSeconds)
+      double? cutTolerance, double? fillTolerance, FilterResult additionalSpatialFilter, DateTime startDateUtc, DateTime endDateUtc, int intervalSeconds)
     {
       var request = new ProgressiveSummaryVolumesRequest
       {
@@ -107,8 +107,8 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
         CutTolerance = cutTolerance,
         FillTolerance = fillTolerance,
         AdditionalSpatialFilter = additionalSpatialFilter,
-        StartDate = startDate,
-        EndDate = endDate,
+        StartDateUtc = startDateUtc,
+        EndDateUtc = endDateUtc,
         IntervalSeconds = intervalSeconds
       };
 
