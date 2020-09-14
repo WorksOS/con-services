@@ -97,12 +97,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var request = new PatchesRequest(ecSerial,
         machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
-      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
+      var ex = request.Validate();
 
       ex.Should().NotBeNull();
-      ex.Code.Should().Be(HttpStatusCode.BadRequest);
-      ex.GetResult.Code.Should().Be(errorResultCode);
-      ex.GetResult.Message.Should().Be(expectedMessage);
+      ex.Code.Should().Be(errorResultCode);
+      ex.Message.Should().Be(expectedMessage);
     }
 
     [TestMethod]

@@ -3,6 +3,7 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.Productivity3D.Models.Compaction
 {
@@ -43,20 +44,18 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
       BoundingBox = boundingBox;
     }
 
-    public void Validate()
+    public ContractExecutionProtobufResult Validate()
     {
       // the response codes match those in TFA.
       if (string.IsNullOrEmpty(ECSerial))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(3037, "Platform serial number must be provided"));
+        return new ContractExecutionProtobufResult(3037, "Platform serial number must be provided");
       }
 
       if (Math.Abs(MachineLatitude) > 90.0 || Math.Abs(MachineLongitude) > 180.0 ||
           (Math.Abs(MachineLatitude) < 2 && Math.Abs(MachineLongitude) < 2))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(3021, "Invalid Machine Location"));
+        return new ContractExecutionProtobufResult(3021, "Invalid Machine Location");
       }
 
       try
@@ -65,17 +64,17 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
       }
       catch (Exception)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(3020, "Invalid bounding box: corners are not bottom left and top right."));
+        return new ContractExecutionProtobufResult(3020, "Invalid bounding box: corners are not bottom left and top right.");
       }
 
       // NE are in meters  
       var areaSqMeters = (BoundingBox.TopRightX - BoundingBox.BottomLeftX) * (BoundingBox.TopRightY - BoundingBox.BottomleftY);
       if (areaSqMeters > MAX_BOUNDARY_SQUARE_METERS)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(3019, $"Invalid bounding box sqM: {Math.Round(areaSqMeters, 4)}. Must be {MAX_BOUNDARY_SQUARE_METERS}m2 or less."));
+        return new ContractExecutionProtobufResult(3019, $"Invalid bounding box sqM: {Math.Round(areaSqMeters, 4)}. Must be {MAX_BOUNDARY_SQUARE_METERS}m2 or less.");
       }
+      return new ContractExecutionProtobufResult(0, "success");
+
     }
   }
 }

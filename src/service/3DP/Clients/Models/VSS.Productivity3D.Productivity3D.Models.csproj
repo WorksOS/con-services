@@ -22,4 +22,8 @@
     <Folder Include="ProductionData\ResultHandling\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="WebApiContrib.Core.Formatter.Protobuf" Version="2.1.3" />
+  </ItemGroup>
+
 </Project>
