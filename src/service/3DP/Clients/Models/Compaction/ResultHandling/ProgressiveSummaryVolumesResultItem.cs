@@ -18,10 +18,9 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
     [JsonProperty("volume")]
     public SummaryVolumesResult Volume { get; private set; }
 
-    public ProgressiveSummaryVolumesResultItem(DateTime date, SummaryVolumesResult volume)
+    public static ProgressiveSummaryVolumesResultItem Create(DateTime date, SummaryVolumesResult volume)
     {
-      Date = date;
-      Volume = volume;
+      return new ProgressiveSummaryVolumesResultItem {Date = date, Volume = volume};
     }
   }
 }

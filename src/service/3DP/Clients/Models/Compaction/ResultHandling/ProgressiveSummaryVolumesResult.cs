@@ -11,9 +11,9 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
     [JsonProperty("volumes")]
     public ProgressiveSummaryVolumesResultItem[] Volumes { get; private set; }
 
-    public ProgressiveSummaryVolumesResult(ProgressiveSummaryVolumesResultItem[] volumes)
+    public static ProgressiveSummaryVolumesResult Create(ProgressiveSummaryVolumesResultItem[] volumes)
     {
-      Volumes = volumes;
+      return new ProgressiveSummaryVolumesResult {Volumes = volumes};
     }
   }
 }

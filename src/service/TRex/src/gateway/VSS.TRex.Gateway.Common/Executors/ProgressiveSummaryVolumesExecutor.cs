@@ -78,9 +78,9 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// </summary>
     private ProgressiveSummaryVolumesResult ConvertResult(ProgressiveVolumesResponse result)
     {
-      return new ProgressiveSummaryVolumesResult(
+      return ProgressiveSummaryVolumesResult.Create(
         result.Volumes.Select(x =>
-          new ProgressiveSummaryVolumesResultItem(x.Date,
+          ProgressiveSummaryVolumesResultItem.Create(x.Date,
             SummaryVolumesResult.Create(BoundingBox3DGridHelper.ConvertExtents(x.Volume.BoundingExtentGrid),
               x.Volume.Cut ?? 0.0,
               x.Volume.Fill ?? 0.0,
