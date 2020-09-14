@@ -10,7 +10,7 @@
     /// In the format http://localhost/internal/v1/route
     /// </summary>
     Private,
-    
+
     /// <summary>
     /// Urls that are exposed to the public (via TPaaS Or other)
     /// In the format http://localhost/api/v1/route

@@ -36,8 +36,7 @@ namespace CCSS.WorksOS.Healthz
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-
-      // Required for authentication
+      services.AddMemoryCache();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
@@ -45,12 +44,7 @@ namespace CCSS.WorksOS.Healthz
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
 
       services.AddOpenTracing(builder =>
-      {
-        builder.ConfigureAspNetCore(options =>
-              {
-                options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-              });
-      });
+        builder.ConfigureAspNetCore(options => options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping")));
     }
 
     /// <inheritdoc />
