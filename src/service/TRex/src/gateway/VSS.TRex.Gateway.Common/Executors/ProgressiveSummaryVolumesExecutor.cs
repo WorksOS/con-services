@@ -7,16 +7,12 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
-using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Helpers;
-using VSS.TRex.Geometry;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Requests;
@@ -81,7 +77,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Converts SimpleVolumesResponse data into SummaryVolumesResult data.
+    /// Converts ProgressiveVolumesResponse data into SummaryVolumesResult data.
     /// </summary>
     private ProgressiveSummaryVolumesResult ConvertResult(ProgressiveVolumesResponse result)
     {
