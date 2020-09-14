@@ -132,7 +132,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             RaptorClient, 
 #endif
             configStore: ConfigStore,
-            trexCompactionDataProxy: TRexCompactionDataProxy)
+            trexCompactionDataProxy: TRexCompactionDataProxy,
+            userId: GetUserId(), 
+            fileImportProxy: FileImportProxy)
           .ProcessAsync(reportGridRequest)) as CompactionReportResult;
     }
 
@@ -221,7 +223,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           RaptorClient, 
 #endif
           configStore: ConfigStore,
-          trexCompactionDataProxy: TRexCompactionDataProxy)
+          trexCompactionDataProxy: TRexCompactionDataProxy,
+          userId: GetUserId(), 
+          fileImportProxy: FileImportProxy)
         .ProcessAsync(reportRequest)) as CompactionReportResult;
     }
 

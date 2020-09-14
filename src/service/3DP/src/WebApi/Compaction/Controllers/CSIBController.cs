@@ -29,7 +29,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectId = await GetLegacyProjectId(projectUid);
 
       var result = await RequestExecutorContainerFactory.Build<CSIBExecutor>(LoggerFactory,
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(new ProjectID(projectId, projectUid));
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy,
+          userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(new ProjectID(projectId, projectUid));
 
       return result.Code == 0
         ? StatusCode((int)HttpStatusCode.OK, result)
