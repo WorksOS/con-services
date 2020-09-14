@@ -37,10 +37,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as ProgressiveSummaryVolumesDataRequest;
-
-      if (request == null)
-        ThrowRequestTypeCastException<ProgressiveSummaryVolumesDataRequest>();
+      var request = CastRequestObjectTo<ProgressiveSummaryVolumesDataRequest>(item);// as ProgressiveSummaryVolumesDataRequest;
 
       // ReSharper disable once PossibleNullReferenceException
       var siteModel = GetSiteModel(request.ProjectUid);
