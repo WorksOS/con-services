@@ -28,7 +28,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("api/v1/productiondata/profile")]
     public Task<ContractExecutionResult> PostProductionDataProfile([FromBody] ProductionDataProfileDataRequest productionDataProfileRequest)
     {
-      Log.LogInformation($"{nameof(PostProductionDataProfile)}: {JsonConvert.SerializeObject(Request)}");
+
+      Log.LogInformation($"{nameof(PostProductionDataProfile)}: {JsonConvert.SerializeObject(productionDataProfileRequest)}");
 
       productionDataProfileRequest.Validate();
       ValidateFilterMachines(nameof(PostProductionDataProfile), productionDataProfileRequest.ProjectUid, productionDataProfileRequest.Filter);
