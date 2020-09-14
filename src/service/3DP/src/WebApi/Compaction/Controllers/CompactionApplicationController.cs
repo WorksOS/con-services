@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -70,13 +71,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var patchesRequest = new PatchesRequest(ecSerial, machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       Log.LogInformation($"{nameof(GetSubGridPatches)}: {JsonConvert.SerializeObject(patchesRequest)}");
-
+      
       // todoJeannie temporary to look into the DID info available.
       Log.LogDebug($"{nameof(GetSubGridPatches)}: customHeaders {CustomHeaders.LogHeaders()}");
 
       var validationResult = patchesRequest.Validate();
       if (validationResult.Code != 0 )
-        return BadRequest(new ContractExecutionProtobufResult(validationResult.Code, validationResult.Message));
+        return BadRequest(validationResult);
 
       // identify VSS projectUid and CustomerUid
       var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectV5Proxy);
@@ -86,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var errorMessage = $"Unable to identify a unique project or customer. Result: {JsonConvert.SerializeObject(tfaResult)}";
         Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionProtobufResult(tfaResult.Code, tfaResult.Message));
+        return BadRequest(new PatchSubgridsProtobufResult(tfaResult.Code, tfaResult.Message));
       }
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
@@ -124,7 +125,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .ProcessAsync(patchRequest));
 
-      return Ok(v2PatchRequestResponse);
+      var v2PatchRequestFinalResponse = AutoMapperUtility.Automapper.Map<PatchSubgridsProtobufResult>(v2PatchRequestResponse);
+      return Ok(v2PatchRequestFinalResponse);
     }
   }
 }
