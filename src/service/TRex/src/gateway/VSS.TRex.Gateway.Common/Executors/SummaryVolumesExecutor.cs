@@ -86,26 +86,12 @@ namespace VSS.TRex.Gateway.Common.Executors
     private SummaryVolumesResult ConvertResult(SimpleVolumesResponse result)
     {
       return SummaryVolumesResult.Create(
-        ConvertExtents(result.BoundingExtentGrid),
+        BoundingBox3DGridHelper.ConvertExtents(result.BoundingExtentGrid),
         result.Cut ?? 0.0,
         result.Fill ?? 0.0,
         result.TotalCoverageArea ?? 0.0,
         result.CutArea ?? 0.0,
         result.FillArea ?? 0.0);
-    }
-
-    /// <summary>
-    /// Converts BoundingWorldExtent3D data into BoundingBox3DGrid data.
-    /// </summary>
-    private BoundingBox3DGrid ConvertExtents(BoundingWorldExtent3D extents)
-    {
-      return new BoundingBox3DGrid(
-        extents.MinX,
-        extents.MinY,
-        extents.MinZ,
-        extents.MaxX,
-        extents.MaxY,
-        extents.MaxZ);
     }
 
     /// <summary>

@@ -88,26 +88,12 @@ namespace VSS.TRex.Gateway.Common.Executors
       return new ProgressiveSummaryVolumesResult(
         result.Volumes.Select(x =>
           new ProgressiveSummaryVolumesResultItem(x.Date,
-            SummaryVolumesResult.Create(ConvertExtents(x.Volume.BoundingExtentGrid),
+            SummaryVolumesResult.Create(BoundingBox3DGridHelper.ConvertExtents(x.Volume.BoundingExtentGrid),
               x.Volume.Cut ?? 0.0,
               x.Volume.Fill ?? 0.0,
               x.Volume.TotalCoverageArea ?? 0.0,
               x.Volume.CutArea ?? 0.0,
               x.Volume.FillArea ?? 0.0))).ToArray());
-    }
-
-    /// <summary>
-    /// Converts BoundingWorldExtent3D data into BoundingBox3DGrid data.
-    /// </summary>
-    private BoundingBox3DGrid ConvertExtents(BoundingWorldExtent3D extents)
-    {
-      return new BoundingBox3DGrid(
-        extents.MinX,
-        extents.MinY,
-        extents.MinZ,
-        extents.MaxX,
-        extents.MaxY,
-        extents.MaxZ);
     }
 
     /// <summary>
