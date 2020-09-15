@@ -4,6 +4,8 @@ using CCSS.WorksOS.Healthz.Services;
 using CCSS.WorksOS.Healthz.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Models;
 
@@ -15,7 +17,7 @@ namespace CCSS.WorksOS.Healthz.Controllers
     private readonly IHealthCheckService _healthCheckService;
 
     private readonly IServiceResolution _serviceResolution;
-    private static List<string> _serviceIdentifiers;
+    private static readonly List<string> _serviceIdentifiers;
     private static Dictionary<string, ServiceResult> _services;
 
     static HealthCheckController()
@@ -33,6 +35,8 @@ namespace CCSS.WorksOS.Healthz.Controllers
     [HttpGet("api/v1/service")]
     public IActionResult GetServiceIdentifiers()
     {
+      Log.LogInformation($"{nameof(GetServiceIdentifiers)}: Returning service identifiers: {JsonConvert.SerializeObject(_serviceIdentifiers)}");
+
       return Ok(new
       {
         Services = _serviceIdentifiers
@@ -42,6 +46,8 @@ namespace CCSS.WorksOS.Healthz.Controllers
     [HttpGet("api/v1/service/{name}/status")]
     public async Task<IActionResult> GetServiceStatusSingle(string name)
     {
+      Log.LogInformation($"{nameof(GetServiceStatusSingle)}: Resolving service status for '{name}'...");
+
       // TODO validate inputs.
 
       // TODO This will be moved to the HealthCheck hosted service and this method will instead return the last known state 
@@ -49,6 +55,8 @@ namespace CCSS.WorksOS.Healthz.Controllers
       var serviceResult = await _serviceResolution.ResolveService(serviceName: name);
 
       var result = await _healthCheckService.QueryService(name, serviceResult.Endpoint, CustomHeaders);
+
+      Log.LogInformation($"{nameof(GetServiceStatusSingle)}: '{name}' status is {result.State}");
 
       return Ok(result);
     }
@@ -62,6 +70,8 @@ namespace CCSS.WorksOS.Healthz.Controllers
         var serviceResultTasks = new List<Task>(_serviceIdentifiers.Count);
         _services = new Dictionary<string, ServiceResult>();
 
+        Log.LogInformation($"{nameof(GetServiceStatusAll)}: Resolving services for polling...");
+
         foreach (var identifier in _serviceIdentifiers)
         {
           serviceResultTasks
@@ -70,13 +80,18 @@ namespace CCSS.WorksOS.Healthz.Controllers
             {
               var serviceResult = x.Result;
 
-              if (string.IsNullOrEmpty(serviceResult.Endpoint) || serviceResult.Endpoint.Contains("localhost"))
+              if (string.IsNullOrEmpty(serviceResult.Endpoint) ||
+                  serviceResult.Endpoint.Contains("localhost") ||
+                  serviceResult.Endpoint.Contains("healthz"))
               {
+                Log.LogDebug($"{nameof(GetServiceStatusAll)}: Filtering out service '{serviceResult.Endpoint}' from the polling services list.");
+
                 return;
               }
 
               if (!_services.TryGetValue(identifier, out var _))
               {
+                Log.LogInformation($"{nameof(GetServiceStatusAll)}: Found service URL '{serviceResult.Endpoint}'");
                 _services.Add(identifier, serviceResult);
               }
             }));
@@ -95,6 +110,12 @@ namespace CCSS.WorksOS.Healthz.Controllers
           .Add(_healthCheckService.QueryService(i.Key, i.Value.Endpoint, CustomHeaders)
           .ContinueWith(x =>
           {
+            if (!x.IsCompleted)
+            {
+              Log.LogError($"{nameof(GetServiceStatusAll)}: Failure querying service '{i.Key}' at '{i.Value}'; {x.Exception.GetBaseException().Message}");
+              return;
+            }
+
             if (x.Result.State != ServiceState.Available)
             {
               aggregatedServiceState = ServiceState.Unavailable;

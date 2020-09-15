@@ -67,10 +67,10 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
             };
           }
         }
+        // We don't know what exceptions the resolve may throw.
         catch (Exception e)
         {
-          // We don't know what exceptions the resolve may throw
-          _log.LogWarning(e, $"Failed to resolve service '{serviceName}' due to error");
+          _log.LogWarning($"Failed to resolve service '{serviceName}' due to error '{e.GetType().ToString()}: {e.GetBaseException().Message}'");
         }
       }
 
