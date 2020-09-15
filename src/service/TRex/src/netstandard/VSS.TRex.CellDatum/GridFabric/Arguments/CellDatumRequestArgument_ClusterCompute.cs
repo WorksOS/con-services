@@ -86,7 +86,10 @@ namespace VSS.TRex.CellDatum.GridFabric.Arguments
       if (version == 1)
       {
         Mode = (DisplayMode) reader.ReadInt();
+
+        NEECoords = new XYZ();
         NEECoords = NEECoords.FromBinary(reader);
+
         OTGCellX = reader.ReadInt();
         OTGCellY = reader.ReadInt();
       }

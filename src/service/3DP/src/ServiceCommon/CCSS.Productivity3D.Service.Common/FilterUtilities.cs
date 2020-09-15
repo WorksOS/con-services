@@ -1,13 +1,45 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.TRex.Common;
 
-namespace VSS.Productivity3D.Common.Filters.Utilities
+namespace CCSS.Productivity3D.Service.Common
 {
-  public static class FilterUtilities
+  public class FilterUtilities
   {
+    private readonly ILogger _log;
+    private readonly IFilterServiceProxy _filterServiceProxy;
+    private readonly IDataCache _filterCache;
+    private readonly DesignUtilities _designUtilities;
+
+    private readonly MemoryCacheEntryOptions _filterCacheOptions = new MemoryCacheEntryOptions
+    {
+      SlidingExpiration = TimeSpan.FromDays(3)
+    };
+
+    public FilterUtilities(ILogger log, IConfigurationStore configStore, IFileImportProxy fileImportProxy, IFilterServiceProxy filterServiceProxy,
+      IDataCache filterCache)
+    {
+      _log = log;
+      _filterServiceProxy = filterServiceProxy;
+      _filterCache = filterCache;
+      _designUtilities = new DesignUtilities(log, configStore, fileImportProxy);
+    }
 
     public static (FilterResult baseFilter, FilterResult topFilter) AdjustFilterToFilter(FilterResult baseFilter, FilterResult topFilter)
     {
@@ -140,6 +172,121 @@ namespace VSS.Productivity3D.Common.Filters.Utilities
       }
 
       return (baseFilter, topFilter);
+    }
+
+    /// <summary>
+    /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
+    /// </summary>
+    public async Task<FilterResult> GetCompactionFilter(
+      Guid projectUid, string projectTimeZone, string userUid, Guid? filterUid, IHeaderDictionary customHeaders, 
+      bool filterMustExist = false)
+    {
+      var filterKey = filterUid.HasValue ? $"{nameof(FilterResult)} {filterUid.Value}" : string.Empty;
+      // Filter models are immutable except for their Name.
+      // This service doesn't consider the Name in any of it's operations so we don't mind if our
+      // cached object is out of date in this regard.
+      var cachedFilter = filterUid.HasValue ? _filterCache.Get<FilterResult>(filterKey) : null;
+      if (cachedFilter != null)
+      {
+        cachedFilter.ApplyDateRange(projectTimeZone, true);
+
+        return cachedFilter;
+      }
+
+      var excludedSs = await _designUtilities.GetExcludedSurveyedSurfaceIds(projectUid, userUid, customHeaders);
+      var excludedIds = excludedSs?.Select(e => e.Item1).ToList();
+      var excludedUids = excludedSs?.Select(e => e.Item2).ToList();
+      bool haveExcludedSs = excludedSs != null && excludedSs.Count > 0;
+
+      if (!filterUid.HasValue)
+      {
+        return haveExcludedSs
+          ? FilterResult.CreateFilter(excludedIds, excludedUids)
+          : null;
+      }
+
+      try
+      {
+        DesignDescriptor designDescriptor = null;
+        DesignDescriptor alignmentDescriptor = null;
+
+        var filterData = await GetFilterDescriptor(projectUid, filterUid.Value, customHeaders);
+
+        if (filterMustExist && filterData == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Invalid Filter UID."));
+        }
+
+        if (filterData != null)
+        {
+          _log.LogDebug($"Filter from Filter Svc: {JsonConvert.SerializeObject(filterData)}");
+          if (filterData.DesignUid != null && Guid.TryParse(filterData.DesignUid, out Guid designUidGuid))
+          {
+            designDescriptor = await _designUtilities.GetAndValidateDesignDescriptor(projectUid, designUidGuid, userUid, customHeaders);
+          }
+
+          if (filterData.AlignmentUid != null && Guid.TryParse(filterData.AlignmentUid, out Guid alignmentUidGuid))
+          {
+            alignmentDescriptor = await _designUtilities.GetAndValidateDesignDescriptor(projectUid, alignmentUidGuid, userUid, customHeaders);
+          }
+
+          if (filterData.HasData() || haveExcludedSs || designDescriptor != null)
+          {
+            filterData.ApplyDateRange(projectTimeZone, true);
+
+            var layerMethod = filterData.LayerNumber.HasValue
+              ? FilterLayerMethod.TagfileLayerNumber
+              : FilterLayerMethod.None;
+
+            bool? returnEarliest = null;
+            if (filterData.ElevationType == ElevationType.First)
+            {
+              returnEarliest = true;
+            }
+
+            var raptorFilter = new FilterResult(filterUid, filterData, filterData.PolygonLL, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
+
+            _log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
+
+            // The filter will be removed from memory and recalculated to ensure we have the latest filter on any relevant changes
+            var filterTags = new List<string>()
+            {
+              filterUid.Value.ToString(),
+              projectUid.ToString()
+            };
+
+            _filterCache.Set(filterKey, raptorFilter, filterTags, _filterCacheOptions);
+
+            return raptorFilter;
+          }
+        }
+      }
+      catch (ServiceException ex)
+      {
+        _log.LogDebug($"EXCEPTION caught - cannot find filter {ex.Message} {ex.GetContent} {ex.GetResult.Message}");
+        throw;
+      }
+      catch (Exception ex)
+      {
+        _log.LogDebug("EXCEPTION caught - cannot find filter " + ex.Message);
+        throw;
+      }
+
+      return haveExcludedSs ? FilterResult.CreateFilter(excludedIds, excludedUids) : null;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="Microsoft.AspNetCore.Mvc.Filters.FilterDescriptor"/> for a given Filter FileUid (by project).
+    /// </summary>
+    public async Task<Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid, IHeaderDictionary customHeaders)
+    {
+      var filterDescriptor = await _filterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), customHeaders);
+
+      return filterDescriptor == null
+        ? null
+        : JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterJson);
     }
   }
 }

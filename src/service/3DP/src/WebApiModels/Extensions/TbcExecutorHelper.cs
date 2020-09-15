@@ -28,7 +28,8 @@ namespace VSS.Productivity3D.WebApi.Models.Extensions
 
       if (await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(loggerFactory,
           configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy,
-          customHeaders: customHeaders, customerUid: customerUid)
+          customHeaders: customHeaders, customerUid: customerUid,
+          userId: userId, fileImportProxy: fileImportProxy)
         .ProcessAsync(projectIds) is MachineExecutionResult machineExecutionResult && machineExecutionResult.MachineStatuses.Count > 0)
       {
         foreach (var assetMatch in machineExecutionResult.MachineStatuses)
@@ -66,7 +67,7 @@ namespace VSS.Productivity3D.WebApi.Models.Extensions
     {
       // DesignDescriptors which come from TBC requests will only have legacy fileId
       designDescriptors = designDescriptors.Where(d => d != null).ToList();
-      if (!designDescriptors.Any())
+      if (designDescriptors.Count == 0)
         return;
 
       var filesList = await fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
