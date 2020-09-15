@@ -17,12 +17,12 @@ namespace VSS.TRex.SubGridTrees.Server
 {
     public class SubGridCellSegmentPassesDataWrapper_NonStatic : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellSegmentPassesDataWrapper_NonStatic>();
+        private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridCellSegmentPassesDataWrapper_NonStatic>();
 
         /// <summary>
         /// A hook that may be used to gain notification of the add, replace and remove cell pass mutations in the cell pass stack
         /// </summary>
-        private static readonly ICell_NonStatic_MutationHook MutationHook = DIContext.ObtainOptional<ICell_NonStatic_MutationHook>();
+        private static readonly ICell_NonStatic_MutationHook _mutationHook = DIContext.ObtainOptional<ICell_NonStatic_MutationHook>();
 
         private Cell_NonStatic[,] _passData;
 
@@ -32,9 +32,8 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Checks if all cells in the 2D array being rented are correctly initialised for renting
+        /// Checks if all cells in the 2D array being rented are correctly initialized for renting
         /// </summary>
-        /// <param name="passData"></param>
         private void CellNonStaticRentValidator(Cell_NonStatic[,] passData)
         {
           Core.Utilities.SubGridUtilities.SubGridDimensionalIterator
@@ -60,9 +59,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// 'newCount' cell passes in the cell and retiring the remainder.
         /// If newCount is larger than the actual count an ArgumentException is thrown
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="newCount"></param>
         public void TrimPassCount(int X, int Y, int newCount)
         {
           if (newCount < 0 || newCount > _passData[X, Y].PassCount)
@@ -82,9 +78,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// number of cell passes validly present in the cell may be less that the length of the cell pass array.
         /// Integrators must use the PassCount property to determine exactly how many passes are present.
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passCount"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AllocatePasses(int X, int Y, int passCount) => _passData[X, Y].AllocatePasses(passCount);
       
@@ -93,7 +86,7 @@ namespace VSS.TRex.SubGridTrees.Server
             if (pass.Time == Consts.MIN_DATETIME_AS_UTC || pass.Time.Kind != DateTimeKind.Utc)
               throw new ArgumentException("Cell passes added to cell pass stacks must have a non-null, UTC, cell pass time", nameof(pass.Time)); 
 
-            MutationHook?.AddPass(X, Y, _passData[X, Y], pass);
+            _mutationHook?.AddPass(X, Y, _passData[X, Y], pass);
 
             _passData[X, Y].AddPass(pass);
 
@@ -102,7 +95,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
         public void ReplacePass(int X, int Y, int position, CellPass pass)
         {
-            MutationHook?.ReplacePass(X, Y, _passData[X, Y], position, pass);
+            _mutationHook?.ReplacePass(X, Y, _passData[X, Y], position, pass);
 
             _passData[X, Y].Passes.SetElement(pass, position);
 
@@ -114,12 +107,9 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Removes a cell pass at a specific position within the cell passes for a cell in this segment. Only valid for mutable representations exposing this interface.
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="position"></param>
         public void RemovePass(int X, int Y, int position)
         {
-           MutationHook?.RemovePass(X, Y, position);
+           _mutationHook?.RemovePass(X, Y, position);
            //throw new NotImplementedException("Removal of cell passes is not yet supported");
         }
 
@@ -131,11 +121,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// If there is not an exact match, the returned index is the location in the cell pass list where a cell pass 
         /// with the given time would be inserted into the list to maintain correct time ordering of the cell passes in that cell.
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="time"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool LocateTime(int X, int Y, DateTime time, out int index) => _passData[X, Y].LocateTime(time, out index);
 
@@ -187,9 +172,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
-        /// <param name="totalPasses"></param>
-        /// <param name="minPassCount"></param>
-        /// <param name="maxPassCount"></param>
         public void CalculateTotalPasses(out int totalPasses, out int minPassCount, out int maxPassCount)
         {
           totalPasses = 0;
@@ -219,8 +201,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Calculates the time range covering all the cell passes within this segment
         /// </summary>
-        /// <param name="startTime"></param>
-        /// <param name="endTime"></param>
         public void CalculateTimeRange(out DateTime startTime, out DateTime endTime)
         {
           startTime = Consts.MAX_DATETIME_AS_UTC;
@@ -250,9 +230,6 @@ namespace VSS.TRex.SubGridTrees.Server
         /// <summary>
         /// Calculates the number of passes in the segment that occur before searchTime
         /// </summary>
-        /// <param name="searchTime"></param>
-        /// <param name="totalPasses"></param>
-        /// <param name="maxPassCount"></param>
         public void CalculatePassesBeforeTime(DateTime searchTime, out int totalPasses, out int maxPassCount)
         {
           totalPasses = 0;
@@ -278,7 +255,7 @@ namespace VSS.TRex.SubGridTrees.Server
                   countInCell++;
               }
 
-              // Impleentation restricting itself to GetElement() API
+              // Implementation restricting itself to GetElement() API
               // for (var passIndex = 0; passIndex < thePassCount; passIndex++)
               // {
               //   var theTime = PassTime(i, j, passIndex);
@@ -295,11 +272,58 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
+        /// Calculates the set of unique machines that contribute passes to this segment.
+        /// </summary>
+        /// <returns>An array of internal machine IDs for the project identifying the set of machines that produced the cell passes in this segment</returns>
+        public short[] CalculateMachineDirectory()
+        {
+          var index = new BitArray(256, false);
+
+          for (var i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+          {
+            for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+            {
+              var cell = _passData[i, j];
+              var thePassCount = cell.PassCount;
+
+              if (thePassCount == 0)
+                continue;
+
+              // Implementation taking advantage of internal knowledge of TRexSpan
+              var elements = cell.Passes.Elements;
+              for (int passIndex = cell.Passes.Offset, limit = cell.Passes.OffsetPlusCount; passIndex < limit; passIndex++)
+              {
+                var internalMachineIndex = elements[passIndex].InternalSiteModelMachineIndex;
+
+                if (internalMachineIndex >= index.Count)
+                  index.Length = internalMachineIndex + 100;
+
+                index[internalMachineIndex] = true;
+              }
+            }
+          }
+
+          var count = 0;
+          for (int i = 0, limit = index.Count; i < limit; i++)
+            count += index[i] ? 1 : 0;
+
+          var result = new short[count];
+          count = 0;
+          for (short i = 0, limit = (short)index.Count; i < limit; i++)
+          {
+            if (index[i])
+            {
+              result[count++] = i;
+            }
+          }
+
+          return result;
+        }
+
+        /// <summary>
         /// Causes this segment to adopt all cell passes from sourceSegment where those cell passes were 
         /// recorded at or later than a specific date
         /// </summary>
-        /// <param name="sourceSegment"></param>
-        /// <param name="atAndAfterTime"></param>
         public void AdoptCellPassesFrom(ISubGridCellSegmentPassesDataWrapper sourceSegment, DateTime atAndAfterTime)
         {
             SegmentCellPassAdopter.AdoptCellPassesFrom(this, sourceSegment, atAndAfterTime);
@@ -309,16 +333,11 @@ namespace VSS.TRex.SubGridTrees.Server
         /// Returns a null machine ID set for nonstatic cell pass wrappers. MachineIDSets are an 
         /// optimization for read requests on compressed static cell pass representations
         /// </summary>
-        /// <returns></returns>
         public BitArray GetMachineIDSet() => null;
 
       /// <summary>
       /// Sets the internal machine ID for the cell pass identified by x & y spatial location and passNumber.
       /// </summary>
-      /// <param name="X"></param>
-      /// <param name="Y"></param>
-      /// <param name="passNumber"></param>
-      /// <param name="internalMachineID"></param>
       public void SetInternalMachineID(int X, int Y, int passNumber, short internalMachineID)
       {
         var cellPasses = _passData[X, Y].Passes;
@@ -349,8 +368,6 @@ namespace VSS.TRex.SubGridTrees.Server
       /// <summary>
       /// Sets the internal machine ID for all cell passes within the segment to the provided ID.
       /// </summary>
-      /// <param name="internalMachineIndex"></param>
-      /// <param name="numModifiedPasses"></param>
       public void SetAllInternalMachineIDs(short internalMachineIndex, out long numModifiedPasses)
       {
         numModifiedPasses = 0;
@@ -411,7 +428,7 @@ namespace VSS.TRex.SubGridTrees.Server
 
               if (_passData == null)
               {
-                 Log.LogWarning($"****** Writing a nonstatic subgrid segment with no cell passes, counter = {counter}, totalPasses = {totalPasses}");
+                 _log.LogWarning($"****** Writing a nonstatic subgrid segment with no cell passes, counter = {counter}, totalPasses = {totalPasses}");
                  return;
               }
 
@@ -549,5 +566,5 @@ namespace VSS.TRex.SubGridTrees.Server
       Dispose(true);
     }
     #endregion
-  }  
+  }
 }

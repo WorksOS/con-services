@@ -23,8 +23,6 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// <summary>
     /// Determines if this segments time range bounds the data time given in the time argument
     /// </summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
     bool SegmentMatches(DateTime time);
 
     void AllocateFullPassStacks();
@@ -41,11 +39,10 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
       bool loadLatestData, bool loadAllPasses);
 
     bool Write(BinaryWriter writer);
-    void CalculateElevationRangeOfPasses();
 
     bool SaveToFile(IStorageProxy storage,
-      string FileName,
-      out FileSystemErrorStatus FSError);
+      string fileName,
+      out FileSystemErrorStatus fsError);
 
     /// <summary>
     /// Determines if this segment violates either the maximum number of cell passes within a 
@@ -53,13 +50,11 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     /// segment limit.
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
-    /// <returns></returns>
-    bool RequiresCleaving(out int TotalPasses, out int MaxPassCount);
+    bool RequiresCleaving(out int totalPasses, out int maxPassCount);
 
     /// <summary>
     /// Verifies if the segment time range bounds are consistent with the cell passes it contains
     /// </summary>
-    /// <returns></returns>
     bool VerifyComputedAndRecordedSegmentTimeRangeBounds();
   }
 }

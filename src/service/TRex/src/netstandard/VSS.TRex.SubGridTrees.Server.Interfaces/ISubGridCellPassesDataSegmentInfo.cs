@@ -40,5 +40,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void Touch();
 
     string ToString();
+
+    short[] MachineDirectory { get; set; }
   }
 }

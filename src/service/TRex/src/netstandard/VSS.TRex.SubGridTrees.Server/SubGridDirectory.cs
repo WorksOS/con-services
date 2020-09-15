@@ -140,6 +140,7 @@ namespace VSS.TRex.SubGridTrees.Server
               segmentInfo.ExistsInPersistentStore = true;
               SegmentDirectory.Add(segmentInfo);
             }
+
             ExistsInPersistentStore = true;
         }
 

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -16,7 +18,7 @@ namespace VSS.TRex.SubGridTrees.Server
 {
   public class SubGridCellPassesDataSegment : ISubGridCellPassesDataSegment
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridCellPassesDataSegment>();
 
     /// <summary>
     /// Tracks whether there are unsaved changes in this segment
@@ -42,8 +44,8 @@ namespace VSS.TRex.SubGridTrees.Server
     private static readonly bool _segmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
     private static readonly bool _itemsPersistedViaDataPersistorToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG", Consts.ITEMSPERSISTEDVIADATAPERSISTOR_TOLOG);
 
-    private static readonly ISubGridCellLatestPassesDataWrapperFactory subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
-    private static readonly ISubGridCellSegmentPassesDataWrapperFactory subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
+    private static readonly ISubGridCellLatestPassesDataWrapperFactory _subGridCellLatestPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellLatestPassesDataWrapperFactory>();
+    private static readonly ISubGridCellSegmentPassesDataWrapperFactory _subGridCellSegmentPassesDataWrapperFactory = DIContext.Obtain<ISubGridCellSegmentPassesDataWrapperFactory>();
 
     /// <summary>
     /// Default no-arg constructor
@@ -65,22 +67,16 @@ namespace VSS.TRex.SubGridTrees.Server
 
     public void AllocateFullPassStacks()
     {
-      if (PassesData == null)
-      {
-        PassesData = Owner.IsMutable
-          ? subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper()
-          : subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
-      }
+      PassesData ??= Owner.IsMutable
+        ? _subGridCellSegmentPassesDataWrapperFactory.NewMutableWrapper()
+        : _subGridCellSegmentPassesDataWrapperFactory.NewImmutableWrapper();
     }
 
     public void AllocateLatestPassGrid()
     {
-      if (LatestPasses == null)
-      {
-        LatestPasses = Owner.IsMutable
-          ? subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()
-          : subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper_Global();
-      }
+      LatestPasses ??= Owner.IsMutable
+        ? _subGridCellLatestPassesDataWrapperFactory.NewMutableWrapper_Global()
+        : _subGridCellLatestPassesDataWrapperFactory.NewImmutableWrapper_Global();
     }
 
     public void DeAllocateFullPassStacks()
@@ -100,27 +96,27 @@ namespace VSS.TRex.SubGridTrees.Server
       if (!HasAllPasses)
         throw new TRexSubGridIOException("Leaf sub grids being written to persistent store must be fully populated with pass stacks");
 
-      int CellStacksOffset = -1;
+      var cellStacksOffset = -1;
 
       // Write the cell pass information (latest and historic cell pass stacks)
-      long CellStacksOffsetOffset = writer.BaseStream.Position;
-      writer.Write(CellStacksOffset);
+      var cellStacksOffsetOffset = writer.BaseStream.Position;
+      writer.Write(cellStacksOffset);
 
       // Segments may not have any defined latest pass information
       writer.Write(LatestPasses != null);
       LatestPasses?.Write(writer);
 
-      CellStacksOffset = (int) writer.BaseStream.Position;
+      cellStacksOffset = (int) writer.BaseStream.Position;
 
       PassesData.Write(writer);
 
-      int EndPosition = (int) writer.BaseStream.Position;
+      var endPosition = (int) writer.BaseStream.Position;
 
       // Write out the offset to the cell pass stacks in the file
-      writer.BaseStream.Seek(CellStacksOffsetOffset, SeekOrigin.Begin);
-      writer.Write(CellStacksOffset);
+      writer.BaseStream.Seek(cellStacksOffsetOffset, SeekOrigin.Begin);
+      writer.Write(cellStacksOffset);
 
-      writer.BaseStream.Seek(EndPosition, SeekOrigin.Begin);
+      writer.BaseStream.Seek(endPosition, SeekOrigin.Begin);
 
       return true;
     }
@@ -130,7 +126,7 @@ namespace VSS.TRex.SubGridTrees.Server
       bool loadAllPasses)
     {
       // Read the stream offset where the cell pass stacks start
-      int CellStacksOffset = reader.ReadInt32();
+      var cellStacksOffset = reader.ReadInt32();
 
       if (HasLatestData && loadLatestData)
       {
@@ -142,12 +138,12 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (!HasAllPasses && loadAllPasses)
       {
-        Log.LogError("LoadPayloadFromStream asked to load all passes but segment does not have all passes store allocated");
+        _log.LogError("LoadPayloadFromStream asked to load all passes but segment does not have all passes store allocated");
       }
 
       if (HasAllPasses && loadAllPasses)
       {
-        reader.BaseStream.Seek(CellStacksOffset, SeekOrigin.Begin);
+        reader.BaseStream.Seek(cellStacksOffset, SeekOrigin.Begin);
 
         PassesData.Read(reader);
       }
@@ -158,30 +154,30 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Read(BinaryReader reader,
       bool loadLatestData, bool loadAllPasses)
     {
-      var Header = new SubGridStreamHeader(reader);
+      var header = new SubGridStreamHeader(reader);
 
-      StartTime = Header.StartTime;
-      EndTime = Header.EndTime;
+      StartTime = header.StartTime;
+      EndTime = header.EndTime;
 
       // Read the version etc from the stream
-      if (!Header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridLeafFileMoniker))
+      if (!header.IdentifierMatches(SubGridStreamHeader.kICServerSubGridLeafFileMoniker))
       {
-        Log.LogError($"Sub grid segment file moniker (expected {SubGridStreamHeader.kICServerSubGridLeafFileMoniker}, found {Header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+        _log.LogError($"Sub grid segment file moniker (expected {SubGridStreamHeader.kICServerSubGridLeafFileMoniker}, found {header.Identifier}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
         return false;
       }
 
-      if (!Header.IsSubGridSegmentFile)
+      if (!header.IsSubGridSegmentFile)
       {
-        Log.LogCritical("Sub grid grid segment file does not identify itself as such in extended header flags");
+        _log.LogCritical("Sub grid grid segment file does not identify itself as such in extended header flags");
         return false;
       }
 
       var result = false;
 
-      if (Header.Version == 1 || Header.Version == 2)
+      if (header.Version == 1 || header.Version == 2)
         result = LoadPayloadFromStream(reader, loadLatestData, loadAllPasses);
       else
-        Log.LogError($"Sub grid segment file version mismatch (expected {SubGridStreamHeader.VERSION}, found {Header.Version}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
+        _log.LogError($"Sub grid segment file version mismatch (expected {SubGridStreamHeader.VERSION}, found {header.Version}). Stream size/position = {reader.BaseStream.Length}{reader.BaseStream.Position}");
 
       return result;
     }
@@ -189,7 +185,7 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool Write(BinaryWriter writer)
     {
       // Write the version to the stream
-      var Header = new SubGridStreamHeader
+      var header = new SubGridStreamHeader
       {
         Identifier = SubGridStreamHeader.kICServerSubGridLeafFileMoniker,
         Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubGridSegmentFile,
@@ -198,69 +194,74 @@ namespace VSS.TRex.SubGridTrees.Server
         LastUpdateTimeUTC = DateTime.UtcNow
       };
 
-      Header.Write(writer);
+      header.Write(writer);
 
       SavePayloadToStream(writer);
 
       return true;
     }
 
-    public void CalculateElevationRangeOfPasses()
+    private void CalculateElevationRangeOfPasses()
     {
-      if (SegmentElevationRangeCalculator.CalculateElevationRangeOfPasses(PassesData, out double Min, out double Max))
-      {
-        SegmentInfo.MinElevation = Min;
-        SegmentInfo.MaxElevation = Max;
-      }
+      if (!SegmentElevationRangeCalculator.CalculateElevationRangeOfPasses(PassesData, out var min, out var max))
+        return;
+
+      SegmentInfo.MinElevation = min;
+      SegmentInfo.MaxElevation = max;
     }
 
-    public bool SaveToFile(IStorageProxy storage,
-      string FileName,
-      out FileSystemErrorStatus FSError)
+    private void CalculateMachineDirectory()
     {
-      bool Result;
-      FSError = FileSystemErrorStatus.OK;
+      if (!Owner.IsMutable)
+        throw new ArgumentException("Only mutable cell pass collections support machine directory construction");
+
+      SegmentInfo.MachineDirectory = PassesData.CalculateMachineDirectory();
+    }
+
+    public bool SaveToFile(IStorageProxy storage, string fileName, out FileSystemErrorStatus fsError)
+    {
+      bool result;
+      fsError = FileSystemErrorStatus.OK;
 
       CalculateElevationRangeOfPasses();
+      CalculateMachineDirectory();
 
       if (_segmentCleavingOperationsToLog || _itemsPersistedViaDataPersistorToLog)
       {
-        PassesData.CalculateTotalPasses(out int TotalPasses, out _, out int MaxPasses);
+        PassesData.CalculateTotalPasses(out var totalPasses, out _, out var maxPasses);
 
-        if (_segmentCleavingOperationsToLog && TotalPasses > _subGridSegmentPassCountLimit)
-          Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses}) which violates the maximum number of cell passes within a segment ({_subGridSegmentPassCountLimit})");
+        if (_segmentCleavingOperationsToLog && totalPasses > _subGridSegmentPassCountLimit)
+          _log.LogDebug($"Saving segment {fileName} with {totalPasses} cell passes (max:{maxPasses}) which violates the maximum number of cell passes within a segment ({_subGridSegmentPassCountLimit})");
 
         if (_itemsPersistedViaDataPersistorToLog)
-          Log.LogDebug($"Saving segment {FileName} with {TotalPasses} cell passes (max:{MaxPasses})");
+          _log.LogDebug($"Saving segment {fileName} with {totalPasses} cell passes (max:{maxPasses})");
       }
 
-      using (var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
+      using var stream = RecyclableMemoryStreamManagerHelper.Manager.GetStream();
+      using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
       {
-        using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
-        {
-          Result = Write(writer);
-        }
-
-        // Log.LogInformation($"Segment persistence stream (uncompressed) for segment {FileName} containing {PassesData.SegmentPassCount} cell passes using storage proxy {storage.Mutability} is {MStream.Length} bytes (average = {MStream.Length / (1.0 * PassesData.SegmentPassCount)})");
-
-        if (Result)
-        {
-          FSError = storage.WriteSpatialStreamToPersistentStore(
-            Owner.Owner.ID,
-            FileName,
-            Owner.OriginX, Owner.OriginY,
-            SegmentInfo.StartTime.Ticks,
-            SegmentInfo.EndTime.Ticks,
-            SegmentInfo.Version,
-            FileSystemStreamType.SubGridSegment,
-            stream,
-            this);
-
-          Result = FSError == FileSystemErrorStatus.OK;
-        }
+        result = Write(writer);
       }
 
-      return Result;
+      // Log.LogInformation($"Segment persistence stream (uncompressed) for segment {FileName} containing {PassesData.SegmentPassCount} cell passes using storage proxy {storage.Mutability} is {MStream.Length} bytes (average = {MStream.Length / (1.0 * PassesData.SegmentPassCount)})");
+
+      if (result)
+      {
+        fsError = storage.WriteSpatialStreamToPersistentStore(
+          Owner.Owner.ID,
+          fileName,
+          Owner.OriginX, Owner.OriginY,
+          SegmentInfo.StartTime.Ticks,
+          SegmentInfo.EndTime.Ticks,
+          SegmentInfo.Version,
+          FileSystemStreamType.SubGridSegment,
+          stream,
+          this);
+
+        result = fsError == FileSystemErrorStatus.OK;
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -269,14 +270,14 @@ namespace VSS.TRex.SubGridTrees.Server
     /// segment limit.
     /// If either limit is breached, this segment requires cleaving
     /// </summary>
-    public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
+    public bool RequiresCleaving(out int totalPasses, out int maxPassCount)
     {
-      const int cleaveSegmentPassCountDeadBand = 100;
+      const int CLEAVE_SEGMENT_PASS_COUNT_DEAD_BAND = 100;
 
-      PassesData.CalculateTotalPasses(out TotalPasses, out _, out MaxPassCount);
+      PassesData.CalculateTotalPasses(out totalPasses, out _, out maxPassCount);
 
-      return TotalPasses > _subGridSegmentPassCountLimit + cleaveSegmentPassCountDeadBand ||
-             MaxPassCount > _subGridMaxSegmentCellPassesLimit;
+      return totalPasses > _subGridSegmentPassCountLimit + CLEAVE_SEGMENT_PASS_COUNT_DEAD_BAND ||
+             maxPassCount > _subGridMaxSegmentCellPassesLimit;
     }
 
     /// <summary>
@@ -285,25 +286,24 @@ namespace VSS.TRex.SubGridTrees.Server
     public bool VerifyComputedAndRecordedSegmentTimeRangeBounds()
     {
       // Determine the actual time range of the passes within the segment
-      PassesData.CalculateTimeRange(out var CoveredTimeRangeStart, out var CoveredTimeRangeEnd);
+      PassesData.CalculateTimeRange(out var coveredTimeRangeStart, out var coveredTimeRangeEnd);
 
-      bool Result = CoveredTimeRangeStart >= SegmentInfo.StartTime && CoveredTimeRangeEnd <= SegmentInfo.EndTime;
+      var result = coveredTimeRangeStart >= SegmentInfo.StartTime && coveredTimeRangeEnd <= SegmentInfo.EndTime;
 
-      if (!Result)
+      if (!result)
       {
-        Log.LogCritical($"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
-        //throw new TRexException("Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={CoveredTimeRangeStart}, CoveredTimeRangeEnd={CoveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
+        _log.LogCritical($"Segment computed covered time is outside segment time range bounds (CoveredTimeRangeStart={coveredTimeRangeStart}, CoveredTimeRangeEnd={coveredTimeRangeEnd}, SegmentInfo.StartTime = {SegmentInfo.StartTime}, SegmentInfo.EndTime={SegmentInfo.EndTime}");
       }
-      
-      return Result;
+
+      return result;
     }
 
     #region IDisposable Support
-    private bool disposedValue = false; // To detect redundant calls
+    private bool _disposedValue; // To detect redundant calls
 
     protected virtual void Dispose(bool disposing)
     {
-      if (!disposedValue)
+      if (!_disposedValue)
       {
         if (disposing)
         {
@@ -314,7 +314,7 @@ namespace VSS.TRex.SubGridTrees.Server
           PassesData = null;
         }
 
-        disposedValue = true;
+        _disposedValue = true;
       }
     }
 
