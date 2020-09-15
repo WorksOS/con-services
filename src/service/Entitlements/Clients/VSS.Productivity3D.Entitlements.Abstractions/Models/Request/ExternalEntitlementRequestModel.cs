@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Request
     /// An identifier to represent the Organization
     /// Example is a CustomerUID in WorksOS
     /// </summary>
-    [JsonProperty(Required = Required.Always)]
+    [JsonProperty(PropertyName = "organizationIdentifier", Required = Required.Always)]
     [Required]
     public string OrganizationIdentifier { get; set; }
 
@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Request
     /// <summary>
     /// The email address of the user. 
     /// </summary>
-    [JsonProperty(Required = Required.Default)]
+    [JsonProperty(PropertyName = "userEmail", Required = Required.Default)]
     public string UserEmail { get; set; }
 
   }
