@@ -28,7 +28,8 @@ namespace VSS.Productivity3D.WebApi.Models.Extensions
 
       if (await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(loggerFactory,
           configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy,
-          customHeaders: customHeaders, customerUid: customerUid)
+          customHeaders: customHeaders, customerUid: customerUid,
+          userId: userId, fileImportProxy: fileImportProxy)
         .ProcessAsync(projectIds) is MachineExecutionResult machineExecutionResult && machineExecutionResult.MachineStatuses.Count > 0)
       {
         foreach (var assetMatch in machineExecutionResult.MachineStatuses)

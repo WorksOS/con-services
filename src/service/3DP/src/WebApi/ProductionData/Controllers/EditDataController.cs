@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       request.Validate();
       return await RequestExecutorContainerFactory.Build<GetEditDataExecutor>(LoggerFactory, ConfigStore,
-        trexCompactionDataProxy: _tRexCompactionDataProxy
+        trexCompactionDataProxy: _tRexCompactionDataProxy, userId: GetUserId(), fileImportProxy: FileImportProxy
       ).ProcessAsync(request) as EditDataResult;
     }
 
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       }
 
       return await RequestExecutorContainerFactory.Build<EditDataExecutor>(LoggerFactory, ConfigStore,
-        trexCompactionDataProxy: _tRexCompactionDataProxy
+        trexCompactionDataProxy: _tRexCompactionDataProxy, userId: GetUserId(), fileImportProxy: FileImportProxy
       ).ProcessAsync(request);
     }
 

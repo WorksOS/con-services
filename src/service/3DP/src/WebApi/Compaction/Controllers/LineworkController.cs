@@ -31,7 +31,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       Log.LogDebug($"{nameof(GetBoundariesFromLinework)}: {requestDto}");
 
       var result = await RequestExecutorContainerFactory
-                         .Build<LineworkFileExecutor>(LoggerFactory, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy)
+                         .Build<LineworkFileExecutor>(LoggerFactory, configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy,
+                           userId: GetUserId(), fileImportProxy: FileImportProxy)
                          .ProcessAsync(requestDto) as DxfLineworkFileResult;
 
       return result.Code == 0

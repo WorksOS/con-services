@@ -1,4 +1,4 @@
-﻿using Apache.Ignite.Core;
+﻿
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -13,7 +13,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
   /// </summary>
   public class ActivatePersistentGridServer : IActivatePersistentGridServer
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ActivatePersistentGridServer>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ActivatePersistentGridServer>();
 
     /// <summary>
     /// Set the state of a grid to active. If the grid is available and is already active, or can be set active this returns true
@@ -27,7 +27,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
         try
         {
           // Get an ignite reference to the named grid
-          IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(gridName);
+          var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(gridName);
 
           // If the grid exists, and it is not active, then set it to active
           if (ignite != null)
@@ -35,24 +35,24 @@ namespace VSS.TRex.GridFabric.Servers.Client
             if (!ignite.GetCluster().IsActive())
             {
               ignite.GetCluster().SetActive(true);
-              Log.LogInformation($"Set grid '{gridName}' to active.");
+              _log.LogInformation($"Set grid '{gridName}' to active.");
             }
             else
             {
-              Log.LogInformation($"Grid {gridName} was already active, nothing to do");
+              _log.LogInformation($"Grid {gridName} was already active, nothing to do");
             }
             return true;
           }
           else
           {
-            Log.LogError($"Grid '{gridName}' is not available");
+            _log.LogError($"Grid '{gridName}' is not available");
           }
 
           return ignite != null && ignite.GetCluster().IsActive();
         }
         catch (Exception E)
         {
-          Log.LogError(E, "SetGridActive: Exception:");
+          _log.LogError(E, "SetGridActive: Exception:");
           return false;
         }
       }
@@ -68,23 +68,23 @@ namespace VSS.TRex.GridFabric.Servers.Client
       try
       {
         // Get an ignite reference to the named grid
-        IIgnite ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(gridName);
+        var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(gridName);
 
         // If the grid exists, and it is active, then set it to inactive
         if (ignite != null && ignite.GetCluster().IsActive())
         {
           ignite.GetCluster().SetActive(false);
-          Log.LogInformation($"Set grid '{gridName}' to inactive.");
+          _log.LogInformation($"Set grid '{gridName}' to inactive.");
 
           return true;
         }
 
-        Log.LogError($"Grid '{gridName}' is not available or is already inactive.");
+        _log.LogError($"Grid '{gridName}' is not available or is already inactive.");
         return ignite != null && !ignite.GetCluster().IsActive();
       }
       catch (Exception E)
       {
-        Log.LogError(E, "SetGridInActive: Exception:");
+        _log.LogError(E, "SetGridInActive: Exception:");
         return false;
       }
     }
@@ -95,13 +95,13 @@ namespace VSS.TRex.GridFabric.Servers.Client
     /// <param name="gridName">The name of the grid to wait for</param>
     public bool WaitUntilGridActive(string gridName)
     {
-      Log.LogInformation($"Checking if grid {gridName} is active.");
+      _log.LogInformation($"Checking if grid {gridName} is active.");
 
       var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(gridName);
 
       if (ignite == null)
       {
-        Log.LogError($"Grid {gridName} not available to wait for.");
+        _log.LogError($"Grid {gridName} not available to wait for.");
         return false;
       }
 
@@ -112,13 +112,13 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
         if (!isActive)
         {
-          Log.LogInformation($"Grid {gridName} is not active, waiting...");
+          _log.LogInformation($"Grid {gridName} is not active, waiting...");
 
           Thread.Sleep(1000);
         }
       } while (!isActive);
 
-      Log.LogInformation($"Completing grid active check wait with active={ignite.GetCluster().IsActive()}.");
+      _log.LogInformation($"Completing grid active check wait with active={ignite.GetCluster().IsActive()}.");
 
       return ignite.GetCluster().IsActive();
     }

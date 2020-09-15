@@ -235,7 +235,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         RaptorClient,
 #endif   
         configStore: ConfigStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request) as CCAColorPaletteResult;
+        trexCompactionDataProxy: TRexCompactionDataProxy,
+        userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request) as CCAColorPaletteResult;
 
       return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(
         DetailPalette.CreateDetailPalette(

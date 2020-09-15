@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid, userId, customHeaders);
 
-      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds?.Select(e => e.Item1), excludedIds?.Select(e => e.Item2));
+      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds?.Select(e => e.Item1), excludedIds?.Select(e => e.Item2), userId);
     }
 
     /// <summary>
@@ -80,21 +80,21 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         excludedUids = excludedSs == null || excludedSs.Count == 0 ? null :
           excludedSs.Where(e => excludedIds.Contains(e.Item1)).Select(e => e.Item2).ToArray();
       }
-      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds, excludedUids);
+      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds, excludedUids, userId);
     }
 
     /// <summary>
     /// Get project statistics using excluded surveyed surfaces provided in the filter.
     /// </summary>
-    public Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids)
+    public Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids, string userId)
     {
-      return GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds, excludedUids);
+      return GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds, excludedUids, userId);
     }
 
     /// <summary>
     /// Get project statistics using excluded surveyed surfaces.
     /// </summary>
-    private async Task<ProjectStatisticsResult> GetProjectStatisticsWithSsExclusions(Guid projectUid, long projectId, IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids)
+    private async Task<ProjectStatisticsResult> GetProjectStatisticsWithSsExclusions(Guid projectUid, long projectId, IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids, string userId)
     {
       var request = new ProjectStatisticsMultiRequest(projectUid, projectId, excludedUids?.ToArray(), excludedIds?.ToArray());
 
@@ -103,7 +103,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #if RAPTOR
             _raptorClient,
 #endif
-            configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
+            configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy,
+            userId: userId, fileImportProxy: _fileImportProxy)
           .ProcessAsync(request) as ProjectStatisticsResult;
     }
   }

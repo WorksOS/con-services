@@ -327,7 +327,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy,
-            customHeaders: CustomHeaders)
+            customHeaders: CustomHeaders,
+            userId: GetUserId(),
+            fileImportProxy: FileImportProxy)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
       if (result != null)

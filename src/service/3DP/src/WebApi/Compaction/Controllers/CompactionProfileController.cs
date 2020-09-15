@@ -193,7 +193,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(slicerDesignProfileRequest)
       );
 
@@ -254,7 +255,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
               RaptorClient,
 #endif
-              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+              userId: GetUserId(), fileImportProxy: FileImportProxy)
             .ProcessAsync(profileRequest)
         );
           results.Add(impFileUid, (CompactionProfileResult<CompactionProfileVertex>)slicerDesignResult);

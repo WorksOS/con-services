@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -34,7 +33,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
     }
 
     /// <summary>
-    /// Constructs a segment retirement queue for the given ignite grid.
+    /// Constructs a segment retirement queue for the mutable ignite grid.
     /// </summary>
     public SegmentRetirementQueue()
     {
