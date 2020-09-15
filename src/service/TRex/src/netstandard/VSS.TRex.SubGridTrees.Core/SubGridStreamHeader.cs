@@ -9,8 +9,9 @@ namespace VSS.TRex.SubGridTrees
     /// Defines the header written at the start of a stream containing sub grid information, either sub grid directory or sub grid segment.
     /// </summary>
     public struct SubGridStreamHeader : IBinaryReaderWriter
-  {
+    {
         public const byte VERSION = 2;
+        private static byte[] VERSION_NUMBERS = { 1, 2 };
 
         public const int kSubGridHeaderFlag_IsSubGridDirectoryFile = 0x1;
         public const int kSubGridHeaderFlag_IsSubGridSegmentFile = 0x2;
@@ -20,7 +21,7 @@ namespace VSS.TRex.SubGridTrees
 
         public byte[] Identifier { get; set; }
 
-        public byte Version;
+        public byte Version { get; private set; }
 
         public int Flags;
         public DateTime StartTime;
@@ -35,7 +36,7 @@ namespace VSS.TRex.SubGridTrees
 
         public void Read(BinaryReader reader)
         {
-            Version = VersionSerializationHelper.CheckVersionByte(reader, VERSION);
+            Version = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
             if (Version >= 1)
             {
@@ -55,7 +56,7 @@ namespace VSS.TRex.SubGridTrees
 
             writer.Write(Identifier);
 
-            writer.Write(Flags); // | kSubGridHeaderFlag_SubGridContentIsVersioned);
+            writer.Write(Flags);
 
             writer.Write(StartTime.ToBinary());
             writer.Write(EndTime.ToBinary());
