@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.TAGFiles.Classes.Processors;
 using VSS.TRex.TAGFiles.Classes.Sinks;

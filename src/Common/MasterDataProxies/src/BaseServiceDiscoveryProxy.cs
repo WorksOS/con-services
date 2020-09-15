@@ -205,7 +205,6 @@ namespace VSS.MasterData.Proxies
 
       var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
       var result = await (await WebRequest.ExecuteRequestAsStreamContent(url, method, strippedHeaders, streamPayload)).ReadAsStreamAsync();
-      BaseProxyHealthCheck.SetStatus(true, GetType());
       return result;
     }
 
