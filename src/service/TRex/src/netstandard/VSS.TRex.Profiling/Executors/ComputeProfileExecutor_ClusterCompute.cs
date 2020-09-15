@@ -85,7 +85,11 @@ namespace VSS.TRex.Profiling.Executors
         SegmentIterator.IterationDirection = IterationDirection.Backwards;
 
       if (passFilter.HasMachineFilter)
+      {
+        if (passFilter.SiteModel == null)
+          passFilter.SiteModel = SiteModel;
         SegmentIterator.SetMachineRestriction(passFilter.GetMachineIDsSet());
+      }
 
       // Create and configure the cell pass iterator to be used
       CellPassIterator = new SubGridSegmentCellPassIterator_NonStatic
