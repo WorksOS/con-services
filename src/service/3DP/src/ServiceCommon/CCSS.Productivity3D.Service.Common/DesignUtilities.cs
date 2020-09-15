@@ -94,6 +94,23 @@ namespace CCSS.Productivity3D.Service.Common
                       Path.GetExtension(tccFileName);
       }
 
+      //For TRex, need the parent design if it's a reference surface
+      if (file.ImportedFileType == ImportedFileType.ReferenceSurface)
+      {
+        var parent = fileList.FirstOrDefault(f => f.ImportedFileUid == file.ParentUid);
+        if (parent == null)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Unable to access parent design file."));
+        }
+
+        fileUid = Guid.Parse(parent.ImportedFileUid);
+        file.LegacyFileId = parent.LegacyFileId;
+        tccFileName = parent.Name;
+        //The file.Path is CustomerUid + ProjectUid which should be the same for both
+      }
+      
       string fileSpaceId = _configStore.GetValueString("TCCFILESPACEID");
 
       if (string.IsNullOrEmpty(fileSpaceId))
