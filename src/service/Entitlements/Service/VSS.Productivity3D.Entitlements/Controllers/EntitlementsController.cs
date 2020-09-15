@@ -45,6 +45,9 @@ namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
     /// <summary> List of users who automatically have entitlement e.g. Team Merino users </summary>
     private static List<string> AcceptedEmails;
 
+    private static string WorksOsFeature;
+    private static string WorksOsSku;
+
     /// <summary> Constructor </summary>
     public EntitlementsController()
     {
@@ -52,16 +55,16 @@ namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
     }
 
     /// <summary>
-    /// Attempt to request an entitlement for the request feature and user
+    /// Attempt to request an entitlement for the request feature and user. Used by WorksOS services internally.
     /// </summary>
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [HttpPost("api/v1/entitlement")]
-    public async Task<IActionResult> GetEntitlement([FromBody] EntitlementRequestModel request)
+    [HttpPost("internal/v1/entitlement")]
+    public async Task<IActionResult> GetEntitlementInternal([FromBody] EntitlementRequestModel request)
     {
-      Logger.LogInformation($"Entitlement Request: {JsonConvert.SerializeObject(request)}");
+      Logger.LogInformation($"Internal Entitlement Request: {JsonConvert.SerializeObject(request)}");
 
       if (request == null)
         return BadRequest();
@@ -114,6 +117,56 @@ namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
 
       return Json(response);
     }
+
+    /// <summary>
+    /// Attempt to request an entitlement for the request feature and user. Used by WorksOS UI.
+    /// </summary>
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [HttpPost("api/v1/entitlement")]
+    public async Task<IActionResult> GetEntitlementExternal([FromBody] ExternalEntitlementRequestModel request)
+    {
+      Logger.LogInformation($"External Entitlement Request: {JsonConvert.SerializeObject(request)}");
+
+      if (request == null)
+        return BadRequest();
+
+      LoadFeaturesAndSkus();
+      (var feature, var sku) = MapApplicationToFeature(request.ApplicationName);
+      if (string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(sku))
+        return BadRequest($"Unknown application {request.ApplicationName}");
+
+      return await GetEntitlementInternal(new EntitlementRequestModel
+      {
+        OrganizationIdentifier = request.OrganizationIdentifier,
+        Feature = feature,
+        Sku = sku,
+        UserEmail = request.UserEmail,
+        UserUid = User.Identity.Name
+      });
+    }
+
+    /// <summary>
+    /// Loads the configured features and skus. Currently ony WorksOS.
+    /// </summary>
+    private void LoadFeaturesAndSkus()
+    {
+      if (string.IsNullOrEmpty(WorksOsFeature))
+        WorksOsFeature = ConfigStore.GetValueString(ConfigConstants.ENTITLEMENTS_FEATURE_CONFIG_KEY, "FEA-CEC-WORKSOS");
+      if (string.IsNullOrEmpty(WorksOsSku))
+        WorksOsSku = ConfigStore.GetValueString(ConfigConstants.ENTITLEMENTS_SKU_CONFIG_KEY, "HCC-WOS-MO");
+    }
+
+    /// <summary>
+    /// Maps the application to the feature and sku for EMS.
+    /// </summary>
+    private (string feature, string sku) MapApplicationToFeature(string appName) => appName switch
+    {
+      "worksos" => (WorksOsFeature, WorksOsSku),
+      _ => (string.Empty, string.Empty)
+    };
 
     private IHeaderDictionary CustomHeaders =>
       new HeaderDictionary

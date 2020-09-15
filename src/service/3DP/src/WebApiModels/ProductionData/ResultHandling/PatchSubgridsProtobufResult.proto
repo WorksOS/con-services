@@ -1,5 +1,5 @@
 syntax = "proto2";
-package VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+package VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 
 message PatchSubgridOriginProtobufResult {
     required double SubgridOriginX = 1;
@@ -10,6 +10,8 @@ message PatchSubgridOriginProtobufResult {
     repeated uint32 TimeOffsets = 7 [packed = true];
 }
 message PatchSubgridsProtobufResult {
-    required double CellSize = 1;
+    optional double CellSize = 1;
     repeated PatchSubgridOriginProtobufResult Subgrids = 4;
+    required int32 Code = 5;
+    optional string Message = 6;
 }

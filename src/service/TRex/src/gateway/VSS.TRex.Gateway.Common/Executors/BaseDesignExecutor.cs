@@ -173,6 +173,8 @@ namespace VSS.TRex.Gateway.Common.Executors
           ProjectID = request.ProjectUid,
           AlignmentID = request.DesignUid
         });
+
+        removedOk = removeResponse.RequestResult == DesignProfilerRequestResult.OK;
       }
 
       if (!removedOk)

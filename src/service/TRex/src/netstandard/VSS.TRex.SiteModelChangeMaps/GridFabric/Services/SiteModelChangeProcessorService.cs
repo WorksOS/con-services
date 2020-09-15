@@ -8,10 +8,12 @@ using Apache.Ignite.Core.Cache.Query;
 using Apache.Ignite.Core.Cache.Query.Continuous;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Services;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
@@ -54,6 +56,11 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// </summary>
     private EventWaitHandle _waitHandle;
 
+    /// <summary>
+    /// The query handle created to represent the continuous query being used
+    /// </summary>
+    IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> _queryHandle;
+    
     /// <summary>
     /// Default no-args constructor
     /// </summary>
@@ -101,6 +108,16 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
           return;
         }
 
+        // Don't start operations until the local (immutable) grid is confirmed as active
+        DIContext.ObtainRequired<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.ImmutableGridName());
+
+        // Once active, delay start of operations for a time to ensure everything is up and running
+        var delay = DIContext.ObtainRequired<IConfigurationStore>().GetValueInt("TREX_SITE_MODEL_CHANGE_MAP_SERVICE_OPERATION_START_DELAY_SECONDS", 120);
+        _log.LogInformation($"Delaying start of operations for {delay} seconds");
+        Thread.Sleep(delay * 1000);
+
+        _log.LogInformation("Obtaining queue cache reference");
+
         var queueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
 
         _log.LogInformation($"Obtained queue cache for SiteModelChangeBufferQueueKey: {queueCache}");
@@ -114,29 +131,42 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
         // Instantiate the queryHandle and start the continuous query on the remote nodes
         // Note: Only cache items held on this local node will be handled here
         var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>>();
-        IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> queryHandle = null;
 
         if (queryHandleFactory != null)
         {
           _log.LogInformation("Obtaining query handle from DI factory");
-          queryHandle = queryHandleFactory(listener);
+          _queryHandle = queryHandleFactory(listener);
         }
 
-        if (queryHandle == null)
+        while (_queryHandle == null && !Aborted)
         {
           _log.LogInformation("Obtaining query handle from QueryContinuous() API");
 
-          queryHandle = queueCache.QueryContinuous
-          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener) {Local = true},
-            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> {Local = true});
+          try
+          {
+            _queryHandle = queueCache.QueryContinuous
+            (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener) {Local = true},
+              initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> {Local = true});
+          }
+          catch (Exception e)
+          {
+            _log.LogError(e, "Exception while constructing continuous query, will sleep and retry");
+            Thread.Sleep(5000);
+          }
         }
 
-        using (queryHandle)
+        if (_queryHandle == null || Aborted)
+        {
+          _log.LogInformation("No query handle available, or aborting");
+          return;
+        }
+
+        using (_queryHandle)
         {
           _log.LogInformation("Performing initial continuous query cursor scan of items to process");
 
           // Perform the initial query to grab all existing elements and process them. Make sure to sort them in time order first
-          queryHandle.GetInitialQueryCursor().OrderBy(x => x.Key.InsertUTCTicks).ForEach(handler.Add);
+          _queryHandle.GetInitialQueryCursor().OrderBy(x => x.Key.InsertUTCTicks).ForEach(handler.Add);
 
           while (!Aborted)
           {
