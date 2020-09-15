@@ -207,7 +207,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders, false));
+          CustomHeaders,
+          GetUserId(),
+          false));
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
@@ -325,7 +327,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: tRexCompactionDataProxy,
-            customHeaders: CustomHeaders)
+            customHeaders: CustomHeaders,
+            userId: GetUserId(),
+            fileImportProxy: FileImportProxy)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
       if (result != null)
@@ -547,7 +551,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           null,
           null,
           null,
-          CustomHeaders, false));
+          CustomHeaders,
+          GetUserId(), 
+          false));
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 

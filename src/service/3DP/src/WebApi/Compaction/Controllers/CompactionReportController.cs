@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Productivity3D.Service.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -13,7 +14,6 @@ using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -132,7 +132,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             RaptorClient, 
 #endif
             configStore: ConfigStore,
-            trexCompactionDataProxy: TRexCompactionDataProxy)
+            trexCompactionDataProxy: TRexCompactionDataProxy,
+            userId: GetUserId(), 
+            fileImportProxy: FileImportProxy)
           .ProcessAsync(reportGridRequest)) as CompactionReportResult;
     }
 
@@ -221,7 +223,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           RaptorClient, 
 #endif
           configStore: ConfigStore,
-          trexCompactionDataProxy: TRexCompactionDataProxy)
+          trexCompactionDataProxy: TRexCompactionDataProxy,
+          userId: GetUserId(), 
+          fileImportProxy: FileImportProxy)
         .ProcessAsync(reportRequest)) as CompactionReportResult;
     }
 

@@ -51,7 +51,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
           configStore: configStore,
           trexCompactionDataProxy: trexCompactionDataProxy,
           customHeaders: customHeaders,
-          customerUid: customerUid)
+          customerUid: customerUid,
+          userId: userId, fileImportProxy: fileImportProxy)
         .ProcessAsync(projectIds);
     }
   }

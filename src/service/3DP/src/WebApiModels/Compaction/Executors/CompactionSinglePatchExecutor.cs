@@ -11,8 +11,8 @@ using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using System.Collections.Generic;
+using CCSS.Productivity3D.Service.Common;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Common.Filters.Utilities;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
