@@ -13,6 +13,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using System.Collections.Generic;
 using CCSS.Productivity3D.Service.Common;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -75,7 +76,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     protected sealed override void ProcessErrorCodes()
     { }
 
-    private PatchSubgridsProtobufResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
+    private PatchSubgridsRawResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
     {
       using (var reader = new BinaryReader(stream))
       {
@@ -193,7 +194,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
 
         log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} subGridsInPatch: {subGridsInPatch} subGridsWithDataToReturn: {subGridsWithDataToReturn} subgridsCount: {subgrids.Count}");
-        return PatchSubgridsProtobufResult.Create(cellSize, subgrids.ToArray());
+        return PatchSubgridsRawResult.Create(cellSize, subgrids.ToArray());
       }
     }
   }

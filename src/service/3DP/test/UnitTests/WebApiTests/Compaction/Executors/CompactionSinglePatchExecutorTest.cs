@@ -31,6 +31,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using Microsoft.AspNetCore.Http;
 using Point = VSS.MasterData.Models.Models.Point;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -56,6 +57,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [TestMethod, Ignore("Temporary script to generate .proto file for PatchResult while development is ongoing.")]
     public void GenerateProtoFile()
     {
+      // since PatchSubgridsRawResult cannot be derived from Correct base class,
+      //   include code and message manually in .proto
       // After .proto file is created generate .cs client schema using:
       // $ protogen --proto_path=C:\temp PatchResult.proto --csharp_out=C:\temp
       // .\protogen --proto_path=.\ PatchSubgridsProtobufResult.proto --csharp_out=.\
@@ -97,12 +100,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var request = new PatchesRequest(ecSerial,
         machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
-      var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
+      var ex = request.Validate();
 
       ex.Should().NotBeNull();
-      ex.Code.Should().Be(HttpStatusCode.BadRequest);
-      ex.GetResult.Code.Should().Be(errorResultCode);
-      ex.GetResult.Message.Should().Be(expectedMessage);
+      ex.Code.Should().Be(errorResultCode);
+      ex.Message.Should().Be(expectedMessage);
     }
 
     [TestMethod]
@@ -211,7 +213,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CompactionSinglePatchExecutor>(_logger, configStore: mockConfigStore.Object,
           trexCompactionDataProxy: tRexProxy.Object);
-      var result = await executor.ProcessAsync(patchRequest) as PatchSubgridsProtobufResult;
+      var result = await executor.ProcessAsync(patchRequest) as PatchSubgridsRawResult;
       result.Should().NotBeNull();
       result.Subgrids.Should().NotBeNull();
       result.Subgrids.Length.Should().Be(1);

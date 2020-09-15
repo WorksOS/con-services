@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProtoBuf;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
