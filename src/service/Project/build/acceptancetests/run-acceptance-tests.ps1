@@ -4,44 +4,12 @@ enum ReturnCode {
     OPERATION_FAILED
 }
 
-function Login-Aws {
-    Write-Host "`n##[section]Authenticating with AWS ECR..." -ForegroundColor Green
-    Write-Host "Determining AWS CLI version..."
+# Load common script functions
+$buildScriptsDir = "$PSScriptRoot/../../../../../build"
 
-    aws --version
-
-    $awsVersion = (aws --version).Split(' ')[0].Split('/')[1].Split(' ')
-    $versionMajorMinor = [decimal]($awsVersion[0].SubString(0, $awsVersion.LastIndexOf('.')))
-    $canUseGetLoginPassword = $versionMajorMinor -ge 1.18
-
-    if ($canUseGetLoginPassword) {
-        # Azure pipelines use a recent version of AWS CLI that has replaced get-login with get-login-password.
-        aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
-        if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
-    }
-    else {
-        # Retain backward compatibility for running locally on team development PCs with older AWS CLI installed.
-        Write-Host "##[section]Found older version of AWS CLI, failing back to 'get-login'`n" -ForegroundColor Green
-        Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile fsm-okta)
-        if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
-    }
-}
-
-function Exit-With-Code {
-    param(
-        [ReturnCode][Parameter(Mandatory = $true)]$code
-    )
-
-    if ($code -eq [ReturnCode]::SUCCESS) {
-        Write-Host "`n##[command]Exiting: $code" -ForegroundColor Green
-    }
-    else {
-        Write-Host "`n##[error]Exiting with error: $code" -ForegroundColor Red
-    }
-
-    Pop-Location
-    Exit $code
-}
+. $buildScriptsDir/aws-login.ps1
+. $buildScriptsDir/build-common-functions.ps1
+# END SETUP
 
 Login-Aws
 
@@ -90,9 +58,6 @@ Invoke-Expression "dotnet publish ./tests/IntegrationTests/IntegrationTests.cspr
 
 if ($LASTEXITCODE -ne 0) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
 
-# Load environment variables
-#& "${PSScriptRoot}/testingvars.ps1"
-
 # Docker Compose Pull & Up
 Push-Location $PSScriptRoot/../..
 Write-Host "`n##[section]Processing docker-compose.yml for 'pull'..." -ForegroundColor Green
@@ -106,7 +71,6 @@ Invoke-Expression "docker ps"
 
 Write-Host "`n##[command]docker logs --follow acceptancetests_accepttest_1:`n"
 docker logs --follow acceptancetests_accepttest_1 
-#docker wait acceptancetests_accepttest_1
 
 # Run the acceptance tests
 
