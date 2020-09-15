@@ -200,9 +200,15 @@ namespace CCSS.Productivity3D.Service.Common
 
       if (!filterUid.HasValue)
       {
-        return haveExcludedSs
-          ? FilterResult.CreateFilter(excludedIds, excludedUids)
-          : null;
+        if (haveExcludedSs)
+          return FilterResult.CreateFilter(excludedIds, excludedUids);
+        else
+        {
+          var filterResult = new FilterResult();
+          filterResult.anyOfSurveyedSurfacesIncluded = await _designUtilities.AnyIncludedSurveyedSurface(projectUid, userUid, customHeaders);
+
+          return filterResult;
+        }
       }
 
       try

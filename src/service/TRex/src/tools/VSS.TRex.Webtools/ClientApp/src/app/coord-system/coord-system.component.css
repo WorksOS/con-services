@@ -42,8 +42,18 @@ header {
   height: 20px;
 }
 
-.panel-default {
-  height: 400px;
+.panel-default-right {
+  height: auto;
+  padding: 10px;
+  font-size: small;
+}
+
+.panel-default-left {
+  height: 70px;
+}
+
+.panel-default-left,
+.panel-default-right {
   border-style: solid;
   border-width: 1px;
   border-color: lightgray;

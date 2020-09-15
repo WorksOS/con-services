@@ -123,5 +123,18 @@ namespace CCSS.Productivity3D.Service.Common
 
       return results;
     }
+
+    /// <summary>
+    /// Checkss whether at least one of the surveyed surfaces to include to TRex calculations. 
+    /// This is the activated one.
+    /// </summary>
+    public async Task<bool> AnyIncludedSurveyedSurface(Guid projectUid, string userId, IHeaderDictionary customHeaders)
+    {
+      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
+      
+      if (fileList == null || fileList.Count == 0) return false;
+
+      return fileList.Any(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && f.IsActivated);
+    }
   }
 }

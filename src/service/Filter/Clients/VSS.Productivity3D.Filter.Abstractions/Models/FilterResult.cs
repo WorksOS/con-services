@@ -170,6 +170,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
 
     public bool IsFilterEmpty => isFilterEmpty();
 
+    public bool anyOfSurveyedSurfacesIncluded { get; set; }
 
     /// <summary>
     /// Default public constructor.
@@ -711,7 +712,8 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
              TemperatureRangeMax.Equals(other.TemperatureRangeMax) &&
              PassCountRangeMin.Equals(other.PassCountRangeMin) &&
              PassCountRangeMax.Equals(other.PassCountRangeMax) &&
-             isFilterContainsSSOnly == other.isFilterContainsSSOnly;
+             isFilterContainsSSOnly == other.isFilterContainsSSOnly &&
+             anyOfSurveyedSurfacesIncluded == other.anyOfSurveyedSurfacesIncluded;
     }
 
     public override bool Equals(object obj)

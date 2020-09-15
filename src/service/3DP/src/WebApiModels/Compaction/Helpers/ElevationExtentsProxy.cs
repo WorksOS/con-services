@@ -131,49 +131,15 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         {
           ElevationStatisticsResult result;
           entry.SetOptions(opts);
-          if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
-          {
-            log.LogDebug($"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
 
-            var projectExtentsRequest = new ExtentRequest(projectId, projectUid,filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
-            var extents = await RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
-#if RAPTOR
-                raptorClient,
-#endif
-                configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders, 
-                userId: userId, fileImportProxy: fileImportProxy)
-              .ProcessAsync(projectExtentsRequest) as ProjectExtentsResult;
-
-            if (extents != null)
-            {
-              result = new ElevationStatisticsResult(
-                new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
-                  extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
-                  extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0.0);
-            }
-            else
-              result = new ElevationStatisticsResult(null, 0.0, 0.0, 0.0);
-          }
+          if (filter == null)
+            result = await ProcessWithProjectExtentsSubmitter();
           else
           {
-            log.LogDebug(
-              $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
-
-            var liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-
-            var statsRequest =
-              new ElevationStatisticsRequest(projectId, projectUid, null, filter, 0,
-                liftSettings);
-            statsRequest.Validate();
-
-            result =
-              await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
-#if RAPTOR
-                  raptorClient,
-#endif
-                  configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders, 
-                  userId: userId, fileImportProxy: fileImportProxy)
-                .ProcessAsync(statsRequest) as ElevationStatisticsResult;
+            if ((filter.isFilterContainsSSOnly || filter.IsFilterEmpty) && !filter.anyOfSurveyedSurfacesIncluded)
+              result = await ProcessWithProjectExtentsSubmitter();
+            else
+              result = await ProcessWithElevationStatisticsExecutor();
           }
 
           //Check for 'No elevation range' result
@@ -194,6 +160,54 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       }
       
       return resultElevationStatisticsResult;
+
+      #region Internal methods
+      async Task<ElevationStatisticsResult> ProcessWithProjectExtentsSubmitter()
+      {
+        log.LogDebug($"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
+
+        var projectExtentsRequest = new ExtentRequest(projectId, projectUid, filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
+        var extents = await RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
+#if RAPTOR
+                raptorClient,
+#endif
+                configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders,
+            userId: userId, fileImportProxy: fileImportProxy)
+          .ProcessAsync(projectExtentsRequest) as ProjectExtentsResult;
+
+        if (extents != null)
+        {
+          return new ElevationStatisticsResult(
+            new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
+              extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
+              extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0.0);
+        }
+        else
+          return new ElevationStatisticsResult(null, 0.0, 0.0, 0.0);
+      }
+
+
+      async Task<ElevationStatisticsResult> ProcessWithElevationStatisticsExecutor()
+      {
+        log.LogDebug(
+          $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
+
+        var liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+
+        var statsRequest =
+          new ElevationStatisticsRequest(projectId, projectUid, null, filter, 0,
+            liftSettings);
+        statsRequest.Validate();
+
+        return await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
+#if RAPTOR
+                  raptorClient,
+#endif
+                  configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders,
+              userId: userId, fileImportProxy: fileImportProxy)
+            .ProcessAsync(statsRequest) as ElevationStatisticsResult;
+      }
+      #endregion
     }
 
     /// <summary>
