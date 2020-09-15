@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -106,6 +106,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         await TccHelper
           .GetFileContentFromTcc(projectRequest.CoordinateSystem,
             Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
+
+      try
+      {
+        var resultPolygonWkt = PolygonUtils.MakeCounterClockwise(projectValidation.ProjectBoundaryWKT, out var hasBeenReversed);
+        if (hasBeenReversed)
+        {
+          Logger.LogInformation($"{nameof(CreateProjectTBC)} Boundary has been reversed to: {projectValidation.ProjectBoundaryWKT}");
+          projectValidation.ProjectBoundaryWKT = resultPolygonWkt;
+        }
+      }
+      catch (Exception e)
+      {
+        Logger.LogError(e, $"{nameof(CreateProjectTBC)} Boundary orientation check threw exception: ");
+        throw;
+      }
 
       var validationResult
         = await WithServiceExceptionTryExecuteAsync(() =>

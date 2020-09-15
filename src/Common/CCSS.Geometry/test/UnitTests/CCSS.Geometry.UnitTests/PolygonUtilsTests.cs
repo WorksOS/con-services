@@ -164,5 +164,31 @@ namespace CCSS.Geometry.UnitTests
     }
 
     #endregion
+
+
+    #region polygon orientation
+
+    [Fact]
+    public void PolygonOrientationOK()
+    {
+      var projectBoundaryCounterClockwise = "POLYGON((170 10,190 10,190 40,170 40,170 10))";
+      var projectBoundary = projectBoundaryCounterClockwise;
+      var resultPolygonWkt  = PolygonUtils.MakeCounterClockwise(projectBoundary, out var hasBeenReversed);
+      Assert.False(hasBeenReversed);
+      Assert.Equal(projectBoundaryCounterClockwise, resultPolygonWkt);
+    }
+
+    [Fact]
+    public void PolygonOrientationReversed()
+    {
+      var projectBoundaryCounterClockwise = "POLYGON((170 10,190 10,190 40,170 40,170 10))";
+      var projectBoundaryClockwise = "POLYGON((170 10,170 40,190 40,190 10,170 10))";
+      var projectBoundary = projectBoundaryClockwise;
+      var resultPolygonWkt = PolygonUtils.MakeCounterClockwise(projectBoundary, out var hasBeenReversed);
+      Assert.True(hasBeenReversed);
+      Assert.Equal(projectBoundaryCounterClockwise, resultPolygonWkt);
+    }
+
+    #endregion
   }
 }
