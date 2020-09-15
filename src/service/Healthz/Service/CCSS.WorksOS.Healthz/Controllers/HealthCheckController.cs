@@ -9,7 +9,6 @@ using VSS.Common.Abstractions.ServiceDiscovery.Models;
 
 namespace CCSS.WorksOS.Healthz.Controllers
 {
-  [Route("api/[controller]")]
   public class HealthCheckController : BaseController<HealthCheckController>
   {
     private readonly IMemoryCache _cache;
@@ -31,7 +30,7 @@ namespace CCSS.WorksOS.Healthz.Controllers
       _healthCheckService = healthCheckService;
     }
 
-    [HttpGet("v1/serviceidentifiers")]
+    [HttpGet("api/v1/service")]
     public IActionResult GetServiceIdentifiers()
     {
       return Ok(new
@@ -40,19 +39,21 @@ namespace CCSS.WorksOS.Healthz.Controllers
       });
     }
 
-    [HttpGet("v1/service")]
-    public async Task<IActionResult> GetServiceStatusSingle(string serviceIdentifier)
+    [HttpGet("api/v1/service/{name}/status")]
+    public async Task<IActionResult> GetServiceStatusSingle(string name)
     {
+      // TODO validate inputs.
+
       // TODO This will be moved to the HealthCheck hosted service and this method will instead return the last known state 
       // held by the hosted service's cache.
-      var serviceResult = await _serviceResolution.ResolveService(serviceName: serviceIdentifier);
+      var serviceResult = await _serviceResolution.ResolveService(serviceName: name);
 
-      var result = await _healthCheckService.QueryService(serviceIdentifier, serviceResult.Endpoint, CustomHeaders);
+      var result = await _healthCheckService.QueryService(name, serviceResult.Endpoint, CustomHeaders);
 
       return Ok(result);
     }
 
-    [HttpGet("v1/services")]
+    [HttpGet("api/v1/service/status")]
     public async Task<IActionResult> GetServiceStatusAll()
     {
       if (_services == null)
