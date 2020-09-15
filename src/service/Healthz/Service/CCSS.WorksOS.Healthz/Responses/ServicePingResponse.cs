@@ -7,14 +7,16 @@ namespace CCSS.WorksOS.Healthz.Responses
   {
     public string Id { get; private set; }
     public TimeSpan ResponseTime { get; private set; }
+    public long ResponseTimeTicks { get; private set; }
     public ServiceState State { get; private set; }
 
-    public static ServicePingResponse Create(string id, TimeSpan responseTime, bool isFalted) =>
+    public static ServicePingResponse Create(string id, long responseTime, bool isSuccessStatusCode) =>
       new ServicePingResponse
       {
         Id = id,
-        ResponseTime = responseTime,
-        State = isFalted ? ServiceState.Unavailable : ServiceState.Available
+        ResponseTimeTicks = responseTime,
+        ResponseTime = TimeSpan.FromTicks(responseTime),
+        State = isSuccessStatusCode ? ServiceState.Available : ServiceState.Unavailable
       };
   }
 }
