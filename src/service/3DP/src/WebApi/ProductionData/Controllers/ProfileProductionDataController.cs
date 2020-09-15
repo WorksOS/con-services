@@ -7,6 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -47,6 +48,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
+    private readonly IFileImportProxy FileImportProxy;
+
+    private string UserId => User.Identity.Name;
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -54,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy, IFileImportProxy fileImportProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -62,6 +67,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.logger = logger;
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
+      FileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -83,7 +89,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           raptorClient,
 #endif
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+          userId: UserId, fileImportProxy: FileImportProxy)
         .ProcessAsync(request) as ProfileResult;
     }
   }

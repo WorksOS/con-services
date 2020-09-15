@@ -103,7 +103,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.Boundary, opt => opt.MapFrom(src => GeometryConversion.MapProjectBoundary(src.ProjectBoundaryWKT)))
             .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => src.ProjectType))
             .ForMember(dest => dest.CalibrationFileName, opt => opt.MapFrom(src => src.CoordinateSystemFileName))
-            .ForMember(dest => dest.CalibrationFileBase64Content, opt => opt.MapFrom(src => System.Text.Encoding.ASCII.GetString(src.CoordinateSystemFileContent)))
+            .ForMember(dest => dest.CalibrationFileBase64Content, opt => opt.MapFrom(src => Convert.ToBase64String(src.CoordinateSystemFileContent)))
             ;
 
           cfg.CreateMap<AccountResponseModel, CustomerData>()

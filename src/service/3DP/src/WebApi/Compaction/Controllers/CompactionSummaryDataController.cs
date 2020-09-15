@@ -62,7 +62,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(LoggerFactory,
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
               .ProcessAsync(request) as CMVSummaryResult;
 
         var cmvSummaryResult = new CompactionCmvSummaryResult(result, request.CmvSettings);
@@ -117,7 +118,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result = await RequestExecutorContainerFactory.Build<SummaryMDPExecutor>(LoggerFactory,
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
                      .ProcessAsync(request) as MDPSummaryResult;
 
         var mdpSummaryResult = new CompactionMdpSummaryResult(result, mdpSettings);
@@ -162,7 +164,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummaryPassCountsExecutor>(LoggerFactory,
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+        userId: GetUserId(), fileImportProxy: FileImportProxy)
                      .ProcessAsync(request) as PassCountSummaryResult;
 
         var passCountSummaryResult = new CompactionPassCountSummaryResult(result);
@@ -217,7 +220,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummaryTemperatureExecutor>(LoggerFactory,
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
                      .ProcessAsync(request) as TemperatureSummaryResult;
 
         var temperatureSummaryResult = new CompactionTemperatureSummaryResult(result);
@@ -270,7 +274,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummarySpeedExecutor>(LoggerFactory,
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
                      .ProcessAsync(request) as SpeedSummaryResult;
 
         var speedSummaryResult = new CompactionSpeedSummaryResult(result, liftSettings.MachineSpeedTarget);
@@ -361,7 +366,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var result = await RequestExecutorContainerFactory
                      .Build<SummaryVolumesExecutorV2>(LoggerFactory,
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
                      .ProcessAsync(request) as SummaryVolumesResult;
 
         if (result == null) return Ok(new CompactionVolumesSummaryResult(0, "No production data found"));

@@ -78,7 +78,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       return await RequestExecutorContainerFactory
         .Build<PatchExecutor>(LoggerFactory,
-          ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+          userId: GetUserId(), fileImportProxy: FileImportProxy)
         .ProcessAsync(request);
     }
   }

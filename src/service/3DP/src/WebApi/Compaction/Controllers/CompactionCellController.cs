@@ -77,7 +77,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
         RaptorClient,
 #endif
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CompactionCellDatumResult;
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+        userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request) as CompactionCellDatumResult;
     }
 
     /// <summary>
@@ -116,9 +117,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
           RaptorClient,
 #endif
-          configStore: ConfigStore,
-          trexCompactionDataProxy: TRexCompactionDataProxy,
-          customHeaders: CustomHeaders)
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+          userId: GetUserId(), fileImportProxy: FileImportProxy)
         .ProcessAsync(request) as CellPassesV2Result;
 
       if (result?.Layers == null || result?.Layers.Length == 0)

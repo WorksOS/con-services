@@ -53,7 +53,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         LoggerFactory,
         configStore: ConfigStore,
         fileList: fileList,
-        trexCompactionDataProxy: TRexCompactionDataProxy)
+        trexCompactionDataProxy: TRexCompactionDataProxy,
+        userId: GetUserId(), 
+        fileImportProxy: FileImportProxy)
         .ProcessAsync(request);
     }
 
@@ -90,7 +92,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
             request.Validate();
 
             var result = RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(LoggerFactory,
-              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request);
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy,
+              userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request);
 
             tasks.Add(result);
           }
@@ -131,7 +134,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<AlignmentGeometryExecutor>(LoggerFactory,
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request);
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy,
+        userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request);
     }
 
     /// <summary>
