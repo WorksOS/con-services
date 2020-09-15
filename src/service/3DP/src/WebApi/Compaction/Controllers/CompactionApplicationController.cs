@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,11 +16,14 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -50,8 +54,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// The area required is indicated by the bounding box, which is limited to MAX_BOUNDARY_SQUARE_METERSm2.
     /// The response patch of sub-grids is lean and decorated for use with Protobuf-net.
     ///     See GeneratePatchResultProtoFile unit test for generating .proto file for injest by client.
-    /// </remarks>
-    [HttpGet("api/v2/device/patches")]
+    ///
+    /// proto allows optionally returning data or error code&message:
+    /// message PatchSubgridsProtobufResult {
+    ///    required int32 code = 5;
+    ///    optional double CellSize = 1;
+    ///    repeated PatchSubgridOriginProtobufResult Subgrids = 4;
+    ///    optional string error_message = 6
+    ///   }
+  /// </remarks>
+  [HttpGet("api/v2/device/patches")]
     public async Task<IActionResult> GetSubGridPatches(string ecSerial,
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
@@ -59,11 +71,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var patchesRequest = new PatchesRequest(ecSerial, machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       Log.LogInformation($"{nameof(GetSubGridPatches)}: {JsonConvert.SerializeObject(patchesRequest)}");
-
+      
       // todoJeannie temporary to look into the DID info available.
       Log.LogDebug($"{nameof(GetSubGridPatches)}: customHeaders {CustomHeaders.LogHeaders()}");
 
-      patchesRequest.Validate();
+      var validationResult = patchesRequest.Validate();
+      if (validationResult.Code != 0 )
+        return BadRequest(validationResult);
 
       // identify VSS projectUid and CustomerUid
       var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectV5Proxy);
@@ -73,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var errorMessage = $"Unable to identify a unique project or customer. Result: {JsonConvert.SerializeObject(tfaResult)}";
         Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionResult(tfaResult.Code, tfaResult.Message));
+        return BadRequest(new PatchSubgridsProtobufResult(tfaResult.Code, tfaResult.Message));
       }
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
@@ -111,7 +125,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           customHeaders: CustomHeaders, userId: GetUserId(), fileImportProxy: FileImportProxy)
         .ProcessAsync(patchRequest));
 
-      return Ok(v2PatchRequestResponse);
+      var v2PatchRequestFinalResponse = AutoMapperUtility.Automapper.Map<PatchSubgridsProtobufResult>(v2PatchRequestResponse);
+      return Ok(v2PatchRequestFinalResponse);
     }
   }
 }
