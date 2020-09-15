@@ -52,6 +52,8 @@ namespace VSS.TRex.SubGridTrees
 
         public void Write(BinaryWriter writer)
         {
+            Version = VERSION;
+
             VersionSerializationHelper.EmitVersionByte(writer, VERSION);
 
             writer.Write(Identifier);

@@ -48,7 +48,13 @@ namespace VSS.TRex.Tests.SubGrids
       using var br = new BinaryReader(ms);
       var newHeader = new SubGridStreamHeader(br);
 
-      newHeader.Should().BeEquivalentTo(header);
+      newHeader.Identifier.Should().BeEquivalentTo(header.Identifier);
+      newHeader.StartTime.Should().Be(header.StartTime);
+      newHeader.EndTime.Should().Be(header.EndTime);
+      newHeader.Flags.Should().Be(header.Flags);
+      newHeader.LastUpdateTimeUTC.Should().Be(header.LastUpdateTimeUTC);
+      newHeader.IsSubGridDirectoryFile.Should().Be(header.IsSubGridDirectoryFile);
+      newHeader.IsSubGridSegmentFile.Should().Be(header.IsSubGridSegmentFile);
     }
   }
 }
