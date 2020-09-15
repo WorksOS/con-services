@@ -221,3 +221,15 @@ jobs:
         servicePath: '$(rootServiceFolder)/Healthz'
         solution: 'CCSS.WorksOS.Healthz.sln'
         testFolder: 'test'
+        
+  - job: BuildReportsService
+    displayName: 'Build Reports service'
+    timeoutInMinutes: 20
+    steps:
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Reports'
+        solution: 'CCSS.WorksOS.Reports.sln'
+        testFolder: 'test'
