@@ -5,8 +5,6 @@ metadata:
   labels:
     service-name: {{ .Values.serviceName }}
     app: {{ template "projectservice.name" . }}  
-  annotations:
-    prometheus.io/scrape: "true"
 spec:
   selector:
     app: {{ template "projectservice.name" . }}

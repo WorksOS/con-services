@@ -1,0 +1,10 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "tagfileauthservice.name" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "tagfileauthservice.name" . }}
+  endpoints:
+  - port: http
