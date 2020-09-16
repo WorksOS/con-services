@@ -223,8 +223,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected Task<DesignDescriptor> GetAndValidateDesignDescriptor(Guid projectUid, Guid? fileUid, OperationType operation = OperationType.General)
     {
       return DesignUtilities.GetAndValidateDesignDescriptor(projectUid, fileUid, GetUserId(), CustomHeaders);
-        bool operationSupported = true;
-        //Note: ':' is an invalid character for filenames in Windows so get rid of them
     }
 
     /// <summary>
