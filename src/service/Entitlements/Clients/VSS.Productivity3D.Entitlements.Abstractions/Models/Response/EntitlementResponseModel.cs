@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
@@ -39,6 +41,7 @@ namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Response
     /// <summary>
     /// Is the user entitled to the feature described.
     /// </summary>
+    [JsonProperty(PropertyName = "isEntitled")]
     public bool IsEntitled { get; set; }
 
     public List<string> GetIdentifiers()

@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading;
 using App.Metrics;
 using App.Metrics.AspNetCore;
-using App.Metrics.AspNetCore.Health;
 using Jaeger;
 using Jaeger.Samplers;
 using Microsoft.AspNetCore.Builder;
@@ -81,27 +80,6 @@ namespace VSS.WebApi.Common
 
       //Check how many requests we can execute
       ServicePointManager.DefaultConnectionLimit = 128;
-      return builder;
-    }
-
-    /// <summary>
-    /// Uses the prometheus.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    [Obsolete("Please do not use this method anymore")]
-    public static IWebHostBuilder UsePrometheus(this IWebHostBuilder builder)
-    {
-      var Metrics = new MetricsBuilder()
-        .OutputMetrics.AsPrometheusProtobuf()
-        .Build();
-
-      if (builder == null)
-        throw new ArgumentNullException(nameof(builder));
-
-      builder.ConfigureMetrics(Metrics)
-        .UseMetrics()
-        .UseHealth();
-
       return builder;
     }
 

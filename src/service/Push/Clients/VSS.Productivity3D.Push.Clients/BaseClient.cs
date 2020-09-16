@@ -50,7 +50,6 @@ namespace VSS.Productivity3D.Push.Clients
       {
         IsConnecting = false;
         _connected = value;
-        SignalRHealthCheck.State = value;
       }
     }
     

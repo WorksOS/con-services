@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       mockAuthn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
       var controller = CreateEntitlementsController(userUid.ToString());
-      var result = await controller.GetEntitlement(request);
+      var result = await controller.GetEntitlementInternal(request);
       Assert.NotNull(result);
       var response = (result as JsonResult)?.Value as EntitlementResponseModel;
       Assert.NotNull(response);
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       mockAuthn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
       var controller = CreateEntitlementsController(userUid.ToString());
-      var result = await controller.GetEntitlement(request);
+      var result = await controller.GetEntitlementInternal(request);
       Assert.NotNull(result);
       var response = (result as JsonResult)?.Value as EntitlementResponseModel;
       Assert.NotNull(response);
@@ -103,7 +103,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_ACCEPT_EMAIL_KEY, string.Empty)).Returns("allowed@nowhere.com");
 
       var controller = CreateEntitlementsController(userUid.ToString());
-      var result = await controller.GetEntitlement(request);
+      var result = await controller.GetEntitlementInternal(request);
       Assert.NotNull(result);
       var response = (result as JsonResult)?.Value as EntitlementResponseModel;
       Assert.NotNull(response);
@@ -133,7 +133,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       mockConfigStore.Setup(c => c.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false)).Returns(false);
 
       var controller = CreateEntitlementsController(userUid.ToString());
-      var result = await controller.GetEntitlement(request);
+      var result = await controller.GetEntitlementInternal(request);
       Assert.NotNull(result);
       var response = (result as JsonResult)?.Value as EntitlementResponseModel;
       Assert.NotNull(response);
@@ -149,7 +149,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
     public async Task GetEntitlement_NoRequest()
     {
       var controller = CreateEntitlementsController(Guid.NewGuid().ToString());
-      var result = await controller.GetEntitlement(null);
+      var result = await controller.GetEntitlementInternal(null);
       Assert.NotNull(result);
       var response = result as BadRequestResult;
       Assert.NotNull(response);
@@ -168,12 +168,76 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       };
 
       var controller = CreateEntitlementsController(Guid.NewGuid().ToString());
-      var result = await controller.GetEntitlement(request);
+      var result = await controller.GetEntitlementInternal(request);
       Assert.NotNull(result);
       var response = result as BadRequestObjectResult;
       Assert.NotNull(response);
       Assert.Equal(400, response.StatusCode);
       Assert.Equal("Provided uuid does not match JWT.", response.Value);
+    }
+
+    [Fact]
+    public async Task GetExternalEntitlement_Success()
+    {
+      var userUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+
+      var request = new ExternalEntitlementRequestModel
+      {
+        OrganizationIdentifier = customerUid.ToString(),
+        UserEmail = "someone@somwhere.com",
+        ApplicationName = "worksos"
+      };
+
+      var mockFeature = "some feature";
+      var mockSku = "some sku";
+      mockConfigStore.Setup(c => c.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false)).Returns(true);
+      mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_FEATURE_CONFIG_KEY, "FEA-CEC-WORKSOS")).Returns(mockFeature);
+      mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_SKU_CONFIG_KEY, "HCC-WOS-MO")).Returns(mockSku);
+
+      mockEmsClient.Setup(e => e.GetEntitlements(userUid, customerUid, mockSku, mockFeature, It.IsAny<IHeaderDictionary>())).ReturnsAsync(HttpStatusCode.Accepted);
+
+      mockAuthn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
+
+      var controller = CreateEntitlementsController(userUid.ToString());
+      var result = await controller.GetEntitlementExternal(request);
+      Assert.NotNull(result);
+      var response = (result as JsonResult)?.Value as EntitlementResponseModel;
+      Assert.NotNull(response);
+      Assert.Equal(request.OrganizationIdentifier, response.OrganizationIdentifier);
+      Assert.Equal(userUid.ToString(), response.UserUid);
+      Assert.Equal(request.UserEmail, response.UserEmail);
+      Assert.Equal(mockSku, response.Sku);
+      Assert.Equal(mockFeature, response.Feature);
+      Assert.True(response.IsEntitled);
+    }
+
+    [Fact]
+    public async Task GetExternalEntitlement_UnknownApplication()
+    {
+      var userUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+
+      var request = new ExternalEntitlementRequestModel
+      {
+        OrganizationIdentifier = customerUid.ToString(),
+        UserEmail = "someone@somwhere.com",
+        ApplicationName = "dummy"
+      };
+
+      var mockFeature = "some feature";
+      var mockSku = "some sku";
+      mockConfigStore.Setup(c => c.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false)).Returns(true);
+      mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_FEATURE_CONFIG_KEY, "FEA-CEC-WORKSOS")).Returns(mockFeature);
+      mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_SKU_CONFIG_KEY, "HCC-WOS-MO")).Returns(mockSku);
+
+      var controller = CreateEntitlementsController(userUid.ToString());
+      var result = await controller.GetEntitlementExternal(request);
+      Assert.NotNull(result);
+      var response = result as BadRequestObjectResult;
+      Assert.NotNull(response);
+      Assert.Equal(400, response.StatusCode);
+      Assert.Equal($"Unknown application {request.ApplicationName}", response.Value);
     }
 
     private EntitlementsController CreateEntitlementsController(string userUid)
