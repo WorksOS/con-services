@@ -97,7 +97,7 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void ReadUnversioned(BinaryReader reader)
+        public void ReadUnVersioned(BinaryReader reader)
         {
             Version = reader.ReadInt64();
             StartTime = DateTime.FromBinary(reader.ReadInt64());

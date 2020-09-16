@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
     void Clear();
     void Write(BinaryWriter writer);
     void Read(BinaryReader reader);
-    void ReadUnversioned(BinaryReader reader);
+    void ReadUnVersioned(BinaryReader reader);
 
     void DumpSegmentDirectoryToLog();
   }

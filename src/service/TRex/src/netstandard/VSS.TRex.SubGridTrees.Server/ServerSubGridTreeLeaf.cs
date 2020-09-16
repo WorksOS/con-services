@@ -775,7 +775,7 @@ namespace VSS.TRex.SubGridTrees.Server
           _directory.AllocateGlobalLatestCells();
 
           if (header.Version == 1)
-            _directory.ReadUnversioned(reader);
+            _directory.ReadUnVersioned(reader);
           else
             _directory.Read(reader);
 

@@ -115,9 +115,9 @@ namespace VSS.TRex.SubGridTrees.Server
         }
 
         /// <summary>
-        /// Supports reading the initial non-versioned serialization of 
+        /// Supports reading the initial non-versioned serialization of the sub grid directory
         /// </summary>
-        public void ReadUnversioned(BinaryReader reader)
+        public void ReadUnVersioned(BinaryReader reader)
         {
             if (reader.ReadBoolean())
             {
@@ -135,7 +135,7 @@ namespace VSS.TRex.SubGridTrees.Server
             for (var i = 0; i < segmentCount; i++)
             {
               var segmentInfo = new SubGridCellPassesDataSegmentInfo();
-              segmentInfo.ReadUnversioned(reader);
+              segmentInfo.ReadUnVersioned(reader);
 
               segmentInfo.ExistsInPersistentStore = true;
               SegmentDirectory.Add(segmentInfo);
