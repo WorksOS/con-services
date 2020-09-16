@@ -56,7 +56,6 @@ namespace VSS.MasterData.Repositories
               Log.LogTrace("Repository PollySync: db open (with connection reuse) was successfull");
             result = body(connection);
             connection.Close();
-            MySqlHealthCheck.SetStatus(true,this.GetType());
             return result;
           }
         });
@@ -65,7 +64,6 @@ namespace VSS.MasterData.Repositories
       {
         Log.LogCritical(
           $"Repository PollySync: {this.GetType().FullName} failed with exception: ", policyResult.FinalException);
-        MySqlHealthCheck.SetStatus(false, this.GetType());
         throw policyResult.FinalException;
       }
 
@@ -96,7 +94,6 @@ namespace VSS.MasterData.Repositories
               Log.LogTrace("Repository PollyAsync: db open (with connection reuse) was successful");
             result = await body(connection);
             connection.Close();
-            MySqlHealthCheck.SetStatus(true, this.GetType());
             return result;
           }
         });
@@ -105,7 +102,6 @@ namespace VSS.MasterData.Repositories
       {
         Log.LogCritical(
           $"Repository PollyAsync: {this.GetType().FullName} failed with exception: ", policyResult.FinalException);
-        MySqlHealthCheck.SetStatus(false, this.GetType());
         throw policyResult.FinalException;
       }
 

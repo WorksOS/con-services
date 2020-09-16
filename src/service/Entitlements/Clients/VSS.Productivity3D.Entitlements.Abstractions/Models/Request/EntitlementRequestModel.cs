@@ -5,6 +5,9 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Entitlements.Abstractions.Models.Request
 {
+  /// <summary>
+  /// Model for internal entitlement requests i.e. from WorksOS services
+  /// </summary>
   public class EntitlementRequestModel
   {
     /// <summary>

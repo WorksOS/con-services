@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Proxies;
 
 namespace CCSS.WorksOS.Healthz.Controllers
 {
@@ -14,5 +16,10 @@ namespace CCSS.WorksOS.Healthz.Controllers
     protected ILogger<T> Log => _logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
     protected ILoggerFactory LoggerFactory => _loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
     protected IConfigurationStore ConfigStore => _configStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+
+    /// <summary>
+    /// Gets the custom headers for the request.
+    /// </summary>
+    protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
   }
 }
