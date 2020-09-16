@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Entitlements.WebApi.Controllers
         if (enableEntitlementCheck)
         {
           var statusCode = await EmsClient.GetEntitlements(Guid.Parse(request.UserUid), Guid.Parse(request.OrganizationIdentifier), request.Sku, request.Feature, CustomHeaders);
-          isEntitled = statusCode == HttpStatusCode.Accepted;
+          isEntitled = statusCode == HttpStatusCode.OK;
         }
         else
         {

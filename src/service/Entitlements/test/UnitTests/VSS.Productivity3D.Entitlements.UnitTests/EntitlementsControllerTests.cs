@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
 
       mockConfigStore.Setup(c => c.GetValueBool(ConfigConstants.ENABLE_ENTITLEMENTS_CONFIG_KEY, false)).Returns(true);
 
-      mockEmsClient.Setup(e => e.GetEntitlements(userUid, customerUid, request.Sku, request.Feature, It.IsAny<IHeaderDictionary>())).ReturnsAsync(HttpStatusCode.Accepted);
+      mockEmsClient.Setup(e => e.GetEntitlements(userUid, customerUid, request.Sku, request.Feature, It.IsAny<IHeaderDictionary>())).ReturnsAsync(HttpStatusCode.OK);
 
       mockAuthn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 
@@ -195,7 +195,7 @@ namespace VSS.Productivity3D.Entitlements.UnitTests
       mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_FEATURE_CONFIG_KEY, "FEA-CEC-WORKSOS")).Returns(mockFeature);
       mockConfigStore.Setup(c => c.GetValueString(ConfigConstants.ENTITLEMENTS_SKU_CONFIG_KEY, "HCC-WOS-MO")).Returns(mockSku);
 
-      mockEmsClient.Setup(e => e.GetEntitlements(userUid, customerUid, mockSku, mockFeature, It.IsAny<IHeaderDictionary>())).ReturnsAsync(HttpStatusCode.Accepted);
+      mockEmsClient.Setup(e => e.GetEntitlements(userUid, customerUid, mockSku, mockFeature, It.IsAny<IHeaderDictionary>())).ReturnsAsync(HttpStatusCode.OK);
 
       mockAuthn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
 

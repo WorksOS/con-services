@@ -18,6 +18,9 @@ PARAM (
     #[Parameter(Mandatory = $false)][string]$systemAccessToken, 
 )
 
+. $PSScriptRoot/aws-login.ps1
+. $PSScriptRoot/build-common-functions.ps1
+
 enum ReturnCode {
     SUCCESS
     INVALID_ACTION
@@ -227,29 +230,6 @@ function Push-Container-Image {
     Write-Host "`nImage push complete" -ForegroundColor Green
 }
 
-function Login-Aws {
-    Write-Host "`nAuthenticating with AWS ECR..." -ForegroundColor Green
-    Write-Host "Determining AWS CLI version..."
-
-    aws --version
-
-    $awsVersion = (aws --version).Split(' ')[0].Split('/')[1].Split(' ')
-    $versionMajorMinor = [decimal]($awsVersion[0].SubString(0, $awsVersion.LastIndexOf('.')))
-    $canUseGetLoginPassword = $versionMajorMinor -ge 1.18
-
-    if ($canUseGetLoginPassword) {
-        # Azure pipelines use a recent version of AWS CLI that has replaced get-login with get-login-password.
-        aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 940327799086.dkr.ecr.us-west-2.amazonaws.com
-        if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
-    }
-    else {
-        # Retain backward compatibility for running locally on team development PCs with older AWS CLI installed.
-        Write-Host "Found older version of AWS CLI, failing back to 'get-login'`n"
-        Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile fsm-okta)
-        if (-not $?) { Exit-With-Code ([ReturnCode]::AWS_ECR_LOGIN_FAILED) }
-    }
-}
-
 # May be required when interacting with TGL or trmb-ccss Nuget servers.
 # function Update-Nuget-Sources {
 #     $sourceName = 'trmb-ccss'
@@ -264,16 +244,6 @@ function Login-Aws {
 #     & '..\build\nuget\nuget.exe' sources update -Name "${sourceName}" -Username "az" -Password "${systemAccessToken}" -ConfigFile "NuGet.Config"
 #     if (-not $?) { Exit-With-Code ([ReturnCode]::OPERATION_FAILED) }
 # }
-function TrackTime($Time) {
-    if (!($Time)) { 
-        Return 
-    }
-    Else {
-        $executionTime = ((Get-Date) - $Time)
-        $executionMinutes = "{0:N2}" -f $executionTime.TotalMinutes
-        Write-Host "Script completed in ${executionMinutes} minutes."
-    }
-}
 
 function Docker-Image-Prune {
     # This should help prevent the build agent from becoming too cluttered.
@@ -286,23 +256,6 @@ function Docker-Container-Prune {
     Write-Host "`nRemoving old application containers...`n" -ForegroundColor Green
     docker ps
     docker container prune --force --filter "until=12h"
-}
-function Exit-With-Code {
-    param(
-        [ReturnCode][Parameter(Mandatory = $true)]$code
-    )
-
-    TrackTime $timeStart
-
-    if ($code -eq [ReturnCode]::SUCCESS) {
-        Write-Host "`nExiting: $code" -ForegroundColor Green
-    }
-    else {
-        Write-Host "`nExiting with error: $code" -ForegroundColor Red
-    }
-
-    Pop-Location
-    Exit $code
 }
 
 # Get on with the real work...
