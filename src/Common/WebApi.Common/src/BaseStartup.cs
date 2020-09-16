@@ -102,21 +102,6 @@ namespace VSS.WebApi.Common
         .OutputMetrics.AsPrometheusPlainText()
         .Build();
 
-      var healthMetrics = AppMetricsHealth.CreateDefaultBuilder()
-        .Configuration.Configure(options =>
-        {
-          options.Enabled = true;
-          options.ReportingEnabled = true;
-          options.ApplicationName = ServiceName;
-        })
-        .HealthChecks.RegisterFromAssembly(services)
-        .Report.ToMetrics(metrics)
-        .HealthChecks.AddPingCheck("InternetAccess", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
-        .BuildAndAddTo(services);
-
-      services.AddHealth(healthMetrics);
-      services.AddHealthEndpoints();
-
       ServiceProvider = services.BuildServiceProvider();
       ConfigureAdditionalServices(services);
 
@@ -126,7 +111,7 @@ namespace VSS.WebApi.Common
           config.Filters.Add(new ValidationFilterAttribute());
           config.EnableEndpointRouting = false;
         }
-      ).AddMetrics();
+      );
 
       services.AddControllers().AddNewtonsoftJson(options =>
       {
@@ -150,7 +135,6 @@ namespace VSS.WebApi.Common
       Configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       services.AddMetricsReportingHostedService();
-      services.AddHealthReportingHostedService();
 
       StartServices(ServiceProvider);
     }
@@ -168,9 +152,8 @@ namespace VSS.WebApi.Common
         app.UseCors(corsPolicyName);
       }
 
-      app.UseMetricsAllMiddleware();
       app.UseMetricsAllEndpoints();
-      app.UseHealthAllEndpoints();
+      app.UseMetricsAllMiddleware();
       app.UseCommon(ServiceName);
 
       if (Configuration.GetValueBool("newrelic") == true)

@@ -95,7 +95,6 @@ namespace VSS.MasterData.Proxies
         }
 
         log.LogDebug($"{nameof(SendRequestInternal)}: Result of send to master data request: {JsonConvert.SerializeObject(result).Truncate(LogMaxChar)}");
-        BaseProxyHealthCheck.SetStatus(true, GetType());
       }
       catch (Exception ex)
       {
@@ -182,7 +181,6 @@ namespace VSS.MasterData.Proxies
         result = await WebRequest.ExecuteRequest<TK>(url, customHeaders: customHeaders, method: HttpMethod.Get);
 
         log.LogDebug($"{nameof(GetObjectsFromMasterdata)}: Result of get item request: {JsonConvert.SerializeObject(result).Truncate(LogMaxChar)}");
-        BaseProxyHealthCheck.SetStatus(true, GetType());
       }
       catch (Exception ex)
       {
@@ -237,8 +235,6 @@ namespace VSS.MasterData.Proxies
         {
           result = await (await WebRequest.ExecuteRequestAsStreamContent(url, HttpMethod.Get, customHeaders)).ReadAsStreamAsync();
         }
-
-        BaseProxyHealthCheck.SetStatus(true, GetType());
       }
       catch (Exception ex)
       {
@@ -542,8 +538,6 @@ namespace VSS.MasterData.Proxies
       {
         return;
       }
-
-      BaseProxyHealthCheck.SetStatus(false, GetType());
     }
 
     /// <summary>
