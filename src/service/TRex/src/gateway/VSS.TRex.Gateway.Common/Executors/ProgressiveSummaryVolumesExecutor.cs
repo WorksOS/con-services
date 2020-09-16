@@ -57,8 +57,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         VolumeType = ConvertVolumesHelper.ConvertVolumesType(request.VolumeCalcType),
         CutTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE,
         FillTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE,
-        StartDate = request.StartDate,
-        EndDate = request.EndDate,
+        StartDate = request.StartDateUtc,
+        EndDate = request.EndDateUtc,
         Interval = TimeSpan.FromSeconds(request.IntervalSeconds)
       });
 

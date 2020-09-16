@@ -39,8 +39,8 @@ namespace VSS.Productivity3D.Models.Models
       CutTolerance = cutTolerance;
       FillTolerance = fillTolerance;
       AdditionalSpatialFilter = additionalSpatialFilter;
-      StartDate = startDateUtc;
-      EndDate = endDateUtc;
+      StartDateUtc = startDateUtc;
+      EndDateUtc = endDateUtc;
       IntervalSeconds = intervalSeconds;
     }
 
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.Models.Models
     /// The first progressive volume will be calculated at this date
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public DateTime StartDate { get; private set; }
+    public DateTime StartDateUtc { get; private set; }
 
     /// <summary>
     /// The date/time at which to stop calculating progressive volumes.
@@ -117,7 +117,7 @@ namespace VSS.Productivity3D.Models.Models
     /// to the progressive volumes interval specified
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public DateTime EndDate { get; private set; }
+    public DateTime EndDateUtc { get; private set; }
 
     /// <summary>
     /// The time interval between calculated progressive volumes
@@ -133,7 +133,7 @@ namespace VSS.Productivity3D.Models.Models
       AdditionalSpatialFilter?.Validate();
       Filter?.Validate();
 
-      if (StartDate >= EndDate)
+      if (StartDateUtc >= EndDateUtc)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
