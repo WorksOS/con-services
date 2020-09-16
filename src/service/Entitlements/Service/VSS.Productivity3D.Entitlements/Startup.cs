@@ -56,6 +56,7 @@ namespace VSS.Productivity3D.Entitlements.WebApi
             services.AddSingleton<CacheInvalidationService>();
 
             services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
+            services.AddTransient<ITPaasProxy, TPaasProxy>();
             services.AddScoped<IEmsClient, EmsClient>();
 
             services.AddOpenTracing(builder =>
