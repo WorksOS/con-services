@@ -166,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       {
         log.LogDebug($"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
 
-        var projectExtentsRequest = new ExtentRequest(projectId, projectUid, filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
+        var projectExtentsRequest = new ExtentRequest(projectId, projectUid, filter?.SurveyedSurfaceExclusionList?.ToArray());
         var extents = await RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
 #if RAPTOR
                 raptorClient,
