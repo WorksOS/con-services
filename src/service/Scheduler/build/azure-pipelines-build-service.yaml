@@ -40,7 +40,7 @@ jobs:
         displayName: 'Run unit tests'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action unittest -collectCoverage $(isMasterBranch)'
+          arguments: '-service $(serviceName) -action unittest -collectCoverage true'
 
       - task: PublishTestResults@2
         displayName: 'Publish Unit Test Results'
@@ -51,8 +51,6 @@ jobs:
           failTaskOnFailedTests: true
 
       - task: PublishCodeCoverageResults@1
-        # Only run for /master branch
-        condition: and(succeeded(), eq(variables['isMasterBranch'], true))
         displayName: 'Publish Code Coverage'
         inputs:
           codeCoverageTool: Cobertura

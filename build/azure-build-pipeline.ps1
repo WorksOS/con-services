@@ -43,6 +43,7 @@ $services = @{
     Healthz        = 'service/Healthz'
     Megalodon      = 'service/Megalodon'
     Mock           = 'service/MockProjectWebApi'
+    Preferences    = 'service/Preferences'
     Productivity3d = 'service/3DP'
     Project        = 'service/Project'
     Push           = 'service/Push'
