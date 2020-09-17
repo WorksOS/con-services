@@ -5,15 +5,11 @@ sleep 30s
 echo "Checking database availability..."
 /bin/bash wait-for-it.sh db:3306 -t 55
 
-echo "RepositoryTests starting"
-dotnet vstest RepositoryTests/RepositoryTests.dll --logger:xunit
-cp testresults/*.trx testresults/RepositoryTests.trx
-rm testresults/*.trx
+echo "Repository tests starting"
+dotnet test RepositoryTests/RepositoryTests.dll --logger trx --results-directory AcceptanceTestResults
 
-echo "WebApiTests starting"
-dotnet vstest WebApiTests/WebApiTests.dll --logger:xunit
-cp testresults/*.trx testresults/WebApiTests.trx
-rm testresults/*.trx
+echo "WebApi tests starting"
+dotnet test WebApiTests/WebApiTests.dll --logger trx --results-directory AcceptanceTestResults
 
 echo " "
 echo " All acceptance tests completed"

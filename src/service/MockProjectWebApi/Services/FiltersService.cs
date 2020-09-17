@@ -106,7 +106,8 @@ namespace MockProjectWebApi.Services
           FilterDescriptors.Dimensions.DimensionsPassCountRangeFilter,
           FilterDescriptors.Dimensions.DimensionsAutomaticsFilter,
           FilterDescriptors.Dimensions.VolumesWithExplicitFilter1Nov,
-          FilterDescriptors.Dimensions.VolumesWithExplicitFilter1NovFirstPass
+          FilterDescriptors.Dimensions.VolumesWithExplicitFilter1NovFirstPass,
+          FilterDescriptors.Dimensions.DimensionsProjectExtents
         }
       };
 
