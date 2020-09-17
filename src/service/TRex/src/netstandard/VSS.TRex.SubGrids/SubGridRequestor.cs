@@ -105,6 +105,12 @@ namespace VSS.TRex.SubGrids
       _hasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
       _overrideSpatialCellRestriction = overrideSpatialCellRestriction;
 
+      _surveyedSurfacePatchType = _filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation;
+
+      _filteredSurveyedSurfaces = filteredSurveyedSurfaces;
+      _filteredSurveyedSurfaces?.SortChronologically(_surveyedSurfacePatchType == SurveyedSurfacePatchType.LatestSingleElevation);
+      _filteredSurveyedSurfacesAsGuidArray = _filteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0];
+      
       _retriever = DIContext.Obtain<ISubGridRetrieverFactory>().Instance(subGridsRequestArgument,
                                       siteModel,
                                        gridDataType,
@@ -119,7 +125,8 @@ namespace VSS.TRex.SubGrids
                                        pdExistenceMap,
                                        subGridCacheContexts,
                                        overrides,
-                                       liftParams);
+                                       liftParams,
+                                       _filteredSurveyedSurfaces);
 
       _returnEarliestFilteredCellPass = _filter.AttributeFilter.ReturnEarliestFilteredCellPass;
       _processingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
@@ -128,12 +135,6 @@ namespace VSS.TRex.SubGrids
 
       _subGridCache = subGridCache;
       _subGridCacheContexts = subGridCacheContexts;
-
-      _surveyedSurfacePatchType = _filter.AttributeFilter.ReturnEarliestFilteredCellPass ? SurveyedSurfacePatchType.EarliestSingleElevation : SurveyedSurfacePatchType.LatestSingleElevation;
-        
-      _filteredSurveyedSurfaces = filteredSurveyedSurfaces;
-      _filteredSurveyedSurfaces?.SortChronologically(_surveyedSurfacePatchType == SurveyedSurfacePatchType.LatestSingleElevation);
-      _filteredSurveyedSurfacesAsGuidArray = _filteredSurveyedSurfaces?.Select(x => x.ID).ToArray() ?? new Guid[0];
 
       var elevRangeDesignFilter = _filter.AttributeFilter.ElevationRangeDesign;
       if (elevRangeDesignFilter.DesignID != Guid.Empty)
@@ -144,7 +145,7 @@ namespace VSS.TRex.SubGrids
         else
           _elevationRangeDesign = new DesignWrapper(elevRangeDesignFilter, design);
       }
-     
+
       if (_filter.SpatialFilter.IsDesignMask)
         _surfaceDesignMaskDesign = _siteModel.Designs.Locate(_filter.SpatialFilter.SurfaceDesignMaskDesignUid);
 
@@ -244,7 +245,7 @@ namespace VSS.TRex.SubGrids
 
       if (subGridCacheContext != null && assignationSupported)
       {
-        if (subGridCacheContext != null && _clientGrid.GridDataType != subGridCacheContext.GridDataType)
+        if (_clientGrid.GridDataType != subGridCacheContext.GridDataType)
         {
           _log.LogWarning($"Client grid data type {_clientGrid.GridDataType} does not match type of sub grid cache context {subGridCacheContext.GridDataType}");
         }
@@ -385,7 +386,7 @@ namespace VSS.TRex.SubGrids
           elevationRangeFilterLambda = ApplyElevationRangeFilter;
         }
 
-        if (!_clientGrid.PerformHeightAnnotation(_processingMap, _filteredSurveyedSurfaces as IList, _returnEarliestFilteredCellPass, surfaceElevations,  elevationRangeFilterLambda))
+        if (!_clientGrid.PerformHeightAnnotation(_processingMap, _returnEarliestFilteredCellPass, surfaceElevations,  elevationRangeFilterLambda))
           return ServerRequestResult.SubGridHeightAnnotationFailed;
 
         result = ServerRequestResult.NoError;

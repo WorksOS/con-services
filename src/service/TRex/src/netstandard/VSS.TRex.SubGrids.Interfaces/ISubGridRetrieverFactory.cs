@@ -5,6 +5,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGrids.Interfaces
@@ -25,6 +26,7 @@ namespace VSS.TRex.SubGrids.Interfaces
       ISubGridTreeBitMask PDExistenceMap,
       ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
       IOverrideParameters overrides,
-      ILiftParameters liftParams);
+      ILiftParameters liftParams,
+      ISurveyedSurfaces filteredSurveyedSurfaces);
   }
 }
