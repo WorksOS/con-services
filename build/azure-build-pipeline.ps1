@@ -47,6 +47,7 @@ $services = @{
     Project        = 'service/Project'
     Push           = 'service/Push'
     Reports        = 'service/Reports'
+    Scheduler      = 'service/Scheduler'
     TagFileAuth    = 'service/TagFileAuth'
     TagFileGateway = 'service/TagFileGateway'
     Tile           = 'service/TileService'

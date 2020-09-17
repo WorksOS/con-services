@@ -191,7 +191,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
 
           result = errorCodesProvider.CreateErrorResult(environment, SchedulerErrorCodes.VSSJobExecutionFailure,
             request.JobUid.ToString(), e.Message);
-          JobRunnerHealthCheck.State = false;
         }
       }
 
@@ -200,8 +199,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
         log.LogError(result.Message);
         throw new ServiceException(HttpStatusCode.InternalServerError, result);
       }
-
-      JobRunnerHealthCheck.State = true;
 
       log.LogInformation($"{nameof(RunJob)} completed with result: {JsonConvert.SerializeObject(result)}");
       return result;
