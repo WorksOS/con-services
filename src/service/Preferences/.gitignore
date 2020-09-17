@@ -1,0 +1,6 @@
+# Build artifacts
+[Aa]cceptanceTests/[Dd]eploy/
+
+# Test results
+[Uu]nitTestResults/
+[Aa]cceptanceTestResults/
