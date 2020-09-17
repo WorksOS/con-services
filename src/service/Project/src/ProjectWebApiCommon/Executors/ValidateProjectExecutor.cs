@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
@@ -24,7 +23,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var data = CastRequestObjectTo<ProjectValidation>(item, errorCode: 68);
 
       //Check customerUid in request matches header since some of the API calls use the data and some the header
-      if (string.Compare(data.CustomerUid.ToString(), customHeaders["X-VisionLink-CustomerUID"], StringComparison.OrdinalIgnoreCase) != 0)
+      if (!string.Equals(data.CustomerUid.ToString(), customHeaders["X-VisionLink-CustomerUID"], StringComparison.OrdinalIgnoreCase))
       {
         return new ContractExecutionResult(135, "Mismatched customerUid.");
       }
@@ -32,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var userUid = new Guid(userId);
       if (data.UpdateType == ProjectUpdateType.None)
       {
-        log.LogWarning($"Unknown CWS update type in project validation");
+        log.LogWarning("Unknown CWS update type in project validation");
         return new ContractExecutionResult(136, "Unknown update type in project validation.");
       }
       else if (data.UpdateType == ProjectUpdateType.Created)
@@ -91,7 +90,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           return new ContractExecutionResult(coordSysResult.code, coordSysResult.message);
         }
       }
-
       else if (data.UpdateType == ProjectUpdateType.Updated)
       {
         //Validate projectUID
@@ -141,7 +139,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           {
             return new ContractExecutionResult(boundaryResult.code, boundaryResult.message);
           }
-          var overlaps =await ProjectRequestHelper.DoesProjectOverlap(data.CustomerUid, data.ProjectUid, userUid,
+          var overlaps = await ProjectRequestHelper.DoesProjectOverlap(data.CustomerUid, data.ProjectUid, userUid,
             data.ProjectBoundaryWKT, log, serviceExceptionHandler, cwsProjectClient, customHeaders);
           if (overlaps)
           {
@@ -150,7 +148,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
 
         //Validate coordinate system file if changed
-        if (!string.IsNullOrEmpty(data.CoordinateSystemFileName) || (data.CoordinateSystemFileContent != null && data.CoordinateSystemFileContent.Length > 0))
+        if (!string.IsNullOrEmpty(data.CoordinateSystemFileName) || (data.CoordinateSystemFileContent?.Length > 0))
         {
           if (string.IsNullOrEmpty(data.CoordinateSystemFileName) || data.CoordinateSystemFileContent == null || data.CoordinateSystemFileContent.Length == 0)
             return new ContractExecutionResult(134, "Both coordinate system file name and contents must be provided.");
@@ -185,7 +183,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} has tag file data. NOT ok to delete.");
             return new ContractExecutionResult(141, "Cannot delete a project that has 3D production (tag file) data");
           }
-          
+
           log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} has NO tag file data. Ok to delete.");
         }
         catch (Exception e)
@@ -211,7 +209,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         (await ProjectRequestHelper.GetProjectListForCustomer(customerUid, userUid,
           log, serviceExceptionHandler, cwsProjectClient, null, ProjectStatus.Active, false, false, customHeaders))
         .Where(
-          p => p.IsArchived == false &&
+          p => !p.IsArchived &&
                string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&
                (!projectUid.HasValue || !string.Equals(p.ProjectUID, projectUid.ToString(), StringComparison.OrdinalIgnoreCase)))
         .ToList();
@@ -230,22 +228,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         if (string.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
         {
-          return new { code=23, message="Missing project boundary." };
+          return new { code = 23, message = "Missing project boundary." };
         }
 
         if (string.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
         {
-          return new { code = 24, message = "Invalid project boundary as it should contain at least 3 points." }; 
+          return new { code = 24, message = "Invalid project boundary as it should contain at least 3 points." };
         }
 
         if (string.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
         {
-          return new { code = 25, message = "Invalid project boundary." }; 
+          return new { code = 25, message = "Invalid project boundary." };
         }
 
         if (string.CompareOrdinal(result, GeofenceValidation.ValidationInvalidPointValue) == 0)
         {
-          return new { code = 111, message = "Invalid project boundary points. Latitudes should be -90 through 90 and Longitude -180 through 180. Points around 0,0 are invalid." }; 
+          return new { code = 111, message = "Invalid project boundary points. Latitudes should be -90 through 90 and Longitude -180 through 180. Points around 0,0 are invalid." };
         }
       }
 
@@ -282,7 +280,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         return new { code = 47, message = $"Unable to validate CoordinateSystem in 3dpm: {coordinateSystemSettingsResult.Code} {coordinateSystemSettingsResult.Message}." };
       }
-      
+
       return new { code = ContractExecutionStatesEnum.ExecutedSuccessfully, message = ContractExecutionResult.DefaultMessage };
     }
 
