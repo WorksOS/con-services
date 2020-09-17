@@ -46,6 +46,7 @@ $services = @{
     Productivity3d = 'service/3DP'
     Project        = 'service/Project'
     Push           = 'service/Push'
+    Reports        = 'service/Reports'
     TagFileGateway = 'service/TagFileGateway'
     Tile           = 'service/TileService'
     ThreeDNow      = 'service/3dNow'
