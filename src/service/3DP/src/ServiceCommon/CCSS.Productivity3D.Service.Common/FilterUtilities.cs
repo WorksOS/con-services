@@ -198,15 +198,11 @@ namespace CCSS.Productivity3D.Service.Common
       var excludedUids = excludedSs?.Select(e => e.Item2).ToList();
       bool haveExcludedSs = excludedSs != null && excludedSs.Count > 0;
 
-      var anyOfSurveyedSurfacesIncluded = await _designUtilities.AnyIncludedSurveyedSurface(projectUid, userUid, customHeaders);
-
       if (!filterUid.HasValue)
       {
-        var filterResult = haveExcludedSs ? FilterResult.CreateFilter(excludedIds, excludedUids) : new FilterResult();
-
-        filterResult.anyOfSurveyedSurfacesIncluded = anyOfSurveyedSurfacesIncluded;
-
-        return filterResult;
+        return haveExcludedSs
+          ? FilterResult.CreateFilter(excludedIds, excludedUids)
+          : null;
       }
 
       try
@@ -251,8 +247,6 @@ namespace CCSS.Productivity3D.Service.Common
             }
 
             var raptorFilter = new FilterResult(filterUid, filterData, filterData.PolygonLL, alignmentDescriptor, layerMethod, excludedIds, excludedUids, returnEarliest, designDescriptor);
-
-            raptorFilter.anyOfSurveyedSurfacesIncluded = anyOfSurveyedSurfacesIncluded;
 
             _log.LogDebug($"Filter after filter conversion: {JsonConvert.SerializeObject(raptorFilter)}");
 

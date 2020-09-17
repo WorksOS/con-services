@@ -166,60 +166,11 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
     public DesignDescriptor DesignFile { get; private set; }
 
-    public bool isFilterContainsSSOnly { get; private set; }
-
-    public bool IsFilterEmpty => isFilterEmpty();
-
-    public bool anyOfSurveyedSurfacesIncluded { get; set; }
-
     /// <summary>
     /// Default public constructor.
     /// </summary>
     public FilterResult()
     { }
-
-    private bool isFilterEmpty()
-    {
-      if (
-        !StartUtc.HasValue &&
-        !EndUtc.HasValue &&
-        !OnMachineDesignId.HasValue &&
-        string.IsNullOrEmpty(OnMachineDesignName) &&
-        (AssetIDs == null || AssetIDs.Count == 0) &&
-        !VibeStateOn.HasValue &&
-        !CompactorDataOnly.HasValue &&
-        !ElevationType.HasValue &&
-        (PolygonLL == null || PolygonLL.Count == 0) &&
-        (PolygonGrid == null || PolygonGrid.Count == 0) &&
-        !ForwardDirection.HasValue &&
-        AlignmentFile == null &&
-        !StartStation.HasValue &&
-        !EndStation.HasValue &&
-        !LeftOffset.HasValue &&
-        !RightOffset.HasValue &&
-        !LayerType.HasValue &&
-        LayerDesignOrAlignmentFile == null &&
-        !BenchElevation.HasValue &&
-        !LayerNumber.HasValue &&
-        !LayerThickness.HasValue &&
-        (ContributingMachines == null || ContributingMachines.Count == 0) &&
-        (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Count == 0) &&
-        (ExcludedSurveyedSurfaceUids == null || ExcludedSurveyedSurfaceUids.Count == 0) &&
-        !ReturnEarliest.HasValue &&
-        !GpsAccuracy.HasValue &&
-        !GpsAccuracyIsInclusive.HasValue &&
-        !BladeOnGround.HasValue &&
-        !TrackMapping.HasValue &&
-        !WheelTracking.HasValue &&
-        DesignFile == null &&
-        !AutomaticsType.HasValue &&
-        !TemperatureRangeMin.HasValue &&
-        !TemperatureRangeMax.HasValue &&
-        !PassCountRangeMin.HasValue &&
-        !PassCountRangeMax.HasValue
-      ) return true;
-      return false;
-    }
 
     // TODO (Aaron) Refactor the constructors for this object. The following is only used for unit testing.
     /// <summary>
@@ -342,7 +293,6 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     {
       return new FilterResult
       {
-        isFilterContainsSSOnly = true,
         SurveyedSurfaceExclusionList = excludedIds,
         ExcludedSurveyedSurfaceUids = excludedUids
       };
@@ -711,9 +661,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
              TemperatureRangeMin.Equals(other.TemperatureRangeMin) &&
              TemperatureRangeMax.Equals(other.TemperatureRangeMax) &&
              PassCountRangeMin.Equals(other.PassCountRangeMin) &&
-             PassCountRangeMax.Equals(other.PassCountRangeMax) &&
-             isFilterContainsSSOnly == other.isFilterContainsSSOnly &&
-             anyOfSurveyedSurfacesIncluded == other.anyOfSurveyedSurfacesIncluded;
+             PassCountRangeMax.Equals(other.PassCountRangeMax);
     }
 
     public override bool Equals(object obj)
