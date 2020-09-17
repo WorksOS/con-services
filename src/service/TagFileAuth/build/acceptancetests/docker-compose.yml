@@ -1,0 +1,21 @@
+version: "3.2"
+services:
+  webapi:
+    build: ../artifacts/WebApi
+    env_file: ./docker-compose.env
+    volumes:
+      - /artifacts/logs:/app/logs
+    ports:
+      - "3001:80"
+    depends_on:
+      - mockprojectwebapi
+  mockprojectwebapi:
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-mock-webapi:latest-linux
+    env_file: ./docker-compose.env
+    ports:
+      - "5001:5001"
+  accepttest:
+    build: ../../AcceptanceTests/deploy
+    env_file: ./docker-compose.env
+    depends_on:
+      - webapi
