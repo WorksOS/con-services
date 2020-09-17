@@ -69,6 +69,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Invalid earliestOfInterestUtc", 138);
       this.DynamicAddwithOffset("More than 1 project matches the TBC project Id requested.", 139);
       this.DynamicAddwithOffset("Unable to extract shortProjectId.", 140);
+      this.DynamicAddwithOffset("Cannot delete a project that has 3D production (tag file) data", 141);
     }
   }
 }

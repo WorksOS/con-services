@@ -4,16 +4,12 @@ using System.Threading.Tasks;
 using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Enums;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -164,13 +160,39 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           }
         }
       }
+      else if (data.UpdateType == ProjectUpdateType.Archived)
+      {
+        if (!data.ProjectUid.HasValue)
+        {
+          return new ContractExecutionResult(5, "Missing ProjectUID.");
+        }
+        //no other validation for ProjectUpdateType.Archived
+      }
       else if (data.UpdateType == ProjectUpdateType.Deleted)
       {
         if (!data.ProjectUid.HasValue)
         {
           return new ContractExecutionResult(5, "Missing ProjectUID.");
         }
-        //no other validation for ProjectUpdateType.Deleted
+
+        try
+        {
+          //If the project, regardless of type, has any tag file data, it cannot be deleted.
+          var result = await productivity3dV2ProxyCompaction.GetProjectStatistics(data.ProjectUid.Value, customHeaders);
+          if (result.extents?.ValidExtents == true)
+          {
+            log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} has tag file data. NOT ok to delete.");
+            return new ContractExecutionResult(141, "Cannot delete a project that has 3D production (tag file) data");
+          }
+          else
+          {
+            log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} has NO tag file data. Ok to delete.");
+          }
+        }
+        catch (Exception e)
+        {
+          log.LogInformation($"ValidateProjectExecutor: Failed to retrieve project extents for {data.ProjectUid.Value}. Assuming ok to delete.");
+        }
       }
 
       return new ContractExecutionResult();

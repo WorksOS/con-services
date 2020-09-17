@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -7,11 +8,14 @@ using VSS.Common.Abstractions.Clients.CWS;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.Cws;
 using Xunit;
@@ -683,15 +687,78 @@ namespace VSS.MasterData.ProjectTests.Executors
     [Fact]
     public async Task ValidateProjectExecutor_Delete_Valid()
     {
+      var extents = new ProjectStatisticsResult
+      {
+        extents = new BoundingBox3DGrid(BoundingBox3DGrid.MAX_RANGE, BoundingBox3DGrid.MAX_RANGE, BoundingBox3DGrid.MAX_RANGE, BoundingBox3DGrid.MIN_RANGE, BoundingBox3DGrid.MIN_RANGE, BoundingBox3DGrid.MIN_RANGE)
+      };
+      var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(extents);
+
       var request = new ProjectValidateDto {AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject};
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
       var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
       (_loggerFactory, _configStore, ServiceExceptionHandler,
         _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
-        null, cwsProjectClient: null);
+        null, cwsProjectClient: null, productivity3dV2ProxyCompaction: extentsProxy.Object);
       var result = await executor.ProcessAsync(data);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Delete_AssumedValid()
+    {
+      var exception = new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError));
+
+      var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ThrowsAsync(exception);
+
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: null, productivity3dV2ProxyCompaction: extentsProxy.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
+      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Delete_NoExtents()
+    {
+      var extents = new ProjectStatisticsResult();
+      var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(extents);
+
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: null, productivity3dV2ProxyCompaction: extentsProxy.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
+      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Delete_HasTagFileData()
+    {
+      var extents = new ProjectStatisticsResult {extents = new BoundingBox3DGrid(10, 10, 10, 20, 20, 20)};
+      var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(extents);
+
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: null, productivity3dV2ProxyCompaction: extentsProxy.Object);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(141, result.Code);
+      Assert.Equal("Cannot delete a project that has 3D production (tag file) data", result.Message);
     }
 
     [Fact]
@@ -734,6 +801,34 @@ namespace VSS.MasterData.ProjectTests.Executors
       var result = await executor.ProcessAsync(data);
       Assert.Equal(135, result.Code);
       Assert.Equal("Mismatched customerUid.", result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Archive_Valid()
+    {
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.ArchiveProject };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: null);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
+      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Archive_MissingProject()
+    {
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = null, UpdateType = CwsUpdateType.ArchiveProject };
+      var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(request);
+      var executor = RequestExecutorContainerFactory.Build<ValidateProjectExecutor>
+      (_loggerFactory, _configStore, ServiceExceptionHandler,
+        _customerUid.ToString(), _userUid.ToString(), null, _customHeaders,
+        null, cwsProjectClient: null);
+      var result = await executor.ProcessAsync(data);
+      Assert.Equal(5, result.Code);
+      Assert.Equal("Missing ProjectUID.", result.Message);
     }
 
     private ProjectBoundary CreateNonOverlappingBoundary()
