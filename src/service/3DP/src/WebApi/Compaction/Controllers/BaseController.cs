@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     protected ITRexCompactionDataProxy TRexCompactionDataProxy => _tRexCompactionDataProxy ??= HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>();
 
     /// <summary>
-    /// Gets the tagfile authorization proxy interface.
+    /// Gets the tag file authorization proxy interface.
     /// </summary>
     protected ITagFileAuthProjectV5Proxy TagFileAuthProjectV5Proxy => _tagFileAuthProjectV5Proxy ??= HttpContext.RequestServices.GetService<ITagFileAuthProjectV5Proxy>();
 
@@ -123,9 +123,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected bool UseTRexGateway(string key) => ConfigStore.GetValueBool(key) ?? false;
 
-    /// <summary>
-    /// 
-    /// </summary>
     protected BaseController(IConfigurationStore configStore)
     {
       ConfigStore = configStore;
@@ -167,7 +164,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = action.Invoke();
@@ -196,7 +193,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func<Task<TResult>> action) where TResult : ContractExecutionResult
     {
-      TResult result = default(TResult);
+      var result = default(TResult);
       try
       {
         result = await action.Invoke();
@@ -240,7 +237,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the project settings colors for the project.
     /// </summary>
     protected Task<CompactionProjectSettingsColors> GetProjectSettingsColors(Guid projectUid)
-    { ;
+    { 
       return ProjectSettingsProxy.GetProjectSettingsColors(projectUid.ToString(), GetUserId(), CustomHeaders, ServiceExceptionHandler);
     }
 

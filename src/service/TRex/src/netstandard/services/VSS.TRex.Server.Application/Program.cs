@@ -64,7 +64,7 @@ namespace VSS.TRex.Server.Application
     {
       return key switch
       {
-        PipelineProcessorTaskStyle.AggregatedPipelined => (ITRexTask) new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.AggregatedPipelined => new AggregatedPipelinedSubGridTask(),
         PipelineProcessorTaskStyle.PVMRendering => null, // Not responsible for rendering, this is in TileRendering service
         PipelineProcessorTaskStyle.PatchExport => new PatchTask(),
         PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
