@@ -629,7 +629,35 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task ValidateProjectExecutor_Delete_Valid()
+    public async Task ValidateProjectExecutor_Delete_Non3d_NoData()
+    {
+      var exception = new Exception($"GetStatistics: SiteModel: {_projectUid} not found");
+      var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ThrowsAsync(exception);
+
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject };
+      var executor = CreateExecutor(productivity3dV2ProxyCompaction: extentsProxy.Object);
+
+      var result = await executor.ProcessAsync(MapProjectValidation(request));
+      result.IsSuccessResponse();
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Delete_NonExistentProject()
+    {
+      var exception = new Exception("Invalid project id");
+      var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ThrowsAsync(exception);
+
+      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject };
+      var executor = CreateExecutor(productivity3dV2ProxyCompaction: extentsProxy.Object);
+
+      var result = await executor.ProcessAsync(MapProjectValidation(request));
+      result.ShouldBe(57, $"A problem occurred at the validate project deletion endpoint in 3dpm. Exception: {exception.Message}");
+    }
+
+    [Fact]
+    public async Task ValidateProjectExecutor_Delete_3d_NoData_1()
     {
       var extents = new ProjectStatisticsResult
       {
@@ -646,36 +674,24 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task ValidateProjectExecutor_Delete_AssumedValid()
+    public async Task ValidateProjectExecutor_Delete_3d_NoData_2()
     {
-      var exception = new ServiceException(HttpStatusCode.InternalServerError,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError));
-
-      var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
-      extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ThrowsAsync(exception);
-
-      var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject };
-      var executor = CreateExecutor(productivity3dV2ProxyCompaction: extentsProxy.Object);
-      var result = await executor.ProcessAsync(MapProjectValidation(request));
-      result.IsSuccessResponse();
-    }
-
-    [Fact]
-    public async Task ValidateProjectExecutor_Delete_NoExtents()
-    {
-      var extents = new ProjectStatisticsResult();
+      var extents = new ProjectStatisticsResult
+      {
+        extents = new BoundingBox3DGrid(0, 0, 0, 0, 0, 0)
+      };
       var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
       extentsProxy.Setup(ep => ep.GetProjectStatistics(It.IsAny<Guid>(), It.IsAny<IHeaderDictionary>())).ReturnsAsync(extents);
 
       var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = _projectTrn, UpdateType = CwsUpdateType.DeleteProject };
       var executor = CreateExecutor(productivity3dV2ProxyCompaction: extentsProxy.Object);
-      var result = await executor.ProcessAsync(MapProjectValidation(request));
 
+      var result = await executor.ProcessAsync(MapProjectValidation(request));
       result.IsSuccessResponse();
     }
 
     [Fact]
-    public async Task ValidateProjectExecutor_Delete_HasTagFileData()
+    public async Task ValidateProjectExecutor_Delete_3d_HasData()
     {
       var extents = new ProjectStatisticsResult { extents = new BoundingBox3DGrid(10, 10, 10, 20, 20, 20) };
       var extentsProxy = new Mock<IProductivity3dV2ProxyCompaction>();
@@ -689,7 +705,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task ValidateProjectExecutor_Delete_MissingProject()
+    public async Task ValidateProjectExecutor_Delete_MissingProjectUid()
     {
       var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = null, UpdateType = CwsUpdateType.DeleteProject };
       var result = await CreateExecutor().ProcessAsync(MapProjectValidation(request));
@@ -725,7 +741,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task ValidateProjectExecutor_Archive_MissingProject()
+    public async Task ValidateProjectExecutor_Archive_MissingProjectUid()
     {
       var request = new ProjectValidateDto { AccountTrn = _customerTrn, ProjectTrn = null, UpdateType = CwsUpdateType.ArchiveProject };
       var result = await CreateExecutor().ProcessAsync(MapProjectValidation(request));
