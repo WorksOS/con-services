@@ -22,9 +22,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    /// <param name="loggerFactory"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="configStore"></param>
     public VolumesDataController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, IConfigurationStore configStore)
       : base(loggerFactory, loggerFactory.CreateLogger<VolumesDataController>(), serviceExceptionHandler, configStore)
     {
@@ -33,8 +30,6 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results.
     /// </summary>
-    /// <param name="summaryVolumesRequest"></param>
-    /// <returns></returns>
     [Route("api/v1/volumes/summary")]
     [HttpPost]
     public Task<ContractExecutionResult> PostSummaryVolumes([FromBody] SummaryVolumesDataRequest summaryVolumesRequest)
@@ -61,14 +56,11 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <summary>
     /// Get the summary volumes profile report for two surfaces.
     /// </summary>
-    /// <param name="summaryVolumesProfileRequest"></param>
-    /// <returns></returns>
     [Route("api/v1/volumes/summary/profile")]
     [HttpPost]
     public Task<ContractExecutionResult> PostSummaryVolumesProfile([FromBody] SummaryVolumesProfileDataRequest summaryVolumesProfileRequest)
-    { 
+    {
       Log.LogInformation($"{nameof(PostSummaryVolumesProfile)}: {JsonConvert.SerializeObject(summaryVolumesProfileRequest)}");
-
 
       summaryVolumesProfileRequest.Validate();
       if (summaryVolumesProfileRequest.ProjectUid == null || summaryVolumesProfileRequest.ProjectUid == Guid.Empty)
@@ -79,11 +71,37 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       }
       ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.Filter);
       ValidateFilterMachines(nameof(PostSummaryVolumesProfile), summaryVolumesProfileRequest.ProjectUid, summaryVolumesProfileRequest.TopFilter);
-      
+
       return WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainer
           .Build<SummaryVolumesProfileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
           .ProcessAsync(summaryVolumesProfileRequest));
+    }
+
+    /// <summary>
+    /// Get the summary volumes report for two surfaces, producing either ground to ground, ground to design or design to ground results,
+    /// over the course of a progressive series defined by start and end times, and an interval.
+    /// </summary>
+    [Route("api/v1/volumes/summary/progressive")]
+    [HttpPost]
+    public Task<ContractExecutionResult> PostProgressiveSummaryVolumes([FromBody] ProgressiveSummaryVolumesDataRequest request)
+    {
+      Log.LogInformation($"{nameof(PostSummaryVolumes)}: {JsonConvert.SerializeObject(request)}");
+
+      request.Validate();
+      if (request.ProjectUid == null || request.ProjectUid == Guid.Empty)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid project UID."));
+      }
+      ValidateFilterMachines(nameof(PostProgressiveSummaryVolumes), request.ProjectUid, request.Filter);
+      ValidateFilterMachines(nameof(PostProgressiveSummaryVolumes), request.ProjectUid, request.AdditionalSpatialFilter);
+
+      return WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainer
+          .Build<ProgressiveSummaryVolumesExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+          .ProcessAsync(request));
     }
   }
 }

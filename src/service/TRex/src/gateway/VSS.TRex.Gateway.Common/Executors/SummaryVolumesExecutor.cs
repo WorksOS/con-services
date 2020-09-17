@@ -13,6 +13,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Geometry;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.GridFabric.Arguments;
@@ -63,7 +64,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         AdditionalSpatialFilter = additionalSpatialFilter,
         BaseDesign = new DesignOffset(request.BaseDesignUid ?? Guid.Empty, request.BaseDesignOffset ?? 0),
         TopDesign = new DesignOffset(request.TopDesignUid ?? Guid.Empty, request.TopDesignOffset ?? 0),
-        VolumeType = ConvertVolumesType(request.VolumeCalcType),
+        VolumeType = ConvertVolumesHelper.ConvertVolumesType(request.VolumeCalcType),
         CutTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_CUT_TOLERANCE,
         FillTolerance = request.CutTolerance ?? VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE
       });
@@ -80,55 +81,17 @@ namespace VSS.TRex.Gateway.Common.Executors
     }
 
     /// <summary>
-    /// Converts values of the VolumesType to ones of the VolumeComputationType.
-    /// </summary>
-    /// <param name="volumesType"></param>
-    /// <returns></returns>
-    private VolumeComputationType ConvertVolumesType(VolumesType volumesType)
-    {
-      switch (volumesType)
-      {
-        case VolumesType.None: return VolumeComputationType.None;
-        case VolumesType.AboveLevel: return VolumeComputationType.AboveLevel;
-        case VolumesType.Between2Levels: return VolumeComputationType.Between2Levels;
-        case VolumesType.AboveFilter: return VolumeComputationType.AboveFilter;
-        case VolumesType.Between2Filters: return VolumeComputationType.Between2Filters;
-        case VolumesType.BetweenFilterAndDesign: return VolumeComputationType.BetweenFilterAndDesign;
-        case VolumesType.BetweenDesignAndFilter: return VolumeComputationType.BetweenDesignAndFilter;
-        default: throw new ArgumentException($"Unknown VolumesType {Convert.ToInt16(volumesType)}");
-      }
-    }
-
-    /// <summary>
     /// Converts SimpleVolumesResponse data into SummaryVolumesResult data.
     /// </summary>
-    /// <param name="result"></param>
-    /// <returns></returns>
     private SummaryVolumesResult ConvertResult(SimpleVolumesResponse result)
     {
       return SummaryVolumesResult.Create(
-        ConvertExtents(result.BoundingExtentGrid),
+        BoundingBox3DGridHelper.ConvertExtents(result.BoundingExtentGrid),
         result.Cut ?? 0.0,
         result.Fill ?? 0.0,
         result.TotalCoverageArea ?? 0.0,
         result.CutArea ?? 0.0,
         result.FillArea ?? 0.0);
-    }
-
-    /// <summary>
-    /// Converts BoundingWorldExtent3D data into BoundingBox3DGrid data.
-    /// </summary>
-    /// <param name="extents"></param>
-    /// <returns></returns>
-    private BoundingBox3DGrid ConvertExtents(BoundingWorldExtent3D extents)
-    {
-      return new BoundingBox3DGrid(
-        extents.MinX,
-        extents.MinY,
-        extents.MinZ,
-        extents.MaxX,
-        extents.MaxY,
-        extents.MaxZ);
     }
 
     /// <summary>

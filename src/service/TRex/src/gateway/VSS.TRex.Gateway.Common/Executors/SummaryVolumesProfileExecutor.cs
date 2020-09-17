@@ -15,6 +15,7 @@ using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
+using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.GridFabric.Arguments;
 using VSS.TRex.Profiling.GridFabric.Requests;
@@ -65,7 +66,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         StartPoint = new WGS84Point(lon: request.StartX, lat: request.StartY, request.PositionsAreGrid ? Consts.NullDouble : 0),//coord conversion requires elevation set
         EndPoint = new WGS84Point(lon: request.EndX, lat: request.EndY, request.PositionsAreGrid ? Consts.NullDouble : 0),
         ReturnAllPassesAndLayers = false,
-        VolumeType = ConvertVolumesType(request.VolumeCalcType),
+        VolumeType = ConvertVolumesHelper.ConvertVolumesType(request.VolumeCalcType),
         Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
         LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       };
@@ -80,26 +81,6 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
         "Failed to get requested Summary Volumes Profile data"));
-    }
-
-    /// <summary>
-    /// Converts values of the VolumesType to ones of the VolumeComputationType.
-    /// </summary>
-    /// <param name="volumesType"></param>
-    /// <returns></returns>
-    private VolumeComputationType ConvertVolumesType(VolumesType volumesType)
-    {
-      switch (volumesType)
-      {
-        case VolumesType.None: return VolumeComputationType.None;
-        case VolumesType.AboveLevel: return VolumeComputationType.AboveLevel;
-        case VolumesType.Between2Levels: return VolumeComputationType.Between2Levels;
-        case VolumesType.AboveFilter: return VolumeComputationType.AboveFilter;
-        case VolumesType.Between2Filters: return VolumeComputationType.Between2Filters;
-        case VolumesType.BetweenFilterAndDesign: return VolumeComputationType.BetweenFilterAndDesign;
-        case VolumesType.BetweenDesignAndFilter: return VolumeComputationType.BetweenDesignAndFilter;
-        default: throw new ArgumentException($"Unknown VolumesType {Convert.ToInt16(volumesType)}");
-      }
     }
 
     /// <summary>

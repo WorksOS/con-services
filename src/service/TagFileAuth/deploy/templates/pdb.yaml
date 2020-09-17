@@ -1,0 +1,15 @@
+{{- if .Values.replicaMinAvailable -}}
+{{- if gt (int (toString (.Values.replicaCount))) 1 -}}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "tagfileauthservice.name" . }}
+  labels:
+    app: {{ template "tagfileauthservice.name" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "tagfileauthservice.name" . }}
+  minAvailable: {{ .Values.replicaMinAvailable }}
+{{- end -}}
+{{- end -}}

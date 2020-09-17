@@ -22,17 +22,15 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
     private CompactionVolumesSummaryResult()
     { }
 
+
     public CompactionVolumesSummaryResult(int errorCode, string errorMessage)
       : base(errorCode, errorMessage)
     { }
 
-    /// <summary>
-    /// Static constructor.
-    /// </summary>
-    public static CompactionVolumesSummaryResult Create(SummaryVolumesResult result, CompactionProjectSettings projectSettings)
+    public static VolumesSummaryData Convert(SummaryVolumesResult result, CompactionProjectSettings projectSettings)
     {
-      double surplusDeficitVolume = result.Cut - result.Fill;
-      double totalVolume = result.Cut + result.Fill;
+      var surplusDeficitVolume = result.Cut - result.Fill;
+      var totalVolume = result.Cut + result.Fill;
 
       var totalCutVolume = result.Cut;
       var totalFillVolume = result.Fill;
@@ -60,18 +58,26 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling
         shrinkage = projectSettings.customShrinkagePercent;
       }
 
+      return new VolumesSummaryData
+      {
+        Bulking = bulking ?? 0.0,
+        Shrinkage = shrinkage ?? 0.0,
+        TotalCutVolume = totalCutVolume,
+        TotalFillVolume = totalFillVolume,
+        TotalMachineCoveragePlanArea = result.TotalCoverageArea,
+        TotalVolume = totalVolume,
+        NetVolume = surplusDeficitVolume
+      };
+    }
+
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
+    public static CompactionVolumesSummaryResult Create(SummaryVolumesResult result, CompactionProjectSettings projectSettings)
+    {
       return new CompactionVolumesSummaryResult
       {
-        SummaryVolumeData = new VolumesSummaryData
-        {
-          Bulking = bulking ?? 0.0,
-          Shrinkage = shrinkage ?? 0.0,
-          TotalCutVolume = totalCutVolume,
-          TotalFillVolume = totalFillVolume,
-          TotalMachineCoveragePlanArea = result.TotalCoverageArea,
-          TotalVolume = totalVolume,
-          NetVolume = surplusDeficitVolume
-        },
+        SummaryVolumeData = Convert(result, projectSettings),
         Code = result.Code,
         Message = result.Message
       };
