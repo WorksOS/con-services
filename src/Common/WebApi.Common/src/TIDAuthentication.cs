@@ -30,7 +30,7 @@ namespace VSS.WebApi.Common
     private readonly IConfigurationStore store;
     private readonly IEntitlementProxy _entitlementProxy;
 
-    protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/" };
+    protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/", "/ping", "/metrics"};
 
     /// <summary>
     /// Service exception handler.

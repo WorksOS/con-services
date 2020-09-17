@@ -88,19 +88,11 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="baseFilter"></param>
-    /// <param name="topFilter"></param>
-    /// <param name="baseDesignUid"></param>
-    /// <param name="baseDesignOffset"></param>
-    /// <param name="topDesignUid"></param>
-    /// <param name="topDesignOffset"></param>
-    /// <param name="volumeCalcType"></param>
     public SummaryVolumesDataRequest(
-      Guid? projectUid, 
-      FilterResult baseFilter, 
-      FilterResult topFilter, 
-      Guid? baseDesignUid, 
+      Guid? projectUid,
+      FilterResult baseFilter,
+      FilterResult topFilter,
+      Guid? baseDesignUid,
       double? baseDesignOffset,
       Guid? topDesignUid,
       double? topDesignOffset,

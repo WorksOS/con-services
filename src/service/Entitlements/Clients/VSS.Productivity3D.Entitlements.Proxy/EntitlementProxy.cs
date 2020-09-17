@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.Entitlements.Proxy
 
     public override ApiVersion Version => ApiVersion.V1;
 
-    public override ApiType Type => ApiType.Public;
+    public override ApiType Type => ApiType.Private;
 
     public override string CacheLifeKey => "ENTITLEMENT_CACHE_LIFE";
 

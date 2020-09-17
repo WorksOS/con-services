@@ -18,4 +18,4 @@ EXPOSE 80
 
 COPY --from=build_container ${SOURCE_PATH} ${DEST_PATH}
 
-ENTRYPOINT ["dotnet", "CCSS.Heathz.WebAPI.dll"]
+ENTRYPOINT ["dotnet", "CCSS.WorksOS.Healthz.WebAPI.dll"]

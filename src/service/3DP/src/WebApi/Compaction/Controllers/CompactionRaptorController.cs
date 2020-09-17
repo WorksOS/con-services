@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Productivity3D.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -26,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// End points for getting Raptor data e.g. for tile service to get alignment points
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionRaptorController : BaseTileController<CompactionRaptorController>
+  public class CompactionRaptorController : BaseController<CompactionRaptorController>
   {
     /// <summary>
     /// Default constructor.

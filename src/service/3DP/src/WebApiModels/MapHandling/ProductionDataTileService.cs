@@ -15,6 +15,7 @@ using VSS.Productivity3D.Models.Exceptions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -42,12 +43,13 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     protected readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
     private readonly ILogger log;
     private readonly ILoggerFactory logger;
+    private readonly IFileImportProxy FileImportProxy;
 
     public ProductionDataTileService(IProductionDataRequestFactory prodDataFactory, ILoggerFactory logger, IElevationExtentsProxy extentsProxy,
 #if RAPTOR
       IASNodeClient raptor, 
 #endif
-      IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy, IFileImportProxy fileImportProxy)
     {
       requestFactory = prodDataFactory;
       log = logger.CreateLogger<ProductionDataTileService>();
@@ -58,6 +60,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       elevProxy = extentsProxy;
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
+      FileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -79,7 +82,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="volumeCalcType">Type of summary volumes calculation</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns>Tile result</returns>
-    public async Task<TileResult> GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IHeaderDictionary customHeaders, bool explicitFilters = false)
+    public async Task<TileResult> GetProductionDataTile(CompactionProjectSettings projectSettings, CompactionProjectSettingsColors projectSettingsColors, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox, DesignDescriptor cutFillDesign, FilterResult baseFilter, FilterResult topFilter, DesignDescriptor volumeDesign, VolumeCalcType? volumeCalcType, IHeaderDictionary customHeaders, string userId, bool explicitFilters = false)
     {
       var getTile = true;
       ElevationStatisticsResult elevationExtents = null;
@@ -87,7 +90,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 
       try
       {
-        elevationExtents = await GetElevationExtents(projectSettings, filter, projectId, projectUid, mode, customHeaders);
+        elevationExtents = await GetElevationExtents(projectSettings, filter, projectId, projectUid, mode, customHeaders, userId);
       }
       catch (ServiceException se)
       {
@@ -152,7 +155,8 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
 #if RAPTOR
               raptorClient, 
 #endif
-              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: customHeaders)
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: customHeaders,
+              userId: userId, fileImportProxy: FileImportProxy)
             .ProcessAsync(tileRequest) as TileResult;
         }
         catch (Exception ex)
@@ -174,10 +178,10 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="mode">Display mode; type of data requested</param>
     /// <returns>Elevation extents to use</returns>
-    private async Task<ElevationStatisticsResult> GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, IHeaderDictionary customHeaders)
+    private async Task<ElevationStatisticsResult> GetElevationExtents(CompactionProjectSettings projectSettings, FilterResult filter, long projectId, Guid projectUid, DisplayMode mode, IHeaderDictionary customHeaders, string userId)
     {
       var elevExtents = (mode == DisplayMode.Height || mode == DisplayMode.Design3D)
-        ? await elevProxy.GetElevationRange(projectId, projectUid, filter, projectSettings, customHeaders)
+        ? await elevProxy.GetElevationRange(projectId, projectUid, filter, projectSettings, customHeaders, userId)
         : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();

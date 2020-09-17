@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Productivity3D.Service.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -14,7 +15,6 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -193,7 +193,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
             RaptorClient,
 #endif
-            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(slicerDesignProfileRequest)
       );
 
@@ -254,7 +255,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #if RAPTOR
               RaptorClient,
 #endif
-              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+              configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+              userId: GetUserId(), fileImportProxy: FileImportProxy)
             .ProcessAsync(profileRequest)
         );
           results.Add(impFileUid, (CompactionProfileResult<CompactionProfileVertex>)slicerDesignResult);

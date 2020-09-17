@@ -71,7 +71,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       try
       {
         var qmTileResult = await RequestExecutorContainerFactory.Build<QMTilesExecutor>(LoggerFactory,
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+          userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request) as QMTileResult;
         return (qmTileResult == null) ? null : qmTileResult.TileData;
       }
       catch (Exception e)

@@ -8,7 +8,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Combined filter represents both spatial and attribute based filtering considerations
   /// </summary>
-  public class CombinedFilter : ICombinedFilter
+  public class CombinedFilter : VersionCheckedBinarizableSerializationBase, ICombinedFilter
   {
     const byte VERSION_NUMBER = 1;
 
@@ -55,7 +55,7 @@ namespace VSS.TRex.Filters
       SpatialFilter = spatialFilter;
     }
 
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -66,7 +66,7 @@ namespace VSS.TRex.Filters
       SpatialFilter?.ToBinary(writer);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 

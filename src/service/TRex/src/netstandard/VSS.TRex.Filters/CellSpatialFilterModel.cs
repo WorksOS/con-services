@@ -7,7 +7,7 @@ using VSS.TRex.GridFabric.ExtensionMethods;
 
 namespace VSS.TRex.Filters
 {
-  public class CellSpatialFilterModel : ICellSpatialFilterModel
+  public class CellSpatialFilterModel : VersionCheckedBinarizableSerializationBase, ICellSpatialFilterModel
   {
     const byte VERSION_NUMBER = 1;
 
@@ -122,7 +122,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize out the state of the cell spatial filter using the Ignite IBinarizable serialisation
     /// </summary>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -169,7 +169,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize in the state of the cell spatial filter using the Ignite IBinarizable serialisation
     /// </summary>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
@@ -177,12 +177,12 @@ namespace VSS.TRex.Filters
       {
         if (reader.ReadBoolean())
         {
-          (Fence ?? (Fence = new Fence())).FromBinary(reader);
+          (Fence ??= new Fence()).FromBinary(reader);
         }
 
         if (reader.ReadBoolean())
         {
-          (AlignmentFence ?? (AlignmentFence = new Fence())).FromBinary(reader);
+          (AlignmentFence ??= new Fence()).FromBinary(reader);
         }
 
         PositionX = reader.ReadDouble();
@@ -190,6 +190,7 @@ namespace VSS.TRex.Filters
         PositionRadius = reader.ReadDouble();
         IsSquare = reader.ReadBoolean();
 
+        OverrideSpatialCellRestriction = new BoundingIntegerExtent2D();
         OverrideSpatialCellRestriction = OverrideSpatialCellRestriction.FromBinary(reader);
 
         StartStation = reader.ReadBoolean() ? reader.ReadDouble() : (double?) null;

@@ -44,6 +44,7 @@
     <ProjectReference Include="..\..\..\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
+    <ProjectReference Include="..\ServiceCommon\CCSS.Productivity3D.Service.Common\CCSS.Productivity3D.Service.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
@@ -60,6 +61,10 @@
     <Compile Remove=".\ProductionData\ResultHandling\CompactionDesignProfile.cs" />
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

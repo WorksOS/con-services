@@ -3,8 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Designs;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Models
 {
@@ -89,10 +87,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Models
 
     public override void Validate()
     {
-      this.LiftBuildSettings?.Validate();
-      this.AdditionalSpatialFilter?.Validate();
-      this.TopFilter?.Validate();
-      this.BaseFilter?.Validate();
+      LiftBuildSettings?.Validate();
+      AdditionalSpatialFilter?.Validate();
+      TopFilter?.Validate();
+      BaseFilter?.Validate();
     }
   }
 }
