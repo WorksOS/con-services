@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using CCSS.Geometry;
 using Microsoft.Extensions.Logging;
@@ -179,19 +180,20 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           //If the project, regardless of type, has any tag file data, it cannot be deleted.
           var result = await productivity3dV2ProxyCompaction.GetProjectStatistics(data.ProjectUid.Value, customHeaders);
-          if (result.extents?.ValidExtents == true)
+          if (result.extents?.ValidExtents == true && result.extents?.EmptyExtents == false)
           {
             log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} has tag file data. NOT ok to delete.");
             return new ContractExecutionResult(141, "Cannot delete a project that has 3D production (tag file) data");
           }
-          else
-          {
-            log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} has NO tag file data. Ok to delete.");
-          }
+          
+          log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} has NO tag file data. Ok to delete.");
         }
         catch (Exception e)
         {
-          log.LogInformation($"ValidateProjectExecutor: Failed to retrieve project extents for {data.ProjectUid.Value}. Assuming ok to delete.");
+          if (!e.Message.Contains($"GetStatistics: SiteModel: {data.ProjectUid.Value} not found"))
+            return new ContractExecutionResult(57, $"A problem occurred at the validate project deletion endpoint in 3dpm. Exception: {e.Message}");
+
+          log.LogInformation($"ValidateProjectExecutor: Project {data.ProjectUid.Value} not found in TRex. Ok to delete.");
         }
       }
 

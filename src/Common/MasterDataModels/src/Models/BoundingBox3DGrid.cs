@@ -78,6 +78,8 @@ namespace VSS.MasterData.Models.Models
                                   MinY == MAX_RANGE && MaxY == MIN_RANGE &&
                                   MinZ == MAX_RANGE && MaxZ == MIN_RANGE);
 
+    public bool EmptyExtents => MinX == 0 && MaxX == 0 && MinY == 0 && MaxY == 0 && MinZ == 0 && MaxZ == 0;
+
     /// <summary>
     /// ToString override
     /// </summary>

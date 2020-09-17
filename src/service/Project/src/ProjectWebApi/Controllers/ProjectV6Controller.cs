@@ -96,8 +96,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
             Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, 
-            cwsProfileSettingsClient: CwsProfileSettingsClient)
+            cwsProjectClient: CwsProjectClient, cwsProfileSettingsClient: CwsProfileSettingsClient,
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction)
           .ProcessAsync(data)
       );
       return result;
