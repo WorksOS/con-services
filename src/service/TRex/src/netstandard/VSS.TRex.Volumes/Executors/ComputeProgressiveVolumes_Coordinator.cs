@@ -194,9 +194,9 @@ namespace VSS.TRex.Volumes.Executors
             numProgressions--;
           }
 
-          if (numProgressions > ClientProgressiveHeightsLeafSubGrid.MaxNumberOfHeightLayers)
+          if (numProgressions > ClientProgressiveHeightsLeafSubGrid.MAX_NUMBER_OF_HEIGHT_LAYERS)
           {
-            throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MaxNumberOfHeightLayers} height layers may be requested at one time");
+            throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MAX_NUMBER_OF_HEIGHT_LAYERS} height layers may be requested at one time");
           }
 
           // Create and configure the aggregator that contains the business logic for the underlying volume calculation

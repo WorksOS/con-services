@@ -289,7 +289,7 @@ namespace VSS.TRex.SubGridTrees.Client
       return false;
     }
 
-    public virtual bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+    public virtual bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, bool returnEarliestFilteredCellPass,
       IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilter)
     {
       return false;

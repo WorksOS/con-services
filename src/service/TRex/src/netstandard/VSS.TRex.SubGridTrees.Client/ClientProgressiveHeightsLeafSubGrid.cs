@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGridTrees.Client
       return result;
     }
 
-    public const int MaxNumberOfHeightLayers = 1000;
+    public const int MAX_NUMBER_OF_HEIGHT_LAYERS = 1000;
 
     public List<float[,]> Heights { get; set; }
 
@@ -38,9 +38,9 @@ namespace VSS.TRex.SubGridTrees.Client
       get => _numberOfHeightLayers;
       set
       {
-        if (value > MaxNumberOfHeightLayers)
+        if (value > MAX_NUMBER_OF_HEIGHT_LAYERS)
         {
-          throw new ArgumentException($"No more than {MaxNumberOfHeightLayers} progressions may be requested at one time");
+          throw new ArgumentException($"No more than {MAX_NUMBER_OF_HEIGHT_LAYERS} progressions may be requested at one time");
         }
 
         _numberOfHeightLayers = value;
@@ -72,11 +72,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Constructor. Set the grid to HeightAndTime.
     /// </summary>
-    /// <param name="owner"></param>
-    /// <param name="parent"></param>
-    /// <param name="level"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="indexOriginOffset"></param>
     public ClientProgressiveHeightsLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, int indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
     {
       Initialise();
@@ -85,8 +80,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Determine if a filtered height is valid (not null)
     /// </summary>
-    /// <param name="filteredValue"></param>
-    /// <returns></returns>
+    // ReSharper disable once CompareOfFloatsByEqualityOperator
     public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullHeight;
     
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
@@ -96,9 +90,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Assign filtered height value from a filtered pass to a cell
     /// </summary>
     /// <param name="heightIndex">The index of the height array in Heights to assign the elevation to</param>
-    /// <param name="cellX"></param>
-    /// <param name="cellY"></param>
-    /// <param name="height"></param>
     public void AssignFilteredValue(int heightIndex, byte cellX, byte cellY, float height)
     {
       Heights[heightIndex][cellX, cellY] = height;
@@ -121,8 +112,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Determines if the leaf content of this sub grid is equal to 'other'
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     public override bool LeafContentEquals(IClientLeafSubGrid other)
     {
       var result = true;
@@ -131,6 +120,7 @@ namespace VSS.TRex.SubGridTrees.Client
       for (var i = 0; i < _numberOfHeightLayers; i++)
       {
         var ii = i;
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
         ForEach((x, y) => result &= Heights[ii][x, y] == otherCopy.Heights[ii][x, y]);
       }
 
@@ -152,9 +142,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// For the multi-layered progressive height arrays this function simple returns true
     /// delegating the management of this aspect to upper layers.
     /// </summary>
-    /// <param name="cellX"></param>
-    /// <param name="cellY"></param>
-    /// <returns></returns>
     public override bool CellHasValue(byte cellX, byte cellY) => true;
 
     /// <summary>
@@ -203,22 +190,21 @@ namespace VSS.TRex.SubGridTrees.Client
     /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
     /// Override to implement if needed.
     /// </summary>
-    /// <param name="writer"></param>
     public override void Write(BinaryWriter writer)
     {
       base.Write(writer);
 
       writer.Write(_numberOfHeightLayers);
 
-      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
       try
       {
         for (var i = 0; i < _numberOfHeightLayers; i++)
         {
-          Buffer.BlockCopy(Heights[i], 0, buffer, 0, bufferSize);
-          writer.Write(buffer, 0, bufferSize);
+          Buffer.BlockCopy(Heights[i], 0, buffer, 0, BUFFER_SIZE);
+          writer.Write(buffer, 0, BUFFER_SIZE);
         }
       }
       finally
@@ -232,22 +218,21 @@ namespace VSS.TRex.SubGridTrees.Client
     /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
     /// Override to implement if needed.
     /// </summary>
-    /// <param name="reader"></param>
     public override void Read(BinaryReader reader)
     {
       base.Read(reader);
 
       NumberOfHeightLayers = reader.ReadInt32();
 
-      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
       try
       {
         for (var i = 0; i < _numberOfHeightLayers; i++)
         {
-          reader.Read(buffer, 0, bufferSize);
-          Buffer.BlockCopy(buffer, 0, Heights[i], 0, bufferSize);
+          reader.Read(buffer, 0, BUFFER_SIZE);
+          Buffer.BlockCopy(buffer, 0, Heights[i], 0, BUFFER_SIZE);
         }
       }
       finally
@@ -259,7 +244,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Return an indicative size for memory consumption of this class to be used in cache tracking
     /// </summary>
-    /// <returns></returns>
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() +

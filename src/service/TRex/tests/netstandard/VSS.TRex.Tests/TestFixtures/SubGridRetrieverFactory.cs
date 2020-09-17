@@ -8,6 +8,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
 using VSS.TRex.Volumes.Interfaces;
@@ -33,7 +34,8 @@ namespace VSS.TRex.Tests.TestFixtures
       ISubGridTreeBitMask pdExistenceMap,
       ITRexSpatialMemoryCacheContext[] subGridCacheContexts,
       IOverrideParameters overrides,
-      ILiftParameters liftParams)
+      ILiftParameters liftParams,
+      ISurveyedSurfaces filteredSurveyedSurfaces)
     {
       if (gridDataType == GridDataType.ProgressiveVolumes)
       {
@@ -50,7 +52,8 @@ namespace VSS.TRex.Tests.TestFixtures
           populationControl,
           pdExistenceMap,
           overrides,
-          liftParams);
+          liftParams,
+          filteredSurveyedSurfaces);
 
         if (subGridsRequestArgument is IProgressiveVolumesSubGridsRequestArgument argument)
         {

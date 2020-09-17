@@ -65,7 +65,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
 
     bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass);
 
-    bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+    bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, bool returnEarliestFilteredCellPass,
       IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilter);
   }
 }

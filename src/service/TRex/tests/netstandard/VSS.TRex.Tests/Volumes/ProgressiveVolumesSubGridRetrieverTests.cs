@@ -19,7 +19,7 @@ namespace VSS.TRex.Tests.Volumes
     {
       var retriever = new ProgressiveVolumesSubGridRetriever
       (siteModel,
-        GridDataType.ProgressiveVolumes, 
+        GridDataType.ProgressiveVolumes,
         siteModel.PrimaryStorageProxy,
         new CombinedFilter(),
         new CellPassAttributeFilterProcessingAnnex(),
@@ -31,12 +31,15 @@ namespace VSS.TRex.Tests.Volumes
         new FilteredValuePopulationControl(),
         new SubGridTreeBitMask(),
         new OverrideParameters(),
-        new LiftParameters()
-      );
+        new LiftParameters(),
+        new TRex.SurveyedSurfaces.SurveyedSurfaces()
+      )
+      {
+        StartDate = new DateTime(2020, 1, 1, 0, 0, 0), 
+        EndDate = new DateTime(2020, 1, 1, 1, 0, 0), 
+        Interval = new TimeSpan(0, 10, 0)
+      };
 
-      retriever.StartDate = new DateTime(2020, 1, 1, 0, 0, 0);
-      retriever.EndDate = new DateTime(2020, 1, 1, 1, 0, 0);
-      retriever.Interval = new TimeSpan(0, 10, 0);
 
       return retriever;
     }
