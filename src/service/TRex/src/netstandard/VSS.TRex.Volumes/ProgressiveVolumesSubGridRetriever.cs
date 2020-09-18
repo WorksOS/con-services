@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Amazon.S3.Model;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Extensions;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -42,24 +41,18 @@ namespace VSS.TRex.Volumes
 
     private IClientProgressiveHeightsLeafSubGrid _progressiveClientSubGrid;
 
-    /// <summary>
-    /// A list of pre-computed surveyed surface elevations for each of the intervals being computed
-    /// </summary>
-    private (DateTime date, ClientHeightAndTimeLeafSubGrid leaf)[] _progressiveSurveyedSurfaceElevations;
-
     private ISubGridSegmentIterator _reversingSegmentIterator;
     private SubGridSegmentCellPassIterator_NonStatic _reversingCellPassIterator;
 
-    private CellPass _firstCellPass;
     private CellPass _priorToFirstCellPass;
     private CellPass _currentCellPass;
 
-    private ISurveyedSurfaces _filteredSurveyedSurfaces;
-    private Guid[] _filteredSurveyedSurfacesAsGuidArray;
+    private readonly ISurveyedSurfaces _filteredSurveyedSurfaces;
+    private readonly Guid[] _filteredSurveyedSurfacesAsGuidArray;
 
-    private CalculateSurfaceElevationPatch _surveyedSurfaceExecutor = new CalculateSurfaceElevationPatch();
+    private readonly CalculateSurfaceElevationPatch _surveyedSurfaceExecutor = new CalculateSurfaceElevationPatch();
 
-    private IDesignFiles _designFiles = DIContext.ObtainRequired<IDesignFiles>();
+    private readonly IDesignFiles _designFiles = DIContext.ObtainRequired<IDesignFiles>();
 
     /// <summary>
     /// Constructor for the sub grid retriever helper
@@ -110,7 +103,7 @@ namespace VSS.TRex.Volumes
       // Remove any machine filtering - the intent here is to examine volume progression over time, machine breakdowns don't make sense at this point
       filter.AttributeFilter.HasMachineFilter = false;
 
-      _filteredSurveyedSurfaces = filteredSurveyedSurfaces;
+      _filteredSurveyedSurfaces = filteredSurveyedSurfaces ?? new SurveyedSurfaces.SurveyedSurfaces();
       _filteredSurveyedSurfacesAsGuidArray = _filteredSurveyedSurfaces.Select(x => x.ID).ToArray();
     }
 
@@ -129,10 +122,7 @@ namespace VSS.TRex.Volumes
         // according to the primary cell pass iterator _cellPassIterator. Allow it's time range to be all of history prior to StartDate
         // Note that both the reversing and progressive sub grid operator are provide the same sub grid. This permits both iterators
         // to leverage the inherent cache of segment information within the sub grid.
-        _reversingSegmentIterator = new SubGridSegmentIterator(_subGridAsLeaf, _subGridAsLeaf.Directory, _storageProxy)
-        {
-          IterationDirection = IterationDirection.Backwards
-        };
+        _reversingSegmentIterator = new SubGridSegmentIterator(_subGridAsLeaf, _subGridAsLeaf.Directory, _storageProxy) {IterationDirection = IterationDirection.Backwards};
 
         _reversingCellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(_reversingSegmentIterator, _maxNumberOfPassesToReturn);
         _reversingCellPassIterator.SetTimeRange(true, DateTime.MinValue, StartDate.AddTicks(-100));
@@ -148,7 +138,7 @@ namespace VSS.TRex.Volumes
 
     private int NumHeightLayers()
     {
-      var numHeightLayers = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks);
+      var numHeightLayers = (int) ((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks);
       if ((EndDate.Ticks - StartDate.Ticks) % Interval.Ticks == 0)
       {
         numHeightLayers++;
@@ -157,6 +147,66 @@ namespace VSS.TRex.Volumes
       return numHeightLayers;
     }
 
+    /// <summary>
+    /// Calculates the stack of surveyed surface elevations at each of the 'to' as-at times for each volume
+    /// </summary>
+    private void UpdateLayerWithSurveyedSurfaceHeight(int originX, int originY, DateTime startIntervalDate, DateTime endIntervalDate, float[,] prodDataHeights, long[,] prodDataTimes)
+    {
+      // Step 1: Determine the first surveyed surface that should be covered for this interval
+      var firstSurveyedSurfaceIndexForInterval = 0;
+      while (firstSurveyedSurfaceIndexForInterval < _filteredSurveyedSurfaces.Count &&
+             _filteredSurveyedSurfaces[firstSurveyedSurfaceIndexForInterval].AsAtDate < endIntervalDate)
+      {
+        firstSurveyedSurfaceIndexForInterval++;
+      }
+
+      // Step 1: Determine the last surveyed surface that should be covered for this interval
+      var lastSurveyedSurfaceInIntervalIndex = firstSurveyedSurfaceIndexForInterval;
+      while (lastSurveyedSurfaceInIntervalIndex < _filteredSurveyedSurfaces.Count &&
+             _filteredSurveyedSurfaces[lastSurveyedSurfaceInIntervalIndex].AsAtDate < endIntervalDate)
+      {
+        lastSurveyedSurfaceInIntervalIndex++;
+      }
+
+      // Compute the processing map, clearing any cells that have a production data elevation later than the latest available
+      // surveyed surface elevation for that cell, for the interval being considered
+      var processingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+      var lastSurveyedSurfaceDate = _filteredSurveyedSurfaces[lastSurveyedSurfaceInIntervalIndex].AsAtDate.Ticks;
+
+      processingMap.ForEachSetBit((x, y) =>
+      {
+        if (prodDataTimes[x, y] > lastSurveyedSurfaceDate)
+          processingMap.ClearBit(x, y);
+      });
+
+      // There are some surveyed surfaces that need to be processed for this interval
+      // Note: The executor will modify the passed processingMap so take a copy of it for later use
+
+      var savedProcessingMap = new SubGridTreeBitmapSubGridBits(processingMap);
+
+      if (!(_surveyedSurfaceExecutor.Execute(_siteModel, originX, originY, _siteModel.CellSize,
+        SurveyedSurfacePatchType.LatestSingleElevation,
+        _filteredSurveyedSurfacesAsGuidArray.AsSpan(firstSurveyedSurfaceIndexForInterval, lastSurveyedSurfaceInIntervalIndex),
+        _designFiles, _siteModel.SurveyedSurfaces, processingMap) is ClientHeightAndTimeLeafSubGrid heightMap))
+      {
+        throw new TRexException("Progressive volume surveyed surface query returned incorrect type");
+      }
+
+      // Merge the surveyed surface height map with the prod data map. The processing map previously calculated
+      // means all non-null elevations in the result may be used to update elevations in the layer
+      savedProcessingMap.ForEachSetBit((x, y) =>
+      {
+        var height = heightMap.Cells[x, y];
+        // ReSharper disable once CompareOfFloatsByEqualityOperator
+        if (height != Consts.NullHeight)
+        {
+          prodDataHeights[x, y] = height;
+          prodDataTimes[x, y] = heightMap.Times[x, y];
+        }
+      });
+    }
+
+    /*
     /// <summary>
     /// Calculates the stack of surveyed surface elevations at each of the 'to' as-at times for each volume
     /// </summary>
@@ -183,7 +233,8 @@ namespace VSS.TRex.Volumes
       result.ForEach(interval =>
       {
         // Obtain the height maps for all surveyed surfaces in the time between the last interval and the current interval
-        // Work backwards though the list to minimise calculations
+
+        // Step 1: Determine the range of surveyed surfaces that should be covered for this interval
         var lastSurveyedSurfaceInIntervalIndex = currentSurveyedSurfaceIndex;
         while (currentSurveyedSurfaceIndex < _filteredSurveyedSurfaces.Count &&
                _filteredSurveyedSurfaces[currentSurveyedSurfaceIndex].AsAtDate <= interval.date)
@@ -194,13 +245,14 @@ namespace VSS.TRex.Volumes
         if (lastSurveyedSurfaceInIntervalIndex > currentSurveyedSurfaceIndex)
         {
           // There are some surveyed surfaces that need to be processed for this interval
-          var heightMap = _surveyedSurfaceExecutor.Execute(_siteModel, otgBottomLeftX, otgBottomLeftY, _siteModel.CellSize,
+
+          if (!(_surveyedSurfaceExecutor.Execute(_siteModel, otgBottomLeftX, otgBottomLeftY, _siteModel.CellSize,
             SurveyedSurfacePatchType.LatestSingleElevation,
             _filteredSurveyedSurfacesAsGuidArray.AsSpan(currentSurveyedSurfaceIndex, lastSurveyedSurfaceInIntervalIndex),
-            _designFiles, _siteModel.SurveyedSurfaces, processingMap) as ClientHeightAndTimeLeafSubGrid;
-
-          if (heightMap == null)
-            return;
+            _designFiles, _siteModel.SurveyedSurfaces, processingMap) is ClientHeightAndTimeLeafSubGrid heightMap))
+          {
+            throw new TRexException("Progressive volume surveyed surface query returned incorrect type");
+          }
 
           if (runningHeightMap == null)
           {
@@ -230,6 +282,7 @@ namespace VSS.TRex.Volumes
 
       return result;
     }
+    */
 
     /// <summary>
     /// Decorates the base sub grid request logic with additional requirements for progressive requests
@@ -248,7 +301,7 @@ namespace VSS.TRex.Volumes
       _progressiveClientSubGrid = subGrid;
       _progressiveClientSubGrid.NumberOfHeightLayers = NumHeightLayers();
 
-      _progressiveSurveyedSurfaceElevations = CalculateSurveyedSurfaceStack(clientGrid.OriginX, clientGrid.OriginY);
+      //_progressiveSurveyedSurfaceElevations = CalculateSurveyedSurfaceStack(clientGrid.OriginX, clientGrid.OriginY);
 
       return base.RetrieveSubGrid(clientGrid, cellOverrideMask, out sieveFilterInUse, computeSpatialFilterMaskAndClientProdDataMap);
     }
@@ -281,6 +334,7 @@ namespace VSS.TRex.Volumes
          * CAVEATS:
          * 1. [Todo] This logic currently does not cater for minimum elevation mode. This should be relatively easy to track on a forwards basis as
          * the cell passes are being traversed
+         * 2. [Todo] Ensure elevations from earlier layers march forward into later layers if there are no cell passes in an interval
          */
 
         // Initialise iterator contexts for this cell, both forwards and reversing iterators.
@@ -299,11 +353,14 @@ namespace VSS.TRex.Volumes
         var havePriorToFirstCellPass = _reversingCellPassIterator.GetNextCellPass(ref _priorToFirstCellPass);
 
         var previousMarchingHeight = Consts.NullHeight;
+        var previousMarchingTime = DateTime.MinValue;
+
         if (havePriorToFirstCellPass)
         {
           // There is a prior ground elevation to use for the first height progressing
-          _progressiveClientSubGrid.AssignFilteredValue(0, stripeIndex, j, _priorToFirstCellPass.Height);
+          _progressiveClientSubGrid.AssignFilteredValue(0, stripeIndex, j, _priorToFirstCellPass.Height, _priorToFirstCellPass.Time.Ticks);
           previousMarchingHeight = _priorToFirstCellPass.Height;
+          previousMarchingTime = _priorToFirstCellPass.Time;
         }
 
         if (_progressiveClientSubGrid.NumberOfHeightLayers < 2)
@@ -323,14 +380,14 @@ namespace VSS.TRex.Volumes
             continue;
           }
 
-          // TODO: Check if there is a surveyed surface elevation later than the cell pass time but earlier than the marching date
           // TODO: If the cell pass is minimum elevation mode and lower the the currently tracked elevation for this sequence
           // TODO: of minimum elevation mode cell passes then use its elevation, otherwise discard it.
 
           // Record this cell pass height at the marching date if it is at the exact time of <marchingDate>, otherwise use
           // previousMarchingHeight as this will be the correct height for this marching date
           _progressiveClientSubGrid.AssignFilteredValue(marchingIndex, stripeIndex, j,
-            _currentCellPass.Time == marchingDate ? _currentCellPass.Height : previousMarchingHeight);
+            _currentCellPass.Time == marchingDate ? _currentCellPass.Height : previousMarchingHeight,
+            _currentCellPass.Time == marchingDate ? _currentCellPass.Time.Ticks : previousMarchingTime.Ticks);
 
           previousMarchingHeight = _currentCellPass.Height;
           marchingIndex++;
@@ -345,8 +402,30 @@ namespace VSS.TRex.Volumes
         // Fill in any progression dates beyond the last cell pass extracted
         for (var i = marchingIndex; i < _progressiveClientSubGrid.NumberOfHeightLayers; i++)
         {
-          _progressiveClientSubGrid.AssignFilteredValue(i, stripeIndex, j, previousMarchingHeight);
+          _progressiveClientSubGrid.AssignFilteredValue(i, stripeIndex, j, previousMarchingHeight, previousMarchingTime.Ticks);
         }
+      }
+    }
+
+    protected override void RetrieveSubGridStripes(IClientLeafSubGrid clientGrid)
+    {
+      // First calculate the progressive set of height information for each layer in the stack of progressive heights
+
+      // Iterate over the stripes in the sub grid processing each one in turn. The result is a stack of layers containing
+      // elevations selected from production data only
+      for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+      {
+        RetrieveSubGridStripe(i);
+      }
+
+      // Annotate the progressive series of height & time sub grids with surveyed surface information
+      for (var i = 0; i < _progressiveClientSubGrid.Layers.Count; i++)
+      {
+        UpdateLayerWithSurveyedSurfaceHeight(clientGrid.OriginX, clientGrid.OriginY,
+          i == 0 ? DateTime.MinValue : _progressiveClientSubGrid.Layers[i].Date,
+          _progressiveClientSubGrid.Layers[i].Date,
+          _progressiveClientSubGrid.Layers[i].Heights,
+          _progressiveClientSubGrid.Layers[i].Times);
       }
     }
   }

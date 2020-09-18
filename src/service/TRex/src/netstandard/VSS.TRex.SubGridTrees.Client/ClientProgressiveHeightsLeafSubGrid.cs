@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
@@ -19,6 +20,7 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientProgressiveHeightsLeafSubGrid : ClientLeafSubGrid, IClientProgressiveHeightsLeafSubGrid, IDisposable
   {
     public static readonly float[,] NullHeights = InitialiseNullHeights();
+    public static readonly long[,] NullTimes = new long[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
     private static float[,] InitialiseNullHeights()
     {
@@ -29,7 +31,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public const int MAX_NUMBER_OF_HEIGHT_LAYERS = 1000;
 
-    public List<float[,]> Heights { get; set; }
+    public List<(float[,] Heights, long[,] Times, DateTime Date)> Layers { get; set; }
 
     private int _numberOfHeightLayers;
 
@@ -44,11 +46,11 @@ namespace VSS.TRex.SubGridTrees.Client
         }
 
         _numberOfHeightLayers = value;
-        Heights = new List<float[,]>(_numberOfHeightLayers);
+        Layers = new List<(float[,] Heights, long[,] Times, DateTime Date)>(_numberOfHeightLayers);
         for (var i = 0; i < _numberOfHeightLayers; i++)
         {
-          Heights.Add(GenericTwoDArrayCacheHelper<float>.Caches().Rent());
-          Array.Copy(NullHeights, 0, Heights[i], 0, SubGridTreeConsts.CellsPerSubGrid);
+          var layer = (GenericTwoDArrayCacheHelper<float>.Caches().Rent(), GenericTwoDArrayCacheHelper<long>.Caches().Rent(), DateTime.MinValue);
+          Layers.Add(layer);
         }
 
         Clear();
@@ -90,9 +92,10 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Assign filtered height value from a filtered pass to a cell
     /// </summary>
     /// <param name="heightIndex">The index of the height array in Heights to assign the elevation to</param>
-    public void AssignFilteredValue(int heightIndex, byte cellX, byte cellY, float height)
+    public void AssignFilteredValue(int heightIndex, byte cellX, byte cellY, float height, long time)
     {
-      Heights[heightIndex][cellX, cellY] = height;
+      Layers[heightIndex].Heights[cellX, cellY] = height;
+      Layers[heightIndex].Times[cellX, cellY] = time;
     }
 
     /// <summary>
@@ -105,7 +108,7 @@ namespace VSS.TRex.SubGridTrees.Client
       for (var i = 0; i < _numberOfHeightLayers; i++)
       {
         var ii = i;
-        ForEach((x, y) => Heights[ii][x, y] = ii);
+        ForEach((x, y) => Layers[ii].Heights[x, y] = ii);
       }
     }
 
@@ -121,7 +124,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         var ii = i;
         // ReSharper disable once CompareOfFloatsByEqualityOperator
-        ForEach((x, y) => result &= Heights[ii][x, y] == otherCopy.Heights[ii][x, y]);
+        ForEach((x, y) => result &= Layers[ii].Heights[x, y] == otherCopy.Layers[ii].Heights[x, y]);
       }
 
       return result;
@@ -153,14 +156,15 @@ namespace VSS.TRex.SubGridTrees.Client
 
       for (var i = 0; i < _numberOfHeightLayers; i++)
       {
-        Array.Copy(ClientHeightLeafSubGrid.NullCells, 0, Heights[i], 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
+        Array.Copy(ClientProgressiveHeightsLeafSubGrid.NullHeights, 0, Layers[i].Heights, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
+        Array.Copy(ClientProgressiveHeightsLeafSubGrid.NullTimes, 0, Layers[i].Times, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
       }
     }
 
     public override void DumpToLog(ILogger log, string title)
     {
       log.LogDebug(title);
-      log.LogDebug($"Number of layers: {Heights.Count}");
+      log.LogDebug($"Number of layers: {Layers.Count}");
 
       for (var i = 0; i < _numberOfHeightLayers; i++)
       {
@@ -174,7 +178,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
           for (var k = 0; k < SubGridTreeConsts.SubGridTreeDimension; k++)
           {
-            sb.Append(Heights[i][j, k].ToString(CultureInfo.InvariantCulture));
+            sb.Append(Layers[i].Heights[j, k].ToString(CultureInfo.InvariantCulture));
             sb.Append(" ");
           }
 
@@ -187,7 +191,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     /// <summary>
     /// Write the contents of the Items array using the supplied writer
-    /// This is an unimplemented override; a generic BinaryReader based implementation is not provided. 
+    /// This is an unimplemented override; a generic BinaryReader based implementation is not provided.
     /// Override to implement if needed.
     /// </summary>
     public override void Write(BinaryWriter writer)
@@ -203,7 +207,7 @@ namespace VSS.TRex.SubGridTrees.Client
       {
         for (var i = 0; i < _numberOfHeightLayers; i++)
         {
-          Buffer.BlockCopy(Heights[i], 0, buffer, 0, BUFFER_SIZE);
+          Buffer.BlockCopy(Layers[i].Heights, 0, buffer, 0, BUFFER_SIZE);
           writer.Write(buffer, 0, BUFFER_SIZE);
         }
       }
@@ -232,7 +236,7 @@ namespace VSS.TRex.SubGridTrees.Client
         for (var i = 0; i < _numberOfHeightLayers; i++)
         {
           reader.Read(buffer, 0, BUFFER_SIZE);
-          Buffer.BlockCopy(buffer, 0, Heights[i], 0, BUFFER_SIZE);
+          Buffer.BlockCopy(buffer, 0, Layers[i].Heights, 0, BUFFER_SIZE);
         }
       }
       finally
@@ -254,10 +258,13 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       for (var i = 0; i < _numberOfHeightLayers; i++)
       {
-        var tmp = Heights[i];
+        var tmp = Layers[i].Heights;
         GenericTwoDArrayCacheHelper<float>.Caches().Return(ref tmp);
-        Heights[i] = null;
+        var tmp2 = Layers[i].Times;
+        GenericTwoDArrayCacheHelper<long>.Caches().Return(ref tmp2);
       }
+
+      Layers = null;
     }
 
     public void Dispose()

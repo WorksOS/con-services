@@ -100,8 +100,11 @@ namespace VSS.TRex.Tests.Volumes
 
       progressiveSubGrid.NumberOfHeightLayers = 2;
 
-      TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) => progressiveSubGrid.Heights[0][x, y] = baseLevel);
-      TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) => progressiveSubGrid.Heights[1][x, y] = topLevel);
+      TRex.SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+      {
+        progressiveSubGrid.Layers[0].Heights[x, y] = baseLevel;
+        progressiveSubGrid.Layers[1].Heights[x, y] = topLevel;
+      });
 
       var aggr = new ProgressiveVolumesCalculationsAggregator
       {

@@ -12,6 +12,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types.Types;
 using Range = VSS.TRex.Common.Utilities.Range;
 
@@ -590,6 +591,15 @@ namespace VSS.TRex.SubGrids
       }
 
       //if (Debug_ExtremeLogSwitchD) Log.LogDebug("Completed stripe iteration {StripeIndex} at {clientGrid.OriginX}x{clientGrid.OriginY}");
+    }
+
+    protected override void RetrieveSubGridStripes(IClientLeafSubGrid clientGrid)
+    {
+      // Iterate over the stripes in the sub grid processing each one in turn.
+      for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+      {
+        RetrieveSubGridStripe(i);
+      }
     }
   }
 }

@@ -98,15 +98,15 @@ namespace VSS.TRex.Volumes
         {
           case VolumeComputationType.Between2Filters:
             for (var i = 0; i < subGrid.NumberOfHeightLayers - 1; i++)
-              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, subGrid.Heights[i], subGrid.Heights[i + 1]);
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, subGrid.Layers[i].Heights, subGrid.Layers[i + 1].Heights);
             break;
           case VolumeComputationType.BetweenDesignAndFilter:
             for (var i = 0; i < subGrid.NumberOfHeightLayers; i++)
-              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, subGrid.Heights[i], designHeights);
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, subGrid.Layers[i].Heights, designHeights);
             break;
           case VolumeComputationType.BetweenFilterAndDesign:
             for (var i = 0; i < subGrid.NumberOfHeightLayers; i++)
-              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, designHeights, subGrid.Heights[i]);
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, designHeights, subGrid.Layers[i].Heights);
             break;
           default:
             throw new ArgumentException($"Unsupported volume type {VolumeType}");

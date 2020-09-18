@@ -115,12 +115,13 @@ namespace VSS.TRex.SubGrids
       // its attendant machine events and target values prior to assignment to the client sub grid.
       _assignmentContext = new FilteredValueAssignmentContext { Overrides = overrides, LiftParams = liftParams };
 
-      _filter.AttributeFilter.SiteModel = siteModel; 
+      _filter.AttributeFilter.SiteModel = siteModel;
 
       _canUseGlobalLatestCells = _filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
     }
 
     protected abstract void RetrieveSubGridStripe(byte stripeIndex);
+    protected abstract void RetrieveSubGridStripes(IClientLeafSubGrid clientGrid);
 
     /// <summary>
     /// Performs extraction of specific attributes from a GlobalLatestCells structure depending on the type of
@@ -450,11 +451,7 @@ namespace VSS.TRex.SubGrids
           _aggregatedCellScanMap.AndWith(_clientGridAsLeaf.FilterMap); // ... and which are in the required filter map
         }
 
-        // Iterate over the stripes in the sub grid processing each one in turn.
-        for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
-        {
-          RetrieveSubGridStripe(i);
-        }
+        RetrieveSubGridStripes(_clientGrid);
 
         //if Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
