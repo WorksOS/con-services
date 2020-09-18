@@ -9,8 +9,6 @@ rootDomain: eks.ccss.cloud
 
 serviceName: scheduler-service
 
-replicaCount: 1
-
 image:
   tag: latest
 
@@ -35,4 +33,3 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: 3600
     nginx.ingress.kubernetes.io/proxy-read-timeout: 3600
  
-    
