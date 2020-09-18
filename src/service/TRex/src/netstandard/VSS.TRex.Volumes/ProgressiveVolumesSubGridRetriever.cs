@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
+using Amazon.S3.Model;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -15,6 +19,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
+using VSS.TRex.SurveyedSurfaces.Executors;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
@@ -50,6 +55,11 @@ namespace VSS.TRex.Volumes
     private CellPass _currentCellPass;
 
     private ISurveyedSurfaces _filteredSurveyedSurfaces;
+    private Guid[] _filteredSurveyedSurfacesAsGuidArray;
+
+    private CalculateSurfaceElevationPatch _surveyedSurfaceExecutor = new CalculateSurfaceElevationPatch();
+
+    private IDesignFiles _designFiles = DIContext.ObtainRequired<IDesignFiles>();
 
     /// <summary>
     /// Constructor for the sub grid retriever helper
@@ -101,6 +111,7 @@ namespace VSS.TRex.Volumes
       filter.AttributeFilter.HasMachineFilter = false;
 
       _filteredSurveyedSurfaces = filteredSurveyedSurfaces;
+      _filteredSurveyedSurfacesAsGuidArray = _filteredSurveyedSurfaces.Select(x => x.ID).ToArray();
     }
 
     private bool _commonCellPassStackExaminationDone;
@@ -149,8 +160,10 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Calculates the stack of surveyed surface elevations at each of the 'to' as-at times for each volume
     /// </summary>
-    private (DateTime date, ClientHeightAndTimeLeafSubGrid leaf)[] CalculateSurveyedSurfaceStack()
+    private (DateTime date, ClientHeightAndTimeLeafSubGrid leaf)[] CalculateSurveyedSurfaceStack(int otgBottomLeftX, int otgBottomLeftY)
     {
+      var processingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+
       // Create the collection of height and time leaves ready for filling in
       var result = new (DateTime date, ClientHeightAndTimeLeafSubGrid leaf)[NumHeightLayers()];
 
@@ -163,7 +176,57 @@ namespace VSS.TRex.Volumes
       // Iterate through each interval using the computed surveyed surface heights of the previous one as
       // a comparison to be updated
 
+      ClientHeightAndTimeLeafSubGrid runningHeightMap = null;
+      var lastTimeInterval = DateTime.MinValue;
+      var currentSurveyedSurfaceIndex = -1;
 
+      result.ForEach(interval =>
+      {
+        // Obtain the height maps for all surveyed surfaces in the time between the last interval and the current interval
+        // Work backwards though the list to minimise calculations
+        var lastSurveyedSurfaceInIntervalIndex = currentSurveyedSurfaceIndex;
+        while (currentSurveyedSurfaceIndex < _filteredSurveyedSurfaces.Count &&
+               _filteredSurveyedSurfaces[currentSurveyedSurfaceIndex].AsAtDate <= interval.date)
+        {
+          lastSurveyedSurfaceInIntervalIndex++;
+        }
+
+        if (lastSurveyedSurfaceInIntervalIndex > currentSurveyedSurfaceIndex)
+        {
+          // There are some surveyed surfaces that need to be processed for this interval
+          var heightMap = _surveyedSurfaceExecutor.Execute(_siteModel, otgBottomLeftX, otgBottomLeftY, _siteModel.CellSize,
+            SurveyedSurfacePatchType.LatestSingleElevation,
+            _filteredSurveyedSurfacesAsGuidArray.AsSpan(currentSurveyedSurfaceIndex, lastSurveyedSurfaceInIntervalIndex),
+            _designFiles, _siteModel.SurveyedSurfaces, processingMap) as ClientHeightAndTimeLeafSubGrid;
+
+          if (heightMap == null)
+            return;
+
+          if (runningHeightMap == null)
+          {
+            runningHeightMap = heightMap;
+          }
+          else
+          {
+            // Merge running height map with the requested height map
+            processingMap.ForEachSetBit((x, y) =>
+            {
+              var height = heightMap.Cells[x, y];
+              // ReSharper disable once CompareOfFloatsByEqualityOperator
+              if (height != Consts.NullHeight)
+              {
+                runningHeightMap.Cells[x, y] = height;
+                runningHeightMap.Times[x, y] = heightMap.Times[x, y];
+              }
+            });
+          }
+        }
+
+        interval.leaf = new ClientHeightAndTimeLeafSubGrid();
+        interval.leaf.Assign(runningHeightMap);
+
+        currentSurveyedSurfaceIndex = lastSurveyedSurfaceInIntervalIndex;
+      });
 
       return result;
     }
@@ -185,7 +248,7 @@ namespace VSS.TRex.Volumes
       _progressiveClientSubGrid = subGrid;
       _progressiveClientSubGrid.NumberOfHeightLayers = NumHeightLayers();
 
-      _progressiveSurveyedSurfaceElevations = CalculateSurveyedSurfaceStack();
+      _progressiveSurveyedSurfaceElevations = CalculateSurveyedSurfaceStack(clientGrid.OriginX, clientGrid.OriginY);
 
       return base.RetrieveSubGrid(clientGrid, cellOverrideMask, out sieveFilterInUse, computeSpatialFilterMaskAndClientProdDataMap);
     }

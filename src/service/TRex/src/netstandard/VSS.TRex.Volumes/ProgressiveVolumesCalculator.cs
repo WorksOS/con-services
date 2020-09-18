@@ -127,7 +127,7 @@ namespace VSS.TRex.Volumes
       {
         if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))
         {
-          if (ActiveDesign == null || ActiveDesign.Design.DesignDescriptor.IsNull)
+          if (ActiveDesign.Design.DesignDescriptor.IsNull)
           {
             _log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
             VolumesRequestResponse.ResultStatus = RequestErrorStatus.NoDesignProvided;
@@ -148,7 +148,7 @@ namespace VSS.TRex.Volumes
           pipeline: DIContext.ObtainRequired<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
           requestAnalyser: DIContext.ObtainRequired<IRequestAnalyser>(),
           requestRequiresAccessToDesignFileExistenceMap: false, // Note: RefDesign != null || RefOriginal != null,
-          requireSurveyedSurfaceInformation: false, //UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
+          requireSurveyedSurfaceInformation: UseSurveyedSurfaces,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted(),
           liftParams: null
         );

@@ -30,7 +30,7 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
     /// Performs the donkey work of the elevation patch calculation
     /// </summary>
     public IClientLeafSubGrid Execute(ISiteModel siteModel, int otgCellBottomLeftX, int otgCellBottomLeftY, double cellSize, SurveyedSurfacePatchType patchType,
-      Guid[] includedSurveyedSurfaces, IDesignFiles designs, ISurveyedSurfaces surveyedSurfaces, SubGridTreeBitmapSubGridBits processingMap)
+      Span<Guid> includedSurveyedSurfaces, IDesignFiles designs, ISurveyedSurfaces surveyedSurfaces, SubGridTreeBitmapSubGridBits processingMap)
     {
       var calcResult = DesignProfilerRequestResult.UnknownError;
       
