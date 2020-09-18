@@ -11,6 +11,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using System.IO;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Designs.GridFabric.Events
@@ -57,7 +58,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
         {
           ImportedFileType.DesignSurface => DIContext.Obtain<IDesignManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
           ImportedFileType.SurveyedSurface => DIContext.Obtain<ISurveyedSurfaceManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
-          ImportedFileType.Alignment => DIContext.Obtain<ISurveyedSurfaceManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
+          ImportedFileType.Alignment => DIContext.Obtain<IAlignmentManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
           _ => string.Empty
         };
 
