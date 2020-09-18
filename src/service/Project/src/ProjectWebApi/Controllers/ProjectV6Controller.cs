@@ -86,8 +86,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(IsProjectValid)} Project Validation Check {JsonConvert.SerializeObject(validateDto)}");
 
-      // Nothing to validate for a non 3d-enabled project
-      if (validateDto.ProjectType.HasValue && !validateDto.ProjectType.Value.HasFlag(CwsProjectType.AcceptsTagFiles))
+      // Nothing to validate for a non 3d-enabled project except deletion
+      if (validateDto.ProjectType.HasValue && !validateDto.ProjectType.Value.HasFlag(CwsProjectType.AcceptsTagFiles) && validateDto.UpdateType != CwsUpdateType.DeleteProject)
         return new ContractExecutionResult();
 
       var data = AutoMapperUtility.Automapper.Map<ProjectValidation>(validateDto);
@@ -96,8 +96,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<ValidateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             CustomerUid, UserId, null, customHeaders,
             Productivity3dV1ProxyCoord, dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, 
-            cwsProfileSettingsClient: CwsProfileSettingsClient)
+            cwsProjectClient: CwsProjectClient, cwsProfileSettingsClient: CwsProfileSettingsClient,
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction)
           .ProcessAsync(data)
       );
       return result;
