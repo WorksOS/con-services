@@ -152,13 +152,19 @@ namespace VSS.TRex.Volumes
     /// </summary>
     private void UpdateLayerWithSurveyedSurfaceHeight(int originX, int originY, DateTime startIntervalDate, DateTime endIntervalDate, float[,] prodDataHeights, long[,] prodDataTimes)
     {
+      if (_filteredSurveyedSurfaces.Count == 0)
+        return;
+
       // Step 1: Determine the first surveyed surface that should be covered for this interval
       var firstSurveyedSurfaceIndexForInterval = 0;
       while (firstSurveyedSurfaceIndexForInterval < _filteredSurveyedSurfaces.Count &&
-             _filteredSurveyedSurfaces[firstSurveyedSurfaceIndexForInterval].AsAtDate < endIntervalDate)
+             _filteredSurveyedSurfaces[firstSurveyedSurfaceIndexForInterval].AsAtDate < startIntervalDate)
       {
         firstSurveyedSurfaceIndexForInterval++;
       }
+
+      if (firstSurveyedSurfaceIndexForInterval >= _filteredSurveyedSurfaces.Count)
+        return;
 
       // Step 1: Determine the last surveyed surface that should be covered for this interval
       var lastSurveyedSurfaceInIntervalIndex = firstSurveyedSurfaceIndexForInterval;
@@ -167,6 +173,9 @@ namespace VSS.TRex.Volumes
       {
         lastSurveyedSurfaceInIntervalIndex++;
       }
+
+      if (lastSurveyedSurfaceInIntervalIndex == _filteredSurveyedSurfaces.Count)
+        lastSurveyedSurfaceInIntervalIndex--;
 
       // Compute the processing map, clearing any cells that have a production data elevation later than the latest available
       // surveyed surface elevation for that cell, for the interval being considered
