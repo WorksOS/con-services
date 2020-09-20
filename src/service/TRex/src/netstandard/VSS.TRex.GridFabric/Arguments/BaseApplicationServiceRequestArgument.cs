@@ -88,7 +88,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
         if (reader.ReadBoolean())
         {
-          Filters = DI.DIContext.Obtain<IFilterSet>();
+          Filters = DI.DIContext.ObtainRequired<IFilterSet>();
           Filters.FromBinary(reader);
         }
 

@@ -11,7 +11,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// FilterSet represents a set of filters to be applied to each sub grid in a query within a single operation
   /// </summary>
-  public class FilterSet : IFilterSet
+  public class FilterSet : VersionCheckedBinarizableSerializationBase, IFilterSet
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<FilterSet>();
 
@@ -78,20 +78,25 @@ namespace VSS.TRex.Filters
       }
     }
 
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt(Filters.Length);
-      foreach (var filter in Filters)
-      { 
-        // Handle cases where filter entry is null
-        writer.WriteBoolean(filter != null);
-        filter?.ToBinary(writer);
+      var count = Filters?.Length ?? 0;
+      writer.WriteInt(count);
+
+      if (count > 0)
+      {
+        foreach (var filter in Filters)
+        {
+          // Handle cases where filter entry is null
+          writer.WriteBoolean(filter != null);
+          filter?.ToBinary(writer);
+        }
       }
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
