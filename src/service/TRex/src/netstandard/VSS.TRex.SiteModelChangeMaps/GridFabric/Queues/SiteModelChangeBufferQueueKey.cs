@@ -27,17 +27,15 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// <summary>
     /// Site model change map queue key constructor taking project and  insert date
     /// </summary>
-    /// <param name="projectID"></param>
-    /// <param name="insertUTC"></param>
-    public SiteModelChangeBufferQueueKey(Guid projectID, DateTime insertUTC)
+    public SiteModelChangeBufferQueueKey(Guid projectId, DateTime insertUtc)
     {
-      if (insertUTC.Kind != DateTimeKind.Utc)
+      if (insertUtc.Kind != DateTimeKind.Utc)
       {
         throw new ArgumentException("Date for site model change set is not in UTC as expected");
       }
 
-      ProjectUID = projectID;
-      InsertUTCTicks = insertUTC.Ticks;
+      ProjectUID = projectId;
+      InsertUTCTicks = insertUtc.Ticks;
     }
 
     /// <summary>
@@ -64,10 +62,13 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 
     public void FromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProjectUID = reader.ReadGuid() ?? Guid.Empty;
-      InsertUTCTicks = reader.ReadLong();
+      if (version == 1)
+      {
+        ProjectUID = reader.ReadGuid() ?? Guid.Empty;
+        InsertUTCTicks = reader.ReadLong();
+      }
     }
   }
 }
