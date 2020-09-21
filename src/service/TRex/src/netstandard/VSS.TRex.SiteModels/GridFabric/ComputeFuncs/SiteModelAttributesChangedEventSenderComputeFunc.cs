@@ -11,7 +11,7 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
 {
   public class SiteModelAttributesChangedEventSenderComputeFunc : IComputeFunc<ISiteModelAttributesChangedEvent, ISiteModelAttributesChangedEventSenderResponse>
   {
-    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelAttributesChangedEventListener>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelAttributesChangedEventSenderComputeFunc>();
 
     public ISiteModelAttributesChangedEventSenderResponse Invoke(ISiteModelAttributesChangedEvent arg)
     {
