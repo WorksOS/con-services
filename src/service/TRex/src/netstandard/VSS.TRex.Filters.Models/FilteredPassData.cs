@@ -33,7 +33,6 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Copy the state of another FilteredPassData instance to this one
     /// </summary>
-    /// <param name="source"></param>
     public void Assign(FilteredPassData source)
     {
       MachineType = source.MachineType;
