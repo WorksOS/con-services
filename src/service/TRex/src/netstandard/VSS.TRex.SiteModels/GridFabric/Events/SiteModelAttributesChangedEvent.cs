@@ -14,6 +14,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   {
     private const byte VERSION_NUMBER = 1;
 
+    public Guid SourceNodeUid { get; set; } = Guid.Empty;
     public Guid SiteModelID { get; set; } = Guid.Empty;
     public bool ExistenceMapModified { get; set; }
     public bool DesignsModified { get; set; }
@@ -46,6 +47,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
+      writer.WriteGuid(SourceNodeUid);
       writer.WriteGuid(SiteModelID);
       writer.WriteBoolean(ExistenceMapModified);
       writer.WriteBoolean(DesignsModified);
@@ -68,6 +70,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
       if (version == 1)
       {
+        SourceNodeUid = reader.ReadGuid() ?? Guid.Empty;
         SiteModelID = reader.ReadGuid() ?? Guid.Empty;
         ExistenceMapModified = reader.ReadBoolean();
         DesignsModified = reader.ReadBoolean();
