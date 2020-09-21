@@ -126,7 +126,9 @@ namespace VSS.TRex.Volumes
           var baseSubGrid = subGridResult[0];
 
           if (baseSubGrid == null)
-            _log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
+          {
+            _log.LogWarning("SummarizeSubGridResult BaseSubGrid is null");
+          }
           else
           {
             ProcessVolumeInformationForSubGrid(baseSubGrid as ClientProgressiveHeightsLeafSubGrid);
@@ -169,7 +171,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummarizeSubGridResult(subGrids); 
+      SummarizeSubGridResult(subGrids);
     }
 
     /// <summary>
@@ -177,7 +179,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public void Finalise()
     {
-      if (AggregationStates == null) 
+      if (AggregationStates == null)
         return;
 
       foreach (var aggregator in AggregationStates)

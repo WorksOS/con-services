@@ -112,7 +112,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
         raptorClient, 
 #endif
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) is TileResult tileResult)
+        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+        userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request) is TileResult tileResult)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 

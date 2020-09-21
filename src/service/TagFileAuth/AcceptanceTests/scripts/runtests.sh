@@ -1,17 +1,10 @@
 #!/bin/bash
-echo "TFA Accept tests are starting .... "
-echo "Wait for 20 seconds"
-sleep 20s
+echo "AcceptanceTests are starting, wait 10 seconds"
+sleep 10s
 
-cd /app
-echo "WebApiTests starting...."
-dotnet vstest WebApiTests/WebApiTests.dll --logger:trx
-cp testresults/*.trx testresults/WebApiTests.trx
-rm testresults/*.trx
-echo "WebApiTests finished"
+echo "IntegrationTests starting"
+dotnet test IntegrationTests/WebApiTests.dll --logger trx --results-directory AcceptanceTestResults
 
-echo " "
 echo " "
 echo " All acceptance tests completed"
 echo " "
-

@@ -1,0 +1,10 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "projectservice.name" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "projectservice.name" . }}
+  endpoints:
+  - port: http

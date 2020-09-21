@@ -7,6 +7,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -45,6 +46,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     private readonly IConfigurationStore configurationStore;
 
+    private readonly IFileImportProxy FileImportProxy;
+
+    private string UserId => User.Identity.Name;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
@@ -53,7 +58,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       IASNodeClient raptorClient,
 #endif
       IConfigurationStore configStore,
-      ITRexCompactionDataProxy trexCompactionDataProxy)
+      ITRexCompactionDataProxy trexCompactionDataProxy,
+      IFileImportProxy fileImportProxy)
     {
       this.logger = logger;
       this.log = logger.CreateLogger<CCAColorPaletteController>();
@@ -62,6 +68,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
       this.TRexCompactionDataProxy = trexCompactionDataProxy;
       configurationStore = configStore;
+      FileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -95,7 +102,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         raptorClient,
 #endif
         configStore: configurationStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request) as CCAColorPaletteResult;
+        trexCompactionDataProxy: TRexCompactionDataProxy,
+        userId: UserId, fileImportProxy: FileImportProxy).ProcessAsync(request) as CCAColorPaletteResult;
     }
 
     /// <summary>
@@ -129,7 +137,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         raptorClient,
 #endif   
         configStore: configurationStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy).ProcessAsync(request) as CCAColorPaletteResult;
+        trexCompactionDataProxy: TRexCompactionDataProxy,
+        userId: UserId, fileImportProxy: FileImportProxy).ProcessAsync(request) as CCAColorPaletteResult;
     }
   }
 }

@@ -25,13 +25,13 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     private const string URL_FIRST_PARAMETER_SEPARATOR = "?";
     private const string URL_OTHER_PARAMETER_SEPARATOR = "&";
 
-    private readonly ILogger<InternalServiceResolver> logger;
-    private readonly IDataCache cache;
+    private readonly ILogger<InternalServiceResolver> _log;
+    private readonly IDataCache _cache;
 
     public InternalServiceResolver(IEnumerable<IServiceResolver> serviceResolvers, ILogger<InternalServiceResolver> logger, IDataCache cache)
     {
-      this.logger = logger;
-      this.cache = cache;
+      _log = logger;
+      _cache = cache;
       Resolvers = serviceResolvers.OrderBy(s => s.Priority).ToList();
       logger.LogInformation($"We have {Resolvers.Count} Service Resolvers:");
       logger.LogInformation("-----");
@@ -67,10 +67,10 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
             };
           }
         }
+        // We don't know what exceptions the resolve may throw.
         catch (Exception e)
         {
-          // We don't know what exceptions the resolve may throw
-          logger.LogWarning(e, $"Failed to resolve service '{serviceName}' due to error");
+          _log.LogWarning($"Failed to resolve service '{serviceName}' due to error '{e.GetType().ToString()}: {e.GetBaseException().Message}'");
         }
       }
 
@@ -151,7 +151,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     {
       // Cache the service endpoint for a given service name
       var cacheKey = $"{nameof(InternalServiceResolver)}-{GetServiceConfigurationName(serviceName, apiType, version)}";
-      var url = await cache.GetOrCreate(cacheKey, async entry =>
+      var url = await _cache.GetOrCreate(cacheKey, async entry =>
       {
         entry.SetOptions(new MemoryCacheEntryOptions()
         {
@@ -159,15 +159,14 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         });
 
         var result = await GetUrl(serviceName, apiType, version);
-        var cacheItem = new CacheItem<string>(result, new List<string>
+
+        return new CacheItem<string>(result, new List<string>
         {
           serviceName
         });
-
-        return cacheItem;
       });
 
-      logger.LogInformation($"Request for Service {serviceName}, Type: {apiType}, Version: {version} result: {url}");
+      _log.LogInformation($"Request for Service {serviceName}, Type: {apiType}, Version: {version} result: {url}");
 
       if (string.IsNullOrEmpty(url))
         throw new ServiceNotFoundException(serviceName);
@@ -176,7 +175,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
       if (string.IsNullOrEmpty(route))
       {
         if (queryParameters != null)
-          throw new ArgumentException($"Query Parameters passed in with no URL Route");
+          throw new ArgumentException("Query Parameters passed in with no URL Route");
         return url;
       }
 
@@ -204,29 +203,23 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
 
     private async Task<string> GetUrl(string serviceName, ApiType apiType, ApiVersion version)
     {
-      string url;
-
       // We will see if we have an explicit service defined for this version of the service
       // If not we will attempt to build it from the base url
       var service = await ResolveService(GetServiceConfigurationName(serviceName, apiType, version));
       if (service != null && service.Type != ServiceResultType.Unknown)
       {
-        url = service.Endpoint.TrimEnd(URL_ROUTE_PATH_SEPARATOR.ToCharArray());
-      }
-      else
-      {
-        service = await ResolveService(serviceName);
-        if (service == null || service.Type == ServiceResultType.Unknown)
-          return null;
-
-        var apiComponent = GetApiRoute(apiType);
-        var versionComponent = version.GetDescription().ToLower();
-        var endpoint = service.Endpoint.TrimEnd(URL_ROUTE_PATH_SEPARATOR.ToCharArray());
-
-        url = $"{endpoint}{URL_ROUTE_PATH_SEPARATOR}{apiComponent}{URL_ROUTE_PATH_SEPARATOR}{versionComponent}";
+        return service.Endpoint.TrimEnd(URL_ROUTE_PATH_SEPARATOR.ToCharArray());
       }
 
-      return url;
+      service = await ResolveService(serviceName);
+      if (service == null || service.Type == ServiceResultType.Unknown)
+        return null;
+
+      var apiComponent = GetApiRoute(apiType);
+      var versionComponent = version.GetDescription().ToLower();
+      var endpoint = service.Endpoint.TrimEnd(URL_ROUTE_PATH_SEPARATOR.ToCharArray());
+
+      return $"{endpoint}{URL_ROUTE_PATH_SEPARATOR}{apiComponent}{URL_ROUTE_PATH_SEPARATOR}{versionComponent}";
     }
   }
 }

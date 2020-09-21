@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CCSS.WorksOS.Healthz.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -36,21 +37,17 @@ namespace CCSS.WorksOS.Healthz
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-
-      // Required for authentication
+      services.AddMemoryCache();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      services.AddSingleton<IHealthCheckService, HealthCheckService>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
       services.AddServiceDiscovery();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
 
       services.AddOpenTracing(builder =>
-      {
-        builder.ConfigureAspNetCore(options =>
-              {
-                options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-              });
-      });
+        builder.ConfigureAspNetCore(options => options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping")));
     }
 
     /// <inheritdoc />

@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -82,6 +83,16 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
           _log.LogError("Mutable Ignite reference in service is null - aborting service execution");
           return;
         }
+
+        // Don't start operations until the local (mutable) grid is confirmed as active
+        DIContext.ObtainRequired<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
+
+        // Once active, delay start of operations for a time to ensure everything is up and running
+        var delay = DIContext.ObtainRequired<IConfigurationStore>().GetValueInt("TREX_SEGMENT_RETIREMENT_QUEUE_SERVICE_OPERATION_START_DELAY_SECONDS", 120);
+        _log.LogInformation($"Delaying start of operations for {delay} seconds");
+        Thread.Sleep(delay * 1000);
+
+        _log.LogInformation("Obtaining queue cache reference");
 
         var queueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 

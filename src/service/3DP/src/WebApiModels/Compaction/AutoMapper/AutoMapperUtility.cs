@@ -56,6 +56,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper
           cfg.AddProfile<OverridingTargetsProfile>();
           cfg.AddProfile<LiftSettingsProfile>();
           cfg.AddProfile<CellProfileLayerProfile>();
+          cfg.AddProfile<PatchSubgridsProtobufProfile>();
         }
       );
 

@@ -388,7 +388,7 @@ namespace VSS.TRex.Volumes
 
             if (baseSubGrid == null)
             {
-              _log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
+              _log.LogWarning("SummarizeSubGridResult BaseSubGrid is null");
             }
             else
             {

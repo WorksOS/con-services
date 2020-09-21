@@ -14,6 +14,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -70,6 +71,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
+    private readonly IFileImportProxy fileImportProxy;
+
     /// <summary>
     /// Constructor with injection
     /// </summary>
@@ -83,7 +86,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IDataCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      ILoggerFactory logger, IDataCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, 
+      ITRexCompactionDataProxy trexCompactionDataProxy, IFileImportProxy fileImportProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -94,6 +98,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       this.settingsManager = settingsManager;
       this.configStore = configStore;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
+      this.fileImportProxy = fileImportProxy;
     }
 
 
@@ -105,7 +110,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
     public async Task<ElevationStatisticsResult> GetElevationRange(long projectId, Guid projectUid, FilterResult filter,
-      CompactionProjectSettings projectSettings, IHeaderDictionary customHeaders)
+      CompactionProjectSettings projectSettings, IHeaderDictionary customHeaders, string userId)
     {
       const double NO_ELEVATION = 10000000000.0;
 
@@ -135,7 +140,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #if RAPTOR
                 raptorClient,
 #endif
-                configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
+                configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders, 
+                userId: userId, fileImportProxy: fileImportProxy)
               .ProcessAsync(projectExtentsRequest) as ProjectExtentsResult;
 
             if (extents != null)
@@ -165,7 +171,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #if RAPTOR
                   raptorClient,
 #endif
-                  configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
+                  configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders, 
+                  userId: userId, fileImportProxy: fileImportProxy)
                 .ProcessAsync(statsRequest) as ElevationStatisticsResult;
           }
 
