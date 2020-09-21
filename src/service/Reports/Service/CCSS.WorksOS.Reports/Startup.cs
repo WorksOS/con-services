@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using CCSS.CWS.Client;
+using CCSS.WorksOS.Reports.Abstractions.Models.ResultsHandling;
+using CCSS.WorksOS.Reports.Middleware;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
@@ -27,34 +32,27 @@ namespace CCSS.WorksOS.Reports
     /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
-    /// <summary>
-    /// Configures services and the application request pipeline.
-    /// </summary>
-    public Startup()
-    { }
+    private static IServiceProvider _serviceProvider;
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-
       // Required for authentication
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      //services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      //services.AddScoped<IErrorCodesProvider, ReportsErrorCodesProvider>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
-      services.AddServiceDiscovery();
-      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
 
-      services.AddOpenTracing(builder =>
-      {
-        builder.ConfigureAspNetCore(options =>
-              {
-                options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-              });
-      });
+      services.AddOpenTracing(builder => { builder.ConfigureAspNetCore(options => { options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping"); }); });
     }
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
-    { }
+    {
+      app.UseFilterMiddleware<ReportsAuthentication>();
+      _serviceProvider = ServiceProvider;
+    }
   }
 }
