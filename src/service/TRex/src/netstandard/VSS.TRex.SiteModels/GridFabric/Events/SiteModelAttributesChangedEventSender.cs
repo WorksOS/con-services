@@ -21,6 +21,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SiteModelAttributesChangedEventSender>();
 
+    // ReSharper disable once IdentifierTypo
     private const int DEFAULT_TREX_IGNITE_ORDERED_MESSAGE_SEND_TIMEOUT_SECONDS = 30;
 
     /// <summary>
@@ -33,7 +34,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
     private readonly SiteModelAttributesChangedEventSenderComputeFunc _messageSendComputeFunc = new SiteModelAttributesChangedEventSenderComputeFunc();
 
-    private static string messageRoleAttributeName = $"Role-{ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS}";
+    private static readonly string _messageRoleAttributeName = $"Role-{ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS}";
 
     /// <summary>
     /// Sends the message notification schema using the Ignite compute/invoke pattern as a reliable delivery mechanism
@@ -42,7 +43,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     {
       var gridFactory = DIContext.Obtain<ITRexGridFactory>();
 
-      var compute = gridFactory.Grid(StorageMutability.Immutable)?.GetCluster()?.ForAttribute(messageRoleAttributeName, "True")?.GetCompute();
+      var compute = gridFactory.Grid(StorageMutability.Immutable)?.GetCluster()?.ForAttribute(_messageRoleAttributeName, "True")?.GetCompute();
       if (compute != null)
       {
         var responses = compute.Broadcast(_messageSendComputeFunc, evt);
