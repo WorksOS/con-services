@@ -1,10 +1,17 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
+using VSS.TRex.Cells;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Designs.Models;
+using VSS.TRex.Events;
+using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
+using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SiteModels
@@ -380,5 +387,44 @@ namespace VSS.TRex.Tests.SiteModels
       siteModel2.IsTransient.Should().Be(siteModel.IsTransient);
       siteModel2.SiteModelExtent.Should().BeEquivalentTo(siteModel.SiteModelExtent);
     }
+
+    [Theory]
+    [InlineData(7, null, 7, 7)]//SS only
+    [InlineData(null, 10, 0, 10)]//Production data only
+    [InlineData(-5, 10, -5, 10)]//SS before production data
+    [InlineData(5, 10, 0, 10)]//SS within production data
+    [InlineData(15, 10, 0, 15)]//SS after production data
+    public void Test_SiteModel_GetDateRange_SS_And_ProductionData(int? ssMins, int? totalMins, int expectedStartMins, int expectedEndMins)
+    {
+      var baseTime = DateTime.UtcNow;
+      var siteModel = BuildModelForProductionDataAndOrSurveyedSurface(baseTime, totalMins, ssMins);
+
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+      startUtc.Should().Be(baseTime.AddMinutes(expectedStartMins));
+      endUtc.Should().Be(baseTime.AddMinutes(expectedEndMins));
+    }
+
+    private ISiteModel BuildModelForProductionDataAndOrSurveyedSurface(DateTime baseTime, int? totalMins, int? ssMins)
+    {
+      var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      if (totalMins.HasValue)
+      {
+        var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
+        // Ensure the machine has start and stop events (don't need actual cell passes)
+        siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime, ProductionEventType.StartEvent);
+        siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime.AddMinutes(totalMins.Value), ProductionEventType.EndEvent);
+
+        siteModel.MachinesTargetValues[bulldozerMachineIndex].SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
+      }
+
+      if (ssMins.HasValue)
+        siteModel.SurveyedSurfaces.AddSurveyedSurfaceDetails(Guid.NewGuid(), DesignDescriptor.Null(), baseTime.AddMinutes(ssMins.Value), BoundingWorldExtent3D.Null());
+     
+      DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
+
+      return siteModel;
+    }
+
   }
 }
