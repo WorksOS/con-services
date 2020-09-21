@@ -11,7 +11,12 @@ namespace VSS.TRex.Reports.Servers.Client
     /// <summary>
     /// Default no-arg constructor that creates a server with the specialised grid role only, as it has it's own service.
     /// </summary>
-    public GriddedReportRequestServer() : this(new[] {ServerRoles.REPORTING_ROLE})
+    public GriddedReportRequestServer() : this(new[]
+    {
+      ServerRoles.REPORTING_ROLE,
+      ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS,
+      ServerRoles.RECEIVES_DESIGN_CHANGE_EVENTS
+    })
     {
     }
 

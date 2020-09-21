@@ -16,6 +16,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
             base.ConfigureTRexGrid(cfg);
 
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.PSNODE}", "True");
+            cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS}", "True");
+            cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{ServerRoles.RECEIVES_DESIGN_CHANGE_EVENTS}", "True");
         }
 
         /// <summary>

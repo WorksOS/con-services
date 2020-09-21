@@ -12,15 +12,19 @@ namespace VSS.TRex.Designs.GridFabric.Events
   /// </summary>
   public class DesignChangedEvent : BaseRequestResponse, IDesignChangedEvent
   {
+    private const byte VERSION_NUMBER = 1;
+
+    public Guid SourceNodeUid { get; set; } = Guid.Empty;
     public Guid SiteModelUid { get; set; } = Guid.Empty;
     public Guid DesignUid { get; set; } = Guid.Empty;
     public ImportedFileType FileType { get; set; }
     public bool DesignRemoved { get; set; }
-    private const byte VERSION_NUMBER = 1;
 
     public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      writer.WriteGuid(SourceNodeUid);
       writer.WriteGuid(SiteModelUid);
       writer.WriteGuid(DesignUid);
       writer.WriteInt((int) FileType);
@@ -33,6 +37,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
       if (version == 1)
       {
+        SourceNodeUid = reader.ReadGuid() ?? Guid.Empty;
         SiteModelUid = reader.ReadGuid() ?? Guid.Empty;
         DesignUid = reader.ReadGuid() ?? Guid.Empty;
         FileType = (ImportedFileType) reader.ReadInt();

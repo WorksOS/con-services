@@ -6,13 +6,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Common;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
-using System.IO;
-using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Designs.GridFabric.Events
 {
@@ -53,41 +47,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           return true;
         }
 
-        // Tell the DesignManager instance to remove the designated design
-        var designFileName = message.FileType switch
-        {
-          ImportedFileType.DesignSurface => DIContext.Obtain<IDesignManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
-          ImportedFileType.SurveyedSurface => DIContext.Obtain<ISurveyedSurfaceManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
-          ImportedFileType.Alignment => DIContext.Obtain<IAlignmentManager>()?.List(message.SiteModelUid)?.Locate(message.DesignUid)?.DesignDescriptor.FileName,
-          _ => string.Empty
-        };
-
-        IDesignBase design = null;
-        if (!string.IsNullOrEmpty(designFileName))
-        {
-          design = DIContext.ObtainRequired<IDesignClassFactory>().NewInstance(message.DesignUid, designFileName, siteModel.CellSize, message.SiteModelUid);
-        }
-
-        if (design != null)
-        {
-          var localStorage = Path.Combine(FilePathHelper.GetTempFolderForProject(siteModel.ID), design.FileName);
-          if (designFiles.RemoveDesignFromCache(message.DesignUid, design, message.SiteModelUid, false))
-          {
-            if (File.Exists(localStorage))
-            {
-              File.Delete(localStorage);
-            }
-          }
-        }
-        else
-        {
-          // No current record of the design
-          _log.LogWarning($"Design {message.DesignUid} not present in designs for project {message.SiteModelUid} when responding to design change event");
-          return true;
-        }
-
-        // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
-        DIContext.ObtainOptional<ITRexSpatialMemoryCache>()?.InvalidateDueToDesignChange(message.SiteModelUid, message.DesignUid);
+        designFiles.DesignChangedEventHandler(message.DesignUid, siteModel, message.FileType);
       }
       catch (Exception e)
       {
