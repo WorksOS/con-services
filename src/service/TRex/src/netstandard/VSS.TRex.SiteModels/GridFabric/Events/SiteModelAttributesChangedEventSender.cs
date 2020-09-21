@@ -53,6 +53,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         }
         else
         {
+          _log.LogInformation($"Received notification confirmation for {responses.Count} recipients in the {gridName} grid.");
           if (responses.Any(x => !x.Success))
           {
             _log.LogWarning($"Not all targeted nodes in {gridName} successfully processed message, Failures = {string.Join(',', responses.Where(x => !x.Success).Select(x => x.NodeUid))}");
