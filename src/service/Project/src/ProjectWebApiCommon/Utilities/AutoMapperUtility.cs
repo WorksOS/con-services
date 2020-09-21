@@ -165,9 +165,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           return ProjectUpdateType.Updated;
         case CwsUpdateType.UpdateProjectStatus:
           //At the moment can only go from Active to Archived
-          return ProjectUpdateType.Deleted;
+          return ProjectUpdateType.Archived;
         case CwsUpdateType.ArchiveProject:
-          return ProjectUpdateType.Deleted;
+          return ProjectUpdateType.Archived;
         case CwsUpdateType.UpdateProjectType:
           return ProjectUpdateType.Updated;
         default:

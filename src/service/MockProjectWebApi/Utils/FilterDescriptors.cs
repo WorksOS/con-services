@@ -379,6 +379,14 @@ namespace MockProjectWebApi.Utils
         Name = "1 Nov First Pass",
         FilterJson = JsonResourceHelper.GetGoldenDimensionsFilterJson("SummaryVolumes1NovFirstPass")
       };
+
+      public static FilterDescriptor DimensionsProjectExtents => new FilterDescriptor
+      {
+        FilterUid = "1b4dd683-2e0c-420e-b57d-84962894c347",
+        Name = "Dimensions Project Extents",
+        FilterType = FilterType.Persistent,
+        FilterJson = JsonResourceHelper.GetFilterJson("DimensionsProjectExtents")
+      };
     }
 
     public class KettlewellDrive

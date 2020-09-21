@@ -4,7 +4,7 @@ using Apache.Ignite.Core.Binary;
 namespace VSS.TRex.Rendering.Palettes
 {
   /// <summary>
-  /// Transition represents a point on a value line being visualised where a new color starts being used to render the interval of values above the transition value
+  /// Transition represents a point on a value line being visualized where a new color starts being used to render the interval of values above the transition value
   /// </summary>
   public struct Transition
   {
@@ -18,9 +18,8 @@ namespace VSS.TRex.Rendering.Palettes
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteDouble(Value);
@@ -28,9 +27,8 @@ namespace VSS.TRex.Rendering.Palettes
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       Value = reader.ReadDouble();

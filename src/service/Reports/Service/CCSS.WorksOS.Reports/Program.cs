@@ -16,15 +16,15 @@ namespace CCSS.WorksOS.Reports
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
       return Host
-       .CreateDefaultBuilder(args)
-       .ConfigureWebHostDefaults(webBuilder =>
-       {
-         webBuilder
-         .UseKestrel()
-         .UseLibuv(opts => { opts.ThreadCount = 32; })
-         .BuildKestrelWebHost()
-         .UseStartup<Startup>();
-       });
+        .CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+          webBuilder
+            //.UseKestrel()
+            .UseLibuv(opts => { opts.ThreadCount = 32; })
+            .BuildKestrelWebHost()
+            .UseStartup<Startup>();
+        });
     }
   }
 }

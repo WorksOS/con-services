@@ -108,7 +108,7 @@ namespace VSS.TRex.Webtools.Controllers
         {
           resultToReturn = $"<b>Coordinate System Settings (in {sw.Elapsed}) :</b><br/>";
           resultToReturn += "<b>================================================</b><br/>";
-          resultToReturn = ConvertCSResult(request.CSFileName, csd);
+          resultToReturn += ConvertCSResult(request.CSFileName, csd);
         }
       }
 
@@ -178,7 +178,7 @@ namespace VSS.TRex.Webtools.Controllers
       resultString += $"<b>Azimuth Direction: </b> {AZIMUTH_STR} {azimuthDirection}<br/>";
       resultString += $"<b>Positive Coordinate Direction: </b> {latAxis} {lonAxis}<br/>";
       // Others...
-      resultString += "<b>============= Othere Properties =============</b><br/>";
+      resultString += "<b>============= Other Properties =============</b><br/>";
       var siteCalibration = coordSystem.ZoneInfo.HorizontalAdjustment != null || coordSystem.ZoneInfo.VerticalAdjustment != null ? "Yes" : "No";
       resultString += $"<b>Site Calibration: </b> {siteCalibration}<br/>";
       resultString += $"<b>Vertical Datum Name: </b> {string.Empty}<br/>";

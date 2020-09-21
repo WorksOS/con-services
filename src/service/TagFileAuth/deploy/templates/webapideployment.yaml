@@ -18,7 +18,7 @@ spec:
       serviceAccount: {{ .Values.environment }}-service-account
       containers:
       - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-tag-file-auth-webapi:{{ .Values.image.tag }}
-        name: {{ $serviceName }}     
+        name: {{ template "tagfileauthservice.name" . }}        
         livenessProbe:
           httpGet:
             scheme: HTTP

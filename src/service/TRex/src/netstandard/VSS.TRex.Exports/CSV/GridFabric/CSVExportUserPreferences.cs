@@ -1,14 +1,16 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.Exports.CSV.GridFabric
 {
   /// <summary>
   ///  Describes user preference data specific to TRex exports
   /// </summary>
-  public class CSVExportUserPreferences : IFromToBinary
+  public class CSVExportUserPreferences : VersionCheckedBinarizableSerializationBase
   {
+    private static byte VERSION_NUMBER = 1;
+
     public string DateSeparator { get; private set; }
     public string TimeSeparator { get; private set; }
     public string ThousandsSeparator { get; private set; }
@@ -41,8 +43,10 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       ProjectTimeZoneOffset = 0;
     }
 
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteString(DateSeparator);
       writer.WriteString(TimeSeparator);
       writer.WriteString(ThousandsSeparator);
@@ -52,15 +56,20 @@ namespace VSS.TRex.Exports.CSV.GridFabric
       writer.WriteDouble(ProjectTimeZoneOffset);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      DateSeparator = reader.ReadString();
-      TimeSeparator = reader.ReadString();
-      ThousandsSeparator = reader.ReadString();
-      DecimalSeparator = reader.ReadString();
-      Units = (UnitsTypeEnum)reader.ReadInt();
-      TemperatureUnits = (TemperatureUnitEnum)reader.ReadInt();
-      ProjectTimeZoneOffset = reader.ReadDouble();
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
+      {
+        DateSeparator = reader.ReadString();
+        TimeSeparator = reader.ReadString();
+        ThousandsSeparator = reader.ReadString();
+        DecimalSeparator = reader.ReadString();
+        Units = (UnitsTypeEnum) reader.ReadInt();
+        TemperatureUnits = (TemperatureUnitEnum) reader.ReadInt();
+        ProjectTimeZoneOffset = reader.ReadDouble();
+      }
     }
   }
 }
