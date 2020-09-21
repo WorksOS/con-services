@@ -25,6 +25,7 @@ using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Interfaces;
@@ -201,6 +202,9 @@ namespace VSS.TRex.Tests.TestFixtures
       mockIgnite.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
       mockIgnite.Setup(x => x.Name).Returns(TRexGrids.ImmutableGridName);
       mockIgnite.Setup(x => x.GetTransactions()).Returns(mockTransactions.Object);
+
+      // Create base cluster compute routing for messaging use cases
+      AddClusterComputeGridRouting<SiteModelAttributesChangedEventSenderComputeFunc, ISiteModelAttributesChangedEvent, ISiteModelAttributesChangedEventSenderResponse>();
     }
 
     private ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)

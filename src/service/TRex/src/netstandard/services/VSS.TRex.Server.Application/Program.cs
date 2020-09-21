@@ -104,7 +104,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
         // Register the listener for site model attribute change notifications
-        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
 
         // Register the factory for the CellProfileAnalyzer for detailed call pass/lift cell profiles
         .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<ProfileCell>>>(
@@ -168,7 +168,7 @@ namespace VSS.TRex.Server.Application
     private static void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
-      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+      //DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
@@ -191,7 +191,15 @@ namespace VSS.TRex.Server.Application
         Log.LogInformation("Creating service");
         Log.LogDebug("Creating service");
 
-        var server = new ApplicationServiceServer(new[] {ApplicationServiceServer.DEFAULT_ROLE, ServerRoles.ASNODE_PROFILER, ServerRoles.PATCH_REQUEST_ROLE, ServerRoles.ANALYTICS_NODE,});
+        var server = new ApplicationServiceServer(new[]
+        {
+          ApplicationServiceServer.DEFAULT_ROLE,
+          ServerRoles.ASNODE_PROFILER,
+          ServerRoles.PATCH_REQUEST_ROLE,
+          ServerRoles.ANALYTICS_NODE,
+          ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS
+        });
+
 
         var cancelTokenSource = new CancellationTokenSource();
         AppDomain.CurrentDomain.ProcessExit += (s, e) =>

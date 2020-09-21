@@ -20,6 +20,7 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.Gateway.WebApi.ActionServices;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.Events;
@@ -70,7 +71,7 @@ namespace VSS.TRex.Gateway.WebApi
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
         //Monitor number of notifications from this. If too many, go through ignite to get data rather than directly from the site model.
-        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build();
 
@@ -90,14 +91,14 @@ namespace VSS.TRex.Gateway.WebApi
       });
 
       DIBuilder.Continue()
-        .Add(x => x.AddSingleton<IImmutableClientServer>(new ImmutableClientServer("TRexIgniteClient-DotNetStandard")))
+        .Add(x => x.AddSingleton<IImmutableClientServer>(new ImmutableClientServer(new [] { "TRexIgniteClient-DotNetStandard", ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS})))
         .Complete();
     }
 
     protected override void StartServices(IServiceProvider serviceProvider)
     {
       // Start listening to site model change notifications
-      serviceProvider.GetRequiredService<ISiteModelAttributesChangedEventListener>().StartListening();
+      //serviceProvider.GetRequiredService<ISiteModelAttributesChangedEventListener>().StartListening();
     }
 
     /// <inheritdoc/>
