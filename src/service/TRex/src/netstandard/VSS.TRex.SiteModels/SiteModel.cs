@@ -215,7 +215,7 @@ namespace VSS.TRex.SiteModels
       var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
         CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
         FileSystemStreamType.CoordinateSystemCSIB,
-        out MemoryStream csibStream);
+        out var csibStream);
 
       if (readResult != FileSystemErrorStatus.OK || csibStream == null || csibStream.Length == 0)
         return csib = string.Empty;
@@ -232,6 +232,9 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public bool SetCSIB(string csib)
     {
+      if (csib == null)
+        return false;
+
       // Add the coordinate system to the cache
       var storageProxy = DIContext.ObtainRequired<IStorageProxyFactory>().MutableGridStorage();
 

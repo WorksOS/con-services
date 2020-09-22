@@ -194,13 +194,16 @@ namespace VSS.TRex.Tests.SiteModels
       siteModel.CSIBLoaded.Should().Be(false);
     }
 
-    [Fact]
-    public void Test_SiteModel_SetCSIB()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("A dummy coordinate system")]
+    public void Test_SiteModel_SetCSIB(string csib)
     {
       var siteModel = new SiteModel(Guid.NewGuid(), TRex.Storage.Models.StorageMutability.Immutable, false);
       siteModel.CSIBLoaded.Should().Be(false);
 
-      siteModel.SetCSIB("A dummy coordinate system");
+      siteModel.SetCSIB(csib);
 
       // Setting a CSIB does not load it
       siteModel.CSIBLoaded.Should().Be(false);

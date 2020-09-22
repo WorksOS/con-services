@@ -28,9 +28,33 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric
     }
 
     [Fact]
-    public void FromToBinary()
+    public void FromToBinary_WithNonNullMask()
     {
-      Guid newGuid = Guid.NewGuid();
+      var newGuid = Guid.NewGuid();
+
+      var evt = new SiteModelAttributesChangedEvent
+      {
+        AlignmentsModified = true,
+        CsibModified = true,
+        DesignsModified = true,
+        ExistenceMapChangeMask = new byte[0],
+        ExistenceMapModified = true,
+        MachineDesignsModified = true,
+        MachineTargetValuesModified = true,
+        MachinesModified = true,
+        ProofingRunsModified = true,
+        SurveyedSurfacesModified = true,
+        SiteModelMarkedForDeletion = true,
+        SiteModelID = newGuid
+      };
+
+      TestBinarizable_ReaderWriterHelper.RoundTripSerialise(evt);
+    }
+
+    [Fact]
+    public void FromToBinary_WithNullMask()
+    {
+      var newGuid = Guid.NewGuid();
 
       var evt = new SiteModelAttributesChangedEvent
       {
