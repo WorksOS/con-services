@@ -60,7 +60,7 @@ namespace CCSS.WorksOS.Healthz.Services
         {
           await ResolveServicesState(_healthCheckState.GetServiceIdentifiers().ToList());
 
-          await Task.Delay(10000, cancellationToken);
+          await Task.Delay(60 * 1000, cancellationToken);
         }
         catch (Exception e)
         {

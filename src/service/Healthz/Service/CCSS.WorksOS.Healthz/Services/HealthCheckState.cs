@@ -61,12 +61,13 @@ namespace CCSS.WorksOS.Healthz.Services
     /// <inheritdoc/>
     public IEnumerable<Service> GetServiceIdentifiers()
     {
-      if (!_cache.TryGetValue(SERVICE_IDENTIFIES_CACHE_KEY, out Dictionary<string, Service> cachedIdentifiers))
+      if (_cache.TryGetValue(SERVICE_IDENTIFIES_CACHE_KEY, out Dictionary<string, Service> cachedIdentifiers))
       {
-        _log.LogInformation($"{nameof(GetServiceIdentifiers)}: Failed to find any cached service identifies under key '{SERVICE_IDENTIFIES_CACHE_KEY}'");
+        return cachedIdentifiers.Select(x => x.Value);
       }
 
-      return cachedIdentifiers.Select(x => x.Value);
+      _log.LogInformation($"{nameof(GetServiceIdentifiers)}: Failed to find any cached service identifies under key '{SERVICE_IDENTIFIES_CACHE_KEY}'");
+      return null;
     }
 
     /// <inheritdoc/>
