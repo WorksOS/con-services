@@ -18,6 +18,7 @@ using Moq;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Serialisation;
+using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -25,6 +26,7 @@ using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
+using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Interfaces;
@@ -201,6 +203,10 @@ namespace VSS.TRex.Tests.TestFixtures
       mockIgnite.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
       mockIgnite.Setup(x => x.Name).Returns(TRexGrids.ImmutableGridName);
       mockIgnite.Setup(x => x.GetTransactions()).Returns(mockTransactions.Object);
+
+      // Create base cluster compute routing for messaging use cases
+      AddClusterComputeGridRouting<SiteModelAttributesChangedEventSenderComputeFunc, ISiteModelAttributesChangedEvent, ISiteModelAttributesChangedEventSenderResponse>();
+      AddClusterComputeGridRouting<DesignChangedEventSenderComputeFunc, IDesignChangedEvent, IDesignChangedEventSenderResponse>();
     }
 
     private ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)

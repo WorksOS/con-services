@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -19,7 +20,7 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Mvc.Route("api/v1/filter/{projectUid}")]
     [Mvc.HttpGet]
-    public FilterData GetMockFilter(string projectUid, [Mvc.FromQuery] string filterUid)
+    public FilterDescriptorSingleResult GetMockFilter(string projectUid, [Mvc.FromQuery] string filterUid)
     {
       Logger.LogInformation($"{nameof(GetMockFilter)}: projectUid={projectUid}, filterUid={filterUid}");
 
@@ -31,7 +32,7 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Mvc.Route("api/v1/filters/{projectUid}")]
     [Mvc.HttpGet]
-    public FilterListData GetMockFilters(string projectUid)
+    public FilterDescriptorListResult GetMockFilters(string projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockFilters)}: projectUid={projectUid}");
 

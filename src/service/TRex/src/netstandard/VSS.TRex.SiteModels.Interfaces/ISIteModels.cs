@@ -23,6 +23,8 @@ namespace VSS.TRex.SiteModels.Interfaces
 
     void DropSiteModel(Guid id);
 
+    StorageMutability PrimaryMutability { get; }
+
     IStorageProxy PrimaryMutableStorageProxy { get; }
     IStorageProxy PrimaryImmutableStorageProxy { get; }
 

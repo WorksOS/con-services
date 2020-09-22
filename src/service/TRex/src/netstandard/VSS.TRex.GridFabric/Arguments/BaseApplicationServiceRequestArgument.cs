@@ -20,7 +20,7 @@ namespace VSS.TRex.GridFabric.Arguments
 
     /// <summary>
     /// The identifier of the TRex node responsible for issuing a request and to which messages containing responses
-    /// should be sent on a message topic contained within the derived request. 
+    /// should be sent on a message topic contained within the derived request.
     /// </summary>
     public Guid TRexNodeID { get; set; } = Guid.Empty;
 
@@ -82,9 +82,11 @@ namespace VSS.TRex.GridFabric.Arguments
         TRexNodeID = reader.ReadGuid() ?? Guid.Empty;
         ProjectID = reader.ReadGuid() ?? Guid.Empty;
 
-        ReferenceDesign = new DesignOffset();
         if (reader.ReadBoolean())
+        {
+          ReferenceDesign = new DesignOffset();
           ReferenceDesign.FromBinary(reader);
+        }
 
         if (reader.ReadBoolean())
         {

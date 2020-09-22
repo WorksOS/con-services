@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Designs.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Designs.Interfaces
 {
@@ -18,5 +19,7 @@ namespace VSS.TRex.Designs.Interfaces
     bool EnsureSufficientSpaceToLoadDesign(long designCacheSize);
 
     int NumDesignsInCache();
+
+    void DesignChangedEventHandler(Guid designUid, ISiteModelBase siteModel, ImportedFileType fileType);
   }
 }

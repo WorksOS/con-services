@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using CCSS.WorksOS.Reports.Abstractions.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -6,28 +7,34 @@ namespace CCSS.WorksOS.Reports.Controllers
 {
   public class ReportsController : BaseController<ReportsController>
   {
-    [HttpGet("api/v1/reports/stationoffset")]
-    public IActionResult GetStationOffsetReport()
+    [HttpPost("api/v1/reports/stationoffset")]
+    public IActionResult GetStationOffsetReport([FromBody] ReportRequest reportRequest)
     {
-      Log.LogInformation($"{nameof(GetStationOffsetReport)} Hit the endpoint");
+      reportRequest.ReportTypeEnum = ReportType.StationOffset;
+      Log.LogInformation($"{nameof(GetStationOffsetReport)} request: {reportRequest}");
+      reportRequest.Validate();
 
       return StatusCode((int) HttpStatusCode.InternalServerError, $"{nameof(GetStationOffsetReport)} not supported yet");
     }
 
-    [HttpGet("api/v1/reports/summary")]
-    public IActionResult GetSummaryReport()
+    [HttpPost("api/v1/reports/summary")]
+    public IActionResult GetSummaryReport([FromBody] ReportRequest reportRequest)
     {
-      Log.LogInformation($"{nameof(GetSummaryReport)} Hit the endpoint");
+      reportRequest.ReportTypeEnum = ReportType.Summary;
+      Log.LogInformation($"{nameof(GetSummaryReport)} request: {reportRequest}");
+      reportRequest.Validate();
 
-      return StatusCode((int)HttpStatusCode.InternalServerError, $"{nameof(GetSummaryReport)} not supported yet");
+      return StatusCode((int) HttpStatusCode.InternalServerError, $"{nameof(GetSummaryReport)} not supported yet");
     }
 
-    [HttpGet("api/v1/reports/grid")]
-    public IActionResult GetGridReport()
+    [HttpPost("api/v1/reports/grid")]
+    public IActionResult GetGridReport([FromBody] ReportRequest reportRequest)
     {
-      Log.LogInformation($"{nameof(GetGridReport)} Hit the endpoint");
+      reportRequest.ReportTypeEnum = ReportType.Grid;
+      Log.LogInformation($"{nameof(GetGridReport)} request: {reportRequest}");
+      reportRequest.Validate();
 
-      return StatusCode((int)HttpStatusCode.InternalServerError, $"{nameof(GetGridReport)} not supported yet");
+      return StatusCode((int) HttpStatusCode.InternalServerError, $"{nameof(GetGridReport)} not supported yet");
     }
   }
 }

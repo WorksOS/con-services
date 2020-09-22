@@ -911,21 +911,20 @@ Result = false;
     }
 
     /// <summary>
-    /// GetDateRange returns the chronological extents of production data in the site model.
-    /// if no production data exists, then surveyed dates of surveyed surfaces, if any, 
-    /// should be used to set min/max dates, otherwise - min = MaxValue and max and MinValue.
+    /// GetDateRange returns the chronological extents of production data together with
+    /// surveyed dates of surveyed surfaces in the site model.
     /// </summary>
     public (DateTime startUtc, DateTime endUtc) GetDateRange()
     {
-      DateTime minDate = Consts.MAX_DATETIME_AS_UTC;
-      DateTime maxDate = Consts.MIN_DATETIME_AS_UTC;
+      var minDate = Consts.MAX_DATETIME_AS_UTC;
+      var maxDate = Consts.MIN_DATETIME_AS_UTC;
 
       foreach (var machine in Machines)
       {
         var events = MachinesTargetValues[machine.InternalSiteModelMachineIndex].StartEndRecordedDataEvents;
         if (events.Count() > 0)
         {
-          events.GetStateAtIndex(0, out DateTime eventDateFirst, out _);
+          events.GetStateAtIndex(0, out var eventDateFirst, out _);
           if (minDate > eventDateFirst)
             minDate = eventDateFirst;
           if (maxDate < eventDateFirst)
@@ -940,9 +939,7 @@ Result = false;
         }
       }
 
-      // In case there is no production data exixts, surveyed dates of surveyed surfaces,
-      // if any, should be used to set min/max dates.
-      if (minDate == Consts.MAX_DATETIME_AS_UTC && maxDate == Consts.MIN_DATETIME_AS_UTC)
+      if ((SurveyedSurfaces?.Count ?? 0) > 0)
       {
         foreach (var surveyedSurface in SurveyedSurfaces)
         {

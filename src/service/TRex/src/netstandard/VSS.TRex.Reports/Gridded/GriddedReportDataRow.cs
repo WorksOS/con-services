@@ -8,7 +8,6 @@ namespace VSS.TRex.Reports.Gridded
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteDouble(Northing);
@@ -24,7 +23,6 @@ namespace VSS.TRex.Reports.Gridded
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       Northing = reader.ReadDouble();

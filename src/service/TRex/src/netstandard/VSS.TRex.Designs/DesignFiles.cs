@@ -13,8 +13,12 @@ using System.Diagnostics;
 using System.Threading;
 using Nito.AsyncEx.Synchronous;
 using VSS.AWS.TransferProxy;
+using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Designs
 { 
@@ -408,6 +412,48 @@ namespace VSS.TRex.Designs
       {
         return _designs.Count;
       }
+    }
+
+    /// <summary>
+    /// Receives and takes appropriates steps to compensate for a design being changed in a site model
+    /// </summary>
+    public void DesignChangedEventHandler(Guid designUid, ISiteModelBase siteModel, ImportedFileType fileType)
+    {
+
+      // Tell the DesignManager instance to remove the designated design
+      var designFileName = fileType switch
+      {
+        ImportedFileType.DesignSurface => DIContext.Obtain<IDesignManager>()?.List(siteModel.ID)?.Locate(designUid)?.DesignDescriptor.FileName,
+        ImportedFileType.SurveyedSurface => DIContext.Obtain<ISurveyedSurfaceManager>()?.List(siteModel.ID)?.Locate(designUid)?.DesignDescriptor.FileName,
+        ImportedFileType.Alignment => DIContext.Obtain<IAlignmentManager>()?.List(siteModel.ID)?.Locate(designUid)?.DesignDescriptor.FileName,
+        _ => string.Empty
+      };
+
+      IDesignBase design = null;
+      if (!string.IsNullOrEmpty(designFileName))
+      {
+        design = DIContext.ObtainRequired<IDesignClassFactory>().NewInstance(designUid, designFileName, siteModel.CellSize, siteModel.ID);
+      }
+
+      if (design != null)
+      {
+        var localStorage = Path.Combine(FilePathHelper.GetTempFolderForProject(siteModel.ID), design.FileName);
+        if (RemoveDesignFromCache(designUid, design, siteModel.ID, false))
+        {
+          if (File.Exists(localStorage))
+          {
+            File.Delete(localStorage);
+          }
+        }
+      }
+      else
+      {
+        // No current record of the design
+        _log.LogWarning($"Design {designUid} not present in designs for project {siteModel.ID} when responding to design change event");
+      }
+
+      // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
+      DIContext.ObtainOptional<ITRexSpatialMemoryCache>()?.InvalidateDueToDesignChange(siteModel.ID, designUid);
     }
   }
 }

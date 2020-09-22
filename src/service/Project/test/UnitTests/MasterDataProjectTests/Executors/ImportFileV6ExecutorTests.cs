@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,9 +26,6 @@ using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Productivity3D.Models;
-using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -322,7 +320,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
       filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
-        .ReturnsAsync(new List<FilterDescriptor>());
+        .ReturnsAsync(new List<FilterDescriptor>().ToImmutableList);
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
@@ -595,7 +593,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
       filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
-        .ReturnsAsync(new List<FilterDescriptor>());
+        .ReturnsAsync(new List<FilterDescriptor>().ToImmutableList);
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
@@ -672,7 +670,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
       filterServiceProxy.Setup(fs => fs.GetFilters(It.IsAny<string>(), It.IsAny<HeaderDictionary>()))
-        .ReturnsAsync(new List<FilterDescriptor>());
+        .ReturnsAsync(new List<FilterDescriptor>().ToImmutableList);
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<DeleteImportedFileEvent>())).ReturnsAsync(1);
