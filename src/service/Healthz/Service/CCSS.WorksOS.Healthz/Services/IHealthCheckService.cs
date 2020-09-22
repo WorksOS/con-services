@@ -10,6 +10,10 @@ namespace CCSS.WorksOS.Healthz.Services
     /// Get a list of available services.
     /// </summary>
     IEnumerable<Service> GetServiceIdentifiers();
-    IEnumerable<ServicePingResponse> GetServiceState(string[] serviceIdentifiers);
+
+    /// <summary>
+    /// Get the service state for n number of service identifiers.
+    /// </summary>
+    IEnumerable<ServicePingResponse> GetServiceState(params string[] serviceIdentifiers);
   }
 }

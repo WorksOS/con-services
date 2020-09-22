@@ -2,7 +2,6 @@
 using CCSS.WorksOS.Healthz.Services;
 using CCSS.WorksOS.Healthz.Types;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -11,12 +10,10 @@ namespace CCSS.WorksOS.Healthz.Controllers
   public class HealthCheckController : BaseController<HealthCheckController>
   {
     private readonly IHealthCheckState _healthCheckState;
-    private readonly IMemoryCache _cache;
 
-    public HealthCheckController(IHealthCheckState healthCheckState, IMemoryCache memoryCache)
+    public HealthCheckController(IHealthCheckState healthCheckState)
     {
       _healthCheckState = healthCheckState;
-      _cache = memoryCache;
     }
 
     [HttpGet("api/v1/service")]

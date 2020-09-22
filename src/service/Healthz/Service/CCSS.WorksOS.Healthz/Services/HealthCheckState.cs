@@ -102,7 +102,7 @@ namespace CCSS.WorksOS.Healthz.Services
     }
 
     /// <inheritdoc/>
-    public IEnumerable<ServicePingResponse> GetServiceState(string[] identifiers)
+    public IEnumerable<ServicePingResponse> GetServiceState(params string[] identifiers)
     {
       if (identifiers == null || identifiers.Length == 0)
       {

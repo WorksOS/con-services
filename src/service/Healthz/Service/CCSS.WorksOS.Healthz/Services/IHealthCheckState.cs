@@ -26,7 +26,7 @@ namespace CCSS.WorksOS.Healthz.Services
     /// <summary>
     /// Returns the last service state for n number of provided service identifiers.
     /// </summary>
-    IEnumerable<ServicePingResponse> GetServiceState(string[] identifiers);
+    IEnumerable<ServicePingResponse> GetServiceState(params string[] identifiers);
 
     /// <summary>
     /// Sets the global service state; any one unavailable service will return a <see cref="ServiceState.Unavailable"/> response.

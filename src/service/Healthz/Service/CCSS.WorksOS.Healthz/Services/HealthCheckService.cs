@@ -39,7 +39,7 @@ namespace CCSS.WorksOS.Healthz.Services
     public IEnumerable<Service> GetServiceIdentifiers() => _healthCheckState.GetServiceIdentifiers();
 
     /// <inheritdoc/>
-    public IEnumerable<ServicePingResponse> GetServiceState(string[] serviceIdentifiers) => _healthCheckState.GetServiceState(serviceIdentifiers);
+    public IEnumerable<ServicePingResponse> GetServiceState(params string[] serviceIdentifiers) => _healthCheckState.GetServiceState(serviceIdentifiers);
 
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -58,7 +58,7 @@ namespace CCSS.WorksOS.Healthz.Services
       {
         try
         {
-          await ResolveServicesState(_healthCheckState.GetServiceIdentifiers().ToList());
+          await ResolveServicesState(_healthCheckState.GetServiceIdentifiers());
 
           await Task.Delay(60 * 1000, cancellationToken);
         }
@@ -115,9 +115,9 @@ namespace CCSS.WorksOS.Healthz.Services
     /// <summary>
     /// Poll each service identifer using serivce discovery to determine their state of responsiveness.
     /// </summary>
-    private async Task ResolveServicesState(List<Service> serviceIdentifiers)
+    private async Task ResolveServicesState(IEnumerable<Service> serviceIdentifiers)
     {
-      var serviceStateTasks = new List<Task>(serviceIdentifiers.Count);
+      var serviceStateTasks = new List<Task>();
       var _services = new Dictionary<string, ServiceResult>();
 
       Logger.LogInformation($"{nameof(ResolvePollingServices)}: Resolving services for polling...");
