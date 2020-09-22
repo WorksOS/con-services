@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling
     {
     }
 
-    public FilterDescriptorSingleResult()
+    public FilterDescriptorSingleResult() 
     {
     }
 

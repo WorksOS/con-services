@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -37,13 +38,13 @@ namespace VSS.Productivity3D.Filter.Proxy
 
     public override string CacheLifeKey => "FILTER_CACHE_LIFE";
 
-    public async Task<List<FilterDescriptor>> GetFilters(string projectUid, IHeaderDictionary customHeaders = null)
+    public async Task<ImmutableList<FilterDescriptor>> GetFilters(string projectUid, IHeaderDictionary customHeaders = null)
     {
-      var result = await GetMasterDataItemServiceDiscovery<FilterListData>
+      var result = await GetMasterDataItemServiceDiscovery<FilterDescriptorListResult>
         ($"/filters/{projectUid}", projectUid, null, customHeaders);
 
       if (result.Code == 0)
-        return result.filterDescriptors;
+        return result.FilterDescriptors;
 
       log.LogWarning($"Failed to get Filter Descriptors: {result.Code}, {result.Message}");
       return null;
@@ -51,12 +52,12 @@ namespace VSS.Productivity3D.Filter.Proxy
 
     public async Task<FilterDescriptor> GetFilter(string projectUid, string filterUid, IHeaderDictionary customHeaders = null)
     {
-      var result = await GetMasterDataItemServiceDiscovery<FilterData>
+      var result = await GetMasterDataItemServiceDiscovery<FilterDescriptorSingleResult>
       ($"/filter/{projectUid}", filterUid, null, customHeaders,
         new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("filterUid", filterUid) });
 
       if (result.Code == 0)
-        return result.filterDescriptor;
+        return result.FilterDescriptor;
 
       log.LogWarning($"Failed to get Filter Descriptor: {result.Code}, {result.Message}");
       return null;

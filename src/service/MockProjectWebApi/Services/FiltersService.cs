@@ -46,7 +46,7 @@ namespace MockProjectWebApi.Services
       FilterData = new Dictionary<string, FilterDescriptorListResult>();
 
       var list = new List<FilterDescriptor>(goldenDataFilterDescriptors);
-
+      
       list.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilter);
       list.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeFirst);
       list.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeLast);
