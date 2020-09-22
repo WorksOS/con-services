@@ -91,6 +91,7 @@ mutableData:
       cpu: 900m
       memory: 4Gi
   storage:
+    enabled: true
     size: 10Gi
     className: aws-efs
     
@@ -121,6 +122,7 @@ psnode:
       cpu: 900m
       memory: 12.0Gi
   storage:
+    enabled: true
     size: 10Gi
     className: aws-efs
   
@@ -243,6 +245,7 @@ webtools:
 
 # kubectl label nodes <node> vss/application=trex
 nodeSelector: 
+  enabled: true
   highMemory:
     vss/application: trexbigmem
   generalPurpose:
@@ -252,6 +255,7 @@ nodeSelector:
 
 # kubectl taint nodes <node> dedicated=trex:NoSchedule
 tolerations: 
+  enabled: true
   highMemory:
   - key: "dedicated"
     operator: "Equal" 

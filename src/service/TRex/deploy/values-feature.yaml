@@ -1,0 +1,124 @@
+image:
+  pullPolicy: IfNotPresent 
+
+
+nodeSelector:
+  enabled: false
+
+tolerations:
+  enabled: false
+
+psnode:
+  replicaCount: 1
+  storage:
+    enabled: false
+  resources: 
+    requests: 
+      cpu: 100m
+      memory: 100Mi
+
+applicationServer:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+
+designElevation:
+  replicaCount: 1
+  resources: 
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  autoscaling:
+    enabled: false
+
+gateway:
+  replicaCount: 1
+  serviceDiscoveryName: trex-service-immutable
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  autoscaling:
+    enabled: false
+
+mutableData:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  storage:
+    enabled: false
+
+mutableGateway:
+  replicaCount: 1
+  serviceDiscoveryName: trex-service-mutable
+  resources:
+    requests:
+      cpu: 300m
+      memory: 1Gi
+
+qmeshServer:
+  replicaCount: 1
+
+  resources: 
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  autoscaling:
+    enabled: false
+
+projectRebuilderServer:
+  replicaCount: 1
+  resources: 
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  autoscaling:
+    enabled: false
+
+reportServer:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  autoscaling:
+    enabled: false
+
+tileServer:
+  replicaCount: 1
+  resources: 
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  autoscaling:
+    enabled: false
+
+
+tinExportServer:
+  replicaCount: 1
+  resources: 
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  autoscaling:
+    enabled: false
+
+
+utilities:
+  deploy: true
+  replicaCount: 0
+  deployServiceDeployerJob: false
+  resources: 
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+webtools:
+  deploy: true
+  replicaCount: 1
+  resources: 
+    requests:
+      cpu: 100m
+      memory: 100Mi

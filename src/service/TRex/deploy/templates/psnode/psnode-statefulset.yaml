@@ -31,14 +31,21 @@ spec:
     spec:
       terminationGracePeriodSeconds: 10
       serviceAccountName: {{ .Values.serviceAccountName }}
+
+
+{{ if .Values.nodeSelector.enabled }}
 {{- with .Values.nodeSelector.highMemory }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }}
+{{ end }}
+
+{{ if .Values.tolerations.enabled }}
 {{- with .Values.tolerations.highMemory }}
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}
+{{ end }}
       containers:
         # Custom Ignite pod name.
       - name: ignite-node
@@ -78,11 +85,14 @@ spec:
 {{ toYaml .Values.trexPorts | indent 8 }}
 
 
+{{ if .Values.psnode.storage.enabled }}
         volumeMounts:
         # Mounting the persistant storage - currently this is in temp which will change when we sort config
         - mountPath: "/persist"
           name: trex-immutable-storage
+{{ end }}
 
+{{ if .Values.psnode.storage.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: trex-immutable-storage
@@ -92,3 +102,5 @@ spec:
         requests:
           storage: {{ .Values.psnode.storage.size }}
       storageClassName: {{ .Values.psnode.storage.className }}
+{{ end }}
+  
