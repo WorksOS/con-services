@@ -62,7 +62,7 @@ jobs:
         displayName: 'Run integration tests'
         inputs:
           filePath: build/azure-build-pipeline.ps1
-          arguments: '-service $(serviceName) -action integrationtest -collectCoverage true'
+          arguments: '-service $(serviceName) -action integrationtest -collectCoverage false'
 
       - task: PublishTestResults@2
         displayName: 'Publish integration test results'
@@ -71,14 +71,6 @@ jobs:
           testResultsFiles: '**/*.trx'
           searchFolder: '$(rootServiceFolder)/IntegrationTestResults'
           failTaskOnFailedTests: true
-
-      - task: PublishCodeCoverageResults@1
-        displayName: 'Publish code coverage'
-        inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: '$(rootServiceFolder)/IntegrationTestResults/coverage.cobertura.xml'
-          pathToSources: '$(rootServiceFolder)'
-          failIfCoverageEmpty: true
 
       - task: PowerShell@2
         displayName: 'Publish & push Docker image'
