@@ -176,7 +176,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
       AutomaticsType NewAutomaticsModeState;
 
-      AutomaticsType OldAutomaticsModeState = _AutomaticsMode;
+      AutomaticsType OldAutomaticsModeState = AutomaticsMode;
 
       //   implement unknown automatics state for initialisation purposes
 
@@ -195,7 +195,7 @@ namespace VSS.TRex.TAGFiles.Classes.States
 
       if (OldAutomaticsModeState != NewAutomaticsModeState)
       {
-        _AutomaticsMode = NewAutomaticsModeState;
+        AutomaticsMode = NewAutomaticsModeState;
       }
     }
 
