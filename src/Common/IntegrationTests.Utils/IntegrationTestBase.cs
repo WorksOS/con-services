@@ -11,7 +11,7 @@ namespace CCSS.IntegrationTests.Utils
 {
   public class IntegrationTestBase
   {
-    protected IRestClient restClient;
+    protected IIntegrationTestRestClient restClient;
 
     public async Task<T> SendAsync<T>(string url, HttpMethod method, string customerUid, HttpStatusCode expectedStatusCode)
     {

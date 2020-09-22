@@ -11,27 +11,23 @@ using Newtonsoft.Json;
 
 namespace CCSS.IntegrationTests.Utils
 {
-  public class RestClient : IRestClient, IDisposable
+  public class IntegrationTestRestClient : IIntegrationTestRestClient, IDisposable
   {
-    private bool disposed;
-    private readonly ILogger log;
-    private readonly string serviceBaseUrl;
-    private readonly HttpClient httpClient;
+    private bool _disposed;
+    private readonly ILogger _log;
+    private readonly string _serviceBaseUrl;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public RestClient(ILoggerFactory loggerFactory, IConfiguration configuration, HttpClient httpClient = null)
+    public IntegrationTestRestClient(ILoggerFactory loggerFactory, IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
-      log = loggerFactory.CreateLogger(GetType());
-      serviceBaseUrl = configuration.GetSection("ServiceBaseUrl").Value;
-
-      this.httpClient = httpClient ?? new HttpClient();
-
-      this.httpClient.DefaultRequestHeaders.Add("X-VisionLink-ClearCache", "true");
-      this.httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
+      _log = loggerFactory.CreateLogger(GetType());
+      _serviceBaseUrl = configuration.GetSection("ServiceBaseUrl").Value;
+      _clientFactory = httpClientFactory;
     }
 
     public Task<HttpResponseMessage> SendAsync(string route, HttpMethod method, HttpHeaders customHeaders = null, string acceptHeader = MediaTypes.JSON, string contentType = MediaTypes.JSON, object body = null, string customerUid = null, string jwtToken = null)
     {
-      var requestMessage = new HttpRequestMessage(method, new Uri(serviceBaseUrl + route));
+      var requestMessage = new HttpRequestMessage(method, new Uri(_serviceBaseUrl + route));
 
       if (body != null)
       {
@@ -53,12 +49,12 @@ namespace CCSS.IntegrationTests.Utils
       requestMessage.Headers.Add("X-VisionLink-CustomerUid", customerUid);
       requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptHeader));
 
-      log.LogInformation($"[{method}] {requestMessage.RequestUri.AbsoluteUri}");
+      _log.LogInformation($"[{method}] {requestMessage.RequestUri.AbsoluteUri}");
 
-      return httpClient.SendAsync(requestMessage);
+      return _clientFactory.CreateClient().SendAsync(requestMessage);
     }
 
-    ~RestClient()
+    ~IntegrationTestRestClient()
     {
       Dispose(false);
     }
@@ -70,17 +66,15 @@ namespace CCSS.IntegrationTests.Utils
 
     protected virtual void Dispose(bool disposing)
     {
-      if (disposed)
+      if (_disposed)
       {
         return;
       }
 
       if (disposing)
-      {
-        httpClient?.Dispose();
-      }
+      { }
 
-      disposed = true;
+      _disposed = true;
     }
   }
 }

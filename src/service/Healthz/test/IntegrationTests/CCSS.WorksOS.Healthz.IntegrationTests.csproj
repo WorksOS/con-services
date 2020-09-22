@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj" />
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\Service\CCSS.WorksOS.Healthz\CCSS.WorksOS.Healthz.csproj" />
   </ItemGroup>
