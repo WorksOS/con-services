@@ -15,7 +15,7 @@ namespace VSS.Serilog.Extensions.Enrichers
     public HttpContextEnricher(IHttpContextAccessor httpContextAccessor)
     {
       _httpContextAccessor = httpContextAccessor;
-    } 
+    }
 
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
