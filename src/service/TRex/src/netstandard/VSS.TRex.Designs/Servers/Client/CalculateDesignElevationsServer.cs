@@ -5,7 +5,7 @@ namespace VSS.TRex.Designs.Servers.Client
 {
   public class CalculateDesignElevationsServer : ApplicationServiceServer
   {
-    public CalculateDesignElevationsServer() : base(new[] {ServerRoles.DESIGN_PROFILER})
+    public CalculateDesignElevationsServer() : base(new[] {ServerRoles.DESIGN_PROFILER, ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS })
     {
     }
   }

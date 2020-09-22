@@ -11,7 +11,7 @@ namespace VSS.TRex.Rendering.Servers.Client
         /// <summary>
         /// Default no-arg constructor that creates a server with the default Application Service role and the specialize tile rendering role.
         /// </summary>
-        public TileRenderingServer() : this(new [] { ServerRoles.TILE_RENDERING_NODE })
+        public TileRenderingServer() : this(new [] { ServerRoles.TILE_RENDERING_NODE, ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS })
         {
         }
 

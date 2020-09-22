@@ -105,19 +105,19 @@ namespace MockProjectWebApi.Services
         FilterDescriptors.Dimensions.VolumesWithExplicitFilter1NovFirstPass,
         FilterDescriptors.Dimensions.DimensionsProjectExtents
       };
-      var filters2 = new FilterDescriptorListResult {FilterDescriptors = list2.ToImmutableList()};
+      var filters2 = new FilterDescriptorListResult { FilterDescriptors = list2.ToImmutableList() };
 
       FilterData.Add(ConstantsUtil.DIMENSIONS_PROJECT_UID, filters2);
       FilterData.Add(ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID, filters2);
 
-      var kettlewellDriveList = new List<FilterDescriptor> {FilterDescriptors.KettlewellDrive.MinElevationSingleCellPassMultiMode, FilterDescriptors.KettlewellDrive.MinElevationLastPassMode};
+      var kettlewellDriveList = new List<FilterDescriptor> { FilterDescriptors.KettlewellDrive.MinElevationSingleCellPassMultiMode, FilterDescriptors.KettlewellDrive.MinElevationLastPassMode };
       var kettlewellDriveFilters = new FilterDescriptorListResult
       {
         FilterDescriptors = kettlewellDriveList.ToImmutableList()
       };
       FilterData.Add(ConstantsUtil.KETTLEWELL_DRIVE_PROJECT_UID, kettlewellDriveFilters);
 
-      var christchurchTestSiteList = new List<FilterDescriptor> {FilterDescriptors.ChristchurchTestSite.NegativeStartStationFilter};
+      var christchurchTestSiteList = new List<FilterDescriptor> { FilterDescriptors.ChristchurchTestSite.NegativeStartStationFilter };
       var christchurchTestSiteFilters = new FilterDescriptorListResult
       {
         FilterDescriptors = christchurchTestSiteList.ToImmutableList()
