@@ -95,13 +95,17 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
         .Build()
-        .Add(x => x.AddSingleton(new GriddedReportRequestServer())) // TODO: No need to create two server instances here, this creates two Ignite JVMs...
-        .Add(x => x.AddSingleton(new CSVExportRequestServer()))
+
+        .Add(x => x.AddSingleton(new GriddedReportRequestServer()))
+        // Note: There is no need to create a second report server type instances here as this will create two Ignite JVMs...
+        // Use the CSVExportRequestServer if a separate service dedicated to CSV reports is required distinct from gridded reports
+        //.Add(x => x.AddSingleton(new CSVExportRequestServer()))
+
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
-        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
@@ -156,7 +160,7 @@ namespace VSS.TRex.Server.Reports
     private static void DoServiceInitialisation()
     {
       // Start listening to design state change notifications
-      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+      //DIContext.Obtain<IDesignChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());

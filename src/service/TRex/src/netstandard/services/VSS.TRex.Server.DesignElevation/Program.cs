@@ -68,7 +68,7 @@ namespace VSS.TRex.Server.DesignElevation
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
-        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
@@ -114,7 +114,7 @@ namespace VSS.TRex.Server.DesignElevation
       //DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
       // Start listening to design state change notifications
-      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+      //DIContext.Obtain<IDesignChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());

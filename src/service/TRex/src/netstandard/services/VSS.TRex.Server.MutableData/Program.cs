@@ -101,7 +101,6 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IDesignChangedEventSender, DesignChangedEventSender>())
       
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
-        .Add(x => x.AddSingleton<IDesignChangedEventSender>(new DesignChangedEventSender()))
 
         // Register the sender for the site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
