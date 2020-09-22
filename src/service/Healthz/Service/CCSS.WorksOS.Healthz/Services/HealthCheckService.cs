@@ -138,7 +138,7 @@ namespace CCSS.WorksOS.Healthz.Services
               return;
             }
 
-            _healthCheckState.SetServiceState(service.Identifier, servicePingResponse);
+            _healthCheckState.AddServicePingResponse(service.Identifier, servicePingResponse);
 
             if (servicePingResponse.State != ServiceState.Available)
             {

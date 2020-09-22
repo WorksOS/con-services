@@ -268,17 +268,19 @@ namespace VSS.MasterData.Proxies
         {
           _log.LogDebug($"Trying to execute {method} request {endpoint}");
           result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
-          _log.LogDebug($"Request to {endpoint} completed");
 
-          if (!_okCodes.Contains(result.StatusCode))
+          if (_okCodes.Contains(result.StatusCode))
+          {
+            _log.LogDebug($"Request to '{endpoint}' completed with status {result.StatusCode}");
+          }
+          else
           {
             var contents = await result.Content.ReadAsStringAsync();
             _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents.Truncate(_logMaxChar)}");
+
             var serviceException = ParseServiceError(result.StatusCode, contents);
             throw new HttpRequestException($"{result.StatusCode} {contents}", serviceException);
           }
-
-          _log.LogDebug($"Request returned status {result.StatusCode}");
         });
 
       if (policyResult.FinalException != null)

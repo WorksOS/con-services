@@ -6,50 +6,15 @@ using CCSS.WorksOS.Healthz.Responses;
 using CCSS.WorksOS.Healthz.Types;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.ServiceDiscovery.Models;
 
 namespace CCSS.WorksOS.Healthz.Services
 {
-  public interface IHealthCheckState
-  {
-    /// <summary>
-    /// Adds a <see cref="ServiceResult"/> to the list of available servcies to poll for 'liveness'.
-    /// </summary>
-    Service AddPollingService(Service service);
-
-    /// <summary>
-    /// Returns a list of cache services used for polling.
-    /// </summary>
-    IEnumerable<Service> GetServiceIdentifiers();
-
-    /// <summary>
-    /// Add a new service state for the given service identifier.
-    /// </summary>
-    ServicePingResponse SetServiceState(string identifier, ServicePingResponse servicePingResponse);
-
-    /// <summary>
-    /// Returns the last service state for n number of provided service identifiers.
-    /// </summary>
-    IEnumerable<ServicePingResponse> GetServiceState(string[] identifiers);
-
-    /// <summary>
-    /// Sets the global service state; any one unavailable service will return a <see cref="ServiceState.Unavailable"/> response.
-    /// </summary>
-    void SetAggregatedServiceState(ServiceState serviceState);
-
-    /// <summary>
-    /// Returns a <see cref="ServiceState"/> response indicating all services are responding (Available), or any one of the polled services
-    /// is non responsive (Unavailable).
-    /// </summary>
-    ServiceState GetAggregatedServiceState();
-
-    // TODO Could include 'GetHistoryForServices(string[] identifiers)
-  }
-
   public class HealthCheckState : IHealthCheckState
   {
     private const string SERVICE_IDENTIFIES_CACHE_KEY = "service-identifiers";
     private const string SERVICE_STATE_CACHE_KEY_PREFIX = "service-state-";
+
+    private const int PING_RESPONSE_CACHE_SIZE = 5;
 
     private string _serviceStateCacheKey(string identifier) => SERVICE_STATE_CACHE_KEY_PREFIX + identifier;
 
@@ -87,7 +52,7 @@ namespace CCSS.WorksOS.Healthz.Services
 
         // Setup the cache entry for healthcheck ping records.
         var cacheKey = _serviceStateCacheKey(service.Identifier);
-        _cache.Set(cacheKey, new List<ServicePingResponse>());
+        _cache.Set(cacheKey, new Queue<ServicePingResponse>(PING_RESPONSE_CACHE_SIZE));
       }
 
       return service;
@@ -111,7 +76,7 @@ namespace CCSS.WorksOS.Healthz.Services
     public ServiceState GetAggregatedServiceState() => _aggregatedServiceState;
 
     /// <inheritdoc/>
-    public ServicePingResponse SetServiceState(string identifier, ServicePingResponse servicePingResponse)
+    public ServicePingResponse AddServicePingResponse(string identifier, ServicePingResponse servicePingResponse)
     {
       if (string.IsNullOrEmpty(identifier))
       {
@@ -120,12 +85,17 @@ namespace CCSS.WorksOS.Healthz.Services
 
       var cacheKey = _serviceStateCacheKey(identifier);
 
-      if (!_cache.TryGetValue(cacheKey, out List<ServicePingResponse> cachedResponses))
+      if (!_cache.TryGetValue(cacheKey, out Queue<ServicePingResponse> cachedResponses))
       {
         throw new Exception($"Cache entry for service '{cacheKey}' not found");
       }
 
-      cachedResponses.Add(servicePingResponse);
+      cachedResponses.Enqueue(servicePingResponse);
+
+      if (cachedResponses.Count > PING_RESPONSE_CACHE_SIZE)
+      {
+        cachedResponses.TrimExcess();
+      }
 
       return servicePingResponse;
     }
@@ -142,7 +112,7 @@ namespace CCSS.WorksOS.Healthz.Services
 
       for (var i = 0; i < identifiers.Length; i++)
       {
-        var serviceCacheExists = _cache.TryGetValue(_serviceStateCacheKey(identifiers[i]), out List<ServicePingResponse> serviceState);
+        var serviceCacheExists = _cache.TryGetValue(_serviceStateCacheKey(identifiers[i]), out Queue<ServicePingResponse> serviceState);
 
         if (!serviceCacheExists)
         {
