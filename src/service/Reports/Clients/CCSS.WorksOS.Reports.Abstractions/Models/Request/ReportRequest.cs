@@ -25,19 +25,19 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
     /// <summary>
     /// Details that needs to be used to call respective api (List of Urls to query)
     /// </summary>
-    [JsonProperty(PropertyName = "reportParams", Required = Required.Always)]
-    public List<ReportParameter> ReportParameter { get; private set; }
+    [JsonProperty(PropertyName = "reportRoutes", Required = Required.Always)]
+    public List<ReportRoute> ReportRoutes { get; private set; }
 
     private ReportRequest()
     {
       ReportTypeEnum = ReportType.Unknown;
     }
 
-    public ReportRequest(ReportType reportType, string reportTitle, List<ReportParameter> reportParameter)
+    public ReportRequest(ReportType reportType, string reportTitle, List<ReportRoute> reportRoutes)
     {
       ReportTypeEnum = reportType;
       ReportTitle = reportTitle;
-      ReportParameter = reportParameter;
+      ReportRoutes = reportRoutes;
     }
 
     public void Validate()
@@ -50,58 +50,58 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(9, "Report title must be between 1 and 800 characters."));
 
-      if (ReportParameter == null || !ReportParameter.Any())
+      if (ReportRoutes == null || !ReportRoutes.Any())
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(9, "Report parameters must be provided."));
 
-      var summaryReportMandatoryParameters = new List<string>
+      var summaryReportMandatoryRoutes = new List<string>
       {
-        MandatoryReportParameter.ColorPalette.ToString(),
-        MandatoryReportParameter.Filter.ToString(),
-        MandatoryReportParameter.ImportedFiles.ToString(),
-        MandatoryReportParameter.MachineDesigns.ToString(),
-        MandatoryReportParameter.ProjectName.ToString(),
-        MandatoryReportParameter.ProjectExtents.ToString(),
-        MandatoryReportParameter.ProjectSettings.ToString()
+        MandatoryReportRoute.ColorPalette.ToString(),
+        MandatoryReportRoute.Filter.ToString(),
+        MandatoryReportRoute.ImportedFiles.ToString(),
+        MandatoryReportRoute.MachineDesigns.ToString(),
+        MandatoryReportRoute.ProjectName.ToString(),
+        MandatoryReportRoute.ProjectExtents.ToString(),
+        MandatoryReportRoute.ProjectSettings.ToString()
       };
 
-      var optionalSummaryReportParameters = new List<string>
+      var optionalSummaryReportRoutes = new List<string>
       {
-        OptionalSummaryReportParameter.PassCountSummary.ToString(),
-        OptionalSummaryReportParameter.PassCountDetail.ToString(),
-        OptionalSummaryReportParameter.Volumes.ToString(),
-        OptionalSummaryReportParameter.Elevation.ToString(),
-        OptionalSummaryReportParameter.MDPSummary.ToString(),
-        OptionalSummaryReportParameter.CMVSummary.ToString(),
-        OptionalSummaryReportParameter.CMVChange.ToString(),
-        OptionalSummaryReportParameter.CMVDetail.ToString(),
-        OptionalSummaryReportParameter.TemperatureSummary.ToString(),
-        OptionalSummaryReportParameter.TemperatureDetail.ToString(),
-        OptionalSummaryReportParameter.Speed.ToString(),
-        OptionalSummaryReportParameter.CutFill.ToString()
+        OptionalSummaryReportRoute.PassCountSummary.ToString(),
+        OptionalSummaryReportRoute.PassCountDetail.ToString(),
+        OptionalSummaryReportRoute.Volumes.ToString(),
+        OptionalSummaryReportRoute.Elevation.ToString(),
+        OptionalSummaryReportRoute.MDPSummary.ToString(),
+        OptionalSummaryReportRoute.CMVSummary.ToString(),
+        OptionalSummaryReportRoute.CMVChange.ToString(),
+        OptionalSummaryReportRoute.CMVDetail.ToString(),
+        OptionalSummaryReportRoute.TemperatureSummary.ToString(),
+        OptionalSummaryReportRoute.TemperatureDetail.ToString(),
+        OptionalSummaryReportRoute.Speed.ToString(),
+        OptionalSummaryReportRoute.CutFill.ToString()
       };
 
-      if (!summaryReportMandatoryParameters.TrueForAll(x => { return ReportParameter.Exists(r => r.ReportParameterType.Equals(x)); }))
+      if (!summaryReportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); }))
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(9, "Missing report parameter for Summary report."));
 
       if (ReportTypeEnum == ReportType.Summary)
       {
         if (
-          (!summaryReportMandatoryParameters.TrueForAll(x => { return ReportParameter.Exists(r => r.ReportParameterType.Equals(x)); })) &&
-          (!optionalSummaryReportParameters.TrueForAll(x => { return ReportParameter.Exists(r => r.ReportParameterType.Equals(x)); }))
+          (!summaryReportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); })) &&
+          (!optionalSummaryReportRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); }))
         )
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(9, "Report parameter not supported for Summary report."));
       }
       else
       {
-        if (!ReportParameter.TrueForAll(x => Enum.TryParse(x.ReportParameterType, out MandatoryReportParameter _)))
+        if (!ReportRoutes.TrueForAll(x => Enum.TryParse(x.ReportRouteType, out MandatoryReportRoute _)))
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(9, "Report parameter not supported."));
       }
 
-      ReportParameter.ForEach(r => r.Validate());
+      ReportRoutes.ForEach(r => r.Validate());
     }
   }
 }

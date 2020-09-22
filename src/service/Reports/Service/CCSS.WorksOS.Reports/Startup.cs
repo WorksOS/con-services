@@ -39,11 +39,12 @@ namespace CCSS.WorksOS.Reports
     {
       // Required for authentication
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      //services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      //services.AddScoped<IErrorCodesProvider, ReportsErrorCodesProvider>();
+      services.AddSingleton<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddSingleton<IErrorCodesProvider, ReportsErrorCodesProvider>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
       services.AddTransient<ICwsAccountClient, CwsAccountClient>();
+      services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
 
       services.AddOpenTracing(builder => { builder.ConfigureAspNetCore(options => { options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping"); }); });
     }

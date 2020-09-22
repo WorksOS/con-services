@@ -19,5 +19,9 @@ namespace VSS.MasterData.Proxies.Interfaces
     Task<HttpStatusCode> ExecuteRequest(string endpoint, Stream payload = null,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false);
+
+    Task<HttpResponseMessage> ExecuteRequestSimple(string endpoint,
+      IHeaderDictionary customHeaders = null, HttpMethod method = null,
+      int? timeout = null, int retries = 0, bool suppressExceptionLogging = false);
   }
 }

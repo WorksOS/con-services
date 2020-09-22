@@ -1,6 +1,6 @@
 ﻿namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
 {
-  public enum MandatoryReportParameter
+  public enum MandatoryReportRoute
   {
     ProjectName,
     ProjectExtents,

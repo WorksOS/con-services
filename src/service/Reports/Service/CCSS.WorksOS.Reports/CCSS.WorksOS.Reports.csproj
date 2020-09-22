@@ -25,7 +25,7 @@
     <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\Clients\CCSS.WorksOS.Reports.Abstractions\CCSS.WorksOS.Reports.Abstractions.csproj" />
+    <ProjectReference Include="..\CCSS.WorksOS.Reports.Common\CCSS.WorksOS.Reports.Common.csproj" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">

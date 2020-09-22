@@ -20,7 +20,6 @@ namespace CCSS.WorksOS.Reports
         .ConfigureWebHostDefaults(webBuilder =>
         {
           webBuilder
-            //.UseKestrel()
             .UseLibuv(opts => { opts.ThreadCount = 32; })
             .BuildKestrelWebHost()
             .UseStartup<Startup>();

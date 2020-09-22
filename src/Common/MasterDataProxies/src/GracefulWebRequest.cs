@@ -297,6 +297,45 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Executes a simple request, returning raw response
+    /// </summary>
+    public async Task<HttpResponseMessage> ExecuteRequestSimple(string endpoint,
+      IHeaderDictionary customHeaders = null, HttpMethod method = null,
+      int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
+    {
+      //Default to GET
+      if (method == null)
+        method = HttpMethod.Get;
+
+      _log.LogDebug($"{nameof(ExecuteRequestSimple)} ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
+      
+      HttpResponseMessage result = null;
+      var policyResult = await Policy
+        .Handle<Exception>()
+        .RetryAsync(retries)
+        .ExecuteAndCaptureAsync(async () =>
+        {
+          _log.LogDebug($"Trying to execute {method} request {endpoint}");
+          result = await ExecuteRequestInternal(endpoint, method, customHeaders, null, timeout);
+          _log.LogDebug($"Request to {endpoint} completed. status {result.StatusCode}");
+        });
+
+      if (policyResult.FinalException != null)
+      {
+        if (!suppressExceptionLogging)
+        {
+          _log.LogDebug(
+            policyResult.FinalException,
+            $"ExecuteRequest_multi(). endpoint: {endpoint} customHeaders: {customHeaders}");
+        }
+
+        throw policyResult.FinalException;
+      }
+
+      return result;
+    }
+
+    /// <summary>
     /// Attempt to parse the result body, and convert to a service exception
     /// Returns null if not in the correct format (will not throw a new exception)
     /// </summary>
