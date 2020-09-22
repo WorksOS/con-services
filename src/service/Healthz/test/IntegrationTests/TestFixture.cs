@@ -1,24 +1,25 @@
 ﻿using System.Net.Http;
+using CCSS.IntegrationTests.Utils;
 using CCSS.WorksOS.Healthz;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
 using VSS.Serilog.Extensions;
 
 namespace IntegrationTests
 {
-  public class TestClientProviderFixture
+  public class TestFixture
   {
     public ServiceProvider ServiceProvider { get; }
+    public IIntegrationTestRestClient RestClient { get; }
 
     private const string TARGET_ENVIRONMENT = "IntegrationTests";
 
-    public TestClientProviderFixture()
+    public TestFixture()
     {
       var configurationRoot = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
@@ -38,6 +39,8 @@ namespace IntegrationTests
 
       ServiceProvider = ConfigureServices(configurationRoot, mockIHttpClientFactory.Object)
         .BuildServiceProvider();
+
+      RestClient = ServiceProvider.GetRequiredService<IIntegrationTestRestClient>();
     }
 
     /// <summary>
@@ -46,7 +49,7 @@ namespace IntegrationTests
     public static IHostBuilder CreateHostBuilder(IConfigurationRoot configurationRoot)
     {
       Log.Logger = SerilogExtensions
-        .Configure(logFilename: $"Pulse.{TARGET_ENVIRONMENT}.log", config: configurationRoot);
+        .Configure(logFilename: $"Healthz.IntegrationTests.{TARGET_ENVIRONMENT}.log", config: configurationRoot);
 
       return Host
        .CreateDefaultBuilder()
@@ -68,7 +71,8 @@ namespace IntegrationTests
         .AddMemoryCache()
         .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(Log.Logger))
         .AddSingleton<IConfiguration>(configurationRoot)
-        .AddSingleton(httpClientFactory);
+        .AddSingleton(httpClientFactory)
+        .AddSingleton<IIntegrationTestRestClient, IntegrationTestRestClient>();
 
       services.AddHttpClient("configured-disable-automatic-cookies")
         .ConfigurePrimaryHttpMessageHandler(() =>
