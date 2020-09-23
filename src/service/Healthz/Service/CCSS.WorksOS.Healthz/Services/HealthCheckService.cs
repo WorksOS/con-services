@@ -59,15 +59,13 @@ namespace CCSS.WorksOS.Healthz.Services
         try
         {
           await ResolveServicesState(_healthCheckState.GetServiceIdentifiers());
-
-          await Task.Delay(60 * 1000, cancellationToken);
         }
         catch (Exception e)
         {
           Logger.LogError(e, $"{nameof(ExecuteAsync)} Failed to resolve polling services");
-
-          await Task.Delay(60 * 1000, cancellationToken);
         }
+
+        await Task.Delay(60 * 1000, cancellationToken);
       }
     }
 
@@ -77,7 +75,6 @@ namespace CCSS.WorksOS.Healthz.Services
     private async Task ResolvePollingServices(List<string> serviceIdentifiers)
     {
       var serviceResultTasks = new List<Task>(serviceIdentifiers.Count);
-      var _services = new Dictionary<string, ServiceResult>();
 
       Logger.LogInformation($"{nameof(ResolvePollingServices)}: Resolving services for polling...");
 
@@ -89,6 +86,12 @@ namespace CCSS.WorksOS.Healthz.Services
           .Add(_serviceResolution.ResolveService(serviceName: identifier)
           .ContinueWith(x =>
           {
+            if (!x.IsCompleted)
+            {
+              Logger.LogError($"{nameof(ResolveServicesState)}: Failure resolving service '{identifier}'; {x.Exception.GetBaseException().Message}");
+              return;
+            }
+
             var serviceResult = x.Result;
 
             if (string.IsNullOrEmpty(serviceResult.Endpoint) ||
@@ -100,12 +103,9 @@ namespace CCSS.WorksOS.Healthz.Services
               return;
             }
 
-            if (!_services.TryGetValue(identifier, out var _))
-            {
-              Logger.LogInformation($"{nameof(ResolvePollingServices)}: Found service '{identifier}' listening on '{serviceResult.Endpoint}'");
+            Logger.LogInformation($"{nameof(ResolvePollingServices)}: Found service '{identifier}' listening on '{serviceResult.Endpoint}'");
 
-              _healthCheckState.AddPollingService(new Service(identifier, serviceResult.Endpoint));
-            }
+            _healthCheckState.AddPollingService(new Service(identifier, serviceResult.Endpoint));
           }));
       }
 
@@ -130,13 +130,13 @@ namespace CCSS.WorksOS.Healthz.Services
           .Add(QueryService(service)
           .ContinueWith(x =>
           {
-            var servicePingResponse = x.Result;
-
             if (!x.IsCompleted)
             {
               Logger.LogError($"{nameof(ResolveServicesState)}: Failure querying service '{service.Identifier}' at '{service.Endpoint}'; {x.Exception.GetBaseException().Message}");
               return;
             }
+
+            var servicePingResponse = x.Result;
 
             _healthCheckState.AddServicePingResponse(service.Identifier, servicePingResponse);
 
