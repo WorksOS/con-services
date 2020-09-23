@@ -10,28 +10,27 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 {
   public class DevelopmentServiceResolver : IServiceResolver
   {
-    private readonly ILogger<DevelopmentServiceResolver> logger;
-
-    private readonly DevelopmentSettings settings;
+    private readonly ILogger<DevelopmentServiceResolver> _log;
+    private readonly DevelopmentSettings _settings;
 
     public DevelopmentServiceResolver(ILogger<DevelopmentServiceResolver> logger)
     {
-      this.logger = logger;
+      _log = logger;
       Priority = 0; // Top priority ( if we have a file )
 
       try
       {
-        settings = File.Exists(DevelopmentSettings.Filename)
+        _settings = File.Exists(DevelopmentSettings.Filename)
           ? JsonConvert.DeserializeObject<DevelopmentSettings>(File.ReadAllText(DevelopmentSettings.Filename))
           : null;
       }
       catch (JsonException e)
       {
         logger.LogError(e, $"Failed to process Settings File at {DevelopmentSettings.Filename}");
-        settings = null;
+        _settings = null;
       }
 
-      if (settings == null)
+      if (_settings == null)
       {
         Priority = int.MaxValue;
         logger.LogInformation("No settings file found, decreasing discovery priority.");
@@ -41,19 +40,20 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
     public Task<string> ResolveService(string serviceName)
     {
       string result = null;
-      if (settings != null && settings.SelectedSettings.ContainsKey(serviceName))
+
+      if (_settings?.SelectedSettings.ContainsKey(serviceName) == true)
       {
-        result = settings.SelectedSettings[serviceName];
-        logger.LogInformation($"Found value `{result}` for Service Name `{serviceName}`");
+        result = _settings.SelectedSettings[serviceName];
+        _log.LogInformation($"Found value '{result}' for Service Name '{serviceName}'");
       }
-      
+
       return Task.FromResult(result);
     }
 
     public ServiceResultType ServiceType => ServiceResultType.Development;
 
-    public int Priority { get; private set; }
+    public int Priority { get; }
 
-    public bool IsEnabled => settings != null;
+    public bool IsEnabled => _settings != null;
   }
 }

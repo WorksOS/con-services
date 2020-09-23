@@ -31,7 +31,7 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 
       if (!string.IsNullOrEmpty(configValue))
       {
-        _logger.LogDebug($"Service `{serviceName}` was found in configuration");
+        _logger.LogDebug($"Service '{serviceName}' was found in configuration");
         return Task.FromResult(configValue);
       }
 

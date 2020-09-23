@@ -16,7 +16,7 @@ namespace CCSS.Tile.Service.IntegrationTests
   public class TestClientProviderFixture
   {
     public ServiceProvider ServiceProvider { get; }
-    public IRestClient RestClient { get; }
+    public IIntegrationTestRestClient RestClient { get; }
 
     public TestClientProviderFixture()
     {
@@ -25,8 +25,7 @@ namespace CCSS.Tile.Service.IntegrationTests
 
       ServiceProvider = ConfigureServices(httpClient).BuildServiceProvider();
 
-      RestClient = ServiceProvider.GetService<IRestClient>();
-
+      RestClient = ServiceProvider.GetService<IntegrationTestRestClient>();
     }
 
     /// <summary>
@@ -58,7 +57,7 @@ namespace CCSS.Tile.Service.IntegrationTests
              .AddMemoryCache()
              .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(Log.Logger))
              .AddSingleton<IConfiguration>(config)
-             .AddSingleton<IRestClient>(s => new RestClient(s.GetService<ILoggerFactory>(), s.GetService<IConfiguration>(), client));
+             .AddSingleton<IIntegrationTestRestClient>(s => new IntegrationTestRestClient(s.GetService<ILoggerFactory>(), s.GetService<IConfiguration>(), null));
     }
   }
 }

@@ -92,7 +92,7 @@
     public const string RECEIVES_SITEMODEL_CHANGE_EVENTS = "Receives-SiteModelAttributesChangedEvents";
 
     /// <summary>
-    /// The server wants to receive notifications regarding changes to site models
+    /// The server wants to receive notifications regarding changes to designs
     /// </summary>
     public const string RECEIVES_DESIGN_CHANGE_EVENTS = "Receives-DesignChangeEvents";
   }

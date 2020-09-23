@@ -22,11 +22,9 @@ using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Executors;
-using VSS.TRex.SiteModels.GridFabric.Listeners;
 using VSS.TRex.SiteModels.Heartbeats;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Executors;
-using VSS.TRex.SiteModels.Interfaces.Listeners;
 using VSS.TRex.Storage;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -72,7 +70,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         .Add(x => x.AddSingleton<Func<Guid, bool, TransferProxyType, ISiteModelRebuilder>>(_ => (projectUid, archiveTAGFiles, transferProxyType) => new SiteModelRebuilder(projectUid, archiveTAGFiles, transferProxyType)))
         .Add(x => x.AddSingleton<ISiteModelRebuilderManager, SiteModelRebuilderManager>())
         .Add(x => x.AddSingleton<Func<TransferProxyType, IS3FileTransfer>>(_ => proxyType => new S3FileTransfer(proxyType)))
-        .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener, RebuildSiteModelTAGNotifierListener>())
+        //.Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifierListener, RebuildSiteModelTAGNotifierListener>())
 
         .Complete();
     }
@@ -101,6 +99,9 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
     private static async Task DoServiceInitialisation(ILogger log, CancellationTokenSource cancelTokenSource)
     {
+      // Start listening to TAG file processing notifications
+      // DIContext.Obtain<IRebuildSiteModelTAGNotifierListener>().StartListening();
+
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());

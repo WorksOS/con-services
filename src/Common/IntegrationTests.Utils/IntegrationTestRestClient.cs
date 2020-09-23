@@ -11,14 +11,14 @@ using Newtonsoft.Json;
 
 namespace CCSS.IntegrationTests.Utils
 {
-  public class RestClient : IRestClient, IDisposable
+  public class IntegrationTestRestClient : IIntegrationTestRestClient, IDisposable
   {
     private bool _disposed;
     private readonly ILogger _log;
     private readonly string _serviceBaseUrl;
     private readonly IHttpClientFactory _clientFactory;
 
-    public RestClient(ILoggerFactory loggerFactory, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+    public IntegrationTestRestClient(ILoggerFactory loggerFactory, IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
       _log = loggerFactory.CreateLogger(GetType());
       _serviceBaseUrl = configuration.GetSection("ServiceBaseUrl").Value;
@@ -54,8 +54,7 @@ namespace CCSS.IntegrationTests.Utils
       return _clientFactory.CreateClient().SendAsync(requestMessage);
     }
 
-    
-    public Task<HttpResponseMessage> SendAsync(HttpRequestMessage requestMessage)
+    ~IntegrationTestRestClient()
     {
       _log.LogInformation($"[{requestMessage.Method.Method}] {requestMessage.RequestUri.AbsoluteUri}");
 
@@ -71,16 +70,15 @@ namespace CCSS.IntegrationTests.Utils
 
     protected virtual void Dispose(bool disposing)
     {
-      if (disposing && !_disposed)
+      if (_disposed)
       {
-        _disposed = true;
+        return;
       }
-    }
 
-    public void Dispose()
-    {
-      Dispose(true);
-      GC.SuppressFinalize(this);
+      if (disposing)
+      { }
+
+      _disposed = true;
     }
 
     #endregion

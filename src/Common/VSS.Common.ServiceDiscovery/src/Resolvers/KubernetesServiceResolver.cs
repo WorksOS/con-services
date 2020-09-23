@@ -1,16 +1,13 @@
 ﻿using System.Linq;
-using System;
 using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Kubernetes.Interfaces;
-using VSS.ConfigurationStore;
 
 namespace VSS.Common.ServiceDiscovery.Resolvers
 {
@@ -28,36 +25,36 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 
     private const int DEFAULT_PRIORITY = 10;
 
-    private readonly ILogger<KubernetesServiceResolver> logger;
-    
-    private readonly IKubernetes kubernetesClient;
+    private readonly ILogger<KubernetesServiceResolver> _log;
 
-    private readonly string kubernetesNamespace;
+    private readonly IKubernetes _kubernetesClient;
+
+    private readonly string _kubernetesNamespace;
 
     public KubernetesServiceResolver(ILogger<KubernetesServiceResolver> logger, IKubernetesClientFactory kubernetesClientFactory, IConfigurationStore configuration)
     {
-      this.logger = logger;
+      _log = logger;
 
-      Priority =  configuration.GetValueInt("KubernetesServicePriority", DEFAULT_PRIORITY);
-      
+      Priority = configuration.GetValueInt("KubernetesServicePriority", DEFAULT_PRIORITY);
+
       var kubernetesContext = configuration.GetValueString("KubernetesContext", null);
 
-      (kubernetesClient, kubernetesNamespace) = kubernetesClientFactory.CreateClient(kubernetesContext);
-      logger.LogInformation($"Using the kubernetes namespace {kubernetesNamespace} with priority {Priority}");
+      (_kubernetesClient, _kubernetesNamespace) = kubernetesClientFactory.CreateClient(kubernetesContext);
+      logger.LogInformation($"Using the kubernetes namespace {_kubernetesNamespace} with priority {Priority}");
     }
 
     public ServiceResultType ServiceType => ServiceResultType.InternalKubernetes;
 
     public int Priority { get; }
 
-    public bool IsEnabled => kubernetesClient != null;
+    public bool IsEnabled => _kubernetesClient != null;
 
     public Task<string> ResolveService(string serviceName)
     {
       var labelFilter = $"{LABEL_FILTER_NAME}={serviceName}";
 
       // Are we configured? if not we won't have setup the client 
-      if (string.IsNullOrEmpty(kubernetesNamespace) || kubernetesClient == null)
+      if (string.IsNullOrEmpty(_kubernetesNamespace) || _kubernetesClient == null)
         return Task.FromResult<string>(null);
 
       // Attempt to get the list of services in our namespace that match our label
@@ -66,12 +63,12 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
       V1ServiceList list = null;
       try
       {
-        list = kubernetesClient.ListNamespacedService(kubernetesNamespace, labelSelector: labelFilter);
+        list = _kubernetesClient.ListNamespacedService(_kubernetesNamespace, labelSelector: labelFilter);
       }
       catch (HttpOperationException e)
       {
         // If we don't have access to query the namespace (e.g default), we will get a forbidden exception
-        logger.LogWarning($"Failed to query cluster for service {serviceName} due to error. Returning empty result. Error: {e.Message}");
+        _log.LogWarning($"Failed to query cluster for service {serviceName} due to error. Returning empty result. Error: {e.Message}");
         return Task.FromResult<string>(null);
       }
 
@@ -90,17 +87,17 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
 
         if (httpPort == null)
         {
-          logger.LogWarning($"Could not find Port {PORT_NUMBER} for the service `{item.Metadata?.Name}` - ignoring");
+          _log.LogWarning($"Could not find Port {PORT_NUMBER} for the service '{item.Metadata?.Name}' - ignoring");
         }
         else if (string.IsNullOrEmpty(item.Spec.ClusterIP))
         {
-          logger.LogWarning($"No clusterIP provided for service {item.Metadata.Name} - ignoring");
+          _log.LogWarning($"No clusterIP provided for service {item.Metadata.Name} - ignoring");
         }
         else
         {
           // First one found that matches
           var url = $"http://{spec.ClusterIP}:{httpPort.Port}";
-          logger.LogInformation($"Found `{url}` for the service name `{serviceName}` from kubernetes");
+          _log.LogInformation($"Found '{url}' for the service name '{serviceName}' from kubernetes");
           return Task.FromResult(url);
         }
       }
