@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 
 namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 {
@@ -83,7 +84,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
     private void MapResponseProperties(DataGrabberResponse response, IReadOnlyDictionary<string, string> parsedData)
     {
       // Data model and filters...
-      response.ReportData = new GridReportDataModel {Filters = new FilterListData {filterDescriptors = new List<FilterDescriptor>()}};
+      response.ReportData = new GridReportDataModel {Filters = new FilterDescriptorListResult()};  // todoJeannie { filterDescriptors = new List<FilterDescriptor>()}};
 
       var gridReportData = (GridReportDataModel) response.ReportData;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -112,7 +113,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
           JsonConvert.DeserializeObject<ProjectStatisticsResult>(parsedData["ProjectExtents"]);
       }
 
-      mandatoryReportData.Filters = new FilterListData { filterDescriptors = new List<FilterDescriptor>() };
+      mandatoryReportData.Filters = new FilterDescriptorListResult(); // { FilterDescriptors = new List<FilterDescriptor>() }; todoJeannie
 
       if (parsedData.ContainsKey("Filter") && parsedData["Filter"] != null)
       {
@@ -123,7 +124,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
           if (filterDetails != null)
           {
             mandatoryReportData.ReportFilter = filterDetails;
-            mandatoryReportData.Filters.filterDescriptors.Add(filterDescriptor.FilterDescriptor);
+            mandatoryReportData.Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
           }
         }
       }

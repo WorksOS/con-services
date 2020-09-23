@@ -1,4 +1,5 @@
 ﻿using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
@@ -19,7 +20,7 @@ namespace CCSS.WorksOS.Reports.Common.Models
     /// <summary>
     /// Gets or sets Filter descriptors used in the report.
     /// </summary>
-    public FilterListData Filters { get; set; }
+    public FilterDescriptorListResult Filters { get; set; }
 
     /// <summary>
     /// Gets or sets the report filter.

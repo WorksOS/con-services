@@ -171,8 +171,8 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
           var summaryReportData = new SummaryReportDataModel();
           response.ReportData = summaryReportData;
           summaryReportData.Data = new List<SummaryDataBase>();
-          summaryReportData.Filters = new FilterListData();
-          summaryReportData.Filters.filterDescriptors = new List<VSS.Productivity3D.Filter.Abstractions.Models.FilterDescriptor>();
+          summaryReportData.Filters = new FilterDescriptorListResult();
+          // todoJeannie summaryReportData.Filters.FilterDescriptors = new List<VSS.Productivity3D.Filter.Abstractions.Models.FilterDescriptor>();
           //Save the requested order - use QueryURL which is unique key
           var sortedData = parsedData.SortBy(_composerRequest.ReportRequest.ReportRoutes.Select(rp => rp.QueryURL),
             pd => pd.Item5).ToList();
@@ -244,11 +244,11 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
                 var filterDescriptor = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(sortedData[i].Item2);
                 if (filterDescriptor != null && filterDescriptor.FilterDescriptor?.FilterJson != null)
                 {
-                  var filterDetails = JsonConvert.DeserializeObject<VSS.Productivity3D.Filter.Abstractions.Models.Filter>(filterDescriptor.FilterDescriptor.FilterJson);
+                  var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
                   if (filterDetails != null)
                   {
                     summaryReportData.ReportFilter = filterDetails;
-                    summaryReportData.Filters.filterDescriptors.Add(filterDescriptor.FilterDescriptor);
+                    summaryReportData.Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
                   }
                 }
                 break;
@@ -335,7 +335,6 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
     {
       try
       {
-        HttpResponseMessage filterResponse = null;
         string apiResponse;
        var filterRequest = new DataGrabberRequest
         {
@@ -343,8 +342,8 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
           SvcMethod = HttpMethod.Get
         };
 
-        string topurl = DataGrabberHelper.AppendOrUpdateQueryParam(filterUrl, SummaryReportConstants.FilterUid, queryCollection.Get(SummaryReportConstants.TopUid));
-        string baseurl = DataGrabberHelper.AppendOrUpdateQueryParam(filterUrl, SummaryReportConstants.FilterUid, queryCollection.Get(SummaryReportConstants.BaseUid));
+        var topurl = DataGrabberHelper.AppendOrUpdateQueryParam(filterUrl, SummaryReportConstants.FilterUid, queryCollection.Get(SummaryReportConstants.TopUid));
+        var baseurl = DataGrabberHelper.AppendOrUpdateQueryParam(filterUrl, SummaryReportConstants.FilterUid, queryCollection.Get(SummaryReportConstants.BaseUid));
 
         if (topurl != null && !topurl.Equals(filterUrl))
         {
@@ -357,7 +356,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
             var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
             if (filterDetails != null)
             {
-              ((SummaryReportDataModel)response.ReportData).Filters.filterDescriptors.Add(filterDescriptor.FilterDescriptor);
+              ((SummaryReportDataModel)response.ReportData).Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
             }
           }
         }
@@ -373,7 +372,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
             var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
             if (filterDetails != null)
             {
-              ((SummaryReportDataModel)response.ReportData).Filters.filterDescriptors.Add(filterDescriptor.FilterDescriptor);
+              ((SummaryReportDataModel)response.ReportData).Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
             }
           }
         }
