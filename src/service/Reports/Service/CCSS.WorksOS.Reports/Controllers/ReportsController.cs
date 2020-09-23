@@ -52,12 +52,14 @@ namespace CCSS.WorksOS.Reports.Controllers
       Log.LogInformation($"{nameof(GetGridReport)} request: {reportRequest}");
       reportRequest.Validate();
 
-      //var reportResult = await WithServiceExceptionTryExecuteAsync(() =>
-      //  RequestExecutorContainerFactory
-      //    .Build<GetStationOffsetExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-      //      CustomerUid, UserUid, UserEmailAddress, headers: customHeaders
-      //    )
-      //    .ProcessAsync(reportRequest));
+      // todoJeannie use same executor for now
+      var reportResult = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<GetGridExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            CustomerUid, UserUid, customHeaders,
+            PreferenceProxy, GracefulClient
+          )
+          .ProcessAsync(reportRequest));
 
       return StatusCode((int) HttpStatusCode.InternalServerError, $"{nameof(GetGridReport)} not supported yet");
     }

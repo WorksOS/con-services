@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -12,6 +13,13 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
   /// </summary>
   public class ReportRoute
   {
+    /// <summary>
+    ///  Parameter type e.g. ProjectName and other mandatory
+    ///   or optional sheets for summary reports e.g. CMVDetail
+    /// </summary>
+    [JsonProperty("reportRouteType", Required = Required.Always)]
+    public string ReportRouteType { get; private set; }
+    
     /// <summary>
     /// The URL to hit to get the report data. 
     /// </summary>
@@ -31,13 +39,6 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
     public string /* JRaw todoJeannie is this ever used for 3dp reports? */
       SvcBody { get; private set; }
 
-    /// <summary>
-    ///  Parameter type e.g. ProjectName and other mandatory
-    ///   or optional sheets for summary reports e.g. CMVDetail
-    /// </summary>
-    [JsonProperty("reportRouteType")]
-    public string ReportRouteType { get; private set; }
-
 
     private ReportRoute()
     {
@@ -46,7 +47,7 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
     public ReportRoute(string reportRouteType, string queryURL, string mapURL = null, string svcMethod = "GET", string svcBody = null)
     {
       ReportRouteType = reportRouteType;
-      SvcMethod = svcMethod;
+      SvcMethod = new HttpMethod(svcMethod ?? "GET").ToString();
 
       if (!string.IsNullOrEmpty(queryURL))
         QueryURL = queryURL.Trim();
@@ -60,7 +61,8 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
     public void Validate()
     {
       // queryUrl optional or not Required (? todoJeannie)  for CMVDetail
-      if (ReportRouteType != OptionalSummaryReportRoute.CMVDetail.ToString())
+      if (ReportRouteType != OptionalSummaryReportRoute.CMVDetail.ToString() &&
+          ReportRouteType != "StationOffset") /* todoJeannie isWellFormedUriString doesn't work? */
       {
         if (string.IsNullOrEmpty(QueryURL) || QueryURL.Length > 2000)
           throw new ServiceException(HttpStatusCode.BadRequest,

@@ -13,6 +13,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 {
@@ -55,7 +59,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 			//	{
 			//		//var reportHeaders = GetReportsColumnHeaders(request.MappingData, request.RequiredColumns, request.UserPreference);
 			//		//ServiceClientResponseMsg reportsData = GetDataFromApi(request);
-   //       var reportsData = await _gracefulWebRequest.ExecuteRequestSimple(request.QueryURL, request.Headers, request.SvcMethod);
+   //       var reportsData = await _gracefulWebRequest.ExecuteRequestRaw(request.QueryURL, request.Headers, request.SvcMethod);
    //       if (reportsData.ResponseStatusCode == (int)HttpStatusCode.OK ||
 			//				reportsData.ResponseStatusCode == (int)HttpStatusCode.NoContent) //NotificationAPI is returning NoContent if no data found
 			//		{
@@ -109,7 +113,43 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
     //  return request;
     //}
 
+    protected void MapMandatoryResponseProperties(DataGrabberResponse response, IReadOnlyDictionary<string, string> parsedData, MandatoryReportData mandatoryReportData)
+    {
+      if (parsedData.ContainsKey("ProjectName") && parsedData["ProjectName"] != null)
+      {
+        mandatoryReportData.ProjectName = JsonConvert.DeserializeObject<ProjectV6DescriptorsSingleResult>(parsedData["ProjectName"]);
+      }
+
+      if (parsedData.ContainsKey("ProjectExtents") && parsedData["ProjectExtents"] != null)
+      {
+        mandatoryReportData.ProjectExtents =
+          JsonConvert.DeserializeObject<ProjectStatisticsResult>(parsedData["ProjectExtents"]);
+      }
+
+      mandatoryReportData.Filters = new FilterListData { filterDescriptors = new List<FilterDescriptor>() };
+
+      if (parsedData.ContainsKey("Filter") && parsedData["Filter"] != null)
+      {
+        var filterDescriptor = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(parsedData["Filter"]);
+        if (filterDescriptor?.FilterDescriptor?.FilterJson != null)
+        {
+          var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
+          if (filterDetails != null)
+          {
+            mandatoryReportData.ReportFilter = filterDetails;
+            mandatoryReportData.Filters.filterDescriptors.Add(filterDescriptor.FilterDescriptor);
+          }
+        }
+      }
+
+      if (parsedData.ContainsKey("ImportedFiles") && parsedData["ImportedFiles"] != null)
+      {
+        mandatoryReportData.ImportedFiles = JsonConvert.DeserializeObject<ImportedFileDescriptorListResult>(parsedData["ImportedFiles"]);
+      }
+    }
+
     #region private methods
+
     ///// <summary>
     ///// check if request is valid
     ///// </summary>
@@ -138,9 +178,16 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 
     protected async Task<string> GetData(DataGrabberRequest request)
     {
-      var response = await _gracefulClient.ExecuteRequestSimple(request.QueryURL, request.CustomHeaders, new HttpMethod(request.SvcMethod));
+      var response = await _gracefulClient.ExecuteRequestRaw(request.QueryURL, request.CustomHeaders, request.SvcMethod);
 
+      var code = response.StatusCode;
       var result = response.Content.ReadAsStringAsync().Result;
+      if (code != HttpStatusCode.OK)
+      {
+        _log.LogError($"{nameof(GenerateReportsData)}: Invalid response code {code} and result {result} for reportRoute {request.QueryURL}");
+        return string.Empty;
+      }
+
       return !string.IsNullOrEmpty(result)
         ? result
         : string.Empty;

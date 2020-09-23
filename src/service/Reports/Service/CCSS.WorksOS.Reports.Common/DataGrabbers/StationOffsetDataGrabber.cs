@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -20,7 +21,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 {
   public class StationOffsetDataGrabber : GenericDataGrabber, IDataGrabber
     {
-      const string keyStationOffset = "StationOffset";
+      const string KEY_STATION_OFFSET = "StationOffset";
 
       public StationOffsetDataGrabber(ILogger logger, IServiceExceptionHandler serviceExceptionHandler, IWebRequest gracefulClient,
         GenericComposerRequest composerRequest)
@@ -55,8 +56,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
           {
             CustomHeaders = _composerRequest.CustomHeaders,
             QueryURL = report.QueryURL,
-            SvcMethod = report.SvcMethod,
-            
+            SvcMethod = new HttpMethod(report.SvcMethod)
           };
 
           var strResponse = !string.IsNullOrEmpty(report.QueryURL)
@@ -74,7 +74,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
       }
       catch (Exception ex)
       {
-        _log.LogError(ex, $"{nameof(StationOffsetDataGrabber)}.{nameof(GenerateReportsData)}: ", ex);
+        _log.LogError(ex, $"{nameof(StationOffsetDataGrabber)}.{nameof(GenerateReportsData)}: ");
         response.Message = "Internal Server Error";
         response.DataGrabberStatus = (int)HttpStatusCode.InternalServerError;
       }
@@ -87,9 +87,9 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
     /// </summary>
     private void MapResponseProperties(DataGrabberResponse response, IReadOnlyDictionary<string, string> parsedData)
     {
-      if (parsedData.ContainsKey(keyStationOffset) && parsedData[keyStationOffset] != null)
+      if (parsedData.ContainsKey(KEY_STATION_OFFSET) && !string.IsNullOrEmpty(parsedData[KEY_STATION_OFFSET]))
       {
-        response.ReportData = JsonConvert.DeserializeObject<StationOffsetReportDataModel>(parsedData[keyStationOffset]);
+        response.ReportData = JsonConvert.DeserializeObject<StationOffsetReportDataModel>(parsedData[KEY_STATION_OFFSET]);
       }
       else
       {
@@ -98,47 +98,15 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
       }
 
       var stationOffsetReportData = (StationOffsetReportDataModel)response.ReportData;
-
-      if (parsedData.ContainsKey("ProjectName") && parsedData["ProjectName"] != null)
-      {
-        stationOffsetReportData.ProjectName = JsonConvert.DeserializeObject<ProjectV6DescriptorsSingleResult>(parsedData["ProjectName"]);
-      }
-
-      // ProjectExtents...
-      if (parsedData.ContainsKey("ProjectExtents") && parsedData["ProjectExtents"] != null)
-      {
-        stationOffsetReportData.ProjectExtents =
-          JsonConvert.DeserializeObject<ProjectStatisticsResult>(parsedData["ProjectExtents"]);
-      }
-
-      stationOffsetReportData.Filters = new FilterListData { filterDescriptors = new List<FilterDescriptor>() };
-
-      if (parsedData.ContainsKey("Filter") && parsedData["Filter"] != null)
-      {
-        var filterDescriptor = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(parsedData["Filter"]);
-        if (filterDescriptor?.FilterDescriptor?.FilterJson != null)
-        {
-          var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
-          if (filterDetails != null)
-          {
-            stationOffsetReportData.ReportFilter = filterDetails;
-            stationOffsetReportData.Filters.filterDescriptors.Add(filterDescriptor.FilterDescriptor);
-          }
-        }
-      }
-
-      if (parsedData.ContainsKey("ImportedFiles") && parsedData["ImportedFiles"] != null)
-      {
-        stationOffsetReportData.ImportedFiles = JsonConvert.DeserializeObject<ImportedFileDescriptorListResult>(parsedData["ImportedFiles"]);
-      }
-
+      MapMandatoryResponseProperties(response, parsedData, stationOffsetReportData);
+     
       // Map each report to the query string details for filters section.
       // And strip out just the queries necessary to provide report settings info later during generation.
       _composerRequest.ReportRequest.ReportRoutes?.ForEach(r =>
       {
         if (parsedData.ContainsKey(r.ReportRouteType) &&
                   parsedData[r.ReportRouteType] != null &&
-                  r.ReportRouteType == keyStationOffset)
+                  r.ReportRouteType == KEY_STATION_OFFSET)
         {
           var splitRequest = r.QueryURL.Split('?');
           if (splitRequest.Length > 1)
@@ -146,15 +114,12 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
         }
       });
 
-
-      if (!parsedData.ContainsKey(keyStationOffset) || parsedData[keyStationOffset] == null)
+      if (parsedData.ContainsKey(KEY_STATION_OFFSET) && !string.IsNullOrEmpty(parsedData[KEY_STATION_OFFSET]))
       {
-        return;
+        var tempDataModel = JsonConvert.DeserializeObject<JObject>(parsedData[KEY_STATION_OFFSET]);
+        var obj = tempDataModel["reportData"]["rows"];
+        stationOffsetReportData.Rows = obj.ToObject<StationOffsetReportRow[]>();
       }
-
-      var tempDataModel = JsonConvert.DeserializeObject<JObject>(parsedData[keyStationOffset]);
-      var obj = tempDataModel["reportData"]["rows"];
-      stationOffsetReportData.Rows = obj.ToObject<StationOffsetReportRow[]>();
     }
   }
 }

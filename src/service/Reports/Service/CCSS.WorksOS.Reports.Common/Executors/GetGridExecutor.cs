@@ -11,7 +11,7 @@ namespace CCSS.WorksOS.Reports.Common.Executors
   /// <summary>
   /// The executor which gets the project settings for the project
   /// </summary>
-  public class GetStationOffsetExecutor : RequestExecutorContainer
+  public class GetGridExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Processes the report request including: obtaining data, formatting the report and creating it in S3
@@ -44,6 +44,7 @@ namespace CCSS.WorksOS.Reports.Common.Executors
 
         var dataGrabber = DataGrabberHelper.CreateDataGrabber(_log, _serviceExceptionHandler, _gracefulClient, composerRequest);
         var dataGrabberResponse = dataGrabber.GetReportsData();
+
 
       }
       catch (Exception e)

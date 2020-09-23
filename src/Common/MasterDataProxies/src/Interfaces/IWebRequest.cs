@@ -20,7 +20,7 @@ namespace VSS.MasterData.Proxies.Interfaces
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false);
 
-    Task<HttpResponseMessage> ExecuteRequestSimple(string endpoint,
+    Task<HttpResponseMessage> ExecuteRequestRaw(string endpoint,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false);
   }

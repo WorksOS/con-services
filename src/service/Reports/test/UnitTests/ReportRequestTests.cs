@@ -12,7 +12,6 @@ namespace CCSS.WorksOS.Reports.UnitTests
   public class ReportRequestTests
   {
     // todoJeannie setup error codes
-    // todoJeannie more tests e.g. StationOffset and Grid
 
     [Theory]
     [InlineData("Unknown", "3D Summary Report", 9, "Report type unknown.")]
@@ -31,6 +30,7 @@ namespace CCSS.WorksOS.Reports.UnitTests
     public void ReportRequest_Summary_Success()
     {
       var reportRoutes = LoadMandatoryReportRoutes();
+      LoadOptionalSummaryReportRoutes(reportRoutes);
       var reportRequest = new ReportRequest(ReportType.Summary, "3D Summary Report", reportRoutes);
       reportRequest.Validate();
     }
@@ -39,25 +39,39 @@ namespace CCSS.WorksOS.Reports.UnitTests
     public void ReportRequest_Grid_Success()
     {
       var reportRoutes = LoadMandatoryReportRoutes();
+      LoadGridReportRoutes(reportRoutes);
       var reportRequest = new ReportRequest(ReportType.Grid, "Grid Report", reportRoutes);
       reportRequest.Validate();
     }
 
     [Fact]
-    public void ReportRequest_SummaryPlus_Success()
+    public void ReportRequest_StationOffset_Success()
     {
       var reportRoutes = LoadMandatoryReportRoutes();
-      LoadOptionalSummaryReportRoutes(reportRoutes);
-      var reportRequest = new ReportRequest(ReportType.Summary, "3D Summary Report", reportRoutes);
+      LoadStationOffsetReportRoutes(reportRoutes);
+      var reportRequest = new ReportRequest(ReportType.StationOffset, "Station Offset Report", reportRoutes);
       reportRequest.Validate();
+    }
+
+    [Fact]
+    public void ReportRequest_Summary_MissingAnyOptionalParam()
+    {
+      var reportRoutes = LoadMandatoryReportRoutes();
+      var reportRequest = new ReportRequest(ReportType.Summary, "3D Summary Report", reportRoutes);
+      
+      var ex = Assert.Throws<ServiceException>(() => reportRequest.Validate());
+      ex.Code.Should().Be(HttpStatusCode.BadRequest);
+      ex.GetResult.Code.Should().Be(9);
+      ex.GetResult.Message.Should().Be("At least 1 optional report parameter must be included for Summary report.");
     }
 
     [Theory]
     [InlineData("Filter", "https://woteva.com/projectSvc/1.4/project/c8ae5c33", "https://woteva.com/3dpSvc/2.0/reporttiles", "GET", 9, "MapUrl not supported for Filter.")]
     [InlineData("ProjectName", "httwoteva.com/projectSvc/1.4/project/c8ae5c33", "", "get",  9, "QueryUrl is not a valid url format for ProjectName.")]
-    public void ReportRequest_Summary_ParameterValidationFailure(string reportRouteType, string queryURL, string mapURL, string method, int errorCode, string errorMessage)
+    public void ReportRequest_Summary_InvalidParameterRoute(string reportRouteType, string queryURL, string mapURL, string method, int errorCode, string errorMessage)
     {
       var reportRoutes = LoadMandatoryReportRoutes();
+      LoadOptionalSummaryReportRoutes(reportRoutes);
 
       // replace if exist, otherwise add
       reportRoutes.Remove(reportRoutes.FirstOrDefault(rp => rp.ReportRouteType == reportRouteType));
@@ -70,21 +84,28 @@ namespace CCSS.WorksOS.Reports.UnitTests
       ex.GetResult.Message.Should().Be(errorMessage);
     }
 
-    [Theory]
-    [InlineData("Blah", "https://woteva.com/projectSvc/1.4/project/c8ae5c33", "", 9, "Report parameter not supported.")]
-    public void ReportRequest_StationOffset_ParameterValidationFailure(string reportRouteType, string queryURL, string mapURL, int errorCode, string errorMessage)
+    [Fact]
+    public void ReportRequest_Grid_MissingStationOffsetRoute()
     {
       var reportRoutes = LoadMandatoryReportRoutes();
-
-      // replace if exist, otherwise add
-      reportRoutes.Remove(reportRoutes.FirstOrDefault(rp => rp.ReportRouteType == reportRouteType));
-      reportRoutes.Add(new ReportRoute(reportRouteType, queryURL, mapURL));
 
       var reportRequest = new ReportRequest(ReportType.StationOffset, "Station Offset Report", reportRoutes);
       var ex = Assert.Throws<ServiceException>(() => reportRequest.Validate());
       ex.Code.Should().Be(HttpStatusCode.BadRequest);
-      ex.GetResult.Code.Should().Be(errorCode);
-      ex.GetResult.Message.Should().Be(errorMessage);
+      ex.GetResult.Code.Should().Be(9);
+      ex.GetResult.Message.Should().Be("Report parameter StationOffset must be included for StationOffset report.");
+    }
+
+    [Fact]
+    public void ReportRequest_StationOffset_MissingStationOffsetRoute()
+    {
+      var reportRoutes = LoadMandatoryReportRoutes();
+      
+      var reportRequest = new ReportRequest(ReportType.StationOffset, "Station Offset Report", reportRoutes);
+      var ex = Assert.Throws<ServiceException>(() => reportRequest.Validate());
+      ex.Code.Should().Be(HttpStatusCode.BadRequest);
+      ex.GetResult.Code.Should().Be(9);
+      ex.GetResult.Message.Should().Be("Report parameter StationOffset must be included for StationOffset report.");
     }
 
     private List<ReportRoute> LoadMandatoryReportRoutes()
@@ -117,6 +138,18 @@ namespace CCSS.WorksOS.Reports.UnitTests
       reportRoutes.Add(new ReportRoute("CMVDetail", 
         "https://woteva.com/3dpSvc/2.0/cmv/details?projectUid=c8ae5c33&filterUid=a824d675&timestamp=1537746842245",
         "https://woteva.com/3dpSvc/2.0/reporttiles/png?projectUid=c8ae5c33&filterUid=a824d675&width=1024&height=800&overlays=AllOverlays&mode=1&mapType=MAP"));
+    }
+
+    private void LoadStationOffsetReportRoutes(List<ReportRoute> reportRoutes)
+    {
+      reportRoutes.Add(new ReportRoute("StationOffset",
+        "https://woteva.com/3dpSvc/2.0/report/stationoffset?projectUid=19c1fca0&filterUid=12c45dbd&reportElevation=true&reportCmv=true&reportMdp=true&reportPassCount=true&reportTemperature=true&reportCutFill=true&cutFillDesignUid=false&crossSectionInterval=0.5&startStation=0.0&endStation=4&offsets[0]=1&offsets[1]=-1&offsets[2]=2"));
+    }
+
+    private void LoadGridReportRoutes(List<ReportRoute> reportRoutes)
+    {
+      reportRoutes.Add(new ReportRoute("Grid",
+        "https://woteva.com/3dpSvc/2.0/report/grid?projectUid=19c1fca0&filterUid=12c45dbd&reportElevation=true&reportCmv=true&reportMdp=true&reportPassCount=true&reportTemperature=true&reportCutFill=false&gridReportOption=Direction&startNorthing=0.0&startEasting=0.0&endNorthing=100&endEasting=100&azimuth=0"));
     }
   }
 }

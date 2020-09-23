@@ -1,160 +1,115 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Reflection;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using CCSS.WorksOS.Reports.Common.DataGrabbers;
 using CCSS.WorksOS.Reports.Common.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
-using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
-using Filter = VSS.MasterData.Repositories.DBModels.Filter;
-using FilterDescriptor = Microsoft.AspNetCore.Mvc.Filters.FilterDescriptor;
 
-namespace VSS.Reports.Core.DataGrabbers
+namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 {
-    public class GridDataGrabber : GenericDataGrabber, IDataGrabber
-    {
-    const string keyGrid = "Grid";
+  public class GridDataGrabber : GenericDataGrabber, IDataGrabber
+  {
+    const string KEY_GRID = "Grid";
 
-    public GridDataGrabber(ILogger logger, IServiceExceptionHandler serviceExceptionHandler, IWebRequest gracefulClient, 
+    public GridDataGrabber(ILogger logger, IServiceExceptionHandler serviceExceptionHandler, IWebRequest gracefulClient,
       GenericComposerRequest composerRequest)
       : base(logger, serviceExceptionHandler, gracefulClient, composerRequest)
-    { }
+    {
+    }
 
     public DataGrabberResponse GetReportsData()
     {
-      throw new NotImplementedException();
+      var consolidatedResponse = new DataGrabberResponse();
+
+      var sw = new Stopwatch();
+      sw.Start();
+
+      //--> Get the report data for each endpoint
+      var response = GenerateReportsData();
+
+      //-->TODO: Validate on response and create consolidated Response
+      if (response.DataGrabberStatus == (int) HttpStatusCode.OK && response.ReportData != null)
+        consolidatedResponse = response;
+      else if (response.DataGrabberStatus != (int) HttpStatusCode.NotFound)
+        consolidatedResponse = response;
+
+      _log.LogInformation($"{nameof(GridDataGrabber)}.{nameof(GetReportsData)} Time Elapsed is {Math.Round(sw.Elapsed.TotalSeconds, 2)}.");
+      return consolidatedResponse;
     }
 
-    //public DataGrabberResponse GetReportsData(GenericComposerRequest composerRequest)
-    //{
-    //  string classMethod = $"{this.GetType().Name}.{MethodBase.GetCurrentMethod().Name}"; ;
-    //  DataGrabberResponse consolidatedResponse = new DataGrabberResponse();
+    public override DataGrabberResponse GenerateReportsData()
+    {
+      var response = new GridDataGrabberResponse();
 
-    //  Stopwatch sw = new Stopwatch();
-    //  sw.Start();
+      try
+      {
+        var parsedData = new Dictionary<string, string>();
 
-    //  //--> Creating Grabber request object
-    //  var request = CloneRequestObject(composerRequest);
+        Parallel.ForEach(_composerRequest.ReportRequest.ReportRoutes, report =>
+        {
+          var reportRequest = new DataGrabberRequest {CustomHeaders = _composerRequest.CustomHeaders, QueryURL = report.QueryURL, SvcMethod = new HttpMethod(report.SvcMethod)};
 
-    //  //--> Get the report data for each endpoint
-    //  var response = GenerateReportsData(request);
+          var strResponse = GetData(reportRequest);
+          parsedData.Add(report.ReportRouteType, strResponse?.Result);
+        });
 
-    //  //-->TODO: Validate on response and create consolidated Response
-    //  if (response.DataGrabberStatus == (int)HttpStatusCode.OK && response.ReportData != null)
-    //    consolidatedResponse = response;
-    //  else if (response.DataGrabberStatus != (int)HttpStatusCode.NotFound)
-    //    consolidatedResponse = response;
+        response.DataGrabberStatus = (int) HttpStatusCode.OK;
+        MapResponseProperties(response, parsedData);
+      }
+      catch (Exception ex)
+      {
+        _log.LogError(ex, $"{nameof(GridDataGrabber)}.{nameof(GenerateReportsData)}: ");
+        response.Message = "Internal Server Error";
+        response.DataGrabberStatus = (int) HttpStatusCode.InternalServerError;
+      }
 
-    //  LogService.Info(requestContext, classMethod, string.Format("DataGrabber Final StatusCode: {0} for RepInstID: {1}  IsScheduledReport: {2} TotalTime: {3}",
-    //    consolidatedResponse.DataGrabberStatus,
-    //    composerRequest.ExpReportUID,
-    //    (composerRequest.FileSaveLocation == Common.Helper.Enums.FileSaveLocation.SCHEDUELEDREPORTS),
-    //    Math.Round(sw.Elapsed.TotalSeconds, 2)));
+      return response;
+    }
 
-    //  return consolidatedResponse;
-    //}
+    /// <summary>
+    /// Map response data into the report model object.
+    /// </summary>
+    private void MapResponseProperties(DataGrabberResponse response, IReadOnlyDictionary<string, string> parsedData)
+    {
+      // Data model and filters...
+      response.ReportData = new GridReportDataModel {Filters = new FilterListData {filterDescriptors = new List<FilterDescriptor>()}};
 
-    //public override DataGrabberResponse GenerateReportsData(DataGrabberRequest request)
-    //{
-    //  GridDataGrabberResponse response = new GridDataGrabberResponse();
+      var gridReportData = (GridReportDataModel) response.ReportData;
 
-    //  try
-    //  {
-    //    Dictionary<string, string> parsedData = new Dictionary<string, string>();
+      MapMandatoryResponseProperties(response, parsedData, gridReportData);
 
-    //    Parallel.ForEach(
-    //    request.ReportParameters, report =>
-    //    {
+      //Map each report to the query string details for filters section
+      _composerRequest.ReportRequest.ReportRoutes?.ForEach((r =>
+      {
+        if (parsedData.ContainsKey(r.ReportRouteType) && 
+            parsedData[r.ReportRouteType] != null && 
+            r.ReportRouteType == KEY_GRID
+            && gridReportData.ReportUrlQueryCollection == null)
+        {
+          var splitRequest = r.QueryURL.Split('?');
+          if (splitRequest.Count() > 1)
+          {
+            gridReportData.ReportUrlQueryCollection = HttpUtility.ParseQueryString(splitRequest[1], Encoding.UTF8);
+          }
+        }
+      }));
 
-    //      ServiceClientResponseMsg reportsData = null;
-    //      DataGrabberRequest reportRequest = new DataGrabberRequest()
-    //      {
-    //        QueryURL = report.QueryURL,
-    //        SvcMethod = report.SvcMethod,
-    //        AccessToken = request.AccessToken,
-    //        Headers = request.Headers
-    //      };
-    //      string strResponse = GetData(reportRequest, out reportsData);
-    //      parsedData.Add(report.ReportColumn, strResponse);
-    //    });
-
-    //    response.DataGrabberStatus = (int)HttpStatusCode.OK;
-
-    //    // Data model and filters...
-    //    response.ReportData = new GridReportDataModel
-    //    {
-    //      Filters = new FilterListData { FilterDescriptors = new List<FilterDescriptor>() }
-    //    };
-
-    //    var gridReportData = (GridReportDataModel) response.ReportData;
-
-    //    // ProjectName...
-    //    if (parsedData.ContainsKey("ProjectName") && parsedData["ProjectName"] != null)
-    //      gridReportData.ProjectName = JsonConvert.DeserializeObject<ProjectV6DescriptorsSingleResult>(parsedData["ProjectName"]);
-
-    //    // ProjectExtents...
-    //    if (parsedData.ContainsKey("ProjectExtents") && parsedData["ProjectExtents"] != null)
-    //      gridReportData.ProjectExtents = JsonConvert.DeserializeObject<ProjectStatisticsResult>(parsedData["ProjectExtents"]);
-
-    //    // Filter details...
-    //    if (parsedData.ContainsKey("Filter") && parsedData["Filter"] != null)
-    //    {
-    //      var filterDescriptor = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(parsedData["Filter"]);
-    //      if (filterDescriptor?.FilterDescriptor?.FilterJson != null)
-    //      {
-    //        var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
-    //        if (filterDetails != null)
-    //        {
-    //          gridReportData.ReportFilter = filterDetails;
-    //          gridReportData.Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
-    //        }
-    //      }
-    //    }
-
-    //    // ImportedFiles and DesignData...
-    //    if (parsedData.ContainsKey("ImportedFiles") && parsedData["ImportedFiles"] != null)
-    //      gridReportData.ImportedFiles = JsonConvert.DeserializeObject<ImportedFileDescriptorListResult>(parsedData["ImportedFiles"]);
-
-    //    //Map each report to the query string details for filters section
-    //    request.ReportParameters?.ForEach((r =>
-    //    {
-    //      if (parsedData.ContainsKey(r.ReportColumn) && parsedData[r.ReportColumn] != null && r.ReportColumn == keyGrid
-    //      && gridReportData.ReportUrlQueryCollection == null)
-    //      {
-    //        string[] splitRequest = r.QueryURL.Split('?');
-    //        if (splitRequest.Count() > 1)
-    //        {
-    //          gridReportData.ReportUrlQueryCollection = HttpUtility.ParseQueryString(splitRequest[1], Encoding.UTF8);
-    //        }
-    //      }
-    //    }));
-
-    //    if (parsedData.ContainsKey(keyGrid) && parsedData[keyGrid] != null)
-    //    {
-    //      var tempDataModel = JsonConvert.DeserializeObject<JObject>(parsedData[keyGrid]);
-    //      var obj = tempDataModel["reportData"]["rows"];
-    //      gridReportData.Rows = obj.ToObject<GridReportRow[]>();
-    //    }
-    //  }
-    //  catch (Exception ex)
-    //  {
-    //    LogService.Error(requestContext, "SummaryDataAPIDataGrabber.GenerateReportsData", ex);
-    //    response.Message = "Internal Server Error";
-    //    response.DataGrabberStatus = (int)HttpStatusCode.InternalServerError;
-    //  }
-    //  return response;
-    //}
+      if (parsedData.ContainsKey(KEY_GRID) && !string.IsNullOrEmpty(parsedData[KEY_GRID]))
+      {
+        var tempDataModel = JsonConvert.DeserializeObject<JObject>(parsedData[KEY_GRID]);
+        var obj = tempDataModel["reportData"]["rows"];
+        gridReportData.Rows = obj.ToObject<GridReportRow[]>();
+      }
+    }
   }
 }

@@ -299,7 +299,7 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Executes a simple request, returning raw response
     /// </summary>
-    public async Task<HttpResponseMessage> ExecuteRequestSimple(string endpoint,
+    public async Task<HttpResponseMessage> ExecuteRequestRaw(string endpoint,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
     {
@@ -307,7 +307,7 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Get;
 
-      _log.LogDebug($"{nameof(ExecuteRequestSimple)} ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
+      _log.LogDebug($"{nameof(ExecuteRequestRaw)} ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
       
       HttpResponseMessage result = null;
       var policyResult = await Policy
