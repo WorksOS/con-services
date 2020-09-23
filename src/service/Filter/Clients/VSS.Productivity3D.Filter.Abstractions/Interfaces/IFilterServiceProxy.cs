@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -14,7 +15,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Interfaces
 
     Task<FilterDescriptorSingleResult> CreateFilter(string projectUid, FilterRequest request, IHeaderDictionary customHeaders = null);
 
-    Task<List<FilterDescriptor>> GetFilters(string projectUid, IHeaderDictionary customHeaders = null);
+    Task<ImmutableList<FilterDescriptor>> GetFilters(string projectUid, IHeaderDictionary customHeaders = null);
 
     void ClearCacheListItem(string projectUid, string userId = null);
   }

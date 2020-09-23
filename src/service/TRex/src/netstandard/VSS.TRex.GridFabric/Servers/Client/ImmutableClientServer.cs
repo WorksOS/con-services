@@ -78,10 +78,10 @@ namespace VSS.TRex.GridFabric.Servers.Client
             JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB),
             JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB),
 
-            UserAttributes = new Dictionary<string, object>()
-                        {
-                            { "TRexNodeId", TRexNodeID.ToString() }
-                        },
+            UserAttributes = new Dictionary<string, object>
+            {
+                { "TRexNodeId", TRexNodeID.ToString() }
+            },
 
             Logger = new TRexIgniteLogger(DIContext.Obtain<IConfigurationStore>(), Logger.CreateLogger("ImmutableClientServer")),
 

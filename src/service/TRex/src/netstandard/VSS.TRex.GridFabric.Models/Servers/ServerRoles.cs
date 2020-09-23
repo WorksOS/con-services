@@ -85,5 +85,15 @@
     /// the intention that those changes are projected to the immutable grid
     /// </summary>
     public const string DATA_MUTATION_ROLE = "DataMutator";
+
+    /// <summary>
+    /// The server wants to receive notifications regarding changes to site models
+    /// </summary>
+    public const string RECEIVES_SITEMODEL_CHANGE_EVENTS = "Receives-SiteModelAttributesChangedEvents";
+
+    /// <summary>
+    /// The server wants to receive notifications regarding changes to site models
+    /// </summary>
+    public const string RECEIVES_DESIGN_CHANGE_EVENTS = "Receives-DesignChangeEvents";
   }
 }

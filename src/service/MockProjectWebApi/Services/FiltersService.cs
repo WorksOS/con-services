@@ -1,134 +1,126 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using MockProjectWebApi.Utils;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Services
 {
   public class FiltersService : IFiltersService
   {
-    public Dictionary<string, FilterListData> FilterData;
+    public Dictionary<string, FilterDescriptorListResult> FilterData;
 
     public FiltersService()
     {
       CreateTestData();
     }
 
-    public FilterData GetFilter(string projectUid, string filterUid)
+    public FilterDescriptorSingleResult GetFilter(string projectUid, string filterUid)
     {
       var filters = GetFilters(projectUid);
       var filter = filters
-        .filterDescriptors
+        .FilterDescriptors
         .SingleOrDefault(s => string.Equals(s.FilterUid, filterUid, StringComparison.CurrentCultureIgnoreCase));
 
       if (filter == null)
       {
-        return new FilterData
-        {
-          Code = 36,
-          Message =
-            "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user."
-        };
+        return new FilterDescriptorSingleResult(36, "GetFilter By filterUid. The requested filter does exist, or does not belong to the requesting customer; project or user.");
       }
-      return new FilterData { filterDescriptor = filter };
+      return new FilterDescriptorSingleResult(filter);
     }
 
-    public FilterListData GetFilters(string projectUid)
+    public FilterDescriptorListResult GetFilters(string projectUid)
     {
       if (FilterData.ContainsKey(projectUid))
       {
         return FilterData[projectUid];
       }
-      return new FilterListData { filterDescriptors = new List<FilterDescriptor>() };
+      return new FilterDescriptorListResult { FilterDescriptors = new List<FilterDescriptor>().ToImmutableList() };
     }
 
     private void CreateTestData()
     {
-      FilterData = new Dictionary<string, FilterListData>();
+      FilterData = new Dictionary<string, FilterDescriptorListResult>();
 
-      var filters = new FilterListData
+      var list = new List<FilterDescriptor>(goldenDataFilterDescriptors);
+      
+      list.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilter);
+      list.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeFirst);
+      list.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeLast);
+      list.Add(FilterDescriptors.GoldenDimensions.InvalidDateFilterElevationTypeFirst);
+      list.Add(FilterDescriptors.GoldenDimensions.InvalidDateFilterElevationTypeLast);
+      list.Add(FilterDescriptors.GoldenDimensions.NoDataFilterElevationTypeFirst);
+      list.Add(FilterDescriptors.GoldenDimensions.NoDataFilterElevationTypeLast);
+      list.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesBaseFilter20170305);
+      list.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesTopFilter20170621);
+      list.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeEarliest);
+      list.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeLatest);
+
+      var filters = new FilterDescriptorListResult
       {
-        filterDescriptors = goldenDataFilterDescriptors
+        FilterDescriptors = list.ToImmutableList()
       };
-
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilter);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeFirst);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.ProjectExtentsFilterElevationTypeLast);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.InvalidDateFilterElevationTypeFirst);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.InvalidDateFilterElevationTypeLast);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.NoDataFilterElevationTypeFirst);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.NoDataFilterElevationTypeLast);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesBaseFilter20170305);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.SummaryVolumesTopFilter20170621);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeEarliest);
-      filters.filterDescriptors.Add(FilterDescriptors.GoldenDimensions.VolumesFilterWithPassCountRangeLatest);
 
       FilterData.Add(ConstantsUtil.GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1, filters);
-
-      var filters2 = new FilterListData
+      var list2 = new List<FilterDescriptor>()
       {
-        filterDescriptors = new List<FilterDescriptor>
-        {
-          FilterDescriptors.Dimensions.DimensionsAsAtCustom,
-          FilterDescriptors.Dimensions.ElevationRangeAndPaletteNoDataFilter,
-          FilterDescriptors.Dimensions.DimensionsBoundaryFilterWithMachine,
-          FilterDescriptors.Dimensions.DimensionsFilterWithMachine,
-          FilterDescriptors.Dimensions.DimensionsBoundaryFilter,
-          FilterDescriptors.Dimensions.DimensionsBoundaryFilterAsAtToday,
-          FilterDescriptors.Dimensions.DimensionsBoundaryMdp,
-          FilterDescriptors.Dimensions.DimensionsBoundaryMdpPassCountRange,
-          FilterDescriptors.Dimensions.DimensionsBoundaryMdpAsAtToday,
-          FilterDescriptors.Dimensions.DimensionsBoundaryCmv,
-          FilterDescriptors.Dimensions.DimensionsBoundaryCmvPassCountRange,
-          FilterDescriptors.Dimensions.DimensionsBoundaryCmvAsAtToday,
-          FilterDescriptors.Dimensions.SummaryVolumesBaseFilter,
-          FilterDescriptors.Dimensions.SummaryVolumesTopFilter,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliest,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatest,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliestWithPassCountRange,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatestWithPassCountRange,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterToday,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterNoDates,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonToday,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonYesterday,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterProjectExtents,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterCustom20121101First,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterCustom20121101Last,
-          FilterDescriptors.Dimensions.SummaryVolumesFilterNull,
-          FilterDescriptors.Dimensions.SummaryVolumesTemperature,
-          FilterDescriptors.Dimensions.ReportDxfTile,
-          FilterDescriptors.Dimensions.DimensionsAlignmentFilter0to200,
-          FilterDescriptors.Dimensions.DimensionsAlignmentFilter100to200,
-          FilterDescriptors.Dimensions.DimensionsTemperatureRangeFilter,
-          FilterDescriptors.Dimensions.DimensionsTempRangeBoundaryFilter,
-          FilterDescriptors.Dimensions.DimensionsPassCountRangeFilter,
-          FilterDescriptors.Dimensions.DimensionsAutomaticsFilter,
-          FilterDescriptors.Dimensions.VolumesWithExplicitFilter1Nov,
-          FilterDescriptors.Dimensions.VolumesWithExplicitFilter1NovFirstPass
-        }
+        FilterDescriptors.Dimensions.DimensionsAsAtCustom,
+        FilterDescriptors.Dimensions.ElevationRangeAndPaletteNoDataFilter,
+        FilterDescriptors.Dimensions.DimensionsBoundaryFilterWithMachine,
+        FilterDescriptors.Dimensions.DimensionsFilterWithMachine,
+        FilterDescriptors.Dimensions.DimensionsBoundaryFilter,
+        FilterDescriptors.Dimensions.DimensionsBoundaryFilterAsAtToday,
+        FilterDescriptors.Dimensions.DimensionsBoundaryMdp,
+        FilterDescriptors.Dimensions.DimensionsBoundaryMdpPassCountRange,
+        FilterDescriptors.Dimensions.DimensionsBoundaryMdpAsAtToday,
+        FilterDescriptors.Dimensions.DimensionsBoundaryCmv,
+        FilterDescriptors.Dimensions.DimensionsBoundaryCmvPassCountRange,
+        FilterDescriptors.Dimensions.DimensionsBoundaryCmvAsAtToday,
+        FilterDescriptors.Dimensions.SummaryVolumesBaseFilter,
+        FilterDescriptors.Dimensions.SummaryVolumesTopFilter,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliest,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatest,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsEarliestWithPassCountRange,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterExtentsLatestWithPassCountRange,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterToday,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterNoDates,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonToday,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterNoLatLonYesterday,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterProjectExtents,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterCustom20121101First,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterCustom20121101Last,
+        FilterDescriptors.Dimensions.SummaryVolumesFilterNull,
+        FilterDescriptors.Dimensions.SummaryVolumesTemperature,
+        FilterDescriptors.Dimensions.ReportDxfTile,
+        FilterDescriptors.Dimensions.DimensionsAlignmentFilter0to200,
+        FilterDescriptors.Dimensions.DimensionsAlignmentFilter100to200,
+        FilterDescriptors.Dimensions.DimensionsTemperatureRangeFilter,
+        FilterDescriptors.Dimensions.DimensionsTempRangeBoundaryFilter,
+        FilterDescriptors.Dimensions.DimensionsPassCountRangeFilter,
+        FilterDescriptors.Dimensions.DimensionsAutomaticsFilter,
+        FilterDescriptors.Dimensions.VolumesWithExplicitFilter1Nov,
+        FilterDescriptors.Dimensions.VolumesWithExplicitFilter1NovFirstPass,
+        FilterDescriptors.Dimensions.DimensionsProjectExtents
       };
+      var filters2 = new FilterDescriptorListResult { FilterDescriptors = list2.ToImmutableList() };
 
       FilterData.Add(ConstantsUtil.DIMENSIONS_PROJECT_UID, filters2);
       FilterData.Add(ConstantsUtil.CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID, filters2);
 
-      var kettlewellDriveFilters = new FilterListData
+      var kettlewellDriveList = new List<FilterDescriptor> { FilterDescriptors.KettlewellDrive.MinElevationSingleCellPassMultiMode, FilterDescriptors.KettlewellDrive.MinElevationLastPassMode };
+      var kettlewellDriveFilters = new FilterDescriptorListResult
       {
-        filterDescriptors = new List<FilterDescriptor>
-        {
-          FilterDescriptors.KettlewellDrive.MinElevationSingleCellPassMultiMode,
-          FilterDescriptors.KettlewellDrive.MinElevationLastPassMode
-        }
+        FilterDescriptors = kettlewellDriveList.ToImmutableList()
       };
       FilterData.Add(ConstantsUtil.KETTLEWELL_DRIVE_PROJECT_UID, kettlewellDriveFilters);
 
-      var christchurchTestSiteFilters = new FilterListData
+      var christchurchTestSiteList = new List<FilterDescriptor> { FilterDescriptors.ChristchurchTestSite.NegativeStartStationFilter };
+      var christchurchTestSiteFilters = new FilterDescriptorListResult
       {
-        filterDescriptors = new List<FilterDescriptor>
-        {
-          FilterDescriptors.ChristchurchTestSite.NegativeStartStationFilter
-        }
+        FilterDescriptors = christchurchTestSiteList.ToImmutableList()
       };
 
       FilterData.Add(ConstantsUtil.CHRISTCHURCH_TEST_SITE_PROJECT_UID, christchurchTestSiteFilters);

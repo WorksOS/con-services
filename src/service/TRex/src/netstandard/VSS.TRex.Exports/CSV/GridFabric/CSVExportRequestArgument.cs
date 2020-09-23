@@ -108,9 +108,9 @@ namespace VSS.TRex.Exports.CSV.GridFabric
         UserPreferences.FromBinary(reader);
         var count = reader.ReadInt();
         MappedMachines = new List<CSVExportMappedMachine>(count);
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
-          MappedMachines.Add(new CSVExportMappedMachine()
+          MappedMachines.Add(new CSVExportMappedMachine
           {
             Uid = reader.ReadGuid() ?? Guid.Empty,
             InternalSiteModelMachineIndex = reader.ReadShort(),

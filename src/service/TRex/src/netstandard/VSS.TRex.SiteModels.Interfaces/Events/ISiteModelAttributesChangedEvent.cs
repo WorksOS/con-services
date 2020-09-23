@@ -4,6 +4,8 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
 {
   public interface ISiteModelAttributesChangedEvent
   {
+    Guid SourceNodeUid { get; }
+
     Guid SiteModelID { get; }
 
     bool ExistenceMapModified { get; }

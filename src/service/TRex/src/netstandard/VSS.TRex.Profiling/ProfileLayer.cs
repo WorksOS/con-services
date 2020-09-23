@@ -113,7 +113,6 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Creates a new defaulted profile layer with the given ProfileCell as owner
     /// </summary>
-    /// <param name="owner"></param>
     public ProfileLayer(ProfileCell owner)
     {
       Owner = owner;
@@ -159,7 +158,6 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Assigns the cell passes contained in a set of filtered pass values into this layer
     /// </summary>
-    /// <param name="cellPassValues"></param>
     public void Assign(FilteredMultiplePassInfo cellPassValues)
     {
       Clear();
@@ -198,7 +196,6 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Assigns the contents of another profile layer to this profile layer
     /// </summary>
-    /// <param name="source_"></param>
     public void Assign(IProfileLayer source_)
     {
       ProfileLayer source = (ProfileLayer)source_;
@@ -240,7 +237,6 @@ namespace VSS.TRex.Profiling
     /// the cell being analyzed. The pass itself is not physically added, but the index range of
     /// cells included in the layer is modified to take the newly added cell pass into account
     /// </summary>
-    /// <param name="passIndex"></param>
     public void AddPass(int passIndex)
     {
       if (StartCellPassIdx == -1)
@@ -252,7 +248,6 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Serializes content of the cell to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteInt(StartCellPassIdx);
@@ -305,7 +300,6 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Deserializes content of the cell from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       StartCellPassIdx = reader.ReadInt();

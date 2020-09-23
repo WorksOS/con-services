@@ -128,7 +128,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteDouble(Station);
@@ -145,7 +144,6 @@ namespace VSS.TRex.Reports.StationOffset.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       Station = reader.ReadDouble();

@@ -6,7 +6,7 @@
   <div class="row" id="coordSystemRow">
     <div class="coordSystemPanel col-lg-3">
       <div class="panel-heading">Add/Update</div>
-      <div class="panel-default">
+      <div class="panel-default-left">
         <div class="spacer"></div>
         <button class="browseButton" (click)="fileInput.click()">Browse</button>
         <input hidden type="file" accept=".dc,.cal" value="" (change)="addUpdateCoordSystem($event.target.files)" #fileInput />
@@ -16,7 +16,7 @@
 
     <div class="coordSystemPanel col-lg-9">
       <div class="panel-heading">Settings</div>
-      <div class="panel-default" [innerHTML]="coordSystemSettings" style="padding-left: 10px; padding-top: 10px; font-size: small"></div>
+      <div class="panel-default-right" [innerHTML]="coordSystemSettings"></div>
     </div>
   </div>
 </div>
