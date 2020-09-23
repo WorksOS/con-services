@@ -71,7 +71,7 @@ namespace VSS.MasterData.ProjectTests.FlowJS
   public class TestClientProviderFixture
   {
     public ServiceProvider ServiceProvider { get; }
-    public IRestClient RestClient { get; }
+    public IIntegrationTestRestClient RestClient { get; }
 
     public TestClientProviderFixture()
     {
@@ -88,7 +88,7 @@ namespace VSS.MasterData.ProjectTests.FlowJS
       ServiceProvider = ConfigureServices(mockIHttpClientFactory.Object)
         .BuildServiceProvider();
 
-      RestClient = ServiceProvider.GetService<IRestClient>();
+      RestClient = ServiceProvider.GetService<IIntegrationTestRestClient>();
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ namespace VSS.MasterData.ProjectTests.FlowJS
         .AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>()
         .AddSingleton<IHttpClientFactory>(mockIHttpClientFactory)
         .AddHttpClient()
-        .AddSingleton<IRestClient>(s => new RestClient(
+        .AddSingleton<IIntegrationTestRestClient>(s => new IntegrationTestRestClient(
           s.GetService<ILoggerFactory>(),
           s.GetService<IConfiguration>(),
           s.GetService<IHttpClientFactory>()));

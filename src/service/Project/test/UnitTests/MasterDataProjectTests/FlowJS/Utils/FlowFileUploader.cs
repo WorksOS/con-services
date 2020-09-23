@@ -20,10 +20,10 @@ namespace VSS.MasterData.ProjectTests.FlowJS.Utils
     private const string BOUNDARY_START = "-----";
     private const int CHUNK_SIZE = 1024 * 1024;
 
-    private readonly IRestClient _httpClient;
+    private readonly IIntegrationTestRestClient _httpClient;
     private readonly string _bearerToken;
 
-    public FlowFileUploader(IRestClient restClient)
+    public FlowFileUploader(IIntegrationTestRestClient restClient)
     {
       _httpClient = restClient;
       _bearerToken = Guid.NewGuid().ToString();

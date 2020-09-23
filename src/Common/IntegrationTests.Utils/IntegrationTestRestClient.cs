@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace CCSS.IntegrationTests.Utils
 {
-  public class IntegrationTestRestClient : IIntegrationTestRestClient, IDisposable
+  public class IntegrationTestRestClient : IIntegrationTestRestClient
   {
     private bool _disposed;
     private readonly ILogger _log;
@@ -54,33 +54,11 @@ namespace CCSS.IntegrationTests.Utils
       return _clientFactory.CreateClient().SendAsync(requestMessage);
     }
 
-    ~IntegrationTestRestClient()
+    public Task<HttpResponseMessage> SendAsync(HttpRequestMessage requestMessage)
     {
       _log.LogInformation($"[{requestMessage.Method.Method}] {requestMessage.RequestUri.AbsoluteUri}");
 
       return _clientFactory.CreateClient().SendAsync(requestMessage);
     }
-
-    ~RestClient()
-    {
-      Dispose(false);
-    }
-
-    #region IDisposable Members
-
-    protected virtual void Dispose(bool disposing)
-    {
-      if (_disposed)
-      {
-        return;
-      }
-
-      if (disposing)
-      { }
-
-      _disposed = true;
-    }
-
-    #endregion
   }
 }
