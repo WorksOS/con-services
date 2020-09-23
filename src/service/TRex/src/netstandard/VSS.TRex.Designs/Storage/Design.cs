@@ -223,7 +223,7 @@ namespace VSS.TRex.Designs.Storage
       {
         for (byte j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
-          if (patchCells[i, j].Equals(Common.Consts.NullHeight))
+          if (!patchCells[i, j].Equals(Common.Consts.NullHeight))
             mask[i, j] = true;
         }
       }
