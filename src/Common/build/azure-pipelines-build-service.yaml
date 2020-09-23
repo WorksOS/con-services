@@ -7,7 +7,7 @@ trigger:
     include:
       - 'src/Common/*'
 
-pool: fsm-merino-services
+pool: PDXA-CSD-EKS01
 
 variables:
   buildPlatform: 'Any CPU'
@@ -208,4 +208,28 @@ jobs:
       parameters:
         servicePath: '$(rootServiceFolder)/Megalodon'
         solution: 'CCSS.Megalodon.sln'
+        testFolder: 'test'
+
+  - job: BuildHealthzService
+    displayName: 'Build Healthz service'
+    timeoutInMinutes: 20
+    steps:
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Healthz'
+        solution: 'CCSS.WorksOS.Healthz.sln'
+        testFolder: 'test'
+        
+  - job: BuildReportsService
+    displayName: 'Build Reports service'
+    timeoutInMinutes: 20
+    steps:
+    - checkout: self
+      fetchDepth: 1
+    - template: templates/build-service.yaml
+      parameters:
+        servicePath: '$(rootServiceFolder)/Reports'
+        solution: 'CCSS.WorksOS.Reports.sln'
         testFolder: 'test'

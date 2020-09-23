@@ -1,8 +1,0 @@
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:jenkinsslave-core31
-
-COPY . /app
-
-WORKDIR /app
-
-VOLUME testresults
-

@@ -44,7 +44,7 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       Labels = labels;
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -109,56 +109,59 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      RequestResult = (DesignProfilerRequestResult) reader.ReadInt();
-
-      var vertexArrayCount = reader.ReadInt();
-      if (vertexArrayCount > 0)
+      if (version == 1)
       {
-        Vertices = new double[vertexArrayCount][][];
-        for (var index = 0; index < vertexArrayCount; index++)
-        {
-          // Read the vertices
-          var vertexCount = reader.ReadInt();
-          if (vertexCount > 0)
-          {
-            Vertices[index] = new double[vertexCount][];
+        RequestResult = (DesignProfilerRequestResult) reader.ReadInt();
 
-            for (var i = 0; i < vertexCount; i++)
+        var vertexArrayCount = reader.ReadInt();
+        if (vertexArrayCount > 0)
+        {
+          Vertices = new double[vertexArrayCount][][];
+          for (var index = 0; index < vertexArrayCount; index++)
+          {
+            // Read the vertices
+            var vertexCount = reader.ReadInt();
+            if (vertexCount > 0)
             {
-              Vertices[index][i] = new[] {reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble()};
+              Vertices[index] = new double[vertexCount][];
+
+              for (var i = 0; i < vertexCount; i++)
+              {
+                Vertices[index][i] = new[] {reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble()};
+              }
             }
           }
         }
-      }
 
-      // Read the arcs
-      var arcCount = reader.ReadInt();
-      if (arcCount > 0)
-      {
-        Arcs = new AlignmentGeometryResponseArc[arcCount];
-        for (var i = 0; i < arcCount; i++)
+        // Read the arcs
+        var arcCount = reader.ReadInt();
+        if (arcCount > 0)
         {
-          Arcs[i] = new AlignmentGeometryResponseArc
+          Arcs = new AlignmentGeometryResponseArc[arcCount];
+          for (var i = 0; i < arcCount; i++)
+          {
+            Arcs[i] = new AlignmentGeometryResponseArc
             (reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
-            reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
-            reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
-            reader.ReadBoolean());
+              reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
+              reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(),
+              reader.ReadBoolean());
+          }
         }
-      }
 
-      // Read the labels
-      var count = reader.ReadInt();
-      if (count > 0)
-      {
-        Labels = new AlignmentGeometryResponseLabel[count];
-        for (var i = 0; i < count; i++)
+        // Read the labels
+        var count = reader.ReadInt();
+        if (count > 0)
         {
-          Labels[i] = new AlignmentGeometryResponseLabel
-            (reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+          Labels = new AlignmentGeometryResponseLabel[count];
+          for (var i = 0; i < count; i++)
+          {
+            Labels[i] = new AlignmentGeometryResponseLabel
+              (reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+          }
         }
       }
     }

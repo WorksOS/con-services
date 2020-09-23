@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Productivity3D.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -12,7 +13,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
@@ -26,7 +27,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// End points for getting Raptor data e.g. for tile service to get alignment points
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
-  public class CompactionRaptorController : BaseTileController<CompactionRaptorController>
+  public class CompactionRaptorController : BaseController<CompactionRaptorController>
   {
     /// <summary>
     /// Default constructor.

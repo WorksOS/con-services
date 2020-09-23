@@ -14,7 +14,6 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// Constructs a set of requester intermediaries that have various aspects of surveyed surfaces, filters and caches pre-calculated
     /// ready to be used to create per-Task requestor delegates
     /// </summary>
-    /// <returns></returns>
     (GridDataType GridDataType,
       ICombinedFilter Filter,
       ISurveyedSurfaces FilteredSurveyedSurfaces,
@@ -27,7 +26,6 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// <summary>
     /// Constructs the set of requestors, one per filter, required to query the data stacks
     /// </summary>
-    /// <returns></returns>
     ISubGridRequestor[] ConstructRequestors(
       ISubGridsRequestArgument subGridsRequestArgument, 
       ISiteModel siteModel,

@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
-using System.Threading.Tasks;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
@@ -18,11 +16,11 @@ using VSS.TRex.Types;
 namespace VSS.TRex.Analytics.Foundation
 {
   /// <summary>
-  /// The base class the implements the analytics computation framework 
+  /// The base class the implements the analytics computation framework
   /// </summary>
   public class AnalyticsComputor
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<AnalyticsComputor>();
 
     /// <summary>
     /// The Aggregator to use for calculation of analytics
@@ -30,7 +28,7 @@ namespace VSS.TRex.Analytics.Foundation
     public ISubGridRequestsAggregator Aggregator { get; set; }
 
     /// <summary>
-    /// The Sitemodel from which the volume is being calculated
+    /// The site model from which the volume is being calculated
     /// </summary>
     public ISiteModel SiteModel { get; set; }
 
@@ -66,10 +64,9 @@ namespace VSS.TRex.Analytics.Foundation
     /// <summary>
     /// Primary method called to begin analytics computation
     /// </summary>
-    /// <returns></returns>
-    public async Task<bool> ComputeAnalytics(BaseAnalyticsResponse response)
+    public bool ComputeAnalytics(BaseAnalyticsResponse response)
     {
-      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
+      using var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
         RequestDescriptor,
         SiteModel.ID,
         RequestedGridDataType,
@@ -83,21 +80,20 @@ namespace VSS.TRex.Analytics.Foundation
         CutFillDesign?.DesignID != Guid.Empty,
         BoundingIntegerExtent2D.Inverted(),
         LiftParams
-      ))
+      );
+
+      // Assign the provided aggregator into the pipelined sub grid task
+      ((IAggregatedPipelinedSubGridTask) processor.Task).Aggregator = Aggregator;
+
+      if (!processor.Build())
       {
-        // Assign the provided aggregator into the pipelined sub grid task
-        ((IAggregatedPipelinedSubGridTask) processor.Task).Aggregator = Aggregator;
-
-        if (!await processor.BuildAsync())
-        {
-          Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
-          return false;
-        }
-
-        processor.Process();
-
-        return response.ResultStatus == RequestErrorStatus.OK;
+        Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+        return false;
       }
+
+      processor.Process();
+
+      return response.ResultStatus == RequestErrorStatus.OK;
     }
   }
 }

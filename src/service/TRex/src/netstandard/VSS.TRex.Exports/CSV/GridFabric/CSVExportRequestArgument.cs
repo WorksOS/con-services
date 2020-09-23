@@ -68,10 +68,9 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -94,31 +93,34 @@ namespace VSS.TRex.Exports.CSV.GridFabric
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      FileName = reader.ReadString();
-      CoordType = (CoordType)reader.ReadInt();
-      OutputType = (OutputTypes)reader.ReadInt();
-      UserPreferences = new CSVExportUserPreferences();
-      UserPreferences.FromBinary(reader);
-      var count = reader.ReadInt();
-      MappedMachines = new List<CSVExportMappedMachine>(count);
-      for(int i = 0; i < count; i++)
+      if (version == 1)
       {
-        MappedMachines.Add(new CSVExportMappedMachine()
+        FileName = reader.ReadString();
+        CoordType = (CoordType) reader.ReadInt();
+        OutputType = (OutputTypes) reader.ReadInt();
+        UserPreferences = new CSVExportUserPreferences();
+        UserPreferences.FromBinary(reader);
+        var count = reader.ReadInt();
+        MappedMachines = new List<CSVExportMappedMachine>(count);
+        for (var i = 0; i < count; i++)
         {
-          Uid = reader.ReadGuid() ?? Guid.Empty,
-          InternalSiteModelMachineIndex = reader.ReadShort(),
-          Name = reader.ReadString()
-        });
+          MappedMachines.Add(new CSVExportMappedMachine
+          {
+            Uid = reader.ReadGuid() ?? Guid.Empty,
+            InternalSiteModelMachineIndex = reader.ReadShort(),
+            Name = reader.ReadString()
+          });
+        }
+
+        RestrictOutputSize = reader.ReadBoolean();
+        RawDataAsDBase = reader.ReadBoolean();
       }
-      RestrictOutputSize = reader.ReadBoolean();
-      RawDataAsDBase = reader.ReadBoolean();
     }
   }
 }

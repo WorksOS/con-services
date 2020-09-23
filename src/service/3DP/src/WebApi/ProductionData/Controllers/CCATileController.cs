@@ -17,9 +17,11 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -64,6 +66,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     protected IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
+    private readonly IFileImportProxy FileImportProxy;
+
+    private string UserId => User.Identity.Name;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
@@ -74,7 +80,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy, IFileImportProxy fileImportProxy)
     {
       this.logger = logger;
       log = logger.CreateLogger<CCATileController>();
@@ -83,6 +89,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
       ConfigStore = configStore;
       TRexCompactionDataProxy = trexCompactionDataProxy;
+      FileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -181,7 +188,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #if RAPTOR
           raptorClient, 
 #endif
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+          userId: UserId, fileImportProxy: FileImportProxy)
                          .ProcessAsync(request) as TileResult;
 
       if (tileResult?.TileData == null)

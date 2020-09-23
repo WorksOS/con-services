@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using VSS.TRex.ExistenceMaps.Interfaces;
-using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using System;
 using VSS.TRex.DI;
@@ -45,7 +44,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         {
           using (ms)
           {
-            var map = new SubGridTreeSubGridExistenceBitMask();// SubGridTreeBitMask();
+            var map = new SubGridTreeSubGridExistenceBitMask();
             map.FromStream(ms);
             return map;
           }

@@ -12,7 +12,6 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
@@ -65,7 +64,7 @@ namespace VSS.TRex.Server.Application
     {
       return key switch
       {
-        PipelineProcessorTaskStyle.AggregatedPipelined => (ITRexTask) new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.AggregatedPipelined => new AggregatedPipelinedSubGridTask(),
         PipelineProcessorTaskStyle.PVMRendering => null, // Not responsible for rendering, this is in TileRendering service
         PipelineProcessorTaskStyle.PatchExport => new PatchTask(),
         PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
@@ -83,8 +82,7 @@ namespace VSS.TRex.Server.Application
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -106,7 +104,7 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
         // Register the listener for site model attribute change notifications
-        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
 
         // Register the factory for the CellProfileAnalyzer for detailed call pass/lift cell profiles
         .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<ProfileCell>>>(
@@ -139,7 +137,7 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
@@ -170,10 +168,11 @@ namespace VSS.TRex.Server.Application
     private static void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
-      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+      //DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
 
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
@@ -192,7 +191,15 @@ namespace VSS.TRex.Server.Application
         Log.LogInformation("Creating service");
         Log.LogDebug("Creating service");
 
-        var server = new ApplicationServiceServer(new[] {ApplicationServiceServer.DEFAULT_ROLE, ServerRoles.ASNODE_PROFILER, ServerRoles.PATCH_REQUEST_ROLE, ServerRoles.ANALYTICS_NODE,});
+        var server = new ApplicationServiceServer(new[]
+        {
+          ApplicationServiceServer.DEFAULT_ROLE,
+          ServerRoles.ASNODE_PROFILER,
+          ServerRoles.PATCH_REQUEST_ROLE,
+          ServerRoles.ANALYTICS_NODE,
+          ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS
+        });
+
 
         var cancelTokenSource = new CancellationTokenSource();
         AppDomain.CurrentDomain.ProcessExit += (s, e) =>

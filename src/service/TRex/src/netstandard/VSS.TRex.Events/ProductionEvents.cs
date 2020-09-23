@@ -585,26 +585,24 @@ namespace VSS.TRex.Events
         throw new TRexException($"ProductionEvent mutable stream length is too short. Expected greater than: {MinStreamLength} retrieved {reader.BaseStream.Length}.");
       }
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      var eventType = reader.ReadInt32();
-      if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
+      if (version == 1)
       {
-        throw new TRexException("ProductionEvent eventType is not recognized. Invalid stream.");
-      }
-
-      int count = reader.ReadInt32();
-      Events.Clear();
-      Events.Capacity = count;
-
-      for (int i = 0; i < count; i++)
-      {
-        Events.Add(new Event
+        var eventType = reader.ReadInt32();
+        if (!Enum.IsDefined(typeof(ProductionEventType), eventType))
         {
-          Date = DateTime.FromBinary(reader.ReadInt64()),
-          Flags = reader.ReadByte(),
-          State = SerialiseStateIn(reader)
-        });
+          throw new TRexException("ProductionEvent eventType is not recognized. Invalid stream.");
+        }
+
+        int count = reader.ReadInt32();
+        Events.Clear();
+        Events.Capacity = count;
+
+        for (int i = 0; i < count; i++)
+        {
+          Events.Add(new Event {Date = DateTime.FromBinary(reader.ReadInt64()), Flags = reader.ReadByte(), State = SerialiseStateIn(reader)});
+        }
       }
     }
 

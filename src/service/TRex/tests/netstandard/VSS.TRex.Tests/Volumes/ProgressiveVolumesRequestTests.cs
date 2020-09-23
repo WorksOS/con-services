@@ -202,14 +202,14 @@ namespace VSS.TRex.Tests.Volumes
 
     private void AddSimpleNEEToLLHConversionMock()
     {
-      var result = new CoreX.Models.XYZ[2]
+      var result = new CoreXModels.XYZ[2]
       {
-        new CoreX.Models.XYZ(0, 0, 1),
-        new CoreX.Models.XYZ(1, 1, 0)
+        new CoreXModels.XYZ(0, 0, 1),
+        new CoreXModels.XYZ(1, 1, 0)
       };
 
-      var csMock = new Mock<IConvertCoordinates>();
-      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>()))
+      var csMock = new Mock<ICoreXWrapper>();
+      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>()))
         .Returns(result);
 
       DIBuilder.Continue()

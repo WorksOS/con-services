@@ -35,7 +35,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
 {
   class Program
   {
-    static private IStorageProxyCacheCommit CacheFactory(RebuildSiteModelCacheType cacheType)
+    private static IStorageProxyCacheCommit CacheFactory(RebuildSiteModelCacheType cacheType)
     {
       return cacheType switch
       {
@@ -59,7 +59,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
         .Add(x => x.AddSingleton<Func<RebuildSiteModelCacheType, IStorageProxyCacheCommit>>(CacheFactory))
 
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
@@ -99,12 +99,11 @@ namespace VSS.TRex.Server.ProjectRebuilder
       }
     }
 
-    private static async void DoServiceInitialisation(ILogger log, CancellationTokenSource cancelTokenSource)
+    private static async Task DoServiceInitialisation(ILogger log, CancellationTokenSource cancelTokenSource)
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelRebuilderHeartbeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
 
       // Wait until the grid is active
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
@@ -142,6 +141,9 @@ namespace VSS.TRex.Server.ProjectRebuilder
         await Task.Delay(1000, cancelTokenSource.Token);
       }
 
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelRebuilderHeartbeatLogger());
+
       // Tell the rebuilder manager to find any active rebuilders and start them off from where they left off
       await DIContext.Obtain<ISiteModelRebuilderManager>().BeginOperations();
     }
@@ -172,7 +174,7 @@ namespace VSS.TRex.Server.ProjectRebuilder
 
         AppDomain.CurrentDomain.UnhandledException += TRexAppDomainUnhandledExceptionHandler.Handler;
 
-        DoServiceInitialisation(log, cancelTokenSource);
+        await DoServiceInitialisation(log, cancelTokenSource);
 
         await Task.Delay(-1, cancelTokenSource.Token);
         return 0;

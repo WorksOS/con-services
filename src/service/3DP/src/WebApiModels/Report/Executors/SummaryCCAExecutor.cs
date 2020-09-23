@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -19,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
   /// <summary>
   /// The executor which passes the summary CCA request to Raptor
   /// </summary>
-  public class SummaryCCAExecutor : RequestExecutorContainer
+  public class SummaryCCAExecutor : TbcExecutorHelper
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
@@ -41,7 +42,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA") ?? false)
         {
 #endif
-          var ccaSummaryRequest = new CCASummaryRequest(
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+
+        var ccaSummaryRequest = new CCASummaryRequest(
             request.ProjectUid.Value, 
             request.Filter,
             AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),

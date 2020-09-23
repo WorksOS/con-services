@@ -52,7 +52,9 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_PASSCOUNT") ?? false)
         {
 #endif
-        await PairUpAssetIdentifiers(request.ProjectId, request.ProjectUid, request.Filter);
+        await PairUpAssetIdentifiers(request.ProjectUid.Value, request.Filter);
+        await PairUpImportedFileIdentifiers(request.ProjectUid.Value, filter1: request.Filter);
+
         var pcSummaryRequest = new PassCountSummaryRequest(
             request.ProjectUid.Value,
             request.Filter,

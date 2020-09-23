@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.TRex.CoordinateSystems;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Factories;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.IO;
 using VSS.TRex.IO.Helpers;
@@ -16,11 +20,6 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using Consts = VSS.TRex.Common.Consts;
-using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces.Interfaces;
-using VSS.AWS.TransferProxy.Interfaces;
-using System.Collections.Generic;
-using VSS.TRex.GridFabric.Grids;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -99,9 +98,6 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME")).Returns("UnitTestAWSBucketKey");
           config.Setup(c => c.GetValueString("AWS_TEMPORARY_BUCKET_NAME", It.IsAny<string>())).Returns("UnitTestAWSBucketKey");
 
-          config.Setup(c => c.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY, It.IsAny<string>())).Returns("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0");
-          config.Setup(c => c.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY)).Returns("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0");
-
           config.Setup(c => c.GetValueBool("SURFACE_EXPORT_DATA_SMOOTHING_ACTIVE", It.IsAny<bool>())).Returns(false);
           config.Setup(c => c.GetValueInt("SURFACE_EXPORT_DATA_SMOOTHING_NULL_INFILL_MODE", It.IsAny<int>())).Returns((int)NullInfillMode.NoInfill);
           config.Setup(c => c.GetValueInt("SURFACE_EXPORT_DATA_SMOOTHING_MASK_SIZE", It.IsAny<int>())).Returns((int)ConvolutionMaskSize.Mask3X3);
@@ -121,6 +117,8 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueString("AWS_TAGFILE_BUCKET_NAME", It.IsAny<string>())).Returns("AWS_TAGFILE_BUCKET");
           config.Setup(c => c.GetValueString("AWS_TAGFILE_BUCKET_NAME")).Returns("AWS_TAGFILE_BUCKET");
+          config.Setup(c => c.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME", It.IsAny<string>())).Returns("AWS_DESIGNIMPORT_BUCKET");
+          config.Setup(c => c.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME")).Returns("AWS_DESIGNIMPORT_BUCKET");
 
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS")).Returns(1000);
           config.Setup(c => c.GetValueInt("REBUILD_SITE_MODEL_MONITORING_INTERVAL_MS", It.IsAny<int>())).Returns(1000);
@@ -128,6 +126,13 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueString("TGL_GEODATA_PATH", It.IsAny<string>())).Returns("Geodata");
 
           config.Setup(c => c.GetValueUlong("TREX_DESIGN_ELEVATION_CACHE_SIZE", It.IsAny<ulong>())).Returns((ulong)10 * 1024 * 1024);
+
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_DEFAULT_THREAD_POOL_FRACTION_DIVISOR")).Returns(4);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_DEFAULT_THREAD_POOL_FRACTION_DIVISOR", It.IsAny<int>())).Returns(4);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS")).Returns(10);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_TASK_GROUP_TIMEOUT_SECONDS", It.IsAny<int>())).Returns(10);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS")).Returns(4);
+          config.Setup(c => c.GetValueInt("TREX_QOS_SCHEDULER_MAX_CONCURRENT_SCHEDULER_SESSIONS", It.IsAny<int>())).Returns(4);
 
           return config;
         }))

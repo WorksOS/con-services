@@ -41,7 +41,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
       else
       {
         var llhCoords = DIContext
-          .Obtain<IConvertCoordinates>()
+          .Obtain<ICoreXWrapper>()
           .NEEToLLH(csib, neeCoords.ToCoreX_XYZ())
           .ToTRex_XYZ();
 

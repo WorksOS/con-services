@@ -29,6 +29,7 @@ namespace VSS.Serilog.Extensions
                    .MinimumLevel.Override("System", LogEventLevel.Information)
                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                    .MinimumLevel.Override("OpenTracing", LogEventLevel.Warning)
+                   .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
                    .Enrich.FromLogContext()
                    .Enrich.WithThreadId()
                    .Enrich.With<ExceptionEnricher>()

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using CoreX.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -6,10 +7,12 @@ using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Requests;
 using VSS.TRex.CellDatum.GridFabric.Responses;
 using VSS.TRex.DI;
+using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.CellDatum.Executors
 {
@@ -26,6 +29,15 @@ namespace VSS.TRex.CellDatum.Executors
     {
       var result = new CellPassesResponse() { ReturnCode = CellPassesReturnCode.Error };
 
+      if (arg.Filters?.Filters != null && arg.Filters.Filters.Length > 0)
+      {
+        // Prepare the filters for use in cell passes operations. Failure to prepare any filter results in this request terminating
+        if (!arg.Filters.Filters.Select(x => FilterUtilities.PrepareFilterForUse(x, arg.ProjectID)).All(x => x == RequestErrorStatus.OK))
+        {
+          return new CellPassesResponse { ReturnCode = CellPassesReturnCode.FailedToPrepareFilter };
+        }
+      }
+
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
       if (siteModel == null)
       {
@@ -37,7 +49,7 @@ namespace VSS.TRex.CellDatum.Executors
       {
         //WGS84 coords need to be converted to NEE
         var pointToConvert = new XYZ(arg.Point.X, arg.Point.Y, 0);
-        arg.Point = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(siteModel.CSIB(), pointToConvert.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
+        arg.Point = DIContext.Obtain<ICoreXWrapper>().LLHToNEE(siteModel.CSIB(), pointToConvert.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
         result.Northing = arg.Point.Y;
         result.Easting = arg.Point.X;
       }

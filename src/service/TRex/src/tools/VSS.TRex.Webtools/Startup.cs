@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CoreX.Interfaces;
+using CoreX.Wrapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using VSS.AWS.TransferProxy;
@@ -14,7 +16,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -34,8 +35,6 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using CoreX.Interfaces;
-using CoreX.Wrapper;
 
 namespace VSS.TRex.Webtools
 {
@@ -97,8 +96,8 @@ namespace VSS.TRex.Webtools
       //Set up configuration for TRex
       DIContext.Inject(services.BuildServiceProvider());
 
-      services.AddSingleton<IConvertCoordinates, ConvertCoordinates>();
-      services.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates());
+      services.AddSingleton<ICoreXWrapper, CoreXWrapper>();
+      services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
       TRexGridFactory.AddGridFactoriesToDI(services);
       Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI(services);
 
@@ -128,7 +127,6 @@ namespace VSS.TRex.Webtools
       services.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable));
 
       services.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable));
-      services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
 
       ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI(services);
 

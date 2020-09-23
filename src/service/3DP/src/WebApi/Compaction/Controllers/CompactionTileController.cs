@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.Productivity3D.Service.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -32,7 +33,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// </summary>
   [ResponseCache(Duration = 900, VaryByQueryKeys = new[] { "*" })]
   [ProjectVerifier]
-  public class CompactionTileController : BaseTileController<CompactionTileController>
+  public class CompactionTileController : BaseController<CompactionTileController>
   {
     /// <summary>
     /// The tile generator
@@ -131,7 +132,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         sumVolParameters.Result.Item2, 
         sumVolParameters.Result.Item3,
         volumeCalcType, 
-        CustomHeaders, 
+        CustomHeaders,
+        GetUserId(),
         explicitFilters));
     }
 
@@ -215,123 +217,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         sumVolParameters.Result.Item2, 
         sumVolParameters.Result.Item3,
         volumeCalcType, 
-        CustomHeaders, 
+        CustomHeaders,
+        GetUserId(), 
         explicitFilters));
 
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
 
       return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ImagePng);
-    }
-
-    /// <summary>
-    /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
-    /// The tiles for the supplied list of files are overlaid and a single tile returned.
-    /// </summary>
-    /// <param name="service">WMS parameter - value WMS</param>
-    /// <param name="version">WMS parameter - value 1.3.0</param>
-    /// <param name="request">WMS parameter - value GetMap</param>
-    /// <param name="format">WMS parameter - value image/png</param>
-    /// <param name="transparent">WMS parameter - value true</param>
-    /// <param name="layers">WMS parameter - value Layers</param>
-    /// <param name="crs">WMS parameter - value EPSG:4326</param>
-    /// <param name="styles">WMS parameter - value null</param>
-    /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
-    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>DxfTileExecutor</executor> 
-    [ValidateTileParameters]
-    [ValidateWidthAndHeight]
-    [Route("api/v2/lineworktiles")]
-    [HttpGet]
-    public async Task<TileResult> GetLineworkTile(
-      [FromQuery] string service,
-      [FromQuery] string version,
-      [FromQuery] string request,
-      [FromQuery] string format,
-      [FromQuery] string transparent,
-      [FromQuery] string layers,
-      [FromQuery] string crs,
-      [FromQuery] string styles,
-      [FromQuery] int width,
-      [FromQuery] int height,
-      [FromQuery] string bbox,
-      [FromQuery] Guid projectUid,
-      [FromQuery] string fileType)
-    {
-      Log.LogDebug($"{nameof(GetLineworkTile)}: " + Request.QueryString);
-
-      var requiredFiles = await ValidateFileType(projectUid, fileType);
-      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
-
-      dxfTileRequest.Validate();
-#if RAPTOR
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
-      return await executor.ProcessAsync(dxfTileRequest) as TileResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
-    }
-
-    /// <summary>
-    /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
-    /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
-    /// The tiles for the supplied list of files are overlaid and a single tile returned.
-    /// </summary>
-    /// <param name="service">WMS parameter - value WMS</param>
-    /// <param name="version">WMS parameter - value 1.3.0</param>
-    /// <param name="request">WMS parameter - value GetMap</param>
-    /// <param name="format">WMS parameter - value image/png</param>
-    /// <param name="transparent">WMS parameter - value true</param>
-    /// <param name="layers">WMS parameter - value Layers</param>
-    /// <param name="crs">WMS parameter - value EPSG:4326</param>
-    /// <param name="styles">WMS parameter - value null</param>
-    /// <param name="width">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="height">The height, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="bbox">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
-    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>DxfTileExecutor</executor> 
-    [ValidateTileParameters]
-    [Route("api/v2/lineworktiles/png")]
-    [HttpGet]
-    public async Task<FileResult> GetLineworkTileRaw(
-      [FromQuery] string service,
-      [FromQuery] string version,
-      [FromQuery] string request,
-      [FromQuery] string format,
-      [FromQuery] string transparent,
-      [FromQuery] string layers,
-      [FromQuery] string crs,
-      [FromQuery] string styles,
-      [FromQuery] int width,
-      [FromQuery] int height,
-      [FromQuery] string bbox,
-      [FromQuery] Guid projectUid,
-      [FromQuery] string fileType)
-    {
-      Log.LogDebug($"{nameof(GetLineworkTileRaw)}: " + Request.QueryString);
-
-      var requiredFiles = await ValidateFileType(projectUid, fileType);
-      var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
-
-      dxfTileRequest.Validate();
-#if RAPTOR
-      var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor>(LoggerFactory, RaptorClient, null, ConfigStore, fileRepo);
-      var result = await executor.ProcessAsync(dxfTileRequest) as TileResult;
-
-      if (result?.TileData == null)
-        result = TileResult.EmptyTile(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE);
-
-      return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
     }
 
     /// <summary>

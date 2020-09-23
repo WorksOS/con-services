@@ -27,8 +27,8 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
@@ -50,6 +50,7 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Classes.Queues;
+using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Models;
 using VSS.WebApi.Common;
 
@@ -64,8 +65,9 @@ namespace VSS.TRex.Server.MutableData
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
+        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
+        .Add(x => x.AddSingleton<IACSTranslator, ACSTranslator>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -95,6 +97,9 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
+
+        .Add(x => x.AddSingleton<IDesignChangedEventSender, DesignChangedEventSender>())
+      
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
 
         // Register the sender for the site model attribute change notifications
@@ -117,7 +122,6 @@ namespace VSS.TRex.Server.MutableData
             DIContext.Obtain<IConfigurationStore>(),
             DIContext.Obtain<IHttpClientFactory>())))
         .Add(x => x.AddSingleton<IRebuildSiteModelTAGNotifier, RebuildSiteModelTAGNotifier>())
-        .Add(x => x.AddSingleton<ITransferProxyFactory, TransferProxyFactory>())
         .Complete();
     }
 
@@ -136,7 +140,7 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
@@ -149,7 +153,7 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.TAGFiles.Executors.SubmitTAGFileExecutor),
-        typeof(CoreX.Models.CoordinateSystemResponse),
+        typeof(CoreXModels.CoordinateSystemResponse),
         typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
       };
 
@@ -186,6 +190,7 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new RecycledMemoryStreamHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelsHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
 
@@ -197,6 +202,10 @@ namespace VSS.TRex.Server.MutableData
       try
       {
         Console.WriteLine($"TRex service starting at {DateTime.Now}");
+
+        ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
+        ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
+        Console.WriteLine($"Thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
 
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();

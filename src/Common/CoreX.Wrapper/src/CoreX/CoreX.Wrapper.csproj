@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>CoreX.Wrapper</AssemblyName>
+    <RootNamespace>CoreX.Wrapper</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -14,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\Models\CoreX.Models.csproj" />
   </ItemGroup>

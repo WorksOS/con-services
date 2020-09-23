@@ -1,18 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Models.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -37,19 +40,23 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string CacheLifeKey => "PROJECT_SETTINGS_CACHE_LIFE";
 
-    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IHeaderDictionary customHeaders)
+    public Task<CompactionProjectSettingsColors> GetProjectSettingsColors(string projectUid, string userId, IHeaderDictionary customHeaders, 
+      IServiceExceptionHandler serviceExceptionHandler)
     {
-      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult>($"/projectsettings/{projectUid}", projectUid, userId, customHeaders);
-
-      if (result.Code == 0)
-        return result.Settings;
-
-      log.LogWarning($"Failed to get project settings, using default values: {result.Code}, {result.Message}");
-      return null;
+      return GetProjectSettings<CompactionProjectSettingsColors>(projectUid, userId, customHeaders, ProjectSettingsType.Targets, serviceExceptionHandler);
     }
 
-    public async Task<JObject> GetProjectSettings(string projectUid, string userId, IHeaderDictionary customHeaders, ProjectSettingsType settingsType)
+    public Task<CompactionProjectSettings> GetProjectSettingsTargets(string projectUid, string userId, IHeaderDictionary customHeaders,
+      IServiceExceptionHandler serviceExceptionHandler)
     {
+      return GetProjectSettings<CompactionProjectSettings>(projectUid, userId, customHeaders, ProjectSettingsType.Targets, serviceExceptionHandler);
+    }
+
+    private async Task<T> GetProjectSettings<T>(string projectUid, string userId, IHeaderDictionary customHeaders, ProjectSettingsType settingsType,
+      IServiceExceptionHandler serviceExceptionHandler) where T : IValidatable, IDefaultSettings, new()
+    {
+      T ps = default;
+
       var uri = string.Empty;
       switch (settingsType)
       {
@@ -63,14 +70,45 @@ namespace VSS.Productivity3D.Project.Proxy
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(-10, "Unsupported project settings type."));
       }
 
-      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsDataResult>(uri, projectUid + settingsType, userId, customHeaders);
+      var result = await GetMasterDataItemServiceDiscovery<ProjectSettingsResult>(uri, $"{projectUid}{settingsType}", userId, customHeaders);
 
-      if (result.Code == 0)
-        return result.Settings;
+      if (result.Code == ContractExecutionStatesEnum.ExecutedSuccessfully)
+      {
+        var jsonSettings = result.Settings;
+        if (jsonSettings != null)
+        {
+          try
+          {
+            ps = jsonSettings.ToObject<T>();
+            if (settingsType == ProjectSettingsType.Colors)
+            {
+              (ps as CompactionProjectSettingsColors).UpdateCmvDetailsColorsIfRequired();
+            }
+            ps.Validate(serviceExceptionHandler);
 
-      log.LogWarning($"Failed to get project settings by type {settingsType}, using default values: {result.Code}, {result.Message}");
-      return null;
+          }
+          catch (Exception ex)
+          {
+            log.LogInformation(
+              $"JObject conversion to Project Settings validation failure for projectUid {projectUid}. Error is {ex.Message}");
+          }
+        }
+        else
+        {
+          log.LogDebug($"No Project Settings for projectUid {projectUid}. Using defaults.");
+        }
+      }
+      else
+      {
+        log.LogWarning($"Failed to get project settings, using default values: {result.Code}, {result.Message}");
+      }
 
+      if (ps == null)
+      {
+        ps = new T();
+        ps.Defaults();
+      }
+      return ps;
     }
 
     /// <summary>

@@ -32,7 +32,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public async Task PassCountLastPassNotDbase()
+    public void PassCountLastPassNotDbase()
     {
       DILoggingFixture.SetMaxExportRowsConfig(1000);
 
@@ -40,13 +40,13 @@ namespace VSS.TRex.Tests.Exports.CSV
         out var requestArgument, out _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
       rows[0].Should().Be(@"2019/Jan/23 00:22:09.993,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Importing a DC file is currently being implemented")]
-    public async Task PassCountLastPassNotDbaseWithLatLong()
+    public void PassCountLastPassNotDbaseWithLatLong()
     {
       DILoggingFixture.SetMaxExportRowsConfig(1000);
 
@@ -54,13 +54,13 @@ namespace VSS.TRex.Tests.Exports.CSV
         out var requestArgument, out _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
       rows[0].Should().Be(@"2019/Jan/23 00:22:10.033,808,525.440m,376,730.880m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact]
-    public async Task PassCountLastPassDBase()
+    public void PassCountLastPassDBase()
     {
       DILoggingFixture.SetMaxExportRowsConfig(1000);
 
@@ -68,13 +68,13 @@ namespace VSS.TRex.Tests.Exports.CSV
         out var requestArgument, out _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(226);
       rows[0].Should().Be(@"2019/Jan/23 00:22:09.993,808532.750,376734.110,68.631,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2,RTK Fixed,Medium (0.050),,1,1,,,,,,,,,,,");
     }
 
     [Fact]
-    public async Task VetaFinalPass_NorthingEasting()
+    public void VetaFinalPass_NorthingEasting()
     {
       DILoggingFixture.SetMaxExportRowsConfig(100);
 
@@ -82,13 +82,13 @@ namespace VSS.TRex.Tests.Exports.CSV
         out var requestArgument, out _);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(100);
       rows[0].Should().Be(@"2019-Jan-23 00:22:09.993,808532.750m,376734.110m,68.631m,1,0,Site Extended (Preliminary) 180302 EW,""Unknown"",34.2km/h,RTK Fixed,Medium (0.050m),?,1,1,?,?,?,?,?,?,?,?,?,?,?");
     }
 
     [Fact(Skip = "Skip until coreX is available")]
-    public async Task VetaFinalPass_LatLong()
+    public void VetaFinalPass_LatLong()
     {
       DILoggingFixture.SetMaxExportRowsConfig(10);
 
@@ -101,7 +101,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DITAGFileAndSubGridRequestsFixture.AddCSIBToSiteModel(ref siteModel, TestCommonConsts.DIMENSIONS_2012_DC_CSIB);
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       rows.Count.Should().Be(8);
       rows[0].Should().Be(@"2012-Nov-05 19:44:47.459,1174.870m,2869.770m,599.220m,2,0,Trimble Road with Ref Surfaces v2,""Unknown"",7.4km/h,Not_Applicable,Fine (0.000m),?,2,1,?,?,?,?,?,?,?,?,?,?,?");
     }
@@ -173,7 +173,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     [InlineData(226)]
     [InlineData(227)]
     [InlineData(400)]
-    public async Task RowCountLimit_FinalPass(int maxExportRows)
+    public void RowCountLimit_FinalPass(int maxExportRows)
     {
       DILoggingFixture.SetMaxExportRowsConfig(maxExportRows);
 
@@ -182,7 +182,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
-      var rows = await subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
+      var rows = subGridProcessor.ProcessSubGrid(requestedSubGrids[0] as ClientCellProfileLeafSubgrid);
       if (maxExportRows <= 226) // 226 is the number of rows we could potentially get from this set
         rows.Count.Should().Be(maxExportRows);
       else
@@ -201,7 +201,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var clientGrid = SetupProfileSampleCell();
       var subGridProcessor = new CSVExportSubGridProcessor(requestArgument);
 
-      var rows = await subGridProcessor.ProcessSubGrid(clientGrid);
+      var rows = subGridProcessor.ProcessSubGrid(clientGrid);
       rows.Count.Should().Be(1);
       rows[0].Should().Be(@"2019-Mar-14 23:45:00.000,0.170m,0.170m,6509.000m,1,34,Full Site (Kettlewell Drive 171219) Earthworks,""The machine Name"",1,188.0km/h,Float,Coarse (0.300m),5,3,2,90.1,85.0,13.0,11.0,11.1,96.0Hz,45.60mm,45.000m,Forward_2,On,104.0°C");
     }
@@ -389,9 +389,9 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // Request sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
       {
-        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, true, false);
+        var requestSubGridInternalResult = requestors[0].RequestSubGridInternal(x, true, false);
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
           requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });

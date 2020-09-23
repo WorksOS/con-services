@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -19,197 +19,167 @@ namespace VSS.TRex.SurveyedSurfaces.Executors
   /// </summary>
   public class CalculateSurfaceElevationPatch
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateSurfaceElevationPatch>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateSurfaceElevationPatch>();
 
     /// <summary>
     /// Local reference to the client sub grid factory
     /// </summary>
-    private IClientLeafSubGridFactory ClientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
-
-    /// <summary>
-    /// Private reference to the arguments provided to the executor
-    /// </summary>
-    private ISurfaceElevationPatchArgument Args { get; }
-
-    /// <summary>
-    /// Default no-arg constructor
-    /// </summary>
-    public CalculateSurfaceElevationPatch()
-    {
-    }
-
-    /// <summary>
-    /// Constructor for the executor accepting the arguments for its operation
-    /// </summary>
-    public CalculateSurfaceElevationPatch(ISurfaceElevationPatchArgument args) : this()
-    {
-      Args = args;
-    }
+    private readonly IClientLeafSubGridFactory _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
 
     /// <summary>
     /// Performs the donkey work of the elevation patch calculation
     /// </summary>
-    private IClientLeafSubGrid Calc(out DesignProfilerRequestResult CalcResult)
+    public IClientLeafSubGrid Execute(ISiteModel siteModel, int otgCellBottomLeftX, int otgCellBottomLeftY, double cellSize, SurveyedSurfacePatchType patchType,
+      Guid[] includedSurveyedSurfaces, IDesignFiles designs, ISurveyedSurfaces surveyedSurfaces, SubGridTreeBitmapSubGridBits processingMap)
     {
-      CalcResult = DesignProfilerRequestResult.UnknownError;
-
-      IDesignBase Design;
-      int Hint = -1;
-
-      // if <config>.Debug_PerformDPServiceRequestHighRateLogging then
-      //   SIGLogMessage.PublishNoODS(Self, Format('In %s.Execute for DataModel:%d  OTGCellBottomLeftX:%d  OTGCellBottomLeftY:%d', [Self.ClassName, Args.ProjectUid, Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY]), slmcDebug);
-      // InterlockedIncrement64(DesignProfilerRequestStats.NumSurfacePatchesComputed);
-
-      //try
-      //{
-
-      if (!Enum.IsDefined(typeof(SurveyedSurfacePatchType), Args.SurveyedSurfacePatchType))
-        throw new TRexException($"Unknown SurveyedSurfacePatchType: {Args.SurveyedSurfacePatchType}");
-
-      var Patch = ClientLeafSubGridFactory.GetSubGridEx(
-        Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations
-          ? GridDataType.CompositeHeights
-          : GridDataType.HeightAndTime, 
-          Args.CellSize, SubGridTreeConsts.SubGridTreeLevels, 
-          Args.OTGCellBottomLeftX, Args.OTGCellBottomLeftY);
-
-      // Assign 
-      var PatchSingle = Args.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations
-        ? Patch as ClientHeightAndTimeLeafSubGrid : null;
-
-      var PatchComposite = Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations
-        ? Patch as ClientCompositeHeightsLeafSubgrid : null;
-
-      Patch.CalculateWorldOrigin(out double OriginX, out double OriginY);
-
-      double CellSize = Args.CellSize;
-      double HalfCellSize = CellSize / 2;
-      double OriginXPlusHalfCellSize = OriginX + HalfCellSize;
-      double OriginYPlusHalfCellSize = OriginY + HalfCellSize;
-
-      var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(Args.SiteModelID);
-      var Designs = DIContext.Obtain<IDesignFiles>();
-
-      // Work down through the list of surfaces in the time ordering provided by the caller
-      for (int i = 0; i < Args.IncludedSurveyedSurfaces.Length; i++)
+      var calcResult = DesignProfilerRequestResult.UnknownError;
+      
+      try
       {
-        if (Args.ProcessingMap.IsEmpty())
-          break;
-
-        var ThisSurveyedSurface = siteModel.SurveyedSurfaces.Locate(Args.IncludedSurveyedSurfaces[i]);
-
-        // Lock & load the design
-        Design = Designs.Lock(ThisSurveyedSurface.DesignDescriptor.DesignID, Args.SiteModelID, Args.CellSize, out _);
-
-        if (Design == null)
+        if (!Enum.IsDefined(typeof(SurveyedSurfacePatchType), patchType))
         {
-          Log.LogError($"Failed to read design file {ThisSurveyedSurface.DesignDescriptor} in {nameof(CalculateSurfaceElevationPatch)}");
-          CalcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
+          _log.LogError($"Unknown SurveyedSurfacePatchType: {patchType}, returning null");
           return null;
         }
 
-        try
+        if (includedSurveyedSurfaces == null)
         {
-          // Todo: Determine if this exclusive lock acquisition is really necessary
-          if (!Design.HasElevationDataForSubGridPatch(
-            Args.OTGCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-            Args.OTGCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
-            continue;
+          _log.LogError("Included surveyed surfaces list is null, returning null");
+          return null;
+        }
 
-          long AsAtDate = ThisSurveyedSurface.AsAtDate.Ticks;
+        if (processingMap == null)
+        {
+          _log.LogError("Supplied processing map is null, returning null");
+          return null;
+        }
 
-          // Walk across the sub grid checking for a design elevation for each appropriate cell
-          // based on the processing bit mask passed in
-          Args.ProcessingMap.ForEachSetBit((x, y) =>
+        var patch = _clientLeafSubGridFactory.GetSubGridEx(
+          patchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime,
+          cellSize, SubGridTreeConsts.SubGridTreeLevels,
+          otgCellBottomLeftX, otgCellBottomLeftY);
+
+        // Assign 
+        var patchSingle = patchType != SurveyedSurfacePatchType.CompositeElevations
+          ? patch as ClientHeightAndTimeLeafSubGrid
+          : null;
+
+        var patchComposite = patchType == SurveyedSurfacePatchType.CompositeElevations
+          ? patch as ClientCompositeHeightsLeafSubgrid
+          : null;
+
+        patch.CalculateWorldOrigin(out var originX, out var originY);
+
+        var halfCellSize = cellSize / 2;
+        var originXPlusHalfCellSize = originX + halfCellSize;
+        var originYPlusHalfCellSize = originY + halfCellSize;
+
+        // Work down through the list of surfaces in the time ordering provided by the caller
+        foreach (var surveyedSurfaceUid in includedSurveyedSurfaces)
+        {
+          if (processingMap.IsEmpty())
+            break;
+
+          var thisSurveyedSurface = surveyedSurfaces.Locate(surveyedSurfaceUid);
+          if (thisSurveyedSurface == null)
           {
-            // If we can interpolate a height for the requested cell, then update the cell height
-            // and decrement the bit count so that we know when we've handled all the requested cells
+            _log.LogError($"Surveyed surface {surveyedSurfaceUid} not found in site model, returning null");
+            calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
+            return null;
+          }
 
-            if (Design.InterpolateHeight(ref Hint,
-            OriginXPlusHalfCellSize + CellSize * x, OriginYPlusHalfCellSize + CellSize * y,
-            0, out double z))
+          // Lock & load the design
+          var design = designs.Lock(thisSurveyedSurface.DesignDescriptor.DesignID, siteModel, cellSize, out _);
+
+          if (design == null)
+          {
+            _log.LogError($"Failed to lock design file {thisSurveyedSurface.DesignDescriptor} in {nameof(CalculateSurfaceElevationPatch)}");
+            calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
+            return null;
+          }
+
+          try
+          {
+            if (!design.HasElevationDataForSubGridPatch(
+              otgCellBottomLeftX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+              otgCellBottomLeftY >> SubGridTreeConsts.SubGridIndexBitsPerLevel))
             {
-              // Check for composite elevation processing
-              if (Args.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations)
-              {
-                // Set the first elevation if not already set
-                if (PatchComposite.Cells[x, y].FirstHeightTime == 0)
-                {
-                  PatchComposite.Cells[x, y].FirstHeightTime = AsAtDate;
-                  PatchComposite.Cells[x, y].FirstHeight = (float)z;
-                }
-
-                // Always set the latest elevation (surfaces ordered by increasing date)
-                PatchComposite.Cells[x, y].LastHeightTime = AsAtDate;
-                PatchComposite.Cells[x, y].LastHeight = (float)z;
-
-                // Update the lowest height
-                if (PatchComposite.Cells[x, y].LowestHeightTime == 0 ||
-                  PatchComposite.Cells[x, y].LowestHeight > z)
-                {
-                  PatchComposite.Cells[x, y].LowestHeightTime = AsAtDate;
-                  PatchComposite.Cells[x, y].LowestHeight = (float)z;
-                }
-
-                // Update the highest height
-                if (PatchComposite.Cells[x, y].HighestHeightTime == 0 ||
-                  PatchComposite.Cells[x, y].HighestHeight > z)
-                {
-                  PatchComposite.Cells[x, y].HighestHeightTime = AsAtDate;
-                  PatchComposite.Cells[x, y].HighestHeight = (float)z;
-                }
-              }
-              else // earliest/latest singular value processing
-              {
-                PatchSingle.Times[x, y] = AsAtDate;
-                PatchSingle.Cells[x, y] = (float)z;
-              }
+              continue;
             }
 
-            // Only clear the processing bit if earliest or latest information is wanted from the surveyed surfaces
-            if (Args.SurveyedSurfacePatchType != SurveyedSurfacePatchType.CompositeElevations)
-              Args.ProcessingMap.ClearBit(x, y);
+            var asAtDate = thisSurveyedSurface.AsAtDate.Ticks;
+            var hint = -1;
 
-            return true;
-          });
+            // Walk across the sub grid checking for a design elevation for each appropriate cell
+            // based on the processing bit mask passed in
+            processingMap.ForEachSetBit((x, y) =>
+            {
+              // If we can interpolate a height for the requested cell, then update the cell height
+              // and decrement the bit count so that we know when we've handled all the requested cells
+
+              if (design.InterpolateHeight(ref hint,
+                originXPlusHalfCellSize + cellSize * x, originYPlusHalfCellSize + cellSize * y,
+                0, out var z))
+              {
+                // Check for composite elevation processing
+                if (patchType == SurveyedSurfacePatchType.CompositeElevations)
+                {
+                  // Set the first elevation if not already set
+                  if (patchComposite.Cells[x, y].FirstHeightTime == 0)
+                  {
+                    patchComposite.Cells[x, y].FirstHeightTime = asAtDate;
+                    patchComposite.Cells[x, y].FirstHeight = (float) z;
+                  }
+
+                  // Always set the latest elevation (surfaces ordered by increasing date)
+                  patchComposite.Cells[x, y].LastHeightTime = asAtDate;
+                  patchComposite.Cells[x, y].LastHeight = (float) z;
+
+                  // Update the lowest height
+                  if (patchComposite.Cells[x, y].LowestHeightTime == 0 ||
+                      patchComposite.Cells[x, y].LowestHeight > z)
+                  {
+                    patchComposite.Cells[x, y].LowestHeightTime = asAtDate;
+                    patchComposite.Cells[x, y].LowestHeight = (float) z;
+                  }
+
+                  // Update the highest height
+                  if (patchComposite.Cells[x, y].HighestHeightTime == 0 ||
+                      patchComposite.Cells[x, y].HighestHeight > z)
+                  {
+                    patchComposite.Cells[x, y].HighestHeightTime = asAtDate;
+                    patchComposite.Cells[x, y].HighestHeight = (float) z;
+                  }
+                }
+                else // earliest/latest singular value processing
+                {
+                  patchSingle.Times[x, y] = asAtDate;
+                  patchSingle.Cells[x, y] = (float) z;
+                }
+              }
+
+              // Only clear the processing bit if earliest or latest information is wanted from the surveyed surfaces
+              if (patchType != SurveyedSurfacePatchType.CompositeElevations)
+                processingMap.ClearBit(x, y);
+
+              return true;
+            });
+          }
+          finally
+          {
+            designs.UnLock(thisSurveyedSurface.DesignDescriptor.DesignID, design);
+          }
         }
-        finally
-        {
-          Designs.UnLock(ThisSurveyedSurface.DesignDescriptor.DesignID, Design);
-        }
+
+        calcResult = DesignProfilerRequestResult.OK;
+
+        return patch;
       }
-
-      CalcResult = DesignProfilerRequestResult.OK;
-
-      return Patch;
-      // }
-      // finally
-      // {
-      //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
-      //Log.LogInformation($"Out {nameof(CalculateSurfaceElevationPatch)}.Execute");
-      // }
-    }
-
-    /// <summary>
-    /// Performs execution business logic for this executor
-    /// </summary>
-    public IClientLeafSubGrid Execute()
-    {
-      // Perform the design profile calculation
-      //try
-      //{
-      // Calculate the patch of elevations and return it
-      var result = Calc(out var calcResult);
-
-      // TODO: Handle case of failure to request patch of elevations from design
-
-      return result;
-      //}
-      //finally
-      //{
-      //if <config>.Debug_PerformDPServiceRequestHighRateLogging then
-      // Log.LogInformation($"#Out# {nameof(CalculateSurfaceElevationPatch)}.Execute #Result# {CalcResult}");
-      //}
+      catch (Exception e)
+      {
+        _log.LogError(e, $"Exception occurred calculating surveyed surface patch, calcResult = {calcResult}");
+        return null;
+      }
     }
   }
 }

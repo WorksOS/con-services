@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.BinarizableSerialization.Designs
     [Fact]
     public void Test_DesignSubGridRequestArgumentBase_OneBit()
     {
-      var argument = new DesignFilterSubGridMaskResponse();
+      var argument = new DesignFilterSubGridMaskResponse {Bits = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled)};
       argument.Bits[10, 10] = true;
 
       var result = SimpleBinarizableInstanceTester.TestClass(argument, "Empty DesignFilterSubGridMaskResponse not same after round trip serialisation");

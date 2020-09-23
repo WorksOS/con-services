@@ -63,6 +63,5 @@ namespace VSS.Common.Abstractions.Clients.CWS
       }
       return null;
     }
-
   }
 }

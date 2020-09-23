@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling.Coords;

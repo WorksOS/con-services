@@ -80,24 +80,37 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// </summary>
         public override TSubGridRequestsResponse Execute()
         {
+            const int TIME_LIMIT_MS = 30000;
+
             PrepareForExecution();
 
             Task<ICollection<TSubGridRequestsResponse>> taskResult = null;
 
-            var sw = new Stopwatch();
-            sw.Start();
+            var sw = Stopwatch.StartNew();
             try
             {
                 // Construct the function to be used
                 var func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
                 taskResult = Compute.BroadcastAsync(func, arg);
-                taskResult.Wait(30000);
+
+                if (!taskResult.Wait(TIME_LIMIT_MS))
+                {
+                  Log.LogWarning($"Progressive sub grid request from node {TRexTask.TRexNodeID} timeout out after {TIME_LIMIT_MS}ms");
+                }
+
+                if (taskResult.Status != TaskStatus.RanToCompletion)
+                {
+                  Log.LogWarning($"Progressive sub grid request from node {TRexTask.TRexNodeID}, project {TRexTask.PipeLine.DataModelID}, failed to complete inside its time limit ({TIME_LIMIT_MS}ms). Status is {taskResult.Status}. IsFaulted = {taskResult.IsFaulted}");
+                  if (taskResult.Exception != null)
+                  {
+                    Log.LogError(taskResult.Exception, "Exception raised in Compute.BroadcastAsync()");
+                  }
+                }
             }
             finally
             {
-                sw.Stop();
-                Log.LogInformation($"TaskResult {taskResult?.Status}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
+              Log.LogInformation($"TaskResult {taskResult?.Status}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
             // Send the appropriate response to the caller

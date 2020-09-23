@@ -143,9 +143,6 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Performs the build action of processing the cells in the profile cell vector
     /// </summary>
-    /// <param name="ProfileCells"></param>
-    /// <param name="cellPassIterator"></param>
-    /// <returns></returns>
-    public abstract Task<bool> Analyze(List<T> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator);
+    public abstract bool Analyze(List<T> ProfileCells, ISubGridSegmentCellPassIterator cellPassIterator);
   }
 }

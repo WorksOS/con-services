@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
@@ -31,8 +31,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       private readonly TileRequestHelper requestHelper = new TileRequestHelper();
       private readonly CompactionSettingsManager settingsManager = new CompactionSettingsManager();
-      private readonly CompactionProjectSettings compactionProjectSettings = CompactionProjectSettings.CreateProjectSettings();
-      private readonly CompactionProjectSettingsColors compactionProjectSettingsColors = CompactionProjectSettingsColors.Create();
+      private readonly CompactionProjectSettings compactionProjectSettings = new CompactionProjectSettings();
+      private readonly CompactionProjectSettingsColors compactionProjectSettingsColors = new CompactionProjectSettingsColors();
 
       private FilterResult InitRequestHelper(FilterLayerMethod layerMethod = FilterLayerMethod.None)
       {    

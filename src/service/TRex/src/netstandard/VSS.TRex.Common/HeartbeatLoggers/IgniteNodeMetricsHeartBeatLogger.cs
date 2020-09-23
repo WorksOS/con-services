@@ -8,14 +8,22 @@ namespace VSS.TRex.Common.HeartbeatLoggers
   {
     private readonly IIgnite _ignite;
 
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<IgniteNodeMetricsHeartBeatLogger>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<IgniteNodeMetricsHeartBeatLogger>();
 
     public void HeartBeat()
     {
-      var metrics = _ignite.GetCluster().GetLocalNode().GetMetrics();
-      Log.LogInformation($"Messages: Outbound queue:{metrics.OutboundMessagesQueueSize}, Sent Count/Bytes:{metrics.SentMessagesCount}/{metrics.SentBytesCount}, Received Count/Bytes:{metrics.ReceivedMessagesCount}/{metrics.ReceivedBytesCount}");
-      Log.LogInformation($"Heap Memory: Committed/Total/Maximum/Used:{metrics.HeapMemoryCommitted}/{metrics.HeapMemoryTotal}/{metrics.HeapMemoryMaximum}/{metrics.HeapMemoryUsed}");
-      Log.LogInformation($"Non-heap Memory: Committed/Total/Maximum/Used:{metrics.NonHeapMemoryCommitted}/{metrics.NonHeapMemoryTotal}/{metrics.NonHeapMemoryMaximum}/{metrics.NonHeapMemoryUsed}");
+      var metrics = _ignite?.GetCluster()?.GetLocalNode()?.GetMetrics();
+
+      if (metrics != null)
+      {
+        _log.LogInformation($"Messages: Outbound queue:{metrics.OutboundMessagesQueueSize}, Sent Count/Bytes:{metrics.SentMessagesCount}/{metrics.SentBytesCount}, Received Count/Bytes:{metrics.ReceivedMessagesCount}/{metrics.ReceivedBytesCount}");
+        _log.LogInformation($"Heap Memory: Committed/Total/Maximum/Used:{metrics.HeapMemoryCommitted}/{metrics.HeapMemoryTotal}/{metrics.HeapMemoryMaximum}/{metrics.HeapMemoryUsed}");
+        _log.LogInformation($"Non-heap Memory: Committed/Total/Maximum/Used:{metrics.NonHeapMemoryCommitted}/{metrics.NonHeapMemoryTotal}/{metrics.NonHeapMemoryMaximum}/{metrics.NonHeapMemoryUsed}");
+      }
+      else
+      {
+        _log.LogInformation("Ignite metric not available");
+      }
     }
 
     public IgniteNodeMetricsHeartBeatLogger(IIgnite ignite)

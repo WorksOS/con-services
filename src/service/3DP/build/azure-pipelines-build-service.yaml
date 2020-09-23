@@ -7,7 +7,7 @@ trigger:
     include:
       - 'src/service/3DP/*'
 
-pool: fsm-merino-services
+pool: PDXA-CSD-EKS01
 
 variables:
   buildPlatform: 'Any CPU'

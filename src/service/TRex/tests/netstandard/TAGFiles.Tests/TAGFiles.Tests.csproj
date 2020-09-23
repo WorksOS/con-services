@@ -63,6 +63,11 @@
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
+  <ItemGroup>
+    <None Include="bin\Debug\netcoreapp3.1\Geodata\ausgeoid.ggf" />
+    <None Include="bin\Debug\netcoreapp3.1\Geodata\demin.ggf" />
+    <None Include="bin\Debug\netcoreapp3.1\Geodata\ww15mgh.ggf" />
+  </ItemGroup>
   <!-- End bulk copy. -->
 
   <ItemGroup>

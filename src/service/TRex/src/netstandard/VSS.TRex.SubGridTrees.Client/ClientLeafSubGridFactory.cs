@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Simple array to hold client leaf sub grid type constructor map
     /// </summary>
-    private static readonly Func<IClientLeafSubGrid>[] TypeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
+    private readonly Func<IClientLeafSubGrid>[] _typeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
 
     /// <summary>
     /// Stores of cached client grids to reduce the object instantiation and garbage collection overhead
@@ -27,14 +27,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Register a type implementing IClientLeafSubGrid against a grid data type for the factory to 
     /// create on demand
     /// </summary>
-    /// <param name="gridDataType"></param>
-    /// <param name="constructor"></param>
     public void RegisterClientLeafSubGridType(GridDataType gridDataType, Func<IClientLeafSubGrid> constructor)
     {
-      if ((int) gridDataType > TypeMap.Length)
+      if ((int) gridDataType > _typeMap.Length)
         throw new ArgumentException("Unknown grid data type in RegisterClientLeafSubGridType", nameof(gridDataType));
 
-      TypeMap[(int) gridDataType] = constructor;
+      _typeMap[(int) gridDataType] = constructor;
     }
 
     /// <summary>
@@ -43,7 +41,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
     /// of the caller or a derived factory class
     /// </summary>
-    /// <param name="gridDataType"></param>
     /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
     public IClientLeafSubGrid GetSubGrid(GridDataType gridDataType)
     {
@@ -52,8 +49,8 @@ namespace VSS.TRex.SubGridTrees.Client
       //* TODO: Don't use repatriated sub grids for now...
       //    if (!ClientLeaves[(int) gridDataType].TryTake(out IClientLeafSubGrid result))
       //    {
-            if (TypeMap[(int) gridDataType] != null)
-              result = TypeMap[(int) gridDataType]();
+            if (_typeMap[(int) gridDataType] != null)
+              result = _typeMap[(int) gridDataType]();
       //    }
 
       result?.Clear();
@@ -66,11 +63,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// by a sub grid tree, parentage, level, cell size, index origin offset are delegated responsibilities
     /// of the caller or a derived factory class
     /// </summary>
-    /// <param name="gridDataType"></param>
-    /// <param name="cellSize"></param>
-    /// <param name="level"></param>
-    /// <param name="originX"></param>
-    /// <param name="originY"></param>
     /// <returns>An appropriate instance derived from ClientLeafSubGrid</returns>
     public IClientLeafSubGrid GetSubGridEx(GridDataType gridDataType, double cellSize, byte level, int originX, int originY)
     {
@@ -89,7 +81,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Return a client grid previous obtained from the factory so it may reuse it
     /// </summary>
-    /// <param name="clientGrid"></param>
     public void ReturnClientSubGrid(ref IClientLeafSubGrid clientGrid)
     {
       // TODO: Don't accept any repatriated sub grids for now
@@ -112,8 +103,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Return an array of client grids (of the same type) previously obtained from the factory so it may reuse them
     /// </summary>
-    /// <param name="clientGrids"></param>
-    /// <param name="count"></param>
     public void ReturnClientSubGrids(IClientLeafSubGrid[] clientGrids, int count)
     {
       if (count < 0 || count > clientGrids.Length)
@@ -126,8 +115,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Return an array of client grids (of the same type) previously obtained from the factory so it may reuse them
     /// </summary>
-    /// <param name="clientGrids"></param>
-    /// <param name="count"></param>
     public void ReturnClientSubGrids(IClientLeafSubGrid[][] clientGrids, int count)
     {
       if (count < 0 || count > clientGrids.Length)

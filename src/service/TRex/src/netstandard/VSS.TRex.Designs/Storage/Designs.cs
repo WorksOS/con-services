@@ -33,14 +33,17 @@ namespace VSS.TRex.Designs.Storage
 
     public void Read(BinaryReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      int TheCount = reader.ReadInt32();
-      for (int i = 0; i < TheCount; i++)
+      if (version == 1)
       {
-        Design design = new Design();
-        design.Read(reader);
-        Add(design);
+        int TheCount = reader.ReadInt32();
+        for (int i = 0; i < TheCount; i++)
+        {
+          Design design = new Design();
+          design.Read(reader);
+          Add(design);
+        }
       }
     }
 
@@ -48,17 +51,17 @@ namespace VSS.TRex.Designs.Storage
     /// Create a new design in the list based on the provided details
     /// </summary>
     public IDesign AddDesignDetails(Guid ADesignID,
-                                   DesignDescriptor ADesignDescriptor,
-                                   BoundingWorldExtent3D AExtents)
+                                    DesignDescriptor ADesignDescriptor,
+                                    BoundingWorldExtent3D AExtents)
     {
-      IDesign match = Find(x => x.ID == ADesignID);
+      var match = Find(x => x.ID == ADesignID);
 
       if (match != null)
       {
         return match;
       }
 
-      Design design = new Design(ADesignID, ADesignDescriptor, AExtents);
+      var design = new Design(ADesignID, ADesignDescriptor, AExtents);
       Add(design);
 
       return design;
@@ -69,7 +72,7 @@ namespace VSS.TRex.Designs.Storage
     /// </summary>
     public bool RemoveDesign(Guid ADesignID)
     {
-      IDesign match = Find(x => x.ID == ADesignID);
+      var match = Find(x => x.ID == ADesignID);
 
       return match != null && Remove(match);
     }

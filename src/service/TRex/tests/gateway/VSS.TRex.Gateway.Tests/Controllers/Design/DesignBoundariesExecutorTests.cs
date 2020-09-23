@@ -84,11 +84,11 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       llhCoords[6].X = Math.Round(-115.02063908350371, DECIMALS);
       llhCoords[6].Y = Math.Round(36.20750448242144, DECIMALS);
 
-      var convertCoordinatesMock = new Mock<IConvertCoordinates>();
+      var convertCoordinatesMock = new Mock<ICoreXWrapper>();
 
       var expectedCoordinateConversionResult = llhCoords.ToCoreX_XYZ();
 
-      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>())).Returns(expectedCoordinateConversionResult);
+      convertCoordinatesMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>())).Returns(expectedCoordinateConversionResult);
       DIBuilder.Continue().Add(x => x.AddSingleton(convertCoordinatesMock.Object)).Complete();
 
       var designBoundaryResult = await DesignBoundaryHelper.ConvertBoundary(boundary, TOLERANCE, TestConsts.CELL_SIZE, DIMENSIONS_2012_DC_CSIB, FILE_NAME);

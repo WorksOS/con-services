@@ -14,6 +14,13 @@ parameters:
 steps:
   - ${{ each service in parameters.trexServices }}:
     - task: PowerShell@2
+      # Should save time and space by not pushing built container images to ECR on every feature branch.
+      condition: |
+        and
+        (
+          succeeded(),
+          in('true', variables['isMasterBranch'], variables['pushImages'])
+        )
       displayName: "Push Image: ${{ service }}"
       inputs:
         filePath: build/azure-build-pipeline.ps1

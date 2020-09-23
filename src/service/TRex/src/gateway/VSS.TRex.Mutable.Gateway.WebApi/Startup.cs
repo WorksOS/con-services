@@ -10,7 +10,6 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.ServiceDiscovery;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
@@ -49,8 +48,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     {
       DIBuilder.New(services)
          .Build()
-         .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
-         .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
+         .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
          .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
          .Add(TRexGridFactory.AddGridFactoriesToDI)
          .Build()
@@ -65,7 +63,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(x => x.AddSingleton<IDesignChangedEventSender>(new DesignChangedEventSender()))
          .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
          .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
-         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.MutableGridName())))
+         //.Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.MutableGridName())))
          .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
          .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
          .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
@@ -87,14 +85,14 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<IMutableClientServer>(new MutableClientServer(ServerRoles.TAG_PROCESSING_NODE_CLIENT)))
+        .Add(x => x.AddSingleton<IMutableClientServer>(new MutableClientServer(new [] {ServerRoles.TAG_PROCESSING_NODE_CLIENT, ServerRoles.RECEIVES_SITEMODEL_CHANGE_EVENTS})))
         .Complete();
     }
 
     protected override void StartServices(IServiceProvider serviceProvider)
     {
       // Start listening to site model change notifications
-      serviceProvider.GetRequiredService<ISiteModelAttributesChangedEventListener>().StartListening();
+      //serviceProvider.GetRequiredService<ISiteModelAttributesChangedEventListener>().StartListening();
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)

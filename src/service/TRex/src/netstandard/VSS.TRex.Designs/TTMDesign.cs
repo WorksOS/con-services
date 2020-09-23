@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.TRex.Common;
@@ -438,7 +437,7 @@ namespace VSS.TRex.Designs
     {
       if (Hint != -1)
       {
-        Z = GetHeight(triangleItems[Hint], X, Y);
+        Z = GetHeight2(ref triangleItems[Hint], X, Y);
         if (Z != Common.Consts.NullDouble)
         {
           Z += Offset;
@@ -466,7 +465,7 @@ namespace VSS.TRex.Designs
       for (int i = arrayReference.TriangleArrayIndex; i < limit; i++)
       {
         int triIndex = SpatialIndexOptimisedTriangles[i];
-        Z = GetHeight(triangleItems[triIndex], X, Y);
+        Z = GetHeight2(ref triangleItems[triIndex], X, Y);
 
         if (Z != Common.Consts.NullReal)
         {
@@ -565,9 +564,7 @@ namespace VSS.TRex.Designs
               if (x < triangleCellExtents[i].MinX || x > triangleCellExtents[i].MaxX || y < triangleCellExtents[i].MinY || y > triangleCellExtents[i].MaxY)
                 continue; // No intersection, move to next triangle
 
-              //For now use the non-optimized version as the optimized value can differ. See #1412
-              //double Z = GetHeight2(ref triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
-              var Z = GetHeight(triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
+              var Z = GetHeight2(ref triangleItems[SpatialIndexOptimisedTriangles[arrayReference.TriangleArrayIndex + i]], X, Y);
 
               if (Z != Common.Consts.NullReal)
               {
@@ -592,25 +589,25 @@ namespace VSS.TRex.Designs
     /// Loads the TTM design file/s, from storage
     /// Includes design file, 2 index files and a boundary file (if they exist)
     /// </summary>
-    public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
+    public override DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
       var s3FileTransfer = new S3FileTransfer(TransferProxyType.DesignImport);
 
-      var isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
+      var isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, fileName, localPath);
       if (!isDownloaded)
         return DesignLoadResult.UnknownFailure;
 
       if (loadIndices)
       {
-        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), localPath);
+        isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, (fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION), localPath);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadSubGridIndex;
 
-        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), localPath);
+        isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, (fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION), localPath);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadSpatialIndex;
 
-        isDownloaded = await s3FileTransfer.ReadFile(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), localPath);
+        isDownloaded = s3FileTransfer.ReadFileSync(siteModelUid, (fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION), localPath);
         if (!isDownloaded)
           return DesignLoadResult.UnableToLoadBoundary;
       }

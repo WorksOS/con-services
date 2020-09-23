@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -27,7 +28,8 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost("api/v1/productiondata/profile")]
     public Task<ContractExecutionResult> PostProductionDataProfile([FromBody] ProductionDataProfileDataRequest productionDataProfileRequest)
     {
-      Log.LogInformation($"{nameof(PostProductionDataProfile)}: {Request.QueryString}");
+
+      Log.LogInformation($"{nameof(PostProductionDataProfile)}: {JsonConvert.SerializeObject(productionDataProfileRequest)}");
 
       productionDataProfileRequest.Validate();
       ValidateFilterMachines(nameof(PostProductionDataProfile), productionDataProfileRequest.ProjectUid, productionDataProfileRequest.Filter);

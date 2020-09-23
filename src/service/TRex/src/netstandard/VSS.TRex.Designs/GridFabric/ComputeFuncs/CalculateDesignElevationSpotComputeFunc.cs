@@ -5,7 +5,9 @@ using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
@@ -22,7 +24,7 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
       {
         var Executor = new CalculateDesignElevationSpot();
 
-        return Executor.Execute(args.ProjectID, args.ReferenceDesign, args.SpotX, args.SpotY);
+        return Executor.Execute(DIContext.ObtainRequired<ISiteModels>().GetSiteModel(args.ProjectID), args.ReferenceDesign, args.SpotX, args.SpotY);
       }
       catch (Exception e)
       {

@@ -23,7 +23,7 @@ namespace VSS.TRex.Volumes.Executors
   /// </summary>
   public class ComputeProgressiveVolumes_Coordinator
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeProgressiveVolumes_Coordinator>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ComputeProgressiveVolumes_Coordinator>();
 
     /// <summary>
     /// The ID of the site model the volume is being calculated for 
@@ -155,14 +155,13 @@ namespace VSS.TRex.Volumes.Executors
     /// <summary>
     /// Executes the progressive volumes computation returning a ProgressiveVolumesResponse with the results
     /// </summary>
-    /// <returns></returns>
     public async Task<ProgressiveVolumesResponse> ExecuteAsync()
     {
       var volumesResult = new ProgressiveVolumesResponse();
       var resultBoundingExtents = BoundingWorldExtent3D.Null();
       var requestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
-      Log.LogInformation($"#In# Performing {nameof(ComputeProgressiveVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
+      _log.LogInformation($"#In# Performing {nameof(ComputeProgressiveVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
 
       try
       {
@@ -197,13 +196,13 @@ namespace VSS.TRex.Volumes.Executors
 
           if (numProgressions > ClientProgressiveHeightsLeafSubGrid.MaxNumberOfHeightLayers)
           {
-            throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MaxNumberOfHeightLayers} height layer may be requested at one time");
+            throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MaxNumberOfHeightLayers} height layers may be requested at one time");
           }
 
           // Create and configure the aggregator that contains the business logic for the underlying volume calculation
           Aggregator = new ProgressiveVolumesCalculationsAggregator
           {
-            SiteModelID = SiteModelID,
+            SiteModel = _siteModel,
             LiftParams = _liftParams,
             CellSize = _siteModel.CellSize,
             VolumeType = VolumeType,
@@ -237,7 +236,7 @@ namespace VSS.TRex.Volumes.Executors
           InitialiseVolumesCalculator(computeVolumes);
 
           // Perform the volume computation
-          if (await computeVolumes.ComputeVolumeInformation())
+          if (computeVolumes.ComputeVolumeInformation())
           {
             resultStatus = RequestErrorStatus.OK;
           }
@@ -248,7 +247,7 @@ namespace VSS.TRex.Volumes.Executors
 
           if (resultStatus != RequestErrorStatus.OK)
           {
-            Log.LogInformation($"Progressive volume result: Failure, error = {resultStatus}");
+            _log.LogInformation($"Progressive volume result: Failure, error = {resultStatus}");
 
             // Send the (empty) results back to the caller
             return volumesResult;
@@ -262,7 +261,7 @@ namespace VSS.TRex.Volumes.Executors
 
           foreach (var state in Aggregator.AggregationStates)
           {
-            Log.LogInformation($"#Result# Progressive volume result: Cut={state.CutFillVolume.CutVolume:F3}, Fill={state.CutFillVolume.FillVolume:F3}, Area={state.CoverageArea:F3}");
+            _log.LogInformation($"#Result# Progressive volume result: Cut={state.CutFillVolume.CutVolume:F3}, Fill={state.CutFillVolume.FillVolume:F3}, Area={state.CoverageArea:F3}");
 
             if (!state.BoundingExtents.IsValidPlanExtent)
             {
@@ -279,7 +278,7 @@ namespace VSS.TRex.Volumes.Executors
             resultStatus = RequestErrorStatus.InvalidPlanExtents;
 
           if (resultStatus == RequestErrorStatus.NoProductionDataFound || resultStatus == RequestErrorStatus.InvalidPlanExtents)
-            Log.LogInformation($"Progressive volume invalid plan extents or no data found: {resultStatus}");
+            _log.LogInformation($"Progressive volume invalid plan extents or no data found: {resultStatus}");
 
           volumesResult.ResultStatus = resultStatus;
 
@@ -312,7 +311,7 @@ namespace VSS.TRex.Volumes.Executors
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Failed to compute the progressive volumes. Site Model ID: {SiteModelID}");
+        _log.LogError(e, $"Failed to compute the progressive volumes. Site Model ID: {SiteModelID}");
       }
 
       return volumesResult;

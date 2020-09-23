@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -29,6 +30,5 @@ namespace VSS.Productivity3D.Models.Models
       Overrides = overrides;
       LiftSettings = liftSettings;
     }
-
   }
 }

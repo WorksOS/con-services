@@ -168,14 +168,7 @@ namespace VSS.TRex.Caching
 
       var index = ContextTokens[x, y];
 
-      if (index == 0)
-      {
-        return null;
-      }
-      else
-      {
-        return MRUList.Get(index - 1);
-      }
+      return index == 0 ? null : MRUList.Get(index - 1);
     }
 
     /// <summary>
@@ -215,7 +208,7 @@ namespace VSS.TRex.Caching
         subGridPresentForInvalidation = true;
       }
 
-      // Increment invalidation version to allow sub grid processors to determnine if they wish to reprocess
+      // Increment invalidation version to allow sub grid processors to determine if they wish to reprocess
       _invalidationVersion++;
     }
 

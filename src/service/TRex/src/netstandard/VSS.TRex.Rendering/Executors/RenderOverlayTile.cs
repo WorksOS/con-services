@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
@@ -393,7 +394,7 @@ namespace VSS.TRex.Rendering.Executors
       else
       {
         NEECoords = DIContext
-          .Obtain<IConvertCoordinates>()
+          .Obtain<ICoreXWrapper>()
           .LLHToNEE(SiteModel.CSIB(), LLHCoords.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians)
           .ToTRex_XYZ();
       }
@@ -494,7 +495,7 @@ namespace VSS.TRex.Rendering.Executors
           processor.OverrideSpatialExtents.Assign(RotatedTileBoundingExtents);
 
           // Prepare the processor
-          if (!await processor.BuildAsync())
+          if (!processor.Build())
           {
             _log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
             ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
@@ -506,6 +507,7 @@ namespace VSS.TRex.Rendering.Executors
           // cannot meaningfully render the data). If the size of s sub grid is smaller than
           // the size of a pixel in the requested tile then do this. Just check the X dimension
           // as the data display is isotropic.
+          // TODO: Could this be done before creation of the pipeline processor?
           if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
             return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
 
@@ -528,7 +530,9 @@ namespace VSS.TRex.Rendering.Executors
                              NPixelsX, NPixelsY);
           Renderer.TileRotation = TileRotation;
 
+          var performRenderStopWatch = Stopwatch.StartNew();
           ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
+          _log.LogInformation($"Renderer.PerformRender completed in {performRenderStopWatch.Elapsed}");
 
           if (processor.Response.ResultStatus == RequestErrorStatus.OK)
           {

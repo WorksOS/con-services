@@ -4,6 +4,8 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
 {
   public interface ISiteModelAttributesChangedEvent
   {
+    Guid SourceNodeUid { get; }
+
     Guid SiteModelID { get; }
 
     bool ExistenceMapModified { get; }
@@ -25,5 +27,15 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
     bool SiteModelMarkedForDeletion { get; set; }
 
     byte[] ExistenceMapChangeMask { get; }
+
+    /// <summary>
+    /// A unique ID for this event communicating site model changes within the grid
+    /// </summary>
+    Guid ChangeEventUid { get; set; }
+
+    /// <summary>
+    /// Date/time the change event was sent
+    /// </summary>
+    DateTime TimeSentUtc { get; set; }
   }
 }

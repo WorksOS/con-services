@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -10,9 +11,9 @@ namespace VSS.TRex.Designs.Executors
 {
   public class CalculateDesignElevationSpot
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<CalculateDesignElevationSpot>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationSpot>();
 
-    private readonly IDesignFiles designs = DIContext.Obtain<IDesignFiles>();
+    private readonly IDesignFiles _designs = DIContext.ObtainRequired<IDesignFiles>();
 
     /// <summary>
     /// Default no-args constructor
@@ -25,50 +26,49 @@ namespace VSS.TRex.Designs.Executors
     /// Performs the donkey work of the elevation patch calculation
     /// </summary>
     /// <returns>The computed elevation of the given design at the spot location, or NullDouble if the location does not lie on the design</returns>
-    private double Calc(Guid projectUID, DesignOffset referenceDesign, double spotX, double spotY,
+    private double Calc(ISiteModelBase siteModel, DesignOffset referenceDesign, double spotX, double spotY,
       out DesignProfilerRequestResult calcResult)
     {
       calcResult = DesignProfilerRequestResult.UnknownError;
 
-      var design = designs.Lock(referenceDesign.DesignID, projectUID, SubGridTreeConsts.DefaultCellSize, out var LockResult);
+      var design = _designs.Lock(referenceDesign.DesignID, siteModel, SubGridTreeConsts.DefaultCellSize, out var lockResult);
 
       if (design == null)
       {
-        Log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
+        _log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
         calcResult = DesignProfilerRequestResult.FailedToLoadDesignFile;
         return Common.Consts.NullDouble;
       }
 
       try
       {
-        var Hint = -1;
-        if (design.InterpolateHeight(ref Hint, spotX, spotY, referenceDesign.Offset, out var Z))
+        var hint = -1;
+        if (design.InterpolateHeight(ref hint, spotX, spotY, referenceDesign.Offset, out var z))
         {
           calcResult = DesignProfilerRequestResult.OK;
         }
         else
         {
           calcResult = DesignProfilerRequestResult.NoElevationsInRequestedPatch;
-          Z = Common.Consts.NullDouble;
+          z = Common.Consts.NullDouble;
         }
 
-        return Z;
+        return z;
       }
       finally
       {
-        designs.UnLock(referenceDesign.DesignID, design);
+        _designs.UnLock(referenceDesign.DesignID, design);
       }
     }
 
     /// <summary>
     /// Performs execution business logic for this executor
     /// </summary>
-    /// <returns></returns>
-    public CalculateDesignElevationSpotResponse Execute(Guid projectUID, DesignOffset referenceDesign, double spotX, double spotY)
+    public CalculateDesignElevationSpotResponse Execute(ISiteModelBase siteModel, DesignOffset referenceDesign, double spotX, double spotY)
     {
       try
       {
-        var elevation = Calc(projectUID, referenceDesign, spotX, spotY, out var calcResult);
+        var elevation = Calc(siteModel, referenceDesign, spotX, spotY, out var calcResult);
 
         // Calculate the spot elevation and return it
         return new CalculateDesignElevationSpotResponse
@@ -77,9 +77,9 @@ namespace VSS.TRex.Designs.Executors
           CalcResult = calcResult
         };
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Execute: Exception: ");
+        _log.LogError(e, "Execute: Exception: ");
         return new CalculateDesignElevationSpotResponse
         {
           Elevation = Common.Consts.NullDouble

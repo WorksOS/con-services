@@ -13,7 +13,6 @@ using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
-using VSS.TRex.SurveyedSurfaces;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 

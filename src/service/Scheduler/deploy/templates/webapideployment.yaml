@@ -1,25 +1,24 @@
-{{- $name :=       printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
-{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-cfg-%s" .Release.Name .Values.environment | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $name }}
+  name: {{ template "schedulerservice.name" . }}
   labels:
-    app: {{ $name }}
+    app: {{ template "schedulerservice.name" . }}
 spec:
-  replicas: 1
+  replicas: {{ default 1 .Values.replicaCount}}
   selector:
     matchLabels:
-      app: {{ $name }}
+      app: {{ template "schedulerservice.name" . }}
   template:
     metadata:
       labels:
-        app: {{ $name }}
+        app: {{ template "schedulerservice.name" . }}
     spec:
       serviceAccount: {{ .Values.environment }}-service-account        
       containers:
       - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-scheduler-webapi:{{ .Values.image.tag }}
-        name: {{ $name }}     
+        name: {{ template "schedulerservice.name" . }}   
         livenessProbe:
           httpGet:
             scheme: HTTP

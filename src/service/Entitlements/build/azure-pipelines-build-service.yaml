@@ -1,0 +1,72 @@
+trigger:
+  branches:
+    include:
+      - master
+      # Building of release and feature branches via Pull Requests using Azure Git is handled in Branch Policies.
+  paths:
+    include:
+      - 'src/service/Entitlements/*'
+
+pool: PDXA-CSD-EKS01
+
+variables:
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  serviceName: Entitlements
+  rootServiceFolder: '$(System.DefaultWorkingDirectory)/src/service/Entitlements'
+  ecrRepositoryName: 'rpd-ccss-entitlements-webapi'
+  isMasterBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+
+jobs:
+  - job: BuildTestAndDeploy
+    displayName: 'Build, test and Deploy'
+    timeoutInMinutes: 20
+
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/build/templates/update-buildnumber.yaml
+        parameters:
+          buildId: $(Build.BuildId)
+
+      - task: PowerShell@2
+        displayName: 'Build'
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: '-service $(serviceName) -action build'
+
+      - task: PowerShell@2
+        displayName: 'Run unit tests'
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: '-service $(serviceName) -action unittest -collectCoverage true'
+
+      - task: PublishTestResults@2
+        displayName: 'Publish Unit Test Results'
+        inputs:
+          testResultsFormat: 'VSTest'
+          testResultsFiles: '**/*.trx'
+          searchFolder: '$(rootServiceFolder)/UnitTestResults'
+          failTaskOnFailedTests: true
+
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish Code Coverage'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(rootServiceFolder)/UnitTestResults/coverage.cobertura.xml'
+          pathToSources: '$(rootServiceFolder)'
+          failIfCoverageEmpty: true
+
+      - task: PowerShell@2
+        displayName: 'Publish & Push Image'
+        inputs:
+          filePath: build/azure-build-pipeline.ps1
+          arguments: '-service $(serviceName) -action publishAndPushImage -branch $(Build.SourceBranchName) -imageSuffix $(Build.BuildId) -ecrRepositoryName $(ecrRepositoryName)'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: Charts'
+        inputs:
+          PathtoPublish: $(rootServiceFolder)/deploy
+          ArtifactName: Charts
+        condition: succeededOrFailed()

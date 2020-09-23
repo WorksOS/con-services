@@ -14,7 +14,7 @@ namespace VSS.TRex.Filters
   /// <summary>
   /// Contains all of the model state relevant to describing the parameters of a cell attribute filter
   /// </summary>
-  public class CellPassAttributeFilterModel : ICellPassAttributeFilterModel
+  public class CellPassAttributeFilterModel : VersionCheckedBinarizableSerializationBase, ICellPassAttributeFilterModel
   {
     const byte VERSION_NUMBER = 1;
 
@@ -359,8 +359,7 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Serialize the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
-    /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -434,76 +433,79 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Deserialize the state of the cell pass attribute filter using the FromToBinary serialization approach
     /// </summary>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      RequestedGridDataType = (GridDataType)reader.ReadByte();
-      HasTimeFilter = reader.ReadBoolean();
-      HasMachineFilter = reader.ReadBoolean();
-      HasMachineDirectionFilter = reader.ReadBoolean();
-      HasDesignFilter = reader.ReadBoolean();
-      HasVibeStateFilter = reader.ReadBoolean();
-      HasLayerStateFilter = reader.ReadBoolean();
-      HasElevationMappingModeFilter = reader.ReadBoolean();
-      HasElevationTypeFilter = reader.ReadBoolean();
-      HasGCSGuidanceModeFilter = reader.ReadBoolean();
-      HasGPSAccuracyFilter = reader.ReadBoolean();
-      HasGPSToleranceFilter = reader.ReadBoolean();
-      HasPositioningTechFilter = reader.ReadBoolean();
-      HasLayerIDFilter = reader.ReadBoolean();
-      HasElevationRangeFilter = reader.ReadBoolean();
-      HasPassTypeFilter = reader.ReadBoolean();
-      HasCompactionMachinesOnlyFilter = reader.ReadBoolean();
-      HasTemperatureRangeFilter = reader.ReadBoolean();
-      FilterTemperatureByLastPass = reader.ReadBoolean();
-      HasPassCountRangeFilter = reader.ReadBoolean();
+      if (version == 1)
+      {
+        RequestedGridDataType = (GridDataType) reader.ReadByte();
+        HasTimeFilter = reader.ReadBoolean();
+        HasMachineFilter = reader.ReadBoolean();
+        HasMachineDirectionFilter = reader.ReadBoolean();
+        HasDesignFilter = reader.ReadBoolean();
+        HasVibeStateFilter = reader.ReadBoolean();
+        HasLayerStateFilter = reader.ReadBoolean();
+        HasElevationMappingModeFilter = reader.ReadBoolean();
+        HasElevationTypeFilter = reader.ReadBoolean();
+        HasGCSGuidanceModeFilter = reader.ReadBoolean();
+        HasGPSAccuracyFilter = reader.ReadBoolean();
+        HasGPSToleranceFilter = reader.ReadBoolean();
+        HasPositioningTechFilter = reader.ReadBoolean();
+        HasLayerIDFilter = reader.ReadBoolean();
+        HasElevationRangeFilter = reader.ReadBoolean();
+        HasPassTypeFilter = reader.ReadBoolean();
+        HasCompactionMachinesOnlyFilter = reader.ReadBoolean();
+        HasTemperatureRangeFilter = reader.ReadBoolean();
+        FilterTemperatureByLastPass = reader.ReadBoolean();
+        HasPassCountRangeFilter = reader.ReadBoolean();
 
-      StartTime = DateTime.FromBinary(reader.ReadLong());
-      EndTime = DateTime.FromBinary(reader.ReadLong());
+        StartTime = DateTime.FromBinary(reader.ReadLong());
+        EndTime = DateTime.FromBinary(reader.ReadLong());
 
-      var machineCount = reader.ReadInt();
-      MachinesList = new Guid[machineCount];
-      for (var i = 0; i < machineCount; i++)
-        MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
+        var machineCount = reader.ReadInt();
+        MachinesList = new Guid[machineCount];
+        for (var i = 0; i < machineCount; i++)
+          MachinesList[i] = reader.ReadGuid() ?? Guid.Empty;
 
-      DesignNameID = reader.ReadInt();
-      VibeState = (VibrationState)reader.ReadByte();
-      MachineDirection = (MachineDirection)reader.ReadByte();
-      PassTypeSet = (PassTypeSet)reader.ReadByte();
+        DesignNameID = reader.ReadInt();
+        VibeState = (VibrationState) reader.ReadByte();
+        MachineDirection = (MachineDirection) reader.ReadByte();
+        PassTypeSet = (PassTypeSet) reader.ReadByte();
 
-      ElevationMappingMode = (ElevationMappingMode)reader.ReadByte();
-      PositioningTech = (PositioningTech)reader.ReadByte();
-      GPSTolerance = (ushort)reader.ReadInt();
-      GPSAccuracyIsInclusive = reader.ReadBoolean();
-      GPSAccuracy = (GPSAccuracy)reader.ReadByte();
-      GPSToleranceIsGreaterThan = reader.ReadBoolean();
+        ElevationMappingMode = (ElevationMappingMode) reader.ReadByte();
+        PositioningTech = (PositioningTech) reader.ReadByte();
+        GPSTolerance = (ushort) reader.ReadInt();
+        GPSAccuracyIsInclusive = reader.ReadBoolean();
+        GPSAccuracy = (GPSAccuracy) reader.ReadByte();
+        GPSToleranceIsGreaterThan = reader.ReadBoolean();
 
-      ElevationType = (ElevationType)reader.ReadByte();
-      GCSGuidanceMode = (AutomaticsType)reader.ReadByte();
+        ElevationType = (ElevationType) reader.ReadByte();
+        GCSGuidanceMode = (AutomaticsType) reader.ReadByte();
 
-      ReturnEarliestFilteredCellPass = reader.ReadBoolean();
+        ReturnEarliestFilteredCellPass = reader.ReadBoolean();
 
-      ElevationRangeLevel = reader.ReadDouble();
-      ElevationRangeOffset = reader.ReadDouble();
-      ElevationRangeThickness = reader.ReadDouble();
+        ElevationRangeLevel = reader.ReadDouble();
+        ElevationRangeOffset = reader.ReadDouble();
+        ElevationRangeThickness = reader.ReadDouble();
 
-      ElevationRangeDesign = new DesignOffset();
-      if (reader.ReadBoolean())
-        ElevationRangeDesign.FromBinary(reader);
+        ElevationRangeDesign = new DesignOffset();
+        if (reader.ReadBoolean())
+          ElevationRangeDesign.FromBinary(reader);
 
-      LayerState = (LayerState)reader.ReadByte();
-      LayerID = reader.ReadInt();
+        LayerState = (LayerState) reader.ReadByte();
+        LayerID = reader.ReadInt();
 
-      var surveyedSurfaceCount = reader.ReadInt();
-      SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
-      for (var i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
-        SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
+        var surveyedSurfaceCount = reader.ReadInt();
+        SurveyedSurfaceExclusionList = new Guid[surveyedSurfaceCount];
+        for (var i = 0; i < SurveyedSurfaceExclusionList.Length; i++)
+          SurveyedSurfaceExclusionList[i] = reader.ReadGuid() ?? Guid.Empty;
 
-      MaterialTemperatureMin = (ushort)reader.ReadInt();
-      MaterialTemperatureMax = (ushort)reader.ReadInt();
-      PassCountRangeMin = (ushort)reader.ReadInt();
-      PassCountRangeMax = (ushort)reader.ReadInt();
+        MaterialTemperatureMin = (ushort) reader.ReadInt();
+        MaterialTemperatureMax = (ushort) reader.ReadInt();
+        PassCountRangeMin = (ushort) reader.ReadInt();
+        PassCountRangeMax = (ushort) reader.ReadInt();
+      }
     }
   }
 }

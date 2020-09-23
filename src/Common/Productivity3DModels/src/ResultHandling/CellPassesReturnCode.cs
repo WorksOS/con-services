@@ -4,6 +4,7 @@
   {
     DataFound = 0,
     NoDataFound = 1,
-    Error = 2
+    Error = 2,
+    FailedToPrepareFilter = 3
   }
 }

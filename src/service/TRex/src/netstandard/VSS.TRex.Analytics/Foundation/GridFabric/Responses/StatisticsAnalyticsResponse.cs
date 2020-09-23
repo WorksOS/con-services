@@ -57,10 +57,9 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -77,21 +76,23 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.Responses
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      Counts = reader.ReadLongArray();
-      CellSize = reader.ReadDouble();
-      SummaryCellsScanned = reader.ReadInt();
-      CellsScannedAtTarget = reader.ReadInt();
-      CellsScannedOverTarget = reader.ReadInt();
-      CellsScannedUnderTarget = reader.ReadInt();
-      IsTargetValueConstant = reader.ReadBoolean();
-      MissingTargetValue = reader.ReadBoolean();
+      if (version == 1)
+      {
+        Counts = reader.ReadLongArray();
+        CellSize = reader.ReadDouble();
+        SummaryCellsScanned = reader.ReadInt();
+        CellsScannedAtTarget = reader.ReadInt();
+        CellsScannedOverTarget = reader.ReadInt();
+        CellsScannedUnderTarget = reader.ReadInt();
+        IsTargetValueConstant = reader.ReadBoolean();
+        MissingTargetValue = reader.ReadBoolean();
+      }
     }
 
     public double ValueAtTargetPercent => SummaryCellsScanned > 0 ? (double)CellsScannedAtTarget / SummaryCellsScanned * 100 : 0;

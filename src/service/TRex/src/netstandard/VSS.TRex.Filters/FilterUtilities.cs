@@ -33,8 +33,6 @@ namespace VSS.TRex.Filters
       // Fence DesignBoundary = null;
       var result = RequestErrorStatus.OK;
 
-      //RequestResult: TDesignProfilerRequestResult;
-
       if (filter == null)
         return result;
 
@@ -62,11 +60,11 @@ namespace VSS.TRex.Filters
             try
             {
               neeCoords = DIContext
-              .Obtain<IConvertCoordinates>()
+              .Obtain<ICoreXWrapper>()
               .LLHToNEE(siteModel.CSIB(), llhCoords.ToCoreX_XYZ(), InputAs.Radians)
               .ToTRex_XYZ();
             }
-            catch
+            catch (Exception e)
             {
               return RequestErrorStatus.FailedToConvertClientWGSCoords;
             }
@@ -92,7 +90,7 @@ namespace VSS.TRex.Filters
             try
             {
               neeCoords = DIContext
-                .Obtain<IConvertCoordinates>()
+                .Obtain<ICoreXWrapper>()
                 .LLHToNEE(siteModel.CSIB(), llhCoords.ToCoreX_XYZ(), InputAs.Radians)
                 .ToTRex_XYZ();
             }
@@ -117,7 +115,7 @@ namespace VSS.TRex.Filters
           var boundaryRequest = new AlignmentDesignFilterBoundaryRequest();
 
           var boundaryResult = boundaryRequest.Execute
-          (new AlignmentDesignFilterBoundaryArgument()
+          (new AlignmentDesignFilterBoundaryArgument
           {
             ProjectID = dataModelId,
             ReferenceDesign = new DesignOffset(filter.SpatialFilter.AlignmentDesignMaskDesignUID, 0),
@@ -182,7 +180,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Constructs the set of filters that will be used to derive the set of production data sub grids.
     /// </summary>
-    /// <returns></returns>
     public static IFilterSet ConstructFilters(IFilterSet filterSet, VolumeComputationType volumeType)
     {
       if (volumeType == VolumeComputationType.None)

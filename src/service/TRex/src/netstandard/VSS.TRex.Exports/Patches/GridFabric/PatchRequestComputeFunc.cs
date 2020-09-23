@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Exports.Patches.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -11,12 +10,12 @@ using System;
 namespace VSS.TRex.Exports.Patches.GridFabric
 {
   /// <summary>
-  /// The grid compute function responsible for coordinating subgrids comprising a patch a server compute node in response to 
+  /// The grid compute function responsible for coordinating sub grids comprising a patch a server compute node in response to 
   /// a client server instance requesting it.
   /// </summary>
   public class PatchRequestComputeFunc : BaseComputeFunc, IComputeFunc<PatchRequestArgument, PatchRequestResponse>
   {
-    private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<PatchRequestComputeFunc>();
 
     /// <summary>
     /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -31,8 +30,11 @@ namespace VSS.TRex.Exports.Patches.GridFabric
 
       try
       {
+        // Export requests can be a significant resource commitment. Ensure TPaaS will be listening...
+        PerformTPaaSRequestLivelinessCheck(arg);
+
         // Supply the TRex ID of the Ignite node currently running this code to permit processing contexts to send
-        // subgrid results to it.
+        // sub grid results to it.
         arg.TRexNodeID = TRexNodeID.ThisNodeID(StorageMutability.Immutable);
 
         _log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
@@ -43,7 +45,7 @@ namespace VSS.TRex.Exports.Patches.GridFabric
         _log.LogInformation("Executing request.ExecuteAsync()");
 
         if (!request.ExecuteAsync().WaitAndUnwrapException())
-          _log.LogError($"Request execution failed");
+          _log.LogError("Request execution failed");
 
         return request.PatchSubGridsResponse;
       }

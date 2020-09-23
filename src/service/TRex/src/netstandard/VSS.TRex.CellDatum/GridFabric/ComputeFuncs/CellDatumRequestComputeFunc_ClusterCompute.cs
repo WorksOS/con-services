@@ -16,7 +16,7 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 {
   /// <summary>
   /// This compute func operates in the context of an application server that reaches out to the compute cluster to 
-  /// perform subgrid processing.
+  /// perform sub grid processing.
   /// </summary>
   public class CellDatumRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFuncArgument<CellDatumRequestArgument_ClusterCompute>, IComputeFunc<CellDatumResponse_ClusterCompute>
   {
@@ -32,6 +32,9 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
 
       try
       {
+        // Ensure TPaaS will be listening as this is usually supporting user UX centric mouse hover requests
+        PerformTPaaSRequestLivelinessCheck(Argument);
+
         var request = new CellDatumComputeFuncExecutor_ClusterCompute();
 
         _log.LogInformation("Executing CellDatumRequestComputeFunc_ClusterCompute.ExecuteAsync()");
@@ -56,22 +59,29 @@ namespace VSS.TRex.CellDatum.GridFabric.ComputeFuncs
       }
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
+
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
       writer.WriteBoolean(Argument != null);
       Argument?.ToBinary(writer);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
-      if (reader.ReadBoolean())
+      base.InternalFromBinary(reader);
+
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
       {
-        Argument = new CellDatumRequestArgument_ClusterCompute();
-        Argument.FromBinary(reader);
+        if (reader.ReadBoolean())
+        {
+          Argument = new CellDatumRequestArgument_ClusterCompute();
+          Argument.FromBinary(reader);
+        }
       }
     }
   }

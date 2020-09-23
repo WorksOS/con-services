@@ -17,6 +17,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -246,7 +247,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
-            customHeaders: CustomHeaders)
+            customHeaders: CustomHeaders,
+            userId: GetUserId(), 
+            fileImportProxy: FileImportProxy)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
       Log.LogInformation($"GetExportReportVeta completed");
@@ -322,7 +325,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
             configStore: ConfigStore,
             trexCompactionDataProxy: TRexCompactionDataProxy,
-            customHeaders: CustomHeaders)
+            customHeaders: CustomHeaders,
+            userId: GetUserId(), 
+            fileImportProxy: FileImportProxy)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
       Log.LogInformation($"GetExportReportMachinePasses completed");
@@ -387,7 +392,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             RaptorClient,
 #endif
             configStore: ConfigStore,
-            trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
+            trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+            userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(exportRequest)) as CompactionExportResult;
 
       Log.LogInformation("GetExportReportSurface completed");

@@ -2,11 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>CoreXModels</RootNamespace>
+    <AssemblyName>CoreX.Models</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="CsdManagementWrapper">
+      <HintPath>..\CoreX\CoreXLibs\trimble.csdmanagementwrapper\3.0.2\lib\netstandard2.0\CsdManagementWrapper.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>

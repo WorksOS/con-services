@@ -33,7 +33,6 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Copy the state of another FilteredPassData instance to this one
     /// </summary>
-    /// <param name="source"></param>
     public void Assign(FilteredPassData source)
     {
       MachineType = source.MachineType;
@@ -45,7 +44,6 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Serializes content of the cell to the writer
     /// </summary>
-    /// <param name="writer"></param>
     public void ToBinary(IBinaryRawWriter writer)
     {
       writer.WriteByte((byte)MachineType);
@@ -58,7 +56,6 @@ namespace VSS.TRex.Filters.Models
     /// <summary>
     /// Serializes content of the cell from the writer
     /// </summary>
-    /// <param name="reader"></param>
     public void FromBinary(IBinaryRawReader reader)
     {
       MachineType = (MachineType)reader.ReadByte();

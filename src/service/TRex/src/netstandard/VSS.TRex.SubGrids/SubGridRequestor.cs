@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -31,6 +31,8 @@ namespace VSS.TRex.SubGrids
   public class SubGridRequestor : ISubGridRequestor
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger<SubGridRequestor>();
+
+    private readonly bool _isTraceLoggingEnabled = _log.IsTraceEnabled();
 
     /// <summary>
     /// Local reference to the client sub grid factory
@@ -153,7 +155,7 @@ namespace VSS.TRex.SubGrids
     /// InitialiseFilterContext performs any required filter initialization and configuration
     /// that is external to the filter prior to engaging in cell by cell processing of this sub grid
     /// </summary>
-    private async Task<bool> InitialiseFilterContext()
+    private bool InitialiseFilterContext()
     {
       if (_filter == null)
         return true;
@@ -170,9 +172,9 @@ namespace VSS.TRex.SubGrids
         if (_elevationRangeDesign != null)
         {
           // Query the design to get the patch of elevations calculated from the design
-          var getDesignHeightsResult = await _elevationRangeDesign.Design.GetDesignHeights(
-            _siteModel.ID, _elevationRangeDesign.Offset, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
-          _elevationRangeDesignElevations = getDesignHeightsResult.designHeights.Cells;
+          var getDesignHeightsResult = _elevationRangeDesign.Design.GetDesignHeightsViaLocalCompute(_siteModel,
+          _elevationRangeDesign.Offset, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
+          _elevationRangeDesignElevations = getDesignHeightsResult.designHeights?.Cells;
 
           if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
               || _elevationRangeDesignElevations == null)
@@ -188,8 +190,8 @@ namespace VSS.TRex.SubGrids
         // Query the DesignProfiler service to get the patch of elevations calculated
 
         //Spatial design filter - don't care about offset
-        var getDesignHeightsResult = await _surfaceDesignMaskDesign.GetDesignHeights(_siteModel.ID, 0, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
-        _surfaceDesignMaskElevations = getDesignHeightsResult.designHeights.Cells;
+        var getDesignHeightsResult = _surfaceDesignMaskDesign.GetDesignHeightsViaLocalCompute(_siteModel, 0, _clientGrid.OriginAsCellAddress(), _clientGrid.CellSize);
+        _surfaceDesignMaskElevations = getDesignHeightsResult.designHeights?.Cells;
 
         if ((getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK && getDesignHeightsResult.errorCode != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
              || _surfaceDesignMaskElevations == null)
@@ -320,7 +322,7 @@ namespace VSS.TRex.SubGrids
     /// <summary>
     /// Annotates height information with elevations from surveyed surfaces
     /// </summary>
-    private async Task<ServerRequestResult> PerformHeightAnnotation()
+    private ServerRequestResult PerformHeightAnnotation()
     {
       if (!_haveComputedSpatialFilterMaskAndClientProdDataMap)
       {
@@ -361,7 +363,7 @@ namespace VSS.TRex.SubGrids
         // Instantiate an argument object for the surface elevation patch request. We always want to request all surface elevations to 
         // promote cacheability.
         var surfaceElevationPatchArg = new SurfaceElevationPatchArgument
-          {
+        {
           SiteModelID = _siteModel.ID,
           OTGCellBottomLeftX = _clientGrid.OriginX,
           OTGCellBottomLeftY = _clientGrid.OriginY,
@@ -371,7 +373,7 @@ namespace VSS.TRex.SubGrids
           ProcessingMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled)
         };
 
-        if (!(await _surfaceElevationPatchRequest.ExecuteAsync(surfaceElevationPatchArg) is ClientHeightAndTimeLeafSubGrid surfaceElevations))
+        if (!(_surfaceElevationPatchRequest.Execute(surfaceElevationPatchArg) is ClientHeightAndTimeLeafSubGrid surfaceElevations))
         {
           return result;
         }
@@ -420,7 +422,7 @@ namespace VSS.TRex.SubGrids
     /// Responsible for coordinating the retrieval of production data for a sub grid from a site model and also annotating it with
     /// surveyed surface information for requests involving height data.
     /// </summary>
-    public async Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> RequestSubGridInternal(
+    public (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid) RequestSubGridInternal(
       SubGridCellAddress subGridAddress,
       bool prodDataRequested,
       bool surveyedSurfaceDataRequested)
@@ -446,7 +448,7 @@ namespace VSS.TRex.SubGrids
 
       _clientGrid = result.clientGrid;
 
-      if (ShouldInitialiseFilterContext() && !await InitialiseFilterContext())
+      if (ShouldInitialiseFilterContext() && !InitialiseFilterContext())
       {
         result.requestResult = ServerRequestResult.FilterInitialisationFailure;
         ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
@@ -457,6 +459,9 @@ namespace VSS.TRex.SubGrids
 
       if (_prodDataRequested)
       {
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("Performing data extraction");
+
         if ((result.requestResult = PerformDataExtraction()) != ServerRequestResult.NoError)
         {
           ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
@@ -466,7 +471,10 @@ namespace VSS.TRex.SubGrids
 
       if (_surveyedSurfaceDataRequested)
       {
-        if ((result.requestResult = await PerformHeightAnnotation()) != ServerRequestResult.NoError)
+        if (_isTraceLoggingEnabled)
+          _log.LogTrace("Performing height annotation");
+
+        if ((result.requestResult = PerformHeightAnnotation()) != ServerRequestResult.NoError)
         {
           ClientLeafSubGridFactory.ReturnClientSubGrid(ref _clientGrid);
           return result;

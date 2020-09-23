@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.GridFabric.Arguments;
@@ -37,10 +38,9 @@ namespace VSS.TRex.Reports.Gridded
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -55,19 +55,21 @@ namespace VSS.TRex.Reports.Gridded
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ReportElevation = reader.ReadBoolean();
-      ReportCmv = reader.ReadBoolean();
-      ReportMdp = reader.ReadBoolean();
-      ReportPassCount = reader.ReadBoolean();
-      ReportTemperature = reader.ReadBoolean();
-      ReportCutFill = reader.ReadBoolean();
+      if (version == 1)
+      {
+        ReportElevation = reader.ReadBoolean();
+        ReportCmv = reader.ReadBoolean();
+        ReportMdp = reader.ReadBoolean();
+        ReportPassCount = reader.ReadBoolean();
+        ReportTemperature = reader.ReadBoolean();
+        ReportCutFill = reader.ReadBoolean();
+      }
     }
 
     public void Write(BinaryWriter writer)
@@ -78,6 +80,7 @@ namespace VSS.TRex.Reports.Gridded
       writer.Write(ReportMdp);
       writer.Write(ReportPassCount);
       writer.Write(ReportTemperature);
+      writer.Write(RequestEmissionDateUtc.ToBinary());
     }
 
     public void Read(BinaryReader reader)
@@ -88,6 +91,7 @@ namespace VSS.TRex.Reports.Gridded
       ReportMdp = reader.ReadBoolean();
       ReportPassCount = reader.ReadBoolean();
       ReportTemperature = reader.ReadBoolean();
+      RequestEmissionDateUtc = DateTime.FromBinary(reader.ReadInt64());
     }
   }
 }

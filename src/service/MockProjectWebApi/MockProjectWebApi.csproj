@@ -66,6 +66,7 @@
     <Content Remove="Json\ALK\ProjectThumbnail.json" />
     <Content Remove="Json\ALK\Satellite439x438.json" />
     <Content Remove="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
+    <Content Remove="Json\Filters\DimensionsProjectExtents.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
     <Content Remove="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />
@@ -138,6 +139,9 @@
     <EmbeddedResource Include="Json\ALK\ProjectThumbnail.json" />
     <EmbeddedResource Include="Json\ALK\Satellite439x438.json" />
     <EmbeddedResource Include="Json\ColorSettings\7925f179-013d-4aaf-aff4-7b9833bb06d6.json" />
+    <EmbeddedResource Include="Json\Filters\DimensionsProjectExtents.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101First.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterCustom20121101Last.json" />
     <EmbeddedResource Include="Json\Filters\Dimensions\SummaryVolumesFilterNoDates.json" />

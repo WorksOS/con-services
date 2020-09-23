@@ -1,5 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using VSS.Serilog.Extensions;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -13,9 +14,11 @@ namespace VSS.TRex.Designs.Executors
     {
         private static readonly ILogger _log = Logging.Logger.CreateLogger<CalculateDesignElevationPatch>();
 
-        private static IDesignFiles _designs;
+        private readonly bool _isTraceLoggingEnabled = _log.IsTraceEnabled();
 
-        private IDesignFiles Designs => _designs ??= DIContext.Obtain<IDesignFiles>();
+        private IDesignFiles _designs;
+
+        private IDesignFiles Designs => _designs ??= DIContext.ObtainRequired<IDesignFiles>();
 
         /// <summary>
         /// Default no-args constructor
@@ -24,28 +27,24 @@ namespace VSS.TRex.Designs.Executors
         {
         }
 
-      /// <summary>
-      /// Performs the donkey work of the elevation patch calculation
-      /// </summary>
-      /// <param name="calcResult"></param>
-      /// <param name="projectUid"></param>
-      /// <param name="referenceDesign"></param>
-      /// <param name="cellSize"></param>
-      /// <param name="originX"></param>
-      /// <param name="originY"></param>
-      /// <returns></returns>
-      private IClientHeightLeafSubGrid Calc(Guid projectUid, DesignOffset referenceDesign, double cellSize, int originX, int originY,
+        /// <summary>
+        /// Performs the donkey work of the elevation patch calculation
+        /// </summary>
+        private IClientHeightLeafSubGrid Calc(ISiteModelBase siteModel, DesignOffset referenceDesign, double cellSize, int originX, int originY,
           out DesignProfilerRequestResult calcResult)
         {
             calcResult = DesignProfilerRequestResult.UnknownError;
 
-            var design = Designs.Lock(referenceDesign.DesignID, projectUid, cellSize, out var lockResult);
+            if (_isTraceLoggingEnabled)
+              _log.LogTrace("About to lock design");
+
+            var design = Designs.Lock(referenceDesign.DesignID, siteModel, cellSize, out var lockResult);
 
             if (design == null)
             {
                 _log.LogWarning($"Failed to read design file for design {referenceDesign.DesignID}");
 
-                calcResult = lockResult == DesignLoadResult.DesignDoesNotExist 
+                calcResult = lockResult == DesignLoadResult.DesignDoesNotExist
                 ? DesignProfilerRequestResult.DesignDoesNotExist
                 : DesignProfilerRequestResult.FailedToLoadDesignFile;
 
@@ -54,6 +53,9 @@ namespace VSS.TRex.Designs.Executors
 
             try
             {
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Computing sub grid elevation patch");
+
                 // Check to see if this sub grid has any design surface underlying it
                 // from which to calculate an elevation patch. If not, don't bother...
                 if (!design.HasElevationDataForSubGridPatch(originX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
@@ -73,19 +75,27 @@ namespace VSS.TRex.Designs.Executors
                   ? DesignProfilerRequestResult.OK 
                   : DesignProfilerRequestResult.NoElevationsInRequestedPatch;
 
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Computed sub grid elevation patch");
+
                 return result;
             }
             finally
             {
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Unlocking design");
+
                 Designs.UnLock(referenceDesign.DesignID, design);
+
+                if (_isTraceLoggingEnabled)
+                  _log.LogTrace("Completed calculating design elevations");
             }
         }
 
         /// <summary>
         /// Performs execution business logic for this executor
         /// </summary>
-        /// <returns></returns>
-        public IClientHeightLeafSubGrid Execute(Guid projectUid, DesignOffset referenceDesign, double cellSize, int originX, int originY, out DesignProfilerRequestResult calcResult)
+        public IClientHeightLeafSubGrid Execute(ISiteModelBase siteModel, DesignOffset referenceDesign, double cellSize, int originX, int originY, out DesignProfilerRequestResult calcResult)
         {
             // Perform the design elevation patch calculation
             try
@@ -97,7 +107,7 @@ namespace VSS.TRex.Designs.Executors
                 */
 
                 // Calculate the patch of elevations and return it
-                return Calc(projectUid, referenceDesign, cellSize, originX, originY, out calcResult);
+                return Calc(siteModel, referenceDesign, cellSize, originX, originY, out calcResult);
             }
             finally
             {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
@@ -34,7 +33,7 @@ namespace VSS.TRex.Designs
 
     public abstract DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
 
-    public abstract Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
+    public abstract DesignLoadResult LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
       bool loadIndices = false);
 
     public abstract void GetExtents(out double x1, out double y1, out double x2, out double y2);

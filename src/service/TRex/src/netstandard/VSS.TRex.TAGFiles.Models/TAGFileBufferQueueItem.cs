@@ -2,14 +2,13 @@
 using Apache.Ignite.Core.Binary;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.TAGFiles.Models
 {
   /// <summary>
   /// Represents the state of a TAG file stored in the TAG file buffer queue awaiting processing.
   /// </summary>
-  public class TAGFileBufferQueueItem : IBinarizable, IFromToBinary
+  public class TAGFileBufferQueueItem : VersionCheckedBinarizableSerializationBase
   { 
     public const byte VERSION_NUMBER = 3;
     private static byte[] VERSION_NUMBERS = { 1, 2, 3 };
@@ -54,15 +53,11 @@ namespace VSS.TRex.TAGFiles.Models
     public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
 
     /// <summary>
-    /// The orign source that produced the TAG file, such as GCS900, Eathworjs etc
+    /// The origin source that produced the TAG file, such as GCS900, Earthworks etc
     /// </summary>
     public TAGFileOriginSource OriginSource { get; set; } = TAGFileOriginSource.LegacyTAGFileSource;
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -76,17 +71,20 @@ namespace VSS.TRex.TAGFiles.Models
       writer.WriteInt((int)OriginSource);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
       var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
-      InsertUTC = DateTime.FromBinary(reader.ReadLong());
-      FileName = reader.ReadString();
-      Content = reader.ReadByteArray();
-      ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      AssetID = reader.ReadGuid() ?? Guid.Empty;
-      IsJohnDoe = reader.ReadBoolean();
-
+      if (messageVersion >= 1)
+      {
+        InsertUTC = DateTime.FromBinary(reader.ReadLong());
+        FileName = reader.ReadString();
+        Content = reader.ReadByteArray();
+        ProjectID = reader.ReadGuid() ?? Guid.Empty;
+        AssetID = reader.ReadGuid() ?? Guid.Empty;
+        IsJohnDoe = reader.ReadBoolean();
+      }
+      
       if (messageVersion >= 2)
       {
         SubmissionFlags = (TAGFileSubmissionFlags)reader.ReadInt();

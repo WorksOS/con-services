@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Interfaces.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.Designs.Interfaces;
@@ -12,6 +15,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Designs.Storage
 {
@@ -20,6 +24,10 @@ namespace VSS.TRex.Designs.Storage
   /// </summary>
   public class Design : IEquatable<IDesign>, IBinaryReaderWriter, IDesign
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<Design>();
+
+    private readonly CalculateDesignElevationPatch _designElevationCalculator = new CalculateDesignElevationPatch();
+
     /// <summary>
     /// Binary serialization logic
     /// </summary>
@@ -65,10 +73,13 @@ namespace VSS.TRex.Designs.Storage
           CellSize = cellSize,
           StartPoint = startPoint,
           EndPoint = endPoint,
-          PositionsAreGrid = arePositionsGrid
+          PositionsAreGrid = arePositionsGrid,
+          ReferenceDesign =
+          {
+            DesignID = DesignDescriptor.DesignID,
+            Offset = offset
+          }
         };
-        arg.ReferenceDesign.DesignID = DesignDescriptor.DesignID;
-        arg.ReferenceDesign.Offset = offset;
 
         var profileResult = await profileRequest.ExecuteAsync(arg);
         return (profileResult.Profile, profileResult.RequestResult);
@@ -151,7 +162,22 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Calculates an elevation sub grid for a designated sub grid on this design
     /// </summary>
-    public async Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeights(
+    public (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) GetDesignHeightsViaLocalCompute(
+      ISiteModelBase siteModel,
+      double offset,
+      SubGridCellAddress originCellAddress,
+      double cellSize)
+    {
+      var heightsResult = _designElevationCalculator.Execute(siteModel, new DesignOffset(DesignDescriptor.DesignID, offset), 
+        cellSize, originCellAddress.X, originCellAddress.Y, out var calcResult);
+
+      return (heightsResult, calcResult);
+    }
+
+    /// <summary>
+    /// Calculates an elevation sub grid for a designated sub grid on this design
+    /// </summary>
+    public async Task<(IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode)> GetDesignHeightsViaDesignElevationService(
       Guid siteModelId,
       double offset,
       SubGridCellAddress originCellAddress,
@@ -175,7 +201,40 @@ namespace VSS.TRex.Designs.Storage
     /// <summary>
     /// Calculates a filter mask for a designated sub grid on this design
     /// </summary>
-    public async Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMask(
+    public (SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode) GetFilterMaskViaLocalCompute(
+      ISiteModelBase siteModel,
+      SubGridCellAddress originCellAddress,
+      double cellSize)
+    {
+      // Calculate an elevation patch for the requested location and convert it into a bitmask detailing which cells have non-null values
+      var patch = _designElevationCalculator.Execute(siteModel, new DesignOffset(DesignDescriptor.DesignID, 0),
+        cellSize, originCellAddress.X, originCellAddress.Y, out var calcResult);
+
+      if (patch == null)
+      {
+        _log.LogWarning($"Request for design elevation patch that does not exist: Project: {siteModel.ID}, design {DesignDescriptor.DesignID}, location {originCellAddress.X}:{originCellAddress.Y}, calcResult: {calcResult}");
+        return (null, calcResult); // Requestors should not ask for sub grids that don't exist in the design.
+      }
+
+      var mask = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+      var patchCells = patch.Cells;
+
+      for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+      {
+        for (byte j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+        {
+          if (patchCells[i, j].Equals(Common.Consts.NullHeight))
+            mask[i, j] = true;
+        }
+      }
+
+      return (mask, calcResult);
+    }
+
+    /// <summary>
+    /// Calculates a filter mask for a designated sub grid on this design
+    /// </summary>
+    public async Task<(SubGridTreeBitmapSubGridBits filterMask, DesignProfilerRequestResult errorCode)> GetFilterMaskViaDesignElevationService(
       Guid siteModelId,
       SubGridCellAddress originCellAddress,
       double cellSize)
@@ -192,7 +251,7 @@ namespace VSS.TRex.Designs.Storage
         ProjectID = siteModelId
       });
 
-      return (maskResponse?.Bits, maskResponse.RequestResult);
+      return (maskResponse?.Bits, maskResponse?.RequestResult ?? DesignProfilerRequestResult.UnknownError);
     }
   }
 }

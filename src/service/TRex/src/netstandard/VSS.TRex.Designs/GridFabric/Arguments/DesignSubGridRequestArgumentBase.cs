@@ -16,11 +16,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Constructor taking the full state of the elevation patch computation operation
     /// </summary>
-    /// <param name="siteModelID"></param>
-    /// <param name="referenceDesign"></param>
-    protected DesignSubGridRequestArgumentBase(Guid siteModelID, DesignOffset referenceDesign) : this()
+    protected DesignSubGridRequestArgumentBase(Guid siteModelId, DesignOffset referenceDesign) : this()
     {
-      ProjectID = siteModelID;
+      ProjectID = siteModelId;
       ReferenceDesign = referenceDesign;
     }
 

@@ -26,8 +26,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     public ExtractDXFBoundariesExecutorTests()
     {
       // Mock the coordinate conversion service
-      var mockCoordinateService = new Mock<IConvertCoordinates>();
-      mockCoordinateService.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreX.Models.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>())).Returns((string csib, CoreX.Models.XYZ[] coordinates, CoreX.Types.ReturnAs returnAs) => coordinates);
+      var mockCoordinateService = new Mock<ICoreXWrapper>();
+      mockCoordinateService.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<CoreXModels.XYZ[]>(), It.IsAny<CoreX.Types.ReturnAs>())).Returns((string csib, CoreXModels.XYZ[] coordinates, CoreX.Types.ReturnAs returnAs) => coordinates);
 
       DIBuilder.Continue().Add(x => x.AddSingleton(mockCoordinateService.Object)).Complete();
     }

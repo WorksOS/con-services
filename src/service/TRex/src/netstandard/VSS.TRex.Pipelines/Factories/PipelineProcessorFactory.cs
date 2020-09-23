@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
@@ -22,7 +21,7 @@ namespace VSS.TRex.Pipelines.Factories
     /// of pipelined requests
     /// </summary>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    public async Task<IPipelineProcessor> NewInstance<TSubGridsRequestArgument>(Guid requestDescriptor,
+    public IPipelineProcessor NewInstance<TSubGridsRequestArgument>(Guid requestDescriptor,
       Guid dataModelID,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
@@ -41,7 +40,7 @@ namespace VSS.TRex.Pipelines.Factories
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction, liftParams);
 
-      if (!await pipelineProcessor.BuildAsync())
+      if (!pipelineProcessor.Build())
       {
         Log.LogError($"Failed to build pipeline processor for request to model {dataModelID}");
         pipelineProcessor = null;

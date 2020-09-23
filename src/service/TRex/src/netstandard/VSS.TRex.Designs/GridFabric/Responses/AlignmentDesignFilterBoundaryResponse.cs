@@ -16,9 +16,9 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
     public Fence Boundary { get; set; }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -26,14 +26,17 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       Boundary?.ToBinary(writer);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      if (reader.ReadBoolean())
-        (Boundary ?? (Boundary = new Fence())).FromBinary(reader);
+      if (version == 1)
+      {
+        if (reader.ReadBoolean())
+          (Boundary ?? (Boundary = new Fence())).FromBinary(reader);
+      }
     }
   }
 }

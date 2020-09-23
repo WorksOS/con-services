@@ -20,8 +20,6 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
     /// <summary>
     /// Aggregates an other response with this response
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     public ProfileRequestResponse<T> AggregateWith(ProfileRequestResponse<T> other)
     {
       ProfileCells.AddRange(other.ProfileCells);
@@ -32,10 +30,9 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -54,29 +51,31 @@ namespace VSS.TRex.Profiling.GridFabric.Responses
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      GridDistanceBetweenProfilePoints = reader.ReadDouble();
-
-      if (reader.ReadBoolean())
+      if (version == 1)
       {
-        ProfileCells = new List<T>();
+        GridDistanceBetweenProfilePoints = reader.ReadDouble();
 
-        var numberOfProfileCells = reader.ReadInt();
-
-        if (numberOfProfileCells > 0)
+        if (reader.ReadBoolean())
         {
-          for (var i = 1; i <= numberOfProfileCells; i++)
-          {
-            var profileCell = new T();
+          ProfileCells = new List<T>();
 
-            profileCell.FromBinary(reader);
-            ProfileCells.Add(profileCell);
+          var numberOfProfileCells = reader.ReadInt();
+
+          if (numberOfProfileCells > 0)
+          {
+            for (var i = 1; i <= numberOfProfileCells; i++)
+            {
+              var profileCell = new T();
+
+              profileCell.FromBinary(reader);
+              ProfileCells.Add(profileCell);
+            }
           }
         }
       }

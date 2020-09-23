@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.GridFabric.Arguments;
 
 namespace VSS.TRex.Designs.GridFabric.Arguments
 {
@@ -14,9 +13,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     public double RightOffset { get; set; }
 
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -26,16 +25,19 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
       writer.WriteDouble(RightOffset);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      StartStation = reader.ReadDouble();
-      EndStation = reader.ReadDouble();
-      LeftOffset = reader.ReadDouble();
-      RightOffset = reader.ReadDouble();
+      if (version == 1)
+      {
+        StartStation = reader.ReadDouble();
+        EndStation = reader.ReadDouble();
+        LeftOffset = reader.ReadDouble();
+        RightOffset = reader.ReadDouble();
+      }
     }
   }
 }

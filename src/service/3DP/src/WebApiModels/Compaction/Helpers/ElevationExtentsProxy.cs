@@ -11,9 +11,11 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -69,6 +71,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// </summary>
     private readonly ITRexCompactionDataProxy trexCompactionDataProxy;
 
+    private readonly IFileImportProxy fileImportProxy;
+
+    /// <summary>
+    /// helper methods for getting project statistics from Raptor/TRex
+    /// </summary>
+    private ProjectStatisticsHelper ProjectStatisticsHelper => new ProjectStatisticsHelper(logger, configStore, fileImportProxy, trexCompactionDataProxy, log);
+
     /// <summary>
     /// Constructor with injection
     /// </summary>
@@ -82,7 +91,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IDataCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      ILoggerFactory logger, IDataCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, 
+      ITRexCompactionDataProxy trexCompactionDataProxy, IFileImportProxy fileImportProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -93,6 +103,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
       this.settingsManager = settingsManager;
       this.configStore = configStore;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
+      this.fileImportProxy = fileImportProxy;
     }
 
 
@@ -104,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
     public async Task<ElevationStatisticsResult> GetElevationRange(long projectId, Guid projectUid, FilterResult filter,
-      CompactionProjectSettings projectSettings, IHeaderDictionary customHeaders)
+      CompactionProjectSettings projectSettings, IHeaderDictionary customHeaders, string userId)
     {
       const double NO_ELEVATION = 10000000000.0;
 
@@ -125,48 +136,23 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
         {
           ElevationStatisticsResult result;
           entry.SetOptions(opts);
-          if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
+
+          var projectStatisticsResult = await ProjectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(projectUid, projectId, userId, customHeaders);
+
+          if (projectStatisticsResult?.extents != null)
           {
-            log.LogDebug($"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
+            var extents = projectStatisticsResult.extents;
 
-            var projectExtentsRequest = new ExtentRequest(projectId, projectUid,filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
-            var extents = await RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
-#if RAPTOR
-                raptorClient,
-#endif
-                configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
-              .ProcessAsync(projectExtentsRequest) as ProjectExtentsResult;
-
-            if (extents != null)
-            {
-              result = new ElevationStatisticsResult(
-                new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
-                  extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
-                  extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0.0);
-            }
-            else
-              result = new ElevationStatisticsResult(null, 0.0, 0.0, 0.0);
+            result = new ElevationStatisticsResult
+            (
+              new BoundingBox3DGrid(extents.MinX, extents.MinY, extents.MinZ, extents.MaxX, extents.MaxY, extents.MaxZ), 
+              extents.MinZ, 
+              extents.MaxZ, 
+              0.0
+            );
           }
           else
-          {
-            log.LogDebug(
-              $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
-
-            var liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
-
-            var statsRequest =
-              new ElevationStatisticsRequest(projectId, projectUid, null, filter, 0,
-                liftSettings);
-            statsRequest.Validate();
-
-            result =
-              await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
-#if RAPTOR
-                  raptorClient,
-#endif
-                  configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
-                .ProcessAsync(statsRequest) as ElevationStatisticsResult;
-          }
+            result = new ElevationStatisticsResult(null, 0.0, 0.0, 0.0);
 
           //Check for 'No elevation range' result
           if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 &&

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -15,10 +17,14 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -49,6 +55,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// The area required is indicated by the bounding box, which is limited to MAX_BOUNDARY_SQUARE_METERSm2.
     /// The response patch of sub-grids is lean and decorated for use with Protobuf-net.
     ///     See GeneratePatchResultProtoFile unit test for generating .proto file for injest by client.
+    ///
+    /// proto allows optionally returning data or error code&message:
+    /// message PatchSubgridsProtobufResult {
+    ///    required int32 code = 5;
+    ///    optional double CellSize = 1;
+    ///    repeated PatchSubgridOriginProtobufResult Subgrids = 4;
+    ///    optional string error_message = 6
+    ///   }
     /// </remarks>
     [HttpGet("api/v2/device/patches")]
     public async Task<IActionResult> GetSubGridPatches(string ecSerial,
@@ -62,55 +76,66 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // todoJeannie temporary to look into the DID info available.
       Log.LogDebug($"{nameof(GetSubGridPatches)}: customHeaders {CustomHeaders.LogHeaders()}");
 
-      patchesRequest.Validate();
-
-      // identify VSS projectUid and CustomerUid
-      var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectV5Proxy);
-      var tfaResult = await tfaHelper.GetProjectUid(patchesRequest.ECSerial, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude);
-
-      if (tfaResult.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid) || string.IsNullOrEmpty(tfaResult.CustomerUid))
+      try
       {
-        var errorMessage = $"Unable to identify a unique project or customer. Result: {JsonConvert.SerializeObject(tfaResult)}";
-        Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionResult(tfaResult.Code, errorMessage));
+        patchesRequest.Validate();
+
+        // identify VSS projectUid and CustomerUid
+        var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectV5Proxy);
+        var tfaResult = await tfaHelper.GetProjectUid(patchesRequest.ECSerial, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude);
+
+        if (tfaResult.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid) || string.IsNullOrEmpty(tfaResult.CustomerUid))
+        {
+          var errorMessage = $"Unable to identify a unique project or customer. Result: {JsonConvert.SerializeObject(tfaResult)}";
+          Log.LogInformation(errorMessage);
+          return BadRequest(new PatchSubgridsProtobufResult(tfaResult.Code, tfaResult.Message));
+        }
+
+        Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
+
+        // Set customerUid for downstream service calls e.g. ProjectSvc
+        Log.LogInformation($"{nameof(GetSubGridPatches)}: requestHeaders {JsonConvert.SerializeObject(Request.Headers)} PrincipalCustomerUID {((RaptorPrincipal) User).CustomerUid} authNContext {JsonConvert.SerializeObject(((RaptorPrincipal) User).GetAuthNContext())}");
+        if (((RaptorPrincipal) User).SetCustomerUid(tfaResult.CustomerUid))
+          Request.Headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID] = tfaResult.CustomerUid;
+
+        // this endpoint has no UserId so excludedSSs and targets are not relevant
+        var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);
+
+        var liftSettings = SettingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
+        Log.LogDebug($"{nameof(GetSubGridPatches)}: filter: {JsonConvert.SerializeObject(filter)} liftSettings: {JsonConvert.SerializeObject(liftSettings)}");
+
+        var requestPatchId = 0;
+        var requestPatchSize = 1000; // max # sub-grids to scan
+        var requestIncludeTimeOffsets = true;
+        var patchRequest = new PatchRequest(
+          null, // obsolete
+          Guid.Parse(tfaResult.ProjectUid),
+          new Guid(),
+          DisplayMode.Height,
+          null,
+          liftSettings,
+          false,
+          VolumesType.None,
+          VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
+          null, filter, null, FilterLayerMethod.AutoMapReset,
+          requestPatchId, requestPatchSize, requestIncludeTimeOffsets);
+
+        patchRequest.Validate();
+
+        var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
+          .Build<CompactionSinglePatchExecutor>(LoggerFactory, ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy,
+            customHeaders: CustomHeaders, userId: GetUserId(), fileImportProxy: FileImportProxy)
+          .ProcessAsync(patchRequest));
+
+        var v2PatchRequestFinalResponse = AutoMapperUtility.Automapper.Map<PatchSubgridsProtobufResult>(v2PatchRequestResponse);
+        return Ok(v2PatchRequestFinalResponse);
       }
-      Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
-
-      // Set customerUid for downstream service calls e.g. ProjectSvc
-      Log.LogInformation($"{nameof(GetSubGridPatches)}: requestHeaders {JsonConvert.SerializeObject(Request.Headers)} PrincipalCustomerUID {((RaptorPrincipal)User).CustomerUid} authNContext {JsonConvert.SerializeObject(((RaptorPrincipal)User).GetAuthNContext())}");
-      if (((RaptorPrincipal)User).SetCustomerUid(tfaResult.CustomerUid))
-        Request.Headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID] = tfaResult.CustomerUid;
-
-      // this endpoint has no UserId so excludedSSs and targets are not relevant
-      var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);
-
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(CompactionProjectSettings.DefaultSettings);
-      Log.LogDebug($"{nameof(GetSubGridPatches)}: filter: {JsonConvert.SerializeObject(filter)} liftSettings: {JsonConvert.SerializeObject(liftSettings)}");
-
-      var requestPatchId = 0;
-      var requestPatchSize = 1000; // max # sub-grids to scan
-      var requestIncludeTimeOffsets = true;
-      var patchRequest = new PatchRequest(
-        null, // obsolete
-        Guid.Parse(tfaResult.ProjectUid),
-        new Guid(),
-        DisplayMode.Height,
-        null,
-        liftSettings,
-        false,
-        VolumesType.None,
-        VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
-        null, filter, null, FilterLayerMethod.AutoMapReset,
-        requestPatchId, requestPatchSize, requestIncludeTimeOffsets);
-
-      patchRequest.Validate();
-
-      var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionSinglePatchExecutor>(LoggerFactory,
-          ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-        .ProcessAsync(patchRequest));
-
-      return Ok(v2PatchRequestResponse);
+      catch (ServiceException se)
+      {
+        Log.LogError(se, $"{nameof(GetSubGridPatches)} Exception thrown: ");
+        var actionResult = StatusCode((int) se.Code, new PatchSubgridsProtobufResult(se.GetResult.Code, se.GetResult.Message));
+        return actionResult;
+      }
     }
   }
 }

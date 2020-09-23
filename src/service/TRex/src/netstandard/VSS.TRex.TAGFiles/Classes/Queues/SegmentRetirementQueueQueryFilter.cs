@@ -1,13 +1,12 @@
 ﻿using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Cache;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
-  public class SegmentRetirementQueueQueryFilter : ICacheEntryFilter<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>, IBinarizable, IFromToBinary
+  public class SegmentRetirementQueueQueryFilter : VersionCheckedBinarizableSerializationBase, ICacheEntryFilter<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>
   {
     private const byte VERSION_NUMBER = 1;
 
@@ -27,21 +26,21 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
       return entry.Key.InsertUTCAsLong < retirementDateAsLong;
     }
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteLong(retirementDateAsLong);
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      retirementDateAsLong = reader.ReadLong();
+      if (version == 1)
+      {
+        retirementDateAsLong = reader.ReadLong();
+      }
     }
   }
 }

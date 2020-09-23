@@ -11,8 +11,10 @@ namespace VSS.TRex.Designs.GridFabric.Responses
 
     public List<XYZS> Profile { get; set; } = new List<XYZS>();
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
+      base.InternalToBinary(writer);
+
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt(Profile?.Count ?? 0);
@@ -30,22 +32,27 @@ namespace VSS.TRex.Designs.GridFabric.Responses
       }
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      base.InternalFromBinary(reader);
 
-      var count = reader.ReadInt();
-      Profile = new List<XYZS>(count);
-      for (int i = 0; i < count; i++)
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      if (version == 1)
       {
-        Profile.Add(new XYZS
+        var count = reader.ReadInt();
+        Profile = new List<XYZS>(count);
+        for (int i = 0; i < count; i++)
         {
-          X = reader.ReadDouble(),
-          Y = reader.ReadDouble(),
-          Z = reader.ReadDouble(),
-          Station = reader.ReadDouble(),
-          TriIndex = reader.ReadInt()
-        });
+          Profile.Add(new XYZS
+          {
+            X = reader.ReadDouble(),
+            Y = reader.ReadDouble(),
+            Z = reader.ReadDouble(),
+            Station = reader.ReadDouble(),
+            TriIndex = reader.ReadInt()
+          });
+        }
       }
     }
   }

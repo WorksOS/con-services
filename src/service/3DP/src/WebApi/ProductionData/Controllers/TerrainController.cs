@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -70,7 +71,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       try
       {
         var qmTileResult = await RequestExecutorContainerFactory.Build<QMTilesExecutor>(LoggerFactory,
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+          userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request) as QMTileResult;
         return (qmTileResult == null) ? null : qmTileResult.TileData;
       }
       catch (Exception e)

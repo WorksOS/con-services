@@ -45,7 +45,6 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Overloaded ToString to add argument properties
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return base.ToString() + $" -> SiteModel:{ProjectID}, Location:{SpotX}/{SpotY}, Design:{ReferenceDesign?.DesignID}, Offset:{ReferenceDesign?.Offset}";
@@ -54,10 +53,9 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -68,15 +66,17 @@ namespace VSS.TRex.Designs.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      SpotX = reader.ReadDouble();
-      SpotY = reader.ReadDouble();
+      if (version == 1)
+      {
+        SpotX = reader.ReadDouble();
+        SpotY = reader.ReadDouble();
+      }
     }
   }
 }

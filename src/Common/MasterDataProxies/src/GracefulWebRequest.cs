@@ -19,17 +19,9 @@ namespace VSS.MasterData.Proxies
   public class GracefulWebRequest : IWebRequest
   {
     private readonly ILogger _log;
-    private const int _defaultLogMaxChar = 1000;
+    private const int DEFAULT_LOG_MAX_CHAR = 1000;
     private readonly int _logMaxChar;
     private readonly IHttpClientFactory _clientFactory;
-
-    private static readonly HttpClientHandler _handler = new HttpClientHandler
-    {
-      AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-    };
-
-    //TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
-    //    private static readonly HttpClient _httpClient = new HttpClient(_handler) { Timeout = TimeSpan.FromMinutes(30) };
 
     //Any 200 code is ok.
     private static readonly List<HttpStatusCode> _okCodes = new List<HttpStatusCode>
@@ -41,7 +33,7 @@ namespace VSS.MasterData.Proxies
     public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore, IHttpClientFactory clientFactory)
     {
       _log = logger.CreateLogger<GracefulWebRequest>();
-      _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxChar);
+      _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", DEFAULT_LOG_MAX_CHAR);
 
       _clientFactory = clientFactory;
     }
@@ -83,8 +75,10 @@ namespace VSS.MasterData.Proxies
       }
 
       if (method == HttpMethod.Delete)
+      {
         return _clientFactory.CreateClient().DeleteAsync(endpoint, requestStream, customHeaders, timeout,
           x => ApplyHeaders(customHeaders, x), _log);
+      }
 
       throw new ArgumentException($"Unknown HTTP method {method}");
     }
@@ -248,8 +242,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <exception cref="ArgumentException">If the Method is POST/PUT and the Payload is null.</exception>
     /// <exception cref="HttpRequestException">If the Status Code from the request is not any code in the 200's.</exception>
-    /// <returns></returns>
-    public async Task ExecuteRequest(string endpoint, Stream payload = null,
+    public async Task<HttpStatusCode> ExecuteRequest(string endpoint, Stream payload = null,
       IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
     {
@@ -267,13 +260,14 @@ namespace VSS.MasterData.Proxies
         retries = 0;
       }
 
+      HttpResponseMessage result = null;
       var policyResult = await Policy
         .Handle<Exception>()
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
           _log.LogDebug($"Trying to execute {method} request {endpoint}");
-          var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
+          result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           _log.LogDebug($"Request to {endpoint} completed");
 
           if (!_okCodes.Contains(result.StatusCode))
@@ -298,6 +292,8 @@ namespace VSS.MasterData.Proxies
 
         throw policyResult.FinalException;
       }
+
+      return result.StatusCode;
     }
 
     /// <summary>

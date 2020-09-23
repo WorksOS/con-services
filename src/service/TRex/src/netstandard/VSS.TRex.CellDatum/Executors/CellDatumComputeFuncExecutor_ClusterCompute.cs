@@ -86,7 +86,7 @@ namespace VSS.TRex.CellDatum.Executors
 
       // using the cell address get the index of cell in clientGrid
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true);
+      var requestSubGridInternalResult = requestors[0].RequestSubGridInternal(thisSubGridOrigin, true, true);
       if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
       {
         if (requestSubGridInternalResult.requestResult == ServerRequestResult.SubGridNotFound)
@@ -119,6 +119,7 @@ namespace VSS.TRex.CellDatum.Executors
           success = result.Value != CellPassConsts.NullHeight;
           break;
         case DisplayMode.CCV:
+        case DisplayMode.CompactionCoverage:
           result.Value = cell.LastPassValidCCV;
           success = result.Value != CellPassConsts.NullCCV;
           break;
@@ -209,7 +210,6 @@ namespace VSS.TRex.CellDatum.Executors
         case DisplayMode.Amplitude:
         case DisplayMode.Moisture:
         case DisplayMode.GPSMode:
-        case DisplayMode.CompactionCoverage:
         case DisplayMode.VolumeCoverage:
           break;
       }

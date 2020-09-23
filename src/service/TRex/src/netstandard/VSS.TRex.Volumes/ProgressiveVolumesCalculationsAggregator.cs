@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Interfaces;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Volumes
 {
@@ -22,7 +19,7 @@ namespace VSS.TRex.Volumes
   /// </summary>
   public class ProgressiveVolumesCalculationsAggregator : ISubGridRequestsAggregator, IAggregateWith<ProgressiveVolumesCalculationsAggregator>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculationsAggregator>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculationsAggregator>();
 
     private readonly object _lockObj = new object();
 
@@ -41,7 +38,7 @@ namespace VSS.TRex.Volumes
     // References necessary for correct calculation of aggregated state
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
-    public Guid SiteModelID { get; set; } = Guid.Empty;
+    public ISiteModel SiteModel { get; set; }
 
     // The sum of the aggregated summarized information relating to volumes summary based reports
 
@@ -65,12 +62,12 @@ namespace VSS.TRex.Volumes
     public ProgressiveVolumesCalculationsAggregator()
     { }
 
-    private async Task ProcessVolumeInformationForSubGrid(ClientProgressiveHeightsLeafSubGrid subGrid)
+    private void ProcessVolumeInformationForSubGrid(ClientProgressiveHeightsLeafSubGrid subGrid)
     {
       if (subGrid == null)
       {
         // This is kind of a bad thing, make a note of it for now
-        Log.LogDebug("Sub grid passed to ProcessVolumeInformationForSubGrid is null, ignoring");
+        _log.LogDebug("Sub grid passed to ProcessVolumeInformationForSubGrid is null, ignoring");
         return;
       }
 
@@ -83,12 +80,12 @@ namespace VSS.TRex.Volumes
       // Query the patch of elevations from the surface model for this sub grid
       if (ActiveDesign != null)
       {
-        getDesignHeightsResult = await ActiveDesign.Design.GetDesignHeights(SiteModelID, ActiveDesign.Offset, subGrid.OriginAsCellAddress(), CellSize);
+        getDesignHeightsResult = ActiveDesign.Design.GetDesignHeightsViaLocalCompute(SiteModel, ActiveDesign.Offset, subGrid.OriginAsCellAddress(), CellSize);
 
         if (getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK &&
             getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
         {
-          Log.LogError($"Design profiler sub grid elevation request for {subGrid.OriginAsCellAddress()} failed with error {getDesignHeightsResult.profilerRequestResult}");
+          _log.LogError($"Design profiler sub grid elevation request for {subGrid.OriginAsCellAddress()} failed with error {getDesignHeightsResult.profilerRequestResult}");
           return;
         }
       }
@@ -120,11 +117,8 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Summarizes the client height grid derived from sub grid processing into the running volumes aggregation state
     /// </summary>
-    /// <param name="subGrids"></param>
-    private async Task SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
+    private void SummarizeSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      var taskList = new List<Task>(subGrids.Length);
-
       foreach (var subGridResult in subGrids)
       {
         if (subGridResult != null)
@@ -132,21 +126,20 @@ namespace VSS.TRex.Volumes
           var baseSubGrid = subGridResult[0];
 
           if (baseSubGrid == null)
-            Log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
+          {
+            _log.LogWarning("SummarizeSubGridResult BaseSubGrid is null");
+          }
           else
           {
-            taskList.Add(ProcessVolumeInformationForSubGrid(baseSubGrid as ClientProgressiveHeightsLeafSubGrid));
+            ProcessVolumeInformationForSubGrid(baseSubGrid as ClientProgressiveHeightsLeafSubGrid);
           }
         }
       }
-
-      await Task.WhenAll(taskList);
     }
 
     /// <summary>
     /// Provides a human readable form of the aggregator state
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
       return $"VolumeType:{VolumeType}, CellSize:{CellSize}, ReferenceDesign:{DesignDescriptor}";
@@ -155,7 +148,6 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Combine this aggregator with another progressive volumes aggregator and store the result in this aggregator
     /// </summary>
-    /// <param name="other"></param>
     public ProgressiveVolumesCalculationsAggregator AggregateWith(ProgressiveVolumesCalculationsAggregator other)
     {
       if ((AggregationStates?.Length ?? 0) != (other.AggregationStates?.Length ?? 0))
@@ -177,23 +169,22 @@ namespace VSS.TRex.Volumes
     /// <summary>
     /// Implement the sub grids request aggregator method to process sub grid results...
     /// </summary>
-    /// <param name="subGrids"></param>
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummarizeSubGridResultAsync(subGrids).WaitAndUnwrapException();
+      SummarizeSubGridResult(subGrids);
     }
 
     /// <summary>
-    /// Instructs each individual aggregator in the progressive set of volumes to finalise itself
+    /// Instructs each individual aggregator in the progressive set of volumes to finalize itself
     /// </summary>
     public void Finalise()
     {
-      if (AggregationStates != null)
+      if (AggregationStates == null)
+        return;
+
+      foreach (var aggregator in AggregationStates)
       {
-        foreach (var aggregator in AggregationStates)
-        {
-          aggregator.Finalise();
-        }
+        aggregator.Finalise();
       }
     }
   }

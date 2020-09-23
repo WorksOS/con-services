@@ -85,7 +85,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         processor.Task.GridDataType = GridDataType.CellProfile;
 
         task.ProcessorDelegate = async subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
-          .AddRange(await ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
+          .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
 
         // report options 0=direction,1=endpoint,2=automatic
         if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
@@ -114,7 +114,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
             _griddedReportRequestArgument.StartEasting, _griddedReportRequestArgument.StartNorthing,
             _griddedReportRequestArgument.Azimuth);
 
-        if (!await processor.BuildAsync())
+        if (!processor.Build())
         {
           Log.LogError($"Failed to build pipeline processor for request to model {_griddedReportRequestArgument.ProjectID}");
           return false;
@@ -131,7 +131,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
       return true;
     }
 
-    private async Task<List<GriddedReportDataRow>> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
+    private List<GriddedReportDataRow> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
     {
       var result = new List<GriddedReportDataRow>();
       (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) getDesignHeightsResult = (null, DesignProfilerRequestResult.UnknownError);
@@ -142,7 +142,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
         if (cutFillDesign == null)
           throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesign.DesignID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
 
-        getDesignHeightsResult = await cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, _griddedReportRequestArgument.ReferenceDesign.Offset, 
+        getDesignHeightsResult = cutFillDesign.GetDesignHeightsViaLocalCompute(_siteModel, _griddedReportRequestArgument.ReferenceDesign.Offset,
           subGrid.OriginAsCellAddress(), subGrid.CellSize);
 
         if (getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)

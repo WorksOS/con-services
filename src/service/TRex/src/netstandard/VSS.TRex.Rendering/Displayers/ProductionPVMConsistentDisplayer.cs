@@ -61,6 +61,30 @@ namespace VSS.TRex.Rendering.Displayers
     public IDataSmoother DataSmoother { get; set; }
 
     /// <summary>
+    /// Converts all values in the accumualator into colours according to a supplied displayer
+    /// </summary>
+    private uint[,] ConvertValueStoreToARGB()
+    {
+      var sizeEast = ValueStore.GetLength(0);
+      var sizeNorth = ValueStore.GetLength(1);
+      var result = new uint[sizeEast, sizeNorth];
+
+      east_col = 0;
+      while (east_col < sizeEast)
+      {
+        north_row = 0;
+        while (north_row < sizeNorth)
+        {
+          result[east_col, north_row] = (uint)DoGetDisplayColour().ToArgb();
+          north_row++;
+        }
+        east_col++;
+      }
+
+      return result;
+    }
+
+    /// <summary>
     /// Performs a 'consistent' render across a 2D array of collated values from queried sub grids.
     /// Effectively this treats the passed array as if it were a sub grid of that size and renders it as
     /// such against the MapView.
@@ -105,6 +129,11 @@ namespace VSS.TRex.Rendering.Displayers
       var canvasWidth = MapView.BitmapCanvas.Width;
       var canvasHeight = MapView.BitmapCanvas.Height;
 
+      // Convert the value store values to pixel colours. This prevents the same conversion operation being performed
+      // many times for cell that are larger than one pixel, which can be non-trivial operations
+      var cellColours = ConvertValueStoreToARGB();
+
+      // Transcribe cell colours from the value store into the pizel array for the tile
       for (var i = 0; i < canvasHeight; i++)
       {
         for (var j = 0; j < canvasWidth; j++)
@@ -119,7 +148,7 @@ namespace VSS.TRex.Rendering.Displayers
           if (east_col >= 0 && east_col < _taskAccumulator.CellsWidth &&
               north_row >= 0 && north_row < _taskAccumulator.CellsHeight)
           {
-            pixels[index++] = (uint)DoGetDisplayColour().ToArgb();
+            pixels[index++] = cellColours[east_col, north_row];
           }
           else
           {

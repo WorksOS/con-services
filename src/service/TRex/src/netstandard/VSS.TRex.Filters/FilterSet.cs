@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Apache.Ignite.Core.Binary;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -9,10 +9,12 @@ using VSS.TRex.Geometry;
 namespace VSS.TRex.Filters
 {
   /// <summary>
-  /// FilterSet represents a set of filters to be applied to each subgrid in a query within a single operation
+  /// FilterSet represents a set of filters to be applied to each sub grid in a query within a single operation
   /// </summary>
-  public class FilterSet : IFilterSet
+  public class FilterSet : VersionCheckedBinarizableSerializationBase, IFilterSet
   {
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<FilterSet>();
+
     private const byte VERSION_NUMBER = 1;
 
     public const int MAX_REASONABLE_NUMBER_OF_FILTERS = 10;
@@ -34,9 +36,8 @@ namespace VSS.TRex.Filters
     /// Constructor accepting a single filters to be set into the filter set
     /// Null filters are not incorporated into the resulting filter set
     /// </summary>
-    /// <param name="filter"></param>
     public FilterSet(ICombinedFilter filter)
-    {      
+    {
       Filters = filter != null ? new [] { filter } : new ICombinedFilter[0];
     }
 
@@ -44,23 +45,20 @@ namespace VSS.TRex.Filters
     /// Constructor accepting a pair of filter to be set into the filter set
     /// Null filters are not incorporated into the resulting filter set
     /// </summary>
-    /// <param name="filter1"></param>
-    /// <param name="filter2"></param>
     public FilterSet(ICombinedFilter filter1, ICombinedFilter filter2)
     {
-      Filters = filter1 == null && filter2 == null 
-        ? new ICombinedFilter[0] 
-        : filter2 == null 
-          ? new[] { filter1 } 
-          : filter1 == null 
-            ? new [] {filter2} 
+      Filters = filter1 == null && filter2 == null
+        ? new ICombinedFilter[0]
+        : filter2 == null
+          ? new[] { filter1 }
+          : filter1 == null
+            ? new [] {filter2}
             : new [] { filter1, filter2 };
     }
 
     /// <summary>
     /// Constructor accepting a pre-initialized array of filters to be included in the filter set
     /// </summary>
-    /// <param name="filters"></param>
     public FilterSet(ICombinedFilter[] filters)
     {
       if (filters == null || filters.Length == 0)
@@ -72,7 +70,6 @@ namespace VSS.TRex.Filters
     /// <summary>
     /// Applies spatial filter restrictions to the extents required to request data for.
     /// </summary>
-    /// <param name="extents"></param>
     public void ApplyFilterAndSubsetBoundariesToExtents(BoundingWorldExtent3D extents)
     {
       foreach (var filter in Filters)
@@ -81,30 +78,43 @@ namespace VSS.TRex.Filters
       }
     }
 
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.WriteInt(Filters.Length);
-      foreach (var filter in Filters)
-      { 
-        // Handle cases where filter entry is null
-        writer.WriteBoolean(filter != null);
-        filter?.ToBinary(writer);
+      var count = Filters?.Length ?? 0;
+      writer.WriteInt(count);
+
+      if (count > 0)
+      {
+        foreach (var filter in Filters)
+        {
+          // Handle cases where filter entry is null
+          writer.WriteBoolean(filter != null);
+          filter?.ToBinary(writer);
+        }
       }
     }
 
-    public void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      var filterCount = reader.ReadInt();
-      if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))
-        throw new TRexException($"Invalid number of filters {filterCount} in deserialisation");
-
-      Filters = new ICombinedFilter[filterCount];
-      for(var i = 0; i < Filters.Length; i++)
-        Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
+      if (version == 1)
+      {
+        var filterCount = reader.ReadInt();
+        if (!Range.InRange(filterCount, 0, MAX_REASONABLE_NUMBER_OF_FILTERS))
+        {
+          _log.LogError("$Invalid number of filters { filterCount} in deserialisation. Setting to a single default filter");
+          Filters = new ICombinedFilter[] {new CombinedFilter()};
+        }
+        else
+        {
+          Filters = new ICombinedFilter[filterCount];
+          for (var i = 0; i < Filters.Length; i++)
+            Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
+        }
+      }
     }
   }
 }

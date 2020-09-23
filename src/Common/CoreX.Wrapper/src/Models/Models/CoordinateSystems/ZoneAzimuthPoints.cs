@@ -1,6 +1,4 @@
-﻿using CoreX.Models.CoordinateSystems;
-
-namespace CoreX.Wrapper.Models
+﻿namespace CoreXModels
 {
   public class ZoneAzimuthPoints
   {

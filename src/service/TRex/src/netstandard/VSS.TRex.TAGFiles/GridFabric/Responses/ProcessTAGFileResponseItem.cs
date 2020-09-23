@@ -60,11 +60,14 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
     {
       var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
-      FileName = reader.ReadString();
-      AssetUid = reader.ReadGuid() ?? Guid.Empty;
-      Success = reader.ReadBoolean();
-      Exception = reader.ReadString();
-      ReadResult = (TAGReadResult)reader.ReadInt();
+      if (messageVersion == 1)
+      {
+        FileName = reader.ReadString();
+        AssetUid = reader.ReadGuid() ?? Guid.Empty;
+        Success = reader.ReadBoolean();
+        Exception = reader.ReadString();
+        ReadResult = (TAGReadResult) reader.ReadInt();
+      }
 
       if (messageVersion >= 2)
       {

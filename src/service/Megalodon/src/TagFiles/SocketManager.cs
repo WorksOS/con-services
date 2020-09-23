@@ -127,7 +127,7 @@ namespace TagFiles
         // Set the event to nonsignaled state.
         allDone.Reset();
 
-        var msg =$"Server is now listening on {ipEndPoint.Address} port: {ipEndPoint.Port}";
+        var msg =$"#Result# Server is now listening on {ipEndPoint.Address} port: {ipEndPoint.Port}";
         Console.WriteLine(msg);
         _log.LogInformation(msg);
 
@@ -154,8 +154,7 @@ namespace TagFiles
       // Signal the main thread to continue.  
       allDone.Set();
 
-      if (Callback != null)
-        Callback("Connection made", TagConstants.CALLBACK_CONNECTION_MADE);
+      Callback?.Invoke("Connection made", TagConstants.CALLBACK_CONNECTION_MADE);
 
       Socket listener = null;
 

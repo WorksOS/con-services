@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -94,7 +95,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
           It.IsAny<bool>()))
         .Callback<string, Stream, IHeaderDictionary, HttpMethod, int?, int, bool>((url, stream, _, method, __, ___, ____) =>
         Validate(url, stream, method, validateUrlAction, validateStreamAction, validateHttpMethodAction))
-        .Returns(Task.CompletedTask);
+        .Returns(Task.FromResult(HttpStatusCode.Accepted));
     }
 
     private static void Validate(string url, Stream stream, HttpMethod method,

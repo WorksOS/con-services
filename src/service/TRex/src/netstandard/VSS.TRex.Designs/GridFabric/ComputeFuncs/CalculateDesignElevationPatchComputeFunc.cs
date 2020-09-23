@@ -4,7 +4,9 @@ using System;
 using VSS.TRex.Designs.Executors;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.ComputeFuncs;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 {
@@ -23,7 +25,8 @@ namespace VSS.TRex.Designs.GridFabric.ComputeFuncs
 
         var Executor = new CalculateDesignElevationPatch();
 
-        var heightsResult = Executor.Execute(args.ProjectID, args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
+        var heightsResult = Executor.Execute(DIContext.ObtainRequired<ISiteModels>().GetSiteModel(args.ProjectID),
+          args.ReferenceDesign, args.CellSize, args.OriginX, args.OriginY, out var calcResult);
 
         return new CalculateDesignElevationPatchResponse
         {

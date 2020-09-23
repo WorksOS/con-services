@@ -29,6 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\coord-system\coord-system.-model.ts" />
+    <None Remove="ClientApp\src\app\coord-system\coord-system.service.ts" />
     <None Remove="ClientApp\src\app\delete-project\delete-project-component.ts" />
     <None Remove="ClientApp\src\app\delete-project\delete-project-model.ts" />
     <None Remove="ClientApp\src\app\delete-project\delete-project-service.ts" />
@@ -76,6 +78,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\coord-system\coord-system.-model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\coord-system\coord-system.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\delete-project\delete-project-component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\rebuild-project\rebuild-project-component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\rebuild-project\rebuild-project-model.ts" />

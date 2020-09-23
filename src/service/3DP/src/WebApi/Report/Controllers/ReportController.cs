@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -18,6 +15,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Report.Contracts;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
@@ -28,7 +26,7 @@ using VSS.TRex.Gateway.Common.Abstractions;
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-  public class ReportController : Controller, IReportSvc
+  public class ReportController : BaseController<ReportController>, IReportSvc
   {
 #if RAPTOR
     /// <summary>
@@ -51,29 +49,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// The TRex Gateway proxy for use by executor.
     /// </summary>
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
-
-    /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    private readonly IFileImportProxy fileImportProxy;
-
-    /// <summary>
-    /// Gets the custom headers for the request.
-    /// </summary>
-    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
-
-    /// <summary>
-    /// Gets the User uid/applicationID from the context.
-    /// </summary>
-    private string GetUserId()
-    {
-      if (User is RaptorPrincipal principal && (principal.Identity is GenericIdentity identity))
-      {
-        return identity.Name;
-      }
-
-      throw new ArgumentException("Incorrect UserId in request context principal.");
-    }
+  
 
     /// <summary>
     /// Constructor with injection
@@ -85,7 +61,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy tRexCompactionDataProxy, IFileImportProxy fileImportProxy)
+      ILoggerFactory logger, IConfigurationStore configStore, ICompactionSettingsManager settingsManager, ITRexCompactionDataProxy tRexCompactionDataProxy, IFileImportProxy fileImportProxy)
+      : base(configStore, fileImportProxy, settingsManager)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -94,7 +71,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       _log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
-      this.fileImportProxy = fileImportProxy;
     }
 
     /// <summary>
@@ -124,17 +100,23 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectVerifier]
     [Route("api/v1/export/gridded/csv")]
     [HttpPost]
-    public ExportResult PostExportCsvReport([FromBody] ExportGridCSV request)
+    public async Task<ExportResult> PostExportCsvReport([FromBody] ExportGridCSV request)
     {
       _log.LogDebug($"{nameof(PostExportCsvReport)}: {JsonConvert.SerializeObject(request)}");
 
+      if (request.liftBuildSettings == null)
+      {
+        var projectSettings = await GetProjectSettingsTargets(request.ProjectUid.Value);
+        request.liftBuildSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings);
+      }
+      
       request.Validate();
-#if RAPTOR
-      return RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-#endif
+
+      return await RequestExecutorContainerFactory.Build<ExportGridCSVExecutor>(
+        _logger,
+        configStore: configStore,
+        trexCompactionDataProxy: tRexCompactionDataProxy,
+        userId: GetUserId(), fileImportProxy: FileImportProxy).ProcessAsync(request) as ExportResult;
     }
 
     [PostRequestVerifier]
@@ -153,7 +135,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           null,
 #endif
           configStore: configStore,
-          trexCompactionDataProxy: tRexCompactionDataProxy)
+          trexCompactionDataProxy: tRexCompactionDataProxy,
+          userId: GetUserId(), fileImportProxy: FileImportProxy)
           .ProcessAsync(request) as ExportResult;
     }
 
@@ -176,8 +159,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
             raptorClient, 
 #endif
             configStore: configStore,
-            trexCompactionDataProxy: tRexCompactionDataProxy,
-            customHeaders: CustomHeaders)
+            trexCompactionDataProxy: tRexCompactionDataProxy, 
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
             .ProcessAsync(request) as PassCountSummaryResult;
     }
 
@@ -206,7 +189,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, 
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
             .ProcessAsync(request) as PassCountDetailedResult;
     }
 
@@ -227,7 +211,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, 
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
             .ProcessAsync(request) as CMVSummaryResult;
     }
 
@@ -248,7 +233,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, 
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
             .ProcessAsync(request) as CMVDetailedResult;
     }
 
@@ -269,7 +255,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       request.Validate();
 
-      var projectStatisticsHelper = new ProjectStatisticsHelper(_logger, configStore, fileImportProxy, tRexCompactionDataProxy
+      var projectStatisticsHelper = new ProjectStatisticsHelper(_logger, configStore, FileImportProxy, tRexCompactionDataProxy, _log
 #if RAPTOR
         , raptorClient
 #endif
@@ -302,7 +288,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient,
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy,
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
             .ProcessAsync(request) as
           SummaryVolumesResult;
     }
@@ -349,7 +336,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, 
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
             .ProcessAsync(request) as SpeedSummaryResult;
     }
 
@@ -373,7 +361,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy,
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
             .ProcessAsync(request) as CMVChangeSummaryResult;
     }
 
@@ -396,7 +385,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient,
 #endif
-            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request)
+            configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy,
+            fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId())
+        .ProcessAsync(request)
           as ElevationStatisticsResult;
     }
 
@@ -421,7 +412,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
             raptorClient, 
 #endif
-          configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as
+          configStore: configStore, trexCompactionDataProxy: tRexCompactionDataProxy,
+          fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId()).ProcessAsync(request) as
           CCASummaryResult;
     }
   }

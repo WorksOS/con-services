@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -97,7 +95,7 @@ namespace VSS.TRex.Pipelines.Interfaces
         /// <summary>
         /// Wait for the pipeline to completes operations, or abort at expiration of time to live timeout
         /// </summary>
-        Task<bool> WaitForCompletion();
+        bool WaitForCompletion();
 
         IRequestAnalyser RequestAnalyser { get; set; }
 

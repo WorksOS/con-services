@@ -17,9 +17,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
-using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.MapHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -32,6 +30,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using Microsoft.AspNetCore.Http;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
@@ -53,7 +52,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
     /// helper methods for getting project statistics from Raptor/TRex
     /// </summary>
     private ProjectStatisticsHelper _projectStatisticsHelper = null;
-    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy
+    protected ProjectStatisticsHelper ProjectStatisticsHelper => _projectStatisticsHelper ?? (_projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy, log
 #if RAPTOR
          , raptorClient
 #endif
@@ -318,7 +317,7 @@ namespace VSS.Productivity3D.WebApi.Models.MapHandling
       ProjectStatisticsResult statsResult;
       try
       {
-        statsResult = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, excludedUids);
+        statsResult = await ProjectStatisticsHelper.GetProjectStatisticsWithFilterSsExclusions(projectUid, projectId, excludedIds, excludedUids, userId);
       }
       catch (ServiceException se)
       {

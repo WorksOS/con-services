@@ -61,12 +61,13 @@ namespace VSS.TRex.Tests.Rendering.Requests
       return new TileRenderRequestArgument(siteModel.ID, displayMode, palette, siteModel.SiteModelExtent, true, 256, 256, filter, new DesignOffset(), volumeType);
     }
 
-    protected ISiteModel BuildModelForSingleCellTileRender(float heightIncrement,
+    protected ISiteModel BuildModelForSingleCellTileRender(float heightIncrement, short ccvIncrement,
       int cellX = SubGridTreeConsts.DefaultIndexOriginOffset, int cellY = SubGridTreeConsts.DefaultIndexOriginOffset)
     {
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
       byte baseCCA = 1;
+      short baseCCV = 10;
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
@@ -88,6 +89,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
           Time = baseTime.AddMinutes(x),
           Height = baseHeight + x * heightIncrement,
           CCA = (byte)(baseCCA + x),
+          CCV = (short)(baseCCV + x * ccvIncrement),
           PassType = PassType.Front
         }).ToArray();
 

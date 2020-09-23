@@ -1,7 +1,4 @@
-﻿using CoreX.Models.CoordinateSystems;
-using CoreX.Wrapper.Models;
-
-namespace CoreX.Models
+﻿namespace CoreXModels
 {
   public class CoordinateSystem
   {
@@ -10,7 +7,7 @@ namespace CoreX.Models
     public string SystemName;
     public string RecordName;
     public DatumInfo DatumInfo;
-    public GeoidInfo GeooidInfo;
+    public GeoidInfo GeoidInfo;
     public ZoneInfo ZoneInfo;
     public int DatumSystemId;
     public int GoidSystemId;

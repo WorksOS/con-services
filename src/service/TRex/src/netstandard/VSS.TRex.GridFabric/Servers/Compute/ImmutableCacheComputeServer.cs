@@ -73,9 +73,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB);
 
       cfg.UserAttributes = new Dictionary<string, object>
-            {
-                { "Owner", TRexGrids.ImmutableGridName() }
-            };
+      {
+          { "Owner", TRexGrids.ImmutableGridName() },
+      };
 
       // Configure the Ignite persistence layer to store our data
       cfg.DataStorageConfiguration = new DataStorageConfiguration
@@ -356,6 +356,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         Log.LogInformation($"Completed creation of new Ignite node: Exists = {immutableTRexGrid != null}, Factory available = {DIContext.Obtain<ITRexGridFactory>() != null}");
       }
 
+      Log.LogInformation($"Network timeout set to {cfg.NetworkTimeout}");
+       
       // Wait until the grid is active
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.ImmutableGridName());
 

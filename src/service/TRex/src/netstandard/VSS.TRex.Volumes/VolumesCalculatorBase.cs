@@ -20,7 +20,6 @@ using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
-using Consts = VSS.TRex.Common.Consts;
 using VSS.TRex.SubGrids.Interfaces;
 
 namespace VSS.TRex.Volumes
@@ -290,20 +289,20 @@ namespace VSS.TRex.Volumes
 
                         if (PipeLine.Initiate())
                         {
-                          PipeLine.WaitForCompletion().ContinueWith(x =>
+                          var completionResult = PipeLine.WaitForCompletion();
+                          Log.LogInformation(completionResult ? "WaitForCompletion successful" : $"WaitForCompletion timed out with {PipeLine.SubGridsRemainingToProcess} sub grids remaining to be processed");
+
+                          if (PipeLine.SubGridsRemainingToProcess > 0)
                           {
-                            if (x.Result)
-                              Log.LogInformation("WaitForCompletion successful");
-                            else // No signal was received, the wait timed out...            
-                              Log.LogInformation($"WaitForCompletion timed out with {PipeLine.SubGridsRemainingToProcess} subgrids remaining to be processed");
-                          }).Wait();
+                            Log.LogInformation($"Pipeline completed with {PipeLine.SubGridsRemainingToProcess} sub grids remaining to be processed");
+                          }
                         }
 
                         /*
                         while not FPipeLine.AllFinished and not FPipeLine.PipelineAborted do
                           begin
                             WaitResult := FPipeLine.CompleteEvent.WaitFor(5000);
-
+                         
                             if VLPDSvcLocations.Debug_EmitSubgridPipelineProgressLogging then
                               begin
                                 if ((FEpochCount > 0) or (FPipeLine.SubmissionNode.TotalNumberOfSubgridsScanned > 0)) and
@@ -317,7 +316,7 @@ namespace VSS.TRex.Volumes
                                                                            FPipeLine.OperationNode.NumPendingResultsReceived,
                                                                            FPipeLine.OperationNode.OustandingSubgridsToOperateOn]), slmcDebug);
                               end;
-
+                         
                             if (WaitResult = wrSignaled) and not FPipeLine.AllFinished and not FPipeLine.PipelineAborted and not FPipeLine.Terminated then
                               begin
                                 if ShouldAbortDueToCompletedEventSet then
@@ -344,13 +343,13 @@ namespace VSS.TRex.Volumes
                                     ShouldAbortDueToCompletedEventSet := True;
                                   end;
                               end;
-
+                         
                             if FPipeLine.TimeToLiveExpired then
                               begin
                                 FAbortedDueToTimeout := True;
                                 FPipeLine.Abort;
                                 ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.PerformTaskCancellation(FPipelinedTask);
-
+                         
                                 // The pipeline has exceed its allotted time to complete. It will now
                                 // be aborted and this request will be failed.
                                 SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d) aborted due to time to live expiration (%d seconds)',

@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
@@ -83,6 +84,16 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
           return;
         }
 
+        // Don't start operations until the local (mutable) grid is confirmed as active
+        DIContext.ObtainRequired<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
+
+        // Once active, delay start of operations for a time to ensure everything is up and running
+        var delay = DIContext.ObtainRequired<IConfigurationStore>().GetValueInt("TREX_SEGMENT_RETIREMENT_QUEUE_SERVICE_OPERATION_START_DELAY_SECONDS", 120);
+        _log.LogInformation($"Delaying start of operations for {delay} seconds");
+        Thread.Sleep(delay * 1000);
+
+        _log.LogInformation("Obtaining queue cache reference");
+
         var queueCache = mutableIgnite.GetCache<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>(TRexCaches.TAGFileBufferQueueCacheName());
 
         var queue = new SegmentRetirementQueue();
@@ -161,7 +172,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -171,11 +182,14 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      retirementAge = new TimeSpan(reader.ReadLong());
+      if (version == 1)
+      {
+        retirementAge = new TimeSpan(reader.ReadLong());
+      }
     }
   }
 }

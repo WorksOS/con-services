@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProtoBuf;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
@@ -17,6 +18,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     [ProtoMember(1, IsRequired = true)]
     [JsonProperty(PropertyName = "elevationOrigin")]
-    protected float ElevationOrigin { get; set; }
+    public float ElevationOrigin { get; set; }
   }
 }

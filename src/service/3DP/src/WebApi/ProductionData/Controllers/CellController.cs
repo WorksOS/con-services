@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Common.Exceptions;
@@ -8,6 +9,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -38,7 +40,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return await RequestExecutorContainerFactory.Build<CellPassesExecutor>(
         LoggerFactory,
         configStore: ConfigStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy
+        trexCompactionDataProxy: TRexCompactionDataProxy, 
+        fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId()
         ).ProcessAsync(request) as CellPassesResult;
     }
 
@@ -58,34 +61,26 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       return await RequestExecutorContainerFactory.Build<CellDatumExecutor>(
         LoggerFactory,
         configStore: ConfigStore,
-        trexCompactionDataProxy: TRexCompactionDataProxy
+        trexCompactionDataProxy: TRexCompactionDataProxy,
+        fileImportProxy: FileImportProxy, customHeaders: CustomHeaders, userId: GetUserId()
         ).ProcessAsync(request) as CellDatumResult;
     }
 
+    /// Called by TBC only
     /// <summary>
     /// Requests cell passes information in patches (raw Raptor data output)
     /// </summary>
     [PostRequestVerifier]
     [HttpPost("api/v1/productiondata/patches")]
-    public ContractExecutionResult Post([FromBody] PatchRequest request)
+    public async Task<ContractExecutionResult> PostProductionDataPatchesTbc([FromBody] PatchRequest request)
     {
       request.Validate();
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
-    }
-
-    /// <summary>
-    /// Requests cell passes information in patches but returning co-ordinates relative to the world origin rather than cell origins.
-    /// </summary>
-    [PostRequestVerifier]
-    [HttpPost("api/v1/productiondata/patches/worldorigin")]
-    public ContractExecutionResult GetSubGridPatchesAsWorldOrigins([FromBody] PatchRequest request)
-    {
-      request.Validate();
-
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+      return await RequestExecutorContainerFactory
+        .Build<PatchExecutor>(LoggerFactory,
+          ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders,
+          userId: GetUserId(), fileImportProxy: FileImportProxy)
+        .ProcessAsync(request);
     }
   }
 }

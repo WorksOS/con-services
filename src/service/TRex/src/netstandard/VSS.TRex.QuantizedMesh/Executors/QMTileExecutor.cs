@@ -332,7 +332,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // This will change in Part3 once development is complete 
       var strCSIB = DisplayMode == QMConstants.DisplayModeStandard ? SiteModel.CSIB() : DIMENSIONS_2012_DC_CSIB;
-      var NEECoords = DIContext.Obtain<IConvertCoordinates>().LLHToNEE(strCSIB, LLHCoords.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
+      var NEECoords = DIContext.Obtain<ICoreXWrapper>().LLHToNEE(strCSIB, LLHCoords.ToCoreX_XYZ(), CoreX.Types.InputAs.Radians).ToTRex_XYZ();
 
       GridIntervalX = (NEECoords[1].X - NEECoords[0].X) / (TileGridSize - 1);
       GridIntervalY = (NEECoords[1].Y - NEECoords[0].Y) / (TileGridSize - 1);
@@ -453,7 +453,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       //    processor.Pipeline.AreaControlSet =
       //     new AreaControlSet(false, GridIntervalX, GridIntervalY, StartEasting, StartNorthing, Azimuth);
 
-      if (!await processor.BuildAsync())
+      if (!processor.Build())
       {
         _log.LogError($"Tile.({TileX},{TileY}) Failed to build pipeline processor for request to model {DataModelUid}");
         return false;

@@ -7,7 +7,7 @@ trigger:
     include:
       - 'src/service/Push/*'
 
-pool: fsm-merino-services
+pool: PDXA-CSD-EKS01
 
 variables:
   buildPlatform: 'Any CPU'

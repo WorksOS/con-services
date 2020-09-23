@@ -64,7 +64,7 @@ namespace VSS.TRex.Storage
 
       if (commitResults.IsFaulted || commitTasks.Any(x => x.IsFaulted))
       {
-        _log.LogError(commitResults.Exception, $"Asynchronous Commit() faulted");
+        _log.LogError(commitResults.Exception, "Asynchronous Commit() faulted");
         return false;
       }
       
@@ -117,7 +117,6 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Commits all unsaved changes in the spatial and non-spatial stores. Each store is committed asynchronously.
     /// </summary>
-    /// <returns></returns>
     public override bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
       var commitOk = _useAsyncTasksForStorageProxyIgniteTransactionalCommits

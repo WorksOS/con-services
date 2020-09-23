@@ -202,6 +202,19 @@ namespace MockProjectWebApi.Services
             MinZoomLevel = 15,
             MaxZoomLevel = 19,
             SurveyedUtc = DateTime.Parse("2012-05-29T11:13:17")
+          },
+          new FileData
+          {
+            Name = "Original Ground Survey - Dimensions.TTM",
+            ProjectUid = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+            CustomerUid = "SurveyedSurfaceAcceptanceTest",
+            ImportedFileType = ImportedFileType.SurveyedSurface,
+            ImportedFileUid = "15ef852f-497b-418f-99d8-39a3e6e8b1c7",
+            LegacyFileId = 15188,
+            IsActivated = true,
+            MinZoomLevel = 15,
+            MaxZoomLevel = 19,
+            SurveyedUtc = DateTime.Parse("2020-09-10T23:21:27")
           }
       };
 

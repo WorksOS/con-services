@@ -4,8 +4,13 @@ using System.Threading.Tasks;
 using CoreX.Interfaces;
 using CoreX.Wrapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Caching;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -13,8 +18,8 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -53,6 +58,7 @@ using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 
 namespace VSS.TRex.Server.PSNode
@@ -74,6 +80,8 @@ namespace VSS.TRex.Server.PSNode
       return key switch
       {
         PipelineProcessorTaskStyle.AggregatedPipelined => new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.SimpleVolumes => new VolumesComputationTask(),
+        PipelineProcessorTaskStyle.ProgressiveVolumes => new VolumesComputationTask(),
         _ => null
       };
     }
@@ -84,9 +92,9 @@ namespace VSS.TRex.Server.PSNode
         .New()
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
@@ -114,10 +122,14 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
+        .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
-        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
 
         // Create the cache to store the general sub grid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(
@@ -128,7 +140,7 @@ namespace VSS.TRex.Server.PSNode
         ))
 
         // Register the listener for site model attribute change notifications
-        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
@@ -147,13 +159,14 @@ namespace VSS.TRex.Server.PSNode
 
         // Register the factory for surface elevation requests
         .Build()
-        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => new SurfaceElevationPatchRequest(cache, context)))
+        .Add(x => x.AddSingleton<Func<ITRexSpatialMemoryCache, ITRexSpatialMemoryCacheContext, ISurfaceElevationPatchRequest>>((cache, context) => new SurfaceElevationPatchRequestViaLocalCompute(cache, context)))
 
         .Build()
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ISubGridRetrieverFactory>(new SubGridRetrieverFactory()))
         .Add(x => x.AddSingleton<ISiteModelChangeMapDeltaNotifier>(new SiteModelChangeMapDeltaNotifier()))
 
+        .Add(x => x.AddSingleton<ISubGridQOSTaskScheduler, SubGridQOSTaskScheduler>())
         .Complete();
     }
 
@@ -174,7 +187,7 @@ namespace VSS.TRex.Server.PSNode
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
@@ -207,13 +220,14 @@ namespace VSS.TRex.Server.PSNode
     private static void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
-      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+      //DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
       // Start listening to design state change notifications
-      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+      //DIContext.Obtain<IDesignChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SpatialMemoryCacheHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
@@ -225,6 +239,20 @@ namespace VSS.TRex.Server.PSNode
 
         EnsureAssemblyDependenciesAreLoaded();
         DependencyInjection();
+
+        ThreadPool.GetMinThreads(out var minWorkerThreads, out var minCompletionPortThreads);
+        ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompletionPortThreads);
+
+        var requiredMinThreads = minWorkerThreads * DIContext.ObtainRequired<ISubGridQOSTaskScheduler>().DefaultThreadPoolFractionDivisor;
+
+        // Create a much larger pool of system threads to allow QOS channels with groups of sub-tasks room to take advantage of all system resources while also allowing
+        // other requests to run concurrently
+        if (!ThreadPool.SetMinThreads(requiredMinThreads, minCompletionPortThreads))
+        {
+          Console.WriteLine($"Failed to set minWorkerThreads to {requiredMinThreads}. This will remain at the original value of {minWorkerThreads}");
+        }
+
+        Console.WriteLine($"Operating thread pool: min threads {minWorkerThreads}/{minCompletionPortThreads}, max threads {maxWorkerThreads}/{maxCompletionPortThreads}");
 
         var cancelTokenSource = new CancellationTokenSource();
         AppDomain.CurrentDomain.ProcessExit += (s, e) =>

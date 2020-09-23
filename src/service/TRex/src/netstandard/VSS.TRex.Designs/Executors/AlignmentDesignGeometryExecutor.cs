@@ -35,7 +35,7 @@ namespace VSS.TRex.Designs.Executors
         }
 
         var lockResult = DesignLoadResult.UnknownFailure;
-        var design = DIContext.Obtain<IDesignFiles>()?.Lock(alignmentDesignUid, projectUid, siteModel.CellSize, out lockResult);
+        var design = DIContext.ObtainRequired<IDesignFiles>().Lock(alignmentDesignUid, siteModel, siteModel.CellSize, out lockResult);
 
         if (lockResult != DesignLoadResult.Success)
         {

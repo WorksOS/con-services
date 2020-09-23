@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.FIlters;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace VSS.Productivity3D.Models.Models
 {

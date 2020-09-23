@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -58,11 +58,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     public ContractExecutionResult ValidateProjectSettings(
       [FromQuery] Guid projectUid,
       [FromQuery] string projectSettings,
-      [FromQuery] ProjectSettingsType? settingsType)
+      [FromQuery] ProjectSettingsType? settingsType,
+      [FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
 
-      return ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType);
+      return ValidateProjectSettingsEx(projectUid.ToString(), projectSettings, settingsType, serviceExceptionHandler);
     }
 
     /// <summary>
@@ -72,16 +73,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>ContractExecutionResult</returns>
     [Route("api/v2/validatesettings")]
     [HttpPost]
-    public ContractExecutionResult ValidateProjectSettings([FromBody] ProjectSettingsRequest request)
+    public ContractExecutionResult ValidateProjectSettings([FromBody] ProjectSettingsRequest request,
+      [FromServices] IServiceExceptionHandler serviceExceptionHandler)
     {
       log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 
-      return ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType);
+      return ValidateProjectSettingsEx(request.projectUid, request.Settings, request.ProjectSettingsType, serviceExceptionHandler);
     }
 
-    private ContractExecutionResult ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType)
+    private ContractExecutionResult ValidateProjectSettingsEx(string projectUid, string projectSettings, ProjectSettingsType? settingsType, IServiceExceptionHandler serviceExceptionHandler)
     {
       if (!string.IsNullOrEmpty(projectSettings))
       {
@@ -92,11 +94,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         {
           case ProjectSettingsType.Targets:
             var compactionSettings = GetProjectSettingsTargets(projectSettings);
-            compactionSettings?.Validate();
+            compactionSettings?.Validate(serviceExceptionHandler);
             break;
           case ProjectSettingsType.Colors:
             var colorSettings = GetProjectSettingsColors(projectSettings);
-            colorSettings?.Validate();
+            colorSettings?.Validate(serviceExceptionHandler);
             break;
           default:
             throw new ServiceException(HttpStatusCode.InternalServerError,

@@ -50,7 +50,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     public TAGFileSubmissionFlags SubmissionFlags { get; set; } = TAGFileSubmissionFlags.AddToArchive;
 
     /// <summary>
-    /// The orign source that produced the TAG file, such as GCS900, Eathworjs etc
+    /// The origin source that produced the TAG file, such as GCS900, Earthworks etc
     /// </summary>
     public TAGFileOriginSource OriginSource { get; set; } = TAGFileOriginSource.LegacyTAGFileSource;
 
@@ -61,9 +61,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     {
     }
 
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -77,17 +77,20 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       writer.WriteInt((int)OriginSource);
     }
 
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
       var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
-      ProjectID = reader.ReadGuid();
-      AssetID = reader.ReadGuid();
-      TAGFileName = reader.ReadString();
-      TCCOrgID = reader.ReadString();
-      TagFileContent = reader.ReadByteArray();
+      if (messageVersion >= 1)
+      {
+        ProjectID = reader.ReadGuid();
+        AssetID = reader.ReadGuid();
+        TAGFileName = reader.ReadString();
+        TCCOrgID = reader.ReadString();
+        TagFileContent = reader.ReadByteArray();
+      }
 
       if (messageVersion >= 2)
       {

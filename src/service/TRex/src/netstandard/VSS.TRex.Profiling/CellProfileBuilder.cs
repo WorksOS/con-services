@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -206,10 +204,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Constructs a vector of cells in profileCells along the path of the profile geometry containing in nEECoords
     /// </summary>
-    /// <param name="nEECoords"></param>
-    /// <param name="profileCells"></param>
-    /// <returns></returns>
-    public async Task<bool> Build(XYZ[] nEECoords, List<T> profileCells)
+    public bool Build(XYZ[] nEECoords, List<T> profileCells)
     {
       NEECoords = nEECoords;
       ProfileCells = profileCells;
@@ -289,13 +284,13 @@ namespace VSS.TRex.Profiling
 
           CurrentSubgridOrigin = ThisSubgridOrigin;
 
-          if (!await ProfileFilterMask.ConstructSubgridCellFilterMask(CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, SiteModel.Grid, 
+          if (!ProfileFilterMask.ConstructSubGridCellFilterMask(SiteModel, CurrentSubgridOrigin, VtHzIntercepts, i, FilterMask, CellFilter, 
             SurfaceDesignMaskDesign))
             continue;
 
           if (ReturnDesignElevation && CutFillDesignWrapper?.Design != null) // cut fill profile request then get elevation at same spot along design
           {
-            var getDesignHeightsResult = await CutFillDesignWrapper.Design.GetDesignHeights(SiteModel.ID, CutFillDesignWrapper.Offset, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize);
+            var getDesignHeightsResult = CutFillDesignWrapper.Design.GetDesignHeightsViaLocalCompute(SiteModel, CutFillDesignWrapper.Offset, new SubGridCellAddress(OTGCellX, OTGCellY), CellSize);
             
             DesignElevations = getDesignHeightsResult.designHeights;
             DesignResult = getDesignHeightsResult.errorCode;

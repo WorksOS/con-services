@@ -1,12 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace CoreX.Wrapper
 {
-  static class CoreXGeodataLogger
+  internal static class CoreXGeodataLogger
   {
-    private static object _lock = new object();
+    private static readonly object _lock = new object();
     private static bool _isLogged;
 
     /// <summary>

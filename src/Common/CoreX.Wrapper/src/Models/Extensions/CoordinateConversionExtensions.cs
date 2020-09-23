@@ -1,7 +1,7 @@
-﻿using CoreX.Models;
-using CoreX.Types;
+﻿using CoreX.Types;
+using CoreXModels;
 
-namespace CoreX.Wrapper.Extensions
+namespace CoreX.Extensions
 {
   public static class CoordinateConversionExtensions
   {

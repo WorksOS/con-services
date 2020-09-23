@@ -193,6 +193,12 @@ namespace CCSS.Geometry
       return points.Select(p => new IntPoint { X = (long)(p.X * SCALE), Y = (long)(p.Y * SCALE) }).ToList();
     }
 
+    private static List<Point> FromClipperPolygon(List<IntPoint> points)
+    {
+      const float SCALE = 100000;
+      return points.Select(p => new Point { X = (double)(p.X / SCALE), Y = (double)(p.Y / SCALE) }).ToList();
+    }
+
     /// <summary>
     /// Converts the polygon WKT to a list of points. Closes the polygon if it is not already closed. Validates there are at least 3 points. 
     /// </summary>
@@ -269,5 +275,29 @@ namespace CCSS.Geometry
       return true;
     }
 
+    /// <summary>
+    /// cws requires the project boundary to be counter clockwise.
+    ///   returns true if reversed
+    /// </summary>
+    public static string MakeCounterClockwise(string polygonWkt, out bool hasBeenReversed)
+    {
+      hasBeenReversed = false;
+      var resultPolygonWkt = polygonWkt;
+      var points = ConvertAndValidatePolygon(polygonWkt);
+
+      var polygon = ClipperPolygon(points);
+      var orientation = Clipper.Orientation(polygon);
+      // "On Y-axis positive upward displays, Orientation will return true if the polygon's orientation is counter-clockwise"
+      if (orientation == false)
+      {
+        var polygons = new List<List<IntPoint>> {polygon};
+        Clipper.ReversePolygons(new List<List<IntPoint>>(polygons));
+        hasBeenReversed = true;
+        var polygonList = FromClipperPolygon(polygons[0]);
+        resultPolygonWkt = polygonList.ToPolygonWKT();
+      }
+     
+      return resultPolygonWkt;
+    }
   }
 }

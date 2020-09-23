@@ -37,9 +37,9 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <summary>
     /// Serializes content to the writer
     /// </summary>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -63,29 +63,32 @@ namespace VSS.TRex.Profiling.GridFabric.Arguments
     /// <summary>
     /// Serializes content from the writer
     /// </summary>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      ProfileTypeRequired = (GridDataType)reader.ReadInt();
+      if (version == 1)
+      {
+        ProfileTypeRequired = (GridDataType) reader.ReadInt();
 
-      ProfileStyle = (ProfileStyle)reader.ReadInt();
+        ProfileStyle = (ProfileStyle) reader.ReadInt();
 
-      StartPoint = new WGS84Point();
-      if (reader.ReadBoolean())
-        StartPoint.FromBinary(reader);
+        StartPoint = new WGS84Point();
+        if (reader.ReadBoolean())
+          StartPoint.FromBinary(reader);
 
-      EndPoint = new WGS84Point();
-      if (reader.ReadBoolean())
-        EndPoint.FromBinary(reader);
+        EndPoint = new WGS84Point();
+        if (reader.ReadBoolean())
+          EndPoint.FromBinary(reader);
 
-      PositionsAreGrid = reader.ReadBoolean();
+        PositionsAreGrid = reader.ReadBoolean();
 
-      ReturnAllPassesAndLayers = reader.ReadBoolean();
+        ReturnAllPassesAndLayers = reader.ReadBoolean();
 
-      VolumeType = (VolumeComputationType)reader.ReadInt();
+        VolumeType = (VolumeComputationType) reader.ReadInt();
+      }
     }
   }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Threading.Tasks;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
@@ -26,7 +25,7 @@ namespace VSS.TRex.Volumes
   /// </summary>
   public class ProgressiveVolumesCalculator
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculator>();
+    private static readonly ILogger _log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculator>();
 
     /// <summary>
     /// The response object available for inspection once the Executor has completed processing
@@ -122,7 +121,7 @@ namespace VSS.TRex.Volumes
 
     public Guid RequestDescriptor { get; set; } = Guid.Empty;
 
-    public async Task<bool> ExecutePipeline()
+    public bool ExecutePipeline()
     {
       try
       {
@@ -130,34 +129,34 @@ namespace VSS.TRex.Volumes
         {
           if (ActiveDesign == null || ActiveDesign.Design.DesignDescriptor.IsNull)
           {
-            Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
+            _log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
             VolumesRequestResponse.ResultStatus = RequestErrorStatus.NoDesignProvided;
             return false;
           }
         }
 
         // Note: The execution context is on a compute cluster node already. However, the processor still performs the same function
-        // within the local context. TODO: Check this is a valid statement and we are not multiple dipping out to the whole compute cluster 'n' times
-        using var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
+        // within the local context. 
+        using var processor = DIContext.ObtainRequired<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
         (requestDescriptor: RequestDescriptor,
           dataModelID: SiteModel.ID,
           gridDataType: GridDataType.ProgressiveVolumes,
           response: VolumesRequestResponse,
           cutFillDesign: null,
           filters: new FilterSet(Filter),
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
+          task: DIContext.ObtainRequired<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
+          pipeline: DIContext.ObtainRequired<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
+          requestAnalyser: DIContext.ObtainRequired<IRequestAnalyser>(),
           requestRequiresAccessToDesignFileExistenceMap: false, // Note: RefDesign != null || RefOriginal != null,
           requireSurveyedSurfaceInformation: false, //UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted(),
-          liftParams: null //LiftParams
+          liftParams: null
         );
 
         // Assign the aggregator into the volumes computation task
         if (!(processor.Task is VolumesComputationTask volumesComputationTask))
         {
-          throw new ArgumentException($"Processor task for progressive volumes is not a {nameof(VolumesComputationTask)}, if is {processor.Task}");
+          throw new ArgumentException($"Processor task for progressive volumes is not a {nameof(VolumesComputationTask)}, it is '{processor.Task}'");
         }
 
         volumesComputationTask.Aggregator = Aggregator;
@@ -166,7 +165,7 @@ namespace VSS.TRex.Volumes
         // pipeline processor execution context.
         if (processor is IPipelineProcessor<ProgressiveVolumesSubGridsRequestArgument> customProcessor)
         {
-          customProcessor.CustomArgumentInitializer = (arg) =>
+          customProcessor.CustomArgumentInitializer = arg =>
           {
             arg.StartDate = StartDate;
             arg.EndDate = EndDate;
@@ -176,9 +175,9 @@ namespace VSS.TRex.Volumes
 
         processor.Task.RequestDescriptor = RequestDescriptor;
 
-        if (!await processor.BuildAsync())
+        if (!processor.Build())
         {
-          Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID} with status {processor.Response.ResultStatus}");
+          _log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID} with status {processor.Response.ResultStatus}");
           VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
           return false;
         }
@@ -187,7 +186,7 @@ namespace VSS.TRex.Volumes
 
         if (processor.Response.ResultStatus != RequestErrorStatus.OK)
         {
-          Log.LogError($"Failed to compute progressive volumes data, for project: {SiteModel.ID}. response: {processor.Response.ResultStatus}.");
+          _log.LogError($"Failed to compute progressive volumes data, for project: {SiteModel.ID}. response: {processor.Response.ResultStatus}.");
           VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
           return false;
         }
@@ -196,33 +195,27 @@ namespace VSS.TRex.Volumes
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Pipeline processor raised exception");
+        _log.LogError(e, "Pipeline processor raised exception");
       }
 
       return false;
     }
 
-    public Task<bool> ComputeVolumeInformation()
+    public bool ComputeVolumeInformation()
     {
       if (VolumeType == VolumeComputationType.None)
         throw new TRexException("No report type supplied to ComputeVolumeInformation");
 
-      if (FromSelectionType == ProdReportSelectionType.Surface)
+      if (FromSelectionType == ProdReportSelectionType.Surface && RefOriginal == null)
       {
-        if (RefOriginal == null)
-        {
-          Log.LogError("No RefOriginal surface supplied");
-          return Task.FromResult(false);
-        }
+        _log.LogError("No RefOriginal surface supplied");
+        return false;
       }
 
-      if (ToSelectionType == ProdReportSelectionType.Surface)
+      if (ToSelectionType == ProdReportSelectionType.Surface && RefDesign == null)
       {
-        if (RefDesign == null)
-        {
-          Log.LogError("No RefDesign surface supplied");
-          return Task.FromResult(false);
-        }
+        _log.LogError("No RefDesign surface supplied");
+        return false;
       }
 
       // Compute the volumes as required

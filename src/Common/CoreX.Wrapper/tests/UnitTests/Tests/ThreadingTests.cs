@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoreX.Interfaces;
-using CoreX.Models;
 using CoreX.Types;
 using CoreX.Wrapper.UnitTests.Types;
+using CoreXModels;
 using Xunit;
 
 namespace CoreX.Wrapper.UnitTests.Tests
 {
   public class ThreadingTests : IClassFixture<UnitTestBaseFixture>
   {
-    private readonly IConvertCoordinates _convertCoordinates;
+    private readonly ICoreXWrapper _convertCoordinates;
 
     public ThreadingTests(UnitTestBaseFixture testFixture)
     {
-      _convertCoordinates = testFixture.ConvertCoordinates;
+      _convertCoordinates = testFixture.CoreXWrapper;
     }
 
     [Fact]

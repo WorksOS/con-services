@@ -11,7 +11,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     /// Represents an internal TAG file item to be processed into a site model. It defines the underlying filename for 
     /// the TAG file, and the content of the file as a byte array
     /// </summary>
-    public class ProcessTAGFileRequestFileItem : IFromToBinary
+    public class ProcessTAGFileRequestFileItem : VersionCheckedBinarizableSerializationBase
     {
         private const byte VERSION_NUMBER = 3;
         private static byte[] VERSION_NUMBERS = {1, 2, 3};
@@ -49,7 +49,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         FromBinary(reader);
       }
 
-      public void ToBinary(IBinaryRawWriter writer)
+      public override void InternalToBinary(IBinaryRawWriter writer)
       {
         VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -61,14 +61,17 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         writer.WriteInt((int)OriginSource);
     }
 
-      public void FromBinary(IBinaryRawReader reader)
+      public override void InternalFromBinary(IBinaryRawReader reader)
       {
         var messageVersion = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
-        FileName = reader.ReadString();
-        AssetId = reader.ReadGuid() ?? Guid.Empty;
-        IsJohnDoe = reader.ReadBoolean();
-        TagFileContent = reader.ReadByteArray();
+        if (messageVersion >= 1)
+        {
+          FileName = reader.ReadString();
+          AssetId = reader.ReadGuid() ?? Guid.Empty;
+          IsJohnDoe = reader.ReadBoolean();
+          TagFileContent = reader.ReadByteArray();
+        }
 
         if (messageVersion >= 2)
         {

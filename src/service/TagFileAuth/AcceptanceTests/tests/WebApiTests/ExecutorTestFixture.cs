@@ -48,6 +48,7 @@ namespace WebApiTests
 
                         // for serviceDiscovery
                         .AddServiceDiscovery()
+                        .AddHttpClient()
                         .AddTransient<IWebRequest, GracefulWebRequest>()
                         .AddMemoryCache()
                         .AddSingleton<IDataCache, InMemoryDataCache>()

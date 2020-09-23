@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,9 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
   {
     private static readonly ILogger _log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
+    // Warn on analytics requests that take more than this time to service (20 seconds)
+    private static readonly TimeSpan _analyticsRequestTimeSpanWarnLimit = new TimeSpan(0, 0, 20);
+
     /// <summary>
     /// The SiteModel context for computing the result of the request
     /// </summary>
@@ -39,6 +43,8 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
       _log.LogInformation("In: Executing Coordination logic");
       TResponse response = default;
 
+      var requestStopWatch = Stopwatch.StartNew();
+
       try
       {
         response = new TResponse();
@@ -55,7 +61,7 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
         using var aggregator = ConstructAggregator(arg);
         var computor = ConstructComputor(arg, aggregator);
 
-        if (await computor.ComputeAnalytics(response))
+        if (computor.ComputeAnalytics(response))
         {
           // Instruct the aggregator to perform any finalisation logic before returning results
           aggregator.Finalise();
@@ -70,7 +76,13 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
       }
       finally
       {
-        _log.LogInformation("Out: Executing Coordination logic");
+        _log.LogInformation($"Out: Executing Coordination logic, elapsed time = {requestStopWatch.Elapsed}");
+
+        // Flag tile renders that take more than 20 seconds to render...
+        if (requestStopWatch.Elapsed > _analyticsRequestTimeSpanWarnLimit)
+        {
+          _log.LogInformation($"Analytics request required more than {_analyticsRequestTimeSpanWarnLimit} to complete");
+        }
       }
 
       return response;
@@ -79,23 +91,16 @@ namespace VSS.TRex.Analytics.Foundation.Coordinators
     /// <summary>
     /// Constructs the aggregator to be used as the reduction function for the MapReduceReduce computation
     /// </summary>
-    /// <param name="argument"></param>
-    /// <returns></returns>
     public abstract AggregatorBase ConstructAggregator(TArgument argument);
 
     /// <summary>
     /// Constructs the computor responsible for orchestrating information requests, essentially the map part of the MapReduceReduce computation
     /// </summary>
-    /// <param name="argument"></param>
-    /// <param name="aggregator"></param>
-    /// <returns></returns>
     public abstract AnalyticsComputor ConstructComputor(TArgument argument, AggregatorBase aggregator);
 
     /// <summary>
     /// Transcribes the results of the computation from the internal response type to the external response type
     /// </summary>
-    /// <param name="aggregator"></param>
-    /// <param name="response"></param>
     public abstract void ReadOutResults(AggregatorBase aggregator, TResponse response);
   }
 }

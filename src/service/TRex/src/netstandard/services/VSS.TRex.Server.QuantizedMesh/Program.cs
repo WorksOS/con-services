@@ -7,11 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
+using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
-using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
@@ -66,8 +67,7 @@ namespace VSS.TRex.Server.QuantizedMesh
         .AddLogging()
         .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
         .Build()
-        .Add(x => x.AddSingleton<IConvertCoordinates, ConvertCoordinates>())
-        .Add(x => x.AddSingleton<ITRexConvertCoordinates>(new TRexConvertCoordinates()))
+        .Add(x => x.AddSingleton<ICoreXWrapper, CoreXWrapper>())
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
         .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
@@ -85,12 +85,15 @@ namespace VSS.TRex.Server.QuantizedMesh
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
         .Add(x => x.AddSingleton(new QuantizedMeshServer()))
+        .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
-        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
+        .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
+        .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
 
         // Register the listener for site model attribute change notifications
-        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        //.Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
@@ -115,7 +118,7 @@ namespace VSS.TRex.Server.QuantizedMesh
         typeof(VSS.TRex.SiteModels.SiteModel),
         typeof(VSS.TRex.Cells.CellEvents),
         typeof(VSS.TRex.Compression.AttributeValueModifiers),
-        typeof(CoreX.Models.LLH),
+        typeof(CoreXModels.LLH),
         typeof(VSS.TRex.Designs.DesignBase),
         typeof(VSS.TRex.Designs.TTM.HashOrdinate),
         typeof(VSS.TRex.Designs.TTM.Optimised.HeaderConsts),
@@ -142,13 +145,14 @@ namespace VSS.TRex.Server.QuantizedMesh
     private static void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
-      DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+      //DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
 
       // Start listening to design state change notifications
-      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+      //DIContext.Obtain<IDesignChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new DotnetThreadHeartBeatLogger());
 
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -74,12 +75,56 @@ namespace VSS.AWS.TransferProxy
       }
     }
 
+    public FileStreamResult DownloadFromBucketSync(string s3Key, string bucketName)
+    {
+      FileStreamResult fsr = null;
+
+      var sw = Stopwatch.StartNew();
+
+      using (var transferUtil = GetTransferUtility())
+      {
+        logger.LogDebug($"Time to GetTransferUtility: {sw.Elapsed}");
+        sw.Restart();
+
+        var stream = transferUtil.OpenStream(bucketName, s3Key);
+        logger.LogDebug($"Time to transferUtil.OpenStream: {sw.Elapsed}");
+        sw.Restart();
+
+        string mimeType;
+        try
+        {
+          var extension = Path.GetExtension(s3Key);
+
+          mimeType = MimeTypeMap.GetMimeType(extension);
+        }
+        catch (ArgumentException)
+        {
+          // Unknown or invalid extension, not bad but we don't know the content type
+          mimeType = ContentTypeConstants.ApplicationOctetStream; // binary data....
+        }
+
+        fsr = new FileStreamResult(stream, mimeType);
+        logger.LogDebug($"Time to create file stream: {sw.Elapsed}");
+        sw.Restart();
+      }
+
+      logger.LogDebug($"Time to dispose transfer utility and return file stream: {sw.Elapsed}");
+      return fsr;
+    }
+
     /// <summary>
     /// Create a task to download a file from S3 storage
     /// </summary>
     /// <param name="s3Key">Key to the data to be downloaded</param>
     /// <returns>FileStreamResult if the file exists</returns>
     public Task<FileStreamResult> Download(string s3Key) => DownloadFromBucket(s3Key, awsBucketName);
+
+    /// <summary>
+    /// Create a task to download a file from S3 storage
+    /// </summary>
+    /// <param name="s3Key">Key to the data to be downloaded</param>
+    /// <returns>FileStreamResult if the file exists</returns>
+    public FileStreamResult DownloadSync(string s3Key) => DownloadFromBucketSync(s3Key, awsBucketName);
 
     public void UploadToBucket(Stream stream, string s3Key, string bucketName)
     {

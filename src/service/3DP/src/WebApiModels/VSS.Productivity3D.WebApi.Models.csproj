@@ -44,27 +44,27 @@
     <ProjectReference Include="..\..\..\TRex\src\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
     <ProjectReference Include="..\..\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
+    <ProjectReference Include="..\ServiceCommon\CCSS.Productivity3D.Service.Common\CCSS.Productivity3D.Service.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-    <Compile Remove=".\Compaction\Executors\CompactionPatchExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\DxfTileExecutor.cs" />
     <Compile Remove=".\Compaction\Executors\AlignmentLineworkExecutor.cs" />
-
     <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
-
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorGet.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPost.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorPut.cs" />
     <Compile Remove=".\ProductionData\ResultHandling\CompactionDesignProfile.cs" />
-    <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

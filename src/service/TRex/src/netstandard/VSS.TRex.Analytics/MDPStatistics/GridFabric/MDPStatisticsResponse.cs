@@ -23,10 +23,9 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     /// <summary>
     /// Serialises content to the writer
     /// </summary>
-    /// <param name="writer"></param>
-    public override void ToBinary(IBinaryRawWriter writer)
+    public override void InternalToBinary(IBinaryRawWriter writer)
     {
-      base.ToBinary(writer);
+      base.InternalToBinary(writer);
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -36,21 +35,21 @@ namespace VSS.TRex.Analytics.MDPStatistics.GridFabric
     /// <summary>
     /// Serialises content from the writer
     /// </summary>
-    /// <param name="reader"></param>
-    public override void FromBinary(IBinaryRawReader reader)
+    public override void InternalFromBinary(IBinaryRawReader reader)
     {
-      base.FromBinary(reader);
+      base.InternalFromBinary(reader);
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      LastTargetMDP = reader.ReadShort();
+      if (version == 1)
+      {
+        LastTargetMDP = reader.ReadShort();
+      }
     }
 
     /// <summary>
     /// Aggregate a set of MDP statistics into this set and return the result.
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
     protected override void AggregateBaseDataWith(StatisticsAnalyticsResponse other)
     {
       base.AggregateBaseDataWith(other);

@@ -4,12 +4,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
@@ -232,7 +234,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     public void MapProjectSettingsToCMVSettings()
     {
       // The useDefaultTargetRangeCmvPercent is set to "false".
-      var ps = CompactionProjectSettings.CreateProjectSettings(
+      var ps = new CompactionProjectSettings(
         useMachineTargetCmv: false, customTargetCmv: 50, useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140
       );
 
@@ -245,7 +247,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(ps.customTargetCmvPercentMaximum, cmv.MaxCMVPercent, "maxCMVPercent not mapped correctly");
 
       // The useDefaultTargetRangeCmvPercent is set to "true".
-      ps = CompactionProjectSettings.CreateProjectSettings(
+      ps = new CompactionProjectSettings(
         useMachineTargetCmv: false, customTargetCmv: 50, useDefaultTargetRangeCmvPercent: true, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140
       );
 
@@ -262,7 +264,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     public void MapProjectSettingsToCMVSettingsEx()
     {
       // The useDefaultCMVTargets is set to "false".
-      var ps = CompactionProjectSettings.CreateProjectSettings(
+      var ps = new CompactionProjectSettings(
         useMachineTargetCmv: false, customTargetCmv: 50,
         useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140,
         useDefaultCMVTargets: false, customCMVTargets: new List<int>
@@ -284,7 +286,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreNotEqual(ps.customCMVTargets, cmv.CustomCMVDetailTargets, "customCMVDetailTargets not mapped correctly");
 
       // The useDefaultCMVTargets is set to "true".
-      ps = CompactionProjectSettings.CreateProjectSettings(
+      ps = new CompactionProjectSettings(
         useMachineTargetCmv: false, customTargetCmv: 50,
         useDefaultTargetRangeCmvPercent: false, customTargetCmvPercentMinimum: 30, customTargetCmvPercentMaximum: 140,
         useDefaultCMVTargets: true, customCMVTargets: new List<int>
@@ -311,7 +313,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     public void MapProjectSettingsToMDPSettings()
     {
       // The useDefaultTargetRangeMdpPercent is set to "false".
-      var ps = CompactionProjectSettings.CreateProjectSettings(
+      var ps = new CompactionProjectSettings(
         useMachineTargetMdp: false, customTargetMdp: 50, useDefaultTargetRangeMdpPercent: false, customTargetMdpPercentMinimum: 30, customTargetMdpPercentMaximum: 140
       );
 
@@ -324,7 +326,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(ps.customTargetMdpPercentMaximum, mdp.MaxMDPPercent, "maxMDPPercent not mapped correctly");
 
       // The useDefaultTargetRangeMdpPercent is set to "true".
-      ps = CompactionProjectSettings.CreateProjectSettings(
+      ps = new CompactionProjectSettings(
         useMachineTargetMdp: false, customTargetMdp: 50, useDefaultTargetRangeMdpPercent: true, customTargetMdpPercentMinimum: 30, customTargetMdpPercentMaximum: 140
       );
 
@@ -340,7 +342,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     [TestMethod]
     public void MapProjectSettingsToTemperatureSettings()
     {
-      var ps = CompactionProjectSettings.CreateProjectSettings(
+      var ps = new CompactionProjectSettings(
         useMachineTargetTemperature: false, customTargetTemperatureMinimum: 50, customTargetTemperatureMaximum: 140
       );
 
@@ -353,7 +355,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     [TestMethod]
     public void MapProjectSettingsToTemperatureDetailsSettings()
     {
-      var ps = CompactionProjectSettings.CreateProjectSettings(
+      var ps = new CompactionProjectSettings(
         useDefaultTemperatureTargets: false, customTemperatureTargets: new List<double>
         {
           0,
@@ -378,7 +380,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     [TestMethod]
     public void MapProjectSettingsToPassCountSettings()
     {
-      var ps = CompactionProjectSettings.CreateProjectSettings(
+      var ps = new CompactionProjectSettings(
         useDefaultPassCountTargets: false, customPassCountTargets: new List<int>
         {
           1,
@@ -403,7 +405,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     [TestMethod]
     public void MapProjectSettingsToCMVPercentChangeSettings()
     {
-      var ps = CompactionProjectSettings.CreateProjectSettings();
+      var ps = new CompactionProjectSettings();
       double[] expectedPercents = ps.CmvPercentChange;
 
       var cmvChange = AutoMapperUtility.Automapper.Map<CmvPercentChangeSettings>(ps);
@@ -417,7 +419,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     [TestMethod]
     public void MapProjectSettingsToCutFillSettings()
     {
-      var ps = CompactionProjectSettings.CreateProjectSettings(
+      var ps = new CompactionProjectSettings(
         useDefaultCutFillTolerances: false, customCutFillTolerances: new List<double>
         {
           0.3,
@@ -443,7 +445,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     public void MapProjectSettingsToCustomLiftBuildSettings()
     {
       // The useDefaultTargetRangeCmvPercent and useDefaultTargetRangeMdpPercent are set to "false".
-      var ps = CompactionProjectSettings.CreateProjectSettings(false, 3, 11, false, 35, 129, false, 43, false, 44, false, 55, 103, false, 56, 102, false, 4, 8, null, null, null, null, null, false, new List<int>
+      var ps = new CompactionProjectSettings(false, 3, 11, false, 35, 129, false, 43, false, 44, false, 55, 103, false, 56, 102, false, 4, 8, null, null, null, null, null, false, new List<int>
       {
         1,
         2,
@@ -477,7 +479,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
       Assert.AreEqual(ps.CustomTargetSpeedMaximum, lbs.MachineSpeedTarget.MaxTargetMachineSpeed, "machineSpeedTarget.MaxTargetMachineSpeed not mapped correctly");
 
       // The useDefaultTargetRangeCmvPercent and useDefaultTargetRangeMdpPercent are set to "true".
-      ps = CompactionProjectSettings.CreateProjectSettings(false, 3, 11, false, 35, 129, false, 43, false, 44, true, 55, 103, true, 56, 102, false, 4, 8, null, null, null, null, null, false, new List<int>
+      ps = new CompactionProjectSettings(false, 3, 11, false, 35, 129, false, 43, false, 44, true, 55, 103, true, 56, 102, false, 4, 8, null, null, null, null, null, false, new List<int>
       {
         1,
         2,
@@ -514,7 +516,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.AutoMapper
     [TestMethod]
     public void MapProjectSettingsToDefaultLiftBuildSettings()
     {
-      var ps = CompactionProjectSettings.CreateProjectSettings(true, 3, 11, true, 35, 129, true, 43, true, 44, true, 55, 103, true, 56, 102, true, 4, 8, null, null, null, null, null, true, new List<int>
+      var ps = new CompactionProjectSettings(true, 3, 11, true, 35, 129, true, 43, true, 44, true, 55, 103, true, 56, 102, true, 4, 8, null, null, null, null, null, true, new List<int>
       {
         1,
         2,

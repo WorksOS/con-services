@@ -26,6 +26,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
   public class TileRequestTests : TileRequestTestsBase, IClassFixture<DIRenderingFixture>
   {
     private const float HEIGHT_INCREMENT_0_5 = 0.5f;
+    private const short CCV_INCREMENT = 10;
 
 
     [Fact]
@@ -39,7 +40,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -50,6 +53,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_EmptySiteModel_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -69,7 +73,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -80,6 +86,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_EmptySiteModel_FullExtents_WithColourPalette(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -101,7 +108,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -112,12 +121,13 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, CCV_INCREMENT);
 
       var request = new TileRenderRequest();
       var filter = new CellPassAttributeFilter() { MachinesList = new[] { siteModel.Machines[0].ID }, LayerID = 1 };
@@ -129,7 +139,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -140,12 +152,13 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithCustomSpatialFilter_Rectangle(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, CCV_INCREMENT);
 
       var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
@@ -167,7 +180,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -178,12 +193,13 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithCustomSpatialFilter_Polygonal(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, CCV_INCREMENT);
 
       var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
@@ -213,7 +229,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -224,12 +242,13 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_SiteModelWithSingleCell_FullExtents_WithColourPalette(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
-      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, CCV_INCREMENT);
 
       var palette = PVMPaletteFactory.GetPalette(siteModel, displayMode, siteModel.SiteModelExtent);
 
@@ -242,7 +261,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -253,6 +274,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -275,7 +297,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -286,6 +310,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_NoSubGridData_EmptyTile(DisplayMode displayMode)
     {
       // See BUG# 86870
@@ -298,6 +323,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var baseTime = DateTime.UtcNow;
       var baseHeight = 1.0f;
       byte baseCCA = 1;
+      byte baseCCV = 0;
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
@@ -311,6 +337,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
           Time = baseTime.AddMinutes(x),
           Height = baseHeight + x * HEIGHT_INCREMENT_0_5,
           CCA = (byte)(baseCCA + x),
+          CCV = (short)(baseCCV + x * CCV_INCREMENT),
           PassType = PassType.Front
         }).ToArray();
 
@@ -346,7 +373,9 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Theory]
     [InlineData(DisplayMode.Height)]
     [InlineData(DisplayMode.CCV)]
+    [InlineData(DisplayMode.CCVPercent)]
     [InlineData(DisplayMode.CCVPercentSummary)]
+    [InlineData(DisplayMode.CCVPercentChange)]
     [InlineData(DisplayMode.CCA)]
     [InlineData(DisplayMode.CCASummary)]
     [InlineData(DisplayMode.MDP)]
@@ -357,6 +386,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [InlineData(DisplayMode.TemperatureSummary)]
     [InlineData(DisplayMode.PassCount)]
     [InlineData(DisplayMode.PassCountSummary)]
+    [InlineData(DisplayMode.CompactionCoverage)]
     public async Task Test_TileRenderRequest_SingleTAGFileSiteModel_FileExtents_WithColourPalette(DisplayMode displayMode)
     {
       AddApplicationGridRouting();
@@ -399,7 +429,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
         (TTMLocationX, TTMLocationY, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset, out int cellX, out int cellY);
 
       // Create the site model containing a single cell and add the design to it for the cut/fill
-      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, CCV_INCREMENT, cellX, cellY);
 
       var palette = usePalette ? PVMPaletteFactory.GetPalette(siteModel, DisplayMode.CutFill, siteModel.SiteModelExtent) : null;
 
@@ -440,7 +470,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
         (LOCATION_X, LOCATION_Y, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset, out var cellX, out var cellY);
 
       // Create the site model containing a single cell and add the surveyed surface to it 
-      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, cellX, cellY);
+      var siteModel = BuildModelForSingleCellTileRender(HEIGHT_INCREMENT_0_5, CCV_INCREMENT, cellX, cellY);
 
       DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSurveyedSurfaceEncompassingExtent(ref siteModel,
         new TRex.Geometry.BoundingWorldExtent3D(0, 0, 100, 100), DateTime.UtcNow, new[] { 100.0, 100.0, 100.0, 100.0 });
@@ -463,7 +493,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
     [Fact]
     public async Task Test_TileRenderRequest_TAGFile_And_SurveyedSurface_ElevationOnly()
     {
-      // Render a surveyed surface across a processd TAG file extent
+      // Render a surveyed surface across a processed TAG file extent
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
@@ -494,7 +524,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       const string FILE_NAME = "SimpleSurveyedSurfaceWithTAGFile.bmp";
       var path = Path.Combine("TestData", "RenderedTiles", "SurveyedSurface", FILE_NAME);
 
-      var saveFileName = ""; // @$"c:\temp\{FILE_NAME}";
+      var saveFileName = ""; //@$"c:\temp\{FILE_NAME}";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.Height, saveFileName, path);
     }

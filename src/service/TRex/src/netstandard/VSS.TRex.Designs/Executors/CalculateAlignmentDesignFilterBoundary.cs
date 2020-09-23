@@ -21,8 +21,8 @@ namespace VSS.TRex.Designs.Executors
     {
       try
       {
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, false);
-        var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUid, projectUid, siteModel.CellSize, out var lockResult);
+        var siteModel = DIContext.ObtainRequired<ISiteModels>().GetSiteModel(projectUid, false);
+        var design = DIContext.ObtainRequired<IDesignFiles>().Lock(referenceDesignUid, siteModel, siteModel.CellSize, out var lockResult);
 
         if (design == null)
         {

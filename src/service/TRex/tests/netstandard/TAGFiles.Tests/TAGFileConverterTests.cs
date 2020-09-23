@@ -5,6 +5,7 @@ using FluentAssertions;
 using Nito.AsyncEx;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Tests;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -13,6 +14,7 @@ namespace TAGFiles.Tests
 {
   public class TAGFileConverterTests : IClassFixture<DITagFileFixture>
   {
+
     [Fact()]
     public void Test_TAGFileConverter_Creation()
     {
@@ -67,6 +69,7 @@ namespace TAGFiles.Tests
     [InlineData(10)]
     public async Task Test_TAGFileConverter_Execute_SingleFileMultipleTimesConcurrently(int instanceCount)
     {
+
       var result = await Enumerable.Range(1, instanceCount).Select(x => Task.Run(() => DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false))).WhenAll();
 
       result.Length.Should().Be(instanceCount);

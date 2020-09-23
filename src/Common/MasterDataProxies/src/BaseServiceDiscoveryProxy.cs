@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,7 +124,7 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Execute a Post/Put/Delete to an endpoint that returns only an HttpStatusCode.
     /// </summary>
-    protected Task SendMasterDataItemServiceDiscoveryNoCache(string route, IHeaderDictionary customHeaders,
+    protected Task<HttpStatusCode> SendMasterDataItemServiceDiscoveryNoCache(string route, IHeaderDictionary customHeaders,
      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
     {
       return Request(customHeaders, method, route, queryParameters, payload);
@@ -204,7 +205,6 @@ namespace VSS.MasterData.Proxies
 
       var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
       var result = await (await WebRequest.ExecuteRequestAsStreamContent(url, method, strippedHeaders, streamPayload)).ReadAsStreamAsync();
-      BaseProxyHealthCheck.SetStatus(true, GetType());
       return result;
     }
 
@@ -234,14 +234,14 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
-    private async Task Request(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
+    private async Task<HttpStatusCode> Request(IHeaderDictionary customHeaders, HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
       var strippedHeaders = customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      await WebRequest.ExecuteRequest(url, payload: payload, customHeaders: strippedHeaders, method: method);
+      return await WebRequest.ExecuteRequest(url, payload: payload, customHeaders: strippedHeaders, method: method);
     }
 
     #endregion

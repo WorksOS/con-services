@@ -23,7 +23,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         /// <summary>
         /// Constructor that hard wires the expected grid data type to height
         /// </summary>
-        public VolumesComputationTask() 
+        public VolumesComputationTask()
         {
           GridDataType = GridDataType.Height;
         }
@@ -31,8 +31,6 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         /// <summary>
         /// Receives a pair of sub grids from the sub grid compute engine and passes them to the volumes aggregator for summation
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
         public override bool TransferResponse(object response)
         {
             // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreX.Wrapper.Extensions
+namespace CoreX.Extensions
 {
   public static class DoubleExtensions
   {
