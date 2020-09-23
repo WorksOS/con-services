@@ -19,24 +19,39 @@ namespace VSS.TRex.CoordinateSystems.Executors
     /// non spatial cache for the project
     /// Additionally, it notifies listeners of the coordinate system change.
     /// </summary>
-    public bool Execute(Guid projectID, string csib)
+    // ReSharper disable once IdentifierTypo
+    public bool Execute(Guid projectUid, string csib)
     {
       // todo: Enrich return value to encode or provide additional information relating to failures
 
       try
       {
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectID, true);
-        siteModel.SetCSIB(csib);
+        // Tell the SiteModels instance to reload the designated site model that has changed
+        var siteModels = DIContext.Obtain<ISiteModels>();
+        if (siteModels == null)
+        {
+          _log.LogError("No ISiteModels instance available from DIContext to send attributes change message to");
+          return false;
+        }
 
-        // Notify the  grid listeners that attributes of this site model have changed.
-        var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
-        sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModel.ID, CsibChanged: true);
+        var siteModel = siteModels.GetSiteModel(projectUid, true);
 
+        if (siteModel == null)
+        {
+          _log.LogError($"Failed to obtain site model for UID = {projectUid}");
+          return false;
+        }
+
+        if (siteModel.SetCSIB(csib))
+        {
+          // Notify the  grid listeners that attributes of this site model have changed.
+          var sender = DIContext.ObtainRequired<ISiteModelAttributesChangedEventSender>();
+          sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, siteModel.ID, CsibChanged: true);
+        }
       }
       catch (Exception e)
       {
         _log.LogError(e, "Exception occurred adding coordinate system to project");
-        Console.WriteLine(e);
         throw;
       }
 
