@@ -104,8 +104,8 @@ function Run-Unit-Tests {
     $localTestResultsFolder = "UnitTestResults"
     Remove-Item -Path "$servicePath/$localTestResultsFolder" -Recurse -ErrorAction SilentlyContinue
 
-    # Build and run containerized unit tests
-    Write-Host "`nBuilding unit test container..." -ForegroundColor Green
+    # Build and run containerized tests
+    Write-Host "`nBuilding test container..." -ForegroundColor Green
 
     # We don't require a build context here because everything needed is present in the already present [service]-build image.
     # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
@@ -116,7 +116,7 @@ function Run-Unit-Tests {
         --build-arg SERVICE_PATH=$servicePath `
         --build-arg COLLECT_COVERAGE=$collectCoverage - 
     
-    Write-Host "`nCreating unit test container..." -ForegroundColor Green
+    Write-Host "`nCreating test container..." -ForegroundColor Green
     $unique_container_name = "$container_name`_$(Get-Random -Minimum 1000 -Maximum 9999)"
 
     # Had instances of the docker login failing, possibly due to AWS token expiry? 
@@ -154,6 +154,75 @@ function Run-Unit-Tests {
     Write-Host "`nUnit test run complete" -ForegroundColor Green
 }
 
+function Run-Integration-Tests {
+    $container_name = "$serviceName-integrationtest"
+    if (-not($dockerFile)) { $dockerFile = 'Dockerfile.integrationtest' }
+
+    # Ensure required image exists
+    $buildImage = "$serviceName-build:latest"
+
+    if ($(docker images $buildImage -q).Count -eq 0) {
+        Write-Host "Unable to find required build image '$buildImage'." -ForegroundColor Red
+        Write-Host "Found the following '$serviceName*' images:`n" -ForegroundColor Red
+        docker images $serviceName*
+
+        Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_IMAGE)
+    }
+
+    # Clean up from earlier runs
+    $localTestResultsFolder = "IntegrationTestResults"
+    Remove-Item -Path "$servicePath/$localTestResultsFolder" -Recurse -ErrorAction SilentlyContinue
+
+    # Build and run containerized tests
+    Write-Host "`nBuilding test container..." -ForegroundColor Green
+
+    # We don't require a build context here because everything needed is present in the already present [service]-build image.
+    # Docker build allows the - < token indicating the dockerfile is passed via STDIN; this means the build context only consists of the Dockerfile.
+    # Powershell doesn't have an input redirection feature so it's done using the Get-Content cmdlet.
+    Get-Content $servicePath/build/$dockerFile | docker build --tag $container_name `
+        --no-cache `
+        --build-arg FROM_IMAGE=$buildImage `
+        --build-arg SERVICE_PATH=$servicePath `
+        --build-arg COLLECT_COVERAGE=$collectCoverage - 
+    
+    Write-Host "`nCreating test container..." -ForegroundColor Green
+    $unique_container_name = "$container_name`_$(Get-Random -Minimum 1000 -Maximum 9999)"
+
+    # Had instances of the docker login failing, possibly due to AWS token expiry? 
+    Login-Aws
+
+    # Start the container image and terminate and detach immediately
+    docker create --name $unique_container_name $container_name
+    if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_CREATE_FAILED) }
+
+    if ($recordTestResults -eq $true -Or $collectCoverage -eq $true) {
+        Write-Host "Copying files from container /IntegrationTestResults/ to local host..." -ForegroundColor Green
+        docker cp $unique_container_name`:/build/$servicePath/IntegrationTestResults/. $servicePath/$localTestResultsFolder
+        Write-Host "Listing results of file copy..." -ForegroundColor Green
+        Get-ChildItem $servicePath/$localTestResultsFolder
+
+        if ($recordTestResults -eq $true) {
+            if (-not (Test-Path -Path $servicePath/$localTestResultsFolder/* -Include *.trx)) {
+                Write-Host "Unable to find any .trx results files on local host." -ForegroundColor Red
+                Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_RESULTS)
+            }
+        }
+    
+        if ($collectCoverage -eq $true) {
+            $coveragePath = "$servicePath/$localTestResultsFolder/coverage*cobertura.xml"
+    
+            if (-not (Test-Path $coveragePath -PathType Leaf)) {
+                Write-Host "Unable to find test coverage file '$coveragePath' on local host." -ForegroundColor Red
+                Exit-With-Code ([ReturnCode]::UNABLE_TO_FIND_TEST_COVERAGE)
+            }
+        }
+    }
+
+    Write-Host "`nRemoving test container..." -ForegroundColor Green
+    docker rm $unique_container_name
+    Write-Host "`nIntegration test run complete" -ForegroundColor Green
+}
+
 function Publish-Service {
     $publishImage = "$serviceName-webapi"
 
@@ -184,12 +253,12 @@ function Publish-Service {
     if (-not($dockerFile)) { $dockerFile = 'Dockerfile.runtime' }
 
     Get-Content $servicePath/build/$dockerFile | docker build `
-    --tag $publishImage `
-    --no-cache `
-    --build-arg FROM_IMAGE=$buildImage `
-    --build-arg SERVICE_PATH=$servicePath `
-    --build-arg SOURCE_PATH$sourceArtifactPathArg `
-    --build-arg DEST_PATH$destArtifactPathArg -
+        --tag $publishImage `
+        --no-cache `
+        --build-arg FROM_IMAGE=$buildImage `
+        --build-arg SERVICE_PATH=$servicePath `
+        --build-arg SOURCE_PATH$sourceArtifactPathArg `
+        --build-arg DEST_PATH$destArtifactPathArg -
 
     if (-not $?) { Exit-With-Code ([ReturnCode]::CONTAINER_BUILD_FAILED) }
 
@@ -305,8 +374,12 @@ switch ($action) {
         Build-Solution
         continue
     }
-    'unittest' {
+    'unitTest' {
         Run-Unit-Tests
+        continue
+    }
+    'integrationTest' {
+        Run-Integration-Tests
         continue
     }
     'publish' {
@@ -322,7 +395,6 @@ switch ($action) {
         Push-Container-Image
         continue
     }
-    
     'updateNugetSources' {
         Update-Nuget-Sources
         continue

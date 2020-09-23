@@ -10,12 +10,12 @@ namespace CCSS.WorksOS.Healthz.Responses
     public long ResponseTimeTicks { get; private set; }
     public ServiceState State { get; private set; }
 
-    public static ServicePingResponse Create(string id, long responseTime, bool isSuccessStatusCode) =>
+    public static ServicePingResponse Create(string id, long responseTimeTicks, bool isSuccessStatusCode) =>
       new ServicePingResponse
       {
         Id = id,
-        ResponseTimeTicks = responseTime,
-        ResponseTime = TimeSpan.FromTicks(responseTime),
+        ResponseTimeTicks = responseTimeTicks,
+        ResponseTime = TimeSpan.FromTicks(responseTimeTicks),
         State = isSuccessStatusCode ? ServiceState.Available : ServiceState.Unavailable
       };
   }
