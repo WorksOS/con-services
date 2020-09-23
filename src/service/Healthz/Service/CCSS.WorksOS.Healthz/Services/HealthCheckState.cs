@@ -113,15 +113,15 @@ namespace CCSS.WorksOS.Healthz.Services
 
       for (var i = 0; i < identifiers.Length; i++)
       {
-        var serviceCacheExists = _cache.TryGetValue(_serviceStateCacheKey(identifiers[i]), out Queue<ServicePingResponse> serviceState);
+        var serviceCacheExists = _cache.TryGetValue(_serviceStateCacheKey(identifiers[i]), out Queue<ServicePingResponse> serviceStates);
 
-        if (!serviceCacheExists)
+        if (!serviceCacheExists || serviceStates.Count == 0)
         {
           continue;
         }
 
         // Return the last, most recent ping response.
-        response[i] = serviceState.Last();
+        response[i] = serviceStates.Last();
       }
 
       return response;

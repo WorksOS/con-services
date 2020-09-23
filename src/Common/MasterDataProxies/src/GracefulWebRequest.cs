@@ -101,9 +101,8 @@ namespace VSS.MasterData.Proxies
       int? timeout = null, int retries = 0, bool suppressExceptionLogging = false)
     {
       _log.LogDebug(
-        $"ExecuteRequest() Stream: endpoint {endpoint} " +
-        $"method {method}, " +
-        $"customHeaders {customHeaders.LogHeaders(_logMaxChar)} " +
+        $"ExecuteRequest() Stream: [{method}] endpoint: {endpoint}, " +
+        $"customHeaders: {customHeaders.LogHeaders(_logMaxChar)}, " +
         $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
@@ -123,7 +122,7 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          _log.LogDebug($"Trying to execute {method} request {endpoint}");
+          _log.LogDebug($"Executing {method} request: {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
           _log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
@@ -178,7 +177,7 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
 
-      _log.LogDebug($"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
+      _log.LogDebug($"ExecuteRequest() T[{method}] endpoint: {endpoint}, customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload?.CanSeek == false && retries > 0)
@@ -193,7 +192,7 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          _log.LogDebug($"Trying to execute {method} request {endpoint}");
+          _log.LogDebug($"Executing {method} request: {endpoint}");
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           _log.LogDebug($"Request to {endpoint} completed");
 
@@ -250,7 +249,7 @@ namespace VSS.MasterData.Proxies
       if (method == null)
         method = HttpMethod.Post;
 
-      _log.LogDebug($"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
+      _log.LogDebug($"ExecuteRequest() [{method}] endpoint: {endpoint}, customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
       if (payload?.CanSeek == false && retries > 0)
@@ -266,7 +265,7 @@ namespace VSS.MasterData.Proxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          _log.LogDebug($"Trying to execute {method} request {endpoint}");
+          _log.LogDebug($"Executing {method} request: {endpoint}");
           result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
 
           if (_okCodes.Contains(result.StatusCode))

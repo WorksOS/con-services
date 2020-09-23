@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using CCSS.WorksOS.Healthz.Models;
@@ -130,7 +129,7 @@ namespace CCSS.WorksOS.Healthz.Services
           .Add(QueryService(service)
           .ContinueWith(x =>
           {
-            if (!x.IsCompleted)
+            if (!x.IsCompleted || x.Result == null)
             {
               Logger.LogError($"{nameof(ResolveServicesState)}: Failure querying service '{service.Identifier}' at '{service.Endpoint}'; {x.Exception.GetBaseException().Message}");
               return;
@@ -164,11 +163,11 @@ namespace CCSS.WorksOS.Healthz.Services
     private async Task<ServicePingResponse> QueryService(Service service)
     {
       var pingUrl = service.Endpoint.TrimEnd('/') + "/ping";
+      var sw = Stopwatch.StartNew();
 
       try
       {
         Logger.LogInformation($"{nameof(QueryService)}: Querying '{pingUrl}'...");
-        var sw = Stopwatch.StartNew();
 
         var response = await _webRequest.ExecuteRequest(
           endpoint: pingUrl,
@@ -180,18 +179,18 @@ namespace CCSS.WorksOS.Healthz.Services
         Logger.LogInformation($"{nameof(QueryService)}: Service '{service.Identifier}' responded in {sw.Elapsed}");
         return ServicePingResponse.Create(service.Identifier, sw.ElapsedTicks, IsSuccessStatusCode(response));
       }
-      catch (SocketException ex)
+      catch (TaskCanceledException)
       {
-        Logger.LogWarning(ErrorMessage(ex));
-        return null;
+        // Exception handling is managed in our IWebRequest service.
       }
       catch (Exception ex)
       {
         Logger.LogError(ex, ErrorMessage(ex));
-        return null;
       }
 
       string ErrorMessage(Exception ex) => $"{nameof(QueryService)}: Failure querying service '{service.Identifier}' at '{pingUrl}'; {ex.GetBaseException().Message}";
+
+      return ServicePingResponse.Create(service.Identifier, sw.ElapsedTicks, isSuccessStatusCode: false);
     }
   }
 }
