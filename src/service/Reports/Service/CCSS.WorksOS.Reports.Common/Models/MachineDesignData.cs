@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -11,7 +9,6 @@ namespace CCSS.WorksOS.Reports.Common.Models
     [JsonProperty(PropertyName = "designs")]
     public List<DesignDetail> MachineDesigns { get; set; }
   }
-  // todoJeannie is this in 3dp?
   public class DesignDetail
   {
     [JsonProperty(PropertyName = "designId")]

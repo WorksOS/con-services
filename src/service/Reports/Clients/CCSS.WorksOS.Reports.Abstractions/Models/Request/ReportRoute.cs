@@ -34,17 +34,12 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
     /// </summary>
     [JsonProperty(PropertyName = "method")]
     public string SvcMethod { get; private set; } 
-
-    [JsonProperty("body")]
-    public string /* JRaw todoJeannie is this ever used for 3dp reports? */
-      SvcBody { get; private set; }
-
-
+    
     private ReportRoute()
     {
     }
 
-    public ReportRoute(string reportRouteType, string queryURL, string mapURL = null, string svcMethod = "GET", string svcBody = null)
+    public ReportRoute(string reportRouteType, string queryURL, string mapURL = null, string svcMethod = "GET")
     {
       ReportRouteType = reportRouteType;
       SvcMethod = new HttpMethod(svcMethod ?? "GET").ToString();
@@ -54,14 +49,11 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
 
       if (!string.IsNullOrEmpty(mapURL))
         MapURL = mapURL.Trim();
-
-      SvcBody = svcBody;
     }
 
     public void Validate()
     {
-      // queryUrl optional or not Required (? todoJeannie)  for CMVDetail
-      if (ReportRouteType != OptionalSummaryReportRoute.CMVDetail.ToString() &&
+      if (ReportRouteType != OptionalSummaryReportRoute.CMVDetail.ToString() && // todoJeannie why? this is from original code
           ReportRouteType != "StationOffset") /* todoJeannie isWellFormedUriString doesn't work? */
       {
         if (string.IsNullOrEmpty(QueryURL) || QueryURL.Length > 2000)
