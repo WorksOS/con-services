@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
@@ -14,6 +15,7 @@ using CCSS.WorksOS.Reports.Common.Models;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Polly;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
@@ -24,34 +26,37 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 {
   public class SummaryDataGrabber : GenericDataGrabber, IDataGrabber
-    {
-        #region summaryendpoint keys
-        //These are the ReportColumn names
-        const string keyProjectSettings = "ProjectSettings";
-        const string keyFilter = "Filter";
-        const string keyProjectName = "ProjectName";
-        const string keyProjectExtents = "ProjectExtents";
-        const string keyColorPalette = "ColorPalette";
-        const string keyImportedFiles = "ImportedFiles";
-        const string keyMachineDesigns = "MachineDesigns";
-        const string keyPassCountSummary = "PassCountSummary";
-        const string keyPassCountDetail = "PassCountDetail";
-        const string keyMDPSummary = "MDPSummary";
-        const string keyCMVSummary = "CMVSummary";
-        const string keyCMVChange = "CMVChange";
-        const string keyCMVDetail = "CMVDetail";
-        const string keyTemperature = "Temperature";//Obsolete
-        const string keyTemperatureSummary = "TemperatureSummary";
-        const string keyTemperatureDetail = "TemperatureDetail";
-        const string keyCutFill = "CutFill";
-        const string keyElevation = "Elevation";
-        const string keySpeed = "Speed";
-        const string keyVolumes = "Volumes";
-        #endregion
+  {
+    #region summaryendpoint keys
 
-        public SummaryDataGrabber(ILogger logger, IServiceExceptionHandler serviceExceptionHandler, IWebRequest gracefulClient, GenericComposerRequest composerRequest)
-            : base(logger, serviceExceptionHandler, gracefulClient, composerRequest)
-        { }
+    //These are the ReportColumn names
+    const string keyProjectSettings = "ProjectSettings";
+    const string keyFilter = "Filter";
+    const string keyProjectName = "ProjectName";
+    const string keyProjectExtents = "ProjectExtents";
+    const string keyColorPalette = "ColorPalette";
+    const string keyImportedFiles = "ImportedFiles";
+    const string keyMachineDesigns = "MachineDesigns";
+    const string keyPassCountSummary = "PassCountSummary";
+    const string keyPassCountDetail = "PassCountDetail";
+    const string keyMDPSummary = "MDPSummary";
+    const string keyCMVSummary = "CMVSummary";
+    const string keyCMVChange = "CMVChange";
+    const string keyCMVDetail = "CMVDetail";
+    const string keyTemperature = "Temperature"; //Obsolete
+    const string keyTemperatureSummary = "TemperatureSummary";
+    const string keyTemperatureDetail = "TemperatureDetail";
+    const string keyCutFill = "CutFill";
+    const string keyElevation = "Elevation";
+    const string keySpeed = "Speed";
+    const string keyVolumes = "Volumes";
+
+    #endregion
+
+    public SummaryDataGrabber(ILogger logger, IServiceExceptionHandler serviceExceptionHandler, IWebRequest gracefulClient, GenericComposerRequest composerRequest)
+      : base(logger, serviceExceptionHandler, gracefulClient, composerRequest)
+    {
+    }
 
     public DataGrabberResponse GetReportsData()
     {
@@ -98,15 +103,15 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
     {
       DataGrabberResponse response = new SummaryDataGrabberResponse();
       var mandatoryReportColumns = new List<string>
-        {
-          MandatoryReportRoute.Filter.ToString(),
-          MandatoryReportRoute.ImportedFiles.ToString(),
-          MandatoryReportRoute.ProjectName.ToString(),
-          MandatoryReportRoute.ProjectExtents.ToString(),
-          MandatorySummaryReportRoute.ColorPalette.ToString(),
-          MandatorySummaryReportRoute.MachineDesigns.ToString(),
-          MandatorySummaryReportRoute.ProjectSettings.ToString()
-        };
+      {
+        MandatoryReportRoute.Filter.ToString(),
+        MandatoryReportRoute.ImportedFiles.ToString(),
+        MandatoryReportRoute.ProjectName.ToString(),
+        MandatoryReportRoute.ProjectExtents.ToString(),
+        MandatorySummaryReportRoute.ColorPalette.ToString(),
+        MandatorySummaryReportRoute.MachineDesigns.ToString(),
+        MandatorySummaryReportRoute.ProjectSettings.ToString()
+      };
 
       try
       {
@@ -114,48 +119,45 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
         var errorState = new KeyValuePair<string, int>();
 
         Parallel.ForEach(_composerRequest.ReportRequest.ReportRoutes, (report, loopState) =>
+        {
+          var sw = new Stopwatch();
+          sw.Start();
+
+          if (!loopState.IsStopped)
+          {
+            var reportRequest = new DataGrabberRequest {CustomHeaders = _composerRequest.CustomHeaders, QueryURL = report.QueryURL, SvcMethod = new HttpMethod(report.SvcMethod)};
+
+            var reportResponse = !string.IsNullOrEmpty(report.QueryURL)
+              ? GetData(reportRequest).Result
+              : null;
+
+            var imgResponse = new ImageAPIResponse();
+            if (reportResponse != null && reportResponse.StatusCode == HttpStatusCode.OK)
             {
-              var sw = new Stopwatch();
-              sw.Start();
-
-              if (!loopState.IsStopped)
+              if (report.MapURL != null)
               {
-                var reportRequest = new DataGrabberRequest
+                reportRequest.QueryURL = string.IsNullOrEmpty(_composerRequest.UserPreference?.Language) ? report.MapURL : report.MapURL + $"&language={_composerRequest.UserPreference.Language}";
+                imgResponse = GetImage(reportRequest);
+                if (imgResponse.DataGrabberResponseCode != (int) HttpStatusCode.OK)
                 {
-                  CustomHeaders = _composerRequest.CustomHeaders,
-                  QueryURL = report.QueryURL,
-                  SvcMethod = new HttpMethod(report.SvcMethod)
-                };
-
-                var reportsData = !string.IsNullOrEmpty(report.QueryURL) 
-                  ? GetData(reportRequest).Result : null;
-                
-                var imgResponse = new ImageAPIResponse();
-                if (reportsData != null && reportsData.StatusCode == HttpStatusCode.OK)
-                {
-                  if (report.MapURL != null)
-                  {
-                    reportRequest.QueryURL = string.IsNullOrEmpty(_composerRequest.UserPreference?.Language) ? report.MapURL : report.MapURL + $"&language={_composerRequest.UserPreference.Language}";
-                    imgResponse = GetImage(reportRequest);
-                    if (imgResponse.DataGrabberResponseCode != (int)HttpStatusCode.OK)
-                    {
-                      imgResponse.Image = null;
-                    }
-                  }
-                  
-                  var strResponse = reportsData.Content.ReadAsStringAsync().Result;
-                  parsedData.Add(Tuple.Create(report.ReportRouteType, strResponse, imgResponse.Image, GetQueryParameters(report), report.QueryURL));
-                  response.DataGrabberStatus = (int)HttpStatusCode.OK;
-                }
-                else if (reportsData.StatusCode != HttpStatusCode.OK
-                    && mandatoryReportColumns.Contains(report.ReportRouteType))
-                {
-                  errorState = new KeyValuePair<string, int>(report.ReportRouteType, (int) reportsData.StatusCode);
-                  loopState.Stop();
+                  imgResponse.Image = null;
                 }
               }
-              _log.LogInformation($"{nameof(SummaryDataGrabber)}.{nameof(GenerateReportsData)} Time Elapsed is {Math.Round(sw.Elapsed.TotalSeconds, 2)}.");
-            });
+
+              var strResponse = reportResponse.Content.ReadAsStringAsync().Result;
+              parsedData.Add(Tuple.Create(report.ReportRouteType, strResponse, imgResponse.Image, GetQueryParameters(report), report.QueryURL));
+              response.DataGrabberStatus = (int) HttpStatusCode.OK;
+            }
+            else if (reportResponse.StatusCode != HttpStatusCode.OK
+                     && mandatoryReportColumns.Contains(report.ReportRouteType))
+            {
+              errorState = new KeyValuePair<string, int>(report.ReportRouteType, (int) reportResponse.StatusCode);
+              loopState.Stop();
+            }
+          }
+
+          _log.LogInformation($"{nameof(SummaryDataGrabber)}.{nameof(GenerateReportsData)} Time Elapsed is {Math.Round(sw.Elapsed.TotalSeconds, 2)}.");
+        });
 
         //set overall response status
         if (errorState.Key != null && errorState.Value != 200)
@@ -165,14 +167,14 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
           return response;
         }
 
-        if (response.DataGrabberStatus == (int)HttpStatusCode.OK)
+        if (response.DataGrabberStatus == (int) HttpStatusCode.OK)
         {
           //-- Mapping
           var summaryReportData = new SummaryReportDataModel();
           response.ReportData = summaryReportData;
           summaryReportData.Data = new List<SummaryDataBase>();
           summaryReportData.Filters = new FilterDescriptorListResult();
-          // todoJeannie summaryReportData.Filters.FilterDescriptors = new List<VSS.Productivity3D.Filter.Abstractions.Models.FilterDescriptor>();
+          summaryReportData.Filters.FilterDescriptors = new List<FilterDescriptor>().ToImmutableList();
           //Save the requested order - use QueryURL which is unique key
           var sortedData = parsedData.SortBy(_composerRequest.ReportRequest.ReportRoutes.Select(rp => rp.QueryURL),
             pd => pd.Item5).ToList();
@@ -239,6 +241,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
                 {
                   summaryReportData.ProjectCustomSettings = customProjectSettings.settings;
                 }
+
                 break;
               case keyFilter:
                 var filterDescriptor = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(sortedData[i].Item2);
@@ -251,6 +254,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
                     summaryReportData.Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
                   }
                 }
+
                 break;
               case keyProjectName:
                 summaryReportData.ProjectName = JsonConvert.DeserializeObject<ProjectV6DescriptorsSingleResult>(sortedData[i].Item2);
@@ -286,8 +290,9 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
       {
         _log.LogError(ex, "SummaryDataGrabber exception: ");
         response.Message = "Internal Server Error";
-        response.DataGrabberStatus = (int)HttpStatusCode.InternalServerError;
+        response.DataGrabberStatus = (int) HttpStatusCode.InternalServerError;
       }
+
       return response;
     }
 
@@ -321,14 +326,18 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 
     private ImageAPIResponse GetImage(DataGrabberRequest request)
     {
-      var imgResult = new[] { new byte { } };
+      var imgResult = new[] {new byte { }};
       var imageData = GetData(request);
-      var contentType = imageData?.Result.Content.Headers.ContentType;
-      if (contentType.ToString() == "image/png")
+      if (imageData?.Result.StatusCode == HttpStatusCode.OK)
       {
-        imgResult = imageData.Result.Content.ReadAsByteArrayAsync().Result;
+        var contentType = imageData?.Result.Content.Headers.ContentType;
+        if (contentType.ToString() == "image/png")
+        {
+          imgResult = imageData.Result.Content.ReadAsByteArrayAsync().Result;
+        }
       }
-      return new ImageAPIResponse { DataGrabberResponseCode = (int) imageData.Result.StatusCode, Image = imgResult };
+
+      return new ImageAPIResponse {DataGrabberResponseCode = (int) imageData.Result.StatusCode, Image = imgResult};
     }
 
     private void GetVolumeFilters(DataGrabberResponse response, string filterUrl, NameValueCollection queryCollection)
@@ -336,11 +345,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
       try
       {
         string apiResponse;
-       var filterRequest = new DataGrabberRequest
-        {
-          CustomHeaders = _composerRequest.CustomHeaders,
-          SvcMethod = HttpMethod.Get
-        };
+        var filterRequest = new DataGrabberRequest {CustomHeaders = _composerRequest.CustomHeaders, SvcMethod = HttpMethod.Get};
 
         var topurl = DataGrabberHelper.AppendOrUpdateQueryParam(filterUrl, SummaryReportConstants.FilterUid, queryCollection.Get(SummaryReportConstants.TopUid));
         var baseurl = DataGrabberHelper.AppendOrUpdateQueryParam(filterUrl, SummaryReportConstants.FilterUid, queryCollection.Get(SummaryReportConstants.BaseUid));
@@ -356,7 +361,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
             var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
             if (filterDetails != null)
             {
-              ((SummaryReportDataModel)response.ReportData).Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
+              ((SummaryReportDataModel) response.ReportData).Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
             }
           }
         }
@@ -372,7 +377,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
             var filterDetails = JsonConvert.DeserializeObject<Filter>(filterDescriptor.FilterDescriptor.FilterJson);
             if (filterDetails != null)
             {
-              ((SummaryReportDataModel)response.ReportData).Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
+              ((SummaryReportDataModel) response.ReportData).Filters.FilterDescriptors.Add(filterDescriptor.FilterDescriptor);
             }
           }
         }
@@ -381,7 +386,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
       {
         _log.LogError(ex, $"{nameof(SummaryDataGrabber)}.{nameof(GetVolumeFilters)}: ");
         response.Message = "Internal Server Error";
-        response.DataGrabberStatus = (int)HttpStatusCode.InternalServerError;
+        response.DataGrabberStatus = (int) HttpStatusCode.InternalServerError;
       }
     }
   }

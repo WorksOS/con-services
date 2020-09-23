@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -60,9 +61,17 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
         {
           var reportRequest = new DataGrabberRequest {CustomHeaders = _composerRequest.CustomHeaders, QueryURL = report.QueryURL, SvcMethod = new HttpMethod(report.SvcMethod)};
 
-          var reportsData = GetData(reportRequest).Result;
-          var strResponse = reportsData?.Content.ReadAsStringAsync().Result;
-          parsedData.Add(report.ReportRouteType, strResponse);
+          var reportsResponse = GetData(reportRequest).Result;
+          var strResponse = reportsResponse?.Content.ReadAsStringAsync().Result;
+          if (reportsResponse?.StatusCode == HttpStatusCode.OK)
+          {
+            parsedData.Add(report.ReportRouteType, strResponse);
+          }
+          else
+          {
+            _log.LogError($"{nameof(StationOffsetDataGrabber)}.{nameof(GenerateReportsData)}: non-ok response {reportsResponse?.StatusCode} for RouteType {report.ReportRouteType} response: {strResponse}");
+            parsedData.Add(report.ReportRouteType, null);
+          }
         });
 
         response.DataGrabberStatus = (int) HttpStatusCode.OK;
@@ -84,7 +93,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
     private void MapResponseProperties(DataGrabberResponse response, IReadOnlyDictionary<string, string> parsedData)
     {
       // Data model and filters...
-      response.ReportData = new GridReportDataModel {Filters = new FilterDescriptorListResult()};  // todoJeannie { filterDescriptors = new List<FilterDescriptor>()}};
+      response.ReportData = new GridReportDataModel {Filters = new FilterDescriptorListResult() { FilterDescriptors = new List<FilterDescriptor>().ToImmutableList() } };
 
       var gridReportData = (GridReportDataModel) response.ReportData;
 

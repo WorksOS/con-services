@@ -2,7 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using CCSS.WorksOS.Reports.Abstractions.Models.Request;
-using CCSS.WorksOS.Reports.Common.Helpers;
+using CCSS.WorksOS.Reports.Common.DataGrabbers;
 using CCSS.WorksOS.Reports.Common.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
@@ -42,7 +42,7 @@ namespace CCSS.WorksOS.Reports.Common.Executors
           ReportRequest = reportRequest
         };
 
-        var dataGrabber = DataGrabberHelper.CreateDataGrabber(_log, _serviceExceptionHandler, _gracefulClient, composerRequest);
+        var dataGrabber = new SummaryDataGrabber(_log, _serviceExceptionHandler, _gracefulClient, composerRequest);
         var dataGrabberResponse = dataGrabber.GetReportsData();
 
 

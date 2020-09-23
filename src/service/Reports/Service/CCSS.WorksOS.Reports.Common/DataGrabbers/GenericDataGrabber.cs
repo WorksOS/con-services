@@ -113,7 +113,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
           JsonConvert.DeserializeObject<ProjectStatisticsResult>(parsedData["ProjectExtents"]);
       }
 
-      mandatoryReportData.Filters = new FilterDescriptorListResult(); // { FilterDescriptors = new List<FilterDescriptor>() }; todoJeannie
+      mandatoryReportData.Filters = new FilterDescriptorListResult{ FilterDescriptors = new List<FilterDescriptor>().ToImmutableList() };
 
       if (parsedData.ContainsKey("Filter") && parsedData["Filter"] != null)
       {

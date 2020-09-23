@@ -55,10 +55,18 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
             SvcMethod = new HttpMethod(report.SvcMethod)
           };
 
-          var reportsData = !string.IsNullOrEmpty(report.QueryURL)
+          var reportsResponse = !string.IsNullOrEmpty(report.QueryURL)
             ? GetData(reportRequest).Result : null;
-          var strResponse = reportsData?.Content.ReadAsStringAsync().Result;
-          parsedData.Add(report.ReportRouteType, strResponse);
+          var strResponse = reportsResponse?.Content.ReadAsStringAsync().Result;
+          if (reportsResponse?.StatusCode == HttpStatusCode.OK)
+          {
+            parsedData.Add(report.ReportRouteType, strResponse);
+          }
+          else
+          {
+            _log.LogError($"{nameof(StationOffsetDataGrabber)}.{nameof(GenerateReportsData)}: non-ok response {reportsResponse?.StatusCode} for RouteType {report.ReportRouteType} response: {strResponse}");
+            parsedData.Add(report.ReportRouteType, null);
+          }
 
           _log.LogInformation($"{nameof(StationOffsetDataGrabber)}.{nameof(GenerateReportsData)} Time Elapsed for ReportColumn {report.ReportRouteType} is {Math.Round(sw.Elapsed.TotalSeconds, 2)}.");
         });
