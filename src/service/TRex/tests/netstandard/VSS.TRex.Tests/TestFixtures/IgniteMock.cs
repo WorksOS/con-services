@@ -207,6 +207,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create base cluster compute routing for messaging use cases
       AddClusterComputeGridRouting<SiteModelAttributesChangedEventSenderComputeFunc, ISiteModelAttributesChangedEvent, ISiteModelAttributesChangedEventSenderResponse>();
       AddClusterComputeGridRouting<DesignChangedEventSenderComputeFunc, IDesignChangedEvent, IDesignChangedEventSenderResponse>();
+      AddClusterComputeGridRouting<RebuildSiteModelTAGNotifierListenerComputeFunc, IRebuildSiteModelTAGNotifierEvent, IRebuildSiteModelTAGNotifierEventSenderResponse>();
     }
 
     private ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)
