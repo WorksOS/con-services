@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CCSS.WorksOS.Reports.Common.Helpers;
 using CCSS.WorksOS.Reports.Common.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
@@ -20,17 +15,8 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 {
-	public class GenericDataGrabber
+  public class GenericDataGrabber
 	{
-    //protected Log4NetService LogService;
-    //protected readonly RequestContext requestContext;
-
-    //private readonly IReportsApiClient apiClient;
-    //private readonly TPaaSIdentityTokenApiClientWithCaching tokenApi;
-    //private readonly string consumerKey;
-    //private readonly string consumerSecret;
-    //private const string className = "GenericDataGrabber";
-
     protected readonly ILogger _log;
     private IServiceExceptionHandler _serviceExceptionHandler;
     private readonly IWebRequest _gracefulClient;
@@ -176,21 +162,9 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
     //	return isValid;
     //}
 
-    protected async Task<string> GetData(DataGrabberRequest request)
+    protected async Task<HttpResponseMessage> GetData(DataGrabberRequest request)
     {
-      var response = await _gracefulClient.ExecuteRequestRaw(request.QueryURL, request.CustomHeaders, request.SvcMethod);
-
-      var code = response.StatusCode;
-      var result = response.Content.ReadAsStringAsync().Result;
-      if (code != HttpStatusCode.OK)
-      {
-        _log.LogError($"{nameof(GenerateReportsData)}: Invalid response code {code} and result {result} for reportRoute {request.QueryURL}");
-        return string.Empty;
-      }
-
-      return !string.IsNullOrEmpty(result)
-        ? result
-        : string.Empty;
+      return await _gracefulClient.ExecuteRequestRaw(request.QueryURL, request.CustomHeaders, request.SvcMethod);
     }
 
     ///// <summary>

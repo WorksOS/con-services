@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
@@ -54,15 +53,19 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(9, "Report parameters must be provided."));
 
-      var summaryReportMandatoryRoutes = new List<string>
+      var reportMandatoryRoutes = new List<string>
       {
         MandatoryReportRoute.Filter.ToString(),
         MandatoryReportRoute.ImportedFiles.ToString(),
         MandatoryReportRoute.ProjectName.ToString(),
-        MandatoryReportRoute.ProjectExtents.ToString(),
-        //MandatoryReportRoute.ColorPalette.ToString(), // todoJeannie are these used?
-        //MandatoryReportRoute.MachineDesigns.ToString(),
-        //MandatoryReportRoute.ProjectSettings.ToString()
+        MandatoryReportRoute.ProjectExtents.ToString()
+      };
+
+      var summaryReportMandatoryRoutes = new List<string>
+      {
+        MandatorySummaryReportRoute.ColorPalette.ToString(), 
+        MandatorySummaryReportRoute.MachineDesigns.ToString(),
+        MandatorySummaryReportRoute.ProjectSettings.ToString()
       };
 
       var optionalSummaryReportRoutes = new List<string>
@@ -81,18 +84,23 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
         OptionalSummaryReportRoute.CutFill.ToString()
       };
 
-      if (!summaryReportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); }))
+      if (!reportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); }))
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(9, "Missing report parameter for Summary report."));
+          new ContractExecutionResult(9, "Missing report parameter for any report."));
 
-      // must be at least 1 of the optional routes
+      // must have mantatory summary and at least 1 of the optional routes
       if (ReportTypeEnum == ReportType.Summary)
       {
+        if (!summaryReportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); }))
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(9, "Missing report parameter for summary report."));
+
         if (!ReportRoutes.Any(r => optionalSummaryReportRoutes.Contains(r.ReportRouteType)))
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(9, "At least 1 optional report parameter must be included for Summary report."));
 
         if (
+          (!reportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); })) &&
           (!summaryReportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); })) &&
           (!optionalSummaryReportRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); }))
         )
@@ -107,7 +115,7 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
             new ContractExecutionResult(9, "Report parameter StationOffset must be included for StationOffset report."));
 
         if (
-          (!summaryReportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); })) &&
+          (!reportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); })) &&
           (!ReportRoutes.Exists(r => r.ReportRouteType.Equals("StationOffset")))
         )
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -120,7 +128,7 @@ namespace CCSS.WorksOS.Reports.Abstractions.Models.Request
             new ContractExecutionResult(9, "Report parameter Grid must be included for Grid report."));
 
         if (
-          (!summaryReportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); })) &&
+          (!reportMandatoryRoutes.TrueForAll(x => { return ReportRoutes.Exists(r => r.ReportRouteType.Equals(x)); })) &&
           (!ReportRoutes.Exists(r => r.ReportRouteType.Equals("Grid")))
         )
           throw new ServiceException(HttpStatusCode.BadRequest,

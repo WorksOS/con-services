@@ -9,6 +9,25 @@ namespace CCSS.WorksOS.Reports.Controllers
 {
   public class ReportsController : BaseController<ReportsController>
   {
+
+    [HttpPost("api/v1/reports/summary")]
+    public async Task<IActionResult> GetSummaryReport([FromBody] ReportRequest reportRequest)
+    {
+      reportRequest.ReportTypeEnum = ReportType.Summary;
+      Log.LogInformation($"{nameof(GetSummaryReport)} request: {reportRequest}");
+      reportRequest.Validate();
+
+      var reportResult = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<GetSummaryExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            CustomerUid, UserUid, customHeaders,
+            PreferenceProxy, GracefulClient
+          )
+          .ProcessAsync(reportRequest));
+
+      return StatusCode((int)HttpStatusCode.InternalServerError, $"{nameof(GetSummaryReport)} not supported yet");
+    }
+
     [HttpPost("api/v1/reports/stationoffset")]
     public async Task<IActionResult> GetStationOffsetReportAsync(
       [FromBody] ReportRequest reportRequest)
@@ -27,24 +46,7 @@ namespace CCSS.WorksOS.Reports.Controllers
 
       return StatusCode((int) HttpStatusCode.InternalServerError, $"{nameof(GetStationOffsetReportAsync)} not supported yet");
     }
-
-    [HttpPost("api/v1/reports/summary")]
-    public async Task<IActionResult> GetSummaryReport([FromBody] ReportRequest reportRequest)
-    {
-      reportRequest.ReportTypeEnum = ReportType.Summary;
-      Log.LogInformation($"{nameof(GetSummaryReport)} request: {reportRequest}");
-      reportRequest.Validate();
-
-      //var reportResult = await WithServiceExceptionTryExecuteAsync(() =>
-      //  RequestExecutorContainerFactory
-      //    .Build<GetStationOffsetExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-      //      CustomerUid, UserUid, UserEmailAddress, headers: customHeaders
-      //    )
-      //    .ProcessAsync(reportRequest));
-
-      return StatusCode((int) HttpStatusCode.InternalServerError, $"{nameof(GetSummaryReport)} not supported yet");
-    }
-
+    
     [HttpPost("api/v1/reports/grid")]
     public async Task<IActionResult> GetGridReport([FromBody] ReportRequest reportRequest)
     {
@@ -52,7 +54,6 @@ namespace CCSS.WorksOS.Reports.Controllers
       Log.LogInformation($"{nameof(GetGridReport)} request: {reportRequest}");
       reportRequest.Validate();
 
-      // todoJeannie use same executor for now
       var reportResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<GetGridExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,

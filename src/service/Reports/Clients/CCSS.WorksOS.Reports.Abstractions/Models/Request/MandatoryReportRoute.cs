@@ -2,12 +2,9 @@
 {
   public enum MandatoryReportRoute
   {
-    ProjectName,
-    ProjectExtents,
     Filter,
-    ColorPalette,
     ImportedFiles,
-    MachineDesigns,
-    ProjectSettings
+    ProjectName,
+    ProjectExtents
   }
 }

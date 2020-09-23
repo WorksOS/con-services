@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CCSS.WorksOS.Reports.Common.Models
+﻿namespace CCSS.WorksOS.Reports.Common.Models
 {
   public class SummaryReportConstants
   {
@@ -18,5 +14,9 @@ namespace CCSS.WorksOS.Reports.Common.Models
       ReportElevationParameter, ReportCutFillParameter, ReportCmvParameter, ReportMdpParameter, ReportPassCountParameter, ReportTemperatureParameter
     };
 
+    public const string FilterUid = "filterUid";
+    public const string BaseUid = "baseUid";
+    public const string TopUid = "topUid";
+    public const string VolumeCalculationType = "volumeCalcType";
   }
 }

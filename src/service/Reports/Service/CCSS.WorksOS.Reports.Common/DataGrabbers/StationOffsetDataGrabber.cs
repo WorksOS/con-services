@@ -12,10 +12,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Filter.Abstractions.Models;
-using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
-using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace CCSS.WorksOS.Reports.Common.DataGrabbers
 {
@@ -59,11 +55,10 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
             SvcMethod = new HttpMethod(report.SvcMethod)
           };
 
-          var strResponse = !string.IsNullOrEmpty(report.QueryURL)
-                      ? GetData(reportRequest)
-                      : null;
-
-          parsedData.Add(report.ReportRouteType, strResponse?.Result);
+          var reportsData = !string.IsNullOrEmpty(report.QueryURL)
+            ? GetData(reportRequest).Result : null;
+          var strResponse = reportsData?.Content.ReadAsStringAsync().Result;
+          parsedData.Add(report.ReportRouteType, strResponse);
 
           _log.LogInformation($"{nameof(StationOffsetDataGrabber)}.{nameof(GenerateReportsData)} Time Elapsed for ReportColumn {report.ReportRouteType} is {Math.Round(sw.Elapsed.TotalSeconds, 2)}.");
         });

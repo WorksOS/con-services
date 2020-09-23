@@ -34,7 +34,7 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
       var sw = new Stopwatch();
       sw.Start();
 
-      //--> Get the report data for each endpoint
+      // Get the report data for each endpoint
       var response = GenerateReportsData();
 
       //-->TODO: Validate on response and create consolidated Response
@@ -59,8 +59,9 @@ namespace CCSS.WorksOS.Reports.Common.DataGrabbers
         {
           var reportRequest = new DataGrabberRequest {CustomHeaders = _composerRequest.CustomHeaders, QueryURL = report.QueryURL, SvcMethod = new HttpMethod(report.SvcMethod)};
 
-          var strResponse = GetData(reportRequest);
-          parsedData.Add(report.ReportRouteType, strResponse?.Result);
+          var reportsData = GetData(reportRequest).Result;
+          var strResponse = reportsData?.Content.ReadAsStringAsync().Result;
+          parsedData.Add(report.ReportRouteType, strResponse);
         });
 
         response.DataGrabberStatus = (int) HttpStatusCode.OK;
